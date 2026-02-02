@@ -145,7 +145,7 @@ dependencies:
   battery_plus: ^7.0.0
   archive: ^4.0.7
   llama_flutter_android: ^0.1.1
-  file_picker: ^10.3.8
+  file_picker: ^10.3.10
   ffi: ^2.1.4
   cryptography: ^2.9.0
   image_picker: ^1.2.1
