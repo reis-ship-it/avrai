@@ -112,7 +112,7 @@ dependencies:
   
   # Development & Code Generation
   json_annotation: ^4.8.1
-  build_runner: ^2.10.5
+  build_runner: ^2.11.0
   json_serializable: ^6.11.2
   injectable_generator: ^2.8.1
   
