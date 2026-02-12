@@ -228,7 +228,7 @@ jobs:
         echo "- Tests completed successfully" >> ${{ matrix.test-type }}-results.md
         
     - name: Upload ${{ matrix.test-type }} results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.test-type }}-test-results
         path: ${{ matrix.test-type }}-results.md
@@ -286,7 +286,7 @@ jobs:
         echo "- Code formatted" >> quality-report.md
         
     - name: Upload quality report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: quality-report
         path: quality-report.md
@@ -348,7 +348,7 @@ jobs:
         flutter pub deps >> dependency-report.md 2>&1 || echo "Dependency check completed" >> dependency-report.md
         
     - name: Upload dependency report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: dependency-report
         path: dependency-report.md
@@ -442,7 +442,7 @@ jobs:
         echo "- Check cargo audit output above for details" >> security-report.md
         
     - name: Upload security report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: security-report
         path: security-report.md
@@ -489,7 +489,7 @@ jobs:
         echo "- Success Rate: ${SUCCESS_RATE}% (${SUCCESS_COUNT}/${TOTAL_JOBS})" >> performance-report.md
         
     - name: Upload performance report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: performance-report
         path: performance-report.md
