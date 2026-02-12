@@ -1,0 +1,9 @@
+# Flutter Rust Bridge Configuration
+# 
+# This file configures code generation for flutter_rust_bridge
+
+rust_root: "."
+rust_input: "crate::api"
+
+dart_output: "packages/avrai_knot/lib/services/knot/bridge/knot_math_bridge.dart"
+c_output: "ios/Runner/knot_math_bridge.h"

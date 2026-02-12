@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Birth of Self</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    canvas {
+      display: block;
+    }
+    #webgl-fallback {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      color: #00FF66;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      text-align: center;
+      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #webgl-fallback.active {
+      display: flex;
+    }
+    #webgl-fallback .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    #webgl-fallback .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    #webgl-fallback .reason {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="webgl-fallback">
+    <div class="icon">⚠️</div>
+    <div class="title">3D visualization not available</div>
+    <div class="reason" id="webgl-reason"></div>
+  </div>
+  
+  <!-- WebGL Detection (runs before ES modules) -->
+  <script>
+    (function() {
+      function checkWebGLSupport() {
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          if (!gl) {
+            return { supported: false, reason: 'WebGL not available on this device' };
+          }
+          return { supported: true, degraded: false };
+        } catch (e) {
+          return { supported: false, reason: e.message || 'WebGL check failed' };
+        }
+      }
+      
+      window.webglStatus = checkWebGLSupport();
+      
+      if (!window.webglStatus.supported) {
+        // Show fallback UI
+        document.getElementById('webgl-fallback').classList.add('active');
+        document.getElementById('webgl-reason').textContent = window.webglStatus.reason;
+        document.getElementById('container').style.display = 'none';
+        
+        // Notify Flutter
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onWebGLNotSupported', window.webglStatus.reason);
+        }
+      }
+    })();
+  </script>
+  
+  <!-- Three.js ES Module Import Map (local bundle for offline support) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./lib/three.module.js",
+      "three/addons/": "./lib/"
+    }
+  }
+  </script>
+  
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    
+    // ─────────────────────────────────────────────────────────────
+    // BIRTH EXPERIENCE CONTROLLER
+    // ─────────────────────────────────────────────────────────────
+    
+    class BirthExperienceController {
+      constructor(container) {
+        this.container = container;
+        this.knotData = null;
+        this.currentPhase = null;
+        this.phaseStartTime = 0;
+        
+        // Scene setup
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x000000);
+        
+        this.camera = new THREE.PerspectiveCamera(
+          75,
+          container.clientWidth / container.clientHeight,
+          0.1,
+          1000
+        );
+        this.camera.position.z = 8;
+        
+        this.renderer = new THREE.WebGLRenderer({ 
+          antialias: true, 
+          alpha: true,
+          powerPreference: 'high-performance'
+        });
+        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(this.renderer.domElement);
+        
+        // Post-processing
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.addPass(new RenderPass(this.scene, this.camera));
+        
+        this.bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(container.clientWidth, container.clientHeight),
+          0,  // Start with no bloom
+          0.6,
+          0.7
+        );
+        this.composer.addPass(this.bloomPass);
+        
+        // Objects
+        this.spark = null;
+        this.sparkGlow = null;
+        this.particles = null;
+        this.particleVelocities = [];
+        this.targetPositions = [];
+        this.knotMesh = null;
+        this.ambientParticles = null;
+        
+        // Animation
+        this.animationId = null;
+        this.isRunning = false;
+        
+        // Resize handler
+        window.addEventListener('resize', () => this.onResize());
+      }
+      
+      onResize() {
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        
+        this.renderer.setSize(width, height);
+        this.composer.setSize(width, height);
+      }
+      
+      // ─────────────────────────────────────────────────────────────
+      // PHASE 1: THE VOID (5-10s)
+      // ─────────────────────────────────────────────────────────────
+      
+      async startVoid() {
+        this.currentPhase = 'void';
+        this.phaseStartTime = Date.now();
+        
+        // Create the spark
+        const geometry = new THREE.SphereGeometry(0.02, 32, 32);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0,
+        });
+        
+        this.spark = new THREE.Mesh(geometry, material);
+        this.scene.add(this.spark);
+        
+        // Create glow sprite
+        const spriteMaterial = new THREE.SpriteMaterial({
+          map: this.createGlowTexture(),
+          color: 0xffffff,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          opacity: 0,
+        });
+        
+        this.sparkGlow = new THREE.Sprite(spriteMaterial);
+        this.sparkGlow.scale.set(0.5, 0.5, 1);
+        this.spark.add(this.sparkGlow);
+        
+        // Animate fade in
+        return new Promise(resolve => {
+          let opacity = 0;
+          const animate = () => {
+            opacity += 0.02;
+            
+            this.spark.material.opacity = Math.min(opacity, 1);
+            this.sparkGlow.material.opacity = Math.min(opacity * 0.8, 0.8);
+            
+            // Pulse effect
+            const pulse = 1 + Math.sin(Date.now() * 0.005) * 0.2;
+            this.spark.scale.setScalar(pulse);
+            this.sparkGlow.scale.setScalar(0.5 * pulse);
+            
+            // Increase bloom
+            this.bloomPass.strength = Math.min(opacity * 0.8, 0.8);
+            
+            if (opacity < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      createGlowTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(200, 220, 255, 0.8)');
+        gradient.addColorStop(0.5, 'rgba(100, 150, 255, 0.3)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 128, 128);
+        
+        return new THREE.CanvasTexture(canvas);
+      }
+      
+      // ─────────────────────────────────────────────────────────────
+      // PHASE 2: EMERGENCE (10-25s)
+      // ─────────────────────────────────────────────────────────────
+      
+      async startEmergence() {
+        this.currentPhase = 'emergence';
+        this.phaseStartTime = Date.now();
+        
+        const particleCount = 2000;
+        
+        // Calculate target positions (where particles will form the knot)
+        this.calculateTargetPositions(particleCount);
+        
+        // Create particle system
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+        
+        const primaryColor = new THREE.Color(this.knotData?.style?.primaryColor || 0x6366f1);
+        
+        // All particles start at spark position
+        for (let i = 0; i < particleCount; i++) {
+          positions[i * 3] = 0;
+          positions[i * 3 + 1] = 0;
+          positions[i * 3 + 2] = 0;
+          
+          // Color gradient from white to primary
+          const t = i / particleCount;
+          const color = new THREE.Color(0xffffff).lerp(primaryColor.clone(), t * 0.5);
+          colors[i * 3] = color.r;
+          colors[i * 3 + 1] = color.g;
+          colors[i * 3 + 2] = color.b;
+          
+          sizes[i] = Math.random() * 0.05 + 0.02;
+          
+          // Random velocity for explosion
+          this.particleVelocities.push(new THREE.Vector3(
+            (Math.random() - 0.5) * 0.8,
+            (Math.random() - 0.5) * 0.8,
+            (Math.random() - 0.5) * 0.8
+          ));
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const material = new THREE.PointsMaterial({
+          size: 0.05,
+          transparent: true,
+          opacity: 1,
+          vertexColors: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          sizeAttenuation: true,
+        });
+        
+        this.particles = new THREE.Points(geometry, material);
+        this.scene.add(this.particles);
+        
+        // Hide spark
+        this.spark.visible = false;
+        
+        // Phase 2a: Explosion (2s)
+        await this.explodeParticles(2000);
+        
+        // Phase 2b: Drift and swirl (3s)
+        await this.driftParticles(3000);
+        
+        // Phase 2c: Gather (8s)
+        await this.gatherParticles(8000);
+      }
+      
+      calculateTargetPositions(count) {
+        this.targetPositions = [];
+        
+        // Use knot coordinates if available
+        const coords = this.knotData?.coordinates || [];
+        
+        if (coords.length > 0) {
+          // Create curve from knot coordinates
+          const points = coords.map(c => new THREE.Vector3(c[0], c[1], c[2]));
+          const curve = new THREE.CatmullRomCurve3(points, true);
+          
+          for (let i = 0; i < count; i++) {
+            const t = i / count;
+            const point = curve.getPoint(t);
+            this.targetPositions.push(point);
+          }
+        } else {
+          // Default: create a trefoil knot shape
+          for (let i = 0; i < count; i++) {
+            const t = (i / count) * Math.PI * 2;
+            const x = Math.sin(t) + 2 * Math.sin(2 * t);
+            const y = Math.cos(t) - 2 * Math.cos(2 * t);
+            const z = -Math.sin(3 * t);
+            this.targetPositions.push(new THREE.Vector3(x * 0.5, y * 0.5, z * 0.5));
+          }
+        }
+      }
+      
+      async explodeParticles(duration) {
+        const startTime = Date.now();
+        const positions = this.particles.geometry.attributes.position.array;
+        const particleCount = positions.length / 3;
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            
+            for (let i = 0; i < particleCount; i++) {
+              const vel = this.particleVelocities[i];
+              positions[i * 3] += vel.x * (1 - eased) * 0.3;
+              positions[i * 3 + 1] += vel.y * (1 - eased) * 0.3;
+              positions[i * 3 + 2] += vel.z * (1 - eased) * 0.3;
+            }
+            
+            this.particles.geometry.attributes.position.needsUpdate = true;
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      async driftParticles(duration) {
+        const startTime = Date.now();
+        const positions = this.particles.geometry.attributes.position.array;
+        const particleCount = positions.length / 3;
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            for (let i = 0; i < particleCount; i++) {
+              const x = positions[i * 3];
+              const y = positions[i * 3 + 1];
+              
+              // Orbital motion
+              const angle = Math.atan2(y, x) + 0.01;
+              const radius = Math.sqrt(x * x + y * y);
+              
+              positions[i * 3] = Math.cos(angle) * radius;
+              positions[i * 3 + 1] = Math.sin(angle) * radius;
+              positions[i * 3 + 2] += Math.sin(elapsed * 0.002 + i) * 0.005;
+            }
+            
+            this.particles.geometry.attributes.position.needsUpdate = true;
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      async gatherParticles(duration) {
+        const startTime = Date.now();
+        const positions = this.particles.geometry.attributes.position.array;
+        const particleCount = positions.length / 3;
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = progress * progress * progress;
+            
+            for (let i = 0; i < particleCount; i++) {
+              const target = this.targetPositions[i];
+              
+              // Lerp toward target
+              positions[i * 3] += (target.x - positions[i * 3]) * eased * 0.05;
+              positions[i * 3 + 1] += (target.y - positions[i * 3 + 1]) * eased * 0.05;
+              positions[i * 3 + 2] += (target.z - positions[i * 3 + 2]) * eased * 0.05;
+              
+              // Turbulence that decreases
+              const turbulence = (1 - eased) * 0.02;
+              positions[i * 3] += (Math.random() - 0.5) * turbulence;
+              positions[i * 3 + 1] += (Math.random() - 0.5) * turbulence;
+              positions[i * 3 + 2] += (Math.random() - 0.5) * turbulence;
+            }
+            
+            this.particles.geometry.attributes.position.needsUpdate = true;
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      // ─────────────────────────────────────────────────────────────
+      // PHASE 3: FORMATION (25-45s)
+      // ─────────────────────────────────────────────────────────────
+      
+      async startFormation() {
+        this.currentPhase = 'formation';
+        this.phaseStartTime = Date.now();
+        
+        // Create the knot tube
+        const coords = this.knotData?.coordinates || [];
+        let curve;
+        
+        if (coords.length > 0) {
+          const points = coords.map(c => new THREE.Vector3(c[0], c[1], c[2]));
+          curve = new THREE.CatmullRomCurve3(points, true);
+        } else {
+          // Default trefoil
+          const points = [];
+          for (let i = 0; i < 100; i++) {
+            const t = (i / 100) * Math.PI * 2;
+            const x = Math.sin(t) + 2 * Math.sin(2 * t);
+            const y = Math.cos(t) - 2 * Math.cos(2 * t);
+            const z = -Math.sin(3 * t);
+            points.push(new THREE.Vector3(x * 0.5, y * 0.5, z * 0.5));
+          }
+          curve = new THREE.CatmullRomCurve3(points, true);
+        }
+        
+        const geometry = new THREE.TubeGeometry(curve, 200, 0.1, 16, true);
+        
+        const primaryColor = new THREE.Color(this.knotData?.style?.primaryColor || 0x6366f1);
+        const material = new THREE.MeshStandardMaterial({
+          color: primaryColor,
+          emissive: primaryColor,
+          emissiveIntensity: 0.3,
+          metalness: 0.6,
+          roughness: 0.3,
+          transparent: true,
+          opacity: 0,
+        });
+        
+        this.knotMesh = new THREE.Mesh(geometry, material);
+        this.scene.add(this.knotMesh);
+        
+        // Add lighting
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1);
+        keyLight.position.set(5, 5, 5);
+        this.scene.add(keyLight);
+        
+        const fillLight = new THREE.DirectionalLight(0x8888ff, 0.3);
+        fillLight.position.set(-5, 3, -5);
+        this.scene.add(fillLight);
+        
+        const ambient = new THREE.AmbientLight(0x404040, 0.5);
+        this.scene.add(ambient);
+        
+        // Materialize tube (fade in while particles fade out)
+        await this.materializeKnot(12000);
+        
+        // Full glow reveal
+        await this.revealKnot(8000);
+      }
+      
+      async materializeKnot(duration) {
+        const startTime = Date.now();
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 4);
+            
+            // Fade in knot
+            this.knotMesh.material.opacity = eased;
+            
+            // Fade out particles
+            if (this.particles) {
+              this.particles.material.opacity = 1 - eased * 0.9;
+            }
+            
+            // Increase emissive
+            this.knotMesh.material.emissiveIntensity = 0.3 + eased * 0.4;
+            
+            // Increase bloom
+            this.bloomPass.strength = 0.8 + eased * 0.4;
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              // Remove particles
+              if (this.particles) {
+                this.scene.remove(this.particles);
+                this.particles.geometry.dispose();
+                this.particles.material.dispose();
+                this.particles = null;
+              }
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      async revealKnot(duration) {
+        const startTime = Date.now();
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Slow rotation
+            this.knotMesh.rotation.y += 0.003;
+            
+            // Gentle float
+            this.knotMesh.position.y = Math.sin(elapsed * 0.001) * 0.1;
+            
+            // Full bloom
+            this.bloomPass.strength = 1.2;
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      // ─────────────────────────────────────────────────────────────
+      // PHASE 4: HARMONY (45-60s)
+      // ─────────────────────────────────────────────────────────────
+      
+      async startHarmony() {
+        this.currentPhase = 'harmony';
+        this.phaseStartTime = Date.now();
+        
+        // Add ambient particles
+        this.addAmbientParticles();
+        
+        // Camera pullback
+        await this.cameraPullback(8000);
+        
+        // Hold in beauty
+        await this.hold(7000);
+        
+        // Signal completion
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onBirthComplete', JSON.stringify({
+            invariants: this.knotData?.invariants || {},
+          }));
+        }
+      }
+      
+      addAmbientParticles() {
+        const particleCount = 200;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        
+        for (let i = 0; i < particleCount; i++) {
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(Math.random() * 2 - 1);
+          const r = 3 + Math.random() * 2;
+          
+          positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+          positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+          positions[i * 3 + 2] = r * Math.cos(phi);
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const material = new THREE.PointsMaterial({
+          color: 0xffffff,
+          size: 0.02,
+          transparent: true,
+          opacity: 0.3,
+          blending: THREE.AdditiveBlending,
+        });
+        
+        this.ambientParticles = new THREE.Points(geometry, material);
+        this.scene.add(this.ambientParticles);
+      }
+      
+      async cameraPullback(duration) {
+        const startTime = Date.now();
+        const startZ = this.camera.position.z;
+        const endZ = 10;
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            
+            this.camera.position.z = startZ + (endZ - startZ) * eased;
+            
+            // Gentle orbit
+            const orbitAngle = progress * Math.PI * 0.25;
+            this.camera.position.x = Math.sin(orbitAngle) * 2;
+            this.camera.lookAt(0, 0, 0);
+            
+            // Rotate ambient particles
+            if (this.ambientParticles) {
+              this.ambientParticles.rotation.y += 0.0005;
+              this.ambientParticles.rotation.x += 0.0002;
+            }
+            
+            // Continue knot rotation
+            if (this.knotMesh) {
+              this.knotMesh.rotation.y += 0.002;
+              this.knotMesh.position.y = Math.sin(elapsed * 0.001) * 0.1;
+            }
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      async hold(duration) {
+        const startTime = Date.now();
+        
+        return new Promise(resolve => {
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Continue gentle animations
+            if (this.knotMesh) {
+              this.knotMesh.rotation.y += 0.001;
+              this.knotMesh.position.y = Math.sin(elapsed * 0.001) * 0.1;
+            }
+            
+            if (this.ambientParticles) {
+              this.ambientParticles.rotation.y += 0.0003;
+            }
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              resolve();
+            }
+          };
+          animate();
+        });
+      }
+      
+      // ─────────────────────────────────────────────────────────────
+      // MAIN EXPERIENCE
+      // ─────────────────────────────────────────────────────────────
+      
+      async start(knotData) {
+        this.knotData = knotData;
+        this.isRunning = true;
+        
+        // Start render loop
+        this.animate();
+        
+        // Signal phase changes to Flutter
+        const signalPhase = (phase) => {
+          if (window.flutter_inappwebview) {
+            window.flutter_inappwebview.callHandler('onPhaseChange', phase);
+          }
+        };
+        
+        // Run phases sequentially
+        signalPhase('void');
+        await this.startVoid();
+        
+        signalPhase('emergence');
+        await this.startEmergence();
+        
+        signalPhase('formation');
+        await this.startFormation();
+        
+        signalPhase('harmony');
+        await this.startHarmony();
+        
+        this.isRunning = false;
+      }
+      
+      animate() {
+        if (!this.isRunning) return;
+        
+        this.animationId = requestAnimationFrame(() => this.animate());
+        this.composer.render();
+      }
+      
+      dispose() {
+        this.isRunning = false;
+        cancelAnimationFrame(this.animationId);
+        
+        // Cleanup all objects
+        this.scene.traverse(object => {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach(m => m.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        });
+        
+        this.renderer.dispose();
+        this.composer.dispose();
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // GLOBAL INITIALIZATION
+    // ─────────────────────────────────────────────────────────────
+    
+    const container = document.getElementById('container');
+    const birthController = new BirthExperienceController(container);
+    
+    window.birthExperience = {
+      start: (knotDataJson) => {
+        const knotData = typeof knotDataJson === 'string' 
+          ? JSON.parse(knotDataJson) 
+          : knotDataJson;
+        birthController.start(knotData);
+      },
+      dispose: () => {
+        birthController.dispose();
+      }
+    };
+
+    // ─────────────────────────────────────────────────────────────
+    // MOTION SUPPORT
+    // Motion-Reactive 3D Visualization System
+    // ─────────────────────────────────────────────────────────────
+    
+    // Store gravity for particle physics
+    let deviceGravity = { x: 0, y: -1, z: 0 };
+    
+    // Handle device motion from Flutter
+    window.setDeviceMotion = function(motionData) {
+      deviceGravity = motionData.gravity || { x: 0, y: -1, z: 0 };
+      
+      // Apply gravity to particle velocities if particles exist
+      if (birthController.particleVelocities && birthController.particleVelocities.length > 0) {
+        const gravityInfluence = 0.02;
+        birthController.particleVelocities.forEach(vel => {
+          vel.x += deviceGravity.x * gravityInfluence;
+          vel.y += deviceGravity.y * gravityInfluence;
+          vel.z += deviceGravity.z * gravityInfluence;
+        });
+      }
+      
+      // Shake triggers sparkle effect during any phase
+      if (motionData.shake) {
+        triggerSparkle();
+      }
+    };
+    
+    // Trigger sparkle effect
+    function triggerSparkle() {
+      console.log('Shake - triggering sparkle!');
+      
+      // Boost bloom temporarily
+      const originalStrength = birthController.bloomPass.strength;
+      birthController.bloomPass.strength = 1.5;
+      
+      setTimeout(() => {
+        birthController.bloomPass.strength = originalStrength;
+      }, 200);
+      
+      // If particles exist, give them a burst of random velocity
+      if (birthController.particleVelocities && birthController.particleVelocities.length > 0) {
+        birthController.particleVelocities.forEach(vel => {
+          vel.x += (Math.random() - 0.5) * 0.5;
+          vel.y += (Math.random() - 0.5) * 0.5;
+          vel.z += (Math.random() - 0.5) * 0.5;
+        });
+      }
+    }
+    
+    // Signal ready
+    if (window.flutter_inappwebview) {
+      window.flutter_inappwebview.callHandler('onReady', 'birth_experience');
+    }
+    
+    console.log('Birth Experience initialized with motion support');
+  </script>
+</body>
+</html>

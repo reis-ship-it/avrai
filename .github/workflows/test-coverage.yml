@@ -1,0 +1,90 @@
+name: Test Coverage Report
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run weekly on Mondays
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.6'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Run tests with coverage
+      run: |
+        flutter test --coverage --exclude-tags=performance
+        
+    - name: Generate coverage report
+      run: |
+        # Install lcov if not available
+        sudo apt-get update && sudo apt-get install -y lcov || true
+        
+        # Generate HTML report
+        genhtml coverage/lcov.info -o coverage/html || echo "lcov not available, skipping HTML generation"
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        flags: unittests,widgets,integration
+        name: codecov-spots
+        fail_ci_if_error: false
+        
+    - name: Check coverage thresholds
+      run: |
+        # Extract coverage percentage from lcov.info
+        if [ -f coverage/lcov.info ]; then
+          TOTAL_LINES=$(grep -c "^SF:" coverage/lcov.info || echo "0")
+          HIT_LINES=$(grep -c "^LH:" coverage/lcov.info || echo "0")
+          
+          if [ "$TOTAL_LINES" -gt 0 ]; then
+            COVERAGE=$(echo "scale=2; ($HIT_LINES * 100) / $TOTAL_LINES" | bc)
+            echo "Coverage: ${COVERAGE}%"
+            
+            # Check against minimum thresholds
+            CRITICAL_THRESHOLD=90
+            HIGH_THRESHOLD=85
+            MEDIUM_THRESHOLD=75
+            
+            if (( $(echo "$COVERAGE < $CRITICAL_THRESHOLD" | bc -l) )); then
+              echo "⚠️ Coverage below critical threshold ($CRITICAL_THRESHOLD%)"
+            else
+              echo "✅ Coverage meets critical threshold"
+            fi
+          fi
+        fi
+        
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage/
+        retention-days: 30
+        
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MINIMUM_GREEN: 75
+        MINIMUM_ORANGE: 60
+

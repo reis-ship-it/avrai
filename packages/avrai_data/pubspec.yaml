@@ -1,0 +1,29 @@
+name: avrai_data
+description: Data layer implementations for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  avrai_core:
+    path: ../avrai_core
+  avrai_network:
+    path: ../avrai_network
+  
+  # Data dependencies
+  sembast: ^3.5.0
+  get_storage: ^2.1.1
+  path_provider: ^2.1.1
+  connectivity_plus: ^7.0.0
+  
+  # Utilities
+  equatable: ^2.0.5
+
+dev_dependencies:
+  test: ^1.25.15
+  mockito: ^5.5.0
+  
+flutter:
+  uses-material-design: false

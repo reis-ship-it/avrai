@@ -1,0 +1,43 @@
+name: avrai_app
+description: Main SPOTS Flutter application
+publish_to: 'none'
+version: 1.2.0+5
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Local packages
+  avrai_core:
+    path: ../avrai_core
+  avrai_data:
+    path: ../avrai_data
+  avrai_network:
+    path: ../avrai_network
+  avrai_ai:
+    path: ../avrai_ai
+  avrai_ml:
+    path: ../avrai_ml
+  
+  # UI dependencies
+  flutter_bloc: ^9.1.1
+  cupertino_icons: ^1.0.2
+  google_fonts: ^6.1.0
+  flutter_map: ^8.2.2
+  get_it: ^9.2.0
+  
+  # Platform integration
+  connectivity_plus: ^7.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+  
+flutter:
+  uses-material-design: true

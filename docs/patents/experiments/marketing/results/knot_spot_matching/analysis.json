@@ -1,0 +1,33 @@
+{
+  "compatibility": {
+    "metric_name": "Compatibility Score",
+    "control_mean": 0.6535313701570672,
+    "test_mean": 0.751134875481679,
+    "improvement_percent": 14.934785043471466,
+    "t_statistic": 70.3799688306911,
+    "p_value": 0.0,
+    "cohens_d": 0.7038172839589585,
+    "significant": true,
+    "large_effect": false
+  },
+  "satisfaction": {
+    "metric_name": "User Satisfaction",
+    "control_mean": 0.24782581026018896,
+    "test_mean": 0.44226205703759736,
+    "improvement_percent": 78.45681875236176,
+    "t_statistic": 61.47821273976177,
+    "p_value": 0.0,
+    "cohens_d": 0.6147974975271849,
+    "significant": true,
+    "large_effect": false
+  },
+  "calling_rate": {
+    "metric_name": "Calling Rate",
+    "control_mean": 0.39465,
+    "test_mean": 0.66505,
+    "improvement_percent": 68.51640694286077,
+    "chi2_statistic": 2934.022018536044,
+    "p_value": 0.0,
+    "significant": true
+  }
+}

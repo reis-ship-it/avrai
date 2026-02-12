@@ -1,0 +1,107 @@
+name: Test Quality Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'test/**/*_test.dart'
+      - 'scripts/check_test_quality.dart'
+  workflow_dispatch:
+
+jobs:
+  test-quality:
+    name: Test Quality Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.6'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Check test quality
+      id: quality-check
+      continue-on-error: true
+      run: |
+        echo "🔍 Running test quality analysis..."
+        
+        # Find test files changed in this PR
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          TEST_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "_test\.dart$" || true)
+        else
+          TEST_FILES=$(find test -name "*_test.dart" | head -20)
+        fi
+        
+        if [ -z "$TEST_FILES" ]; then
+          echo "No test files to check"
+          exit 0
+        fi
+        
+        echo "Found test files to check:"
+        echo "$TEST_FILES" | while read file; do
+          echo "  - $file"
+        done
+        
+        # Run quality checker on each file
+        # Use process substitution to avoid subshell issues with variable updates
+        ISSUES_FOUND=0
+        while IFS= read -r file; do
+          if [ -f "$file" ]; then
+            echo ""
+            echo "Checking: $file"
+            # Check if script output contains "Issues Found:" which indicates quality issues
+            OUTPUT=$(dart run scripts/check_test_quality.dart "$file" 2>&1)
+            echo "$OUTPUT"
+            # Check for issues (grep for "Issues Found:" text pattern, works with or without emoji)
+            if echo "$OUTPUT" | grep -qE "Issues Found:|issues found"; then
+              ISSUES_FOUND=$((ISSUES_FOUND + 1))
+            fi
+          fi
+        done < <(printf '%s\n' "$TEST_FILES")
+        
+        if [ $ISSUES_FOUND -gt 0 ]; then
+          echo "::warning::Test quality issues found. See output above."
+          echo "quality_issues=true" >> $GITHUB_OUTPUT
+        else
+          echo "::notice::All checked test files meet quality standards"
+          echo "quality_issues=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Comment on PR (if issues found)
+      if: steps.quality-check.outputs.quality_issues == 'true' && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '⚠️ **Test Quality Check Results**\n\n' +
+                  'Some test files have quality issues. Please review:\n\n' +
+                  '📚 **Resources:**\n' +
+                  '- [Test Writing Guide](docs/plans/test_refactoring/TEST_WRITING_GUIDE.md)\n' +
+                  '- [Quick Reference](docs/plans/test_refactoring/TEST_QUALITY_QUICK_REFERENCE.md)\n' +
+                  '- [Refactoring Plan](docs/plans/test_refactoring/TEST_REFACTORING_PLAN.md)\n\n' +
+                  '💡 **Tip:** Focus on testing behavior and business logic, not property values.'
+          })
+          
+    - name: Summary
+      run: |
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📊 Test Quality Check Summary"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        if [ "${{ steps.quality-check.outputs.quality_issues }}" == "true" ]; then
+          echo "⚠️  Quality issues found. Please review and improve test quality."
+          echo ""
+          echo "This check does not block merging, but please address issues before merging."
+        else
+          echo "✅ All checked test files meet quality standards!"
+        fi

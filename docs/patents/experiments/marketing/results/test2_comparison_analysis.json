@@ -1,0 +1,100 @@
+{
+  "test": {
+    "attendance_rate": 0.23117647058823532,
+    "conversion_rate": 0.8938642546793973,
+    "gross_revenue_per_event": 11558.823529411764,
+    "net_profit_per_event": 8815.426762130672,
+    "cpa": 5.19959426241522,
+    "roi": 3.3719386338892376,
+    "total_gross_revenue": 196500.0,
+    "total_marketing_cost": 21092.74504377861,
+    "total_payment_processing_fees": 5895.0,
+    "total_platform_fees": 19650.0,
+    "total_costs": 46637.7450437786,
+    "total_net_profit": 149862.2549562214,
+    "total_tickets": 3930
+  },
+  "control": {
+    "attendance_rate": 0.10466666666666669,
+    "conversion_rate": 0.0010439415416673762,
+    "gross_revenue_per_event": 5233.333333333333,
+    "net_profit_per_event": 2742.6666666666665,
+    "cpa": 23.869513333369028,
+    "roi": 1.0494227417207125,
+    "total_gross_revenue": 31400.0,
+    "total_marketing_cost": 12432.0,
+    "total_payment_processing_fees": 942.0,
+    "total_platform_fees": 1570.0,
+    "total_costs": 14944.0,
+    "total_net_profit": 16456.0,
+    "total_tickets": 628
+  },
+  "improvements": {
+    "attendance_rate": {
+      "improvement": 1.208692394155114,
+      "improvement_x": 2.208692394155114
+    },
+    "conversion_rate": {
+      "improvement": 855.2397596054311,
+      "improvement_x": 856.2397596054311
+    },
+    "gross_revenue_per_event": {
+      "improvement": 1.2086923941551142,
+      "improvement_x": 2.2086923941551144
+    },
+    "net_profit_per_event": {
+      "improvement": 2.2141808806990784,
+      "improvement_x": 3.2141808806990784
+    },
+    "roi": {
+      "improvement": 2.2131366129538543,
+      "improvement_x": 3.2131366129538543
+    },
+    "total_net_profit": {
+      "improvement": 8.106845828647387,
+      "improvement_x": 9.106845828647387
+    },
+    "cpa": {
+      "improvement": 0.7821658870963948,
+      "improvement_x": 4.590649217749079
+    }
+  },
+  "statistical_tests": {
+    "attendance_rate": {
+      "t_statistic": 3.232288029610544,
+      "p_value": 0.003992572825411934,
+      "cohens_d": 1.8206725544476254,
+      "significant": true
+    },
+    "conversion_rate": {
+      "t_statistic": 5.9900072121797985,
+      "p_value": 6.0457861133512355e-06,
+      "cohens_d": 3.619269188573279,
+      "significant": true
+    },
+    "gross_revenue": {
+      "t_statistic": 3.2322880296105434,
+      "p_value": 0.003992572825411934,
+      "cohens_d": 1.820672554447625,
+      "significant": true
+    },
+    "net_profit": {
+      "t_statistic": 4.090329069151399,
+      "p_value": 0.0005235517744809428,
+      "cohens_d": 2.2361310836365966,
+      "significant": true
+    },
+    "cpa": {
+      "t_statistic": -7.04374572699292,
+      "p_value": 5.950431308653417e-07,
+      "cohens_d": -2.597246506780072,
+      "significant": true
+    },
+    "roi": {
+      "t_statistic": 6.915917438891407,
+      "p_value": 7.823200366905429e-07,
+      "cohens_d": 3.348043906428571,
+      "significant": true
+    }
+  }
+}

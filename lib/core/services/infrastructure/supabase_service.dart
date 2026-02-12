@@ -1,0 +1,351 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:avrai/core/services/infrastructure/logger.dart';
+
+/// Supabase service for AVRAI app
+/// Provides a clean interface to Supabase backend
+class SupabaseService {
+  static final SupabaseService _instance = SupabaseService._internal();
+  factory SupabaseService() => _instance;
+  SupabaseService._internal();
+  static const String _logName = 'SupabaseService';
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'AVRAI', minimumLevel: LogLevel.debug);
+
+  // In tests we cannot rely on Supabase.instance being initialized (it asserts).
+  // Provide a safe override for unit tests and guard access in production.
+  static SupabaseClient? _overrideClientForTests;
+
+  static void useClientForTests(SupabaseClient client) {
+    _overrideClientForTests = client;
+  }
+
+  static void resetClientForTests() {
+    _overrideClientForTests = null;
+  }
+
+  SupabaseClient? _tryGetClient() {
+    if (_overrideClientForTests != null) return _overrideClientForTests;
+    try {
+      return Supabase.instance.client;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  SupabaseClient get _client {
+    final client = _tryGetClient();
+    if (client == null) {
+      throw Exception('Supabase is not initialized');
+    }
+    return client;
+  }
+
+  /// Expose client for internal service consumers (not UI)
+  SupabaseClient get client => _client;
+
+  /// Check if Supabase is available
+  bool get isAvailable {
+    try {
+      return _tryGetClient() != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Safely get client if available (returns null if not initialized)
+  SupabaseClient? tryGetClient() => _tryGetClient();
+
+  /// Test connection to Supabase
+  Future<bool> testConnection() async {
+    try {
+      await _client.from('users').select('count').limit(1);
+      _logger.info('Supabase connection test successful', tag: _logName);
+      return true;
+    } catch (e) {
+      _logger.error('Supabase connection test failed', error: e, tag: _logName);
+      return false;
+    }
+  }
+
+  /// Get current user
+  User? get currentUser {
+    try {
+      final c = _tryGetClient();
+      return c?.auth.currentUser;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Get server time from the backend (authoritative).
+  ///
+  /// Uses the `public.get_server_time()` RPC (see `supabase/migrations/039_atomic_clock_server_time_rpc.sql`).
+  /// This is used by `AtomicClockService` for NTP-style offset estimation.
+  Future<DateTime> getServerTime() async {
+    try {
+      final c = _tryGetClient();
+      if (c == null) {
+        throw Exception('Supabase client not available');
+      }
+
+      final res = await c.rpc('get_server_time');
+      // supabase_flutter returns a raw value for scalar RPCs
+      if (res is String) {
+        return DateTime.parse(res);
+      }
+      if (res is DateTime) {
+        return res;
+      }
+      throw Exception(
+          'Unexpected get_server_time() result type: ${res.runtimeType}');
+    } catch (e) {
+      _logger.error('Failed to fetch server time', error: e, tag: _logName);
+      rethrow;
+    }
+  }
+
+  /// Sign in with email and password
+  Future<AuthResponse> signInWithEmail(String email, String password) async {
+    try {
+      final response = await _client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      _logger.info('User signed in: ${response.user?.email}', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Sign in failed', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Sign up with email and password
+  Future<AuthResponse> signUpWithEmail(String email, String password) async {
+    try {
+      final response = await _client.auth.signUp(
+        email: email,
+        password: password,
+      );
+      _logger.info('User signed up: ${response.user?.email}', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Sign up failed', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Sign out
+  Future<void> signOut() async {
+    try {
+      await _client.auth.signOut();
+      _logger.info('User signed out', tag: _logName);
+    } catch (e) {
+      _logger.error('Sign out failed', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Create a new spot
+  Future<Map<String, dynamic>> createSpot({
+    required String name,
+    required double latitude,
+    required double longitude,
+    String? description,
+    List<String>? tags,
+  }) async {
+    try {
+      final spotData = {
+        'name': name,
+        'latitude': latitude,
+        'longitude': longitude,
+        'description': description,
+        'tags': tags,
+        'created_at': DateTime.now().toIso8601String(),
+        'user_id': currentUser?.id,
+      };
+
+      final response =
+          await _client.from('spots').insert(spotData).select().single();
+      _logger.info('Spot created: $name', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Failed to create spot', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Get all spots
+  Future<List<Map<String, dynamic>>> getSpots() async {
+    try {
+      final response = await _client
+          .from('spots')
+          .select('*')
+          .order('created_at', ascending: false);
+      final spots = List<Map<String, dynamic>>.from(response);
+      _logger.info('Retrieved ${spots.length} spots', tag: _logName);
+      return spots;
+    } catch (e) {
+      _logger.error('Failed to get spots', error: e, tag: _logName);
+      return [];
+    }
+  }
+
+  /// Get spots by user
+  Future<List<Map<String, dynamic>>> getSpotsByUser(String userId) async {
+    try {
+      final response = await _client
+          .from('spots')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+      final spots = List<Map<String, dynamic>>.from(response);
+      _logger.info('Retrieved ${spots.length} spots for user $userId',
+          tag: _logName);
+      return spots;
+    } catch (e) {
+      _logger.error('Failed to get spots by user', error: e, tag: _logName);
+      return [];
+    }
+  }
+
+  /// Create a new spot list
+  Future<Map<String, dynamic>> createSpotList({
+    required String name,
+    String? description,
+    List<String>? tags,
+  }) async {
+    try {
+      final listData = {
+        'name': name,
+        'description': description,
+        'tags': tags,
+        'created_at': DateTime.now().toIso8601String(),
+        'user_id': currentUser?.id,
+      };
+
+      final response =
+          await _client.from('spot_lists').insert(listData).select().single();
+      _logger.info('Spot list created: $name', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Failed to create spot list', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Get all spot lists
+  Future<List<Map<String, dynamic>>> getSpotLists() async {
+    try {
+      final response = await _client
+          .from('spot_lists')
+          .select('*')
+          .order('created_at', ascending: false);
+      final lists = List<Map<String, dynamic>>.from(response);
+      _logger.info('Retrieved ${lists.length} spot lists', tag: _logName);
+      return lists;
+    } catch (e) {
+      _logger.error('Failed to get spot lists', error: e, tag: _logName);
+      return [];
+    }
+  }
+
+  /// Add spot to list
+  Future<Map<String, dynamic>> addSpotToList({
+    required String listId,
+    required String spotId,
+    String? note,
+  }) async {
+    try {
+      final itemData = {
+        'list_id': listId,
+        'spot_id': spotId,
+        'note': note,
+        'created_at': DateTime.now().toIso8601String(),
+        'user_id': currentUser?.id,
+      };
+
+      final response = await _client
+          .from('spot_list_items')
+          .insert(itemData)
+          .select()
+          .single();
+      _logger.info('Spot added to list: $spotId -> $listId', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Failed to add spot to list', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Get real-time updates for spots
+  Stream<List<Map<String, dynamic>>> getSpotsStream() {
+    try {
+      final c = _tryGetClient();
+      if (c == null) return const Stream.empty();
+      return c.from('spots').stream(primaryKey: ['id']).map(
+          (event) => List<Map<String, dynamic>>.from(event));
+    } catch (_) {
+      return const Stream.empty();
+    }
+  }
+
+  /// Get real-time updates for spot lists
+  Stream<List<Map<String, dynamic>>> getSpotListsStream() {
+    try {
+      final c = _tryGetClient();
+      if (c == null) return const Stream.empty();
+      return c.from('spot_lists').stream(primaryKey: ['id']).map(
+          (event) => List<Map<String, dynamic>>.from(event));
+    } catch (_) {
+      return const Stream.empty();
+    }
+  }
+
+  /// Update user profile
+  Future<Map<String, dynamic>> updateUserProfile({
+    String? name,
+    String? bio,
+    String? location,
+    String? avatarUrl,
+  }) async {
+    try {
+      final userId = currentUser?.id;
+      if (userId == null) throw Exception('No authenticated user');
+
+      final profileData = {
+        if (name != null) 'name': name,
+        if (bio != null) 'bio': bio,
+        if (location != null) 'location': location,
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      final response = await _client
+          .from('users')
+          .update(profileData)
+          .eq('id', userId)
+          .select()
+          .single();
+
+      _logger.info('User profile updated', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Failed to update user profile', error: e, tag: _logName);
+      throw Exception(e.toString());
+    }
+  }
+
+  /// Get user profile
+  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+    try {
+      final response =
+          await _client.from('users').select('*').eq('id', userId).single();
+
+      _logger.info('Retrieved user profile for $userId', tag: _logName);
+      return response;
+    } catch (e) {
+      _logger.error('Failed to get user profile', error: e, tag: _logName);
+      return null;
+    }
+  }
+}

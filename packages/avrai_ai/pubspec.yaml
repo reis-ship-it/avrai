@@ -1,0 +1,27 @@
+name: avrai_ai
+description: AI systems and personality learning for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  avrai_core:
+    path: ../avrai_core
+  avrai_network:
+    path: ../avrai_network
+  
+  # AI/ML dependencies
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+  
+  # For crypto and privacy protection
+  crypto: ^3.0.3
+
+dev_dependencies:
+  test: ^1.24.7
+  mockito: ^5.4.4
+  
+flutter:
+  uses-material-design: false

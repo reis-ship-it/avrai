@@ -1,0 +1,49 @@
+[package]
+name = "knot_math"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+# === Core Math Libraries ===
+nalgebra = "0.32"         # Primary type system (vectors, matrices)
+num = "0.4"               # Complex number support
+
+# === Physics & Scientific Computing ===
+# russell_ode: ODE solvers for knot dynamics
+# NOTE: Temporarily disabled - requires BLAS libraries (will be integrated in Week 3)
+# russell_ode = "1.10"      # ODE solvers (for knot dynamics)
+# Alternative: Use nalgebra for ODE solving or implement simple Euler/RK4
+
+# === Numerical Methods ===
+quadrature = "0.1"        # Numerical integration (for energy calculations) - latest is 0.1.2
+statrs = "0.16"           # Statistical functions (Boltzmann, entropy)
+
+# === Serialization ===
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# === Error Handling ===
+anyhow = "1.0"
+thiserror = "1.0"
+
+# === FFI for Flutter ===
+flutter_rust_bridge = "=2.11.1"
+
+[target.'cfg(not(target_os = "ios"))'.dependencies]
+rug = { version = "1.22", features = ["serde"] }  # Arbitrary precision arithmetic (for polynomials)
+gmp-mpfr-sys = { version = "1.6.8", features = ["force-cross"] } # Allow cross-compile
+
+[build-dependencies]
+flutter_rust_bridge_codegen = "=2.11.1"
+
+[dev-dependencies]
+# Testing
+criterion = "0.5"
+
+# Benchmarks will be added later
+# [[bench]]
+# name = "knot_energy_benchmark"
+# harness = false

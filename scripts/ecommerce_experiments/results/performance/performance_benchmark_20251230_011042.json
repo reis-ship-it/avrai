@@ -1,0 +1,3102 @@
+[
+  {
+    "test_id": "real-world-behavior_0",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1044.7900295257568,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:47.587511"
+  },
+  {
+    "test_id": "real-world-behavior_1",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1525.312900543213,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:49.113139"
+  },
+  {
+    "test_id": "real-world-behavior_2",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1030.6408405303955,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:50.143920"
+  },
+  {
+    "test_id": "real-world-behavior_3",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1268.7418460845947,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:51.412813"
+  },
+  {
+    "test_id": "real-world-behavior_4",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 934.9551200866699,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:52.347916"
+  },
+  {
+    "test_id": "real-world-behavior_5",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1048.2897758483887,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:53.396376"
+  },
+  {
+    "test_id": "real-world-behavior_6",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1088.9050960540771,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:54.485429"
+  },
+  {
+    "test_id": "real-world-behavior_7",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1525.0918865203857,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:56.010681"
+  },
+  {
+    "test_id": "real-world-behavior_8",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1126.924753189087,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:57.137763"
+  },
+  {
+    "test_id": "real-world-behavior_9",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1024.0159034729004,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:58.161941"
+  },
+  {
+    "test_id": "real-world-behavior_10",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1126.258373260498,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:07:59.288350"
+  },
+  {
+    "test_id": "real-world-behavior_11",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1124.5050430297852,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:00.413002"
+  },
+  {
+    "test_id": "real-world-behavior_12",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1698.6868381500244,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:02.111830"
+  },
+  {
+    "test_id": "real-world-behavior_13",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1085.6361389160156,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:03.197666"
+  },
+  {
+    "test_id": "real-world-behavior_14",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1620.513916015625,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:04.818343"
+  },
+  {
+    "test_id": "real-world-behavior_15",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1038.3846759796143,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:05.856902"
+  },
+  {
+    "test_id": "real-world-behavior_16",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1366.5111064910889,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:07.223594"
+  },
+  {
+    "test_id": "real-world-behavior_17",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1210.5967998504639,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:08.434340"
+  },
+  {
+    "test_id": "real-world-behavior_18",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1079.1678428649902,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:09.513661"
+  },
+  {
+    "test_id": "real-world-behavior_19",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1069.267988204956,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:10.583073"
+  },
+  {
+    "test_id": "real-world-behavior_20",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 990.7341003417969,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:11.573960"
+  },
+  {
+    "test_id": "real-world-behavior_21",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1025.1922607421875,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:12.599303"
+  },
+  {
+    "test_id": "real-world-behavior_22",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1371.2849617004395,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:13.970925"
+  },
+  {
+    "test_id": "real-world-behavior_23",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 999.3128776550293,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:14.970435"
+  },
+  {
+    "test_id": "real-world-behavior_24",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1224.411964416504,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:16.195131"
+  },
+  {
+    "test_id": "real-world-behavior_25",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1112.9868030548096,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:17.308314"
+  },
+  {
+    "test_id": "real-world-behavior_26",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 859.1530323028564,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:18.167614"
+  },
+  {
+    "test_id": "real-world-behavior_27",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 984.7540855407715,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:19.152511"
+  },
+  {
+    "test_id": "real-world-behavior_28",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1061.8653297424316,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:20.214538"
+  },
+  {
+    "test_id": "real-world-behavior_29",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1067.922830581665,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:21.282606"
+  },
+  {
+    "test_id": "real-world-behavior_30",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 969.4702625274658,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:22.252218"
+  },
+  {
+    "test_id": "real-world-behavior_31",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 976.9711494445801,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:23.229387"
+  },
+  {
+    "test_id": "real-world-behavior_32",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 975.6908416748047,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:24.205222"
+  },
+  {
+    "test_id": "real-world-behavior_33",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 914.968729019165,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:25.120334"
+  },
+  {
+    "test_id": "real-world-behavior_34",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1026.0438919067383,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:26.146552"
+  },
+  {
+    "test_id": "real-world-behavior_35",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1309.7689151763916,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:27.456794"
+  },
+  {
+    "test_id": "real-world-behavior_36",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 974.8537540435791,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:28.431844"
+  },
+  {
+    "test_id": "real-world-behavior_37",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1048.4743118286133,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:29.480434"
+  },
+  {
+    "test_id": "real-world-behavior_38",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1052.678108215332,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:30.533256"
+  },
+  {
+    "test_id": "real-world-behavior_39",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1013.6911869049072,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:31.547090"
+  },
+  {
+    "test_id": "real-world-behavior_40",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1024.3048667907715,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:32.571536"
+  },
+  {
+    "test_id": "real-world-behavior_41",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 992.6111698150635,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:33.564298"
+  },
+  {
+    "test_id": "real-world-behavior_42",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 920.0210571289062,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:34.484455"
+  },
+  {
+    "test_id": "real-world-behavior_43",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 992.6981925964355,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:35.477301"
+  },
+  {
+    "test_id": "real-world-behavior_44",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 998.6381530761719,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:36.476086"
+  },
+  {
+    "test_id": "real-world-behavior_45",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 904.9279689788818,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:37.381174"
+  },
+  {
+    "test_id": "real-world-behavior_46",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1030.8020114898682,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:38.412126"
+  },
+  {
+    "test_id": "real-world-behavior_47",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 930.8211803436279,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:39.343121"
+  },
+  {
+    "test_id": "real-world-behavior_48",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1013.3881568908691,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:40.356671"
+  },
+  {
+    "test_id": "real-world-behavior_49",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1023.3511924743652,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:41.380159"
+  },
+  {
+    "test_id": "quantum-personality_50",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1256.7059993743896,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:42.637345"
+  },
+  {
+    "test_id": "quantum-personality_51",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 945.9118843078613,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:43.583427"
+  },
+  {
+    "test_id": "quantum-personality_52",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 990.1518821716309,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:44.573723"
+  },
+  {
+    "test_id": "quantum-personality_53",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1069.9682235717773,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:45.643837"
+  },
+  {
+    "test_id": "quantum-personality_54",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1070.2383518218994,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:46.714250"
+  },
+  {
+    "test_id": "quantum-personality_55",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1631.7048072814941,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:48.346105"
+  },
+  {
+    "test_id": "quantum-personality_56",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 962.9397392272949,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:49.309196"
+  },
+  {
+    "test_id": "quantum-personality_57",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1083.3749771118164,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:50.392719"
+  },
+  {
+    "test_id": "quantum-personality_58",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1075.575828552246,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:51.468462"
+  },
+  {
+    "test_id": "quantum-personality_59",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 975.8846759796143,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:52.444503"
+  },
+  {
+    "test_id": "quantum-personality_60",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 932.8670501708984,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:53.377535"
+  },
+  {
+    "test_id": "quantum-personality_61",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 958.3628177642822,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:54.336045"
+  },
+  {
+    "test_id": "quantum-personality_62",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1107.8860759735107,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:55.444075"
+  },
+  {
+    "test_id": "quantum-personality_63",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 996.1457252502441,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:56.440367"
+  },
+  {
+    "test_id": "quantum-personality_64",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1054.7730922698975,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:57.495281"
+  },
+  {
+    "test_id": "quantum-personality_65",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1007.4069499969482,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:58.502843"
+  },
+  {
+    "test_id": "quantum-personality_66",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1136.948823928833,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:08:59.639920"
+  },
+  {
+    "test_id": "quantum-personality_67",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1069.0290927886963,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:00.709180"
+  },
+  {
+    "test_id": "quantum-personality_68",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1168.5540676116943,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:01.878263"
+  },
+  {
+    "test_id": "quantum-personality_69",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1080.8918476104736,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:02.959697"
+  },
+  {
+    "test_id": "quantum-personality_70",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1158.1847667694092,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:04.118109"
+  },
+  {
+    "test_id": "quantum-personality_71",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1123.5809326171875,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:05.241893"
+  },
+  {
+    "test_id": "quantum-personality_72",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1204.2500972747803,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:06.446305"
+  },
+  {
+    "test_id": "quantum-personality_73",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 926.8038272857666,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:07.373319"
+  },
+  {
+    "test_id": "quantum-personality_74",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1422.9869842529297,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:08.796469"
+  },
+  {
+    "test_id": "quantum-personality_75",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1022.5539207458496,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:09.819310"
+  },
+  {
+    "test_id": "quantum-personality_76",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1192.167043685913,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:11.011618"
+  },
+  {
+    "test_id": "quantum-personality_77",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1076.9171714782715,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:12.088678"
+  },
+  {
+    "test_id": "quantum-personality_78",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1025.0270366668701,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:13.113912"
+  },
+  {
+    "test_id": "quantum-personality_79",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 960.7219696044922,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:14.074900"
+  },
+  {
+    "test_id": "quantum-personality_80",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 969.7506427764893,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:15.044823"
+  },
+  {
+    "test_id": "quantum-personality_81",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 952.2049427032471,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:15.997195"
+  },
+  {
+    "test_id": "quantum-personality_82",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1025.3028869628906,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:17.022642"
+  },
+  {
+    "test_id": "quantum-personality_83",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1236.4296913146973,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:18.259241"
+  },
+  {
+    "test_id": "quantum-personality_84",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1072.355031967163,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:19.331912"
+  },
+  {
+    "test_id": "quantum-personality_85",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1223.3211994171143,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:20.555617"
+  },
+  {
+    "test_id": "quantum-personality_86",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1177.0548820495605,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:21.732805"
+  },
+  {
+    "test_id": "quantum-personality_87",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1130.6469440460205,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:22.863606"
+  },
+  {
+    "test_id": "quantum-personality_88",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1232.1178913116455,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:24.095874"
+  },
+  {
+    "test_id": "quantum-personality_89",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1035.0897312164307,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:25.131123"
+  },
+  {
+    "test_id": "quantum-personality_90",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 962.9478454589844,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:26.094241"
+  },
+  {
+    "test_id": "quantum-personality_91",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1046.8018054962158,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:27.141191"
+  },
+  {
+    "test_id": "quantum-personality_92",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1020.7650661468506,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:28.162103"
+  },
+  {
+    "test_id": "quantum-personality_93",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1032.0568084716797,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:29.194327"
+  },
+  {
+    "test_id": "quantum-personality_94",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1051.8600940704346,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:30.246353"
+  },
+  {
+    "test_id": "quantum-personality_95",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 843.9128398895264,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:31.090448"
+  },
+  {
+    "test_id": "quantum-personality_96",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1198.7829208374023,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:32.289393"
+  },
+  {
+    "test_id": "quantum-personality_97",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1132.6730251312256,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:33.422221"
+  },
+  {
+    "test_id": "quantum-personality_98",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1129.2669773101807,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:34.551629"
+  },
+  {
+    "test_id": "quantum-personality_99",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8
+        }
+      }
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1115.9188747406006,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:35.667863"
+  },
+  {
+    "test_id": "community-influence_100",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 979.6631336212158,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:36.648061"
+  },
+  {
+    "test_id": "community-influence_101",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1168.3530807495117,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:37.816571"
+  },
+  {
+    "test_id": "community-influence_102",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1067.887306213379,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:38.884614"
+  },
+  {
+    "test_id": "community-influence_103",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1106.6429615020752,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:39.991399"
+  },
+  {
+    "test_id": "community-influence_104",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1004.849910736084,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:40.996395"
+  },
+  {
+    "test_id": "community-influence_105",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 998.8749027252197,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:41.995642"
+  },
+  {
+    "test_id": "community-influence_106",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1076.2150287628174,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:43.072008"
+  },
+  {
+    "test_id": "community-influence_107",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1062.859058380127,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:44.135212"
+  },
+  {
+    "test_id": "community-influence_108",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 994.3580627441406,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:45.129870"
+  },
+  {
+    "test_id": "community-influence_109",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1159.8930358886719,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:46.289936"
+  },
+  {
+    "test_id": "community-influence_110",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1219.6800708770752,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:47.509804"
+  },
+  {
+    "test_id": "community-influence_111",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1096.5681076049805,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:48.607240"
+  },
+  {
+    "test_id": "community-influence_112",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 958.5928916931152,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:49.566327"
+  },
+  {
+    "test_id": "community-influence_113",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 923.6009120941162,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:50.490257"
+  },
+  {
+    "test_id": "community-influence_114",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1049.030065536499,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:51.539531"
+  },
+  {
+    "test_id": "community-influence_115",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 961.9169235229492,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:52.501582"
+  },
+  {
+    "test_id": "community-influence_116",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1019.7000503540039,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:53.521422"
+  },
+  {
+    "test_id": "community-influence_117",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1060.6660842895508,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:54.582214"
+  },
+  {
+    "test_id": "community-influence_118",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 950.9220123291016,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:55.533267"
+  },
+  {
+    "test_id": "community-influence_119",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 988.9888763427734,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:56.522404"
+  },
+  {
+    "test_id": "community-influence_120",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 984.2839241027832,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:57.506839"
+  },
+  {
+    "test_id": "community-influence_121",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1296.1030006408691,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:58.803079"
+  },
+  {
+    "test_id": "community-influence_122",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1112.3771667480469,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:09:59.915647"
+  },
+  {
+    "test_id": "community-influence_123",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 2228.1432151794434,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:02.143947"
+  },
+  {
+    "test_id": "community-influence_124",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 2085.1447582244873,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:04.229257"
+  },
+  {
+    "test_id": "community-influence_125",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 2009.8459720611572,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:06.239364"
+  },
+  {
+    "test_id": "community-influence_126",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1309.2880249023438,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:07.548822"
+  },
+  {
+    "test_id": "community-influence_127",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1098.7811088562012,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:08.648332"
+  },
+  {
+    "test_id": "community-influence_128",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 979.956865310669,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:09.628600"
+  },
+  {
+    "test_id": "community-influence_129",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1058.1257343292236,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:10.687004"
+  },
+  {
+    "test_id": "community-influence_130",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 9392.481088638306,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:20.079723"
+  },
+  {
+    "test_id": "community-influence_131",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1377.7642250061035,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:21.457655"
+  },
+  {
+    "test_id": "community-influence_132",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1685.9169006347656,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:23.143799"
+  },
+  {
+    "test_id": "community-influence_133",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1060.7149600982666,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:24.204777"
+  },
+  {
+    "test_id": "community-influence_134",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1320.754051208496,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:25.526001"
+  },
+  {
+    "test_id": "community-influence_135",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1256.0927867889404,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:26.782776"
+  },
+  {
+    "test_id": "community-influence_136",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 944.5958137512207,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:27.727601"
+  },
+  {
+    "test_id": "community-influence_137",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1079.0791511535645,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:28.807358"
+  },
+  {
+    "test_id": "community-influence_138",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1083.9166641235352,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:29.891952"
+  },
+  {
+    "test_id": "community-influence_139",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1089.785099029541,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:30.981938"
+  },
+  {
+    "test_id": "community-influence_140",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1063.8971328735352,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:32.046004"
+  },
+  {
+    "test_id": "community-influence_141",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1241.5330410003662,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:33.287943"
+  },
+  {
+    "test_id": "community-influence_142",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1087.2509479522705,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:34.375776"
+  },
+  {
+    "test_id": "community-influence_143",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1043.7779426574707,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:35.420024"
+  },
+  {
+    "test_id": "community-influence_144",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1181.3256740570068,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:36.602082"
+  },
+  {
+    "test_id": "community-influence_145",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1049.0608215332031,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:37.651289"
+  },
+  {
+    "test_id": "community-influence_146",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 909.358024597168,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:38.560803"
+  },
+  {
+    "test_id": "community-influence_147",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1309.553861618042,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:39.870514"
+  },
+  {
+    "test_id": "community-influence_148",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 940.6609535217285,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:40.811333"
+  },
+  {
+    "test_id": "community-influence_149",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_perf",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": null,
+    "success": false,
+    "processing_time_ms": 1431.37526512146,
+    "error": "HTTP Error 500: Internal Server Error",
+    "timestamp": "2025-12-30T01:10:42.242856"
+  }
+]

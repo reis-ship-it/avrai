@@ -1,0 +1,20 @@
+name: avrai_quantum
+description: Quantum services, quantum matching, and quantum vibe engine for SPOTS
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  avrai_core:
+    path: ../avrai_core
+  avrai_knot:
+    path: ../avrai_knot
+  equatable: ^2.0.5
+  meta: ^1.9.1
+
+dev_dependencies:
+  test: ^1.24.7
+  flutter_test:
+    sdk: flutter

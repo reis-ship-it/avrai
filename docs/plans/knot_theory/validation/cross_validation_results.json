@@ -1,0 +1,52 @@
+{
+  "k_folds": 5,
+  "quantum_accuracy": {
+    "mean": 0.5442105263157895,
+    "std": 0.12196907105339783
+  },
+  "integrated_accuracy": {
+    "mean": 0.5263157894736843,
+    "std": 0.13972668215616946
+  },
+  "improvement": {
+    "mean": 2.0837689570509843,
+    "std": 35.82068624617923
+  },
+  "fold_results": [
+    {
+      "fold": 1,
+      "quantum_accuracy": 0.4263157894736842,
+      "integrated_accuracy": 0.6947368421052632,
+      "improvement": 62.962962962962976,
+      "total_pairs": 190
+    },
+    {
+      "fold": 2,
+      "quantum_accuracy": 0.7157894736842105,
+      "integrated_accuracy": 0.38421052631578945,
+      "improvement": -46.32352941176471,
+      "total_pairs": 190
+    },
+    {
+      "fold": 3,
+      "quantum_accuracy": 0.3894736842105263,
+      "integrated_accuracy": 0.38421052631578945,
+      "improvement": -1.3513513513513555,
+      "total_pairs": 190
+    },
+    {
+      "fold": 4,
+      "quantum_accuracy": 0.6263157894736842,
+      "integrated_accuracy": 0.6894736842105263,
+      "improvement": 10.084033613445392,
+      "total_pairs": 190
+    },
+    {
+      "fold": 5,
+      "quantum_accuracy": 0.5631578947368421,
+      "integrated_accuracy": 0.4789473684210526,
+      "improvement": -14.953271028037381,
+      "total_pairs": 190
+    }
+  ]
+}

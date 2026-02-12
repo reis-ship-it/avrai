@@ -1,0 +1,23 @@
+name: avrai_core
+description: Core models, interfaces, and shared utilities for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  # Core dependencies only
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+  meta: ^1.9.1
+  timezone: ^0.10.1  # For atomic clock service timezone support
+  crypto: ^3.0.3  # Shared hashing for UserVibe signatures
+
+dev_dependencies:
+  test: ^1.25.15
+  json_serializable: ^6.11.2
+  build_runner: ^2.7.1
+  
+flutter:
+  uses-material-design: false

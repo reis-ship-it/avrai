@@ -1,0 +1,1253 @@
+{
+  "analysis": {
+    "total_scenarios": 60,
+    "avg_conversion_improvement": 12.474292227636193,
+    "avg_engagement_improvement": 17.845205897984705,
+    "avg_satisfaction_improvement": 22.6230922863089,
+    "avg_roi_improvement": 13.343998100893625,
+    "category_analysis": {
+      "standard_recommendations": {
+        "count": 20,
+        "avg_conversion_improvement": 13.616547698999852,
+        "avg_engagement_improvement": 18.458729650818455,
+        "avg_satisfaction_improvement": 21.517515747839898
+      },
+      "event_targeting": {
+        "count": 15,
+        "avg_conversion_improvement": 12.819153389456638,
+        "avg_engagement_improvement": 16.71419823317854,
+        "avg_satisfaction_improvement": 23.37457790194107
+      },
+      "user_acquisition": {
+        "count": 10,
+        "avg_conversion_improvement": 11.408048148262825,
+        "avg_engagement_improvement": 17.162019337743235,
+        "avg_satisfaction_improvement": 22.632280576819
+      },
+      "retention_strategies": {
+        "count": 10,
+        "avg_conversion_improvement": 12.139212045072316,
+        "avg_engagement_improvement": 19.46173219300106,
+        "avg_satisfaction_improvement": 23.379882066134464
+      },
+      "enterprise_scale": {
+        "count": 5,
+        "avg_conversion_improvement": 9.673335380594711,
+        "avg_engagement_improvement": 16.91745441151844,
+        "avg_satisfaction_improvement": 23.25898545261706
+      }
+    },
+    "roi_results": [
+      {
+        "quantum_roi": 12.894496621803789,
+        "knot_roi": 15.157166966775069,
+        "roi_improvement_percent": 17.54756630937609
+      },
+      {
+        "quantum_roi": 14.77203419207026,
+        "knot_roi": 16.20434379234663,
+        "roi_improvement_percent": 9.696089121193923
+      },
+      {
+        "quantum_roi": 10.505074135355112,
+        "knot_roi": 11.712862768297118,
+        "roi_improvement_percent": 11.49719285537605
+      },
+      {
+        "quantum_roi": 15.21004066028466,
+        "knot_roi": 18.099163594373543,
+        "roi_improvement_percent": 18.994840307250122
+      },
+      {
+        "quantum_roi": 12.476783170263309,
+        "knot_roi": 14.966192354563743,
+        "roi_improvement_percent": 19.952331865745634
+      },
+      {
+        "quantum_roi": 12.480337806542023,
+        "knot_roi": 13.423847843862259,
+        "roi_improvement_percent": 7.559971949041801
+      },
+      {
+        "quantum_roi": 11.681034597734183,
+        "knot_roi": 13.270824429732322,
+        "roi_improvement_percent": 13.610008759896298
+      },
+      {
+        "quantum_roi": 10.72478498940843,
+        "knot_roi": 12.803887392060096,
+        "roi_improvement_percent": 19.38595882999
+      },
+      {
+        "quantum_roi": 17.470060614104433,
+        "knot_roi": 20.272061746427674,
+        "roi_improvement_percent": 16.03887470236393
+      },
+      {
+        "quantum_roi": 14.546707234383002,
+        "knot_roi": 16.23408608090426,
+        "roi_improvement_percent": 11.599730573616837
+      },
+      {
+        "quantum_roi": 14.578088634149305,
+        "knot_roi": 16.81857082140069,
+        "roi_improvement_percent": 15.368833620636908
+      },
+      {
+        "quantum_roi": 9.570424880795235,
+        "knot_roi": 10.802130390367124,
+        "roi_improvement_percent": 12.86991460581364
+      },
+      {
+        "quantum_roi": 14.881537502322583,
+        "knot_roi": 15.745200105001103,
+        "roi_improvement_percent": 5.803584492151614
+      },
+      {
+        "quantum_roi": 14.382061470491228,
+        "knot_roi": 16.806280546485194,
+        "roi_improvement_percent": 16.855852556102064
+      },
+      {
+        "quantum_roi": 18.945035271524574,
+        "knot_roi": 22.247116693255514,
+        "roi_improvement_percent": 17.42979822631499
+      },
+      {
+        "quantum_roi": 18.66634576851857,
+        "knot_roi": 22.332149434547013,
+        "roi_improvement_percent": 19.63857153128999
+      },
+      {
+        "quantum_roi": 12.081126560899232,
+        "knot_roi": 13.392233849148788,
+        "roi_improvement_percent": 10.852525065774712
+      },
+      {
+        "quantum_roi": 16.756078309200728,
+        "knot_roi": 18.691843567703366,
+        "roi_improvement_percent": 11.552615252697365
+      },
+      {
+        "quantum_roi": 14.673243023692507,
+        "knot_roi": 16.796782607595695,
+        "roi_improvement_percent": 14.472189825210169
+      },
+      {
+        "quantum_roi": 18.399858095744143,
+        "knot_roi": 22.275412325811647,
+        "roi_improvement_percent": 21.062957170109442
+      },
+      {
+        "quantum_roi": 12.758369696464829,
+        "knot_roi": 14.155590667672564,
+        "roi_improvement_percent": 10.951406836838146
+      },
+      {
+        "quantum_roi": 16.96341332627749,
+        "knot_roi": 18.812208540587875,
+        "roi_improvement_percent": 10.898721729821172
+      },
+      {
+        "quantum_roi": 14.923772155087352,
+        "knot_roi": 18.035219036069332,
+        "roi_improvement_percent": 20.848930475806824
+      },
+      {
+        "quantum_roi": 10.913817241016442,
+        "knot_roi": 12.2868706988106,
+        "roi_improvement_percent": 12.580872736570395
+      },
+      {
+        "quantum_roi": 9.725981710142094,
+        "knot_roi": 11.292080851865453,
+        "roi_improvement_percent": 16.102221743747034
+      },
+      {
+        "quantum_roi": 14.021439345300841,
+        "knot_roi": 15.514372207593375,
+        "roi_improvement_percent": 10.64750077026063
+      },
+      {
+        "quantum_roi": 14.811848760522057,
+        "knot_roi": 17.175639082928466,
+        "roi_improvement_percent": 15.958779762230673
+      },
+      {
+        "quantum_roi": 17.154059987749402,
+        "knot_roi": 18.322064068014384,
+        "roi_improvement_percent": 6.808907518681373
+      },
+      {
+        "quantum_roi": 16.749845204942474,
+        "knot_roi": 19.692665266855247,
+        "roi_improvement_percent": 17.56923736253048
+      },
+      {
+        "quantum_roi": 12.74354276473451,
+        "knot_roi": 14.414462641910259,
+        "roi_improvement_percent": 13.111894455282266
+      },
+      {
+        "quantum_roi": 18.5341996743947,
+        "knot_roi": 20.87725840439559,
+        "roi_improvement_percent": 12.641812277645121
+      },
+      {
+        "quantum_roi": 18.13177395115101,
+        "knot_roi": 20.141009911915067,
+        "roi_improvement_percent": 11.081298311886952
+      },
+      {
+        "quantum_roi": 12.872312617309023,
+        "knot_roi": 15.003616053338082,
+        "roi_improvement_percent": 16.557269073493117
+      },
+      {
+        "quantum_roi": 11.385239533595419,
+        "knot_roi": 13.575522070137833,
+        "roi_improvement_percent": 19.23791352899828
+      },
+      {
+        "quantum_roi": 18.84130774073831,
+        "knot_roi": 20.93853571930641,
+        "roi_improvement_percent": 11.131010688995422
+      },
+      {
+        "quantum_roi": 18.203884464309457,
+        "knot_roi": 21.181795844605332,
+        "roi_improvement_percent": 16.35865897816683
+      },
+      {
+        "quantum_roi": 16.94157053502937,
+        "knot_roi": 19.04319717742969,
+        "roi_improvement_percent": 12.405146488956701
+      },
+      {
+        "quantum_roi": 16.200627264128933,
+        "knot_roi": 17.481854118332233,
+        "roi_improvement_percent": 7.9085015247537
+      },
+      {
+        "quantum_roi": 13.513305950223655,
+        "knot_roi": 16.215752687194872,
+        "roi_improvement_percent": 19.998413022880527
+      },
+      {
+        "quantum_roi": 14.528353030526173,
+        "knot_roi": 15.523810151556871,
+        "roi_improvement_percent": 6.8518235958274065
+      },
+      {
+        "quantum_roi": 15.707026726479032,
+        "knot_roi": 18.25840617669809,
+        "roi_improvement_percent": 16.243554522753332
+      },
+      {
+        "quantum_roi": 16.54489889732291,
+        "knot_roi": 17.95733656528201,
+        "roi_improvement_percent": 8.536997879072223
+      },
+      {
+        "quantum_roi": 10.986618946770832,
+        "knot_roi": 12.171484705791348,
+        "roi_improvement_percent": 10.784625959643114
+      },
+      {
+        "quantum_roi": 18.76119847310121,
+        "knot_roi": 21.669539615998378,
+        "roi_improvement_percent": 15.501894226357606
+      },
+      {
+        "quantum_roi": 15.984609806527606,
+        "knot_roi": 17.081154922361815,
+        "roi_improvement_percent": 6.860005524729259
+      },
+      {
+        "quantum_roi": 11.343076198085875,
+        "knot_roi": 12.767040213547375,
+        "roi_improvement_percent": 12.553596490004995
+      },
+      {
+        "quantum_roi": 15.515079476798915,
+        "knot_roi": 16.568072336915478,
+        "roi_improvement_percent": 6.786899555952626
+      },
+      {
+        "quantum_roi": 16.889279478783596,
+        "knot_roi": 19.36695937654231,
+        "roi_improvement_percent": 14.670133802162432
+      },
+      {
+        "quantum_roi": 15.126222944579128,
+        "knot_roi": 17.282667959604893,
+        "roi_improvement_percent": 14.25633499470919
+      },
+      {
+        "quantum_roi": 16.43663178527138,
+        "knot_roi": 19.563065241593804,
+        "roi_improvement_percent": 19.021132170910917
+      },
+      {
+        "quantum_roi": 12.99892791013326,
+        "knot_roi": 14.450502078696324,
+        "roi_improvement_percent": 11.166876057767011
+      },
+      {
+        "quantum_roi": 17.12328881480521,
+        "knot_roi": 19.338645007464446,
+        "roi_improvement_percent": 12.937679301091887
+      },
+      {
+        "quantum_roi": 18.393064163854415,
+        "knot_roi": 20.949266849211618,
+        "roi_improvement_percent": 13.897644582682355
+      },
+      {
+        "quantum_roi": 10.951889298509945,
+        "knot_roi": 12.046621755854037,
+        "roi_improvement_percent": 9.995832020444503
+      },
+      {
+        "quantum_roi": 13.938636092269732,
+        "knot_roi": 15.939442832800497,
+        "roi_improvement_percent": 14.354393982926334
+      },
+      {
+        "quantum_roi": 10.121277716067869,
+        "knot_roi": 11.466365943782016,
+        "roi_improvement_percent": 13.289707736986347
+      },
+      {
+        "quantum_roi": 18.263593771887436,
+        "knot_roi": 19.5411332610718,
+        "roi_improvement_percent": 6.995006049416401
+      },
+      {
+        "quantum_roi": 18.010913021525422,
+        "knot_roi": 20.058059082927986,
+        "roi_improvement_percent": 11.366142621176142
+      },
+      {
+        "quantum_roi": 17.012502081033062,
+        "knot_roi": 17.97168606096745,
+        "roi_improvement_percent": 5.638112344472625
+      },
+      {
+        "quantum_roi": 16.999388050257284,
+        "knot_roi": 19.4377101883048,
+        "roi_improvement_percent": 14.343587727033563
+      }
+    ],
+    "success_criteria": {
+      "engagement_improvement_positive": true,
+      "satisfaction_improvement_positive": true,
+      "conversion_improvement_positive": true,
+      "roi_improvement_positive": true,
+      "engagement_improvement_significant": true
+    },
+    "all_criteria_met": true
+  },
+  "scenarios": [
+    {
+      "scenario_id": "standard_1",
+      "category": "standard_recommendations",
+      "users": 4691,
+      "events": 407,
+      "quantum_only_conversion": 0.1389449662180379,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1615716696677507,
+      "knot_enhanced_engagement": 0.05938989396093421,
+      "knot_enhanced_satisfaction": 0.05582930276175129,
+      "improvement_conversion": 16.28465144552706,
+      "improvement_engagement": 14.211334540258107,
+      "improvement_satisfaction": 19.293381969554037
+    },
+    {
+      "scenario_id": "standard_2",
+      "category": "standard_recommendations",
+      "users": 1492,
+      "events": 262,
+      "quantum_only_conversion": 0.15772034192070258,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1720434379234663,
+      "knot_enhanced_engagement": 0.06479969922874096,
+      "knot_enhanced_satisfaction": 0.05804585962842307,
+      "improvement_conversion": 9.081324468574238,
+      "improvement_engagement": 24.614806209117233,
+      "improvement_satisfaction": 24.02961459064758
+    },
+    {
+      "scenario_id": "standard_3",
+      "category": "standard_recommendations",
+      "users": 5051,
+      "events": 230,
+      "quantum_only_conversion": 0.11505074135355113,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.12712862768297117,
+      "knot_enhanced_engagement": 0.06468636848266422,
+      "knot_enhanced_satisfaction": 0.05426108043221534,
+      "improvement_conversion": 10.49787788181623,
+      "improvement_engagement": 24.396862466661972,
+      "improvement_satisfaction": 15.942479556015687
+    },
+    {
+      "scenario_id": "standard_4",
+      "category": "standard_recommendations",
+      "users": 9090,
+      "events": 115,
+      "quantum_only_conversion": 0.1621004066028466,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19099163594373542,
+      "knot_enhanced_engagement": 0.06304034547085863,
+      "knot_enhanced_satisfaction": 0.05786326816576953,
+      "improvement_conversion": 17.82304557179405,
+      "improvement_engagement": 21.231433597805058,
+      "improvement_satisfaction": 23.63946189266994
+    },
+    {
+      "scenario_id": "standard_5",
+      "category": "standard_recommendations",
+      "users": 6928,
+      "events": 309,
+      "quantum_only_conversion": 0.1347678317026331,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.15966192354563744,
+      "knot_enhanced_engagement": 0.059670493660866075,
+      "knot_enhanced_satisfaction": 0.053894299425568865,
+      "improvement_conversion": 18.471835250665354,
+      "improvement_engagement": 14.75094934781938,
+      "improvement_satisfaction": 15.158759456343724
+    },
+    {
+      "scenario_id": "standard_6",
+      "category": "standard_recommendations",
+      "users": 7164,
+      "events": 334,
+      "quantum_only_conversion": 0.13480337806542023,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1442384784386226,
+      "knot_enhanced_engagement": 0.058155648865719715,
+      "knot_enhanced_satisfaction": 0.059348616989212996,
+      "improvement_conversion": 6.999157223362403,
+      "improvement_engagement": 11.837786280230226,
+      "improvement_satisfaction": 26.813284164985028
+    },
+    {
+      "scenario_id": "standard_7",
+      "category": "standard_recommendations",
+      "users": 4315,
+      "events": 445,
+      "quantum_only_conversion": 0.12681034597734184,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.14270824429732323,
+      "knot_enhanced_engagement": 0.057400751656973885,
+      "knot_enhanced_satisfaction": 0.06051282910165865,
+      "improvement_conversion": 12.53675179060074,
+      "improvement_engagement": 10.386060878795938,
+      "improvement_satisfaction": 29.300916883886003
+    },
+    {
+      "scenario_id": "standard_8",
+      "category": "standard_recommendations",
+      "users": 1346,
+      "events": 254,
+      "quantum_only_conversion": 0.11724784989408428,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.13803887392060094,
+      "knot_enhanced_engagement": 0.057395763400704215,
+      "knot_enhanced_satisfaction": 0.05564776056104265,
+      "improvement_conversion": 17.73254182937956,
+      "improvement_engagement": 10.376468078277343,
+      "improvement_satisfaction": 18.90547128427916
+    },
+    {
+      "scenario_id": "standard_9",
+      "category": "standard_recommendations",
+      "users": 6227,
+      "events": 432,
+      "quantum_only_conversion": 0.18470060614104436,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21272061746427676,
+      "knot_enhanced_engagement": 0.05874975104120999,
+      "knot_enhanced_satisfaction": 0.05590076292294495,
+      "improvement_conversion": 15.170503177361127,
+      "improvement_engagement": 12.980290463865371,
+      "improvement_satisfaction": 19.44607462167724
+    },
+    {
+      "scenario_id": "standard_10",
+      "category": "standard_recommendations",
+      "users": 1520,
+      "events": 433,
+      "quantum_only_conversion": 0.15546707234383,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1723408608090426,
+      "knot_enhanced_engagement": 0.06249442649967515,
+      "knot_enhanced_satisfaction": 0.054658604404307906,
+      "improvement_conversion": 10.853609198927106,
+      "improvement_engagement": 20.181589422452213,
+      "improvement_satisfaction": 16.791889752794667
+    },
+    {
+      "scenario_id": "standard_11",
+      "category": "standard_recommendations",
+      "users": 6652,
+      "events": 192,
+      "quantum_only_conversion": 0.15578088634149306,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.17818570821400692,
+      "knot_enhanced_engagement": 0.06487398792004695,
+      "knot_enhanced_satisfaction": 0.05577342829117311,
+      "improvement_conversion": 14.382266270715277,
+      "improvement_engagement": 24.757669077013368,
+      "improvement_satisfaction": 19.17399207515622
+    },
+    {
+      "scenario_id": "standard_12",
+      "category": "standard_recommendations",
+      "users": 6757,
+      "events": 349,
+      "quantum_only_conversion": 0.10570424880795236,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.11802130390367123,
+      "knot_enhanced_engagement": 0.0642752903835174,
+      "knot_enhanced_satisfaction": 0.05819312268490255,
+      "improvement_conversion": 11.652374653451236,
+      "improvement_engagement": 23.606327660610386,
+      "improvement_satisfaction": 24.344279241244767
+    },
+    {
+      "scenario_id": "standard_13",
+      "category": "standard_recommendations",
+      "users": 2329,
+      "events": 381,
+      "quantum_only_conversion": 0.15881537502322582,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.16745200105001104,
+      "knot_enhanced_engagement": 0.0649166630136783,
+      "knot_enhanced_satisfaction": 0.0576840730420623,
+      "improvement_conversion": 5.4381548546683,
+      "improvement_engagement": 24.839736564765953,
+      "improvement_satisfaction": 23.256566329192946
+    },
+    {
+      "scenario_id": "standard_14",
+      "category": "standard_recommendations",
+      "users": 1394,
+      "events": 159,
+      "quantum_only_conversion": 0.1538206147049123,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.17806280546485193,
+      "knot_enhanced_engagement": 0.05978028373869864,
+      "knot_enhanced_satisfaction": 0.05588051060255135,
+      "improvement_conversion": 15.760040230267949,
+      "improvement_engagement": 14.962084112882007,
+      "improvement_satisfaction": 19.402800432802028
+    },
+    {
+      "scenario_id": "standard_15",
+      "category": "standard_recommendations",
+      "users": 3888,
+      "events": 396,
+      "quantum_only_conversion": 0.19945035271524575,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.2324711669325551,
+      "knot_enhanced_engagement": 0.06144654010005407,
+      "knot_enhanced_satisfaction": 0.06058028378639378,
+      "improvement_conversion": 16.555906654350714,
+      "improvement_engagement": 18.166423269334757,
+      "improvement_satisfaction": 29.44505082562773
+    },
+    {
+      "scenario_id": "standard_16",
+      "category": "standard_recommendations",
+      "users": 7577,
+      "events": 226,
+      "quantum_only_conversion": 0.19666345768518573,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.23332149434547014,
+      "knot_enhanced_engagement": 0.058492799987519196,
+      "knot_enhanced_satisfaction": 0.05643732257421991,
+      "improvement_conversion": 18.639983803684437,
+      "improvement_engagement": 12.486153822152305,
+      "improvement_satisfaction": 20.592569603033997
+    },
+    {
+      "scenario_id": "standard_17",
+      "category": "standard_recommendations",
+      "users": 1948,
+      "events": 114,
+      "quantum_only_conversion": 0.13081126560899234,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1439223384914879,
+      "knot_enhanced_engagement": 0.05854066285516594,
+      "knot_enhanced_satisfaction": 0.05569409116666606,
+      "improvement_conversion": 10.022892769561476,
+      "improvement_engagement": 12.57819779839604,
+      "improvement_satisfaction": 19.004468304842
+    },
+    {
+      "scenario_id": "standard_18",
+      "category": "standard_recommendations",
+      "users": 3225,
+      "events": 357,
+      "quantum_only_conversion": 0.1775607830920073,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19691843567703365,
+      "knot_enhanced_engagement": 0.06482581995191716,
+      "knot_enhanced_satisfaction": 0.05830764823742012,
+      "improvement_conversion": 10.901986490449156,
+      "improvement_engagement": 24.665038369071475,
+      "improvement_satisfaction": 24.588991960299403
+    },
+    {
+      "scenario_id": "standard_19",
+      "category": "standard_recommendations",
+      "users": 3624,
+      "events": 198,
+      "quantum_only_conversion": 0.15673243023692507,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.17796782607595696,
+      "knot_enhanced_engagement": 0.06415073621642418,
+      "knot_enhanced_satisfaction": 0.05841511251387777,
+      "improvement_conversion": 13.548820628207793,
+      "improvement_engagement": 23.36680041620036,
+      "improvement_satisfaction": 24.81861648264481
+    },
+    {
+      "scenario_id": "standard_20",
+      "category": "standard_recommendations",
+      "users": 4507,
+      "events": 271,
+      "quantum_only_conversion": 0.19399858095744146,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.2327541232581165,
+      "knot_enhanced_engagement": 0.06488486193314298,
+      "knot_enhanced_satisfaction": 0.054475970107619266,
+      "improvement_conversion": 19.97722978663285,
+      "improvement_engagement": 24.778580640659587,
+      "improvement_satisfaction": 16.401645529100993
+    },
+    {
+      "scenario_id": "event_targeting_1",
+      "category": "event_targeting",
+      "users": 19197,
+      "events": 884,
+      "quantum_only_conversion": 0.13758369696464828,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.15155590667672567,
+      "knot_enhanced_engagement": 0.058771835752177176,
+      "knot_enhanced_satisfaction": 0.05730017187820843,
+      "improvement_conversion": 10.155425403103902,
+      "improvement_engagement": 13.02276106187919,
+      "improvement_satisfaction": 22.436264697026548
+    },
+    {
+      "scenario_id": "event_targeting_2",
+      "category": "event_targeting",
+      "users": 8903,
+      "events": 318,
+      "quantum_only_conversion": 0.1796341332627749,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19812208540587878,
+      "knot_enhanced_engagement": 0.06026393781938209,
+      "knot_enhanced_satisfaction": 0.05959323113136259,
+      "improvement_conversion": 10.292003979031698,
+      "improvement_engagement": 15.892188114196326,
+      "improvement_satisfaction": 27.33596395590297
+    },
+    {
+      "scenario_id": "event_targeting_3",
+      "category": "event_targeting",
+      "users": 6407,
+      "events": 150,
+      "quantum_only_conversion": 0.15923772155087354,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19035219036069334,
+      "knot_enhanced_engagement": 0.06374206220989674,
+      "knot_enhanced_satisfaction": 0.057428205202112156,
+      "improvement_conversion": 19.539634520504805,
+      "improvement_engagement": 22.580888865186047,
+      "improvement_satisfaction": 22.709840175453323
+    },
+    {
+      "scenario_id": "event_targeting_4",
+      "category": "event_targeting",
+      "users": 11343,
+      "events": 565,
+      "quantum_only_conversion": 0.11913817241016442,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.132868706988106,
+      "knot_enhanced_engagement": 0.0581562139391275,
+      "knot_enhanced_satisfaction": 0.06068249753917382,
+      "improvement_conversion": 11.524882663694559,
+      "improvement_engagement": 11.838872959860588,
+      "improvement_satisfaction": 29.66345628028593
+    },
+    {
+      "scenario_id": "event_targeting_5",
+      "category": "event_targeting",
+      "users": 5370,
+      "events": 926,
+      "quantum_only_conversion": 0.10725981710142092,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.12292080851865453,
+      "knot_enhanced_engagement": 0.05904917054901747,
+      "knot_enhanced_satisfaction": 0.05873309133175787,
+      "improvement_conversion": 14.600986502172713,
+      "improvement_engagement": 13.556097209648982,
+      "improvement_satisfaction": 25.49805840119203
+    },
+    {
+      "scenario_id": "event_targeting_6",
+      "category": "event_targeting",
+      "users": 5817,
+      "events": 370,
+      "quantum_only_conversion": 0.1502143934530084,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.16514372207593378,
+      "knot_enhanced_engagement": 0.05884540762110448,
+      "knot_enhanced_satisfaction": 0.05635072918902731,
+      "improvement_conversion": 9.938680495085654,
+      "improvement_engagement": 13.164245425200932,
+      "improvement_satisfaction": 20.407541002195103
+    },
+    {
+      "scenario_id": "event_targeting_7",
+      "category": "event_targeting",
+      "users": 2413,
+      "events": 485,
+      "quantum_only_conversion": 0.15811848760522057,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1817563908292847,
+      "knot_enhanced_engagement": 0.06317123933995913,
+      "knot_enhanced_satisfaction": 0.05792342837997753,
+      "improvement_conversion": 14.949487300360232,
+      "improvement_engagement": 21.483152576844493,
+      "improvement_satisfaction": 23.76800935892634
+    },
+    {
+      "scenario_id": "event_targeting_8",
+      "category": "event_targeting",
+      "users": 7647,
+      "events": 372,
+      "quantum_only_conversion": 0.18154059987749405,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19322064068014386,
+      "knot_enhanced_engagement": 0.05957725624395092,
+      "knot_enhanced_satisfaction": 0.05922886975938434,
+      "improvement_conversion": 6.433844996949252,
+      "improvement_engagement": 14.571646622982538,
+      "improvement_satisfaction": 26.55741401577849
+    },
+    {
+      "scenario_id": "event_targeting_9",
+      "category": "event_targeting",
+      "users": 13208,
+      "events": 100,
+      "quantum_only_conversion": 0.17749845204942477,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.20692665266855248,
+      "knot_enhanced_engagement": 0.05733318176074651,
+      "knot_enhanced_satisfaction": 0.054242104341400255,
+      "improvement_conversion": 16.579412540980005,
+      "improvement_engagement": 10.256118770666372,
+      "improvement_satisfaction": 15.901932353419342
+    },
+    {
+      "scenario_id": "event_targeting_10",
+      "category": "event_targeting",
+      "users": 17547,
+      "events": 387,
+      "quantum_only_conversion": 0.13743542764734512,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1541446264191026,
+      "knot_enhanced_engagement": 0.06026889902164409,
+      "knot_enhanced_satisfaction": 0.05525722635237386,
+      "improvement_conversion": 12.157854097585913,
+      "improvement_engagement": 15.901728887777104,
+      "improvement_satisfaction": 18.07099647943132
+    },
+    {
+      "scenario_id": "event_targeting_11",
+      "category": "event_targeting",
+      "users": 18859,
+      "events": 286,
+      "quantum_only_conversion": 0.195341996743947,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21877258404395591,
+      "knot_enhanced_engagement": 0.05895888634823096,
+      "knot_enhanced_satisfaction": 0.058919818522613014,
+      "improvement_conversion": 11.994649225748198,
+      "improvement_engagement": 13.382473746598006,
+      "improvement_satisfaction": 25.89704812524148
+    },
+    {
+      "scenario_id": "event_targeting_12",
+      "category": "event_targeting",
+      "users": 4365,
+      "events": 138,
+      "quantum_only_conversion": 0.1913177395115101,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21141009911915065,
+      "knot_enhanced_engagement": 0.06147456524091935,
+      "knot_enhanced_satisfaction": 0.05978761972092379,
+      "improvement_conversion": 10.502089173195438,
+      "improvement_engagement": 18.220317770998754,
+      "improvement_satisfaction": 27.751324190008102
+    },
+    {
+      "scenario_id": "event_targeting_13",
+      "category": "event_targeting",
+      "users": 4886,
+      "events": 941,
+      "quantum_only_conversion": 0.13872312617309024,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.16003616053338082,
+      "knot_enhanced_engagement": 0.06347316252832726,
+      "knot_enhanced_satisfaction": 0.05472960793871469,
+      "improvement_conversion": 15.363721210908613,
+      "improvement_engagement": 22.063774092937038,
+      "improvement_satisfaction": 16.943606706655316
+    },
+    {
+      "scenario_id": "event_targeting_14",
+      "category": "event_targeting",
+      "users": 17923,
+      "events": 348,
+      "quantum_only_conversion": 0.12385239533595419,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.14575522070137834,
+      "knot_enhanced_engagement": 0.06304210357185613,
+      "knot_enhanced_satisfaction": 0.05687002628315659,
+      "improvement_conversion": 17.68461991067022,
+      "improvement_engagement": 21.234814561261803,
+      "improvement_satisfaction": 21.517150177685025
+    },
+    {
+      "scenario_id": "event_targeting_15",
+      "category": "event_targeting",
+      "users": 5947,
+      "events": 986,
+      "quantum_only_conversion": 0.19841307740738312,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21938535719306415,
+      "knot_enhanced_engagement": 0.06424282427245274,
+      "knot_enhanced_satisfaction": 0.05904290930144009,
+      "improvement_conversion": 10.57000882185835,
+      "improvement_engagement": 23.5438928316399,
+      "improvement_satisfaction": 26.160062609914725
+    },
+    {
+      "scenario_id": "acquisition_1",
+      "category": "user_acquisition",
+      "users": 27567,
+      "events": 1203,
+      "quantum_only_conversion": 0.1920388446430946,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.22181795844605331,
+      "knot_enhanced_engagement": 0.06284148075228706,
+      "knot_enhanced_satisfaction": 0.05771311429324647,
+      "improvement_conversion": 15.506817830685971,
+      "improvement_engagement": 20.849001446705884,
+      "improvement_satisfaction": 23.31862028471468
+    },
+    {
+      "scenario_id": "acquisition_2",
+      "category": "user_acquisition",
+      "users": 8718,
+      "events": 1235,
+      "quantum_only_conversion": 0.17941570535029372,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.2004319717742969,
+      "knot_enhanced_engagement": 0.06311759803899289,
+      "knot_enhanced_satisfaction": 0.05800879148616469,
+      "improvement_conversion": 11.713727280992888,
+      "improvement_engagement": 21.379996228832486,
+      "improvement_satisfaction": 23.95040915847155
+    },
+    {
+      "scenario_id": "acquisition_3",
+      "category": "user_acquisition",
+      "users": 28208,
+      "events": 968,
+      "quantum_only_conversion": 0.17200627264128937,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.18481854118332236,
+      "knot_enhanced_engagement": 0.060938844236369284,
+      "knot_enhanced_satisfaction": 0.05549678423087124,
+      "improvement_conversion": 7.448721692116628,
+      "improvement_engagement": 17.190085069940935,
+      "improvement_satisfaction": 18.582872288186405
+    },
+    {
+      "scenario_id": "acquisition_4",
+      "category": "user_acquisition",
+      "users": 5400,
+      "events": 368,
+      "quantum_only_conversion": 0.14513305950223654,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.1721575268719487,
+      "knot_enhanced_engagement": 0.05870293936963939,
+      "knot_enhanced_satisfaction": 0.0603473342874834,
+      "improvement_conversion": 18.620476590515008,
+      "improvement_engagement": 12.890268018537295,
+      "improvement_satisfaction": 28.947295486075642
+    },
+    {
+      "scenario_id": "acquisition_5",
+      "category": "user_acquisition",
+      "users": 48306,
+      "events": 396,
+      "quantum_only_conversion": 0.15528353030526174,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.16523810151556872,
+      "knot_enhanced_engagement": 0.06003568008892932,
+      "knot_enhanced_satisfaction": 0.05843581537446339,
+      "improvement_conversion": 6.410577600044222,
+      "improvement_engagement": 15.453230940248705,
+      "improvement_satisfaction": 24.862853364238017
+    },
+    {
+      "scenario_id": "acquisition_6",
+      "category": "user_acquisition",
+      "users": 12310,
+      "events": 1207,
+      "quantum_only_conversion": 0.16707026726479035,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.19258406176698092,
+      "knot_enhanced_engagement": 0.06007563359687351,
+      "knot_enhanced_satisfaction": 0.05536849469164591,
+      "improvement_conversion": 15.271295676898426,
+      "improvement_engagement": 15.530064609372143,
+      "improvement_satisfaction": 18.30874934112374
+    },
+    {
+      "scenario_id": "acquisition_7",
+      "category": "user_acquisition",
+      "users": 20233,
+      "events": 1593,
+      "quantum_only_conversion": 0.1754489889732291,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.18957336565282015,
+      "knot_enhanced_engagement": 0.05942678058670235,
+      "knot_enhanced_satisfaction": 0.06007959541248602,
+      "improvement_conversion": 8.0504178235796,
+      "improvement_engagement": 14.28227035904299,
+      "improvement_satisfaction": 28.375203872833367
+    },
+    {
+      "scenario_id": "acquisition_8",
+      "category": "user_acquisition",
+      "users": 27890,
+      "events": 706,
+      "quantum_only_conversion": 0.11986618946770833,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.13171484705791348,
+      "knot_enhanced_engagement": 0.06354756925891265,
+      "knot_enhanced_satisfaction": 0.05797941597557385,
+      "improvement_conversion": 9.884903860564574,
+      "improvement_engagement": 22.206863959447414,
+      "improvement_satisfaction": 23.887640973448395
+    },
+    {
+      "scenario_id": "acquisition_9",
+      "category": "user_acquisition",
+      "users": 42259,
+      "events": 1874,
+      "quantum_only_conversion": 0.19761198473101207,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.22669539615998377,
+      "knot_enhanced_engagement": 0.0607461239946068,
+      "knot_enhanced_satisfaction": 0.05599393387058575,
+      "improvement_conversion": 14.717432987963667,
+      "improvement_engagement": 16.819469220397696,
+      "improvement_satisfaction": 19.645157843131944
+    },
+    {
+      "scenario_id": "acquisition_10",
+      "category": "user_acquisition",
+      "users": 9325,
+      "events": 916,
+      "quantum_only_conversion": 0.16984609806527606,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.18081154922361817,
+      "knot_enhanced_engagement": 0.059809850632951536,
+      "knot_enhanced_satisfaction": 0.0544957934769922,
+      "improvement_conversion": 6.4561101392672615,
+      "improvement_engagement": 15.018943524906806,
+      "improvement_satisfaction": 16.444003155966243
+    },
+    {
+      "scenario_id": "retention_1",
+      "category": "retention_strategies",
+      "users": 47317,
+      "events": 4018,
+      "quantum_only_conversion": 0.12343076198085873,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.13767040213547374,
+      "knot_enhanced_engagement": 0.06476563986565406,
+      "knot_enhanced_satisfaction": 0.055609439863416245,
+      "improvement_conversion": 11.53654075053288,
+      "improvement_engagement": 24.549307433950123,
+      "improvement_satisfaction": 18.82358945174411
+    },
+    {
+      "scenario_id": "retention_2",
+      "category": "retention_strategies",
+      "users": 17117,
+      "events": 2665,
+      "quantum_only_conversion": 0.16515079476798916,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.17568072336915477,
+      "knot_enhanced_engagement": 0.061289095513176926,
+      "knot_enhanced_satisfaction": 0.06026304717539345,
+      "improvement_conversion": 6.375947882030178,
+      "improvement_engagement": 17.86364521764794,
+      "improvement_satisfaction": 28.76719481921677
+    },
+    {
+      "scenario_id": "retention_3",
+      "category": "retention_strategies",
+      "users": 43330,
+      "events": 2623,
+      "quantum_only_conversion": 0.17889279478783596,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.20366959376542315,
+      "knot_enhanced_engagement": 0.05971188834659136,
+      "knot_enhanced_satisfaction": 0.05521207874750607,
+      "improvement_conversion": 13.85008211592428,
+      "improvement_engagement": 14.830554512675693,
+      "improvement_satisfaction": 17.974527238260826
+    },
+    {
+      "scenario_id": "retention_4",
+      "category": "retention_strategies",
+      "users": 22233,
+      "events": 1532,
+      "quantum_only_conversion": 0.1612622294457913,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.18282667959604892,
+      "knot_enhanced_engagement": 0.05932865010840571,
+      "knot_enhanced_satisfaction": 0.055464664178366097,
+      "improvement_conversion": 13.372288244040783,
+      "improvement_engagement": 14.093557900780217,
+      "improvement_satisfaction": 18.51423969736345
+    },
+    {
+      "scenario_id": "retention_5",
+      "category": "retention_strategies",
+      "users": 53470,
+      "events": 2521,
+      "quantum_only_conversion": 0.17436631785271384,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.20563065241593806,
+      "knot_enhanced_engagement": 0.058928050113669285,
+      "knot_enhanced_satisfaction": 0.05637729739850969,
+      "improvement_conversion": 17.93026024076107,
+      "improvement_engagement": 13.323173295517877,
+      "improvement_satisfaction": 20.464310680576258
+    },
+    {
+      "scenario_id": "retention_6",
+      "category": "retention_strategies",
+      "users": 17741,
+      "events": 2478,
+      "quantum_only_conversion": 0.1399892791013326,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.15450502078696324,
+      "knot_enhanced_engagement": 0.05964607912178295,
+      "knot_enhanced_satisfaction": 0.05910595868276005,
+      "improvement_conversion": 10.369180967867742,
+      "improvement_engagement": 14.703998311121055,
+      "improvement_satisfaction": 26.294783510171044
+    },
+    {
+      "scenario_id": "retention_7",
+      "category": "retention_strategies",
+      "users": 40807,
+      "events": 1886,
+      "quantum_only_conversion": 0.1812328881480521,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.20338645007464448,
+      "knot_enhanced_engagement": 0.0663129478119998,
+      "knot_enhanced_satisfaction": 0.06059252519848374,
+      "improvement_conversion": 12.22380890851045,
+      "improvement_engagement": 27.524899638461143,
+      "improvement_satisfaction": 29.471207689067814
+    },
+    {
+      "scenario_id": "retention_8",
+      "category": "retention_strategies",
+      "users": 19119,
+      "events": 1033,
+      "quantum_only_conversion": 0.19393064163854415,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21949266849211618,
+      "knot_enhanced_engagement": 0.066842631739029,
+      "knot_enhanced_satisfaction": 0.0604223841992023,
+      "improvement_conversion": 13.18101494307206,
+      "improvement_engagement": 28.543522575055785,
+      "improvement_satisfaction": 29.107658545304062
+    },
+    {
+      "scenario_id": "retention_9",
+      "category": "retention_strategies",
+      "users": 20932,
+      "events": 1833,
+      "quantum_only_conversion": 0.11951889298509946,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.13046621755854038,
+      "knot_enhanced_engagement": 0.06548265360809984,
+      "knot_enhanced_satisfaction": 0.055386349365132315,
+      "improvement_conversion": 9.159492947115673,
+      "improvement_engagement": 25.928180015576626,
+      "improvement_satisfaction": 18.346900352846824
+    },
+    {
+      "scenario_id": "retention_10",
+      "category": "retention_strategies",
+      "users": 81200,
+      "events": 4682,
+      "quantum_only_conversion": 0.1493863609226973,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.16939442832800497,
+      "knot_enhanced_engagement": 0.05889337117519653,
+      "knot_enhanced_satisfaction": 0.05898410326073935,
+      "improvement_conversion": 13.393503450868053,
+      "improvement_engagement": 13.256483029224112,
+      "improvement_satisfaction": 26.03440867679348
+    },
+    {
+      "scenario_id": "enterprise_1",
+      "category": "enterprise_scale",
+      "users": 93987,
+      "events": 1434,
+      "quantum_only_conversion": 0.11121277716067869,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.12466365943782017,
+      "knot_enhanced_engagement": 0.06079358018608366,
+      "knot_enhanced_satisfaction": 0.05465593035532745,
+      "improvement_conversion": 12.094727440991626,
+      "improvement_engagement": 16.910731127083974,
+      "improvement_satisfaction": 16.786175972921903
+    },
+    {
+      "scenario_id": "enterprise_2",
+      "category": "enterprise_scale",
+      "users": 92218,
+      "events": 3191,
+      "quantum_only_conversion": 0.19263593771887436,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.205411332610718,
+      "knot_enhanced_engagement": 0.060404514299519776,
+      "knot_enhanced_satisfaction": 0.057682100587299744,
+      "improvement_conversion": 6.63188553658538,
+      "improvement_engagement": 16.1625274990765,
+      "improvement_satisfaction": 23.252351682264404
+    },
+    {
+      "scenario_id": "enterprise_3",
+      "category": "enterprise_scale",
+      "users": 68078,
+      "events": 3058,
+      "quantum_only_conversion": 0.19010913021525425,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.21058059082927988,
+      "knot_enhanced_engagement": 0.06069487775059362,
+      "knot_enhanced_satisfaction": 0.05933313181146904,
+      "improvement_conversion": 10.768267989468196,
+      "improvement_engagement": 16.72091875114159,
+      "improvement_satisfaction": 26.78019617835265
+    },
+    {
+      "scenario_id": "enterprise_4",
+      "category": "enterprise_scale",
+      "users": 54876,
+      "events": 2878,
+      "quantum_only_conversion": 0.18012502081033066,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.18971686060967452,
+      "knot_enhanced_engagement": 0.059080303153007975,
+      "knot_enhanced_satisfaction": 0.06064730855796073,
+      "improvement_conversion": 5.325101285869631,
+      "improvement_engagement": 13.61596760193842,
+      "improvement_satisfaction": 29.588266149488735
+    },
+    {
+      "scenario_id": "enterprise_5",
+      "category": "enterprise_scale",
+      "users": 90617,
+      "events": 4336,
+      "quantum_only_conversion": 0.17999388050257287,
+      "quantum_only_engagement": 0.052,
+      "quantum_only_satisfaction": 0.0468,
+      "knot_enhanced_conversion": 0.204377101883048,
+      "knot_enhanced_engagement": 0.0630121060807429,
+      "knot_enhanced_satisfaction": 0.056107554647066966,
+      "improvement_conversion": 13.546694650058724,
+      "improvement_engagement": 21.177127078351727,
+      "improvement_satisfaction": 19.887937280057617
+    }
+  ]
+}

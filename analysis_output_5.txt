@@ -1,0 +1,177 @@
+Analyzing AVRAI...                                              
+
+warning • The declaration '_convertToPatternRecognitionUserActions' isn't referenced • lib/core/ai/ai_master_orchestrator.dart:1013:7 • unused_element
+warning • The left operand can't be null, so the right operand is never executed • lib/core/ai/perpetual_list/analyzers/location_pattern_analyzer.dart:298:59 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/ai2ai/anonymous_communication.dart:1337:67 • dead_null_aware_expression
+warning • The value of the field '_atomicClock' isn't used • lib/core/controllers/business_onboarding_controller.dart:62:7 • unused_field
+warning • The value of the field '_keyManager' isn't used • lib/core/crypto/signal/device_registration_service.dart:50:26 • unused_field
+warning • The value of the field '_currentUserId' isn't used • lib/core/crypto/signal/device_registration_service.dart:59:11 • unused_field
+   info • 'encryptedSharedPreferences' is deprecated and shouldn't be used. EncryptedSharedPreferences is deprecated and will be removed in v11. The Jetpack Security library is deprecated by Google. Your data will be automatically migrated to custom ciphers on first access. Remove this parameter - it will be ignored • lib/core/crypto/signal/device_registration_service.dart:69:40 • deprecated_member_use
+   info • 'encryptedSharedPreferences' is deprecated and shouldn't be used. EncryptedSharedPreferences is deprecated and will be removed in v11. The Jetpack Security library is deprecated by Google. Your data will be automatically migrated to custom ciphers on first access. Remove this parameter - it will be ignored • lib/core/crypto/signal/secure_signal_storage.dart:42:40 • deprecated_member_use
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_business_chat_service_ai2ai.dart:237:72 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_business_chat_service_ai2ai.dart:330:67 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_business_chat_service_ai2ai.dart:412:67 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_expert_chat_service_ai2ai.dart:225:72 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_expert_chat_service_ai2ai.dart:254:72 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_expert_chat_service_ai2ai.dart:346:67 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/business_expert_chat_service_ai2ai.dart:430:67 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/community_chat_service.dart:310:63 • dead_null_aware_expression
+warning • The value of the local variable 'response' isn't used • lib/core/services/device_link/numeric_code_service.dart:159:13 • unused_local_variable
+warning • The value of the field '_supabaseService' isn't used • lib/core/services/device_sync/multi_device_message_service.dart:30:25 • unused_field
+warning • The value of the field '_syncStateTable' isn't used • lib/core/services/device_sync/sync_state_service.dart:26:23 • unused_field
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/friend_chat_service.dart:240:63 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/friend_chat_service.dart:352:63 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/friend_chat_service.dart:550:65 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/google_places_cache_service.dart:165:65 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/google_places_cache_service.dart:217:65 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/google_places_cache_service.dart:267:67 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/google_places_cache_service.dart:280:70 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/mapkit_places_cache_service.dart:68:59 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/mapkit_places_cache_service.dart:119:59 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/mapkit_places_cache_service.dart:180:59 • dead_null_aware_expression
+   info • 'calendar' is deprecated and shouldn't be used. Use [calendarWriteOnly] and [calendarFullAccess] • lib/core/services/permissions_persistence_service.dart:153:27 • deprecated_member_use
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/personality_agent_chat_service.dart:362:63 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/search_cache_service.dart:301:75 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/core/services/search_cache_service.dart:315:75 • dead_null_aware_expression
+   info • 'accelerometerEvents' is deprecated and shouldn't be used. Use accelerometerEventStream() instead • lib/core/services/world_orientation_service.dart:43:28 • deprecated_member_use
+   info • 'magnetometerEvents' is deprecated and shouldn't be used. Use magnetometerEventStream() instead • lib/core/services/world_orientation_service.dart:48:26 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/core/services/world_orientation_service.dart:56:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/theme/app_theme.dart:103:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/theme/app_theme.dart:119:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/theme/app_theme.dart:214:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/theme/app_theme.dart:230:34 • deprecated_member_use
+warning • The value of the field '_onboardingKey' isn't used • lib/data/datasources/local/auth_drift_datasource.dart:15:23 • unused_field
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/auth_drift_datasource.dart:46:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/auth_drift_datasource.dart:47:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:70:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:71:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:72:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:97:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:98:38 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:176:31 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/datasources/local/spots_drift_datasource.dart:178:33 • dead_null_aware_expression
+   info • Angle brackets will be interpreted as HTML • lib/data/objectbox/entities/decoherence_pattern_entity.dart:31:18 • unintended_html_in_doc_comment
+warning • The value of the field '_store' isn't used • lib/data/objectbox/objectbox_store.dart:26:11 • unused_field
+warning • The value of the field '_decoherencePatternBox' isn't used • lib/data/objectbox/objectbox_store.dart:29:11 • unused_field
+warning • The value of the field '_quantumStateBox' isn't used • lib/data/objectbox/objectbox_store.dart:30:11 • unused_field
+warning • The value of the field '_ragEmbeddingBox' isn't used • lib/data/objectbox/objectbox_store.dart:31:11 • unused_field
+warning • The value of the field '_structuredFactsBox' isn't used • lib/data/objectbox/objectbox_store.dart:32:11 • unused_field
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_document_repository.dart:65:61 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_document_repository.dart:86:61 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_document_repository.dart:105:61 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_document_repository.dart:125:61 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_profile_repository.dart:63:61 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/data/repositories/tax_profile_repository.dart:82:61 • dead_null_aware_expression
+   info • 'encryptedSharedPreferences' is deprecated and shouldn't be used. EncryptedSharedPreferences is deprecated and will be removed in v11. The Jetpack Security library is deprecated by Google. Your data will be automatically migrated to custom ciphers on first access. Remove this parameter - it will be ignored • lib/injection_container_device_sync.dart:63:36 • deprecated_member_use
+   info • 'encryptedSharedPreferences' is deprecated and shouldn't be used. EncryptedSharedPreferences is deprecated and will be removed in v11. The Jetpack Security library is deprecated by Google. Your data will be automatically migrated to custom ciphers on first access. Remove this parameter - it will be ignored • lib/injection_container_device_sync.dart:85:36 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/presentation/blocs/auth/auth_bloc.dart:130:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/blocs/auth/auth_bloc.dart:137:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/blocs/auth/auth_bloc.dart:148:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/blocs/auth/auth_bloc.dart:164:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/blocs/auth/auth_bloc.dart:165:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/bootloader_page.dart:135:50 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/pages/business/business_dashboard_page.dart:254:45 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/pages/business/business_dashboard_page.dart:272:45 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/device_link/device_link_code_page.dart:159:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/device_link/device_link_transfer_page.dart:209:26 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/device_link/secure_bypass_page.dart:93:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/device_link/secure_bypass_page.dart:95:55 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/pages/knot/knot_meditation_page.dart:31:3 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/pages/knot/knot_meditation_page.dart:48:37 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/pages/knot/knot_meditation_page.dart:49:42 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/pages/onboarding/knot_discovery_page.dart:57:14 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/pages/onboarding/knot_discovery_page.dart:75:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/settings/linked_devices_page.dart:270:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/settings/linked_devices_page.dart:382:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/pages/settings/linked_devices_page.dart:383:31 • deprecated_member_use
+  error • Undefined name 'BertSquadBackend' • lib/presentation/pages/settings/on_device_ai_settings_page.dart:280:29 • undefined_identifier
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/public_handles_page.dart:498:78 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/public_handles_page.dart:504:57 • undefined_getter
+  error • The getter 'shade900' isn't defined for the type 'Color' • lib/presentation/pages/settings/public_handles_page.dart:518:53 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:176:78 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:182:57 • undefined_getter
+  error • The getter 'shade900' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:195:53 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:229:40 • undefined_getter
+  error • The getter 'shade900' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:241:40 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/settings/social_media_settings_page.dart:249:33 • undefined_getter
+  error • The getter 'shade900' isn't defined for the type 'Color' • lib/presentation/pages/spots/spot_details_page.dart:578:40 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/pages/spots/spot_details_page.dart:582:33 • undefined_getter
+   info • Don't invoke 'print' in production code • lib/presentation/routes/app_router.dart:141:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/routes/app_router.dart:143:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/routes/app_router.dart:145:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/routes/app_router.dart:180:11 • avoid_print
+  error • The getter 'shade100' isn't defined for the type 'Color' • lib/presentation/widgets/knot/fabric_cluster_visualization.dart:76:63 • undefined_getter
+  error • The getter 'shade200' isn't defined for the type 'Color' • lib/presentation/widgets/knot/fabric_cluster_visualization.dart:98:52 • undefined_getter
+  error • The getter 'shade300' isn't defined for the type 'Color' • lib/presentation/widgets/knot/fabric_evolution_timeline.dart:74:42 • undefined_getter
+  error • The getter 'shade600' isn't defined for the type 'Color' • lib/presentation/widgets/knot/fabric_evolution_timeline.dart:90:48 • undefined_getter
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_audio_loading_widget.dart:56:27 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_audio_loading_widget.dart:57:12 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_audio_loading_widget.dart:75:30 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_audio_loading_widget.dart:82:37 • deprecated_member_use
+  error • The getter 'shade100' isn't defined for the type 'Color' • lib/presentation/widgets/knot/knot_fabric_widget.dart:203:35 • undefined_getter
+  error • The getter 'shade300' isn't defined for the type 'Color' • lib/presentation/widgets/knot/knot_fabric_widget.dart:219:42 • undefined_getter
+  error • The getter 'shade700' isn't defined for the type 'Color' • lib/presentation/widgets/knot/knot_fabric_widget.dart:232:40 • undefined_getter
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_formation_sync_widget.dart:205:28 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_formation_sync_widget.dart:213:31 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_formation_sync_widget.dart:259:27 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/knot/knot_formation_sync_widget.dart:260:18 • deprecated_member_use
+  error • The operator '[]' isn't defined for the type 'Color' • lib/presentation/widgets/knot/knot_formation_sync_widget.dart:295:52 • undefined_operator
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/presentation/widgets/knot/knot_logo_widget.dart:202:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/map/map_view.dart:776:48 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/onboarding/knot_birth_experience_widget.dart:107:3 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/onboarding/knot_birth_experience_widget.dart:169:39 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • lib/presentation/widgets/onboarding/knot_birth_experience_widget.dart:170:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/focus_aware_scaffold.dart:93:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/glass_slate.dart:32:27 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/glass_slate.dart:33:27 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/glass_slate.dart:61:36 • deprecated_member_use
+   info • 'accelerometerEvents' is deprecated and shouldn't be used. Use accelerometerEventStream() instead • lib/presentation/widgets/portal/metallic_text.dart:50:28 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/metallic_text.dart:121:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/recessed_map_container.dart:29:34 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/recessed_map_container.dart:35:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/recessed_map_container.dart:58:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/recessed_map_container.dart:72:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/turbine_loader.dart:62:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/turbine_loader.dart:75:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/turbine_loader.dart:88:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/widgets/portal/turbine_loader.dart:93:40 • deprecated_member_use
+warning • The value of the field '_initialPinchDistance' isn't used • lib/presentation/widgets/visualization/motion_gesture_handler.dart:125:11 • unused_field
+warning • The value of the field '_initialRotationAngle' isn't used • lib/presentation/widgets/visualization/motion_gesture_handler.dart:126:11 • unused_field
+warning • The value of the local variable 'rotateX' isn't used • lib/presentation/widgets/visualization/motion_gesture_handler.dart:191:13 • unused_local_variable
+warning • The value of the local variable 'rotateY' isn't used • lib/presentation/widgets/visualization/motion_gesture_handler.dart:192:13 • unused_local_variable
+warning • The value of the field '_motionDisabled' isn't used • lib/presentation/widgets/visualization/motion_gesture_handler.dart:340:8 • unused_field
+   info • Angle brackets will be interpreted as HTML • packages/avrai_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:106:25 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • packages/avrai_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:107:42 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • packages/avrai_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:118:30 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • packages/spots_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:92:25 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • packages/spots_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:93:42 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • packages/spots_knot/lib/services/knot/bridge/knot_math_bridge.dart/api.dart:101:30 • unintended_html_in_doc_comment
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:19:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:20:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:21:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:22:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:23:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:24:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:25:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:29:3 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:30:3 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:35:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:60:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:61:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:62:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:63:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:65:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:66:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:67:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:68:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:69:7 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:72:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:73:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:74:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:75:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:76:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/create_storage_bucket.dart:77:5 • avoid_print
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • test/core/services/knot/knot_audio_service_test.dart:12:10 • deprecated_member_use
+   info • 'KnotAudioService' is deprecated and shouldn't be used. Use WavetableKnotAudioService instead for richer audio synthesis • test/core/services/knot/knot_audio_service_test.dart:15:22 • deprecated_member_use
+
+173 issues found. (ran in 18.6s)

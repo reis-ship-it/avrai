@@ -1,0 +1,34 @@
+{
+  "control": {
+    "attendance_rate": 0.046,
+    "conversion_rate": 0.002340000000000001,
+    "gross_revenue_per_event": 2300.0,
+    "net_profit_per_event": -194.0,
+    "total_gross_revenue": 1150000.0,
+    "total_net_profit": -97000.0,
+    "roi": -0.07778668805132319
+  },
+  "test": {
+    "attendance_rate": 0.059158,
+    "conversion_rate": 0.19949362574897916,
+    "gross_revenue_per_event": 2957.9,
+    "net_profit_per_event": 2274.165864347216,
+    "total_gross_revenue": 1478950.0,
+    "total_net_profit": 1137082.932173608,
+    "roi": 3.4193071934175343
+  },
+  "improvements": {
+    "attendance_rate": {
+      "improvement": 0.2860434782608696,
+      "improvement_x": 1.2860434782608696
+    },
+    "conversion_rate": {
+      "improvement": 84.25368621751242,
+      "improvement_x": 85.25368621751242
+    },
+    "gross_revenue_per_event": {
+      "improvement": 0.2860434782608696,
+      "improvement_x": 1.2860434782608696
+    }
+  }
+}

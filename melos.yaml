@@ -1,0 +1,102 @@
+name: AVRAI
+repository: https://github.com/AVRA-CADAVRA/avrai
+
+packages:
+  - packages/**
+
+command:
+  version:
+    workspaceChangelog: true
+  bootstrap:
+    usePubspecOverrides: true
+    hooks:
+      pre: echo "🚀 Bootstrapping AVRAI workspace..."
+      post: echo "✅ Bootstrap complete!"
+
+scripts:
+  # Repo guardrails (architecture + hygiene)
+  check:architecture:
+    run: dart run scripts/ci/check_architecture.dart
+    description: Enforce package dependency boundaries (no package:avra/* from packages/)
+
+  check:repo_hygiene:
+    run: dart run scripts/ci/check_repo_hygiene.dart
+    description: Fail if generated artifacts (build/Pods/tmp/logs) are tracked by git
+
+  # Analysis
+  analyze:
+    run: flutter analyze
+    description: Analyze all packages
+    exec:
+      concurrency: 6
+  
+  # Testing
+  test:
+    run: flutter test
+    description: Test all packages
+    exec:
+      concurrency: 4
+  
+  test:network:
+    run: flutter test
+    description: Test network module only
+    packageFilters:
+      scope: "avrai_network"
+  
+  test:core:
+    run: flutter test
+    description: Test core module only
+    packageFilters:
+      scope: "avrai_core"
+  
+  test:data:
+    run: flutter test
+    description: Test data module only
+    packageFilters:
+      scope: "avrai_data"
+  
+  test:ai:
+    run: flutter test
+    description: Test AI module only
+    packageFilters:
+      scope: "avrai_ai"
+  
+  test:ml:
+    run: flutter test
+    description: Test ML module only
+    packageFilters:
+      scope: "avrai_ml"
+  
+  # Building
+  build:
+    run: flutter build apk
+    description: Build main app
+    packageFilters:
+      scope: "avrai_app"
+  
+  # Dependency management
+  deps:get:
+    run: flutter pub get
+    description: Get dependencies for all packages
+    exec:
+      concurrency: 6
+  
+  deps:upgrade:
+    run: flutter pub upgrade
+    description: Upgrade dependencies for all packages
+    exec:
+      concurrency: 6
+  
+  # Code generation
+  codegen:
+    run: dart run build_runner build --delete-conflicting-outputs
+    description: Generate code for all packages
+    exec:
+      concurrency: 2
+  
+  # Cleanup
+  clean:
+    run: flutter clean
+    description: Clean all packages
+    exec:
+      concurrency: 6

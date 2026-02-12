@@ -1,0 +1,674 @@
+[
+  {
+    "test_id": "real-world-behavior_0",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_1",
+        "geographic_region": "san_francisco",
+        "category_preferences": [
+          "electronics"
+        ]
+      },
+      "product_context": {
+        "category": "electronics",
+        "price_range": "premium"
+      }
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "real_world_behavior": {
+          "average_dwell_time": {
+            "value": 45,
+            "unit": "minutes",
+            "confidence": 0.7
+          },
+          "return_visit_rate": {
+            "value": 0.65,
+            "interpretation": "65% return to favorites (default estimate)",
+            "confidence": 0.7
+          },
+          "exploration_tendency": {
+            "value": 0.35,
+            "interpretation": "35% explore new places (default estimate)",
+            "confidence": 0.7
+          },
+          "community_engagement": {
+            "value": 0.6,
+            "interpretation": "Moderate community engagement (default estimate)",
+            "confidence": 0.7
+          },
+          "journey_patterns": {
+            "typical_path": [
+              "coffee_shop",
+              "work",
+              "restaurant",
+              "event"
+            ],
+            "frequency": "daily",
+            "variability": 0.3
+          },
+          "time_spent_analysis": {
+            "short_visits": 0.2,
+            "medium_visits": 0.5,
+            "long_visits": 0.3
+          }
+        },
+        "product_implications": {
+          "prefers_quality_over_price": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "values_community_products": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "likely_to_return_purchase": {
+            "value": 0.7,
+            "confidence": 0.7
+          },
+          "purchase_decision_factors": [
+            {
+              "factor": "quality",
+              "weight": 0.4
+            },
+            {
+              "factor": "community_endorsement",
+              "weight": 0.3
+            },
+            {
+              "factor": "price",
+              "weight": 0.2
+            },
+            {
+              "factor": "sustainability",
+              "weight": 0.1
+            }
+          ]
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:25.919Z",
+          "geographic_coverage": "san_francisco",
+          "data_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "b96f7cec-ef7f-4f6f-bd5f-0ef6578c7ba0",
+        "processing_time_ms": 266,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:25.919Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 1557.3089122772217,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:26.074352"
+  },
+  {
+    "test_id": "real-world-behavior_1",
+    "endpoint": "real-world-behavior",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_2",
+        "geographic_region": "new_york",
+        "category_preferences": [
+          "fashion",
+          "accessories"
+        ],
+        "demographics": {
+          "age_range": [
+            25,
+            35
+          ],
+          "interests": [
+            "technology",
+            "fashion"
+          ]
+        }
+      },
+      "product_context": {
+        "category": "fashion",
+        "subcategory": "accessories",
+        "price_range": "mid"
+      },
+      "requested_insights": [
+        "dwell_time_patterns",
+        "return_visit_frequency",
+        "real_world_journey_mapping",
+        "community_engagement_levels"
+      ]
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "real_world_behavior": {
+          "average_dwell_time": {
+            "value": 45,
+            "unit": "minutes",
+            "confidence": 0.7
+          },
+          "return_visit_rate": {
+            "value": 0.65,
+            "interpretation": "65% return to favorites (default estimate)",
+            "confidence": 0.7
+          },
+          "exploration_tendency": {
+            "value": 0.35,
+            "interpretation": "35% explore new places (default estimate)",
+            "confidence": 0.7
+          },
+          "community_engagement": {
+            "value": 0.6,
+            "interpretation": "Moderate community engagement (default estimate)",
+            "confidence": 0.7
+          },
+          "journey_patterns": {
+            "typical_path": [
+              "coffee_shop",
+              "work",
+              "restaurant",
+              "event"
+            ],
+            "frequency": "daily",
+            "variability": 0.3
+          },
+          "time_spent_analysis": {
+            "short_visits": 0.2,
+            "medium_visits": 0.5,
+            "long_visits": 0.3
+          }
+        },
+        "product_implications": {
+          "prefers_quality_over_price": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "values_community_products": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "likely_to_return_purchase": {
+            "value": 0.7,
+            "confidence": 0.7
+          },
+          "purchase_decision_factors": [
+            {
+              "factor": "quality",
+              "weight": 0.4
+            },
+            {
+              "factor": "community_endorsement",
+              "weight": 0.3
+            },
+            {
+              "factor": "price",
+              "weight": 0.2
+            },
+            {
+              "factor": "sustainability",
+              "weight": 0.1
+            }
+          ]
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:27.468Z",
+          "geographic_coverage": "new_york",
+          "data_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "c8df2d94-f5b1-41cf-a345-c1314225a186",
+        "processing_time_ms": 278,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:27.468Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 1493.354082107544,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:27.567773"
+  },
+  {
+    "test_id": "quantum-personality_2",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_1",
+        "geographic_region": "san_francisco"
+      },
+      "product_quantum_state": {
+        "category": "electronics",
+        "style": "minimalist",
+        "price": "premium",
+        "features": [
+          "quality",
+          "sustainability"
+        ],
+        "attributes": {
+          "energy_level": 0.7,
+          "novelty": 0.8,
+          "community_oriented": 0.6
+        }
+      }
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "quantum_compatibility": {
+          "score": 0.75,
+          "interpretation": "High compatibility (default estimate)",
+          "confidence": 0.7,
+          "formula": "|\u27e8\u03c8_user|\u03c8_product\u27e9|\u00b2 = 0.750 (default)"
+        },
+        "personality_profile": {
+          "12_dimensions": {
+            "exploration_eagerness": {
+              "value": 0.6,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.5,
+                "p50": 0.6,
+                "p75": 0.7
+              }
+            },
+            "community_orientation": {
+              "value": 0.65,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.55,
+                "p50": 0.65,
+                "p75": 0.75
+              }
+            },
+            "authenticity_preference": {
+              "value": 0.7,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.6,
+                "p50": 0.7,
+                "p75": 0.8
+              }
+            },
+            "value_orientation": {
+              "value": 0.65,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.55,
+                "p50": 0.65,
+                "p75": 0.75
+              }
+            }
+          },
+          "archetype": "Aggregate",
+          "authenticity_score": 0.85
+        },
+        "knot_compatibility": {
+          "score": 0.8,
+          "jones_polynomial_match": 0.84,
+          "alexander_polynomial_match": 0.79,
+          "topological_similarity": 0.815,
+          "knot_type_match": "similar",
+          "interpretation": "High topological compatibility (default estimate)"
+        },
+        "product_recommendations": {
+          "high_compatibility": [
+            {
+              "product_id": "product_default_1",
+              "compatibility_score": 0.7875000000000001,
+              "reasoning": "Default recommendation based on segment characteristics"
+            }
+          ],
+          "compatibility_breakdown": {
+            "style_match": 0.8,
+            "price_match": 0.75,
+            "feature_match": 0.85,
+            "personality_match": 0.75
+          }
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:29.030Z",
+          "quantum_state_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "3105f737-9497-422d-9272-23341619a4ac",
+        "processing_time_ms": 508,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:29.030Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 1578.963041305542,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:29.146819"
+  },
+  {
+    "test_id": "quantum-personality_3",
+    "endpoint": "quantum-personality",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_2",
+        "geographic_region": "new_york"
+      },
+      "product_quantum_state": {
+        "category": "fashion",
+        "style": "bold",
+        "price": "mid",
+        "features": [
+          "trendy",
+          "affordable"
+        ],
+        "attributes": {
+          "energy_level": 0.9,
+          "novelty": 0.7,
+          "community_oriented": 0.8
+        }
+      },
+      "requested_insights": [
+        "quantum_compatibility",
+        "personality_profile",
+        "knot_compatibility",
+        "dimension_breakdown"
+      ]
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "quantum_compatibility": {
+          "score": 0.75,
+          "interpretation": "High compatibility (default estimate)",
+          "confidence": 0.7,
+          "formula": "|\u27e8\u03c8_user|\u03c8_product\u27e9|\u00b2 = 0.750 (default)"
+        },
+        "personality_profile": {
+          "12_dimensions": {
+            "exploration_eagerness": {
+              "value": 0.6,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.5,
+                "p50": 0.6,
+                "p75": 0.7
+              }
+            },
+            "community_orientation": {
+              "value": 0.65,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.55,
+                "p50": 0.65,
+                "p75": 0.75
+              }
+            },
+            "authenticity_preference": {
+              "value": 0.7,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.6,
+                "p50": 0.7,
+                "p75": 0.8
+              }
+            },
+            "value_orientation": {
+              "value": 0.65,
+              "std_dev": 0.15,
+              "percentiles": {
+                "p25": 0.55,
+                "p50": 0.65,
+                "p75": 0.75
+              }
+            }
+          },
+          "archetype": "Aggregate",
+          "authenticity_score": 0.85
+        },
+        "knot_compatibility": {
+          "score": 0.8,
+          "jones_polynomial_match": 0.84,
+          "alexander_polynomial_match": 0.79,
+          "topological_similarity": 0.815,
+          "knot_type_match": "similar",
+          "interpretation": "High topological compatibility (default estimate)"
+        },
+        "product_recommendations": {
+          "high_compatibility": [
+            {
+              "product_id": "product_default_1",
+              "compatibility_score": 0.7875000000000001,
+              "reasoning": "Default recommendation based on segment characteristics"
+            }
+          ],
+          "compatibility_breakdown": {
+            "style_match": 0.8,
+            "price_match": 0.75,
+            "feature_match": 0.85,
+            "personality_match": 0.75
+          }
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:30.558Z",
+          "quantum_state_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "13c3de55-afbd-4a3c-bf19-28f2109922cf",
+        "processing_time_ms": 448,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:30.558Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 1555.8898448944092,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:30.702783"
+  },
+  {
+    "test_id": "community-influence_4",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_1",
+        "geographic_region": "san_francisco"
+      },
+      "product_category": "electronics"
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "community_influence_patterns": {
+          "influence_score": {
+            "value": 0.65,
+            "interpretation": "Moderate influence in community (default estimate)",
+            "confidence": 0.7
+          },
+          "community_size": 100,
+          "influence_network": {
+            "direct_connections": 30,
+            "indirect_connections": 70,
+            "community_reach": 0.1,
+            "network_density": 0.3
+          },
+          "ai2ai_insights": {
+            "average_compatibility": 0.7,
+            "connection_frequency": "medium",
+            "learning_rate": 0.7
+          }
+        },
+        "purchase_behavior": {
+          "community_driven_purchases": {
+            "value": 0.6,
+            "interpretation": "60% influenced by community (default estimate)",
+            "confidence": 0.7
+          },
+          "trend_setter_score": {
+            "value": 0.65,
+            "interpretation": "Moderate trend-setting potential (default estimate)",
+            "confidence": 0.7
+          },
+          "viral_potential": {
+            "value": 0.6,
+            "interpretation": "Moderate viral potential (default estimate)",
+            "confidence": 0.7
+          },
+          "social_sharing_tendency": {
+            "value": 0.55,
+            "interpretation": "55% likely to share purchases (default estimate)",
+            "confidence": 0.7
+          }
+        },
+        "marketing_implications": {
+          "responds_to_community_endorsements": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "likely_to_share_purchases": {
+            "value": 0.55,
+            "confidence": 0.7
+          },
+          "influencer_potential": {
+            "value": 0.65,
+            "interpretation": "Moderate influencer potential (default estimate)",
+            "confidence": 0.7
+          },
+          "recommended_marketing_strategies": [
+            {
+              "strategy": "community_endorsement",
+              "effectiveness": 0.75,
+              "reasoning": "Default recommendation based on segment characteristics"
+            },
+            {
+              "strategy": "social_proof",
+              "effectiveness": 0.7,
+              "reasoning": "Default recommendation based on segment characteristics"
+            }
+          ]
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:31.579Z",
+          "network_analysis_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "2fe61095-1351-41f6-824f-92135dbc6725",
+        "processing_time_ms": 223,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:31.579Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 965.7778739929199,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:31.668775"
+  },
+  {
+    "test_id": "community-influence_5",
+    "endpoint": "community-influence",
+    "request_data": {
+      "user_segment": {
+        "segment_id": "test_segment_2",
+        "geographic_region": "new_york"
+      },
+      "product_category": "fashion",
+      "requested_insights": [
+        "influence_patterns",
+        "purchase_behavior",
+        "marketing_implications",
+        "viral_potential"
+      ]
+    },
+    "response_data": {
+      "success": true,
+      "data": {
+        "community_influence_patterns": {
+          "influence_score": {
+            "value": 0.65,
+            "interpretation": "Moderate influence in community (default estimate)",
+            "confidence": 0.7
+          },
+          "community_size": 100,
+          "influence_network": {
+            "direct_connections": 30,
+            "indirect_connections": 70,
+            "community_reach": 0.1,
+            "network_density": 0.3
+          },
+          "ai2ai_insights": {
+            "average_compatibility": 0.7,
+            "connection_frequency": "medium",
+            "learning_rate": 0.7
+          }
+        },
+        "purchase_behavior": {
+          "community_driven_purchases": {
+            "value": 0.6,
+            "interpretation": "60% influenced by community (default estimate)",
+            "confidence": 0.7
+          },
+          "trend_setter_score": {
+            "value": 0.65,
+            "interpretation": "Moderate trend-setting potential (default estimate)",
+            "confidence": 0.7
+          },
+          "viral_potential": {
+            "value": 0.6,
+            "interpretation": "Moderate viral potential (default estimate)",
+            "confidence": 0.7
+          },
+          "social_sharing_tendency": {
+            "value": 0.55,
+            "interpretation": "55% likely to share purchases (default estimate)",
+            "confidence": 0.7
+          }
+        },
+        "marketing_implications": {
+          "responds_to_community_endorsements": {
+            "value": true,
+            "confidence": 0.7
+          },
+          "likely_to_share_purchases": {
+            "value": 0.55,
+            "confidence": 0.7
+          },
+          "influencer_potential": {
+            "value": 0.65,
+            "interpretation": "Moderate influencer potential (default estimate)",
+            "confidence": 0.7
+          },
+          "recommended_marketing_strategies": [
+            {
+              "strategy": "community_endorsement",
+              "effectiveness": 0.75,
+              "reasoning": "Default recommendation based on segment characteristics"
+            },
+            {
+              "strategy": "social_proof",
+              "effectiveness": 0.7,
+              "reasoning": "Default recommendation based on segment characteristics"
+            }
+          ]
+        },
+        "market_segment_metadata": {
+          "sample_size": 0,
+          "data_freshness": "2025-12-30T16:20:32.595Z",
+          "network_analysis_version": "1.0"
+        }
+      },
+      "metadata": {
+        "request_id": "e423ccfb-ce45-4f9c-bab4-75c5143039dc",
+        "processing_time_ms": 259,
+        "api_version": "1.0.0-poc",
+        "timestamp": "2025-12-30T16:20:32.595Z"
+      }
+    },
+    "success": true,
+    "processing_time_ms": 1040.7350063323975,
+    "error": null,
+    "timestamp": "2025-12-30T10:20:32.709877"
+  }
+]

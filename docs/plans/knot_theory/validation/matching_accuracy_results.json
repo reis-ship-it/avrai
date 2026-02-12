@@ -1,0 +1,32 @@
+{
+  "quantum_only_accuracy": 0.8068686868686868,
+  "integrated_accuracy": 0.4816161616161616,
+  "improvement_percentage": -40.31046569854782,
+  "total_pairs": 4950,
+  "compatible_pairs": 4709,
+  "incompatible_pairs": 241,
+  "meets_threshold": false,
+  "quantum_optimal_threshold": 0.30568661879384895,
+  "integrated_optimal_threshold": 0.4401654851266965,
+  "statistical_results": {
+    "quantum_accuracy": 0.8068686868686868,
+    "integrated_accuracy": 0.4816161616161616,
+    "improvement": -0.32525252525252524,
+    "t_statistic": 82.27255612422408,
+    "p_value": 0.0,
+    "is_significant": true,
+    "confidence_interval": [
+      0.07396596895579706,
+      0.07757703319081806
+    ],
+    "effect_size": 1.1693711934727826,
+    "quantum_threshold": 0.30568661879384895,
+    "integrated_threshold": 0.4401654851266965,
+    "quantum_auc": 0.8988041791607665,
+    "integrated_auc": 0.6758762465095091
+  },
+  "weights": {
+    "quantum": 0.7,
+    "topological": 0.3
+  }
+}

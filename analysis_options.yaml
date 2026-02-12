@@ -1,0 +1,17 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Quarantine + backups (not part of build; can contain intentionally broken historical code)
+    - review_before_deletion/**
+    # Backup directories (not part of build)
+    - .avra_import_fix_backup_*/**
+    - .avra_rename_backup_*/**
+    - .avrai_rename_backup_*/**
+    # Generated files (auto-generated, should not be analyzed)
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+    # Build directories
+    - build/**
+    - .dart_tool/**

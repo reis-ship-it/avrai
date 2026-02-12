@@ -1,0 +1,34 @@
+{
+    "name": "SPOTS",
+    "description": "Offline-first mobile app for creating and sharing lists of real-world spots with personalized recommendations and social curation.",
+    "version": "0.1.0",
+    "stack": {
+        "frontend": "Flutter (recommended) or React Native",
+        "backend": "Firebase or Supabase (sync + auth)",
+        "database": "SQLite or Realm (offline local storage)",
+        "maps": "Mapbox (with offline tile support)",
+        "ai": "TensorFlow Lite or ONNX (on-device suggestion engine)"
+    },
+    "features": [
+        "Create/share spot lists",
+        "Map view with pins",
+        "Respect lists",
+        "Friendship/social graph",
+        "Feedback as context",
+        "Suggested for You (AI)",
+        "Refine AI preferences",
+        "Expertise levels by category",
+        "Offline caching",
+        "Event hosting + ticketing"
+    ],
+    "ethos": {
+        "gamification": "None",
+        "monetization": [
+            "Spotlight listings to relevant users",
+            "Sponsored expert-curated lists",
+            "Web3 event hosting",
+            "Market insights from anonymized AI"
+        ],
+        "privacy": "No user data sold. Only anonymized AI trends shared."
+    }
+}

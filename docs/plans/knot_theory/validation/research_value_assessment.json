@@ -1,0 +1,22 @@
+{
+  "knot_distribution_novelty": 0.7296694839533425,
+  "pattern_uniqueness": 0.566060606060606,
+  "publishability_score": 1.0,
+  "market_value_score": 0.9000000000000001,
+  "overall_research_value": 0.7989325225034871,
+  "novel_insights": [
+    "Most common personality knot type: unknot (16 occurrences)",
+    "Average personality complexity: 0.190",
+    "Found 1 rare/complex personality knots (Conway-like or complex-11)",
+    "Personality dimensions create distinct topological structures"
+  ],
+  "potential_publications": [
+    "Novel application of topological knot theory to personality representation",
+    "Mathematical formulation of personality-knot relationships",
+    "Empirical analysis of 100 personality knots",
+    "Applications to compatibility matching and recommendation systems",
+    "Interdisciplinary research: topology + psychology + data science"
+  ],
+  "total_knots_analyzed": 100,
+  "research_value_validated": true
+}

@@ -1,0 +1,61 @@
+name: Storage health
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  storage-health:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [dev]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Verify Supabase setup (tables, policies, buckets)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_DEV }}
+          BUCKETS: user-avatars,spot-images,list-images
+          REQUIRE_CANARY: true
+          CANARY_PATH: health/_canary.txt
+          CANARY_BUCKETS: spot-images,list-images
+        run: dart run scripts/supabase/verify_supabase_setup.dart
+
+  storage-health-env:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [development, staging, production]
+    environment: ${{ matrix.env }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Verify Supabase setup (env-level secrets)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          BUCKETS: user-avatars,spot-images,list-images
+          REQUIRE_CANARY: true
+          CANARY_PATH: health/_canary.txt
+          CANARY_BUCKETS: spot-images,list-images
+        run: dart run scripts/supabase/verify_supabase_setup.dart
+

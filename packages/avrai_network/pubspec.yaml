@@ -1,0 +1,53 @@
+name: avrai_network
+description: Network layer and backend implementations for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  avrai_core:
+    path: ../avrai_core
+  
+  # Network dependencies
+  http: ^1.1.0
+  connectivity_plus: ^7.0.0
+  
+  # Device discovery dependencies
+  flutter_blue_plus: ^2.1.0  # Bluetooth Low Energy
+  flutter_nsd: ^1.6.0  # Network Service Discovery / mDNS
+  permission_handler: ^12.0.1  # For Android permissions (device_discovery_android)
+  wifi_iot: ^0.3.19  # WiFi Direct (Android - device_discovery_android)
+  shared_preferences: any  # For WebRTC signaling config (web platform)
+  web: ^1.1.1  # For web platform APIs (WebRTC, WebSocket)
+  
+  # Encryption dependencies
+  crypto: ^3.0.3  # For hashing
+  pointycastle: ^4.0.0  # For encryption
+  
+  # Backend options (will be added as needed)
+  # firebase_core: ^2.24.2
+  # firebase_auth: ^4.15.3
+  # cloud_firestore: ^4.13.6
+  supabase_flutter: ^2.3.4
+  
+  # Utilities
+  json_annotation: ^4.8.1
+  equatable: ^2.0.5
+  meta: ^1.9.1
+  get_it: ^9.2.0  # For dependency injection (used by device_discovery_web)
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  test: ^1.25.15
+  mockito: ^5.5.0
+  build_runner: ^2.7.1
+  json_serializable: ^6.11.2
+  
+flutter:
+  uses-material-design: false

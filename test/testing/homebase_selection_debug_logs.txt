@@ -1,0 +1,35 @@
+# Debug Logs: Homebase Selection Thoroughfare Extraction
+# Date: 2025-07-22
+# Status: ✅ WORKING
+
+flutter: [DEBUG] Placemark data:
+flutter:   Street: Prospect Expy
+flutter:   Thoroughfare: Prospect Expy
+flutter:   Sublocality: Brooklyn
+flutter:   Locality: New York
+flutter:   SubAdministrativeArea: Kings County
+flutter:   AdministrativeArea: NY
+flutter:   Country: United States
+flutter: [DEBUG] Extracted neighborhood: Prospect Expy
+flutter: [DEBUG] Setting _selectedNeighborhood to: Prospect Expy
+flutter: [DEBUG] setState called with neighborhood: Prospect Expy
+flutter: [DEBUG] After setState, _selectedNeighborhood is: Prospect Expy
+
+flutter: [DEBUG] Placemark data:
+flutter:   Street: 573–613 6th Ave
+flutter:   Thoroughfare: 6th Ave
+flutter:   Sublocality: Brooklyn
+flutter:   Locality: New York
+flutter:   SubAdministrativeArea: Kings County
+flutter:   AdministrativeArea: NY
+flutter:   Country: United States
+flutter: [DEBUG] Extracted neighborhood: 6th Ave
+flutter: [DEBUG] Setting _selectedNeighborhood to: 6th Ave
+flutter: [DEBUG] setState called with neighborhood: 6th Ave
+flutter: [DEBUG] After setState, _selectedNeighborhood is: 6th Ave
+
+# RESULT: ✅ SUCCESS
+# - Thoroughfare extraction working correctly
+# - UI updating properly with setState
+# - More specific location names (6th Ave vs Brooklyn)
+# - Debug logging confirms proper data flow 

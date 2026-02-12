@@ -1,0 +1,111 @@
+{
+  "control": {
+    "quantum_compatibility": 0.4956028955836111,
+    "decoherence_accuracy": 0.135877282494,
+    "queue_ordering_accuracy": 0.503,
+    "entanglement_sync_accuracy": 0.8509157394033912,
+    "timezone_matching_accuracy": 0.0
+  },
+  "test": {
+    "quantum_compatibility": 0.5404881850281921,
+    "decoherence_accuracy": 0.15527984882527118,
+    "queue_ordering_accuracy": 1.0,
+    "entanglement_sync_accuracy": 0.9990000000000002,
+    "timezone_matching_accuracy": 0.9686844642570736
+  },
+  "improvements": {
+    "quantum_compatibility": {
+      "percentage": 9.056704439090302,
+      "multiplier": 1.090567044390903
+    },
+    "decoherence_accuracy": {
+      "percentage": 14.27947775753313,
+      "multiplier": 1.1427947775753313
+    },
+    "queue_ordering_accuracy": {
+      "percentage": 98.80715705765407,
+      "multiplier": 1.9880715705765408
+    },
+    "entanglement_sync_accuracy": {
+      "percentage": 17.40292883763514,
+      "multiplier": 1.1740292883763515
+    }
+  },
+  "statistical_tests": {
+    "quantum_compatibility": {
+      "t_statistic": -3.373781613022592,
+      "p_value": 0.0007555919612938636,
+      "cohens_d": 0.15088010055914813,
+      "control_ci_95": [
+        0.4778155003941115,
+        0.5133902907731106
+      ],
+      "test_ci_95": [
+        0.5213780125656869,
+        0.5595983574906972
+      ],
+      "statistically_significant": "True",
+      "large_effect_size": "False"
+    },
+    "decoherence_accuracy": {
+      "t_statistic": -1.5144083300450515,
+      "p_value": 0.13008047716888216,
+      "cohens_d": 0.06772639943345346,
+      "control_ci_95": [
+        0.11941369592621368,
+        0.15234086906178632
+      ],
+      "test_ci_95": [
+        0.13627868775112004,
+        0.17428100989942233
+      ],
+      "statistically_significant": "False",
+      "large_effect_size": "False"
+    },
+    "queue_ordering_accuracy": {
+      "t_statistic": -31.417885018026983,
+      "p_value": 2.0174927140621477e-176,
+      "cohens_d": 1.405050532191611,
+      "control_ci_95": [
+        0.4719576906394646,
+        0.5340423093605354
+      ],
+      "test_ci_95": [
+        NaN,
+        NaN
+      ],
+      "statistically_significant": "True",
+      "large_effect_size": "True"
+    },
+    "entanglement_sync_accuracy": {
+      "t_statistic": -82.33597843789892,
+      "p_value": 0.0,
+      "cohens_d": 3.682176895621979,
+      "control_ci_95": [
+        0.8473863967050568,
+        0.8544450821017255
+      ],
+      "test_ci_95": [
+        0.9990000000000002,
+        0.9990000000000002
+      ],
+      "statistically_significant": "True",
+      "large_effect_size": "True"
+    },
+    "timezone_matching_accuracy": {
+      "t_statistic": -189.39106451057611,
+      "p_value": 0.0,
+      "cohens_d": 8.469825891533924,
+      "control_ci_95": [
+        NaN,
+        NaN
+      ],
+      "test_ci_95": [
+        0.9586476143566848,
+        0.9787213141574623
+      ],
+      "statistically_significant": "True",
+      "large_effect_size": "True"
+    }
+  }
+}

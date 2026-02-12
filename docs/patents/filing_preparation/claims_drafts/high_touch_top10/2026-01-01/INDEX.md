@@ -1,0 +1,17 @@
+# High-Touch Claims Drafts — Retiered Top 10
+
+**Generated:** 2026-01-01
+**Source Top 10:** `docs/patents/filing_preparation/retiering/2026-01-01/TOP_10.md`
+
+## Files
+
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/01_quantum_compatibility_calculation/01_quantum_compatibility_calculation_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/02_contextual_personality_drift_resistance/02_contextual_personality_drift_resistance_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/03_quantum_matching_partnership_enforcement/03_quantum_matching_partnership_enforcement_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/04_offline_quantum_privacy_ai2ai/04_offline_quantum_privacy_ai2ai_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/05_quantum_expertise_enhancement/05_quantum_expertise_enhancement_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/08_multi_entity_quantum_entanglement_matching/08_multi_entity_quantum_entanglement_matching_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/09_quantum_atomic_clock_system/09_quantum_atomic_clock_system_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_1_quantum_ai_systems/31_topological_knot_theory_personality/31_topological_knot_theory_personality_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_3_expertise_economic_systems/01_multi_path_dynamic_expertise/01_multi_path_dynamic_expertise_claims_high_touch.md`
+- `docs/patents/filing_preparation/claims_drafts/high_touch_top10/2026-01-01/category_5_network_intelligence_systems/05_ai2ai_network_monitoring_administration/05_ai2ai_network_monitoring_administration_claims_high_touch.md`

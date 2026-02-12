@@ -1,0 +1,797 @@
+[
+  {
+    "scenario_id": "aggressive_data_harvesting",
+    "scenario_name": "Aggressive Data Harvesting - Extensive User Profiling",
+    "scenario_type": "data_harvesting",
+    "status": "success",
+    "execution_time": 0.08304119110107422,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.036,
+        "conversion_rate": 0.0017999999999999995,
+        "gross_revenue_per_event": 1800.0,
+        "net_profit_per_event": -654.0,
+        "total_gross_revenue": 900000.0,
+        "total_net_profit": -327000.0,
+        "roi": -0.26650366748166254
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.643277777777778,
+          "improvement_x": 1.643277777777778
+        },
+        "conversion_rate": {
+          "improvement": 109.82979208276623,
+          "improvement_x": 110.82979208276623
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.6432777777777778,
+          "improvement_x": 1.6432777777777778
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/data_harvesting"
+  },
+  {
+    "scenario_id": "aggressive_data_reselling",
+    "scenario_name": "Data Reselling - Third-Party User Profiles",
+    "scenario_type": "data_harvesting",
+    "status": "success",
+    "execution_time": 0.08116984367370605,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.046,
+        "conversion_rate": 0.002340000000000001,
+        "gross_revenue_per_event": 2300.0,
+        "net_profit_per_event": -194.0,
+        "total_gross_revenue": 1150000.0,
+        "total_net_profit": -97000.0,
+        "roi": -0.07778668805132319
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.2860434782608696,
+          "improvement_x": 1.2860434782608696
+        },
+        "conversion_rate": {
+          "improvement": 84.25368621751242,
+          "improvement_x": 85.25368621751242
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.2860434782608696,
+          "improvement_x": 1.2860434782608696
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection",
+      "Micro-Targeting"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/data_reselling"
+  },
+  {
+    "scenario_id": "privacy_invasive_tracking",
+    "scenario_name": "Privacy-Invasive Tracking - Cross-Platform Cookies",
+    "scenario_type": "privacy_invasive",
+    "status": "success",
+    "execution_time": 0.08085083961486816,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.034,
+        "conversion_rate": 0.0017250000000000006,
+        "gross_revenue_per_event": 1700.0,
+        "net_profit_per_event": -956.0,
+        "total_gross_revenue": 850000.0,
+        "total_net_profit": -478000.0,
+        "roi": -0.35993975903614456
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.7399411764705882,
+          "improvement_x": 1.739941176470588
+        },
+        "conversion_rate": {
+          "improvement": 114.64847869506035,
+          "improvement_x": 115.64847869506035
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.7399411764705883,
+          "improvement_x": 1.7399411764705883
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Privacy-Invasive Tracking",
+      "Cross-Platform Tracking"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/privacy_invasive"
+  },
+  {
+    "scenario_id": "privacy_invasive_location",
+    "scenario_name": "Aggressive Location Tracking - Always-On GPS",
+    "scenario_type": "privacy_invasive",
+    "status": "success",
+    "execution_time": 0.09393596649169922,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.034,
+        "conversion_rate": 0.0017250000000000006,
+        "gross_revenue_per_event": 1700.0,
+        "net_profit_per_event": -851.0,
+        "total_gross_revenue": 850000.0,
+        "total_net_profit": -425500.0,
+        "roi": -0.33359466875734994
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.7399411764705882,
+          "improvement_x": 1.739941176470588
+        },
+        "conversion_rate": {
+          "improvement": 114.64847869506035,
+          "improvement_x": 115.64847869506035
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.7399411764705883,
+          "improvement_x": 1.7399411764705883
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Privacy-Invasive Tracking"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/location_tracking"
+  },
+  {
+    "scenario_id": "behavioral_manipulation",
+    "scenario_name": "Behavioral Manipulation - Dark Patterns & Psychological Tricks",
+    "scenario_type": "behavioral_manipulation",
+    "status": "success",
+    "execution_time": 0.08058500289916992,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.045,
+        "conversion_rate": 0.00225,
+        "gross_revenue_per_event": 2250.0,
+        "net_profit_per_event": -30.0,
+        "total_gross_revenue": 1125000.0,
+        "total_net_profit": -15000.0,
+        "roi": -0.013157894736842103
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.3146222222222223,
+          "improvement_x": 1.3146222222222224
+        },
+        "conversion_rate": {
+          "improvement": 87.66383366621297,
+          "improvement_x": 88.66383366621297
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.31462222222222225,
+          "improvement_x": 1.3146222222222224
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Behavioral Manipulation",
+      "Psychological Manipulation",
+      "Dark Patterns"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/behavioral_manipulation"
+  },
+  {
+    "scenario_id": "fomo_scarcity",
+    "scenario_name": "FOMO & Scarcity Manipulation - Fake Urgency",
+    "scenario_type": "behavioral_manipulation",
+    "status": "success",
+    "execution_time": 0.08191323280334473,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.037,
+        "conversion_rate": 0.0018750000000000004,
+        "gross_revenue_per_event": 1850.0,
+        "net_profit_per_event": -398.0,
+        "total_gross_revenue": 925000.0,
+        "total_net_profit": -199000.0,
+        "roi": -0.17704626334519571
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.598864864864865,
+          "improvement_x": 1.598864864864865
+        },
+        "conversion_rate": {
+          "improvement": 105.39660039945554,
+          "improvement_x": 106.39660039945554
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.5988648648648649,
+          "improvement_x": 1.598864864864865
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Psychological Manipulation"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/fomo_scarcity"
+  },
+  {
+    "scenario_id": "micro_targeting_extensive",
+    "scenario_name": "Micro-Targeting - Extensive User Data Profiles",
+    "scenario_type": "micro_targeting",
+    "status": "success",
+    "execution_time": 0.08383536338806152,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.046,
+        "conversion_rate": 0.002340000000000001,
+        "gross_revenue_per_event": 2300.0,
+        "net_profit_per_event": -194.0,
+        "total_gross_revenue": 1150000.0,
+        "total_net_profit": -97000.0,
+        "roi": -0.07778668805132319
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.2860434782608696,
+          "improvement_x": 1.2860434782608696
+        },
+        "conversion_rate": {
+          "improvement": 84.25368621751242,
+          "improvement_x": 85.25368621751242
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.2860434782608696,
+          "improvement_x": 1.2860434782608696
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection",
+      "Micro-Targeting"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/micro_targeting"
+  },
+  {
+    "scenario_id": "micro_targeting_ai",
+    "scenario_name": "AI-Powered Micro-Targeting - Machine Learning Profiling",
+    "scenario_type": "micro_targeting",
+    "status": "success",
+    "execution_time": 0.08112120628356934,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.053,
+        "conversion_rate": 0.0026909999999999994,
+        "gross_revenue_per_event": 2650.0,
+        "net_profit_per_event": 23.0,
+        "total_gross_revenue": 1325000.0,
+        "total_net_profit": 11500.0,
+        "roi": 0.008755234107346783
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.11618867924528309,
+          "improvement_x": 1.116188679245283
+        },
+        "conversion_rate": {
+          "improvement": 73.13364018914129,
+          "improvement_x": 74.13364018914129
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.11618867924528305,
+          "improvement_x": 1.116188679245283
+        },
+        "net_profit_per_event": {
+          "improvement": 97.87677671074853,
+          "improvement_x": 98.87677671074853
+        },
+        "total_net_profit": {
+          "improvement": 97.87677671074853,
+          "improvement_x": 98.87677671074853
+        },
+        "roi": {
+          "improvement": 389.54434770034186,
+          "improvement_x": 390.54434770034186
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection",
+      "Privacy-Invasive Tracking",
+      "Micro-Targeting"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/ai_micro_targeting"
+  },
+  {
+    "scenario_id": "cross_platform_tracking",
+    "scenario_name": "Cross-Platform Tracking - User Behavior Across All Apps",
+    "scenario_type": "cross_platform_tracking",
+    "status": "success",
+    "execution_time": 0.08086514472961426,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.034,
+        "conversion_rate": 0.0017250000000000006,
+        "gross_revenue_per_event": 1700.0,
+        "net_profit_per_event": -956.0,
+        "total_gross_revenue": 850000.0,
+        "total_net_profit": -478000.0,
+        "roi": -0.35993975903614456
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.7399411764705882,
+          "improvement_x": 1.739941176470588
+        },
+        "conversion_rate": {
+          "improvement": 114.64847869506035,
+          "improvement_x": 115.64847869506035
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.7399411764705883,
+          "improvement_x": 1.7399411764705883
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Privacy-Invasive Tracking",
+      "Cross-Platform Tracking"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/cross_platform"
+  },
+  {
+    "scenario_id": "device_fingerprinting",
+    "scenario_name": "Device Fingerprinting - Unique Device Identification",
+    "scenario_type": "cross_platform_tracking",
+    "status": "success",
+    "execution_time": 0.08109688758850098,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.034,
+        "conversion_rate": 0.0017250000000000006,
+        "gross_revenue_per_event": 1700.0,
+        "net_profit_per_event": -956.0,
+        "total_gross_revenue": 850000.0,
+        "total_net_profit": -478000.0,
+        "roi": -0.35993975903614456
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.7399411764705882,
+          "improvement_x": 1.739941176470588
+        },
+        "conversion_rate": {
+          "improvement": 114.64847869506035,
+          "improvement_x": 115.64847869506035
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.7399411764705883,
+          "improvement_x": 1.7399411764705883
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Privacy-Invasive Tracking",
+      "Cross-Platform Tracking"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/device_fingerprinting"
+  },
+  {
+    "scenario_id": "psychological_social_proof",
+    "scenario_name": "Social Proof Manipulation - Fake Reviews & Testimonials",
+    "scenario_type": "psychological_manipulation",
+    "status": "success",
+    "execution_time": 0.08113884925842285,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.037,
+        "conversion_rate": 0.0018750000000000004,
+        "gross_revenue_per_event": 1850.0,
+        "net_profit_per_event": -398.0,
+        "total_gross_revenue": 925000.0,
+        "total_net_profit": -199000.0,
+        "roi": -0.17704626334519571
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.598864864864865,
+          "improvement_x": 1.598864864864865
+        },
+        "conversion_rate": {
+          "improvement": 105.39660039945554,
+          "improvement_x": 106.39660039945554
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.5988648648648649,
+          "improvement_x": 1.598864864864865
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Psychological Manipulation"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/social_proof"
+  },
+  {
+    "scenario_id": "psychological_anchoring",
+    "scenario_name": "Price Anchoring - Manipulative Pricing Strategies",
+    "scenario_type": "psychological_manipulation",
+    "status": "success",
+    "execution_time": 0.08014202117919922,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.037,
+        "conversion_rate": 0.0018750000000000004,
+        "gross_revenue_per_event": 1850.0,
+        "net_profit_per_event": -398.0,
+        "total_gross_revenue": 925000.0,
+        "total_net_profit": -199000.0,
+        "roi": -0.17704626334519571
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.598864864864865,
+          "improvement_x": 1.598864864864865
+        },
+        "conversion_rate": {
+          "improvement": 105.39660039945554,
+          "improvement_x": 106.39660039945554
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.5988648648648649,
+          "improvement_x": 1.598864864864865
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Psychological Manipulation"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/price_anchoring"
+  },
+  {
+    "scenario_id": "dark_patterns_ui",
+    "scenario_name": "Dark Patterns - Deceptive UI & Hidden Costs",
+    "scenario_type": "dark_patterns",
+    "status": "success",
+    "execution_time": 0.08284878730773926,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.036,
+        "conversion_rate": 0.0017999999999999995,
+        "gross_revenue_per_event": 1800.0,
+        "net_profit_per_event": -444.0,
+        "total_gross_revenue": 900000.0,
+        "total_net_profit": -222000.0,
+        "roi": -0.1978609625668449
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.643277777777778,
+          "improvement_x": 1.643277777777778
+        },
+        "conversion_rate": {
+          "improvement": 109.82979208276623,
+          "improvement_x": 110.82979208276623
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.6432777777777778,
+          "improvement_x": 1.6432777777777778
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Behavioral Manipulation",
+      "Dark Patterns"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/dark_patterns"
+  },
+  {
+    "scenario_id": "dark_patterns_consent",
+    "scenario_name": "Consent Dark Patterns - Forced Opt-Ins",
+    "scenario_type": "dark_patterns",
+    "status": "success",
+    "execution_time": 0.08420085906982422,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.034,
+        "conversion_rate": 0.0017250000000000006,
+        "gross_revenue_per_event": 1700.0,
+        "net_profit_per_event": -851.0,
+        "total_gross_revenue": 850000.0,
+        "total_net_profit": -425500.0,
+        "roi": -0.33359466875734994
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.7399411764705882,
+          "improvement_x": 1.739941176470588
+        },
+        "conversion_rate": {
+          "improvement": 114.64847869506035,
+          "improvement_x": 115.64847869506035
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.7399411764705883,
+          "improvement_x": 1.7399411764705883
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Privacy-Invasive Tracking",
+      "Dark Patterns"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/consent_dark_patterns"
+  },
+  {
+    "scenario_id": "aggressive_perfect_storm",
+    "scenario_name": "Perfect Storm - All Aggressive Techniques Combined",
+    "scenario_type": "data_harvesting",
+    "status": "success",
+    "execution_time": 0.09697103500366211,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.08,
+        "conversion_rate": 0.004036499999999999,
+        "gross_revenue_per_event": 4000.0,
+        "net_profit_per_event": 1160.0,
+        "total_gross_revenue": 2000000.0,
+        "total_net_profit": 580000.0,
+        "roi": 0.40845070422535207
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.260525,
+          "improvement_x": 0.739475
+        },
+        "conversion_rate": {
+          "improvement": 48.42242679276086,
+          "improvement_x": 49.42242679276086
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.26052499999999995,
+          "improvement_x": 0.739475
+        },
+        "net_profit_per_event": {
+          "improvement": 0.9604878140924276,
+          "improvement_x": 1.9604878140924276
+        },
+        "total_net_profit": {
+          "improvement": 0.9604878140924278,
+          "improvement_x": 1.9604878140924278
+        },
+        "roi": {
+          "improvement": 7.37140726664293,
+          "improvement_x": 8.37140726664293
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection",
+      "Privacy-Invasive Tracking",
+      "Behavioral Manipulation",
+      "Micro-Targeting",
+      "Cross-Platform Tracking",
+      "Psychological Manipulation",
+      "Dark Patterns"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/perfect_storm"
+  },
+  {
+    "scenario_id": "aggressive_optimal",
+    "scenario_name": "Aggressive Marketing Optimal - Maximum Invasion",
+    "scenario_type": "data_harvesting",
+    "status": "success",
+    "execution_time": 0.08410215377807617,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.201,
+        "conversion_rate": 0.004036499999999999,
+        "gross_revenue_per_event": 10050.0,
+        "net_profit_per_event": 2946.0,
+        "total_gross_revenue": 5025000.0,
+        "total_net_profit": 1473000.0,
+        "roi": 0.41469594594594594
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.7056815920398011,
+          "improvement_x": 0.294318407960199
+        },
+        "conversion_rate": {
+          "improvement": 48.42242679276086,
+          "improvement_x": 49.42242679276086
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.7056815920398011,
+          "improvement_x": 0.29431840796019904
+        },
+        "net_profit_per_event": {
+          "improvement": -0.22804960477012354,
+          "improvement_x": 0.7719503952298764
+        },
+        "total_net_profit": {
+          "improvement": -0.22804960477012348,
+          "improvement_x": 0.7719503952298765
+        },
+        "roi": {
+          "improvement": 7.245335472518046,
+          "improvement_x": 8.245335472518047
+        }
+      }
+    },
+    "error": null,
+    "aggressive_techniques": [
+      "Aggressive Data Collection",
+      "Privacy-Invasive Tracking",
+      "Behavioral Manipulation",
+      "Micro-Targeting",
+      "Cross-Platform Tracking",
+      "Psychological Manipulation",
+      "Dark Patterns"
+    ],
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/aggressive_marketing/optimal_invasion"
+  }
+]

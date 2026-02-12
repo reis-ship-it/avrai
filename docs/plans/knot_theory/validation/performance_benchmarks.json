@@ -1,0 +1,82 @@
+{
+  "knot_generation": [
+    {
+      "operation": "knot_generation",
+      "scale": 100,
+      "time_ms": 0.02247875090688467,
+      "throughput": 44486.45763914424,
+      "memory_mb": 0.0003125,
+      "scaling_factor": 1.0
+    },
+    {
+      "operation": "knot_generation",
+      "scale": 1000,
+      "time_ms": 0.02190162497572601,
+      "throughput": 45658.71258905763,
+      "memory_mb": 0.00046875,
+      "scaling_factor": 1.0
+    },
+    {
+      "operation": "knot_generation",
+      "scale": 10000,
+      "time_ms": 0.021399212488904595,
+      "throughput": 46730.69163262414,
+      "memory_mb": 0.0004375,
+      "scaling_factor": 1.0
+    }
+  ],
+  "invariant_calculation": {
+    "mean_time_ms": 0.00019205035641789436,
+    "median_time_ms": 0.00016693957149982452,
+    "max_time_ms": 0.0012919772416353226,
+    "min_time_ms": 0.000125030055642128,
+    "std_dev_ms": 0.00012466216496646905
+  },
+  "integrated_compatibility": [
+    {
+      "operation": "integrated_compatibility",
+      "scale": 1000,
+      "time_ms": 0.0012500840239226818,
+      "throughput": 799946.2283039707,
+      "memory_mb": 0,
+      "scaling_factor": 1.0
+    },
+    {
+      "operation": "integrated_compatibility",
+      "scale": 10000,
+      "time_ms": 0.0010894832899793982,
+      "throughput": 917866.3034096739,
+      "memory_mb": 0,
+      "scaling_factor": 1.0
+    },
+    {
+      "operation": "integrated_compatibility",
+      "scale": 100000,
+      "time_ms": 0.0011046879086643458,
+      "throughput": 905233.0456020636,
+      "memory_mb": 0,
+      "scaling_factor": 1.0
+    }
+  ],
+  "scaling_analysis": {
+    "knot_generation": {
+      "scaling_type": "linear_or_constant",
+      "time_coefficient_of_variation": 0.0006069728532644311,
+      "mean_time_ms": 0.02192652945717176,
+      "time_std_dev_ms": 0.0005401999387919183
+    },
+    "integrated_compatibility": {
+      "scaling_type": "linear_or_constant",
+      "time_coefficient_of_variation": 0.005963613055074888,
+      "mean_time_ms": 0.0011480850741888086,
+      "time_std_dev_ms": 8.866021891157589e-05
+    }
+  },
+  "success_criteria": {
+    "knot_generation_100ms": true,
+    "invariant_calculation_100ms": true,
+    "compatibility_1000_pairs_per_sec": true,
+    "scaling_linear": true
+  },
+  "all_criteria_met": true
+}

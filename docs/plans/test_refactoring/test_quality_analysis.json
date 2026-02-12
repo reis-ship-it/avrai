@@ -1,0 +1,1624 @@
+{
+  "summary": {
+    "total_files": 47,
+    "total_tests": 650,
+    "total_issues": 144
+  },
+  "files": {
+    "test/unit/models/anonymous_user_test.dart": {
+      "total_tests": 6,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 2,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 4,
+      "issues": [
+        {
+          "line_number": 16,
+          "test_name": "test_1",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 38,
+          "test_name": "should handle missing optional fields with defaults",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/automatic_check_in_test.dart": {
+      "total_tests": 15,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 5,
+      "issues": []
+    },
+    "test/unit/models/brand_account_test.dart": {
+      "total_tests": 2,
+      "low_value_percentage": 50.0,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 47,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/brand_discovery_test.dart": {
+      "total_tests": 2,
+      "low_value_percentage": 50.0,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 65,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/business_account_test.dart": {
+      "total_tests": 7,
+      "low_value_percentage": 28.57142857142857,
+      "property_assignment_tests": 1,
+      "trivial_checks": 1,
+      "json_field_tests": 0,
+      "business_logic_tests": 2,
+      "issues": [
+        {
+          "line_number": 27,
+          "test_name": "should serialize and deserialize nested preferences correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 119,
+          "test_name": "should handle empty strings",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial empty check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/business_expert_preferences_test.dart": {
+      "total_tests": 26,
+      "low_value_percentage": 15.384615384615385,
+      "property_assignment_tests": 2,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 8,
+      "issues": [
+        {
+          "line_number": 131,
+          "test_name": "should have correct display text",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 247,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 347,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 347,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/business_patron_preferences_test.dart": {
+      "total_tests": 24,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 6,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 6,
+      "issues": [
+        {
+          "line_number": 19,
+          "test_name": "should create preferences with default values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (10 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 44,
+          "test_name": "should create preferences with all fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (23 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 125,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 240,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (6 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 261,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (24 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 334,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 334,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        },
+        {
+          "line_number": 348,
+          "test_name": "should create copy with modified fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/business_verification_test.dart": {
+      "total_tests": 30,
+      "low_value_percentage": 20.0,
+      "property_assignment_tests": 3,
+      "trivial_checks": 2,
+      "json_field_tests": 1,
+      "business_logic_tests": 18,
+      "issues": [
+        {
+          "line_number": 54,
+          "test_name": "should create verification with all fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (8 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 128,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 293,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (11 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 361,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        },
+        {
+          "line_number": 403,
+          "test_name": "should create copy with modified fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 484,
+          "test_name": "should handle empty strings",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial empty check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/cancellation_test.dart": {
+      "total_tests": 16,
+      "low_value_percentage": 18.75,
+      "property_assignment_tests": 1,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 137,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 166,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 166,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/club_hierarchy_test.dart": {
+      "total_tests": 14,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 11,
+      "issues": []
+    },
+    "test/unit/models/club_test.dart": {
+      "total_tests": 36,
+      "low_value_percentage": 19.444444444444446,
+      "property_assignment_tests": 6,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 13,
+      "issues": [
+        {
+          "line_number": 53,
+          "test_name": "should extend Community model correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 67,
+          "test_name": "should preserve all Community properties",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 427,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (7 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 450,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 484,
+          "test_name": "should handle JSON roundtrip correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (7 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 510,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 525,
+          "test_name": "should preserve original values when fields not specified",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/community_event_test.dart": {
+      "total_tests": 20,
+      "low_value_percentage": 25.0,
+      "property_assignment_tests": 4,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 46,
+          "test_name": "should create community event with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 69,
+          "test_name": "should create community event with all fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 332,
+          "test_name": "should serialize to JSON",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (7 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 357,
+          "test_name": "should deserialize from JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 388,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/community_test.dart": {
+      "total_tests": 27,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 8,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 4,
+      "issues": [
+        {
+          "line_number": 53,
+          "test_name": "should create community with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (8 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 77,
+          "test_name": "should create community with default values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (7 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 357,
+          "test_name": "should track activity level",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 466,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (20 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 515,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (18 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 562,
+          "test_name": "should handle JSON roundtrip correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (18 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 610,
+          "test_name": "should handle missing optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (12 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 702,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 728,
+          "test_name": "should preserve original values when fields not specified",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/dispute_test.dart": {
+      "total_tests": 16,
+      "low_value_percentage": 25.0,
+      "property_assignment_tests": 2,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 65,
+          "test_name": "should create dispute with default values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 113,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (9 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 140,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 140,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/event_feedback_test.dart": {
+      "total_tests": 15,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 2,
+      "trivial_checks": 1,
+      "json_field_tests": 2,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 61,
+          "test_name": "should create feedback with minimal fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 108,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (11 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 141,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 141,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        },
+        {
+          "line_number": 240,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        }
+      ]
+    },
+    "test/unit/models/event_partnership_test.dart": {
+      "total_tests": 9,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 3,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 120,
+          "test_name": "should serialize and deserialize with nested agreement correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 184,
+          "test_name": "should convert status to display name",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 218,
+          "test_name": "should convert type to display name",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/event_template_test.dart": {
+      "total_tests": 20,
+      "low_value_percentage": 10.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 6,
+      "issues": [
+        {
+          "line_number": 176,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 205,
+          "test_name": "should handle null price in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/expertise_community_test.dart": {
+      "total_tests": 11,
+      "low_value_percentage": 9.090909090909092,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 137,
+          "test_name": "should serialize and deserialize with member data correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/expertise_event_test.dart": {
+      "total_tests": 22,
+      "low_value_percentage": 31.818181818181817,
+      "property_assignment_tests": 5,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 2,
+      "issues": [
+        {
+          "line_number": 35,
+          "test_name": "should create event with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (17 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 74,
+          "test_name": "should create event with all fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 388,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (21 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 438,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (16 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 485,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (7 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 485,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        },
+        {
+          "line_number": 538,
+          "test_name": "should create copy with modified fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/expertise_level_test.dart": {
+      "total_tests": 16,
+      "low_value_percentage": 31.25,
+      "property_assignment_tests": 5,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 19,
+          "test_name": "should have correct order (local to universal)",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 30,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 41,
+          "test_name": "should have correct descriptions",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 52,
+          "test_name": "should have correct emoji representations",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 90,
+          "test_name": "should return correct next level for each level",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/expertise_pin_test.dart": {
+      "total_tests": 24,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 6,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 4,
+      "issues": [
+        {
+          "line_number": 24,
+          "test_name": "should create pin with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 48,
+          "test_name": "should create pin with all fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 91,
+          "test_name": "should create pin with default values when optional fields are null",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 352,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 380,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (10 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 408,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 408,
+          "test_name": "should handle null optional fields in JSON",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial null check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        },
+        {
+          "line_number": 443,
+          "test_name": "should create copy with modified fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/expertise_progress_test.dart": {
+      "total_tests": 7,
+      "low_value_percentage": 14.285714285714285,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 3,
+      "issues": [
+        {
+          "line_number": 133,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/geographic_expansion_test.dart": {
+      "total_tests": 5,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 3,
+      "issues": []
+    },
+    "test/unit/models/geographic_scope_test.dart": {
+      "total_tests": 15,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 4,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 2,
+      "issues": [
+        {
+          "line_number": 21,
+          "test_name": "should create geographic scope for local expert",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 41,
+          "test_name": "should create geographic scope for city expert",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 191,
+          "test_name": "should serialize to JSON",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (10 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 219,
+          "test_name": "should deserialize from JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (7 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 247,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (5 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/large_city_test.dart": {
+      "total_tests": 12,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 3,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 20,
+          "test_name": "should create large city with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 120,
+          "test_name": "should serialize to JSON",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (12 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 152,
+          "test_name": "should deserialize from JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 184,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/local_expert_qualification_test.dart": {
+      "total_tests": 7,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 3,
+      "issues": []
+    },
+    "test/unit/models/locality_test.dart": {
+      "total_tests": 12,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 3,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 20,
+          "test_name": "should create locality with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 122,
+          "test_name": "should serialize to JSON",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (11 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 152,
+          "test_name": "should deserialize from JSON",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (8 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 182,
+          "test_name": "should create copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/locality_value_test.dart": {
+      "total_tests": 10,
+      "low_value_percentage": 20.0,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 20,
+          "test_name": "should create locality value with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 161,
+          "test_name": "should serialize to JSON",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (5 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        }
+      ]
+    },
+    "test/unit/models/multi_party_sponsorship_test.dart": {
+      "total_tests": 4,
+      "low_value_percentage": 25.0,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 69,
+          "test_name": "should serialize and deserialize correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/neighborhood_boundary_test.dart": {
+      "total_tests": 8,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 0,
+      "issues": []
+    },
+    "test/unit/models/partnership_event_test.dart": {
+      "total_tests": 5,
+      "low_value_percentage": 20.0,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 114,
+          "test_name": "should serialize and deserialize partnership data correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/partnership_expertise_boost_test.dart": {
+      "total_tests": 4,
+      "low_value_percentage": 50.0,
+      "property_assignment_tests": 2,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 40,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 58,
+          "test_name": "should handle missing and null fields with defaults",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/payment_intent_test.dart": {
+      "total_tests": 11,
+      "low_value_percentage": 18.181818181818183,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 50,
+          "test_name": "should create payment intent with default values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 99,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (7 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        }
+      ]
+    },
+    "test/unit/models/personality_profile_test.dart": {
+      "total_tests": 33,
+      "low_value_percentage": 18.181818181818183,
+      "property_assignment_tests": 4,
+      "trivial_checks": 1,
+      "json_field_tests": 1,
+      "business_logic_tests": 12,
+      "issues": [
+        {
+          "line_number": 26,
+          "test_name": "should create profile with all required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 52,
+          "test_name": "should create initial profile with default values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 92,
+          "test_name": "should evolve personality with new dimensions",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 331,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (9 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 347,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (6 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 423,
+          "test_name": "should handle empty dimensions gracefully",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial empty check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/platform_phase_test.dart": {
+      "total_tests": 7,
+      "low_value_percentage": 28.57142857142857,
+      "property_assignment_tests": 2,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 0,
+      "issues": [
+        {
+          "line_number": 63,
+          "test_name": "test_3",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 87,
+          "test_name": "should convert phase name to display name",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/product_tracking_test.dart": {
+      "total_tests": 3,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 2,
+      "issues": [
+        {
+          "line_number": 55,
+          "test_name": "should serialize and deserialize with nested sales correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/revenue_split_test.dart": {
+      "total_tests": 12,
+      "low_value_percentage": 8.333333333333332,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 9,
+      "issues": [
+        {
+          "line_number": 269,
+          "test_name": "should convert type to display name",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/saturation_metrics_test.dart": {
+      "total_tests": 11,
+      "low_value_percentage": 9.090909090909092,
+      "property_assignment_tests": 1,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 9,
+      "issues": [
+        {
+          "line_number": 281,
+          "test_name": "should convert recommendation to display name",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/sponsorship_model_relationships_test.dart": {
+      "total_tests": 7,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": []
+    },
+    "test/unit/models/sponsorship_payment_revenue_test.dart": {
+      "total_tests": 8,
+      "low_value_percentage": 0.0,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 3,
+      "issues": []
+    },
+    "test/unit/models/sponsorship_test.dart": {
+      "total_tests": 8,
+      "low_value_percentage": 37.5,
+      "property_assignment_tests": 3,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 2,
+      "issues": [
+        {
+          "line_number": 107,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 156,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 183,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/spot_test.dart": {
+      "total_tests": 14,
+      "low_value_percentage": 50.0,
+      "property_assignment_tests": 7,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 3,
+      "issues": [
+        {
+          "line_number": 63,
+          "test_name": "should accept any numeric rating value without bounds enforcement",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (17 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 81,
+          "test_name": "should preserve tag order and allow duplicates",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 107,
+          "test_name": "should handle address variations including null and empty",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 147,
+          "test_name": "should handle missing and null fields with sensible defaults",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 181,
+          "test_name": "should create immutable copy with updated fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 208,
+          "test_name": "should handle very long strings",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 222,
+          "test_name": "should handle many tags",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/unified_list_test.dart": {
+      "total_tests": 38,
+      "low_value_percentage": 18.421052631578945,
+      "property_assignment_tests": 6,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 27,
+      "issues": [
+        {
+          "line_number": 22,
+          "test_name": "should create list with required fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (15 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 57,
+          "test_name": "should create list with all optional fields",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (10 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 296,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (11 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        },
+        {
+          "line_number": 325,
+          "test_name": "should deserialize from JSON correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (9 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 367,
+          "test_name": "should handle missing fields in JSON gracefully",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 413,
+          "test_name": "should deserialize from Map correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 431,
+          "test_name": "should copy list with new values",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (7 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/unified_models_test.dart": {
+      "total_tests": 11,
+      "low_value_percentage": 45.45454545454545,
+      "property_assignment_tests": 4,
+      "trivial_checks": 1,
+      "json_field_tests": 0,
+      "business_logic_tests": 5,
+      "issues": [
+        {
+          "line_number": 49,
+          "test_name": "should have correct string representation",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 100,
+          "test_name": "should serialize and deserialize complex parameters correctly",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 148,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 164,
+          "test_name": "should accept any numeric value and preserve timestamp precision",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 219,
+          "test_name": "should handle empty collections and extreme values",
+          "issue_type": "trivial_check",
+          "severity": "medium",
+          "description": "Trivial empty check - tests language feature",
+          "suggestion": "Consolidate with other edge cases into single test"
+        }
+      ]
+    },
+    "test/unit/models/unified_user_test.dart": {
+      "total_tests": 15,
+      "low_value_percentage": 20.0,
+      "property_assignment_tests": 3,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 8,
+      "issues": [
+        {
+          "line_number": 104,
+          "test_name": "should serialize and deserialize without data loss",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 200,
+          "test_name": "should have correct descriptions",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 207,
+          "test_name": "should have correct short names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/user_partnership_test.dart": {
+      "total_tests": 6,
+      "low_value_percentage": 33.33333333333333,
+      "property_assignment_tests": 2,
+      "trivial_checks": 0,
+      "json_field_tests": 0,
+      "business_logic_tests": 1,
+      "issues": [
+        {
+          "line_number": 26,
+          "test_name": "should have correct display names",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (3 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        },
+        {
+          "line_number": 53,
+          "test_name": "should correctly identify partnership status and ongoing state",
+          "issue_type": "property_assignment",
+          "severity": "high",
+          "description": "Test only checks property assignment (4 checks)",
+          "suggestion": "Remove - tests Dart constructor, not business logic"
+        }
+      ]
+    },
+    "test/unit/models/visit_test.dart": {
+      "total_tests": 19,
+      "low_value_percentage": 5.263157894736842,
+      "property_assignment_tests": 0,
+      "trivial_checks": 0,
+      "json_field_tests": 1,
+      "business_logic_tests": 10,
+      "issues": [
+        {
+          "line_number": 200,
+          "test_name": "should serialize to JSON correctly",
+          "issue_type": "json_field_test",
+          "severity": "medium",
+          "description": "Tests JSON fields individually (6 fields)",
+          "suggestion": "Replace with round-trip test using TestHelpers.validateJsonRoundtrip"
+        }
+      ]
+    }
+  }
+}

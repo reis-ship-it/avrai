@@ -1,0 +1,846 @@
+{
+  "total_profiles": 100,
+  "total_knots_generated": 100,
+  "success_rate": 1.0,
+  "analysis": {
+    "knot_type_distribution": {
+      "complex-17": 6,
+      "complex-11": 1,
+      "unknot": 16,
+      "complex-26": 4,
+      "complex-19": 5,
+      "figure-eight": 3,
+      "complex-15": 4,
+      "complex-24": 4,
+      "complex-21": 4,
+      "complex-22": 2,
+      "complex-10": 7,
+      "complex-16": 4,
+      "complex-14": 1,
+      "complex-9": 5,
+      "complex-18": 4,
+      "stevedore": 3,
+      "complex-7": 3,
+      "complex-30": 1,
+      "complex-13": 4,
+      "complex-28": 2,
+      "cinquefoil": 3,
+      "complex-25": 1,
+      "complex-12": 5,
+      "complex-1": 1,
+      "complex-8": 4,
+      "complex-20": 2,
+      "complex-34": 1
+    },
+    "total_knots": 100,
+    "complexity_stats": {
+      "mean": 0.19045454545454546,
+      "median": 0.18181818181818182,
+      "std_dev": 0.12921713156400383,
+      "min": 0.0,
+      "max": 0.5151515151515151
+    }
+  },
+  "knots": [
+    {
+      "user_id": "user_0",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_1",
+      "knot_type": "complex-11",
+      "crossing_number": 11,
+      "complexity": 0.16666666666666666,
+      "jones_polynomial": "q^11",
+      "alexander_polynomial": "t^11"
+    },
+    {
+      "user_id": "user_2",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_3",
+      "knot_type": "complex-26",
+      "crossing_number": 26,
+      "complexity": 0.3939393939393939,
+      "jones_polynomial": "q^26",
+      "alexander_polynomial": "t^26"
+    },
+    {
+      "user_id": "user_4",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_5",
+      "knot_type": "complex-19",
+      "crossing_number": 19,
+      "complexity": 0.2878787878787879,
+      "jones_polynomial": "q^19",
+      "alexander_polynomial": "t^19"
+    },
+    {
+      "user_id": "user_6",
+      "knot_type": "figure-eight",
+      "crossing_number": 4,
+      "complexity": 0.06060606060606061,
+      "jones_polynomial": "q^4",
+      "alexander_polynomial": "t^4"
+    },
+    {
+      "user_id": "user_7",
+      "knot_type": "complex-15",
+      "crossing_number": 15,
+      "complexity": 0.22727272727272727,
+      "jones_polynomial": "q^15",
+      "alexander_polynomial": "t^15"
+    },
+    {
+      "user_id": "user_8",
+      "knot_type": "complex-24",
+      "crossing_number": 24,
+      "complexity": 0.36363636363636365,
+      "jones_polynomial": "q^24",
+      "alexander_polynomial": "t^24"
+    },
+    {
+      "user_id": "user_9",
+      "knot_type": "complex-21",
+      "crossing_number": 21,
+      "complexity": 0.3181818181818182,
+      "jones_polynomial": "q^21",
+      "alexander_polynomial": "t^21"
+    },
+    {
+      "user_id": "user_10",
+      "knot_type": "figure-eight",
+      "crossing_number": 4,
+      "complexity": 0.06060606060606061,
+      "jones_polynomial": "q^4",
+      "alexander_polynomial": "t^4"
+    },
+    {
+      "user_id": "user_11",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_12",
+      "knot_type": "complex-22",
+      "crossing_number": 22,
+      "complexity": 0.3333333333333333,
+      "jones_polynomial": "q^22",
+      "alexander_polynomial": "t^22"
+    },
+    {
+      "user_id": "user_13",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_14",
+      "knot_type": "complex-16",
+      "crossing_number": 16,
+      "complexity": 0.24242424242424243,
+      "jones_polynomial": "q^16",
+      "alexander_polynomial": "t^16"
+    },
+    {
+      "user_id": "user_15",
+      "knot_type": "complex-14",
+      "crossing_number": 14,
+      "complexity": 0.21212121212121213,
+      "jones_polynomial": "q^14",
+      "alexander_polynomial": "t^14"
+    },
+    {
+      "user_id": "user_16",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_17",
+      "knot_type": "complex-9",
+      "crossing_number": 9,
+      "complexity": 0.13636363636363635,
+      "jones_polynomial": "q^9",
+      "alexander_polynomial": "t^9"
+    },
+    {
+      "user_id": "user_18",
+      "knot_type": "complex-26",
+      "crossing_number": 26,
+      "complexity": 0.3939393939393939,
+      "jones_polynomial": "q^26",
+      "alexander_polynomial": "t^26"
+    },
+    {
+      "user_id": "user_19",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_20",
+      "knot_type": "complex-16",
+      "crossing_number": 16,
+      "complexity": 0.24242424242424243,
+      "jones_polynomial": "q^16",
+      "alexander_polynomial": "t^16"
+    },
+    {
+      "user_id": "user_21",
+      "knot_type": "complex-18",
+      "crossing_number": 18,
+      "complexity": 0.2727272727272727,
+      "jones_polynomial": "q^18",
+      "alexander_polynomial": "t^18"
+    },
+    {
+      "user_id": "user_22",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_23",
+      "knot_type": "complex-15",
+      "crossing_number": 15,
+      "complexity": 0.22727272727272727,
+      "jones_polynomial": "q^15",
+      "alexander_polynomial": "t^15"
+    },
+    {
+      "user_id": "user_24",
+      "knot_type": "complex-18",
+      "crossing_number": 18,
+      "complexity": 0.2727272727272727,
+      "jones_polynomial": "q^18",
+      "alexander_polynomial": "t^18"
+    },
+    {
+      "user_id": "user_25",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_26",
+      "knot_type": "stevedore",
+      "crossing_number": 6,
+      "complexity": 0.09090909090909091,
+      "jones_polynomial": "q^6",
+      "alexander_polynomial": "t^6"
+    },
+    {
+      "user_id": "user_27",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_28",
+      "knot_type": "complex-24",
+      "crossing_number": 24,
+      "complexity": 0.36363636363636365,
+      "jones_polynomial": "q^24",
+      "alexander_polynomial": "t^24"
+    },
+    {
+      "user_id": "user_29",
+      "knot_type": "stevedore",
+      "crossing_number": 6,
+      "complexity": 0.09090909090909091,
+      "jones_polynomial": "q^6",
+      "alexander_polynomial": "t^6"
+    },
+    {
+      "user_id": "user_30",
+      "knot_type": "complex-7",
+      "crossing_number": 7,
+      "complexity": 0.10606060606060606,
+      "jones_polynomial": "q^7",
+      "alexander_polynomial": "t^7"
+    },
+    {
+      "user_id": "user_31",
+      "knot_type": "complex-30",
+      "crossing_number": 30,
+      "complexity": 0.45454545454545453,
+      "jones_polynomial": "q^30",
+      "alexander_polynomial": "t^30"
+    },
+    {
+      "user_id": "user_32",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_33",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_34",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_35",
+      "knot_type": "complex-7",
+      "crossing_number": 7,
+      "complexity": 0.10606060606060606,
+      "jones_polynomial": "q^7",
+      "alexander_polynomial": "t^7"
+    },
+    {
+      "user_id": "user_36",
+      "knot_type": "complex-19",
+      "crossing_number": 19,
+      "complexity": 0.2878787878787879,
+      "jones_polynomial": "q^19",
+      "alexander_polynomial": "t^19"
+    },
+    {
+      "user_id": "user_37",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_38",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_39",
+      "knot_type": "complex-13",
+      "crossing_number": 13,
+      "complexity": 0.19696969696969696,
+      "jones_polynomial": "q^13",
+      "alexander_polynomial": "t^13"
+    },
+    {
+      "user_id": "user_40",
+      "knot_type": "complex-28",
+      "crossing_number": 28,
+      "complexity": 0.42424242424242425,
+      "jones_polynomial": "q^28",
+      "alexander_polynomial": "t^28"
+    },
+    {
+      "user_id": "user_41",
+      "knot_type": "cinquefoil",
+      "crossing_number": 5,
+      "complexity": 0.07575757575757576,
+      "jones_polynomial": "q^5",
+      "alexander_polynomial": "t^5"
+    },
+    {
+      "user_id": "user_42",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_43",
+      "knot_type": "complex-17",
+      "crossing_number": 17,
+      "complexity": 0.25757575757575757,
+      "jones_polynomial": "q^17",
+      "alexander_polynomial": "t^17"
+    },
+    {
+      "user_id": "user_44",
+      "knot_type": "complex-25",
+      "crossing_number": 25,
+      "complexity": 0.3787878787878788,
+      "jones_polynomial": "q^25",
+      "alexander_polynomial": "t^25"
+    },
+    {
+      "user_id": "user_45",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_46",
+      "knot_type": "complex-28",
+      "crossing_number": 28,
+      "complexity": 0.42424242424242425,
+      "jones_polynomial": "q^28",
+      "alexander_polynomial": "t^28"
+    },
+    {
+      "user_id": "user_47",
+      "knot_type": "complex-12",
+      "crossing_number": 12,
+      "complexity": 0.18181818181818182,
+      "jones_polynomial": "q^12",
+      "alexander_polynomial": "t^12"
+    },
+    {
+      "user_id": "user_48",
+      "knot_type": "complex-1",
+      "crossing_number": 1,
+      "complexity": 0.015151515151515152,
+      "jones_polynomial": "q^1",
+      "alexander_polynomial": "t^1"
+    },
+    {
+      "user_id": "user_49",
+      "knot_type": "complex-9",
+      "crossing_number": 9,
+      "complexity": 0.13636363636363635,
+      "jones_polynomial": "q^9",
+      "alexander_polynomial": "t^9"
+    },
+    {
+      "user_id": "user_50",
+      "knot_type": "complex-12",
+      "crossing_number": 12,
+      "complexity": 0.18181818181818182,
+      "jones_polynomial": "q^12",
+      "alexander_polynomial": "t^12"
+    },
+    {
+      "user_id": "user_51",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_52",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_53",
+      "knot_type": "complex-13",
+      "crossing_number": 13,
+      "complexity": 0.19696969696969696,
+      "jones_polynomial": "q^13",
+      "alexander_polynomial": "t^13"
+    },
+    {
+      "user_id": "user_54",
+      "knot_type": "complex-18",
+      "crossing_number": 18,
+      "complexity": 0.2727272727272727,
+      "jones_polynomial": "q^18",
+      "alexander_polynomial": "t^18"
+    },
+    {
+      "user_id": "user_55",
+      "knot_type": "complex-16",
+      "crossing_number": 16,
+      "complexity": 0.24242424242424243,
+      "jones_polynomial": "q^16",
+      "alexander_polynomial": "t^16"
+    },
+    {
+      "user_id": "user_56",
+      "knot_type": "complex-7",
+      "crossing_number": 7,
+      "complexity": 0.10606060606060606,
+      "jones_polynomial": "q^7",
+      "alexander_polynomial": "t^7"
+    },
+    {
+      "user_id": "user_57",
+      "knot_type": "complex-26",
+      "crossing_number": 26,
+      "complexity": 0.3939393939393939,
+      "jones_polynomial": "q^26",
+      "alexander_polynomial": "t^26"
+    },
+    {
+      "user_id": "user_58",
+      "knot_type": "complex-12",
+      "crossing_number": 12,
+      "complexity": 0.18181818181818182,
+      "jones_polynomial": "q^12",
+      "alexander_polynomial": "t^12"
+    },
+    {
+      "user_id": "user_59",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_60",
+      "knot_type": "cinquefoil",
+      "crossing_number": 5,
+      "complexity": 0.07575757575757576,
+      "jones_polynomial": "q^5",
+      "alexander_polynomial": "t^5"
+    },
+    {
+      "user_id": "user_61",
+      "knot_type": "complex-21",
+      "crossing_number": 21,
+      "complexity": 0.3181818181818182,
+      "jones_polynomial": "q^21",
+      "alexander_polynomial": "t^21"
+    },
+    {
+      "user_id": "user_62",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_63",
+      "knot_type": "complex-12",
+      "crossing_number": 12,
+      "complexity": 0.18181818181818182,
+      "jones_polynomial": "q^12",
+      "alexander_polynomial": "t^12"
+    },
+    {
+      "user_id": "user_64",
+      "knot_type": "cinquefoil",
+      "crossing_number": 5,
+      "complexity": 0.07575757575757576,
+      "jones_polynomial": "q^5",
+      "alexander_polynomial": "t^5"
+    },
+    {
+      "user_id": "user_65",
+      "knot_type": "complex-19",
+      "crossing_number": 19,
+      "complexity": 0.2878787878787879,
+      "jones_polynomial": "q^19",
+      "alexander_polynomial": "t^19"
+    },
+    {
+      "user_id": "user_66",
+      "knot_type": "complex-8",
+      "crossing_number": 8,
+      "complexity": 0.12121212121212122,
+      "jones_polynomial": "q^8",
+      "alexander_polynomial": "t^8"
+    },
+    {
+      "user_id": "user_67",
+      "knot_type": "complex-18",
+      "crossing_number": 18,
+      "complexity": 0.2727272727272727,
+      "jones_polynomial": "q^18",
+      "alexander_polynomial": "t^18"
+    },
+    {
+      "user_id": "user_68",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_69",
+      "knot_type": "complex-26",
+      "crossing_number": 26,
+      "complexity": 0.3939393939393939,
+      "jones_polynomial": "q^26",
+      "alexander_polynomial": "t^26"
+    },
+    {
+      "user_id": "user_70",
+      "knot_type": "complex-9",
+      "crossing_number": 9,
+      "complexity": 0.13636363636363635,
+      "jones_polynomial": "q^9",
+      "alexander_polynomial": "t^9"
+    },
+    {
+      "user_id": "user_71",
+      "knot_type": "complex-8",
+      "crossing_number": 8,
+      "complexity": 0.12121212121212122,
+      "jones_polynomial": "q^8",
+      "alexander_polynomial": "t^8"
+    },
+    {
+      "user_id": "user_72",
+      "knot_type": "complex-13",
+      "crossing_number": 13,
+      "complexity": 0.19696969696969696,
+      "jones_polynomial": "q^13",
+      "alexander_polynomial": "t^13"
+    },
+    {
+      "user_id": "user_73",
+      "knot_type": "figure-eight",
+      "crossing_number": 4,
+      "complexity": 0.06060606060606061,
+      "jones_polynomial": "q^4",
+      "alexander_polynomial": "t^4"
+    },
+    {
+      "user_id": "user_74",
+      "knot_type": "complex-20",
+      "crossing_number": 20,
+      "complexity": 0.30303030303030304,
+      "jones_polynomial": "q^20",
+      "alexander_polynomial": "t^20"
+    },
+    {
+      "user_id": "user_75",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_76",
+      "knot_type": "complex-9",
+      "crossing_number": 9,
+      "complexity": 0.13636363636363635,
+      "jones_polynomial": "q^9",
+      "alexander_polynomial": "t^9"
+    },
+    {
+      "user_id": "user_77",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_78",
+      "knot_type": "complex-10",
+      "crossing_number": 10,
+      "complexity": 0.15151515151515152,
+      "jones_polynomial": "q^10",
+      "alexander_polynomial": "t^10"
+    },
+    {
+      "user_id": "user_79",
+      "knot_type": "complex-22",
+      "crossing_number": 22,
+      "complexity": 0.3333333333333333,
+      "jones_polynomial": "q^22",
+      "alexander_polynomial": "t^22"
+    },
+    {
+      "user_id": "user_80",
+      "knot_type": "complex-24",
+      "crossing_number": 24,
+      "complexity": 0.36363636363636365,
+      "jones_polynomial": "q^24",
+      "alexander_polynomial": "t^24"
+    },
+    {
+      "user_id": "user_81",
+      "knot_type": "complex-8",
+      "crossing_number": 8,
+      "complexity": 0.12121212121212122,
+      "jones_polynomial": "q^8",
+      "alexander_polynomial": "t^8"
+    },
+    {
+      "user_id": "user_82",
+      "knot_type": "complex-19",
+      "crossing_number": 19,
+      "complexity": 0.2878787878787879,
+      "jones_polynomial": "q^19",
+      "alexander_polynomial": "t^19"
+    },
+    {
+      "user_id": "user_83",
+      "knot_type": "complex-15",
+      "crossing_number": 15,
+      "complexity": 0.22727272727272727,
+      "jones_polynomial": "q^15",
+      "alexander_polynomial": "t^15"
+    },
+    {
+      "user_id": "user_84",
+      "knot_type": "complex-9",
+      "crossing_number": 9,
+      "complexity": 0.13636363636363635,
+      "jones_polynomial": "q^9",
+      "alexander_polynomial": "t^9"
+    },
+    {
+      "user_id": "user_85",
+      "knot_type": "stevedore",
+      "crossing_number": 6,
+      "complexity": 0.09090909090909091,
+      "jones_polynomial": "q^6",
+      "alexander_polynomial": "t^6"
+    },
+    {
+      "user_id": "user_86",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_87",
+      "knot_type": "complex-13",
+      "crossing_number": 13,
+      "complexity": 0.19696969696969696,
+      "jones_polynomial": "q^13",
+      "alexander_polynomial": "t^13"
+    },
+    {
+      "user_id": "user_88",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_89",
+      "knot_type": "complex-21",
+      "crossing_number": 21,
+      "complexity": 0.3181818181818182,
+      "jones_polynomial": "q^21",
+      "alexander_polynomial": "t^21"
+    },
+    {
+      "user_id": "user_90",
+      "knot_type": "unknot",
+      "crossing_number": 0,
+      "complexity": 0.0,
+      "jones_polynomial": "1",
+      "alexander_polynomial": "1"
+    },
+    {
+      "user_id": "user_91",
+      "knot_type": "complex-34",
+      "crossing_number": 34,
+      "complexity": 0.5151515151515151,
+      "jones_polynomial": "q^34",
+      "alexander_polynomial": "t^34"
+    },
+    {
+      "user_id": "user_92",
+      "knot_type": "complex-21",
+      "crossing_number": 21,
+      "complexity": 0.3181818181818182,
+      "jones_polynomial": "q^21",
+      "alexander_polynomial": "t^21"
+    },
+    {
+      "user_id": "user_93",
+      "knot_type": "complex-19",
+      "crossing_number": 19,
+      "complexity": 0.2878787878787879,
+      "jones_polynomial": "q^19",
+      "alexander_polynomial": "t^19"
+    },
+    {
+      "user_id": "user_94",
+      "knot_type": "complex-8",
+      "crossing_number": 8,
+      "complexity": 0.12121212121212122,
+      "jones_polynomial": "q^8",
+      "alexander_polynomial": "t^8"
+    },
+    {
+      "user_id": "user_95",
+      "knot_type": "complex-24",
+      "crossing_number": 24,
+      "complexity": 0.36363636363636365,
+      "jones_polynomial": "q^24",
+      "alexander_polynomial": "t^24"
+    },
+    {
+      "user_id": "user_96",
+      "knot_type": "complex-12",
+      "crossing_number": 12,
+      "complexity": 0.18181818181818182,
+      "jones_polynomial": "q^12",
+      "alexander_polynomial": "t^12"
+    },
+    {
+      "user_id": "user_97",
+      "knot_type": "complex-20",
+      "crossing_number": 20,
+      "complexity": 0.30303030303030304,
+      "jones_polynomial": "q^20",
+      "alexander_polynomial": "t^20"
+    },
+    {
+      "user_id": "user_98",
+      "knot_type": "complex-15",
+      "crossing_number": 15,
+      "complexity": 0.22727272727272727,
+      "jones_polynomial": "q^15",
+      "alexander_polynomial": "t^15"
+    },
+    {
+      "user_id": "user_99",
+      "knot_type": "complex-16",
+      "crossing_number": 16,
+      "complexity": 0.24242424242424243,
+      "jones_polynomial": "q^16",
+      "alexander_polynomial": "t^16"
+    }
+  ]
+}

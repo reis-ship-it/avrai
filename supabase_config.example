@@ -1,0 +1,32 @@
+# Supabase Configuration Example
+# Copy this file to supabase_config.dart and fill in your actual values
+
+class SupabaseConfig {
+  // Supabase Project URL (found in your project settings)
+  static const String url = 'https://your-project-id.supabase.co';
+  
+  // Supabase Anonymous Key (found in your project settings)
+  static const String anonKey = 'your-anon-key-here';
+  
+  // Supabase Service Role Key (for admin operations - keep secret!)
+  static const String serviceRoleKey = 'your-service-role-key-here';
+  
+  // Environment (development, staging, production)
+  static const String environment = 'development';
+  
+  // Debug mode for Supabase
+  static const bool debug = false;
+  
+  // Database schema version
+  static const int schemaVersion = 1;
+  
+  // Storage bucket names
+  static const String userAvatarsBucket = 'user-avatars';
+  static const String spotImagesBucket = 'spot-images';
+  static const String listImagesBucket = 'list-images';
+  
+  // Realtime channels
+  static const String userPresenceChannel = 'user-presence';
+  static const String spotUpdatesChannel = 'spot-updates';
+  static const String listUpdatesChannel = 'list-updates';
+}
