@@ -161,7 +161,7 @@ dependencies:
   path: any
   flutter_rust_bridge: 2.11.1
   battery_plus: ^7.0.0
-  sensors_plus: ^6.1.1  # Motion-Reactive 3D Visualization: accelerometer, gyroscope
+  sensors_plus: ^7.0.0  # Motion-Reactive 3D Visualization: accelerometer, gyroscope
   archive: ^4.0.7
   llama_flutter_android: ^0.1.1
   file_picker: ^10.3.8
