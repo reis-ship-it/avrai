@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/controllers/event_attendance_controller.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/payment/checkout_page.dart';
 import 'package:avrai/presentation/pages/partnerships/partnership_proposal_page.dart';
@@ -21,6 +24,7 @@ import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/fraud/fraud_detection_service.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Event Details Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -159,12 +163,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully registered for event!'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Successfully registered for event!');
       }
     } catch (e) {
       setState(() {
@@ -173,12 +172,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -221,12 +215,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration cancelled'),
-            backgroundColor: AppColors.textSecondary,
-          ),
-        );
+        context.showInfo('Registration cancelled');
       }
     } catch (e) {
       setState(() {
@@ -317,12 +306,7 @@ SPOTS - know you belong.''';
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open calendar'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Could not open calendar');
       }
     }
   }
@@ -392,45 +376,48 @@ SPOTS - know you belong.''';
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header with Event Type Icon and Title
-            Container(
-              padding: const EdgeInsets.all(20),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
+              radius: 0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CircleAvatar(
+                        radius: context.radius.xl,
+                        backgroundColor:
+                            AppColors.electricGreen.withValues(alpha: 0.1),
                         child: Text(
                           event.getEventTypeEmoji(),
-                          style: const TextStyle(fontSize: 32),
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: context.spacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               event.title,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: context.spacing.xxs),
                             Text(
                               event.getEventTypeDisplayName(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
@@ -441,17 +428,13 @@ SPOTS - know you belong.''';
                   ),
                   // Fraud Warning (if flagged)
                   if (_hasFraudFlag) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.warningColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color:
-                                AppTheme.warningColor.withValues(alpha: 0.3)),
-                      ),
-                      child: const Row(
+                    SizedBox(height: context.spacing.sm),
+                    PortalSurface(
+                      padding: EdgeInsets.all(context.spacing.sm),
+                      color: AppTheme.warningColor.withValues(alpha: 0.1),
+                      borderColor: AppTheme.warningColor.withValues(alpha: 0.3),
+                      radius: context.radius.sm,
+                      child: Row(
                         children: [
                           Icon(Icons.warning,
                               color: AppTheme.warningColor, size: 20),
@@ -459,10 +442,12 @@ SPOTS - know you belong.''';
                           Expanded(
                             child: Text(
                               'This event has been flagged for review. Please exercise caution.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                           ),
                         ],
@@ -475,29 +460,27 @@ SPOTS - know you belong.''';
 
             // Event Details
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Description
-                  const Text(
+                  Text(
                     'Description',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: context.spacing.xs),
                   Text(
                     event.description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textPrimary,
-                      height: 1.5,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                          height: 1.5,
+                        ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.spacing.xl),
 
                   // Date & Time
                   _buildDetailRow(
@@ -506,7 +489,7 @@ SPOTS - know you belong.''';
                     value: '${_formatDateTime(event.startTime)}\n'
                         'Duration: ${_formatDuration(event.startTime, event.endTime)}',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Location
                   if (event.location != null)
@@ -515,7 +498,8 @@ SPOTS - know you belong.''';
                       label: 'Location',
                       value: event.location!,
                     ),
-                  if (event.location != null) const SizedBox(height: 16),
+                  if (event.location != null)
+                    SizedBox(height: context.spacing.md),
 
                   // Price
                   _buildDetailRow(
@@ -525,7 +509,7 @@ SPOTS - know you belong.''';
                         ? '\$${event.price?.toStringAsFixed(2) ?? '0.00'}'
                         : 'Free',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Attendees
                   _buildDetailRow(
@@ -533,7 +517,7 @@ SPOTS - know you belong.''';
                     label: 'Attendees',
                     value: '${event.attendeeCount}/${event.maxAttendees}',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Category
                   _buildDetailRow(
@@ -541,57 +525,62 @@ SPOTS - know you belong.''';
                     label: 'Category',
                     value: event.category,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.spacing.xl),
 
                   // Host Information
-                  const Text(
+                  Text(
                     'Host',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 24,
+                        radius: context.radius.xl,
                         backgroundColor: AppColors.grey200,
                         child: event.host.photoUrl != null
                             ? Image.network(event.host.photoUrl!)
                             : Text(
                                 (event.host.displayName ?? event.host.email)[0]
                                     .toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.textPrimary,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textPrimary,
+                                    ),
                               ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: context.spacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               event.host.displayName ?? event.host.email,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                             if (event.host.expertiseMap
                                 .containsKey(event.category)) ...[
-                              const SizedBox(height: 4),
+                              SizedBox(height: context.spacing.xxs),
                               Text(
                                 '${event.category} Expert',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                             ],
                           ],
@@ -602,32 +591,36 @@ SPOTS - know you belong.''';
 
                   // Spots (if event includes spots)
                   if (event.spots.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    const Text(
+                    SizedBox(height: context.spacing.xl),
+                    Text(
                       'Spots',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     ...event.spots.map((spot) {
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: context.spacing.xs),
                         child: ListTile(
                           leading: const Icon(Icons.place,
                               color: AppTheme.primaryColor),
                           title: Text(
                             spot.name,
-                            style:
-                                const TextStyle(color: AppColors.textPrimary),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textPrimary),
                           ),
                           subtitle: spot.address != null
                               ? Text(
                                   spot.address!,
-                                  style: const TextStyle(
-                                      color: AppColors.textSecondary),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: AppColors.textSecondary),
                                 )
                               : null,
                           tileColor: AppColors.grey100,
@@ -658,34 +651,33 @@ SPOTS - know you belong.''';
                 event.host.id == userId &&
                 event.status == EventStatus.completed) ...[
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(context.spacing.lg),
                 color: AppColors.surface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(Icons.analytics, color: AppTheme.primaryColor),
                         SizedBox(width: 8),
                         Text(
                           'Event Success',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
+                    SizedBox(height: context.spacing.sm),
+                    Text(
                       'View detailed success metrics and recommendations for this event',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.push(
@@ -696,7 +688,7 @@ SPOTS - know you belong.''';
                         );
                       },
                       icon: const Icon(Icons.dashboard),
-                      label: const Text('View Success Dashboard'),
+                      label: Text('View Success Dashboard'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
@@ -711,54 +703,50 @@ SPOTS - know you belong.''';
             // Partnership Section (for event hosts)
             if (userId != null && _currentEvent!.host.id == userId) ...[
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(context.spacing.lg),
                 color: AppColors.surface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(Icons.handshake, color: AppTheme.primaryColor),
                         SizedBox(width: 8),
                         Text(
                           'Partnerships',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     if (_hasPartnerships)
-                      const Text(
+                      Text(
                         'This event has partnerships',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       )
                     else
-                      const Text(
+                      Text(
                         'Partner with businesses to co-host this event',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              Navigator.push(
+                              AppNavigator.pushBuilder(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => PartnershipProposalPage(
-                                    event: _currentEvent!,
-                                  ),
+                                builder: (context) => PartnershipProposalPage(
+                                  event: _currentEvent!,
                                 ),
                               ).then((_) => _checkPartnerships());
                             },
@@ -774,20 +762,18 @@ SPOTS - know you belong.''';
                           ),
                         ),
                         if (_hasPartnerships) ...[
-                          const SizedBox(width: 12),
+                          SizedBox(width: context.spacing.sm),
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PartnershipManagementPage(),
-                                  ),
+                                  builder: (context) =>
+                                      const PartnershipManagementPage(),
                                 );
                               },
                               icon: const Icon(Icons.manage_accounts),
-                              label: const Text('Manage'),
+                              label: Text('Manage'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primaryColor,
                                 foregroundColor: AppColors.white,
@@ -804,7 +790,7 @@ SPOTS - know you belong.''';
 
             // Action Buttons
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
               child: Column(
                 children: [
@@ -857,7 +843,7 @@ SPOTS - know you belong.''';
                               ).then((_) => _loadEvents());
                             },
                       icon: const Icon(Icons.cancel),
-                      label: const Text('Cancel Event'),
+                      label: Text('Cancel Event'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         minimumSize: const Size(double.infinity, 48),
@@ -870,7 +856,7 @@ SPOTS - know you belong.''';
                         backgroundColor: AppColors.grey400,
                         minimumSize: const Size(double.infinity, 48),
                       ),
-                      child: const Text('Event Cancelled'),
+                      child: Text('Event Cancelled'),
                     )
                   else if (event.isFull)
                     ElevatedButton(
@@ -879,7 +865,7 @@ SPOTS - know you belong.''';
                         backgroundColor: AppColors.grey400,
                         minimumSize: const Size(double.infinity, 48),
                       ),
-                      child: const Text('Event Full'),
+                      child: Text('Event Full'),
                     )
                   else if (event.isPaid)
                     ElevatedButton.icon(
@@ -901,7 +887,7 @@ SPOTS - know you belong.''';
                       onPressed:
                           _isLoading || !canRegister ? null : _registerForEvent,
                       icon: const Icon(Icons.event_available),
-                      label: const Text('Register for Event'),
+                      label: Text('Register for Event'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
@@ -910,23 +896,22 @@ SPOTS - know you belong.''';
                     ),
 
                   if (_isLoading) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                     const CircularProgressIndicator(),
                   ],
 
                   if (_error != null) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                     Text(
                       _error!,
-                      style: const TextStyle(
-                        color: AppColors.error,
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.error,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Additional Actions
                   Row(
@@ -935,18 +920,18 @@ SPOTS - know you belong.''';
                         child: OutlinedButton.icon(
                           onPressed: _addToCalendar,
                           icon: const Icon(Icons.calendar_today),
-                          label: const Text('Add to Calendar'),
+                          label: Text('Add to Calendar'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.textPrimary,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: context.spacing.sm),
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: _shareEvent,
                           icon: const Icon(Icons.share),
-                          label: const Text('Share'),
+                          label: Text('Share'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.textPrimary,
                           ),
@@ -959,7 +944,7 @@ SPOTS - know you belong.''';
                   if (userId != null &&
                       _isRegistered &&
                       event.host.id != userId) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                     OutlinedButton.icon(
                       onPressed: () {
                         Navigator.push(
@@ -970,7 +955,7 @@ SPOTS - know you belong.''';
                         );
                       },
                       icon: const Icon(Icons.gavel),
-                      label: const Text('Report an Issue'),
+                      label: Text('Report an Issue'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: const BorderSide(color: AppColors.error),
@@ -996,26 +981,24 @@ SPOTS - know you belong.''';
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 20, color: AppColors.textSecondary),
-        const SizedBox(width: 12),
+        SizedBox(width: context.spacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: context.spacing.xxs),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
@@ -1047,20 +1030,17 @@ SPOTS - know you belong.''';
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
-      ),
-      child: Text(
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      side: BorderSide(color: badgeColor.withValues(alpha: 0.3)),
+      backgroundColor: badgeColor.withValues(alpha: 0.1),
+      label: Text(
         badgeText,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: badgeColor,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: badgeColor,
+            ),
       ),
     );
   }

@@ -11,6 +11,8 @@
 // - Quantum visualization
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
@@ -18,6 +20,7 @@ import 'package:avrai/core/models/quantum/group_matching_result.dart';
 import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Group Results Page
 ///
@@ -57,7 +60,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
       body: BlocBuilder<GroupMatchingBloc, GroupMatchingState>(
         builder: (context, state) {
           if (state is GroupMatchingLoading) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                 color: AppColors.primary,
               ),
@@ -94,7 +97,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.white,
                     ),
-                    child: const Text('Go Back'),
+                    child: Text('Go Back'),
                   ),
                 ],
               ),
@@ -136,7 +139,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
             );
           }
 
-          return const Center(child: Text('Unknown state'));
+          return Center(child: Text('Unknown state'));
         },
       ),
     );
@@ -189,7 +192,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
               // TODO: Implement refresh when retry is implemented
             },
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               itemCount: matchedSpots.length,
               itemBuilder: (context, index) {
                 final matchedSpot = matchedSpots[index];
@@ -211,17 +214,11 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
     BuildContext context,
     GroupMatchingResults state,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.grey100,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.grey300,
-            width: 1,
-          ),
-        ),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMd),
+      color: AppColors.grey100,
+      borderColor: AppColors.grey300,
+      radius: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -271,17 +268,13 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
     required String label,
     required Color color,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
+    return Chip(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      side: BorderSide(color: color.withValues(alpha: 0.3), width: 1),
+      backgroundColor: color.withValues(alpha: 0.1),
+      labelPadding: EdgeInsets.zero,
+      label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
@@ -314,7 +307,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
     final compatibilityPercent = (compatibility * 100).toStringAsFixed(0);
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: kSpaceMd),
       radius: 12,
       borderColor: AppColors.primary.withValues(alpha: 0.3),
       padding: EdgeInsets.zero,
@@ -326,7 +319,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -334,21 +327,16 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
               Row(
                 children: [
                   // Rank badge
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColors.primary,
                     child: Center(
                       child: Text(
                         '#$rank',
-                        style: const TextStyle(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
                   ),
@@ -479,7 +467,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
                 ...matchedSpot.memberCompatibilityScores.entries.map(
                   (entry) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: kSpaceXs),
                       child: Row(
                         children: [
                           Expanded(
@@ -527,15 +515,13 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
                 children: [
                   TextButton.icon(
                     onPressed: () {
-                      Navigator.push(
+                      AppNavigator.pushBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => SpotDetailsPage(spot: spot),
-                        ),
+                        builder: (context) => SpotDetailsPage(spot: spot),
                       );
                     },
                     icon: const Icon(Icons.info_outline),
-                    label: const Text('View Details'),
+                    label: Text('View Details'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                     ),
@@ -544,15 +530,10 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
                   ElevatedButton.icon(
                     onPressed: () {
                       // TODO: Implement "Select Spot" action
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Selected ${spot.name} for group'),
-                          backgroundColor: AppColors.success,
-                        ),
-                      );
+                      context.showSuccess('Selected ${spot.name} for group');
                     },
                     icon: const Icon(Icons.check),
-                    label: const Text('Select'),
+                    label: Text('Select'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.white,
@@ -569,20 +550,19 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
 
   /// Build compatibility bar
   Widget _buildCompatibilityBar(double compatibility) {
-    return Container(
+    return SizedBox(
       width: 60,
       height: 6,
-      decoration: BoxDecoration(
-        color: AppColors.grey200,
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: compatibility,
-        child: Container(
-          decoration: BoxDecoration(
-            color: _getCompatibilityColor(compatibility),
-            borderRadius: BorderRadius.circular(3),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(3)),
+        child: ColoredBox(
+          color: AppColors.grey200,
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: compatibility,
+            child: ColoredBox(
+              color: _getCompatibilityColor(compatibility),
+            ),
           ),
         ),
       ),
@@ -645,7 +625,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
   /// Build breakdown row
   Widget _buildBreakdownRow(String label, double value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: kSpaceXsTight),
       child: Row(
         children: [
           Expanded(

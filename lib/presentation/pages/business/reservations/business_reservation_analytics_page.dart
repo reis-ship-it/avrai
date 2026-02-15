@@ -29,7 +29,9 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart'
     show TrendType;
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Business Reservation Analytics Page
 class BusinessReservationAnalyticsPage extends StatefulWidget {
@@ -131,16 +133,19 @@ class _BusinessReservationAnalyticsPageState
             size: 64,
             color: AppColors.error,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Text(
             _error!,
-            style: const TextStyle(color: AppColors.error),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.error),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ElevatedButton(
             onPressed: _loadAnalytics,
-            child: const Text('Retry'),
+            child: Text('Retry'),
           ),
         ],
       ),
@@ -157,12 +162,12 @@ class _BusinessReservationAnalyticsPageState
             size: 64,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Text(
             'No reservation data available',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             'Your reservation analytics will appear here once you receive reservations',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -177,111 +182,111 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildAnalyticsContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Summary Cards
           _buildSummaryCards(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Volume Patterns
           _buildSectionTitle('Reservation Volume'),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           _buildVolumePatterns(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Peak Times
           if (_analytics!.peakHours.isNotEmpty ||
               _analytics!.peakDays.isNotEmpty) ...[
             _buildSectionTitle('Peak Times'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildPeakTimes(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Revenue Metrics
           if (_analytics!.totalRevenue > 0) ...[
             _buildSectionTitle('Revenue'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildRevenueMetrics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Rates (Cancellation, No-show, Completion)
           _buildSectionTitle('Reservation Rates'),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           _buildRatesSection(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Customer Retention
           _buildSectionTitle('Customer Retention'),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           _buildCustomerRetention(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Rate Limit Usage Metrics (Phase 7.2 Enhancement)
           if (_analytics!.rateLimitMetrics != null) ...[
             _buildSectionTitle('Rate Limit Usage'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildRateLimitMetrics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Waitlist Metrics (Phase 7.2 Enhancement)
           if (_analytics!.waitlistMetrics != null) ...[
             _buildSectionTitle('Waitlist Metrics'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildWaitlistMetrics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Capacity Utilization Metrics (Phase 7.2 Enhancement)
           if (_analytics!.capacityMetrics != null) ...[
             _buildSectionTitle('Capacity Utilization'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildCapacityMetrics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Knot String Evolution Patterns (Phase 7.2 Enhancement)
           if (_analytics!.stringEvolutionPatterns != null) ...[
             _buildSectionTitle('Recurring Patterns (Knot String Evolution)'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildStringEvolutionPatterns(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Fabric Stability Analytics (Phase 7.2 Enhancement)
           if (_analytics!.fabricStabilityAnalytics != null) ...[
             _buildSectionTitle('Group Compatibility (Fabric Stability)'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildFabricStabilityAnalytics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Worldsheet Evolution Analytics (Phase 7.2 Enhancement)
           if (_analytics!.worldsheetEvolutionAnalytics != null) ...[
             _buildSectionTitle('Temporal Evolution (4D Worldsheets)'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildWorldsheetEvolutionAnalytics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // Quantum Compatibility Trends (Phase 7.2 Enhancement)
           if (_analytics!.quantumCompatibilityTrends != null) ...[
             _buildSectionTitle('Quantum Compatibility Trends'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildQuantumCompatibilityTrends(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
 
           // AI2AI Learning Insights (Phase 7.2 Enhancement)
           if (_analytics!.ai2aiLearningInsights != null) ...[
             _buildSectionTitle('AI2AI Mesh Learning Insights'),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildAI2AILearningInsights(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
           ],
         ],
       ),
@@ -299,7 +304,7 @@ class _BusinessReservationAnalyticsPageState
             color: AppTheme.primaryColor,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: context.spacing.sm),
         Expanded(
           child: _buildSummaryCard(
             title: 'Completed',
@@ -308,7 +313,7 @@ class _BusinessReservationAnalyticsPageState
             color: AppColors.success,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: context.spacing.sm),
         Expanded(
           child: _buildSummaryCard(
             title: 'Revenue',
@@ -327,29 +332,29 @@ class _BusinessReservationAnalyticsPageState
     required IconData icon,
     required Color color,
   }) {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Text(
               value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold, color: color),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: context.spacing.xxs),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -360,40 +365,47 @@ class _BusinessReservationAnalyticsPageState
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+      style: Theme.of(context)
+          .textTheme
+          .titleLarge
+          ?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
   Widget _buildVolumePatterns() {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hour distribution chart
             if (_analytics!.volumeByHour.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Hour Distribution',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildHourDistributionChart(),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             // Day distribution chart
             if (_analytics!.volumeByDay.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Day Distribution',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildDayDistributionChart(),
@@ -424,9 +436,10 @@ class _BusinessReservationAnalyticsPageState
               getTitlesWidget: (value, meta) {
                 final hour = value.toInt();
                 if (hour % 4 == 0) {
-                  return Text('$hour:00', style: const TextStyle(fontSize: 10));
+                  return Text('$hour:00',
+                      style: Theme.of(context).textTheme.labelSmall);
                 }
-                return const Text('');
+                return Text('');
               },
             ),
           ),
@@ -491,9 +504,9 @@ class _BusinessReservationAnalyticsPageState
                 ];
                 if (day >= 1 && day <= 7) {
                   return Text(dayNames[day - 1],
-                      style: const TextStyle(fontSize: 10));
+                      style: Theme.of(context).textTheme.labelSmall);
                 }
-                return const Text('');
+                return Text('');
               },
             ),
           ),
@@ -531,18 +544,22 @@ class _BusinessReservationAnalyticsPageState
   }
 
   Widget _buildPeakTimes() {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_analytics!.peakHours.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Peak Hours',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -554,14 +571,17 @@ class _BusinessReservationAnalyticsPageState
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (_analytics!.peakDays.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Peak Days',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -590,9 +610,10 @@ class _BusinessReservationAnalyticsPageState
   }
 
   Widget _buildRevenueMetrics() {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -600,18 +621,21 @@ class _BusinessReservationAnalyticsPageState
               'Total Revenue',
               '\$${_analytics!.totalRevenue.toStringAsFixed(2)}',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Average Revenue per Reservation',
               '\$${_analytics!.averageRevenuePerReservation.toStringAsFixed(2)}',
             ),
             if (_analytics!.revenueByMonth.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Revenue by Month',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildRevenueByMonthChart(),
@@ -651,12 +675,13 @@ class _BusinessReservationAnalyticsPageState
                   if (parts.length == 2) {
                     return Text(
                       '${parts[0]}-${parts[1]}',
-                      style: const TextStyle(fontSize: 10),
+                      style: Theme.of(context).textTheme.labelSmall,
                     );
                   }
-                  return Text(monthKey, style: const TextStyle(fontSize: 10));
+                  return Text(monthKey,
+                      style: Theme.of(context).textTheme.labelSmall);
                 }
-                return const Text('');
+                return Text('');
               },
             ),
           ),
@@ -666,7 +691,7 @@ class _BusinessReservationAnalyticsPageState
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
                 return Text('\$${value.toStringAsFixed(0)}',
-                    style: const TextStyle(fontSize: 10));
+                    style: Theme.of(context).textTheme.labelSmall);
               },
             ),
           ),
@@ -697,9 +722,10 @@ class _BusinessReservationAnalyticsPageState
   }
 
   Widget _buildRatesSection() {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -707,12 +733,12 @@ class _BusinessReservationAnalyticsPageState
               'Completion Rate',
               '${(_analytics!.completionRate * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Cancellation Rate',
               '${(_analytics!.cancellationRate * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'No-Show Rate',
               '${(_analytics!.noShowRate * 100).toStringAsFixed(1)}%',
@@ -724,9 +750,10 @@ class _BusinessReservationAnalyticsPageState
   }
 
   Widget _buildCustomerRetention() {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -734,7 +761,7 @@ class _BusinessReservationAnalyticsPageState
               'Customer Retention Rate',
               '${(_analytics!.customerRetentionRate * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Repeat Customers',
               '${_analytics!.repeatCustomers}',
@@ -747,32 +774,36 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildRateLimitMetrics() {
     final metrics = _analytics!.rateLimitMetrics!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildStatItem('Total Checks', '${metrics.totalChecks}'),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem('Rate Limit Hits', '${metrics.rateLimitHits}'),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Hit Rate',
               '${(metrics.hitRate * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Average Requests per Hour',
               metrics.averageRequestsPerHour.toStringAsFixed(1),
             ),
             if (metrics.peakUsageHours.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Peak Usage Hours',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -792,50 +823,57 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildWaitlistMetrics() {
     final metrics = _analytics!.waitlistMetrics!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildStatItem('Total Waitlist Joins', '${metrics.totalJoins}'),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Total Conversions',
               '${metrics.totalConversions}',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Conversion Rate',
               '${(metrics.conversionRate * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Average Wait Time',
               '${metrics.averageWaitTime.toStringAsFixed(1)} hours',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Longest Wait Time',
               '${metrics.longestWaitTime.toStringAsFixed(1)} hours',
             ),
             if (metrics.conversionsByDay.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Conversions by Day',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...metrics.conversionsByDay.entries.map((entry) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: context.spacing.xxs),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(entry.key),
                       Text(
                         '${entry.value}',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -850,9 +888,10 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildCapacityMetrics() {
     final metrics = _analytics!.capacityMetrics!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -860,18 +899,21 @@ class _BusinessReservationAnalyticsPageState
               'Average Utilization',
               '${(metrics.averageUtilization * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Peak Utilization',
               '${(metrics.peakUtilization * 100).toStringAsFixed(1)}%',
             ),
             if (metrics.peakUtilizationHours.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Peak Utilization Hours',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -882,14 +924,17 @@ class _BusinessReservationAnalyticsPageState
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (metrics.underutilizedHours.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Underutilized Hours',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -903,12 +948,15 @@ class _BusinessReservationAnalyticsPageState
               ),
             ],
             if (metrics.utilizationByHour.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Utilization by Hour',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildUtilizationByHourChart(metrics.utilizationByHour),
@@ -933,9 +981,10 @@ class _BusinessReservationAnalyticsPageState
               getTitlesWidget: (value, meta) {
                 final hour = value.toInt();
                 if (hour % 4 == 0) {
-                  return Text('$hour:00', style: const TextStyle(fontSize: 10));
+                  return Text('$hour:00',
+                      style: Theme.of(context).textTheme.labelSmall);
                 }
-                return const Text('');
+                return Text('');
               },
             ),
           ),
@@ -946,7 +995,7 @@ class _BusinessReservationAnalyticsPageState
               getTitlesWidget: (value, meta) {
                 return Text(
                   '${(value * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(fontSize: 10),
+                  style: Theme.of(context).textTheme.labelSmall,
                 );
               },
             ),
@@ -980,18 +1029,22 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildStringEvolutionPatterns() {
     final patterns = _analytics!.stringEvolutionPatterns!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (patterns.recurringPatterns.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Recurring Patterns',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...patterns.recurringPatterns.map((pattern) {
                 return ListTile(
                   dense: true,
@@ -999,38 +1052,41 @@ class _BusinessReservationAnalyticsPageState
                       const Icon(Icons.repeat, color: AppTheme.primaryColor),
                   title: Text(
                     '${pattern.patternType.toUpperCase()} pattern',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: pattern.nextOccurrence != null
                       ? Text(
                           'Next: ${_formatDateTime(pattern.nextOccurrence!)}')
                       : null,
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
+                  trailing: Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor:
+                        AppTheme.primaryColor.withValues(alpha: 0.1),
+                    label: Text(
                       '${(pattern.confidence * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.primaryColor,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryColor),
                     ),
                   ),
                 );
               }),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (patterns.cycles.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Evolution Cycles',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...patterns.cycles.map((cycle) {
                 return ListTile(
                   dense: true,
@@ -1038,21 +1094,27 @@ class _BusinessReservationAnalyticsPageState
                       const Icon(Icons.repeat, color: AppTheme.primaryColor),
                   title: Text(
                     '${cycle.period.inDays} day cycle',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
                     '${_formatDateTime(cycle.startTime)} - ${_formatDateTime(cycle.endTime)}',
                   ),
                 );
               }),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (patterns.trends.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Evolution Trends',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...patterns.trends.map((trend) {
                 return ListTile(
                   dense: true,
@@ -1074,21 +1136,27 @@ class _BusinessReservationAnalyticsPageState
                         : trend.type == TrendType.decreasing
                             ? 'Decreasing'
                             : 'Stable',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
                     'Magnitude: ${trend.magnitude.toStringAsFixed(2)}',
                   ),
                 );
               }),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (patterns.predictedVolumes.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Predicted Future Volumes',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...patterns.predictedVolumes.map((prediction) {
                 return ListTile(
                   dense: true,
@@ -1096,15 +1164,18 @@ class _BusinessReservationAnalyticsPageState
                       color: AppTheme.primaryColor),
                   title: Text(
                     '${prediction.predictedReservations} reservations',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(_formatDateTime(prediction.predictedTime)),
                   trailing: Text(
                     '${(prediction.confidence * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 );
               }),
@@ -1117,9 +1188,10 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildFabricStabilityAnalytics() {
     final fabric = _analytics!.fabricStabilityAnalytics!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1127,18 +1199,21 @@ class _BusinessReservationAnalyticsPageState
               'Average Fabric Stability',
               '${(fabric.averageStability * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Group Success Rate',
               '${(fabric.groupSuccessRate * 100).toStringAsFixed(1)}%',
             ),
             if (fabric.mostStableGroups.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Most Stable Groups',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...fabric.mostStableGroups.map((group) {
                 return ListTile(
                   dense: true,
@@ -1146,23 +1221,22 @@ class _BusinessReservationAnalyticsPageState
                       const Icon(Icons.group, color: AppTheme.primaryColor),
                   title: Text(
                     '${group.userIds.length} members',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text('${group.reservationCount} reservations'),
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
+                  trailing: Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: AppColors.success.withValues(alpha: 0.1),
+                    label: Text(
                       '${(group.stability * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.success,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success),
                     ),
                   ),
                 );
@@ -1176,30 +1250,37 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildWorldsheetEvolutionAnalytics() {
     final worldsheet = _analytics!.worldsheetEvolutionAnalytics!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (worldsheet.evolutionHistory.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Evolution History',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildEvolutionHistoryChart(worldsheet.evolutionHistory),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (worldsheet.predictions.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Future Predictions',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...worldsheet.predictions.map((prediction) {
                 return ListTile(
                   dense: true,
@@ -1207,28 +1288,34 @@ class _BusinessReservationAnalyticsPageState
                       color: AppTheme.primaryColor),
                   title: Text(
                     _formatDateTime(prediction.predictedTime),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
                     'Predicted stability: ${(prediction.predictedStability * 100).toStringAsFixed(1)}%',
                   ),
                   trailing: Text(
                     '${(prediction.confidence * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 );
               }),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (worldsheet.stabilityTrends.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Stability Trends',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...worldsheet.stabilityTrends.map((trend) {
                 return ListTile(
                   dense: true,
@@ -1246,7 +1333,10 @@ class _BusinessReservationAnalyticsPageState
                   ),
                   title: Text(
                     '${_formatDateTime(trend.startTime)} - ${_formatDateTime(trend.endTime)}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
                     'Change: ${(trend.stabilityChange * 100).toStringAsFixed(1)}%',
@@ -1283,7 +1373,7 @@ class _BusinessReservationAnalyticsPageState
                 final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
                 return Text(
                   '${date.month}/${date.day}',
-                  style: const TextStyle(fontSize: 10),
+                  style: Theme.of(context).textTheme.labelSmall,
                 );
               },
             ),
@@ -1318,9 +1408,10 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildQuantumCompatibilityTrends() {
     final quantum = _analytics!.quantumCompatibilityTrends!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1328,7 +1419,7 @@ class _BusinessReservationAnalyticsPageState
               'Average Compatibility',
               '${(quantum.averageCompatibility * 100).toStringAsFixed(1)}%',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Compatibility Trend',
               quantum.compatibilityTrend == TrendType.increasing
@@ -1338,48 +1429,53 @@ class _BusinessReservationAnalyticsPageState
                       : 'Stable',
             ),
             if (quantum.compatibilityHistory.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Compatibility History',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               SizedBox(
                 height: 200,
                 child: _buildCompatibilityHistoryChart(
                     quantum.compatibilityHistory),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
             if (quantum.highCompatibilityPeriods.isNotEmpty) ...[
-              const Text(
+              Text(
                 'High Compatibility Periods',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...quantum.highCompatibilityPeriods.map((period) {
                 return ListTile(
                   dense: true,
                   leading: const Icon(Icons.star, color: AppColors.warning),
                   title: Text(
                     '${_formatDateTime(period.startTime)} - ${_formatDateTime(period.endTime)}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text('${period.reservationCount} reservations'),
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
+                  trailing: Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: AppColors.success.withValues(alpha: 0.1),
+                    label: Text(
                       '${(period.averageCompatibility * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.success,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success),
                     ),
                   ),
                 );
@@ -1414,7 +1510,7 @@ class _BusinessReservationAnalyticsPageState
                 final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
                 return Text(
                   '${date.month}/${date.day}',
-                  style: const TextStyle(fontSize: 10),
+                  style: Theme.of(context).textTheme.labelSmall,
                 );
               },
             ),
@@ -1426,7 +1522,7 @@ class _BusinessReservationAnalyticsPageState
               getTitlesWidget: (value, meta) {
                 return Text(
                   '${(value * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(fontSize: 10),
+                  style: Theme.of(context).textTheme.labelSmall,
                 );
               },
             ),
@@ -1458,25 +1554,29 @@ class _BusinessReservationAnalyticsPageState
 
   Widget _buildAI2AILearningInsights() {
     final ai2ai = _analytics!.ai2aiLearningInsights!;
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildStatItem('Total Insights', '${ai2ai.totalInsights}'),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildStatItem(
               'Average Learning Quality',
               '${(ai2ai.averageLearningQuality * 100).toStringAsFixed(1)}%',
             ),
             if (ai2ai.improvedDimensions.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Improved Dimensions',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -1489,33 +1589,39 @@ class _BusinessReservationAnalyticsPageState
                 }).toList(),
               ),
             ],
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: context.spacing.md),
+            Text(
               'Mesh Propagation Stats',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildStatItem(
               'Insights Received',
               '${ai2ai.propagationStats.insightsReceived}',
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildStatItem(
               'Insights Shared',
               '${ai2ai.propagationStats.insightsShared}',
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             _buildStatItem(
               'Average Hop Count',
               ai2ai.propagationStats.averageHopCount.toStringAsFixed(1),
             ),
             if (ai2ai.businessInsights.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Business Insights',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               ...ai2ai.businessInsights.map((insight) {
                 return ListTile(
                   dense: true,
@@ -1523,15 +1629,18 @@ class _BusinessReservationAnalyticsPageState
                       const Icon(Icons.lightbulb, color: AppTheme.primaryColor),
                   title: Text(
                     insight.insightType,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(insight.description),
                   trailing: Text(
                     '${(insight.confidence * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 );
               }),
@@ -1548,14 +1657,17 @@ class _BusinessReservationAnalyticsPageState
       children: [
         Text(
           label,
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );

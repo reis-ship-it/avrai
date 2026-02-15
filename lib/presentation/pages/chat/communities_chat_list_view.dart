@@ -1,16 +1,17 @@
 /// Communities Chat List View
-/// 
+///
 /// Displays list of community/club conversations
 /// - Shows communities user is a member of
 /// - Unread indicators
 /// - Last message preview
-/// 
+///
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
 library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/community/community_chat_service.dart';
@@ -24,7 +25,8 @@ class CommunitiesChatListView extends StatefulWidget {
   const CommunitiesChatListView({super.key});
 
   @override
-  State<CommunitiesChatListView> createState() => _CommunitiesChatListViewState();
+  State<CommunitiesChatListView> createState() =>
+      _CommunitiesChatListViewState();
 }
 
 class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
@@ -45,14 +47,14 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
       setState(() {
         _userId = authState.user.id;
       });
-      
+
       await _loadChatList();
     }
   }
 
   Future<void> _loadChatList() async {
     if (_userId == null) return;
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -64,12 +66,12 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
       // TODO: Get user's communities from user service
       // For now, using empty list - will be populated when communities are available
       final userCommunities = <Community>[];
-      
+
       final chatList = await _chatService.getUserCommunitiesChatList(
         _userId!,
         userCommunities,
       );
-      
+
       if (mounted) {
         setState(() {
           _chatList = chatList;
@@ -81,12 +83,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading chats: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading chats: $e');
       }
     }
   }
@@ -94,7 +91,7 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -102,11 +99,11 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
     return RefreshIndicator(
       onRefresh: _loadChatList,
       child: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(),
             )
           : _chatList.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -118,18 +115,16 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
                       SizedBox(height: 16),
                       Text(
                         'No community chats yet',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       SizedBox(height: 8),
                       Text(
                         'Join communities to start chatting!',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -158,9 +153,9 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
           Expanded(
             child: Text(
               chat.communityName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           // TODO: Add unread count when available in CommunityChatPreview
@@ -176,19 +171,18 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
               chat.lastMessagePreview!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 4),
           ],
           if (chat.lastMessageTime != null)
             Text(
               _formatTimestamp(chat.lastMessageTime!),
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
         ],
       ),
@@ -214,4 +208,3 @@ class _CommunitiesChatListViewState extends State<CommunitiesChatListView> {
     }
   }
 }
-

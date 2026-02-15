@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/payment/checkout_page.dart';
 import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Payment Failure Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -89,7 +93,7 @@ class PaymentFailurePage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(kSpaceXl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -97,12 +101,9 @@ class PaymentFailurePage extends StatelessWidget {
                 const SizedBox(height: 40),
 
                 // Error Icon
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
                   child: const Icon(
                     Icons.error_outline,
                     size: 80,
@@ -113,13 +114,12 @@ class PaymentFailurePage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Error Message
-                const Text(
+                Text(
                   'Payment Failed',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -127,50 +127,45 @@ class PaymentFailurePage extends StatelessWidget {
 
                 Text(
                   userFriendlyMessage,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 24),
 
                 // Error Details Card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey100,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceMd),
+                  color: AppColors.grey100,
+                  radius: 12,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Error Details',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         errorMessage,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       if (errorCode != null) ...[
                         const SizedBox(height: 4),
                         Text(
                           'Error Code: $errorCode',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppColors.textHint,
-                            fontFamily: 'monospace',
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textHint,
+                                    fontFamily: 'monospace',
+                                  ),
                         ),
                       ],
                     ],
@@ -180,15 +175,11 @@ class PaymentFailurePage extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // Support Message
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.electricGreen.withValues(alpha: 0.3),
-                    ),
-                  ),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceMd),
+                  color: AppColors.electricGreen.withValues(alpha: 0.1),
+                  borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                  radius: 12,
                   child: Row(
                     children: [
                       const Icon(Icons.info_outline,
@@ -197,10 +188,10 @@ class PaymentFailurePage extends StatelessWidget {
                       Expanded(
                         child: Text(
                           supportMessage,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ),
                     ],
@@ -214,19 +205,17 @@ class PaymentFailurePage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      AppNavigator.replaceBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => CheckoutPage(event: event),
-                        ),
+                        builder: (context) => CheckoutPage(event: event),
                       );
                     },
                     icon: const Icon(Icons.refresh, size: 20),
-                    label: const Text('Try Again'),
+                    label: Text('Try Again'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -240,18 +229,16 @@ class PaymentFailurePage extends StatelessWidget {
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      AppNavigator.replaceBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => EventDetailsPage(event: event),
-                        ),
+                        builder: (context) => EventDetailsPage(event: event),
                       );
                     },
                     icon: const Icon(Icons.event, size: 20),
-                    label: const Text('Back to Event'),
+                    label: Text('Back to Event'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       side: const BorderSide(color: AppColors.grey300),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -266,35 +253,36 @@ class PaymentFailurePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: const Text(
+                  child: Text(
                     'Back to Home',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
                 // Support Contact
-                const Text(
+                Text(
                   'Need help?',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 TextButton(
                   onPressed: () {
                     // TODO: Open support contact
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Support contact coming soon'),
-                      ),
-                    );
+                    context.showInfo('Support contact coming soon');
                   },
-                  child: const Text(
+                  child: Text(
                     'Contact Support',
-                    style: TextStyle(color: AppTheme.primaryColor),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppTheme.primaryColor),
                   ),
                 ),
               ],

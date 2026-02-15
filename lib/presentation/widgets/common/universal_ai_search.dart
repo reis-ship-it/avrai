@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class UniversalAISearch extends StatefulWidget {
   final String? hintText;
@@ -105,7 +106,8 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
     return Column(
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: const EdgeInsets.symmetric(
+              horizontal: kSpaceMd, vertical: kSpaceXs),
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.light
                 ? AppColors.grey100
@@ -151,10 +153,10 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
                         decoration: InputDecoration(
                           hintText: widget.hintText ??
                               'Ask me anything... (create lists, find spots, etc.)',
-                          hintStyle: const TextStyle(
-                            color: AppColors.textHint,
-                            fontSize: 16,
-                          ),
+                          hintStyle:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textHint,
+                                  ),
                           prefixIcon: Icon(
                             Icons.auto_awesome,
                             color: _hasFocus
@@ -163,18 +165,18 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: kSpaceMd,
+                            vertical: kSpaceSm,
                           ),
                         ),
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
                   ),
                 ),
                 if (widget.isLoading)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8),
+                  Padding(
+                    padding: EdgeInsets.only(right: kSpaceXs),
                     child: SizedBox(
                       width: 20,
                       height: 20,
@@ -206,7 +208,7 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
           Material(
             type: MaterialType.transparency,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: kSpaceMd),
               decoration: BoxDecoration(
                 color: Theme.of(context).brightness == Brightness.light
                     ? AppColors.white
@@ -222,7 +224,7 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
               ),
               child: ListView.builder(
                 shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceXs),
                 itemCount: _suggestions.length,
                 itemBuilder: (context, index) {
                   final suggestion = _suggestions[index];
@@ -235,7 +237,7 @@ class _UniversalAISearchState extends State<UniversalAISearch> {
                     ),
                     title: Text(
                       suggestion,
-                      style: const TextStyle(fontSize: 14),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     onTap: () {
                       _controller.text = suggestion;

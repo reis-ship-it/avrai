@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** November 25, 2025  
+**Last Updated:** February 15, 2026  
 **Status:** Active Reference  
 **Purpose:** Central index for all architecture documentation, with clear navigation and relationships
 
@@ -10,6 +10,17 @@
 
 **Start here based on what you need:**
 
+- **Master Plan multi-app architecture blueprint** → [`MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md`](#master-plan-multi-app-architecture-blueprint)
+- **Master Plan architecture execution backlog** → [`MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md`](#master-plan-architecture-execution-backlog)
+- **Master Plan architecture implementation checklist** → [`MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md`](#master-plan-architecture-implementation-checklist)
+- **Master Plan architecture readiness QA** → [`MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md`](#master-plan-architecture-readiness-qa)
+- **Identity unlinkability + access governance contract** → [`IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md`](#identity-unlinkability--access-governance-contract)
+- **Reality coherence test matrix** → [`REALITY_COHERENCE_TEST_MATRIX.md`](#reality-coherence-test-matrix)
+- **External research execution backlog** → [`EXTERNAL_RESEARCH_EXECUTION_BACKLOG_2026-02-15.md`](#external-research-execution-backlog)
+- **Patent risk claim checklist** → [`PATENT_RISK_CLAIM_CHECKLIST_2026-02-15.md`](#patent-risk-claim-checklist)
+- **Phase 10 test suite path normalization map** → [`TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md`](#phase-10-test-suite-path-normalization-map)
+- **Phase 10 canonical rename manifest** → [`FILE_FOLDER_RENAME_MANIFEST_PHASE10.md`](#phase-10-canonical-rename-manifest)
+- **Master Plan phase execution orchestration** → [`MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md`](#master-plan-phase-execution-orchestration)
 - **Feature-by-feature strategy** → [`ONLINE_OFFLINE_STRATEGY.md`](#online-offline-strategy)
 - **AI/LLM offline architecture** → [`OFFLINE_CLOUD_AI_ARCHITECTURE.md`](#offline-cloud-ai-architecture)
 - **AI2AI network architecture** → [`architecture_ai_federated_p2p.md`](#ai2ai-federated-architecture)
@@ -18,6 +29,193 @@
 ---
 
 ## 📚 **Architecture Documents**
+
+### **Master Plan Multi-App Architecture Blueprint** ⭐ **PRIMARY FOR NEW EXECUTION**
+
+**File:** [`MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md`](./MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md)
+
+**What it covers:**
+- ✅ Single architecture model for multiple apps sharing one intelligence core
+- ✅ Contract-first boundaries for apps, APIs, SDKs, researchers, and admins
+- ✅ Learning plane and self-healing plane with immutable safety/compliance boundaries
+- ✅ Human + AI editability model (what can and cannot be autonomously changed)
+- ✅ Reuse-first migration strategy from existing services/packages (no full rewrite)
+- ✅ Cross-stakeholder considerations: users, businesses, event planners, companies, third-party viewers, API callers, admins, researchers
+
+**Use this when:**
+- Planning implementation sequencing for `docs/MASTER_PLAN.md`
+- Designing shared services used by multiple applications
+- Defining how self-healing interacts with safety, compliance, and UX
+- Building migration plans that preserve existing system investments
+
+---
+
+### **Master Plan Architecture Execution Backlog** ⭐ **PHASE-BY-PHASE EXECUTION SOURCE**
+
+**File:** [`MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md`](./MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md)
+
+**What it covers:**
+- ✅ Epics/stories per Master Plan phase (1-15)
+- ✅ Owner boundaries and handoff contracts
+- ✅ Cross-phase dependency model
+- ✅ Direct mapping to Master Plan + Tracker phase registry
+- ✅ Prep-only architecture sequencing without scaffolding
+
+**Use this when:**
+- Converting architecture into executable work items
+- Assigning ownership and preventing boundary drift
+- Running phase-based architecture planning reviews
+
+---
+
+### **Master Plan Architecture Implementation Checklist** ⭐ **EXECUTION GATEKEEPER**
+
+**File:** [`MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md`](./MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md)
+
+**What it covers:**
+- ✅ Global pre-execution controls
+- ✅ Phase entry/exit gates for phases 1-15
+- ✅ Story-level completion template
+- ✅ Tracker sync and cursor-rule compliance checks
+
+**Use this when:**
+- Starting any architecture story from the backlog
+- Determining if a phase can advance
+- Auditing planning/execution discipline
+
+---
+
+### **Master Plan Architecture Readiness QA**
+
+**File:** [`MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md`](./MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md)
+
+**What it covers:**
+- ✅ Prep-only audit of architecture readiness across Master Plan, design system, and testing suite grouping
+- ✅ Pass/fail matrix with severity-ordered findings
+- ✅ Concrete prep-only remediation backlog additions (no scaffolding)
+
+**Use this when:**
+- Validating whether architecture prep is actually execution-ready
+- Reviewing grouped test-suite integrity and design-test coverage readiness
+- Prioritizing Phase 10 hardening prep items
+
+---
+
+### **Identity Unlinkability + Access Governance Contract**
+
+**File:** [`IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md`](./IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md)
+
+**What it covers:**
+- ✅ Canonical `account_id` / `agent_id` / `world_id` namespace boundaries
+- ✅ Access matrix robustness controls (fail-closed, non-bypass, drift detection, break-glass limits)
+- ✅ Identity migration contract with bounded dual-read/dual-write and strict cutoff
+- ✅ Verification/release gates for unlinkability and access-governance enforcement
+
+**Use this when:**
+- Implementing or reviewing any identity/data-sharing contract
+- Touching disclosure, admin, research, partner, or export access routes
+- Planning or executing `user_id` -> namespace migration work
+
+---
+
+### **Reality Coherence Test Matrix**
+
+**File:** [`REALITY_COHERENCE_TEST_MATRIX.md`](./REALITY_COHERENCE_TEST_MATRIX.md)
+
+**What it covers:**
+- ✅ Phase-by-phase coherence test coverage for Phases 1-15
+- ✅ Canonical scenario IDs for offline/online, BLE/WiFi arbitration, weather degradation, self-healing, federation, and admin observability
+- ✅ Mandatory evidence package and no-go release blockers
+- ✅ Cross-link contract for backlog/checklist/orchestration/doc validation
+
+**Use this when:**
+- Proving connected behavior across learning, worlds, environments, and transport layers
+- Reviewing whether self-learning/self-healing is system-wide and policy-safe
+- Enforcing release gating for coherence-critical changes
+
+---
+
+### **External Research Execution Backlog**
+
+**File:** [`EXTERNAL_RESEARCH_EXECUTION_BACKLOG_2026-02-15.md`](./EXTERNAL_RESEARCH_EXECUTION_BACKLOG_2026-02-15.md)
+
+**What it covers:**
+- ✅ Consolidated phase-mapped `MPA` story pack from research findings
+- ✅ Owners, dependencies, and acceptance criteria for immediate documentation execution
+- ✅ Direct mapping to self-learning/self-healing/self-questioning/self-improving and quantum-ready gates
+
+**Use this when:**
+- You need actionable Master Plan/doc updates now from research findings
+- You want to execute risk-reduction work without code scaffolding
+- You need a single backlog pack spanning phases 2, 3, 5, 6, 7, 10, and 11
+
+---
+
+### **Patent Risk Claim Checklist**
+
+**File:** [`PATENT_RISK_CLAIM_CHECKLIST_2026-02-15.md`](./PATENT_RISK_CLAIM_CHECKLIST_2026-02-15.md)
+
+**What it covers:**
+- ✅ Element-level status mapping (`Present`, `Absent`, `Unknown`) for high-risk patent families
+- ✅ Owner-assigned required actions for claim-sensitive architecture elements
+- ✅ Monthly review and escalation rules for phase gate evidence
+
+**Use this when:**
+- Reviewing matching/geo-context architecture for claim-sensitive overlaps
+- Preparing phase-exit evidence for legal/architecture review
+- Prioritizing design-around documentation updates
+
+---
+
+### **Phase 10 Test Suite Path Normalization Map**
+
+**File:** [`TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md`](./TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md)
+
+**What it covers:**
+- ✅ Canonical old->new grouped suite path map for domainized integration tests
+- ✅ Design golden grouping requirement for suite planning
+- ✅ Acceptance gate for zero-missing-reference suite readiness
+
+**Use this when:**
+- Normalizing `test/suites/*_suite.sh` without architecture drift
+- Closing Phase 10 grouped-testing prep blockers
+- Auditing grouped suite references before implementation
+
+---
+
+### **Phase 10 Canonical Rename Manifest**
+
+**File:** [`FILE_FOLDER_RENAME_MANIFEST_PHASE10.md`](./FILE_FOLDER_RENAME_MANIFEST_PHASE10.md)
+
+**What it covers:**
+- ✅ Canonical target taxonomy for working and testing paths
+- ✅ Required manifest schema for `old_path -> new_path` planning rows
+- ✅ Wave-based conversion model with owner boundaries and gates
+- ✅ Verification and rollback planning requirements for rename safety
+
+**Use this when:**
+- Planning file/folder renames to align with Master Plan architecture boundaries
+- Building phase-mapped rename backlogs before any path migration work
+- Keeping rename planning synchronized with tracker and phase gates
+
+---
+
+### **Master Plan Phase Execution Orchestration**
+
+**File:** [`MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md`](./MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md)
+
+**What it covers:**
+- ✅ GitHub + Cursor phase trigger model with dependency-aware ordering
+- ✅ Machine-readable execution contract reference (`docs/plans/master_plan_execution.yaml`)
+- ✅ Mandatory doc-link validation and fail-fast behavior
+- ✅ UI/UX design contract linkage via `docs/design/DESIGN_REF.md`, `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md`, and app-scoped `docs/design/apps/*` folders
+
+**Use this when:**
+- Enabling phase trigger automation for Master Plan execution
+- Validating all required architecture/design docs are linked before phase runs
+- Enforcing consistent phase gating and tracker/checklist synchronization
+
+---
 
 ### **Repo Hygiene + Architecture Rules (Guardrails)**
 
@@ -281,6 +479,15 @@ ONLINE_OFFLINE_STRATEGY.md (WHAT & WHY)
 
 | Document | Status | Last Updated | Completeness |
 |----------|--------|--------------|--------------|
+| `MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md` | ✅ Active | Feb 15, 2026 | 100% - Architecture blueprint |
+| `MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md` | ✅ Active | Feb 15, 2026 | 100% - Phase/owner backlog |
+| `MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md` | ✅ Active | Feb 15, 2026 | 100% - Phase gates/checklist |
+| `MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md` | ✅ Active | Feb 13, 2026 | 100% - Prep readiness audit |
+| `IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md` | ✅ Active | Feb 15, 2026 | 100% - Namespace/access/migration contract |
+| `REALITY_COHERENCE_TEST_MATRIX.md` | ✅ Active | Feb 15, 2026 | 100% - Phase-by-phase coherence gate matrix |
+| `TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md` | ✅ Active | Feb 13, 2026 | 100% - Path normalization map |
+| `FILE_FOLDER_RENAME_MANIFEST_PHASE10.md` | ✅ Active | Feb 13, 2026 | 100% - Rename taxonomy/manifest model |
+| `MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md` | ✅ Active | Feb 15, 2026 | 100% - Phase trigger orchestration model |
 | `ONLINE_OFFLINE_STRATEGY.md` | ✅ Active | Nov 25, 2025 | 100% - Comprehensive |
 | `OFFLINE_CLOUD_AI_ARCHITECTURE.md` | ✅ Active | Jan 2025 | 100% - Complete |
 | `architecture_ai_federated_p2p.md` | ✅ Active | Dec 2024 | 100% - Complete |
@@ -291,6 +498,15 @@ ONLINE_OFFLINE_STRATEGY.md (WHAT & WHY)
 ## 🚀 **Quick Links**
 
 **Strategy & Planning:**
+- [`MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md`](./MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md) - Multi-app master architecture model
+- [`MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md`](./MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md) - Phase-by-phase epics/stories + owner boundaries
+- [`MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md`](./MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md) - Execution gates and readiness checklist
+- [`MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md`](./MASTER_PLAN_ARCHITECTURE_READINESS_QA_2026-02-13.md) - Architecture/design/testing readiness audit
+- [`IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md`](./IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md) - Canonical identity unlinkability + access governance + migration cutoff contract
+- [`REALITY_COHERENCE_TEST_MATRIX.md`](./REALITY_COHERENCE_TEST_MATRIX.md) - Canonical phase-by-phase coherence test matrix and release blockers
+- [`TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md`](./TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md) - Phase 10 grouped-suite path normalization map
+- [`FILE_FOLDER_RENAME_MANIFEST_PHASE10.md`](./FILE_FOLDER_RENAME_MANIFEST_PHASE10.md) - Phase 10 canonical rename manifest and conversion model
+- [`MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md`](./MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md) - Phase trigger orchestration model (GitHub + Cursor)
 - [`ONLINE_OFFLINE_STRATEGY.md`](./ONLINE_OFFLINE_STRATEGY.md) - Feature-by-feature strategy
 
 **Implementation:**
@@ -305,6 +521,5 @@ ONLINE_OFFLINE_STRATEGY.md (WHAT & WHY)
 
 ---
 
-**Last Updated:** November 25, 2025  
+**Last Updated:** February 15, 2026  
 **Status:** Active Reference - Use this index to navigate architecture documentation
-

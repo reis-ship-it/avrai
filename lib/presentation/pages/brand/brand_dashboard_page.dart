@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
 import 'package:avrai/core/models/sponsorship/sponsorship.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/brand/brand_stats_card.dart';
 import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
@@ -14,6 +17,7 @@ import 'package:avrai/presentation/pages/brand/sponsorship_management_page.dart'
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Brand Dashboard Page
 ///
@@ -114,11 +118,10 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading dashboard: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Error loading dashboard: $e',
+          kind: FeedbackKind.error,
         );
       }
     }
@@ -156,22 +159,22 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
             // Brand Header
             _buildBrandHeader(),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Quick Stats
             _buildQuickStats(),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Active Sponsorships
             _buildActiveSponsorshipsSection(),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Analytics Section
             _buildAnalyticsSection(),
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
           ],
         ),
       ),
@@ -180,18 +183,18 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
 
   Widget _buildBrandHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.spacing.lg),
       color: AppColors.surface,
       child: Row(
         children: [
           if (_brandAccount!.logoUrl != null)
             CircleAvatar(
-              radius: 32,
+              radius: context.spacing.xl,
               backgroundImage: NetworkImage(_brandAccount!.logoUrl!),
             )
           else
             CircleAvatar(
-              radius: 32,
+              radius: context.spacing.xl,
               backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
               child: const Icon(
                 Icons.business,
@@ -199,45 +202,45 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 color: AppTheme.primaryColor,
               ),
             ),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _brandAccount!.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Row(
                   children: [
                     Text(
                       _brandAccount!.brandType,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     if (_brandAccount!.categories.isNotEmpty) ...[
-                      const Text(' • ',
-                          style: TextStyle(color: AppColors.textSecondary)),
+                      Text(' • ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary)),
                       Text(
                         _brandAccount!.categories.join(', '),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 if (_brandAccount!.isVerified)
-                  const Row(
+                  Row(
                     children: [
                       Icon(
                         Icons.verified,
@@ -247,11 +250,10 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                       SizedBox(width: 4),
                       Text(
                         'Verified Brand',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.electricGreen,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.electricGreen,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ],
                   )
@@ -263,14 +265,13 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                         size: 16,
                         color: AppColors.warning,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: context.spacing.xxs),
                       Text(
                         'Verification: ${_brandAccount!.verificationStatus.displayName}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.warning,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.warning,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ],
                   ),
@@ -284,7 +285,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
 
   Widget _buildQuickStats() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
       child: Row(
         children: [
           Expanded(
@@ -295,7 +296,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: BrandStatsCard(
               label: 'Total Returns',
@@ -314,37 +315,34 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Active Sponsorships',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               if (_activeSponsorships.isNotEmpty)
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const SponsorshipManagementPage(),
-                      ),
+                      builder: (context) => const SponsorshipManagementPage(),
                     );
                   },
-                  child: const Text('View All'),
+                  child: Text('View All'),
                 ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         if (_activeSponsorships.isEmpty)
           Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(context.spacing.xxl),
             child: Center(
               child: Column(
                 children: [
@@ -353,39 +351,35 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                     size: 64,
                     color: AppColors.textSecondary.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: context.spacing.md),
+                  Text(
                     'No active sponsorships',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textSecondary,
+                        ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: context.spacing.xs),
+                  Text(
                     'Start sponsoring events to see them here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      AppNavigator.pushBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const BrandDiscoveryPage(),
-                        ),
+                        builder: (context) => const BrandDiscoveryPage(),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
                     ),
-                    child: const Text('Discover Events'),
+                    child: Text('Discover Events'),
                   ),
                 ],
               ),
@@ -393,16 +387,16 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
           )
         else
           ..._activeSponsorships.take(3).map((sponsorship) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.spacing.lg,
+                  vertical: context.spacing.xs,
+                ),
                 child: SponsorshipCard(
                   sponsorship: sponsorship,
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const SponsorshipManagementPage(),
-                      ),
+                      builder: (context) => const SponsorshipManagementPage(),
                     );
                   },
                 ),
@@ -416,21 +410,20 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
         _totalInvestment > 0 ? ((_totalReturns / _totalInvestment) * 100) : 0.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
       child: PortalSurface(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '📊 Performance Overview',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
 
             // Investment Breakdown
             _buildAnalyticsRow(
@@ -442,9 +435,9 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 '\$${(_totalInvestment * 0.375).toStringAsFixed(0)}',
                 indent: true),
 
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             const Divider(color: AppColors.grey300),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
 
             // Returns
             _buildAnalyticsRow(
@@ -457,9 +450,9 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 'Brand Value', '\$${(12400.0).toStringAsFixed(0)}',
                 indent: true),
 
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             const Divider(color: AppColors.grey300),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
 
             // ROI
             _buildAnalyticsRow(
@@ -470,23 +463,21 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                   roiPercentage > 0 ? AppColors.electricGreen : AppColors.error,
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  Navigator.push(
+                  AppNavigator.pushBuilder(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const BrandAnalyticsPage(),
-                    ),
+                    builder: (context) => const BrandAnalyticsPage(),
                   );
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.textPrimary,
                   side: const BorderSide(color: AppColors.grey300),
                 ),
-                child: const Text('View Detailed Analytics'),
+                child: Text('View Detailed Analytics'),
               ),
             ),
           ],
@@ -498,26 +489,31 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   Widget _buildAnalyticsRow(String label, String value,
       {bool isTotal = false, bool indent = false, Color? color}) {
     return Padding(
-      padding: EdgeInsets.only(left: indent ? 16 : 0, bottom: 8),
+      padding: EdgeInsets.only(
+          left: indent ? kSpaceMd : kSpaceNone, bottom: kSpaceXs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: AppColors.textPrimary,
-            ),
+            style: (isTotal
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium)
+                ?.copyWith(
+                    fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                    color: AppColors.textPrimary),
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize: isTotal ? 20 : 16,
-              fontWeight: FontWeight.bold,
-              color: color ??
-                  (isTotal ? AppTheme.primaryColor : AppColors.textPrimary),
-            ),
+            style: (isTotal
+                    ? Theme.of(context).textTheme.headlineSmall
+                    : Theme.of(context).textTheme.titleMedium)
+                ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color ??
+                        (isTotal
+                            ? AppTheme.primaryColor
+                            : AppColors.textPrimary)),
           ),
         ],
       ),
@@ -541,25 +537,23 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               size: 64,
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: context.spacing.md),
+            Text(
               'No Brand Account',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: context.spacing.xs),
+            Text(
               'Create a brand account to start sponsoring events',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
             ElevatedButton(
               onPressed: () {
                 // Navigate to create brand account page
@@ -568,7 +562,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: AppColors.white,
               ),
-              child: const Text('Create Brand Account'),
+              child: Text('Create Brand Account'),
             ),
           ],
         ),

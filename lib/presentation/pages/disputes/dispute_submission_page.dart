@@ -1,10 +1,12 @@
 import 'dart:typed_data';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/disputes/dispute_type.dart';
 import 'package:avrai/core/services/fraud/dispute_resolution_service.dart';
@@ -15,6 +17,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/pages/disputes/dispute_status_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Dispute Submission Page
 ///
@@ -90,12 +93,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error picking image: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Error picking image: $e');
     }
   }
 
@@ -120,24 +118,14 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     } catch (e) {
       // Some platforms (or permission states) may not support camera capture.
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Camera unavailable: $e'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
+      context.showWarning('Camera unavailable: $e');
     }
   }
 
   Future<void> _submitDispute() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a dispute type'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please select a dispute type');
       return;
     }
 
@@ -220,7 +208,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(kSpaceMdWide),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -242,14 +230,11 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
 
                 // Error Display
                 if (_error != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3)),
-                    ),
+                  PortalSurface(
+                    padding: const EdgeInsets.all(kSpaceMd),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderColor: AppColors.error.withValues(alpha: 0.3),
+                    radius: 8,
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline, color: AppColors.error),
@@ -257,7 +242,10 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                         Expanded(
                           child: Text(
                             _error!,
-                            style: const TextStyle(color: AppColors.error),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.error),
                           ),
                         ),
                       ],
@@ -297,40 +285,35 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
   }
 
   Widget _buildEventInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMd),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: 8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Event Information',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             widget.event.title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -341,13 +324,12 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Dispute Type *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         RadioGroup<DisputeType>(
@@ -362,14 +344,16 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
               return RadioListTile<DisputeType>(
                 title: Text(
                   type.displayName,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
                 subtitle: Text(
                   _getTypeDescription(type),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 value: type,
                 activeColor: AppTheme.primaryColor,
@@ -385,13 +369,12 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Description *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -414,7 +397,10 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'Please provide a description';
@@ -433,21 +419,19 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Evidence (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Upload photos or screenshots to support your dispute',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -456,7 +440,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
               child: OutlinedButton.icon(
                 onPressed: _pickImage,
                 icon: const Icon(Icons.photo_library),
-                label: const Text('Choose Photo'),
+                label: Text('Choose Photo'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
                   side: const BorderSide(color: AppTheme.primaryColor),
@@ -468,7 +452,7 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
               child: OutlinedButton.icon(
                 onPressed: _takePhoto,
                 icon: const Icon(Icons.camera_alt),
-                label: const Text('Take Photo'),
+                label: Text('Take Photo'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
                   side: const BorderSide(color: AppTheme.primaryColor),
@@ -485,16 +469,20 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
             children: _evidenceDrafts.asMap().entries.map((entry) {
               return Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.grey300),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.memory(entry.value.bytes, fit: BoxFit.cover),
+                    child: PortalSurface(
+                      padding: EdgeInsets.zero,
+                      radius: 8,
+                      borderColor: AppColors.grey300,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.memory(
+                          entry.value.bytes,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -506,13 +494,10 @@ class _DisputeSubmissionPageState extends State<DisputeSubmissionPage> {
                           _evidenceDrafts.removeAt(entry.key);
                         });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: AppColors.error,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
+                      child: const CircleAvatar(
+                        radius: 12,
+                        backgroundColor: AppColors.error,
+                        child: Icon(
                           Icons.close,
                           size: 16,
                           color: AppColors.white,

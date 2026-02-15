@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/payment/sales_tax_service.dart';
 import 'package:avrai/core/controllers/event_creation_controller.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/events/event_published_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Event Review Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.11)
@@ -130,20 +134,29 @@ class _EventReviewPageState extends State<EventReviewPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.background,
-        title: const Text(
+        title: Text(
           'Publish Event?',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
         content: Text(
           'Are you sure you want to publish "${widget.title}"? The event will be visible to others.',
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -203,12 +216,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError(errorMessage);
         }
         return;
       }
@@ -216,11 +224,9 @@ class _EventReviewPageState extends State<EventReviewPage> {
       // Event created successfully
       if (mounted && result.event != null) {
         // Navigate to success page
-        Navigator.pushReplacement(
+        AppNavigator.replaceBuilder(
           context,
-          MaterialPageRoute(
-            builder: (context) => EventPublishedPage(event: result.event!),
-          ),
+          builder: (context) => EventPublishedPage(event: result.event!),
         );
       }
     } catch (e) {
@@ -230,12 +236,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -283,6 +284,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final expertiseLevel = _currentUser?.getExpertiseLevel(widget.category);
 
     return AdaptivePlatformPageScaffold(
@@ -295,26 +297,23 @@ class _EventReviewPageState extends State<EventReviewPage> {
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Review Your Event',
-                    style: TextStyle(
-                      fontSize: 24,
+                    style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: context.spacing.xs),
                   Text(
                     'Please review all details before publishing',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -322,17 +321,17 @@ class _EventReviewPageState extends State<EventReviewPage> {
 
             // Event Details
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
                   _buildReviewRow('Title', widget.title),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Description
                   _buildReviewRow('Description', widget.description),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Category & Type
                   Row(
@@ -340,30 +339,30 @@ class _EventReviewPageState extends State<EventReviewPage> {
                       Expanded(
                         child: _buildReviewRow('Category', widget.category),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: context.spacing.md),
                       Expanded(
                         child: _buildReviewRow(
                             'Type', _getEventTypeDisplayName(widget.eventType)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Date & Time
                   _buildReviewRow(
                     'Date & Time',
                     '${_formatDateTime(widget.startTime)} - ${_formatTime(widget.endTime)}\nDuration: ${_formatDuration(widget.startTime, widget.endTime)}',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Location
                   _buildReviewRow('Location', widget.location),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Max Attendees
                   _buildReviewRow(
                       'Max Attendees', widget.maxAttendees.toString()),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Price
                   _buildReviewRow(
@@ -372,7 +371,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
                         ? '\$${widget.price!.toStringAsFixed(2)}'
                         : 'Free',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Sales Tax (if price is set)
                   if (widget.price != null && widget.price! > 0) ...[
@@ -388,32 +387,26 @@ class _EventReviewPageState extends State<EventReviewPage> {
                         'Sales Tax',
                         '${_taxRate.toStringAsFixed(2)}% (\$${_salesTax.toStringAsFixed(2)})',
                       ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                     // Total with Tax
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                        ),
-                      ),
+                    PortalSurface(
+                      padding: EdgeInsets.all(context.spacing.sm),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                      borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
+                      radius: context.radius.sm,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Total Price',
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                           ),
                           Text(
                             '\$${((widget.price ?? 0.0) + _salesTax).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryColor,
                             ),
@@ -421,51 +414,44 @@ class _EventReviewPageState extends State<EventReviewPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                   ],
 
                   // Public/Private
                   _buildReviewRow(
                       'Visibility', widget.isPublic ? 'Public' : 'Private'),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.spacing.xl),
 
                   // Expertise Requirements
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.electricGreen.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.electricGreen.withValues(alpha: 0.3),
-                      ),
-                    ),
+                  PortalSurface(
+                    padding: EdgeInsets.all(context.spacing.sm),
+                    color: AppColors.electricGreen.withValues(alpha: 0.1),
+                    borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                    radius: context.radius.sm,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.verified,
+                            const Icon(Icons.verified,
                                 color: AppColors.electricGreen, size: 20),
-                            SizedBox(width: 8),
+                            SizedBox(width: context.spacing.xs),
                             Text(
                               'Expertise Verified',
-                              style: TextStyle(
-                                fontSize: 14,
+                              style: textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.electricGreen,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: context.spacing.xs),
                         Text(
                           expertiseLevel != null
                               ? 'You have ${expertiseLevel.displayName} level expertise in ${widget.category} (Required: Local level+)'
                               : 'Expertise level will be verified before publishing',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -477,24 +463,21 @@ class _EventReviewPageState extends State<EventReviewPage> {
             // Error Display
             if (_error != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
+                child: PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -504,7 +487,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
 
             // Action Buttons
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               child: Column(
                 children: [
                   SizedBox(
@@ -514,24 +497,25 @@ class _EventReviewPageState extends State<EventReviewPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: context.spacing.md),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius:
+                              BorderRadius.circular(context.radius.md),
                         ),
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(
                               color: AppColors.white)
-                          : const Text(
+                          : Text(
                               'Publish Event',
-                              style: TextStyle(
-                                fontSize: 16,
+                              style: textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
@@ -539,7 +523,8 @@ class _EventReviewPageState extends State<EventReviewPage> {
                           _isLoading ? null : () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: context.spacing.md),
                         side: const BorderSide(color: AppColors.grey300),
                       ),
                       child: const Text('Edit Details'),
@@ -555,24 +540,21 @@ class _EventReviewPageState extends State<EventReviewPage> {
   }
 
   Widget _buildReviewRow(String label, String value) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
+          style: textTheme.bodySmall?.copyWith(
             color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: context.spacing.xxs),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppColors.textPrimary,
-          ),
+          style: textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
         ),
       ],
     );

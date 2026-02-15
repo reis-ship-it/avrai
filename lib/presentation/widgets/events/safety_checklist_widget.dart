@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/events/event_safety_guidelines.dart';
@@ -6,13 +7,14 @@ import 'package:avrai/core/services/events/event_safety_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Safety Checklist Widget
-/// 
+///
 /// Agent 2: Phase 5, Week 16-17 - Safety Checklist UI
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Checklist of safety requirements
 /// - Emergency contact form
@@ -116,21 +118,11 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Safety guidelines acknowledged'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Safety guidelines acknowledged');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -138,9 +130,9 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(context.spacing.xl),
           child: CircularProgressIndicator(),
         ),
       );
@@ -148,8 +140,8 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
 
     if (_error != null) {
       return Container(
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
+        margin: EdgeInsets.all(context.spacing.md),
         decoration: BoxDecoration(
           color: AppColors.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
@@ -159,14 +151,17 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
           children: [
             const Icon(Icons.error_outline, color: AppColors.error),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Error loading safety guidelines',
-              style: TextStyle(color: AppColors.error),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.error),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: _loadGuidelines,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -178,8 +173,8 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     }
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.all(context.spacing.md),
+      padding: EdgeInsets.all(context.spacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -212,7 +207,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(context.spacing.sm),
           decoration: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -224,25 +219,23 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
           ),
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Safety Checklist',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
-              SizedBox(height: 4),
+              SizedBox(height: context.spacing.xxs),
               Text(
                 'Ensure your event meets safety requirements',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -257,16 +250,16 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Safety Requirements',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
-        ...requirements.map((requirement) => _buildRequirementItem(requirement)),
+        ...requirements
+            .map((requirement) => _buildRequirementItem(requirement)),
       ],
     );
   }
@@ -277,8 +270,8 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     final icon = _getRequirementIcon(requirement);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: context.spacing.sm),
+      padding: EdgeInsets.all(context.spacing.md),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
@@ -294,20 +287,18 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               children: [
                 Text(
                   displayName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 if (description != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ],
@@ -329,23 +320,22 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(Icons.emergency, color: AppColors.error, size: 20),
             SizedBox(width: 8),
             Text(
               'Emergency Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           decoration: BoxDecoration(
             color: AppColors.error.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
@@ -355,20 +345,20 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (emergencyInfo.contacts.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Emergency Contacts:',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 ...emergencyInfo.contacts.map((contact) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: EdgeInsets.only(bottom: context.spacing.xs),
                       child: Row(
                         children: [
-                          const Icon(Icons.person, size: 16, color: AppColors.textSecondary),
+                          const Icon(Icons.person,
+                              size: 16, color: AppColors.textSecondary),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Column(
@@ -376,17 +366,21 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                               children: [
                                 Text(
                                   '${contact.name} (${contact.role})',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textPrimary,
+                                      ),
                                 ),
                                 Text(
                                   contact.phone,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ),
@@ -397,58 +391,52 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                 const SizedBox(height: 12),
               ],
               if (emergencyInfo.nearestHospital != null) ...[
-                const Text(
+                Text(
                   'Nearest Hospital:',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   emergencyInfo.nearestHospital!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 if (emergencyInfo.nearestHospitalAddress != null) ...[
                   Text(
                     emergencyInfo.nearestHospitalAddress!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
                 if (emergencyInfo.nearestHospitalPhone != null) ...[
                   Text(
                     emergencyInfo.nearestHospitalPhone!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
                 const SizedBox(height: 12),
               ],
               if (emergencyInfo.meetingPoint != null) ...[
-                const Text(
+                Text(
                   'Emergency Meeting Point:',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   emergencyInfo.meetingPoint!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ],
@@ -468,30 +456,32 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
           children: [
             Icon(
               Icons.shield,
-              color: insurance.required ? AppColors.error : AppTheme.warningColor,
+              color:
+                  insurance.required ? AppColors.error : AppTheme.warningColor,
               size: 20,
             ),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               'Insurance Recommendation',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           decoration: BoxDecoration(
-            color: (insurance.required ? AppColors.error : AppTheme.warningColor)
-                .withValues(alpha: 0.05),
+            color:
+                (insurance.required ? AppColors.error : AppTheme.warningColor)
+                    .withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (insurance.required ? AppColors.error : AppTheme.warningColor)
-                  .withValues(alpha: 0.2),
+              color:
+                  (insurance.required ? AppColors.error : AppTheme.warningColor)
+                      .withValues(alpha: 0.2),
             ),
           ),
           child: Column(
@@ -500,7 +490,10 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.spacing.xs,
+                      vertical: context.spacing.xxs,
+                    ),
                     decoration: BoxDecoration(
                       color: insurance.required
                           ? AppColors.error
@@ -509,11 +502,10 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                     ),
                     child: Text(
                       insurance.required ? 'REQUIRED' : 'RECOMMENDED',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.white,
+                          ),
                     ),
                   ),
                 ],
@@ -521,42 +513,42 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
               const SizedBox(height: 12),
               Text(
                 insurance.explanation,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Suggested Coverage: \$${insurance.suggestedCoverageAmount.toStringAsFixed(0)}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               if (insurance.insuranceProviders.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   'Recommended Providers:',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 ...insurance.insuranceProviders.map((provider) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: EdgeInsets.only(bottom: context.spacing.xxs),
                       child: Row(
                         children: [
-                          const Icon(Icons.check, size: 14, color: AppColors.electricGreen),
+                          const Icon(Icons.check,
+                              size: 14, color: AppColors.electricGreen),
                           const SizedBox(width: 4),
                           Text(
                             provider,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
@@ -571,7 +563,7 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
 
   Widget _buildAcknowledgment() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
@@ -592,25 +584,23 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
                   },
             activeColor: AppTheme.primaryColor,
           ),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'I acknowledge the safety requirements',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'By checking this box, you confirm that you understand and will comply with all safety requirements for this event.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -713,4 +703,3 @@ class _SafetyChecklistWidgetState extends State<SafetyChecklistWidget> {
     }
   }
 }
-

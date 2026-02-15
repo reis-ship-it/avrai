@@ -7,17 +7,18 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Event Hosting Unlock Widget
 /// Shows when user unlocks event hosting (Local level+ required)
 /// OUR_GUTS.md: "The key opens doors to events"
-/// 
+///
 /// **Usage Example:**
 /// ```dart
 /// EventHostingUnlockWidget(
 ///   user: currentUser,
 ///   onUnlockTap: () {
-///     Navigator.push(context, MaterialPageRoute(
+///     AppNavigator.pushBuilder(context,
 ///       builder: (context) => CreateEventPage(),
 ///     ));
 ///   },
@@ -36,7 +37,8 @@ class EventHostingUnlockWidget extends StatefulWidget {
   });
 
   @override
-  State<EventHostingUnlockWidget> createState() => _EventHostingUnlockWidgetState();
+  State<EventHostingUnlockWidget> createState() =>
+      _EventHostingUnlockWidgetState();
 }
 
 class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
@@ -46,7 +48,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
   bool _wasUnlockedBefore = false;
   ExpertiseLevel? _currentHighestLevel;
   ExpertiseProgress? _progressToCity;
-  
+
   late AnimationController _unlockAnimationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -63,7 +65,8 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
         'sessionId': 'debug-session',
         'runId': 'pre-fix-init',
         'hypothesisId': 'H1',
-        'location': 'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:initState',
+        'location':
+            'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:initState',
         'message': 'EventHostingUnlockWidget initialized',
         'data': {
           'userId': widget.user.id,
@@ -75,7 +78,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     _initAnimations();
     _checkUnlockStatus();
   }
@@ -114,7 +117,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
   @override
   void didUpdateWidget(EventHostingUnlockWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // #region agent log
     // Debug mode: log widget update (no PII values)
     try {
@@ -124,7 +127,8 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
         'sessionId': 'debug-session',
         'runId': 'pre-fix-did-update',
         'hypothesisId': 'H4',
-        'location': 'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:didUpdateWidget',
+        'location':
+            'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:didUpdateWidget',
         'message': 'Widget updated',
         'data': {
           'userIdChanged': oldWidget.user.id != widget.user.id,
@@ -134,7 +138,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     if (oldWidget.user.id != widget.user.id) {
       _checkUnlockStatus();
     }
@@ -144,7 +148,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
     // Check if user can host events (Local level+ required)
     final wasUnlocked = _isUnlocked;
     _isUnlocked = widget.user.canHostEvents();
-    
+
     // #region agent log
     // Debug mode: log unlock status check (no PII values)
     try {
@@ -154,7 +158,8 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
         'sessionId': 'debug-session',
         'runId': 'pre-fix-unlock-check',
         'hypothesisId': 'H2',
-        'location': 'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:_checkUnlockStatus',
+        'location':
+            'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:_checkUnlockStatus',
         'message': 'Unlock status checked',
         'data': {
           'wasUnlocked': wasUnlocked,
@@ -167,13 +172,13 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     // Track if user was unlocked before widget initialization
     // This prevents showing animation on first load if already unlocked
     if (!_wasUnlockedBefore) {
       _wasUnlockedBefore = wasUnlocked || _isUnlocked;
     }
-    
+
     // Trigger unlock animation if just unlocked (and wasn't already unlocked before init)
     if (!wasUnlocked && _isUnlocked && !_wasUnlockedBefore) {
       _unlockAnimationController.reset();
@@ -182,7 +187,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
 
     // Get highest expertise level
     final pins = _expertiseService.getUserPins(widget.user);
-    
+
     // #region agent log
     // Debug mode: log expertise level calculation (no PII values)
     try {
@@ -192,7 +197,8 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
         'sessionId': 'debug-session',
         'runId': 'pre-fix-expertise-level',
         'hypothesisId': 'H3',
-        'location': 'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:_checkUnlockStatus',
+        'location':
+            'lib/presentation/widgets/expertise/event_hosting_unlock_widget.dart:_checkUnlockStatus',
         'message': 'Expertise level calculated',
         'data': {
           'pinsCount': pins.length,
@@ -203,7 +209,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     if (pins.isNotEmpty) {
       pins.sort((a, b) => b.level.index.compareTo(a.level.index));
       _currentHighestLevel = pins.first.level;
@@ -245,10 +251,11 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return GestureDetector(
       onTap: _isUnlocked ? widget.onUnlockTap : widget.onProgressTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(spacing.md + spacing.xxs),
         decoration: BoxDecoration(
           color: _isUnlocked
               ? AppTheme.primaryColor.withValues(alpha: 0.1)
@@ -261,14 +268,13 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             width: 2,
           ),
         ),
-        child: _isUnlocked
-            ? _buildUnlockedState()
-            : _buildLockedState(),
+        child: _isUnlocked ? _buildUnlockedState() : _buildLockedState(),
       ),
     );
   }
 
   Widget _buildUnlockedState() {
+    final spacing = context.spacing;
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ScaleTransition(
@@ -280,7 +286,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(spacing.sm),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
@@ -292,25 +298,23 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Event Hosting Unlocked!',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'You can now create and host events',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -321,7 +325,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
 
             // Current Level Display
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -332,16 +336,15 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                   if (_currentHighestLevel != null) ...[
                     Text(
                       _currentHighestLevel!.emoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '${_currentHighestLevel!.displayName} Level',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ],
@@ -355,11 +358,12 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
               child: ElevatedButton.icon(
                 onPressed: widget.onUnlockTap,
                 icon: const Icon(Icons.event, size: 20),
-                label: const Text('Create Event'),
+                label: Text('Create Event'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding:
+                      EdgeInsets.symmetric(vertical: spacing.sm + spacing.xxs),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -373,6 +377,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
   }
 
   Widget _buildLockedState() {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -380,7 +385,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: const BoxDecoration(
                 color: AppColors.grey200,
                 shape: BoxShape.circle,
@@ -392,25 +397,23 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
               ),
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Unlock Event Hosting',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     'Reach Local level expertise to host events',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -421,7 +424,7 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
 
         // Requirement Display
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(spacing.sm),
           decoration: BoxDecoration(
             color: AppColors.grey50,
             borderRadius: BorderRadius.circular(8),
@@ -437,10 +440,9 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
               Expanded(
                 child: Text(
                   'Requirement: ${ExpertiseLevel.local.emoji} ${ExpertiseLevel.local.displayName} Level or higher',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
             ],
@@ -453,27 +455,25 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Current Level',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               Row(
                 children: [
                   Text(
                     _currentHighestLevel!.emoji,
-                    style: const TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     _currentHighestLevel!.displayName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                 ],
               ),
@@ -489,18 +489,16 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             children: [
               Text(
                 'Progress to ${ExpertiseLevel.local.displayName}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               Text(
                 '${_progressToCity!.progressPercentage.toStringAsFixed(0)}%',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.primaryColor,
+                    ),
               ),
             ],
           ),
@@ -519,7 +517,8 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                   value: value,
                   minHeight: 8,
                   backgroundColor: AppColors.grey200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppTheme.primaryColor),
                 ),
               );
             },
@@ -527,19 +526,19 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
           const SizedBox(height: 8),
           Text(
             _progressToCity!.getFormattedProgress(),
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
 
         const SizedBox(height: 16),
 
         // Next Steps
-        if (_progressToCity != null && _progressToCity!.nextSteps.isNotEmpty) ...[
+        if (_progressToCity != null &&
+            _progressToCity!.nextSteps.isNotEmpty) ...[
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(spacing.sm),
             decoration: BoxDecoration(
               color: AppColors.grey50,
               borderRadius: BorderRadius.circular(8),
@@ -547,23 +546,25 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Next Steps:',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 ..._progressToCity!.nextSteps.take(2).map((step) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: EdgeInsets.only(bottom: spacing.xxs),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: 6, right: 8),
+                          margin: EdgeInsets.only(
+                            top: spacing.xxs,
+                            right: spacing.xs,
+                          ),
                           width: 4,
                           height: 4,
                           decoration: const BoxDecoration(
@@ -574,10 +575,12 @@ class _EventHostingUnlockWidgetState extends State<EventHostingUnlockWidget>
                         Expanded(
                           child: Text(
                             step,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ),
                       ],
@@ -607,9 +610,10 @@ class EventHostingUnlockNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.all(spacing.md),
+      padding: EdgeInsets.all(spacing.md + spacing.xxs),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
@@ -622,32 +626,30 @@ class EventHostingUnlockNotification extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Celebration Icon
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '🎉',
-                style: TextStyle(fontSize: 32),
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Event Hosting Unlocked!',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'You\'ve reached Local level expertise. You can now create and host events!',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -656,9 +658,12 @@ class EventHostingUnlockNotification extends StatelessWidget {
               Expanded(
                 child: TextButton(
                   onPressed: onDismiss,
-                  child: const Text(
+                  child: Text(
                     'Dismiss',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
               ),
@@ -670,7 +675,7 @@ class EventHostingUnlockNotification extends StatelessWidget {
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
                   ),
-                  child: const Text('Create Event'),
+                  child: Text('Create Event'),
                 ),
               ),
             ],
@@ -680,4 +685,3 @@ class EventHostingUnlockNotification extends StatelessWidget {
     );
   }
 }
-

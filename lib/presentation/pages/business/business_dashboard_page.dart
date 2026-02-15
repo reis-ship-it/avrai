@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_auth_service.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/models/business/business_account.dart';
@@ -13,6 +15,8 @@ import 'package:avrai/presentation/pages/business/reservations/reservation_setti
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Dashboard Page
 /// Main dashboard for business accounts after login
@@ -50,10 +54,9 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       if (_authService == null || !_authService!.isAuthenticated()) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const BusinessLoginPage(),
-              ),
+            AppNavigator.replaceBuilder(
+              context,
+              builder: (context) => const BusinessLoginPage(),
             );
           }
         });
@@ -103,10 +106,9 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
   Future<void> _handleLogout() async {
     await _authService?.logout();
     if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const BusinessLoginPage(),
-        ),
+      AppNavigator.replaceBuilder(
+        context,
+        builder: (context) => const BusinessLoginPage(),
       );
     }
   }
@@ -129,7 +131,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
         appBarBackgroundColor: Colors.transparent,
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(kSpaceLg),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -138,13 +140,16 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(color: AppColors.error),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.error),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _loadBusinessData,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -167,98 +172,94 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       body: RefreshIndicator(
         onRefresh: _loadBusinessData,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Business Info Card
               if (_businessAccount != null) ...[
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.business,
-                                color: AppTheme.primaryColor),
-                            const SizedBox(width: 8),
-                            Text(
-                              _businessAccount!.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
-                            ),
-                            const Spacer(),
-                            if (_businessAccount!.isVerified)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppColors.success.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.verified,
-                                      size: 16,
-                                      color: AppColors.success,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Verified',
-                                      style: TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
-                        if (_businessAccount!.description != null) ...[
-                          const SizedBox(height: 8),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceMd),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.business,
+                              color: AppTheme.primaryColor),
+                          const SizedBox(width: 8),
                           Text(
-                            _businessAccount!.description!,
+                            _businessAccount!.name,
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyMedium
+                                .headlineSmall
                                 ?.copyWith(
-                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
                                 ),
                           ),
+                          const Spacer(),
+                          if (_businessAccount!.isVerified)
+                            Chip(
+                              side: BorderSide.none,
+                              visualDensity: const VisualDensity(
+                                horizontal: -4,
+                                vertical: -4,
+                              ),
+                              backgroundColor:
+                                  AppColors.success.withValues(alpha: 0.1),
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.verified,
+                                    size: 16,
+                                    color: AppColors.success,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Verified',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.success,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
-                        const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            if (_businessAccount!.location != null)
-                              Chip(
-                                label: Text(_businessAccount!.location!),
-                                avatar: const Icon(Icons.location_on, size: 16),
-                              ),
-                            if (_businessAccount!.businessType.isNotEmpty)
-                              Chip(
-                                label: Text(_businessAccount!.businessType),
-                                avatar: const Icon(Icons.category, size: 16),
-                              ),
-                          ],
+                      ),
+                      if (_businessAccount!.description != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          _businessAccount!.description!,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
-                    ),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (_businessAccount!.location != null)
+                            Chip(
+                              label: Text(_businessAccount!.location!),
+                              avatar: const Icon(Icons.location_on, size: 16),
+                            ),
+                          if (_businessAccount!.businessType.isNotEmpty)
+                            Chip(
+                              label: Text(_businessAccount!.businessType),
+                              avatar: const Icon(Icons.category, size: 16),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -289,12 +290,10 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     onTap: () {
                       final businessId = _businessAccount?.id;
                       if (businessId != null) {
-                        Navigator.push(
+                        AppNavigator.pushBuilder(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => BusinessConversationsListPage(
-                              businessId: businessId,
-                            ),
+                          builder: (context) => BusinessConversationsListPage(
+                            businessId: businessId,
                           ),
                         );
                       }
@@ -308,12 +307,10 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     onTap: () {
                       final businessId = _businessAccount?.id;
                       if (businessId != null) {
-                        Navigator.push(
+                        AppNavigator.pushBuilder(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => BusinessExpertDiscoveryPage(
-                              businessId: businessId,
-                            ),
+                          builder: (context) => BusinessExpertDiscoveryPage(
+                            businessId: businessId,
                           ),
                         );
                       }
@@ -327,12 +324,10 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     onTap: () {
                       final businessId = _businessAccount?.id;
                       if (businessId != null) {
-                        Navigator.push(
+                        AppNavigator.pushBuilder(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => ReservationDashboardPage(
-                              businessId: businessId,
-                            ),
+                          builder: (context) => ReservationDashboardPage(
+                            businessId: businessId,
                           ),
                         );
                       }
@@ -345,10 +340,10 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     subtitle: 'Manage events',
                     onTap: () {
                       // TODO: Navigate to events
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Events feature coming soon'),
-                        ),
+                      FeedbackPresenter.showSnack(
+                        context,
+                        message: 'Events feature coming soon',
+                        kind: FeedbackKind.info,
                       );
                     },
                   ),
@@ -360,14 +355,12 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     onTap: () {
                       final businessId = _businessAccount?.id;
                       if (businessId != null) {
-                        Navigator.push(
+                        AppNavigator.pushBuilder(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                BusinessReservationAnalyticsPage(
-                              businessId: businessId,
-                              type: ReservationType.business,
-                            ),
+                          builder: (context) =>
+                              BusinessReservationAnalyticsPage(
+                            businessId: businessId,
+                            type: ReservationType.business,
                           ),
                         );
                       }
@@ -386,54 +379,49 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     ),
               ),
               const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.settings,
-                            color: AppTheme.primaryColor,
-                            size: 20,
+              PortalSurface(
+                padding: const EdgeInsets.all(kSpaceMd),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.settings,
+                          color: AppTheme.primaryColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Reservation Preferences',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Manage reservation hours, capacity, time slots, and cancellation policies.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Reservation Preferences',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: () {
+                        AppNavigator.pushBuilder(
+                          context,
+                          builder: (context) => ReservationSettingsPage(
+                            businessId: _businessAccount?.id ?? '',
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Manage reservation hours, capacity, time slots, and cancellation policies.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ReservationSettingsPage(
-                                businessId: _businessAccount?.id ?? '',
-                              ),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Configure Settings'),
-                      ),
-                    ],
-                  ),
+                        );
+                      },
+                      icon: const Icon(Icons.arrow_forward),
+                      label: Text('Configure Settings'),
+                    ),
+                  ],
                 ),
               ),
 
@@ -466,12 +454,13 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return Card(
+    return PortalSurface(
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

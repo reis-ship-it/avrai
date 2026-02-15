@@ -1,13 +1,13 @@
 /// Action History Item Widget
-/// 
+///
 /// Part of Feature Matrix Phase 7, Week 33: Action Execution UI & Integration
-/// 
+///
 /// Displays a single action history entry with:
 /// - Action type and description
 /// - Timestamp
 /// - Success/error status indicator
 /// - Undo button (if undoable)
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
@@ -15,15 +15,16 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/ai/action_history_entry.dart';
 import 'package:avrai/core/ai/action_models.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget that displays a single action history entry
 class ActionHistoryItemWidget extends StatelessWidget {
   /// The action history entry to display
   final ActionHistoryEntry entry;
-  
+
   /// Callback when undo is requested
   final VoidCallback? onUndo;
-  
+
   /// Whether to show detailed information
   final bool showDetails;
 
@@ -55,7 +56,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,7 +65,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
               children: [
                 // Icon
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(kSpaceXs),
                   decoration: BoxDecoration(
                     color: entry.isUndone
                         ? AppColors.grey200
@@ -84,7 +85,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Content
                 Expanded(
                   child: Column(
@@ -96,49 +97,53 @@ class ActionHistoryItemWidget extends StatelessWidget {
                           Expanded(
                             child: Text(
                               title,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: entry.isUndone
-                                    ? AppColors.textSecondary
-                                    : AppColors.textPrimary,
-                                decoration: entry.isUndone
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: entry.isUndone
+                                        ? AppColors.textSecondary
+                                        : AppColors.textPrimary,
+                                    decoration: entry.isUndone
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                  ),
                             ),
                           ),
                           if (entry.isUndone)
-                            const Text(
+                            Text(
                               '(Undone)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                                fontStyle: FontStyle.italic,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                             ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      
+
                       // Subtitle
                       Text(
                         subtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      
+
                       // Result message
-                      if (entry.result.successMessage != null || entry.result.errorMessage != null)
+                      if (entry.result.successMessage != null ||
+                          entry.result.errorMessage != null)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                            horizontal: kSpaceXs,
+                            vertical: kSpaceXxs,
                           ),
                           decoration: BoxDecoration(
                             color: entry.result.success
@@ -164,12 +169,14 @@ class ActionHistoryItemWidget extends StatelessWidget {
                                   entry.result.successMessage ??
                                       entry.result.errorMessage ??
                                       '',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: entry.result.success
-                                        ? AppColors.electricGreen
-                                        : AppColors.error,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: entry.result.success
+                                            ? AppColors.electricGreen
+                                            : AppColors.error,
+                                      ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -178,27 +185,26 @@ class ActionHistoryItemWidget extends StatelessWidget {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      
+
                       // Timestamp
                       Text(
                         timeAgo,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textHint,
+                            ),
                       ),
-                      
+
                       // Detailed information (if showDetails is true)
                       if (showDetails) ...[
                         const SizedBox(height: 12),
                         const Divider(),
                         const SizedBox(height: 8),
-                        _buildDetailsSection(),
+                        _buildDetailsSection(context),
                       ],
                     ],
                   ),
                 ),
-                
+
                 // Undo button
                 if (entry.canUndo && !entry.isUndone && onUndo != null)
                   IconButton(
@@ -215,51 +221,46 @@ class ActionHistoryItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsSection() {
+  Widget _buildDetailsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Details',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           'Action ID: ${entry.id}',
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textHint,
-            fontFamily: 'monospace',
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textHint,
+                fontFamily: 'monospace',
+              ),
         ),
         Text(
           'Timestamp: ${entry.timestamp.toIso8601String()}',
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textHint,
-            fontFamily: 'monospace',
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textHint,
+                fontFamily: 'monospace',
+              ),
         ),
         Text(
           'User ID: ${entry.userId}',
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textHint,
-            fontFamily: 'monospace',
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textHint,
+                fontFamily: 'monospace',
+              ),
         ),
         if (entry.result.data.isNotEmpty)
           Text(
             'Data: ${entry.result.data.toString()}',
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textHint,
-              fontFamily: 'monospace',
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textHint,
+                  fontFamily: 'monospace',
+                ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -295,7 +296,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
 
   String _getSubtitleForEntry(ActionHistoryEntry entry) {
     final intent = entry.intent;
-    
+
     if (intent.type == 'create_spot') {
       if (intent is CreateSpotIntent) {
         return intent.name;
@@ -314,7 +315,7 @@ class ActionHistoryItemWidget extends StatelessWidget {
       }
       return 'Add spot to list';
     }
-    
+
     return 'Action details';
   }
 
@@ -345,4 +346,3 @@ class ActionHistoryItemWidget extends StatelessWidget {
     }
   }
 }
-

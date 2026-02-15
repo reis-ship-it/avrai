@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -8,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -47,17 +50,12 @@ class _LoginPageState extends State<LoginPage> {
                 _isSubmitting = false;
               });
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
+            context.showError(state.message);
           }
         },
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(kSpaceLg),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: (MediaQuery.of(context).size.height -
@@ -219,11 +217,9 @@ class _LoginPageState extends State<LoginPage> {
                       // Business Login Button
                       OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.push(
+                          AppNavigator.pushBuilder(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const BusinessLoginPage(),
-                            ),
+                            builder: (context) => const BusinessLoginPage(),
                           );
                         },
                         icon: const Icon(Icons.business, size: 18),
@@ -238,11 +234,9 @@ class _LoginPageState extends State<LoginPage> {
                       // Admin Login Button
                       OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.push(
+                          AppNavigator.pushBuilder(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const GodModeLoginPage(),
-                            ),
+                            builder: (context) => const GodModeLoginPage(),
                           );
                         },
                         icon: const Icon(Icons.admin_panel_settings, size: 18),

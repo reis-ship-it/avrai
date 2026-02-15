@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Heatmap widget for pattern strength visualization
 class KnotPatternHeatmap extends StatelessWidget {
@@ -45,7 +46,7 @@ class KnotPatternHeatmap extends StatelessWidget {
       children: [
         // Title
         Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: kSpaceMd),
           child: Text(
             'Pattern Strength Heatmap',
             style: Theme.of(context).textTheme.titleMedium,
@@ -92,23 +93,21 @@ class KnotPatternHeatmap extends StatelessWidget {
                     children: [
                       Text(
                         (index + 1).toString(),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: colorIntensity > 0.5
-                              ? AppColors.white
-                              : AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorIntensity > 0.5
+                                  ? AppColors.white
+                                  : AppTheme.primaryColor,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         strength.toStringAsFixed(2),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: colorIntensity > 0.5
-                              ? AppColors.white
-                              : AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: colorIntensity > 0.5
+                                  ? AppColors.white
+                                  : AppTheme.primaryColor,
+                            ),
                       ),
                     ],
                   ),
@@ -121,7 +120,7 @@ class KnotPatternHeatmap extends StatelessWidget {
         // Legend
         Row(
           children: [
-            const Text('Low', style: TextStyle(fontSize: 12)),
+            Text('Low', style: Theme.of(context).textTheme.bodySmall),
             Expanded(
               child: Container(
                 height: 20,
@@ -136,7 +135,7 @@ class KnotPatternHeatmap extends StatelessWidget {
                 ),
               ),
             ),
-            const Text('High', style: TextStyle(fontSize: 12)),
+            Text('High', style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ],

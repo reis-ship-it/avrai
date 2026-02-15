@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -81,7 +83,9 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
                 leading: Icon(Icons.delete, color: AppColors.error),
                 title: Text(
                   'Remove photo',
-                  style: TextStyle(color: AppColors.error),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.error,
+                      ),
                 ),
                 onTap: () => Navigator.pop(context, 'remove'),
               ),
@@ -151,12 +155,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to pick image: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Failed to pick image: $e');
       }
     } finally {
       if (mounted) {
@@ -198,9 +197,10 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -212,7 +212,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             "Tell us what to call you. You can add a photo if you'd like.",
             style: theme.textTheme.bodyLarge?.copyWith(
@@ -220,51 +220,44 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Profile Photo
           GestureDetector(
             onTap: _showPhotoOptions,
             child: Stack(
               children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primaryLight.withValues(alpha: 0.2),
-                    border: Border.all(
-                      color: AppColors.primary,
-                      width: 2,
+                CircleAvatar(
+                  radius: 60,
+                  backgroundColor: AppColors.primary,
+                  child: CircleAvatar(
+                    radius: 58,
+                    backgroundColor:
+                        AppColors.primaryLight.withValues(alpha: 0.2),
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 116,
+                        height: 116,
+                        child: _photoPath == null
+                            ? Icon(
+                                Icons.person,
+                                size: 48,
+                                color: AppColors.primary,
+                              )
+                            : Image.file(
+                                File(_photoPath!),
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
-                    image: _photoPath != null
-                        ? DecorationImage(
-                            image: FileImage(File(_photoPath!)),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
                   ),
-                  child: _photoPath == null
-                      ? Icon(
-                          Icons.person,
-                          size: 48,
-                          color: AppColors.primary,
-                        )
-                      : null,
                 ),
                 Positioned(
                   bottom: 0,
                   right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: theme.scaffoldBackgroundColor,
-                        width: 2,
-                      ),
-                    ),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColors.primary,
                     child: Icon(
                       _photoPath != null ? Icons.edit : Icons.add_a_photo,
                       size: 16,
@@ -274,11 +267,8 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
                 ),
                 if (_isPickingPhoto)
                   Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.black.withValues(alpha: 0.5),
-                        shape: BoxShape.circle,
-                      ),
+                    child: ColoredBox(
+                      color: AppColors.black.withValues(alpha: 0.5),
                       child: const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.white,
@@ -290,7 +280,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Text(
             'Tap to add photo (optional)',
             style: theme.textTheme.bodySmall?.copyWith(
@@ -298,7 +288,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Display Name Input
           Column(
@@ -310,14 +300,14 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               Text(
                 "This is how you'll appear to others in the app.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing.md),
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -336,7 +326,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
             ],
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Info card
           PortalSurface(
@@ -350,7 +340,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
                   color: AppColors.grey600,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: spacing.sm),
                 Expanded(
                   child: Text(
                     'Your name helps others recognize you at events and communities. '

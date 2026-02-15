@@ -1,7 +1,7 @@
 /// Privacy Metrics Widget
-/// 
+///
 /// Part of Feature Matrix Phase 2: Medium Priority UI/UX
-/// 
+///
 /// Widget showing privacy compliance, anonymization levels, and data protection metrics:
 /// - Privacy compliance display (personalized to user)
 /// - Anonymization levels (user-specific)
@@ -10,7 +10,7 @@
 /// - Data exposure level
 /// - Encryption strength
 /// - Privacy violations count
-/// 
+///
 /// Location: Settings/Account page (within Federated Learning section)
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
@@ -18,7 +18,10 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
-import 'package:avrai/core/services/infrastructure/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/presentation/presentation_spacing.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:get_it/get_it.dart';
 
 /// Widget displaying user-specific privacy metrics
@@ -65,7 +68,8 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
           _isLoading = false;
           _errorMessage = null;
         });
-      } else if (oldWidget.privacyMetrics != null && widget.privacyMetrics == null) {
+      } else if (oldWidget.privacyMetrics != null &&
+          widget.privacyMetrics == null) {
         // Transition back to live loading mode.
         _loadPrivacyMetrics();
       }
@@ -105,6 +109,8 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading || _privacyMetrics == null) {
       return _buildLoadingOrErrorState();
     }
@@ -118,180 +124,185 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.lock,
-                    color: AppColors.electricGreen,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Privacy Metrics',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(spacing.xs),
+                    decoration: BoxDecoration(
+                      color: AppColors.electricGreen.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.lock,
+                      color: AppColors.electricGreen,
+                      size: 24,
                     ),
                   ),
-                ),
-                Semantics(
-                  label: 'Learn more about privacy metrics',
-                  button: true,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.info_outline,
-                      color: AppColors.textSecondary,
-                      size: 20,
-                    ),
-                    onPressed: () => _showPrivacyInfoDialog(context),
-                    tooltip: 'Learn more about privacy',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Overall Privacy Score
-            Semantics(
-              label: 'Overall Privacy Score: ${(overallScore * 100).round()}%, $scoreLabel',
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: scoreColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: scoreColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Overall Privacy Score',
-                          style: TextStyle(
-                            fontSize: 16,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Privacy Metrics',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: scoreColor,
-                            borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  Semantics(
+                    label: 'Learn more about privacy metrics',
+                    button: true,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                      onPressed: () => _showPrivacyInfoDialog(context),
+                      tooltip: 'Learn more about privacy',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Overall Privacy Score
+              Semantics(
+                label:
+                    'Overall Privacy Score: ${(overallScore * 100).round()}%, $scoreLabel',
+                child: Container(
+                  padding: EdgeInsets.all(spacing.md),
+                  decoration: BoxDecoration(
+                    color: scoreColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: scoreColor.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Overall Privacy Score',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
-                          child: Text(
-                            '${(overallScore * 100).round()}%',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.surface,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: spacing.sm,
+                              vertical: spacing.xs - kSpaceNano,
+                            ),
+                            decoration: BoxDecoration(
+                              color: scoreColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${(overallScore * 100).round()}%',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.surface,
+                                  ),
                             ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        scoreLabel,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: scoreColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: overallScore,
+                          backgroundColor: AppColors.grey200,
+                          valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
+                          minHeight: 8,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      scoreLabel,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: scoreColor,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: overallScore,
-                        backgroundColor: AppColors.grey200,
-                        valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
-                        minHeight: 8,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Privacy Details',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+              const SizedBox(height: 16),
+              Text(
+                'Privacy Details',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
-            ),
-            const SizedBox(height: 12),
-            // Anonymization Level
-            _buildMetricRow(
-              'Anonymization Level',
-              _privacyMetrics!.anonymizationLevel,
-              Icons.visibility_off,
-              isGood: true,
-            ),
-            const SizedBox(height: 12),
-            // Re-identification Risk
-            _buildMetricRow(
-              'Re-identification Risk',
-              _privacyMetrics!.reidentificationRisk,
-              Icons.shield_outlined,
-              isRisk: true,
-            ),
-            const SizedBox(height: 12),
-            // Data Security Score
-            _buildMetricRow(
-              'Data Security Score',
-              _privacyMetrics!.dataSecurityScore,
-              Icons.security,
-              isGood: true,
-            ),
-            const SizedBox(height: 12),
-            // Data Exposure Level
-            _buildMetricRow(
-              'Data Exposure Level',
-              _privacyMetrics!.dataExposureLevel,
-              Icons.warning_outlined,
-              isRisk: true,
-            ),
-            const SizedBox(height: 12),
-            // Encryption Strength
-            _buildMetricRow(
-              'Encryption Strength',
-              _privacyMetrics!.encryptionStrength,
-              Icons.vpn_key,
-              isGood: true,
-            ),
-            const SizedBox(height: 12),
-            // Privacy Violations
-            _buildViolationsRow(),
-            const SizedBox(height: 12),
-            // Compliance Rate
-            _buildMetricRow(
-              'Privacy Compliance Rate',
-              _privacyMetrics!.complianceRate,
-              Icons.check_circle_outline,
-              isGood: true,
-            ),
+              const SizedBox(height: 12),
+              // Anonymization Level
+              _buildMetricRow(
+                'Anonymization Level',
+                _privacyMetrics!.anonymizationLevel,
+                Icons.visibility_off,
+                isGood: true,
+              ),
+              const SizedBox(height: 12),
+              // Re-identification Risk
+              _buildMetricRow(
+                'Re-identification Risk',
+                _privacyMetrics!.reidentificationRisk,
+                Icons.shield_outlined,
+                isRisk: true,
+              ),
+              const SizedBox(height: 12),
+              // Data Security Score
+              _buildMetricRow(
+                'Data Security Score',
+                _privacyMetrics!.dataSecurityScore,
+                Icons.security,
+                isGood: true,
+              ),
+              const SizedBox(height: 12),
+              // Data Exposure Level
+              _buildMetricRow(
+                'Data Exposure Level',
+                _privacyMetrics!.dataExposureLevel,
+                Icons.warning_outlined,
+                isRisk: true,
+              ),
+              const SizedBox(height: 12),
+              // Encryption Strength
+              _buildMetricRow(
+                'Encryption Strength',
+                _privacyMetrics!.encryptionStrength,
+                Icons.vpn_key,
+                isGood: true,
+              ),
+              const SizedBox(height: 12),
+              // Privacy Violations
+              _buildViolationsRow(),
+              const SizedBox(height: 12),
+              // Compliance Rate
+              _buildMetricRow(
+                'Privacy Compliance Rate',
+                _privacyMetrics!.complianceRate,
+                Icons.check_circle_outline,
+                isGood: true,
+              ),
             ],
           ),
         ),
@@ -300,15 +311,17 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
   }
 
   Widget _buildLoadingOrErrorState() {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
-        child: const Padding(
-          padding: EdgeInsets.all(24),
+        margin: EdgeInsets.only(bottom: spacing.md),
+        child: Padding(
+          padding: EdgeInsets.all(spacing.lg),
           child: Center(
             child: CircularProgressIndicator(
               color: AppColors.electricGreen,
@@ -323,11 +336,11 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           decoration: BoxDecoration(
             color: AppColors.error.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -349,10 +362,9 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
                   Expanded(
                     child: Text(
                       _errorMessage ?? 'An error occurred',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.error,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.error,
+                          ),
                     ),
                   ),
                 ],
@@ -361,7 +373,7 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
               ElevatedButton.icon(
                 onPressed: _loadPrivacyMetrics,
                 icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Retry'),
+                label: Text('Retry'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.electricGreen,
                   foregroundColor: AppColors.white,
@@ -381,13 +393,14 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
     bool isGood = false,
     bool isRisk = false,
   }) {
+    final spacing = context.spacing;
     final percentage = (value * 100).toStringAsFixed(1);
     final color = isRisk
         ? (value < 0.05 ? AppColors.electricGreen : AppColors.error)
         : _getScoreColor(value);
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -406,11 +419,10 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 ClipRRect(
@@ -428,11 +440,10 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
           const SizedBox(width: 12),
           Text(
             '$percentage%',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),
@@ -440,11 +451,12 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
   }
 
   Widget _buildViolationsRow() {
+    final spacing = context.spacing;
     final violations = _privacyMetrics!.privacyViolations;
     final color = violations == 0 ? AppColors.electricGreen : AppColors.error;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -461,29 +473,30 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
             color: color,
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
               'Privacy Violations',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.xs,
+              vertical: spacing.xxs,
+            ),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               violations == 0 ? 'None' : '$violations detected',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
           ),
         ],
@@ -505,6 +518,7 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
   }
 
   void _showPrivacyInfoDialog(BuildContext context) {
+    final spacing = context.spacing;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -512,20 +526,19 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.lock,
               color: AppColors.electricGreen,
             ),
-            SizedBox(width: 8),
+            SizedBox(width: spacing.xs),
             Text(
               'Privacy Metrics Explained',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
@@ -534,12 +547,11 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'These metrics show how well your data is protected in federated learning.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 16),
               _buildInfoItem(
@@ -568,26 +580,25 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
               ),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(spacing.sm),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(
                       Icons.info_outline,
                       size: 20,
                       color: AppColors.electricGreen,
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: spacing.xs),
                     Expanded(
                       child: Text(
                         'Your data stays on your device. Only anonymized patterns are shared.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                   ],
@@ -599,12 +610,12 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
+            child: Text(
               'Got it',
-              style: TextStyle(
-                color: AppColors.electricGreen,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.electricGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
         ],
@@ -613,39 +624,37 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
   }
 
   Widget _buildInfoItem(String title, String description) {
+    final spacing = context.spacing;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '•',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.electricGreen,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.electricGreen,
+                ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: spacing.xs),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -655,4 +664,3 @@ class _PrivacyMetricsWidgetState extends State<PrivacyMetricsWidget> {
     );
   }
 }
-

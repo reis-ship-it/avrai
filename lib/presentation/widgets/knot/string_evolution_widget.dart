@@ -1,5 +1,5 @@
 // String Evolution Widget
-// 
+//
 // Widget for visualizing string evolution as animated curves
 // Part of Low Priority Improvements
 // Patent #31: Topological Knot Theory for Personality Representation
@@ -7,12 +7,13 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart' hide Colors;
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 
 /// Widget for visualizing string evolution
-/// 
+///
 /// Features:
 /// - Animated curve visualization of knot evolution
 /// - Time-based playback
@@ -48,7 +49,8 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
   double _animationProgress = 0.0;
 
   // Visualization properties
-  String _selectedProperty = 'crossing_number'; // crossing_number, writhe, signature
+  String _selectedProperty =
+      'crossing_number'; // crossing_number, writhe, signature
 
   @override
   void initState() {
@@ -74,7 +76,8 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
 
   Future<void> _loadString() async {
     try {
-      final string = await widget.stringService.createStringFromHistory(widget.agentId);
+      final string =
+          await widget.stringService.createStringFromHistory(widget.agentId);
 
       if (mounted) {
         setState(() {
@@ -116,7 +119,7 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
       return SizedBox(
         width: widget.width,
         height: widget.height,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -138,7 +141,10 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
               const SizedBox(height: 8),
               Text(
                 'Error loading string',
-                style: TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
               ),
             ],
           ),
@@ -162,7 +168,10 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
               const SizedBox(height: 8),
               Text(
                 'No string evolution data',
-                style: TextStyle(color: AppColors.grey400),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.grey400),
               ),
             ],
           ),
@@ -206,7 +215,7 @@ class _StringEvolutionWidgetState extends State<StringEvolutionWidget>
 
         // Property selector
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
           child: DropdownButton<String>(
             value: _selectedProperty,
             items: const [
@@ -277,7 +286,8 @@ class StringEvolutionPainter extends CustomPainter {
     // Add initial knot
     final initialValue = _getPropertyValue(string.initialKnot);
     propertyValues.add(initialValue);
-    timePoints.add(startTime.subtract(const Duration(hours: 1))); // Before first snapshot
+    timePoints.add(
+        startTime.subtract(const Duration(hours: 1))); // Before first snapshot
 
     // Add snapshots up to current time
     for (final snapshot in sorted) {

@@ -1,8 +1,8 @@
-# Phase 6 Rationale: MPC Planner, System 1/2, SLM & Agent
+# Phase 6 Rationale: MPC Planner, Translation Layer & Autonomous Agent
 
-**Phase:** 6 | **Tier:** 2 (Depends on Phases 4 and 5) | **Duration:** 6-8 weeks  
+**Phase:** 6 | **Tier:** 2 (Depends on Phases 4 and 5) | **Duration:** 10-13 weeks  
 **Companion to:** `docs/MASTER_PLAN.md` Phase 6  
-**Read before starting:** `FOUNDATIONAL_DECISIONS.md` (Decisions #4, #7, #12)
+**Read before starting:** `FOUNDATIONAL_DECISIONS.md` (Decisions #4, #7, #12, #51, #52, #53)
 
 ---
 
@@ -97,4 +97,83 @@ Re-engagement must be a strategic response (strategy selection), not a spam trig
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 context -- planning/actor is the critical capability gap in their framework and in most recommendation systems. Previous: 1.0 v12 gap fill)
+## Why BLE Advertisement Payload Budget (6.6.6-6.6.7)
+
+**The problem:** BLE advertisements have ~31 bytes of usable payload space. Multiple features now compete for this space: AI2AI personality deltas (existing), organic spot discovery signals (Phase 1.7), device discovery metadata (existing), mesh chat routing headers (6.6.1-6.6.2), and locality agent update summaries (Phase 8.9). Without a payload budget, features silently clobber each other's data -- the last feature to write wins, and all other data is lost.
+
+**Why multiplexing (not larger payloads):** BLE Extended Advertising (BLE 5.0+) allows larger payloads, but: (a) not all devices support it, (b) larger advertisements consume more power, (c) the diversity of data types (personality, discovery, chat, locality) means different consumers need different data at different times. Rotating through payload types across successive advertisement intervals is more power-efficient and backwards-compatible.
+
+**Why priority ordering matters:** When multiple features need to advertise simultaneously (e.g., mesh chat message pending + AI2AI learning exchange in progress), which one wins? Priority order: (1) mesh chat (user-facing, time-sensitive), (2) device discovery (enables other features), (3) AI2AI personality exchange, (4) organic spot discovery, (5) locality agent. This ordering prioritizes user-visible features over background learning -- but the self-optimization engine (Phase 7.9) can re-evaluate this ordering based on happiness outcomes.
+
+**Post-quantum impact:** Phase 2.5 adds post-quantum encryption overhead to BLE payloads. The payload budget must account for larger encrypted headers, which may reduce the bytes available for feature data. The version header (2 bytes) in the schema enables forward compatibility when PQ overhead changes the byte allocation.
+
+---
+
+## Why Multi-Transport AI2AI (6.6.8-6.6.12)
+
+**The problem:** AI2AI communication is currently BLE-only, but BLE's 31-byte advertisement payload is a hard ceiling. Learning insights must be lossy-compressed, personality exchange is limited to deltas, and mesh chat is constrained. WiFi provides orders-of-magnitude more bandwidth.
+
+**Why WiFi local network:** When two devices are on the same WiFi network, they can exchange full-fidelity learning data. Solving the payload budget problem for co-located devices. No new hardware required -- just software routing.
+
+**Why WiFi Direct:** For intentional deep exchanges (event mode, model weight transfer), WiFi Direct creates a direct device-to-device WiFi link without a router. Maximum bandwidth, maximum privacy. Requires user consent.
+
+**Why VPN detection and fallback:** VPN tunnels block local network discovery (mDNS broadcasts don't escape the tunnel). Detecting VPN and falling back to BLE-only respects the user's privacy choice without breaking the system. Silent fallback -- no alarms.
+
+**Why transport-agnostic encryption:** Signal Protocol encrypts the same way over BLE, WiFi, and WiFi Direct. One security layer, multiple physical channels. This is transport-layer independence -- the encryption doesn't care how the bytes travel.
+
+---
+
+### Why SLM Active Life Pattern Engine (6.7B)
+
+**Problem:** The SLM (Phase 6.7) is limited to explaining recommendations. It's the mouth but not the ears. Users have no conversational interface for sharing context, plans, or immediate group needs.
+
+**Solution:** Extend the SLM with:
+1. **Intent extraction (6.7B.1):** Parse natural language into structured `SLMIntent` objects with action, who, what, when, where, sentiment.
+2. **Tool-calling framework (6.7B.2):** 7 tools the SLM can invoke: search_entities, form_group, adjust_parameter, set_exploration_mode, book_service, update_routine, share_schedule.
+3. **Conversational onboarding (6.7B.3):** "Tell me about your week" gives the routine model a 2-4 week head start from a 2-minute conversation.
+4. **Preference extraction (6.7B.7):** User statements like "I love Thai food" become the highest-confidence preference signals (8x weight).
+5. **Tier fallbacks (6.7B.8):** Cloud LLM on Tier 2, template matching on Tier 1/0 -- the active engine works on every device.
+
+**Why not alternatives:**
+- "Forms-based preference entry" -- Captures intent but loses nuance. "Somewhere quiet but not too fancy for my mom's birthday" can't be expressed in dropdown filters.
+- "Skip conversational planning" -- Loses the highest-confidence signals. User statements are 8x more valuable than behavioral signals.
+- "SLM-only, no fallbacks" -- Excludes Tier 1/2 users who make up the majority of the user base.
+
+**Pre-flight checklist for Phase 6.7B:**
+- [ ] Phase 6.7 SLM infrastructure exists (model loading, inference)
+- [ ] Phase 7.5 device tier system exists for tier gating
+- [ ] `LlmService` (Gemini cloud) exists for Tier 2 fallback
+- [ ] Phase 7.10A routine model exists for conversational onboarding to populate
+- [ ] Phase 1.4 signal hierarchy exists for 8x weighting
+- [ ] AI2AI protocol supports `group_confirmation` message type for 8.6B integration
+
+---
+
+### Why Reality-to-Language Translation Layer (6.7C)
+
+**Problem:** The world model's "brain" produces numeric outputs (energy scores, state vectors, transition probabilities). The SLM "mouth" produces natural language. There is no structured contract between them. Today the SLM receives raw numbers and improvises text, which leads to hallucinated explanations ("you'd love this because it's trendy" when the energy function scored high because of routine alignment, not trendiness). There is also no mechanism for the system to improve its OWN mathematical output formats -- if a state vector has 47 dimensions but only 12 carry information for a given recommendation, the wasted dimensions add noise to every translation.
+
+**Solution:** A structured semantic bridge (Phase 6.7C) with two self-healing directions:
+1. **Math → Language (vocabulary evolution, 6.7C.5):** The system learns which words produce user understanding vs. confusion. If users consistently misinterpret "routine alignment" but respond well to "fits your rhythm," the vocabulary evolves. Tracked by contrastive signals (Phase 1.2.16) -- "user acted on recommendation with explanation A" vs. "user ignored recommendation with explanation B."
+2. **Language → Math (format optimization, 6.7C.4):** The system's own mathematical output formats are candidates for self-improvement. If the 47D state vector has 12 near-zero dimensions for 90% of users, the self-optimization engine (Phase 7.9) can propose a more compact format -- and the observation bus (Phase 7.12) monitors whether the new format degrades translation quality.
+
+**Key architectural elements:**
+- **Semantic Bridge Schema (6.7C.1):** Structured intermediate representation that both brain and mouth understand -- `{ decision_type, contributing_factors[], confidence, temporal_context, emotional_valence }`
+- **Output Format Registry (6.7C.2):** Catalog of every world model output type with format, dimensionality, semantic meaning, and freshness requirements
+- **Grounding Enforcement (6.7C.6):** Every SLM sentence must cite a specific bridge schema field. "This spot fits your rhythm" must map to `contributing_factors: [routine_alignment: 0.82]`. If the SLM generates text that references nothing in the schema, the output is blocked and falls back to template
+
+**Why not alternatives:**
+- "Just prompt-engineer the SLM better" -- Prompts don't enforce grounding. The SLM can still hallucinate plausible-sounding explanations. Grounding enforcement catches this at runtime.
+- "Skip self-healing, just build a good bridge once" -- Violates the universal self-healing doctrine (Decision #52). The vocabulary that works for college students won't work for retirees. The formats that work for 1,000 users won't be optimal for 1,000,000.
+- "Let the SLM access raw model weights" -- Dangerous. The SLM should only see the semantic bridge output, never raw parameters. This preserves the brain/mouth separation.
+
+**Pre-flight checklist for Phase 6.7C:**
+- [ ] Phase 6.7 SLM infrastructure exists (model loading, inference)
+- [ ] Phase 4.6 explainability exists (feature attribution, energy decomposition)
+- [ ] Phase 7.9 self-optimization engine exists (for self-healing experiments)
+- [ ] Phase 7.12 observation bus exists (for monitoring translation quality)
+- [ ] Phase 1.2.16 contrastive signals exist (for vocabulary effectiveness tracking)
+
+---
+
+**Last Updated:** February 13, 2026 -- Version 1.3 (added Reality-to-Language Translation Layer 6.7C rationale. Updated title, duration 6-8→10-13 weeks, added Foundational Decisions #51/#52/#53 reference. Previous: 1.2 Multi-Transport AI2AI 6.6.8-6.6.12. Previous: 1.1 Zeng et al. 2026 context)

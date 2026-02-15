@@ -3,10 +3,12 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai/core/services/onboarding/onboarding_suggestion_event_store.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 class FavoritePlacesPage extends StatefulWidget {
@@ -48,7 +50,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
   // Method to dismiss any active SnackBars
   void dismissSnackBars() {
     if (mounted) {
-      ScaffoldMessenger.of(context).clearSnackBars();
+      context.clearAllSnackBars();
     }
   }
 
@@ -294,27 +296,30 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Text(
             'What matches your vibe?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Select places that match your aesthetic and lifestyle preferences.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+            style: textTheme.bodyLarge?.copyWith(
+              color: AppColors.grey600,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Search field
           TextField(
@@ -345,7 +350,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
             ),
             onChanged: _onSearchChanged,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Selected places - Smaller and adaptive
           if (_selectedPlaces.isNotEmpty) ...[
@@ -369,7 +374,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Container(
               constraints: const BoxConstraints(maxHeight: 60),
               child: ListView.builder(
@@ -378,20 +383,19 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                 itemBuilder: (context, index) {
                   final place = _selectedPlaces[index];
                   return Container(
-                    margin: const EdgeInsets.only(right: 8),
+                    margin: EdgeInsets.only(right: spacing.xs),
                     child: Chip(
                       label: Text(
                         place,
-                        style: const TextStyle(fontSize: 11),
+                        style: textTheme.labelSmall,
                       ),
                       deleteIcon: const Icon(Icons.close, size: 14),
                       onDeleted: () => _removePlace(place),
                       backgroundColor:
                           AppTheme.primaryColor.withValues(alpha: 0.1),
                       deleteIconColor: AppTheme.primaryColor,
-                      labelStyle: const TextStyle(
+                      labelStyle: textTheme.labelSmall?.copyWith(
                         color: AppTheme.primaryColor,
-                        fontSize: 11,
                       ),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
@@ -400,7 +404,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
           ],
 
           // Search results and vibe categories
@@ -420,12 +424,12 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                           ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Flexible(
                     fit: FlexFit.loose,
                     child: _buildSearchResults(),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                 ],
 
                 // Always show vibe categories
@@ -447,7 +451,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
         final isRegionExpanded = _expandedRegions.contains(region);
 
         return PortalSurface(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: context.spacing.md),
           padding: EdgeInsets.zero,
           child: ExpansionTile(
             initiallyExpanded: isRegionExpanded,
@@ -468,28 +472,30 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing.sm),
                 Expanded(
                   child: Text(
                     region,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
                 if (_getSelectedCountForRegion(region) > 0)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(12),
+                  Chip(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: -4,
+                      vertical: -4,
                     ),
-                    child: Text(
+                    backgroundColor: AppTheme.primaryColor,
+                    side: BorderSide.none,
+                    label: Text(
                       '${_getSelectedCountForRegion(region)}',
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
               ],
@@ -739,7 +745,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
       ));
 
       // Show a snackbar with vibe suggestions - shorter duration and easier to dismiss
-      ScaffoldMessenger.of(context).showSnackBar(
+      context.showCustomSnackBar(
         SnackBar(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -748,23 +754,26 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Similar vibe places:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 18),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      context.hideCurrentSnack();
                     },
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Wrap(
-                spacing: 8,
+                spacing: context.spacing.xs,
                 children: vibeSuggestions
                     .map((suggestion) => ActionChip(
                           label: Text(suggestion),
@@ -776,12 +785,14 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                               itemLabel: suggestion,
                             ));
                             _addPlace(suggestion);
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            context.hideCurrentSnack();
                           },
                           backgroundColor:
                               AppTheme.primaryColor.withValues(alpha: 0.1),
-                          labelStyle:
-                              const TextStyle(color: AppTheme.primaryColor),
+                          labelStyle: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: AppTheme.primaryColor),
                         ))
                     .toList(),
               ),
@@ -795,7 +806,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
             label: 'Dismiss',
             textColor: AppTheme.primaryColor,
             onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              context.hideCurrentSnack();
             },
           ),
         ),

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:intl/intl.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// User Detail Page
 /// Comprehensive view of a single user's data, progress, and predictions
@@ -99,7 +102,6 @@ class _UserDetailPageState extends State<UserDetailPage>
             'AI Data Only',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.white.withValues(alpha: 0.8),
-                  fontSize: 11,
                 ),
           ),
         ],
@@ -111,7 +113,7 @@ class _UserDetailPageState extends State<UserDetailPage>
         labelColor: AppColors.white,
         unselectedLabelColor: AppColors.white.withValues(alpha: 0.7),
         indicatorColor: AppColors.white,
-        tabs: const [
+        tabs: [
           Tab(icon: Icon(Icons.person), text: 'Data'),
           Tab(icon: Icon(Icons.trending_up), text: 'Progress'),
           Tab(icon: Icon(Icons.psychology), text: 'Predictions'),
@@ -125,10 +127,10 @@ class _UserDetailPageState extends State<UserDetailPage>
                 ? AppColors.electricGreen
                 : AppColors.grey500,
           ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : TabBarView(
               controller: _tabController,
               children: [
@@ -144,15 +146,15 @@ class _UserDetailPageState extends State<UserDetailPage>
     return RefreshIndicator(
       onRefresh: _loadUserData,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Info Card
-            Card(
+            PortalSurface(
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -162,13 +164,13 @@ class _UserDetailPageState extends State<UserDetailPage>
                           radius: 32,
                           backgroundColor:
                               AppTheme.primaryColor.withValues(alpha: 0.2),
-                          child: const Icon(
+                          child: Icon(
                             Icons.person,
                             color: AppTheme.primaryColor,
                             size: 32,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,15 +194,17 @@ class _UserDetailPageState extends State<UserDetailPage>
                                       fontFamily: 'monospace',
                                     ),
                               ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.electricGreen
-                                      .withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(4),
+                              SizedBox(height: 4),
+                              PortalSurface(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: kSpaceXs,
+                                  vertical: kSpaceXxs,
                                 ),
+                                radius: 4,
+                                color: AppColors.electricGreen
+                                    .withValues(alpha: 0.1),
+                                borderColor: AppColors.electricGreen
+                                    .withValues(alpha: 0.2),
                                 child: Text(
                                   'Privacy: Location data shown (vibe indicator), no personal info',
                                   style: Theme.of(context)
@@ -208,7 +212,6 @@ class _UserDetailPageState extends State<UserDetailPage>
                                       .bodySmall
                                       ?.copyWith(
                                         color: AppColors.electricGreen,
-                                        fontSize: 11,
                                       ),
                                 ),
                               ),
@@ -218,7 +221,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                       ],
                     ),
                     if (_userSnapshot != null) ...[
-                      const Divider(),
+                      Divider(),
                       _buildInfoRow('Status',
                           _userSnapshot!.isOnline ? 'Online' : 'Offline'),
                       _buildInfoRow('Last Active',
@@ -228,25 +231,24 @@ class _UserDetailPageState extends State<UserDetailPage>
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Location Data Card (Vibe Indicators)
             if (_userSnapshot != null) _buildLocationDataCard(context),
 
             // Real-time Data Card
             if (_userSnapshot != null)
-              Card(
+              PortalSurface(
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(context.spacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.update,
-                              color: AppTheme.primaryColor),
-                          const SizedBox(width: 8),
+                          Icon(Icons.update, color: AppTheme.primaryColor),
+                          SizedBox(width: 8),
                           Text(
                             'AI-Related Data',
                             style: Theme.of(context)
@@ -258,7 +260,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       // Show AI-related data only (location data shown separately)
                       ..._userSnapshot!.data.entries.where((entry) {
                         final key = entry.key.toLowerCase();
@@ -313,7 +315,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                         return !forbidden.any((f) => key.contains(f));
                       }).isEmpty)
                         Padding(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(context.spacing.xs),
                           child: Text(
                             'No AI data available',
                             style: Theme.of(context)
@@ -336,21 +338,21 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Widget _buildProgressTab() {
     if (_progressData == null) {
-      return const Center(child: Text('No progress data available'));
+      return Center(child: Text('No progress data available'));
     }
 
     return RefreshIndicator(
       onRefresh: _loadUserData,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Summary Card
-            Card(
+            PortalSurface(
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   children: [
                     _buildMetricRow('Total Contributions',
@@ -365,7 +367,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Expertise Progress
             if (_progressData!.expertiseProgress.isNotEmpty) ...[
@@ -375,34 +377,38 @@ class _UserDetailPageState extends State<UserDetailPage>
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 8),
-              ..._progressData!.expertiseProgress.map((progress) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      title: Text(progress.category),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: progress.progressPercentage / 100,
-                            backgroundColor: AppColors.grey200,
+              SizedBox(height: 8),
+              ..._progressData!.expertiseProgress
+                  .map((progress) => PortalSurface(
+                        margin: EdgeInsets.only(bottom: context.spacing.xs),
+                        child: ListTile(
+                          title: Text(progress.category),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 4),
+                              LinearProgressIndicator(
+                                value: progress.progressPercentage / 100,
+                                backgroundColor: AppColors.grey200,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                progress.getFormattedProgress(),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            progress.getFormattedProgress(),
-                            style: Theme.of(context).textTheme.bodySmall,
+                          trailing: Text(
+                            progress.currentLevel.displayName,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                        ],
-                      ),
-                      trailing: Text(
-                        progress.currentLevel.displayName,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ),
-                  )),
+                        ),
+                      )),
             ],
           ],
         ),
@@ -412,21 +418,21 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Widget _buildPredictionsTab() {
     if (_predictionsData == null) {
-      return const Center(child: Text('No predictions available'));
+      return Center(child: Text('No predictions available'));
     }
 
     return RefreshIndicator(
       onRefresh: _loadUserData,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Current Stage Card
-            Card(
+            PortalSurface(
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -436,13 +442,13 @@ class _UserDetailPageState extends State<UserDetailPage>
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Chip(
                       label: Text(_predictionsData!.currentStage),
                       backgroundColor:
                           AppTheme.primaryColor.withValues(alpha: 0.2),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       'Confidence: ${(_predictionsData!.confidence * 100).toStringAsFixed(1)}%',
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -455,7 +461,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Predicted Actions
             Text(
@@ -464,9 +470,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 8),
-            ..._predictionsData!.predictedActions.map((action) => Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+            SizedBox(height: 8),
+            ..._predictionsData!.predictedActions.map((action) => PortalSurface(
+                  margin: EdgeInsets.only(bottom: context.spacing.xs),
                   child: ListTile(
                     title: Text(action.action),
                     subtitle: Text(action.category),
@@ -478,7 +484,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                     ),
                   ),
                 )),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Journey Path
             Text(
@@ -487,9 +493,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 8),
-            ..._predictionsData!.journeyPath.map((step) => Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+            SizedBox(height: 8),
+            ..._predictionsData!.journeyPath.map((step) => PortalSurface(
+                  margin: EdgeInsets.only(bottom: context.spacing.xs),
                   child: ListTile(
                     title: Text(step.description),
                     subtitle: Text(
@@ -505,7 +511,7 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -513,16 +519,19 @@ class _UserDetailPageState extends State<UserDetailPage>
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -532,7 +541,7 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Widget _buildMetricRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: context.spacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -574,7 +583,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildLocationDataCard(BuildContext context) {
-    if (_userSnapshot == null) return const SizedBox.shrink();
+    if (_userSnapshot == null) return SizedBox.shrink();
 
     // Extract location-related data
     final locationData = _userSnapshot!.data.entries.where((entry) {
@@ -591,21 +600,21 @@ class _UserDetailPageState extends State<UserDetailPage>
           !key.contains('residential');
     }).toList();
 
-    if (locationData.isEmpty) return const SizedBox.shrink();
+    if (locationData.isEmpty) return SizedBox.shrink();
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: context.spacing.md),
       color: AppColors.electricGreen.withValues(alpha: 0.05),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.location_on, color: AppColors.electricGreen),
-                const SizedBox(width: 8),
+                Icon(Icons.location_on, color: AppColors.electricGreen),
+                SizedBox(width: 8),
                 Text(
                   'Location Data (Vibe Indicators)',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -614,15 +623,14 @@ class _UserDetailPageState extends State<UserDetailPage>
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Core vibe indicator for AI personality matching',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
-                    fontSize: 11,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             ...locationData.map((entry) =>
                 _buildInfoRow(entry.key, _formatDataValue(entry.value))),
           ],

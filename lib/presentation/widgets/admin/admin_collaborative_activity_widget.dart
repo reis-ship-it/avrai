@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/community/collaborative_activity_metrics.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget displaying collaborative activity analytics
 /// Displays privacy-safe aggregate metrics on AI2AI collaborative patterns
@@ -63,21 +64,22 @@ class _AdminCollaborativeActivityWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Semantics(
       label: 'Collaborative activity analytics widget',
       child: Card(
         elevation: 2,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
               const SizedBox(height: 16),
               if (_isLoading)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.all(32.0),
+                    padding: EdgeInsets.all(spacing.xl),
                     child: CircularProgressIndicator(),
                   ),
                 )
@@ -131,9 +133,10 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildErrorState() {
+    final spacing = context.spacing;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(spacing.xl),
         child: Column(
           children: [
             const Icon(
@@ -152,7 +155,7 @@ class _AdminCollaborativeActivityWidgetState
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadMetrics,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -161,9 +164,10 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildEmptyState() {
+    final spacing = context.spacing;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(spacing.xl),
         child: Column(
           children: [
             const Icon(
@@ -186,9 +190,10 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildOverallStats() {
+    final spacing = context.spacing;
     final metrics = _metrics!;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -257,9 +262,10 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildGroupVsDM() {
+    final spacing = context.spacing;
     final metrics = _metrics!;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -307,8 +313,9 @@ class _AdminCollaborativeActivityWidgetState
     double percentage,
     Color color,
   ) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -344,13 +351,14 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildGroupSizeDistribution() {
+    final spacing = context.spacing;
     final metrics = _metrics!;
     if (metrics.groupSizeDistribution.isEmpty) {
       return const SizedBox.shrink();
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -371,7 +379,7 @@ class _AdminCollaborativeActivityWidgetState
                 .fold(0, (sum, count) => sum + count);
             final percentage = total > 0 ? (entry.value / total) * 100 : 0.0;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: spacing.xs),
               child: Row(
                 children: [
                   SizedBox(
@@ -431,9 +439,10 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildEngagementMetrics() {
+    final spacing = context.spacing;
     final metrics = _metrics!;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -490,13 +499,14 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildActivityPattern() {
+    final spacing = context.spacing;
     final metrics = _metrics!;
     if (metrics.activityByHour.isEmpty) {
       return const SizedBox.shrink();
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -525,8 +535,9 @@ class _AdminCollaborativeActivityWidgetState
   }
 
   Widget _buildPrivacyBadge() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.success.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),

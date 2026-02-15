@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/analytics/public_profile_analysis_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
@@ -75,12 +77,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
   Future<void> _saveHandles() async {
     if (!_consentGiven) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please provide consent to analyze public profiles'),
-          backgroundColor: AppTheme.errorColor,
-        ),
-      );
+      context.showError('Please provide consent to analyze public profiles');
       return;
     }
 
@@ -110,12 +107,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
       if (handles.isEmpty) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please provide at least one handle'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Please provide at least one handle');
         setState(() {
           _isLoading = false;
         });
@@ -135,19 +127,9 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
         });
 
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Handles saved and analysis started!'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          context.showSuccess('Handles saved and analysis started!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to save handles'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Failed to save handles');
         }
       }
     } catch (e) {
@@ -155,12 +137,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -209,22 +186,15 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
           _controllers.forEach((_, controller) => controller.clear());
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text(success ? 'Consent revoked' : 'Failed to revoke consent'),
-            backgroundColor: success ? AppColors.warning : AppTheme.errorColor,
-          ),
-        );
+        if (success) {
+          context.showWarning('Consent revoked');
+        } else {
+          context.showError('Failed to revoke consent');
+        }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -260,29 +230,32 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Public Profile Analysis',
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Text(
               'Public Profile Analysis',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'Optionally provide your public social media handles to enhance your AI personality. We\'ll analyze your public posts and interests (with your explicit consent).',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey600,
+              ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Consent Section
             PortalSurface(
@@ -290,7 +263,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                   ? AppColors.success.withValues(alpha: 0.1)
                   : AppColors.warning.withValues(alpha: 0.1),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -310,22 +283,16 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                             children: [
                               Text(
                                 'I consent to public profile analysis',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: spacing.xxs),
                               Text(
                                 'I understand that avrai will analyze my public posts, interests, and content to enhance my AI personality. I can revoke this consent at any time.',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: AppColors.grey700,
-                                    ),
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: AppColors.grey700,
+                                ),
                               ),
                             ],
                           ),
@@ -336,23 +303,23 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Handles Input Section
             Text(
               'Social Media Handles',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'Enter your public handles (without @ symbol)',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.grey600,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             // Instagram Handle
             PortalSurface(
@@ -362,7 +329,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                   Row(
                     children: [
                       _getPlatformIcon('instagram'),
-                      const SizedBox(width: 12),
+                      SizedBox(width: spacing.sm),
                       Expanded(
                         child: TextField(
                           controller: _controllers['instagram'],
@@ -379,7 +346,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: spacing.sm),
 
             // TikTok Handle
             PortalSurface(
@@ -389,7 +356,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                   Row(
                     children: [
                       _getPlatformIcon('tiktok'),
-                      const SizedBox(width: 12),
+                      SizedBox(width: spacing.sm),
                       Expanded(
                         child: TextField(
                           controller: _controllers['tiktok'],
@@ -406,7 +373,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: spacing.sm),
 
             // Twitter Handle
             PortalSurface(
@@ -416,7 +383,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                   Row(
                     children: [
                       _getPlatformIcon('twitter'),
-                      const SizedBox(width: 12),
+                      SizedBox(width: spacing.sm),
                       Expanded(
                         child: TextField(
                           controller: _controllers['twitter'],
@@ -433,7 +400,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Save Button
             SizedBox(
@@ -443,7 +410,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: spacing.md),
                 ),
                 child: _isLoading
                     ? const SizedBox(
@@ -457,27 +424,27 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
             // Revoke Consent Button (if handles are stored)
             if (_hasStoredHandles) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: spacing.md),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: _revokeConsent,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.errorColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: spacing.md),
                   ),
                   child: const Text('Revoke Consent & Delete Handles'),
                 ),
               ),
             ],
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Privacy Info
             PortalSurface(
               color: AppColors.electricBlue.withValues(alpha: 0.1),
               borderColor: AppColors.electricBlue,
-              radius: 8,
+              radius: context.radius.sm,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -487,25 +454,24 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                         Icons.info_outline,
                         color: AppColors.electricBlue,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Privacy & Analysis',
-                        style: TextStyle(
+                        style: textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.electricBlue,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     '• We only analyze public content (posts, bio, interests)\n'
                     '• Analysis results are stored locally on your device\n'
                     '• You can revoke consent and delete data anytime\n'
                     '• We never share your handles or analysis with third parties\n'
                     '• Analysis enhances your AI personality insights',
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodySmall?.copyWith(
                       color: AppColors.textPrimary,
                     ),
                   ),

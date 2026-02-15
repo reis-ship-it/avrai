@@ -14,6 +14,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai2ai_learning_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget displaying AI2AI learning methods overview
 class AI2AILearningMethodsWidget extends StatefulWidget {
@@ -147,13 +148,15 @@ class _AI2AILearningMethodsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading AI2AI learning methods',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(),
             ),
@@ -166,9 +169,9 @@ class _AI2AILearningMethodsWidgetState
       return Semantics(
         label: 'Error loading learning methods',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -179,16 +182,15 @@ class _AI2AILearningMethodsWidgetState
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: _loadMethods,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -204,16 +206,16 @@ class _AI2AILearningMethodsWidgetState
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -225,14 +227,13 @@ class _AI2AILearningMethodsWidgetState
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Active Learning Methods',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -250,8 +251,9 @@ class _AI2AILearningMethodsWidgetState
   }
 
   Widget _buildEmptyState() {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
+    final spacing = context.spacing;
+    return Padding(
+      padding: EdgeInsets.all(spacing.md),
       child: Center(
         child: Column(
           children: [
@@ -263,18 +265,16 @@ class _AI2AILearningMethodsWidgetState
             SizedBox(height: 8),
             Text(
               'No active learning methods',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 4),
             Text(
               'Start AI2AI connections to begin learning',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textHint,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textHint,
+                  ),
             ),
           ],
         ),
@@ -283,9 +283,10 @@ class _AI2AILearningMethodsWidgetState
   }
 
   Widget _buildMethodCard(LearningMethod method) {
+    final spacing = context.spacing;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -302,11 +303,10 @@ class _AI2AILearningMethodsWidgetState
               Expanded(
                 child: Text(
                   method.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
               _buildStatusBadge(method.status),
@@ -315,10 +315,9 @@ class _AI2AILearningMethodsWidgetState
           const SizedBox(height: 8),
           Text(
             method.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -327,12 +326,11 @@ class _AI2AILearningMethodsWidgetState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Effectiveness',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textHint,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textHint,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     LinearProgressIndicator(
@@ -346,11 +344,10 @@ class _AI2AILearningMethodsWidgetState
                     const SizedBox(height: 4),
                     Text(
                       '${(method.effectivenessScore * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
@@ -359,20 +356,18 @@ class _AI2AILearningMethodsWidgetState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
+                  Text(
                     'Last Active',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textHint,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textHint,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formatLastActive(method.lastActive),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -384,11 +379,15 @@ class _AI2AILearningMethodsWidgetState
   }
 
   Widget _buildStatusBadge(LearningMethodStatus status) {
+    final spacing = context.spacing;
     final color = _getStatusColor(status);
     final text = _getStatusText(status);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.xs,
+        vertical: spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -399,11 +398,10 @@ class _AI2AILearningMethodsWidgetState
       ),
       child: Text(
         text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
       ),
     );
   }

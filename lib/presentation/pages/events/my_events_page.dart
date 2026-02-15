@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
@@ -13,6 +15,7 @@ import 'package:avrai/presentation/pages/feedback/event_feedback_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// My Events Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -151,7 +154,7 @@ class _MyEventsPageState extends State<MyEventsPage>
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -169,16 +172,15 @@ class _MyEventsPageState extends State<MyEventsPage>
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadEvents,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -205,18 +207,13 @@ class _MyEventsPageState extends State<MyEventsPage>
         actionLabel: 'Create Event',
         onAction: () {
           // TODO: Navigate to create event page (Week 3)
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Event creation coming soon'),
-              backgroundColor: AppTheme.warningColor,
-            ),
-          );
+          context.showWarning('Event creation coming soon');
         },
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       itemCount: _hostedEvents.length,
       itemBuilder: (context, index) {
         final event = _hostedEvents[index];
@@ -224,11 +221,9 @@ class _MyEventsPageState extends State<MyEventsPage>
           event: event,
           currentUser: _currentUser,
           onTap: () {
-            Navigator.push(
+            AppNavigator.pushBuilder(
               context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailsPage(event: event),
-              ),
+              builder: (context) => EventDetailsPage(event: event),
             );
           },
           onCancel: () {
@@ -263,7 +258,7 @@ class _MyEventsPageState extends State<MyEventsPage>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       itemCount: _attendingEvents.length,
       itemBuilder: (context, index) {
         final event = _attendingEvents[index];
@@ -271,11 +266,9 @@ class _MyEventsPageState extends State<MyEventsPage>
           event: event,
           currentUser: _currentUser,
           onTap: () {
-            Navigator.push(
+            AppNavigator.pushBuilder(
               context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailsPage(event: event),
-              ),
+              builder: (context) => EventDetailsPage(event: event),
             );
           },
           onCancel: () {
@@ -308,24 +301,22 @@ class _MyEventsPageState extends State<MyEventsPage>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       itemCount: _pastEvents.length,
       itemBuilder: (context, index) {
         final event = _pastEvents[index];
         return PortalSurface(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.only(bottom: kSpaceMd),
           padding: EdgeInsets.zero,
           child: InkWell(
             onTap: () {
-              Navigator.push(
+              AppNavigator.pushBuilder(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(event: event),
-                ),
+                builder: (context) => EventDetailsPage(event: event),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -337,39 +328,45 @@ class _MyEventsPageState extends State<MyEventsPage>
                           children: [
                             Text(
                               event.title,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '${_formatPastDate(event.startTime)} • ${event.category}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.grey400.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                      Chip(
+                        side: BorderSide.none,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: const VisualDensity(
+                          horizontal: -4,
+                          vertical: -4,
                         ),
-                        child: Text(
+                        backgroundColor:
+                            AppColors.grey400.withValues(alpha: 0.1),
+                        label: Text(
                           event.host.id == _currentUser?.id
                               ? 'Hosted'
                               : 'Attended',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ),
                     ],
@@ -377,10 +374,9 @@ class _MyEventsPageState extends State<MyEventsPage>
                   const SizedBox(height: 8),
                   Text(
                     event.description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -392,10 +388,9 @@ class _MyEventsPageState extends State<MyEventsPage>
                       const SizedBox(width: 4),
                       Text(
                         '${event.attendeeCount} ${event.attendeeCount == 1 ? 'attendee' : 'attendees'}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       if (event.location != null) ...[
                         const SizedBox(width: 16),
@@ -405,10 +400,12 @@ class _MyEventsPageState extends State<MyEventsPage>
                         Expanded(
                           child: Text(
                             event.location!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -428,7 +425,7 @@ class _MyEventsPageState extends State<MyEventsPage>
                         );
                       },
                       icon: const Icon(Icons.feedback),
-                      label: const Text('Leave Feedback'),
+                      label: Text('Leave Feedback'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.primaryColor,
                         side: const BorderSide(color: AppTheme.primaryColor),
@@ -454,7 +451,7 @@ class _MyEventsPageState extends State<MyEventsPage>
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(kSpaceXl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -466,19 +463,17 @@ class _MyEventsPageState extends State<MyEventsPage>
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
@@ -490,8 +485,8 @@ class _MyEventsPageState extends State<MyEventsPage>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceLg, vertical: kSpaceSm),
                 ),
               ),
             ],

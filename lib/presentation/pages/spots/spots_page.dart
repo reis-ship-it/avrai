@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:avrai/presentation/pages/spots/create_spot_page.dart';
@@ -8,6 +9,7 @@ import 'package:avrai/presentation/widgets/common/offline_indicator.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SpotsPage extends StatefulWidget {
   const SpotsPage({super.key});
@@ -51,7 +53,7 @@ class _SpotsPageState extends State<SpotsPage> {
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -79,10 +81,8 @@ class _SpotsPageState extends State<SpotsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateSpotPage()),
-          );
+          AppNavigator.pushBuilder(context,
+              builder: (context) => const CreateSpotPage());
         },
         heroTag: 'spots_page_fab',
         child: const Icon(Icons.add),

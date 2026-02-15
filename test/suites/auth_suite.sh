@@ -11,5 +11,5 @@ flutter test "$@" \
   test/unit/data/datasources/remote/auth_remote_datasource_impl_test.dart \
   test/unit/data/repositories/auth_repository_impl_test.dart \
   test/widget/pages/auth/ \
-  test/integration/admin_auth_integration_test.dart
+  test/integration/security/admin_auth_integration_test.dart
 

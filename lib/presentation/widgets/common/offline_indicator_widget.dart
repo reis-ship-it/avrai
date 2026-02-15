@@ -1,15 +1,15 @@
 /// Offline Indicator Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 /// Provides clear feedback when app is offline and what functionality is limited.
-/// 
+///
 /// Features:
 /// - Offline mode banner
 /// - Explanation of limited functionality
 /// - What works offline vs. online
 /// - Retry connection option
 /// - Auto-dismisses when back online
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget that displays offline status and functionality information
 class OfflineIndicatorWidget extends StatefulWidget {
@@ -25,7 +26,7 @@ class OfflineIndicatorWidget extends StatefulWidget {
   final bool showDismiss;
   final List<String>? limitedFeatures;
   final List<String>? availableFeatures;
-  
+
   const OfflineIndicatorWidget({
     super.key,
     required this.isOffline,
@@ -34,7 +35,7 @@ class OfflineIndicatorWidget extends StatefulWidget {
     this.limitedFeatures,
     this.availableFeatures,
   });
-  
+
   @override
   State<OfflineIndicatorWidget> createState() => _OfflineIndicatorWidgetState();
 }
@@ -42,17 +43,18 @@ class OfflineIndicatorWidget extends StatefulWidget {
 class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
   bool _expanded = false;
   bool _dismissed = false;
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     if (!widget.isOffline || _dismissed) {
       return const SizedBox.shrink();
     }
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -70,8 +72,9 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
       ),
     );
   }
-  
+
   Widget _buildHeader() {
+    final spacing = context.spacing;
     return InkWell(
       onTap: () {
         setState(() {
@@ -80,11 +83,11 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
       },
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(spacing.xs),
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
@@ -96,25 +99,23 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
               ),
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Limited Functionality',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     'You\'re offline. Some features are unavailable.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -147,13 +148,20 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
       ),
     );
   }
-  
+
   Widget _buildExpandedContent() {
+    final spacing = context.spacing;
     final limited = widget.limitedFeatures ?? _getDefaultLimitedFeatures();
-    final available = widget.availableFeatures ?? _getDefaultAvailableFeatures();
-    
+    final available =
+        widget.availableFeatures ?? _getDefaultAvailableFeatures();
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: EdgeInsets.fromLTRB(
+        spacing.md,
+        spacing.xxs - spacing.xxs,
+        spacing.md,
+        spacing.md,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -178,13 +186,14 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
       ),
     );
   }
-  
+
   Widget _buildFeatureSection(
     String title,
     List<String> features,
     IconData icon,
     Color color,
   ) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -194,37 +203,39 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
             const SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 8),
         ...features.map((feature) => Padding(
-          padding: const EdgeInsets.only(left: 26, bottom: 6),
-          child: Text(
-            '• $feature',
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        )),
+              padding: EdgeInsets.only(
+                left: spacing.md + spacing.sm - spacing.xxs,
+                bottom: spacing.xxs,
+              ),
+              child: Text(
+                '• $feature',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            )),
       ],
     );
   }
-  
+
   Widget _buildReconnectTip() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.lightbulb_outline,
@@ -235,17 +246,16 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
           Expanded(
             child: Text(
               'Connect to WiFi or mobile data to access all features',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
       ),
     );
   }
-  
+
   List<String> _getDefaultLimitedFeatures() {
     return [
       'Cloud AI responses (LLM-powered chat)',
@@ -255,7 +265,7 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
       'Cloud data sync',
     ];
   }
-  
+
   List<String> _getDefaultAvailableFeatures() {
     return [
       'View saved spots and lists',
@@ -271,23 +281,27 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
 class OfflineBanner extends StatelessWidget {
   final bool isOffline;
   final VoidCallback? onTap;
-  
+
   const OfflineBanner({
     super.key,
     required this.isOffline,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     if (!isOffline) {
       return const SizedBox.shrink();
     }
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.md,
+          vertical: spacing.sm,
+        ),
         color: AppColors.warning.withValues(alpha: 0.2),
         child: Row(
           children: [
@@ -297,14 +311,13 @@ class OfflineBanner extends StatelessWidget {
               color: AppColors.warning,
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
                 'Offline mode • Limited functionality',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ),
             if (onTap != null)
@@ -323,12 +336,12 @@ class OfflineBanner extends StatelessWidget {
 /// Auto-detecting offline indicator that monitors connectivity
 class AutoOfflineIndicator extends StatefulWidget {
   final Widget Function(BuildContext, bool) builder;
-  
+
   const AutoOfflineIndicator({
     super.key,
     required this.builder,
   });
-  
+
   @override
   State<AutoOfflineIndicator> createState() => _AutoOfflineIndicatorState();
 }
@@ -337,14 +350,14 @@ class _AutoOfflineIndicatorState extends State<AutoOfflineIndicator> {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isOffline = false;
-  
+
   @override
   void initState() {
     super.initState();
     _checkInitialConnectivity();
     _listenToConnectivityChanges();
   }
-  
+
   Future<void> _checkInitialConnectivity() async {
     try {
       final result = await _connectivity.checkConnectivity();
@@ -362,9 +375,10 @@ class _AutoOfflineIndicatorState extends State<AutoOfflineIndicator> {
       }
     }
   }
-  
+
   void _listenToConnectivityChanges() {
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((result) {
       if (mounted) {
         setState(() {
           _isOffline = result.contains(ConnectivityResult.none);
@@ -372,16 +386,15 @@ class _AutoOfflineIndicatorState extends State<AutoOfflineIndicator> {
       }
     });
   }
-  
+
   @override
   void dispose() {
     _connectivitySubscription?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return widget.builder(context, _isOffline);
   }
 }
-

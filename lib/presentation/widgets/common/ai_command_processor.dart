@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 import 'package:avrai/core/services/ai_infrastructure/llm_service.dart' as llm
     show
         LLMService,
@@ -161,7 +162,7 @@ class AICommandProcessor {
     final connectivityResult = await connectivityInstance.checkConnectivity();
     // connectivity_plus always returns List<ConnectivityResult>
     final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-    
+
     // #region agent log
     // Debug mode: log connectivity check (no PII values)
     try {
@@ -171,7 +172,8 @@ class AICommandProcessor {
         'sessionId': 'debug-session',
         'runId': 'pre-fix-connectivity',
         'hypothesisId': 'H1',
-        'location': 'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
+        'location':
+            'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
         'message': 'Connectivity check',
         'data': {
           'isOnline': isOnline,
@@ -188,7 +190,7 @@ class AICommandProcessor {
     // Note: _llmService instance field is not used in static context
     // It's kept for future instance-based usage
     final service = llmService ?? _tryGetLLMService();
-    
+
     // #region agent log
     // Debug mode: log LLM service availability (no PII values)
     try {
@@ -198,7 +200,8 @@ class AICommandProcessor {
         'sessionId': 'debug-session',
         'runId': 'pre-fix-llm-service',
         'hypothesisId': 'H2',
-        'location': 'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
+        'location':
+            'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
         'message': 'LLM service check',
         'data': {
           'hasService': service != null,
@@ -234,7 +237,7 @@ class AICommandProcessor {
           }
 
           String response = '';
-          
+
           // Phase 11 Section 5: Use generateWithContext() for structured facts when userId available
           if (userId != null) {
             try {
@@ -613,7 +616,7 @@ class AICommandProcessor {
         final connectivityResult = await connectivity.checkConnectivity();
         // connectivity_plus always returns List<ConnectivityResult>
         final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-        
+
         // #region agent log
         // Debug mode: log connectivity check for LLM response (no PII values)
         try {
@@ -623,15 +626,17 @@ class AICommandProcessor {
             'sessionId': 'debug-session',
             'runId': 'pre-fix-llm-response-connectivity',
             'hypothesisId': 'H3',
-            'location': 'lib/presentation/widgets/common/ai_command_processor.dart:_executeActionWithUI',
+            'location':
+                'lib/presentation/widgets/common/ai_command_processor.dart:_executeActionWithUI',
             'message': 'Connectivity check for LLM response',
             'data': {
               'isOnline': isOnline,
               'connectivityResultsCount': connectivityResult.length,
             },
           };
-          File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-              .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+          File('/Users/reisgordon/SPOTS/.cursor/debug.log').writeAsStringSync(
+              '${jsonEncode(payload)}\n',
+              mode: FileMode.append);
         } catch (_) {}
         // #endregion
 
@@ -740,7 +745,7 @@ class AICommandProcessor {
       return null;
     }
   }
-  
+
   /// Get LLM service from instance field (for future instance-based usage)
   /// Currently unused since processCommand is static
   llm.LLMService? get llmService => _llmService;
@@ -923,7 +928,7 @@ class AICommandProcessor {
     final overlayEntry = OverlayEntry(
       builder: (context) => Container(
         color: AppColors.black.withValues(alpha: 0.54),
-        child: const Center(
+        child: Center(
           child: AIThinkingIndicator(
             stage: AIThinkingStage.generatingResponse,
             showDetails: true,
@@ -988,7 +993,7 @@ class AICommandProcessor {
       isDismissible: false,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           children: [
             Row(

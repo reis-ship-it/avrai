@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Compatibility Badge Widget
-/// 
+///
 /// Displays vibe compatibility percentage with color coding.
 /// Green for 70%+, warning for below.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class CompatibilityBadge extends StatelessWidget {
   final double compatibility; // 0.0 to 1.0
@@ -19,9 +20,10 @@ class CompatibilityBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final percentage = (compatibility * 100).toInt();
     final isGood = compatibility >= 0.70;
-    
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: isGood
             ? AppColors.electricGreen.withValues(alpha: 0.1)
@@ -44,16 +46,13 @@ class CompatibilityBadge extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '$percentage%',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isGood ? AppColors.electricGreen : AppColors.warning,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: isGood ? AppColors.electricGreen : AppColors.warning,
+                ),
           ),
         ],
       ),
     );
   }
 }
-
-

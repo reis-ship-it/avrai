@@ -20,5 +20,5 @@ flutter test "$@" \
   test/widget/pages/lists/ \
   test/widget/pages/spots/ \
   test/integration/controllers/list_creation_controller_integration_test.dart \
-  test/integration/offline_online_sync_test.dart
+  test/integration/infrastructure/offline_online_sync_test.dart
 

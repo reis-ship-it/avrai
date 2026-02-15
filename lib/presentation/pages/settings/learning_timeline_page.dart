@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 import 'package:avrai/core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
@@ -80,9 +81,11 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
   }
 
   Widget _buildFilterChips(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),
       child: Row(
         children: [
           // All filter
@@ -96,10 +99,10 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
             },
             isDark: isDark,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: spacing.xs),
           // Source filters
           ...CrossAppDataSource.values.map((source) => Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: EdgeInsets.only(right: spacing.xs),
                 child: _buildFilterChip(
                   label: source.displayName,
                   icon: source.icon,
@@ -123,36 +126,37 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+    final chipTextColor = isSelected
+        ? AppColors.white
+        : (isDark ? Colors.white70 : Colors.black87);
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
+      child: Chip(
+        backgroundColor: isSelected
+            ? AppColors.primary
+            : (isDark ? AppColors.grey800 : AppColors.white),
+        side: BorderSide(
           color: isSelected
               ? AppColors.primary
-              : (isDark ? AppColors.grey800 : AppColors.white),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : (isDark
-                    ? AppColors.white.withValues(alpha: 0.1)
-                    : AppColors.black.withValues(alpha: 0.1)),
-          ),
+              : (isDark
+                  ? AppColors.white.withValues(alpha: 0.1)
+                  : AppColors.black.withValues(alpha: 0.1)),
         ),
-        child: Row(
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        labelPadding: EdgeInsets.symmetric(horizontal: spacing.xxs),
+        label: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 14)),
-            const SizedBox(width: 6),
+            Text(icon, style: textTheme.bodyMedium),
+            SizedBox(width: spacing.xxs),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 13,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected
-                    ? AppColors.white
-                    : (isDark ? Colors.white70 : Colors.black87),
+                color: chipTextColor,
               ),
             ),
           ],
@@ -162,9 +166,10 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
   }
 
   Widget _buildEmptyState(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(spacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -173,14 +178,14 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
               size: 64,
               color: isDark ? Colors.white24 : Colors.black12,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             Text(
               'No Learning Events Yet',
               style: textTheme.titleMedium?.copyWith(
                 color: isDark ? Colors.white70 : Colors.black54,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'As your AI learns from your activities, you\'ll see the timeline here.',
               textAlign: TextAlign.center,
@@ -195,8 +200,9 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
   }
 
   Widget _buildTimeline(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       itemCount: _insights.length,
       itemBuilder: (context, index) {
         final insight = _insights[index];
@@ -212,25 +218,23 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Timeline line and dot
           SizedBox(
-            width: 40,
+            width: spacing.xl,
             child: Column(
               children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isDark ? AppColors.grey800 : AppColors.white,
-                      width: 2,
-                    ),
+                CircleAvatar(
+                  radius: spacing.xxs + (spacing.xs / 2),
+                  backgroundColor: AppColors.primary,
+                  child: CircleAvatar(
+                    radius: spacing.xxs,
+                    backgroundColor:
+                        isDark ? AppColors.grey800 : AppColors.white,
                   ),
                 ),
                 if (!isLast)
@@ -247,8 +251,8 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
           // Content
           Expanded(
             child: PortalSurface(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(12),
+              margin: EdgeInsets.only(bottom: spacing.md),
+              padding: EdgeInsets.all(spacing.sm),
               color: isDark ? AppColors.grey800 : AppColors.white,
               borderColor: isDark
                   ? AppColors.white.withValues(alpha: 0.1)
@@ -261,9 +265,9 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
                     children: [
                       Text(
                         insight.source.icon,
-                        style: const TextStyle(fontSize: 16),
+                        style: textTheme.bodyLarge,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         insight.source.displayName,
                         style: textTheme.bodySmall?.copyWith(
@@ -276,12 +280,11 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
                         _formatTimestamp(insight.learnedAt),
                         style: textTheme.bodySmall?.copyWith(
                           color: isDark ? Colors.white38 : Colors.black38,
-                          fontSize: 11,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   // Description
                   Text(
                     insight.description,
@@ -289,28 +292,24 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
                       color: isDark ? AppColors.white : Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   // Affected dimensions
                   if (insight.affectedDimensions.isNotEmpty)
                     Wrap(
-                      spacing: 6,
-                      runSpacing: 4,
+                      spacing: spacing.xs - (spacing.xxs / 2),
+                      runSpacing: spacing.xxs,
                       children: insight.affectedDimensions.map((dim) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? AppColors.white.withValues(alpha: 0.1)
-                                : AppColors.black.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
+                        return Chip(
+                          side: BorderSide.none,
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: isDark
+                              ? AppColors.white.withValues(alpha: 0.1)
+                              : AppColors.black.withValues(alpha: 0.05),
+                          label: Text(
                             dim.replaceAll('_', ' '),
                             style: textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
                               color: isDark ? Colors.white54 : Colors.black54,
                             ),
                           ),

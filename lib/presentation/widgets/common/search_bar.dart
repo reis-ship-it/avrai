@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final String? hintText;
@@ -42,7 +43,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     super.didUpdateWidget(oldWidget);
     // If the parent changes initialValue and we're using an internal controller,
     // keep the visible value in sync across rebuilds.
-    if (widget.controller == null && widget.initialValue != oldWidget.initialValue) {
+    if (widget.controller == null &&
+        widget.initialValue != oldWidget.initialValue) {
       final next = widget.initialValue ?? '';
       if (_controller.text != next) {
         _controller.value = TextEditingValue(
@@ -68,7 +70,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       hint: widget.hintText ?? 'Search...',
       textField: true,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(
+            horizontal: kSpaceMd, vertical: kSpaceXs),
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.light
               ? AppColors.grey100
@@ -95,10 +98,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             onTap: widget.onTap,
             decoration: InputDecoration(
               hintText: widget.hintText ?? 'Search...',
-              hintStyle: const TextStyle(
-                color: AppColors.textHint,
-                fontSize: 16,
-              ),
+              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textHint,
+                  ),
               prefixIcon: Icon(
                 Icons.search,
                 color: _hasFocus ? AppTheme.primaryColor : AppColors.grey600,
@@ -123,11 +125,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
+                horizontal: kSpaceMd,
+                vertical: kSpaceSm,
               ),
             ),
-            style: const TextStyle(fontSize: 16),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
       ),

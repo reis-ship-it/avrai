@@ -14,6 +14,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai2ai_learning_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying AI2AI learning insights
 class AI2AILearningInsightsWidget extends StatefulWidget {
@@ -132,13 +134,15 @@ class _AI2AILearningInsightsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading learning insights',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(),
             ),
@@ -151,9 +155,9 @@ class _AI2AILearningInsightsWidgetState
       return Semantics(
         label: 'Error loading insights',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -164,16 +168,15 @@ class _AI2AILearningInsightsWidgetState
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: _loadInsights,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -189,16 +192,16 @@ class _AI2AILearningInsightsWidgetState
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -210,22 +213,20 @@ class _AI2AILearningInsightsWidgetState
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Learning Insights',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                   Text(
                     '${_insights.length}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -242,8 +243,9 @@ class _AI2AILearningInsightsWidgetState
   }
 
   Widget _buildEmptyState() {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
+    final spacing = context.spacing;
+    return Padding(
+      padding: EdgeInsets.all(spacing.md),
       child: Center(
         child: Column(
           children: [
@@ -255,18 +257,16 @@ class _AI2AILearningInsightsWidgetState
             SizedBox(height: 8),
             Text(
               'No insights yet',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 4),
             Text(
               'Start AI2AI connections to generate insights',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textHint,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textHint,
+                  ),
             ),
           ],
         ),
@@ -275,10 +275,11 @@ class _AI2AILearningInsightsWidgetState
   }
 
   Widget _buildInsightCard(LearningInsight insight) {
+    final spacing = context.spacing;
     final isExpanded = _expandedInsights[insight.id] ?? false;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -293,11 +294,11 @@ class _AI2AILearningInsightsWidgetState
           InkWell(
             onTap: () => _toggleExpanded(insight.id),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(spacing.xxs),
                     decoration: BoxDecoration(
                       color: _getInsightTypeColor(insight.type)
                           .withValues(alpha: 0.1),
@@ -316,19 +317,19 @@ class _AI2AILearningInsightsWidgetState
                       children: [
                         Text(
                           insight.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           insight.description,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                           maxLines: isExpanded ? null : 2,
                           overflow: isExpanded ? null : TextOverflow.ellipsis,
                         ),
@@ -346,7 +347,12 @@ class _AI2AILearningInsightsWidgetState
           ),
           if (isExpanded)
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              padding: EdgeInsets.fromLTRB(
+                spacing.sm,
+                kSpaceNone,
+                spacing.sm,
+                spacing.sm,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -362,10 +368,9 @@ class _AI2AILearningInsightsWidgetState
                       const SizedBox(width: 4),
                       Text(
                         _formatTimestamp(insight.timestamp),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textHint,
+                            ),
                       ),
                       const Spacer(),
                       Icon(
@@ -376,27 +381,25 @@ class _AI2AILearningInsightsWidgetState
                       const SizedBox(width: 4),
                       Text(
                         '${(insight.reliability * 100).toStringAsFixed(0)}% reliable',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _getReliabilityColor(insight.reliability),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: _getReliabilityColor(insight.reliability),
+                            ),
                       ),
                     ],
                   ),
                   if (insight.details != null) ...[
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(spacing.xs),
                       decoration: BoxDecoration(
                         color: AppColors.grey200,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         insight.details!,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                   ],

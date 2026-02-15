@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
-import 'package:avrai/core/models/events/event_partnership.dart' show PartnershipStatus, PartnershipStatusExtension;
+import 'package:avrai/core/models/events/event_partnership.dart'
+    show PartnershipStatus, PartnershipStatusExtension;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_card.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnership Display Widget
-/// 
+///
 /// Displays a list of partnerships on user profiles with filtering and visibility controls.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class PartnershipDisplayWidget extends StatefulWidget {
   final List<UserPartnership> partnerships;
@@ -44,16 +46,12 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
 
     // Filter by type
     if (_selectedType != null) {
-      filtered = filtered
-          .where((p) => p.type == _selectedType)
-          .toList();
+      filtered = filtered.where((p) => p.type == _selectedType).toList();
     }
 
     // Filter by status
     if (_selectedStatus != null) {
-      filtered = filtered
-          .where((p) => p.status == _selectedStatus)
-          .toList();
+      filtered = filtered.where((p) => p.status == _selectedStatus).toList();
     }
 
     return filtered;
@@ -80,13 +78,12 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Partnerships',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             if (widget.partnerships.length > widget.maxDisplayCount &&
                 widget.onViewAllTap != null)
@@ -96,10 +93,9 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
                 },
                 child: Text(
                   'View All (${widget.partnerships.length})',
-                  style: const TextStyle(
-                    color: AppTheme.primaryColor,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
           ],
@@ -119,7 +115,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
         else
           ..._displayedPartnerships.map((partnership) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: kSpaceSm),
               child: ProfilePartnershipCard(
                 partnership: partnership,
                 onTap: widget.onPartnershipTap != null
@@ -149,7 +145,10 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             initialValue: _selectedType,
             decoration: InputDecoration(
               labelText: 'Type',
-              labelStyle: const TextStyle(color: AppColors.textSecondary),
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.grey300),
@@ -183,7 +182,10 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             initialValue: _selectedStatus,
             decoration: InputDecoration(
               labelText: 'Status',
-              labelStyle: const TextStyle(color: AppColors.textSecondary),
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.grey300),
@@ -225,21 +227,19 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
             color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No partnerships yet',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Create partnerships to showcase your collaborations',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -250,7 +250,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
   Widget _buildEmptyFilterState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(kSpaceXl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -260,13 +260,12 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No partnerships match your filters',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -277,7 +276,7 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
                   _selectedStatus = null;
                 });
               },
-              child: const Text('Clear Filters'),
+              child: Text('Clear Filters'),
             ),
           ],
         ),
@@ -285,4 +284,3 @@ class _PartnershipDisplayWidgetState extends State<PartnershipDisplayWidget> {
     );
   }
 }
-

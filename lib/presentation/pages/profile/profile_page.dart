@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/tokens/theme_tokens.dart';
@@ -216,11 +217,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                       state.user.email
                                           .substring(0, 1)
                                           .toUpperCase(),
-                                  style: const TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ),
                             SizedBox(width: spacing.md),
@@ -258,12 +261,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                       SizedBox(width: spacing.xxs),
                                       Text(
                                         state.isOffline ? 'Offline' : 'Online',
-                                        style: TextStyle(
-                                          color: state.isOffline
-                                              ? AppTheme.offlineColor
-                                              : AppTheme.successColor,
-                                          fontSize: 12,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: state.isOffline
+                                                  ? AppTheme.offlineColor
+                                                  : AppTheme.successColor,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -274,12 +279,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               icon: const Icon(Icons.edit),
                               onPressed: () {
                                 final authBloc = context.read<AuthBloc>();
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfilePage(
-                                      user: state.user,
-                                    ),
+                                  builder: (context) => EditProfilePage(
+                                    user: state.user,
                                   ),
                                 ).then((_) {
                                   // Refresh auth state to get updated user
@@ -300,12 +303,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           InkWell(
                             onTap: () {
                               if (!mounted) return;
-                              Navigator.push(
+                              AppNavigator.pushBuilder(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const KnotMeditationPage(),
-                                ),
+                                builder: (context) =>
+                                    const KnotMeditationPage(),
                               );
                             },
                             child: Row(
@@ -370,11 +371,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Notifications',
                   subtitle: 'Manage your notifications',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationsSettingsPage(),
-                      ),
+                      builder: (context) => const NotificationsSettingsPage(),
                     );
                   },
                 ),
@@ -384,11 +383,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Privacy',
                   subtitle: 'Manage your privacy settings',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const PrivacySettingsPage(),
-                      ),
+                      builder: (context) => const PrivacySettingsPage(),
                     );
                   },
                 ),
@@ -398,11 +395,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Social Media',
                   subtitle: 'Connect and manage social accounts',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const SocialMediaSettingsPage(),
-                      ),
+                      builder: (context) => const SocialMediaSettingsPage(),
                     );
                   },
                 ),
@@ -529,11 +524,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Identity Verification',
                   subtitle: 'Verify your identity for high earnings',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const IdentityVerificationPage(),
-                      ),
+                      builder: (context) => const IdentityVerificationPage(),
                     );
                   },
                 ),
@@ -543,11 +536,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Tax Profile',
                   subtitle: 'Manage W-9 and tax information',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const TaxProfilePage(),
-                      ),
+                      builder: (context) => const TaxProfilePage(),
                     );
                   },
                 ),
@@ -557,11 +548,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Tax Documents',
                   subtitle: 'View and download tax forms',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const TaxDocumentsPage(),
-                      ),
+                      builder: (context) => const TaxDocumentsPage(),
                     );
                   },
                 ),
@@ -571,11 +560,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Terms of Service',
                   subtitle: 'View terms and conditions',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const TermsOfServicePage(),
-                      ),
+                      builder: (context) => const TermsOfServicePage(),
                     );
                   },
                 ),
@@ -585,11 +572,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Privacy Policy',
                   subtitle: 'View privacy policy',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const PrivacyPolicyPage(),
-                      ),
+                      builder: (context) => const PrivacyPolicyPage(),
                     );
                   },
                 ),
@@ -599,11 +584,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const HelpSupportPage(),
-                      ),
+                      builder: (context) => const HelpSupportPage(),
                     );
                   },
                 ),
@@ -613,11 +596,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: 'About',
                   subtitle: 'App version and information',
                   onTap: () {
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const AboutPage(),
-                      ),
+                      builder: (context) => const AboutPage(),
                     );
                   },
                 ),
@@ -641,11 +622,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: 'God Mode Admin',
                     subtitle: 'Access admin dashboard',
                     onTap: () {
-                      Navigator.push(
+                      AppNavigator.pushBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const GodModeLoginPage(),
-                        ),
+                        builder: (context) => const GodModeLoginPage(),
                       );
                     },
                   ),
@@ -661,13 +640,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       _showSignOutDialog(context);
                     },
                     // Use global ElevatedButtonTheme; color implied by theme
-                    child: const Text('Sign Out'),
+                    child: Text('Sign Out'),
                   ),
                 ),
               ],
             );
           } else {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -754,12 +733,12 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
+          title: Text('Sign Out'),
+          content: Text('Are you sure you want to sign out?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -767,7 +746,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.read<AuthBloc>().add(SignOutRequested());
               },
               // Use global ElevatedButtonTheme
-              child: const Text('Sign Out'),
+              child: Text('Sign Out'),
             ),
           ],
         );

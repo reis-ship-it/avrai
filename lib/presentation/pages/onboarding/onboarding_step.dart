@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/services/user/permissions_persistence_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 class PermissionsPage extends StatefulWidget {
@@ -342,13 +344,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
           // Open System Settings to enable location services
           await _openMacOSSystemSettings(Permission.locationWhenInUse);
           if (mounted && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
+            FeedbackPresenter.showSnack(
+              context,
+              message:
                   'Please enable Location Services in System Settings > Privacy & Security > Location Services.',
-                ),
-                duration: Duration(seconds: 4),
-              ),
+              kind: FeedbackKind.warning,
+              duration: const Duration(seconds: 4),
             );
           }
         } else {
@@ -371,13 +372,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 tag: 'PermissionsPage');
             await _openMacOSSystemSettings(Permission.locationWhenInUse);
             if (mounted && context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
+              FeedbackPresenter.showSnack(
+                context,
+                message:
                     'Please grant location permission in System Settings > Privacy & Security > Location Services.',
-                  ),
-                  duration: Duration(seconds: 4),
-                ),
+                kind: FeedbackKind.warning,
+                duration: const Duration(seconds: 4),
               );
             }
           } else if (permission == LocationPermission.whileInUse ||
@@ -397,13 +397,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
           _logger.warn('Location services are disabled on iOS',
               tag: 'PermissionsPage');
           if (mounted && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
+            FeedbackPresenter.showSnack(
+              context,
+              message:
                   'Please enable Location Services in Settings > Privacy & Security > Location Services.',
-                ),
-                duration: Duration(seconds: 4),
-              ),
+              kind: FeedbackKind.warning,
+              duration: const Duration(seconds: 4),
             );
           }
         } else {
@@ -426,13 +425,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 tag: 'PermissionsPage');
             await _openMacOSSystemSettings(Permission.locationWhenInUse);
             if (mounted && context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
+              FeedbackPresenter.showSnack(
+                context,
+                message:
                     'Please grant location permission in System Settings > Privacy & Security > Location Services.',
-                  ),
-                  duration: Duration(seconds: 4),
-                ),
+                kind: FeedbackKind.warning,
+                duration: const Duration(seconds: 4),
               );
             }
           } else if (permission == LocationPermission.whileInUse ||
@@ -553,15 +551,13 @@ class _PermissionsPageState extends State<PermissionsPage> {
                     tag: 'PermissionsPage');
 
                 if (mounted && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        Platform.isMacOS
-                            ? 'Please grant permissions in System Settings. When done, switch back to AVRAI (Cmd+Tab or dock). Use the Back button above to return to the previous step.'
-                            : 'Please grant permissions in System Settings. The app will check again when you return. Use the Back button above to return to the previous step.',
-                      ),
-                      duration: const Duration(seconds: 5),
-                    ),
+                  FeedbackPresenter.showSnack(
+                    context,
+                    message: Platform.isMacOS
+                        ? 'Please grant permissions in System Settings. When done, switch back to AVRAI (Cmd+Tab or dock). Use the Back button above to return to the previous step.'
+                        : 'Please grant permissions in System Settings. The app will check again when you return. Use the Back button above to return to the previous step.',
+                    kind: FeedbackKind.info,
+                    duration: const Duration(seconds: 5),
                   );
                 }
 
@@ -662,6 +658,8 @@ class _PermissionsPageState extends State<PermissionsPage> {
   /// Shows a dialog explaining permissions and giving users options to grant them
   Future<void> _showPermissionDialog() async {
     if (kIsWeb) return;
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     // Check if we have any denied or permanently denied permissions
     final hasDeniedPermissions = _statuses.values.any(
@@ -681,47 +679,58 @@ class _PermissionsPageState extends State<PermissionsPage> {
       context: context,
       barrierDismissible: true,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.security, color: AppColors.electricBlue),
-            SizedBox(width: 12),
-            Expanded(child: Text('Enable Permissions')),
+            const Icon(Icons.security, color: AppColors.electricBlue),
+            SizedBox(width: spacing.sm),
+            Expanded(
+              child: Text(
+                'Enable Permissions',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ],
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'avrai needs certain permissions to provide the best experience:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 12),
-              _PermissionItem(
+              SizedBox(height: spacing.sm),
+              const _PermissionItem(
                 icon: Icons.location_on,
                 title: 'Location',
                 description:
                     'Show nearby spots and enable location-based discovery',
               ),
-              SizedBox(height: 8),
-              _PermissionItem(
+              SizedBox(height: spacing.xs),
+              const _PermissionItem(
                 icon: Icons.bluetooth,
                 title: 'Bluetooth',
                 description:
                     'Enable secure ai2ai device discovery and proximity awareness',
               ),
-              SizedBox(height: 8),
-              _PermissionItem(
+              SizedBox(height: spacing.xs),
+              const _PermissionItem(
                 icon: Icons.wifi,
                 title: 'WiFi Devices',
                 description:
                     'Improve device discovery and connectivity quality',
               ),
-              SizedBox(height: 16),
+              SizedBox(height: spacing.md),
               Text(
                 'You can grant permissions now or configure them in device settings.',
-                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                style: textTheme.bodySmall?.copyWith(
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ],
           ),
@@ -764,15 +773,13 @@ class _PermissionsPageState extends State<PermissionsPage> {
       _logger.info('Opened app settings: $opened', tag: 'PermissionsPage');
 
       if (mounted && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              Platform.isMacOS
-                  ? 'When done in System Settings, switch back to AVRAI (Cmd+Tab or dock). Use the Back button above to return to the previous step.'
-                  : 'When done in Settings, return to the app. Use the Back button above to return to the previous step.',
-            ),
-            duration: const Duration(seconds: 5),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: Platform.isMacOS
+              ? 'When done in System Settings, switch back to AVRAI (Cmd+Tab or dock). Use the Back button above to return to the previous step.'
+              : 'When done in Settings, return to the app. Use the Back button above to return to the previous step.',
+          kind: FeedbackKind.info,
+          duration: const Duration(seconds: 5),
         );
       }
 
@@ -889,9 +896,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
   Widget build(BuildContext context) {
     final allGranted = _statuses.isNotEmpty && _grantedCount == _totalCount;
     final groups = _groupPermissions();
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -899,8 +909,8 @@ class _PermissionsPageState extends State<PermissionsPage> {
           // Summary banner
           if (_statuses.isNotEmpty)
             PortalSurface(
-              padding: const EdgeInsets.all(16),
-              radius: 12,
+              padding: EdgeInsets.all(spacing.md),
+              radius: context.radius.md,
               color: allGranted
                   ? AppColors.success.withValues(alpha: 0.1)
                   : AppColors.warning.withValues(alpha: 0.1),
@@ -912,15 +922,14 @@ class _PermissionsPageState extends State<PermissionsPage> {
                     color: allGranted ? AppColors.success : AppColors.warning,
                     size: 24,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Expanded(
                     child: Text(
                       allGranted
                           ? 'All permissions granted'
                           : '$_grantedCount of $_totalCount permissions granted',
-                      style: TextStyle(
+                      style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
                         color:
                             allGranted ? AppColors.success : AppColors.warning,
                       ),
@@ -929,14 +938,14 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 ],
               ),
             ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           // Platform-specific info note (shown when permissions are not granted)
           if (!allGranted && _statuses.isNotEmpty)
             PortalSurface(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              radius: 8,
+              padding: EdgeInsets.all(spacing.sm),
+              margin: EdgeInsets.only(bottom: spacing.md),
+              radius: context.radius.sm,
               color: AppColors.electricBlue.withValues(alpha: 0.1),
               borderColor: AppColors.electricBlue.withValues(alpha: 0.3),
               child: Row(
@@ -947,7 +956,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                     color: AppColors.electricBlue,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Expanded(
                     child: Text(
                       Platform.isMacOS
@@ -955,8 +964,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                           : Platform.isIOS
                               ? 'Note: Some permissions (especially Bluetooth and WiFi) may not be fully supported on iOS Simulator. Test on a real device for complete functionality.'
                               : 'Note: Some permissions may require manual configuration in your device settings.',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: textTheme.bodySmall?.copyWith(
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -967,24 +975,24 @@ class _PermissionsPageState extends State<PermissionsPage> {
 
           // Loading state
           if (_loading)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(spacing.lg),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Requesting permissions...'),
+                    const CircularProgressIndicator(),
+                    SizedBox(height: spacing.md),
+                    const Text('Requesting permissions...'),
                   ],
                 ),
               ),
             )
           else if (_statuses.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(24.0),
-                child: Text('Checking permissions...'),
+                padding: EdgeInsets.all(spacing.lg),
+                child: const Text('Checking permissions...'),
               ),
             )
           else
@@ -996,13 +1004,13 @@ class _PermissionsPageState extends State<PermissionsPage> {
                   permissions.every((e) => e.value.isGranted);
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.only(bottom: spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Category header
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: EdgeInsets.only(bottom: spacing.xs),
                       child: Row(
                         children: [
                           Icon(
@@ -1016,11 +1024,10 @@ class _PermissionsPageState extends State<PermissionsPage> {
                                 ? AppColors.success
                                 : Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: spacing.xs),
                           Text(
                             categoryName,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1034,30 +1041,28 @@ class _PermissionsPageState extends State<PermissionsPage> {
                       final isGranted = status.isGranted;
 
                       return PortalSurface(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        radius: 8,
+                        margin: EdgeInsets.only(bottom: spacing.xs),
+                        radius: context.radius.sm,
                         borderColor: isGranted
                             ? AppColors.success.withValues(alpha: 0.3)
                             : AppColors.grey500.withValues(alpha: 0.2),
                         padding: EdgeInsets.zero,
                         child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: spacing.md,
+                            vertical: spacing.xs,
                           ),
                           title: Text(
                             _getPermissionName(permission),
-                            style: const TextStyle(
-                              fontSize: 15,
+                            style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
+                            padding: EdgeInsets.only(top: spacing.xxs),
                             child: Text(
                               _getPermissionDescription(permission),
-                              style: TextStyle(
-                                fontSize: 13,
+                              style: textTheme.bodySmall?.copyWith(
                                 color: AppColors.grey600,
                               ),
                             ),
@@ -1093,33 +1098,27 @@ class _PermissionsPageState extends State<PermissionsPage> {
                                           return;
                                         }
                                         // Show helpful message for platform limitations
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              Platform.isMacOS
-                                                  ? 'On macOS, some permissions may require System Settings configuration. Check System Settings > Privacy & Security if needed.'
-                                                  : Platform.isIOS
-                                                      ? 'Some permissions may not be fully supported on iOS Simulator. Test on a real device for complete functionality.'
-                                                      : 'Some permissions may require manual configuration in device settings.',
-                                            ),
-                                            duration:
-                                                const Duration(seconds: 3),
-                                          ),
+                                        FeedbackPresenter.showSnack(
+                                          context,
+                                          message: Platform.isMacOS
+                                              ? 'On macOS, some permissions may require System Settings configuration. Check System Settings > Privacy & Security if needed.'
+                                              : Platform.isIOS
+                                                  ? 'Some permissions may not be fully supported on iOS Simulator. Test on a real device for complete functionality.'
+                                                  : 'Some permissions may require manual configuration in device settings.',
+                                          kind: FeedbackKind.info,
+                                          duration: const Duration(seconds: 3),
                                         );
                                       }
                                     } else if (!value && isGranted) {
                                       // Refresh to show actual state
                                       await _refreshStatuses();
                                       if (!mounted || !context.mounted) return;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
+                                      FeedbackPresenter.showSnack(
+                                        context,
+                                        message:
                                             'To revoke permissions, please use your device settings.',
-                                          ),
-                                          duration: Duration(seconds: 2),
-                                        ),
+                                        kind: FeedbackKind.info,
+                                        duration: const Duration(seconds: 2),
                                       );
                                     }
                                   },
@@ -1132,7 +1131,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
               );
             }),
 
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
 
           // Action buttons
           if (!allGranted) ...[
@@ -1162,7 +1161,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 label: const Text('Open Settings'),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
           ],
           SizedBox(
             width: double.infinity,
@@ -1202,23 +1201,27 @@ class _PermissionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 20, color: AppColors.electricBlue),
-        const SizedBox(width: 12),
+        SizedBox(width: spacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               Text(
                 description,
-                style: TextStyle(
-                  fontSize: 12,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.grey600,
                 ),
               ),

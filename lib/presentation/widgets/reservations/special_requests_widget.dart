@@ -110,10 +110,9 @@ class _SpecialRequestsWidgetState extends State<SpecialRequestsWidget> {
                   widget.onChanged(newText);
                 },
                 backgroundColor: AppColors.grey100,
-                labelStyle: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 12,
-                ),
+                labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               );
             }).toList(),
           ),

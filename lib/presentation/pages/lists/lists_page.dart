@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/common/offline_indicator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class ListsPage extends StatelessWidget {
   const ListsPage({super.key});
@@ -73,11 +76,9 @@ class ListsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+          AppNavigator.pushBuilder(
             context,
-            MaterialPageRoute(
-              builder: (context) => const CreateListPage(),
-            ),
+            builder: (context) => const CreateListPage(),
           );
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -113,11 +114,9 @@ class ListsPage extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.push(
+                AppNavigator.pushBuilder(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreateListPage(),
-                  ),
+                  builder: (context) => const CreateListPage(),
                 );
               },
               icon: const Icon(Icons.add),
@@ -137,20 +136,12 @@ class ListsPage extends StatelessWidget {
     return Column(
       children: [
         if (isFirstTime) ...[
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withValues(alpha: 0.3),
-              ),
-            ),
+          PortalSurface(
+            margin: const EdgeInsets.all(kSpaceMd),
+            padding: const EdgeInsets.all(kSpaceMd),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             child: Row(
               children: [
                 Icon(
@@ -185,7 +176,7 @@ class ListsPage extends StatelessWidget {
         ],
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             itemCount: lists.length,
             itemBuilder: (context, index) {
               final list = lists[index];

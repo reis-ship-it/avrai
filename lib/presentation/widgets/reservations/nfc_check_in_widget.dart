@@ -7,6 +7,7 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/models/spots/spot.dart';
@@ -17,6 +18,7 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/data/repositories/spots_repository_impl.dart';
 import 'package:avrai/domain/repositories/spots_repository.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// NFC Check-In Widget
 ///
@@ -217,13 +219,8 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Checked in successfully! (Confidence: ${(result.confidenceScore * 100).toStringAsFixed(1)}%)',
-              ),
-              backgroundColor: AppTheme.successColor,
-            ),
+          context.showSuccess(
+            'Checked in successfully! (Confidence: ${(result.confidenceScore * 100).toStringAsFixed(1)}%)',
           );
 
           // Notify parent
@@ -233,12 +230,7 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
             _error = result.error ?? 'Check-in failed';
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Check-in failed'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Check-in failed');
         }
       }
     } catch (e, stackTrace) {
@@ -274,8 +266,8 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(kSpaceMd),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXs),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -295,11 +287,10 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
               Expanded(
                 child: Text(
                   'Tap to Check In',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
             ],
@@ -307,19 +298,17 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
           const SizedBox(height: 8),
           Text(
             'You\'re near the check-in location. Tap your phone to check in.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
             Text(
               _error!,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppTheme.errorColor,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.errorColor,
+                  ),
             ),
           ],
           const SizedBox(height: 12),
@@ -336,7 +325,7 @@ class _NFCCheckInWidgetState extends State<NFCCheckInWidget> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

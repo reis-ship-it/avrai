@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_rate_limit_service.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Rate Limit Warning Widget
 ///
@@ -60,8 +61,8 @@ class RateLimitWarningWidget extends StatelessWidget {
     final warningLevel = _warningLevel;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: kSpaceMd),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: warningLevel == WarningLevel.blocked
             ? AppTheme.errorColor.withValues(alpha: 0.1)
@@ -92,13 +93,12 @@ class RateLimitWarningWidget extends StatelessWidget {
                   warningLevel == WarningLevel.blocked
                       ? 'Rate Limit Exceeded'
                       : 'Rate Limit Warning',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: warningLevel == WarningLevel.blocked
-                        ? AppTheme.errorColor
-                        : AppTheme.warningColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: warningLevel == WarningLevel.blocked
+                            ? AppTheme.errorColor
+                            : AppTheme.warningColor,
+                      ),
                 ),
               ),
             ],
@@ -107,46 +107,41 @@ class RateLimitWarningWidget extends StatelessWidget {
           if (warningLevel == WarningLevel.blocked) ...[
             Text(
               'You have exceeded the rate limit for reservations. Please try again later.',
-              style: const TextStyle(
-                color: AppTheme.errorColor,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.errorColor,
+                  ),
             ),
             if (rateLimitResult!.resetAt != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Resets at: ${_formatResetTime(rateLimitResult!.resetAt!)}',
-                style: const TextStyle(
-                  color: AppTheme.errorColor,
-                  fontSize: 12,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.errorColor,
+                    ),
               ),
             ],
           ] else ...[
             Text(
               'You are approaching the rate limit for reservations.',
-              style: const TextStyle(
-                color: AppTheme.warningColor,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.warningColor,
+                  ),
             ),
             const SizedBox(height: 8),
             if (rateLimitResult!.remaining != null)
               Text(
                 'Remaining: ${rateLimitResult!.remaining}',
-                style: const TextStyle(
-                  color: AppTheme.warningColor,
-                  fontSize: 12,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.warningColor,
+                    ),
               ),
             if (rateLimitResult!.resetAt != null) ...[
               const SizedBox(height: 4),
               Text(
                 'Resets at: ${_formatResetTime(rateLimitResult!.resetAt!)}',
-                style: const TextStyle(
-                  color: AppTheme.warningColor,
-                  fontSize: 12,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.warningColor,
+                    ),
               ),
             ],
           ],

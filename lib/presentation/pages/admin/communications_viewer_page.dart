@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Communications Viewer Page
 /// View AI2AI and user communications
 class CommunicationsViewerPage extends StatelessWidget {
   final AdminGodModeService? godModeService;
-  
+
   const CommunicationsViewerPage({
     super.key,
     this.godModeService,
@@ -18,7 +20,7 @@ class CommunicationsViewerPage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Text(
             'Communications Viewer',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -35,20 +37,20 @@ class CommunicationsViewerPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   'View AI2AI and user communications',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.grey500
-                      ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: AppColors.grey500),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () {
                     // Navigate to AI2AI admin dashboard
-                    Navigator.push(
+                    AppNavigator.pushBuilder(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const ConnectionCommunicationDetailPage(
-                          connectionId: 'example',
-                        ),
+                      builder: (context) =>
+                          const ConnectionCommunicationDetailPage(
+                        connectionId: 'example',
                       ),
                     );
                   },
@@ -64,4 +66,3 @@ class CommunicationsViewerPage extends StatelessWidget {
     );
   }
 }
-

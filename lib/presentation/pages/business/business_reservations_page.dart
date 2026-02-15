@@ -6,6 +6,7 @@
 // Page for business owners to manage reservations for their business
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_service.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -14,6 +15,7 @@ import 'package:avrai/presentation/pages/reservations/reservation_detail_page.da
 import 'package:avrai/presentation/widgets/reservations/reservation_card_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Reservations Page
 ///
@@ -162,7 +164,7 @@ class _BusinessReservationsPageState extends State<BusinessReservationsPage>
       body: _error != null
           ? Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -171,13 +173,16 @@ class _BusinessReservationsPageState extends State<BusinessReservationsPage>
                     const SizedBox(height: 16),
                     Text(
                       _error!,
-                      style: const TextStyle(color: AppTheme.errorColor),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppTheme.errorColor),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _loadReservations,
-                      child: const Text('Retry'),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),
@@ -188,7 +193,7 @@ class _BusinessReservationsPageState extends State<BusinessReservationsPage>
               children: List.generate(4, (index) {
                 final reservations = _getReservationsForTab(index);
                 return _isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator())
                     : RefreshIndicator(
                         onRefresh: _loadReservations,
                         child: reservations.isEmpty
@@ -216,19 +221,18 @@ class _BusinessReservationsPageState extends State<BusinessReservationsPage>
                               )
                             : ListView.builder(
                                 itemCount: reservations.length,
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(kSpaceMd),
                                 itemBuilder: (context, i) {
                                   final reservation = reservations[i];
                                   return ReservationCardWidget(
                                     reservation: reservation,
                                     onTap: () async {
                                       final result =
-                                          await Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ReservationDetailPage(
-                                            reservationId: reservation.id,
-                                          ),
+                                          await AppNavigator.pushBuilder(
+                                        context,
+                                        builder: (context) =>
+                                            ReservationDetailPage(
+                                          reservationId: reservation.id,
                                         ),
                                       );
                                       if (result == true) {

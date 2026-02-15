@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class ChatMessage extends StatelessWidget {
   final String message;
@@ -17,7 +18,8 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: Row(
         mainAxisAlignment:
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -37,7 +39,8 @@ class ChatMessage extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceMd, vertical: kSpaceSm),
               decoration: BoxDecoration(
                 color: isUser
                     ? AppTheme.primaryColor
@@ -51,20 +54,18 @@ class ChatMessage extends StatelessWidget {
                 children: [
                   Text(
                     message,
-                    style: TextStyle(
-                      color: isUser ? AppColors.black : null,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isUser ? AppColors.black : null,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: TextStyle(
-                      color: isUser 
-                          ? AppColors.black.withValues(alpha: 0.6)
-                          : AppColors.grey600,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isUser
+                              ? AppColors.black.withValues(alpha: 0.6)
+                              : AppColors.grey600,
+                        ),
                   ),
                 ],
               ),

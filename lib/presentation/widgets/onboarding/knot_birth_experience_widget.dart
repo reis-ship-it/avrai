@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -172,7 +173,8 @@ class _KnotBirthExperienceWidgetState extends State<KnotBirthExperienceWidget>
             name: _logName);
       }
     } catch (e) {
-      developer.log('WavetableKnotAudioService not available: $e', name: _logName);
+      developer.log('WavetableKnotAudioService not available: $e',
+          name: _logName);
       // Continue without audio - visual experience still works
     }
   }
@@ -366,22 +368,20 @@ class _KnotBirthExperienceWidgetState extends State<KnotBirthExperienceWidget>
                 children: [
                   Text(
                     widget.customRevealText ?? 'This is you.',
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 2,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w300,
+                          letterSpacing: 2,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     _getKnotDescription(),
-                    style: TextStyle(
-                      color: AppColors.white.withValues(alpha: 0.7),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w300,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -424,17 +424,16 @@ class _KnotBirthExperienceWidgetState extends State<KnotBirthExperienceWidget>
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.electricGreen,
             foregroundColor: AppColors.black,
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text(
+          child: Text(
             'Begin Your Journey',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
       ),

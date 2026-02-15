@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/design_system.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/misc/list.dart';
@@ -25,6 +28,7 @@ import 'package:avrai/presentation/pages/reservations/create_reservation_page.da
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SpotDetailsPage extends StatefulWidget {
   final Spot spot;
@@ -146,17 +150,14 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
   }
 
   void _navigateToCreateReservation() {
-    Navigator.of(context)
-        .push(
-      MaterialPageRoute(
-        builder: (context) => CreateReservationPage(
-          type: ReservationType.spot,
-          targetId: widget.spot.id,
-          targetTitle: widget.spot.name,
-        ),
+    AppNavigator.pushBuilder(
+      context,
+      builder: (context) => CreateReservationPage(
+        type: ReservationType.spot,
+        targetId: widget.spot.id,
+        targetTitle: widget.spot.name,
       ),
-    )
-        .then((_) {
+    ).then((_) {
       // Refresh reservation status after returning
       _checkReservationStatus();
     });
@@ -178,6 +179,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return AdaptivePlatformPageScaffold(
       title: widget.spot.name,
       actions: [
@@ -196,35 +198,36 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
       ],
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Spot Header
             PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                        Chip(
+                          side: BorderSide.none,
+                          visualDensity: const VisualDensity(
+                            horizontal: -4,
+                            vertical: -4,
                           ),
-                          decoration: BoxDecoration(
-                            color: _getCategoryColor(widget.spot.category),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
+                          backgroundColor:
+                              _getCategoryColor(widget.spot.category),
+                          label: Text(
                             widget.spot.category,
-                            style: const TextStyle(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ),
                         const Spacer(),
@@ -236,8 +239,10 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                               const SizedBox(width: 4),
                               Text(
                                 widget.spot.rating.toString(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -293,20 +298,20 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
             // Location Information
             PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(Icons.location_on, color: AppTheme.primaryColor),
                         SizedBox(width: 8),
                         Text(
                           'Location',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -314,19 +319,23 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                     if (widget.spot.address != null) ...[
                       Text(
                         widget.spot.address!,
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
                     ],
                     Text(
                       'Latitude: ${widget.spot.latitude.toStringAsFixed(6)}',
-                      style: const TextStyle(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                     Text(
                       'Longitude: ${widget.spot.longitude.toStringAsFixed(6)}',
-                      style: const TextStyle(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
@@ -334,7 +343,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                         _openInMaps(context, widget.spot);
                       },
                       icon: const Icon(Icons.directions),
-                      label: const Text('Get Directions'),
+                      label: Text('Get Directions'),
                       // Use global ElevatedButtonTheme (light grey with black text)
                     ),
                   ],
@@ -346,20 +355,20 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
             // Additional Information
             PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(Icons.info, color: AppTheme.primaryColor),
                         SizedBox(width: 8),
                         Text(
                           'Details',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -372,7 +381,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                       const SizedBox(height: 8),
                       Text(
                         'Tags: ${widget.spot.tags.join(', ')}',
-                        style: const TextStyle(fontSize: 14),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ],
@@ -391,11 +400,11 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                     child: ElevatedButton.icon(
                       onPressed: _navigateToCreateReservation,
                       icon: const Icon(Icons.event_available),
-                      label: const Text('Make Reservation'),
+                      label: Text('Make Reservation'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -413,7 +422,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                           _showAddToListDialog(context);
                         },
                         icon: const Icon(Icons.add),
-                        label: const Text('Add to List'),
+                        label: Text('Add to List'),
                         // Use global ElevatedButtonTheme
                       ),
                     ),
@@ -424,7 +433,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                           _showShareDialog(context);
                         },
                         icon: const Icon(Icons.share),
-                        label: const Text('Share'),
+                        label: Text('Share'),
                       ),
                     ),
                   ],
@@ -438,12 +447,8 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
               spot: widget.spot,
               onValidationComplete: () {
                 // Optionally refresh spot data or show confirmation
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text('Thank you for helping validate community data!'),
-                    backgroundColor: AppTheme.successColor,
-                  ),
+                context.showSuccess(
+                  'Thank you for helping validate community data!',
                 );
               },
             ),
@@ -461,7 +466,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Share Spot'),
+        title: Text('Share Spot'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -474,9 +479,12 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Share to Social Media',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         ...snapshot.data!.map((platform) => ListTile(
@@ -498,8 +506,8 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
               // Standard Sharing Options
               ListTile(
                 leading: const Icon(Icons.share),
-                title: const Text('Share via...'),
-                subtitle: const Text('Share to other apps'),
+                title: Text('Share via...'),
+                subtitle: Text('Share to other apps'),
                 onTap: () {
                   Navigator.pop(context);
                   _shareToOtherApps();
@@ -507,8 +515,8 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.link),
-                title: const Text('Copy Link'),
-                subtitle: const Text('Copy shareable link'),
+                title: Text('Copy Link'),
+                subtitle: Text('Copy shareable link'),
                 onTap: () {
                   Navigator.pop(context);
                   _copySpotLink(context);
@@ -516,8 +524,8 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.location_on),
-                title: const Text('Share Location'),
-                subtitle: const Text('Share coordinates'),
+                title: Text('Share Location'),
+                subtitle: Text('Share coordinates'),
                 onTap: () {
                   Navigator.pop(context);
                   _shareLocation();
@@ -529,7 +537,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
         ],
       ),
@@ -604,12 +612,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
 
       // Show loading
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sharing to $platform...'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        context.showInfo('Sharing to $platform...');
       }
 
       // Share place
@@ -626,29 +629,14 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
 
       if (context.mounted) {
         if (results[platform] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Shared to $platform successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          context.showSuccess('Shared to $platform successfully!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to share to $platform'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Failed to share to $platform');
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sharing: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error sharing: $e');
       }
     }
   }
@@ -673,12 +661,7 @@ Shared from avrai - know you belong.''';
         'https://avrai.app/spot/${widget.spot.id}?lat=${widget.spot.latitude}&lng=${widget.spot.longitude}';
 
     Clipboard.setData(ClipboardData(text: spotLink));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Spot link copied to clipboard'),
-        backgroundColor: AppTheme.successColor,
-      ),
-    );
+    context.showSuccess('Spot link copied to clipboard');
   }
 
   void _shareLocation() {
@@ -694,13 +677,13 @@ Shared from avrai''';
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Open in Maps'),
+        title: Text('Open in Maps'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.map),
-              title: const Text('Google Maps'),
+              title: Text('Google Maps'),
               onTap: () {
                 Navigator.pop(context);
                 _openGoogleMaps(spot);
@@ -708,7 +691,7 @@ Shared from avrai''';
             ),
             ListTile(
               leading: const Icon(Icons.apple),
-              title: const Text('Apple Maps'),
+              title: Text('Apple Maps'),
               onTap: () {
                 Navigator.pop(context);
                 _openAppleMaps(spot);
@@ -716,7 +699,7 @@ Shared from avrai''';
             ),
             ListTile(
               leading: const Icon(Icons.web),
-              title: const Text('Web Browser'),
+              title: Text('Web Browser'),
               onTap: () {
                 Navigator.pop(context);
                 _openInBrowser(spot);
@@ -727,7 +710,7 @@ Shared from avrai''';
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
         ],
       ),
@@ -778,19 +761,19 @@ Shared from avrai''';
           if (state is ListsLoaded) {
             if (state.lists.isEmpty) {
               return AlertDialog(
-                title: const Text('No Lists Available'),
-                content: const Text('Create a list first to add spots to it.'),
+                title: Text('No Lists Available'),
+                content: Text('Create a list first to add spots to it.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('OK'),
+                    child: Text('OK'),
                   ),
                 ],
               );
             }
 
             return AlertDialog(
-              title: const Text('Add to List'),
+              title: Text('Add to List'),
               content: SizedBox(
                 width: double.maxFinite,
                 child: ListView.builder(
@@ -822,7 +805,7 @@ Shared from avrai''';
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text('Cancel'),
                 ),
               ],
             );
@@ -845,17 +828,12 @@ Shared from avrai''';
 
     context.read<ListsBloc>().add(UpdateList(updatedList));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Added ${widget.spot.name} to ${list.title}'),
-        backgroundColor: AppTheme.successColor,
-      ),
-    );
+    context.showSuccess('Added ${widget.spot.name} to ${list.title}');
   }
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -863,10 +841,10 @@ Shared from avrai''';
             width: 80,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.grey600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grey600,
+                  ),
             ),
           ),
           Expanded(

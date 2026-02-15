@@ -10,9 +10,11 @@
 library;
 
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/chat/friend_chat_service.dart';
@@ -171,12 +173,7 @@ class _FriendChatViewState extends State<FriendChatView> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading history: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading history: $e');
       }
     }
   }
@@ -236,12 +233,7 @@ class _FriendChatViewState extends State<FriendChatView> {
         setState(() {
           _isSending = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending message: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error sending message: $e');
       }
     }
   }
@@ -337,7 +329,7 @@ class _FriendChatViewState extends State<FriendChatView> {
           // Message list
           Expanded(
             child: _isLoading && _messages.isEmpty
-                ? const Center(
+                ? Center(
                     child: CircularProgressIndicator(),
                   )
                 : _filteredMessages.isEmpty
@@ -357,19 +349,23 @@ class _FriendChatViewState extends State<FriendChatView> {
                               _searchQuery.isNotEmpty
                                   ? 'No messages found'
                                   : 'No messages yet',
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                             if (_searchQuery.isEmpty) ...[
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Start the conversation!',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 14,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                             ],
                           ],
@@ -377,7 +373,7 @@ class _FriendChatViewState extends State<FriendChatView> {
                       )
                     : ListView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(kSpaceMd),
                         itemCount:
                             _filteredMessages.length + (_isTyping ? 1 : 0),
                         itemBuilder: (context, index) {
@@ -407,20 +403,12 @@ class _FriendChatViewState extends State<FriendChatView> {
           ),
 
           // Input bar
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
+          Material(
+            color: AppColors.white,
+            elevation: 4,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(kSpaceXs),
                 child: Row(
                   children: [
                     Expanded(
@@ -434,8 +422,8 @@ class _FriendChatViewState extends State<FriendChatView> {
                                 const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: kSpaceMd,
+                            vertical: kSpaceSm,
                           ),
                         ),
                         maxLines: null,

@@ -7,10 +7,12 @@
 
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter/scheduler.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/text_styles.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:vector_math/vector_math.dart';
@@ -32,7 +34,7 @@ import 'package:avrai/presentation/widgets/visualization/three_js_visualization_
 /// - Morph targets for smooth time scrubbing
 /// - Interactive 3D view (rotation, zoom, pan via OrbitControls)
 /// - Time slider with animation controls
-/// 
+///
 /// **Features (Fallback mode):**
 /// - Interactive 3D view (rotation, zoom, pan)
 /// - Time scrubbing (slider to navigate through time)
@@ -44,7 +46,7 @@ class Worldsheet4DWidget extends StatefulWidget {
   final double size;
   final bool showControls;
   final Worldsheet4DVisualizationService? visualizationService;
-  
+
   /// Whether to use Three.js WebView (true) or fallback CustomPainter (false)
   final bool useThreeJs;
 
@@ -135,11 +137,11 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
     _animationController.dispose();
     super.dispose();
   }
-  
+
   void _onThreeJsReady(ThreeJsBridgeService bridge) {
     _bridge = bridge;
     _threeJsReady = true;
-    
+
     if (_worldsheet4d != null) {
       _renderWorldsheetInThreeJs();
     }
@@ -148,7 +150,9 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
   }
 
   void _setupMotion() {
-    if (!widget.enableMotion || _motionService == null || _bridge == null) return;
+    if (!widget.enableMotion || _motionService == null || _bridge == null) {
+      return;
+    }
 
     _motionService!.start();
 
@@ -182,18 +186,21 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
     if (!_isPlaying && _worldsheet4d != null) {
       // Accumulate horizontal tilt for time scrubbing
       _tiltAccumulator += motion.tilt.y * 0.01;
-      
+
       // Map accumulator to time position
-      final timeRange = _worldsheet4d!.endTime.difference(_worldsheet4d!.startTime);
-      final currentProgress = _currentTime.difference(_worldsheet4d!.startTime).inMilliseconds / 
-                             timeRange.inMilliseconds;
+      final timeRange =
+          _worldsheet4d!.endTime.difference(_worldsheet4d!.startTime);
+      final currentProgress =
+          _currentTime.difference(_worldsheet4d!.startTime).inMilliseconds /
+              timeRange.inMilliseconds;
       final newProgress = (currentProgress + _tiltAccumulator).clamp(0.0, 1.0);
-      
+
       if ((newProgress - currentProgress).abs() > 0.01) {
         _tiltAccumulator = 0.0; // Reset accumulator after applying
         setState(() {
           _currentTime = _worldsheet4d!.startTime.add(
-            Duration(milliseconds: (timeRange.inMilliseconds * newProgress).round()),
+            Duration(
+                milliseconds: (timeRange.inMilliseconds * newProgress).round()),
           );
         });
         _bridge!.setAnimationTime(newProgress);
@@ -209,21 +216,21 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
       _bridge!.setAnimationTime(0.0);
     }
   }
-  
+
   Future<void> _renderWorldsheetInThreeJs() async {
     if (_bridge == null || _worldsheet4d == null) return;
-    
+
     final style = WorldsheetVisualizationStyle.flowing(
       lod: widget.size <= 300 ? VisualizationLOD.medium : VisualizationLOD.high,
     );
-    
+
     await _bridge!.renderWorldsheet(
       worldsheet: _worldsheet4d!,
       style: style,
       timePosition: _getTimeSliderValue(),
     );
   }
-  
+
   void _updateThreeJsTime() {
     if (_bridge != null && _threeJsReady) {
       _bridge!.setAnimationTime(_getTimeSliderValue());
@@ -310,7 +317,7 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
         _animationController.value = value;
       }
     });
-    
+
     // Update Three.js time if using WebGL
     _updateThreeJsTime();
   }
@@ -364,11 +371,12 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     if (_isLoading) {
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -390,7 +398,7 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
               const SizedBox(height: 8),
               Text(
                 'Error loading worldsheet',
-                style: TextStyle(color: AppColors.error),
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.error),
               ),
             ],
           ),
@@ -414,7 +422,7 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
               const SizedBox(height: 8),
               Text(
                 'No worldsheet data',
-                style: TextStyle(color: AppColors.grey400),
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.grey400),
               ),
             ],
           ),
@@ -426,10 +434,10 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
     if (widget.useThreeJs) {
       return _buildThreeJsVisualization();
     }
-    
+
     return _buildFallbackVisualization();
   }
-  
+
   Widget _buildThreeJsVisualization() {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -441,14 +449,15 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
           showControls: false,
           backgroundColor: AppColors.black,
         ),
-        
+
         // Time controls
         if (widget.showControls) _buildTimeControls(),
       ],
     );
   }
-  
+
   Widget _buildFallbackVisualization() {
+    final textTheme = Theme.of(context).textTheme;
     // Get fabric data at current time
     final fabric3d = _worldsheet4d!.getFabricAtTime(_currentTime);
 
@@ -472,6 +481,10 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
                 panOffset: _panOffset,
                 maxVisibleStrands: _maxVisibleStrands,
                 lodZoomThreshold: _lodZoomThreshold,
+                strandIndicatorStyle:
+                    textTheme.bodySmall?.copyWith(color: AppColors.grey600) ??
+                        AppTextStyles.textTheme.bodySmall
+                            ?.copyWith(color: AppColors.grey600),
                 cachedProjections: _cachedProjections,
                 onProjectionsCached: (key, projections) {
                   if (!mounted) return;
@@ -493,15 +506,16 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
       ],
     );
   }
-  
+
   Widget _buildTimeControls() {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         const SizedBox(height: 16),
 
         // Time slider
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
           child: Column(
             children: [
               Row(
@@ -509,18 +523,17 @@ class _Worldsheet4DWidgetState extends State<Worldsheet4DWidget>
                 children: [
                   Text(
                     _formatTime(_worldsheet4d!.startTime),
-                    style: const TextStyle(fontSize: 12),
+                    style: textTheme.bodySmall,
                   ),
                   Text(
                     _formatTime(_currentTime),
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     _formatTime(_worldsheet4d!.endTime),
-                    style: const TextStyle(fontSize: 12),
+                    style: textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -608,6 +621,7 @@ class Worldsheet4DPainter extends CustomPainter {
   final Map<String, List<List<Offset>>>? cachedProjections;
   final void Function(String key, List<List<Offset>> projections)?
       onProjectionsCached;
+  final TextStyle? strandIndicatorStyle;
 
   Worldsheet4DPainter({
     required this.fabric3d,
@@ -617,6 +631,7 @@ class Worldsheet4DPainter extends CustomPainter {
     required this.panOffset,
     this.maxVisibleStrands = 100,
     this.lodZoomThreshold = 0.8,
+    this.strandIndicatorStyle,
     this.cachedProjections,
     this.onProjectionsCached,
   });
@@ -737,10 +752,10 @@ class Worldsheet4DPainter extends CustomPainter {
         text: TextSpan(
           text:
               'Showing $strandsToRender/${fabric3d!.strandPositions.length} strands',
-          style: TextStyle(
-            color: AppColors.grey600,
-            fontSize: 10,
-          ),
+          style: strandIndicatorStyle ??
+              AppTextStyles.textTheme.bodySmall?.copyWith(
+                color: AppColors.grey600,
+              ),
         ),
         textDirection: TextDirection.ltr,
       );

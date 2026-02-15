@@ -205,3 +205,45 @@ Every AI assistant working on SPOTS must:
 
 **Remember: The tracker is the single source of truth. Keep it current. Reference it always.**
 
+---
+
+## 🧭 MANDATORY RULE: Architecture Planning Artifact Sync
+
+**Trigger:** Create or materially update any of these files:
+
+- `docs/plans/architecture/MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md`
+- `docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md`
+- `docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md`
+- `docs/plans/architecture/FILE_FOLDER_RENAME_MANIFEST_PHASE10.md`
+- `docs/plans/architecture/MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md`
+- `docs/plans/master_plan_execution.yaml`
+
+**Action Required:** In the same task:
+
+1. Update `docs/MASTER_PLAN_TRACKER.md`:
+   - Add or update rows under **Philosophy & Architecture**
+   - Ensure the architecture prep layer appears in **Master Plan Phase-Specific Plans (Planned)** with phase mapping to `1-14`
+   - Update tracker `Last Updated` note
+
+2. Validate links and cross-references:
+   - All file paths resolve correctly
+   - Architecture index (`docs/plans/architecture/ARCHITECTURE_INDEX.md`) includes the artifacts
+   - Orchestration artifacts are included in phase-specific plan rows when applicable
+
+3. Design linkage requirement:
+   - If orchestration or phase planning references UI/UX scope, ensure `docs/design/DESIGN_REF.md`, `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md`, and `docs/design/MASTER_PLAN_DESIGN_LINKAGE.md` are referenced in tracker dependencies
+   - Ensure design-principles docs are referenced where applicable: `docs/design/DESIGN_COVERAGE_MATRIX.md`, `docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md`, `docs/design/SENSORY_FEEDBACK_GUIDELINES.md`
+   - Ensure app-scoped design folder references are present when app targets are specified (`docs/design/apps/*`)
+
+4. Methodology linkage requirement:
+   - For orchestration artifacts, ensure methodology references remain current:
+     - `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
+     - `docs/plans/methodology/SESSION_START_CHECKLIST.md`
+     - `docs/plans/methodology/START_HERE_NEW_TASK.md`
+     - `docs/plans/methodology/PHASE_SECTION_SUBSECTION_FORMAT.md`
+
+5. Keep status semantics consistent:
+   - Planning artifacts should use tracker statuses (typically `🟢 Active` or `📋 Planned`)
+   - Do not use these docs as real-time execution status boards (status remains in `docs/agents/status/status_tracker.md`)
+
+**Enforcement:** If architecture planning artifacts changed but tracker/index did not, task is incomplete.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class OfflineIndicator extends StatelessWidget {
   const OfflineIndicator({super.key});
@@ -12,7 +13,8 @@ class OfflineIndicator extends StatelessWidget {
       builder: (context, state) {
         if (state is Authenticated && state.isOffline) {
           return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+                horizontal: kSpaceXs, vertical: kSpaceXxs),
             decoration: BoxDecoration(
               color: AppTheme.offlineColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -21,7 +23,7 @@ class OfflineIndicator extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
@@ -32,11 +34,10 @@ class OfflineIndicator extends StatelessWidget {
                 SizedBox(width: 4),
                 Text(
                   'Offline',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.offlineColor,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.offlineColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ],
             ),

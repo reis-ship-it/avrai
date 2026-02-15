@@ -1,7 +1,9 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/reservation/reservation_service.dart';
@@ -20,6 +22,7 @@ import 'package:avrai/presentation/widgets/reservations/nfc_check_in_widget.dart
 import 'package:avrai/presentation/widgets/reservations/calendar_sync_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Reservation Detail Page
 /// Phase 15: Reservation System Implementation
@@ -224,7 +227,7 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Reservation'),
+        title: Text('Cancel Reservation'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -238,21 +241,21 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                   ticketCount: _reservation!.ticketCount,
                 )
               else
-                const Text('Are you sure you want to cancel this reservation?'),
+                Text('Are you sure you want to cancel this reservation?'),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No, Keep Reservation'),
+            child: Text('No, Keep Reservation'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Yes, Cancel'),
+            child: Text('Yes, Cancel'),
           ),
         ],
       ),
@@ -275,13 +278,10 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
       await _loadReservation();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_qualifiesForRefund && _refundAmount != null
-                ? 'Reservation cancelled. Refund of \$${_refundAmount!.toStringAsFixed(2)} will be processed.'
-                : 'Reservation cancelled successfully'),
-            backgroundColor: AppTheme.successColor,
-          ),
+        context.showSuccess(
+          _qualifiesForRefund && _refundAmount != null
+              ? 'Reservation cancelled. Refund of \$${_refundAmount!.toStringAsFixed(2)} will be processed.'
+              : 'Reservation cancelled successfully',
         );
       }
     } catch (e, stackTrace) {
@@ -312,12 +312,8 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
       // Navigate to modification page (for now, just show a message)
       // TODO(Phase 15.2.2): Create reservation modification page
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Modification feature coming soon. Please cancel and create a new reservation.'),
-            backgroundColor: AppTheme.warningColor,
-          ),
+        context.showWarning(
+          'Modification feature coming soon. Please cancel and create a new reservation.',
         );
       }
     } catch (e) {
@@ -358,12 +354,8 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
         setState(() {
           _showDisputeForm = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Dispute filed successfully. We will review your request.'),
-            backgroundColor: AppTheme.successColor,
-          ),
+        context.showSuccess(
+          'Dispute filed successfully. We will review your request.',
         );
       }
     } catch (e) {
@@ -394,12 +386,7 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
       await _loadReservation();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Checked in successfully!'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Checked in successfully!');
       }
     } catch (e) {
       setState(() {
@@ -446,7 +433,7 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
       body: _isLoading
           ? Semantics(
               label: 'Loading reservation details',
-              child: const Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator()),
             )
           : _error != null
               ? Semantics(
@@ -461,7 +448,10 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                         const SizedBox(height: 16),
                         Text(
                           _error!,
-                          style: const TextStyle(color: AppTheme.errorColor),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppTheme.errorColor),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
@@ -474,7 +464,7 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                               backgroundColor: AppTheme.primaryColor,
                               foregroundColor: AppColors.white,
                             ),
-                            child: const Text('Retry'),
+                            child: Text('Retry'),
                           ),
                         ),
                       ],
@@ -482,9 +472,9 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                   ),
                 )
               : _reservation == null
-                  ? const Center(child: Text('Reservation not found'))
+                  ? Center(child: Text('Reservation not found'))
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(kSpaceMd),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -497,15 +487,12 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
 
                           // Waitlist Position (if applicable)
                           if (_waitlistPosition != null)
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryColor
-                                    .withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                    Border.all(color: AppTheme.primaryColor),
-                              ),
+                            PortalSurface(
+                              padding: const EdgeInsets.all(kSpaceMd),
+                              color:
+                                  AppTheme.primaryColor.withValues(alpha: 0.1),
+                              borderColor: AppTheme.primaryColor,
+                              radius: 8,
                               child: Row(
                                 children: [
                                   const Icon(Icons.access_time,
@@ -514,11 +501,13 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                                   Expanded(
                                     child: Text(
                                       'Waitlist Position: #$_waitlistPosition',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryColor,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.primaryColor,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -531,15 +520,12 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                           // Modification Count
                           if (_modificationCheck != null &&
                               _modificationCheck!.modificationCount != null)
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppTheme.warningColor
-                                    .withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                    Border.all(color: AppTheme.warningColor),
-                              ),
+                            PortalSurface(
+                              padding: const EdgeInsets.all(kSpaceSm),
+                              color:
+                                  AppTheme.warningColor.withValues(alpha: 0.1),
+                              borderColor: AppTheme.warningColor,
+                              radius: 8,
                               child: Row(
                                 children: [
                                   const Icon(Icons.edit,
@@ -548,11 +534,13 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
                                   Expanded(
                                     child: Text(
                                       'Modifications: ${_modificationCheck!.modificationCount}/3 (${_modificationCheck!.remainingModifications ?? 0} remaining)',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.warningColor,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.warningColor,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -794,19 +782,17 @@ class _DetailRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),

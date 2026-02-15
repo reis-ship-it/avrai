@@ -1,7 +1,10 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/events/event_partnership.dart';
@@ -10,6 +13,7 @@ import 'package:avrai/core/services/matching/partnership_matching_service.dart';
 import 'package:avrai/core/services/business/business_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
@@ -95,12 +99,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading suggestions: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading suggestions: $e');
       }
     }
   }
@@ -143,14 +142,12 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
   }
 
   void _showProposalForm(BusinessAccount business, double? compatibility) {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => PartnershipProposalFormPage(
-          event: widget.event,
-          business: business,
-          compatibility: compatibility,
-        ),
+      builder: (context) => PartnershipProposalFormPage(
+        event: widget.event,
+        business: business,
+        compatibility: compatibility,
       ),
     );
   }
@@ -169,26 +166,24 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Padding(
-              padding: EdgeInsets.all(20),
+            Padding(
+              padding: EdgeInsets.all(kSpaceMdWide),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Find a Business Partner',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   SizedBox(height: 8),
                   Text(
                     'Partner with businesses to host events together',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -196,12 +191,15 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
 
             // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: '🔍 Search businesses...',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -220,38 +218,40 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                         )
                       : null,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 onChanged: _searchBusinesses,
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Search Results or Suggestions
             if (_searchController.text.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: kSpaceMdWide),
                 child: Text(
                   'Search Results',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: context.spacing.sm),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (_searchResults.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(32),
+                Padding(
+                  padding: EdgeInsets.all(kSpaceXl),
                   child: Center(
                     child: Text(
                       'No businesses found',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 )
@@ -261,23 +261,22 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       null, // No compatibility score for search results
                     )),
             ] else ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: kSpaceMdWide),
                 child: Text(
                   'Suggested Partners (Vibe Match)',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: context.spacing.sm),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (_suggestions.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(32),
+                  padding: EdgeInsets.all(context.spacing.xxl),
                   child: Center(
                     child: Column(
                       children: [
@@ -286,22 +285,22 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                           size: 64,
                           color: AppColors.textSecondary.withValues(alpha: 0.5),
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: context.spacing.md),
+                        Text(
                           'No suggested partners yet',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
+                        SizedBox(height: context.spacing.xs),
+                        Text(
                           'Try searching for businesses or check back later',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -317,7 +316,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                         )),
             ],
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
           ],
         ),
       ),
@@ -326,23 +325,22 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
 
   Widget _buildBusinessCard(BusinessAccount business, double? compatibility) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.lg,
+        vertical: context.spacing.xs,
+      ),
       child: PortalSurface(
-        radius: 12,
-        padding: const EdgeInsets.all(16),
+        radius: context.radius.md,
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 // Business Icon/Logo
-                Container(
+                SizedBox(
                   width: 48,
                   height: 48,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                   child: business.logoUrl != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(8),
@@ -351,33 +349,35 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                             fit: BoxFit.cover,
                           ),
                         )
-                      : const Icon(
-                          Icons.business,
-                          color: AppTheme.primaryColor,
-                          size: 24,
+                      : const CircleAvatar(
+                          backgroundColor: Color.fromRGBO(76, 125, 255, 0.1),
+                          child: Icon(
+                            Icons.business,
+                            color: AppTheme.primaryColor,
+                            size: 24,
+                          ),
                         ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         business.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       if (business.categories.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: context.spacing.xxs),
                         Text(
                           business.categories.join(', '),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ],
@@ -387,7 +387,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                   CompatibilityBadge(compatibility: compatibility),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             Row(
               children: [
                 Expanded(
@@ -400,10 +400,10 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       foregroundColor: AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.grey300),
                     ),
-                    child: const Text('View Profile'),
+                    child: Text('View Profile'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing.sm),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _showProposalForm(business, compatibility),
@@ -411,7 +411,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
                     ),
-                    child: const Text('Propose'),
+                    child: Text('Propose'),
                   ),
                 ),
               ],
@@ -527,20 +527,11 @@ class _PartnershipProposalFormPageState
           Navigator.pop(context); // Close form
           Navigator.pop(context); // Close proposal page
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text('Partnership proposal sent to ${widget.business.name}!'),
-              backgroundColor: AppColors.electricGreen,
-            ),
+          context.showSuccess(
+            'Partnership proposal sent to ${widget.business.name}!',
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error sending proposal: ${result.error}'),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError('Error sending proposal: ${result.error}');
         }
       }
     } catch (e, stackTrace) {
@@ -556,12 +547,7 @@ class _PartnershipProposalFormPageState
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending proposal: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error sending proposal: $e');
       }
     }
   }
@@ -579,43 +565,41 @@ class _PartnershipProposalFormPageState
         key: _formKey,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(context.spacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Partner Info
                 PortalSurface(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(context.spacing.md),
                   child: Row(
                     children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
+                      CircleAvatar(
+                        radius: context.radius.xl,
+                        backgroundColor: Color.fromRGBO(76, 125, 255, 0.1),
+                        child: Icon(
                           Icons.business,
                           color: AppTheme.primaryColor,
                           size: 24,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: context.spacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.business.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                             if (widget.compatibility != null) ...[
-                              const SizedBox(height: 4),
+                              SizedBox(height: context.spacing.xxs),
                               CompatibilityBadge(
                                   compatibility: widget.compatibility!),
                             ],
@@ -626,18 +610,17 @@ class _PartnershipProposalFormPageState
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Partnership Type
-                const Text(
+                Text(
                   'Partnership Type',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 RadioGroup<PartnershipType>(
                   groupValue: _partnershipType,
                   onChanged: (val) {
@@ -650,55 +633,58 @@ class _PartnershipProposalFormPageState
                   child: Column(
                     children: [
                       RadioListTile<PartnershipType>(
-                        title: const Text('Co-Host (Equal partners)'),
-                        subtitle: const Text('Share responsibilities equally'),
+                        title: Text('Co-Host (Equal partners)'),
+                        subtitle: Text('Share responsibilities equally'),
                         value: PartnershipType.eventBased,
                       ),
                       RadioListTile<PartnershipType>(
-                        title: const Text('Venue Provider (Business venue)'),
-                        subtitle: const Text('Business provides venue space'),
+                        title: Text('Venue Provider (Business venue)'),
+                        subtitle: Text('Business provides venue space'),
                         value: PartnershipType.ongoing,
                       ),
                       RadioListTile<PartnershipType>(
-                        title: const Text('Sponsorship'),
-                        subtitle: const Text('Business sponsors the event'),
+                        title: Text('Sponsorship'),
+                        subtitle: Text('Business sponsors the event'),
                         value: PartnershipType.exclusive,
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Revenue Split
-                const Text(
+                Text(
                   'Revenue Split',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 Row(
                   children: [
                     Expanded(
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             'You',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           Text(
                             '${_userPercentage.toStringAsFixed(0)}%',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryColor,
+                                ),
                           ),
                         ],
                       ),
@@ -708,20 +694,24 @@ class _PartnershipProposalFormPageState
                         children: [
                           Text(
                             widget.business.name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             '${_businessPercentage.toStringAsFixed(0)}%',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryColor,
+                                ),
                           ),
                         ],
                       ),
@@ -742,18 +732,17 @@ class _PartnershipProposalFormPageState
                   },
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Responsibilities
-                const Text(
+                Text(
                   'Responsibilities',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 ..._availableResponsibilities.map((responsibility) =>
                     CheckboxListTile(
                       title: Text(responsibility),
@@ -769,34 +758,39 @@ class _PartnershipProposalFormPageState
                       },
                     )),
 
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Custom Terms
-                const Text(
+                Text(
                   'Custom Terms (Optional)',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 TextFormField(
                   controller: _customTermsController,
                   maxLines: 4,
                   decoration: InputDecoration(
                     hintText: 'Add any additional terms or notes...',
-                    hintStyle: const TextStyle(color: AppColors.textHint),
+                    hintStyle: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textHint),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: AppColors.grey100,
                   ),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: context.spacing.xxl),
 
                 // Submit Button
                 SizedBox(
@@ -806,7 +800,8 @@ class _PartnershipProposalFormPageState
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding:
+                          EdgeInsets.symmetric(vertical: context.spacing.md),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -820,17 +815,19 @@ class _PartnershipProposalFormPageState
                               color: AppColors.white,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Send Proposal',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: context.spacing.xxl),
               ],
             ),
           ),

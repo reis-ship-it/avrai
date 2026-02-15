@@ -1,0 +1,27 @@
+name: master-plan-orchestration-validate
+
+on:
+  pull_request:
+    paths:
+      - "docs/plans/master_plan_execution.yaml"
+      - "docs/MASTER_PLAN.md"
+      - "docs/MASTER_PLAN_TRACKER.md"
+      - "docs/plans/architecture/**"
+      - "docs/plans/methodology/**"
+      - ".cursorrules"
+      - ".cursorrules_master_plan"
+      - ".cursorrules_plan_tracker"
+      - "docs/design/**"
+      - "scripts/validate_master_plan_execution_refs.sh"
+      - ".github/workflows/master-plan-orchestration-validate.yml"
+  workflow_dispatch:
+
+jobs:
+  validate-orchestration-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate master plan execution references
+        run: bash scripts/validate_master_plan_execution_refs.sh

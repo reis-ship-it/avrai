@@ -3,6 +3,7 @@ import 'package:avrai/core/services/admin/admin_communication_service.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart'
     hide ChatMessage;
@@ -11,6 +12,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Admin page showing detailed communication log between two AIs
 class ConnectionCommunicationDetailPage extends StatefulWidget {
@@ -107,7 +109,7 @@ class _ConnectionCommunicationDetailPageState
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(
                   child: Column(
@@ -115,7 +117,7 @@ class _ConnectionCommunicationDetailPageState
                     children: [
                       const Icon(Icons.error_outline,
                           size: 48, color: AppColors.error),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       Text(
                         _error!,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -123,31 +125,31 @@ class _ConnectionCommunicationDetailPageState
                             ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       ElevatedButton(
                         onPressed: _loadCommunicationLog,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : _log == null
-                  ? const Center(child: Text('No communication log found'))
+                  ? Center(child: Text('No communication log found'))
                   : RefreshIndicator(
                       onRefresh: _loadCommunicationLog,
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(context.spacing.md),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildConnectionHeader(context),
-                            const SizedBox(height: 24),
+                            SizedBox(height: context.spacing.xl),
                             _buildMetricsSection(context),
-                            const SizedBox(height: 24),
+                            SizedBox(height: context.spacing.xl),
                             _buildChatHistorySection(context),
-                            const SizedBox(height: 24),
+                            SizedBox(height: context.spacing.xl),
                             _buildInteractionHistorySection(context),
-                            const SizedBox(height: 24),
+                            SizedBox(height: context.spacing.xl),
                             _buildAlertsSection(context),
                           ],
                         ),
@@ -159,10 +161,10 @@ class _ConnectionCommunicationDetailPageState
   Widget _buildConnectionHeader(BuildContext context) {
     if (_log == null) return const SizedBox.shrink();
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -172,7 +174,7 @@ class _ConnectionCommunicationDetailPageState
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildInfoRow('Local AI', _log!.localAISignature),
             _buildInfoRow('Remote AI', _log!.remoteAISignature),
             _buildInfoRow('Started',
@@ -188,7 +190,7 @@ class _ConnectionCommunicationDetailPageState
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -196,16 +198,19 @@ class _ConnectionCommunicationDetailPageState
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -216,10 +221,10 @@ class _ConnectionCommunicationDetailPageState
   Widget _buildMetricsSection(BuildContext context) {
     if (_log == null) return const SizedBox.shrink();
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -229,7 +234,7 @@ class _ConnectionCommunicationDetailPageState
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -251,20 +256,18 @@ class _ConnectionCommunicationDetailPageState
     return Column(
       children: [
         Icon(icon, size: 32, color: AppTheme.primaryColor),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -272,22 +275,22 @@ class _ConnectionCommunicationDetailPageState
 
   Widget _buildChatHistorySection(BuildContext context) {
     if (_log == null || _log!.chatEvents.isEmpty) {
-      return Card(
+      return PortalSurface(
         elevation: 2,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           child: Column(
             children: [
               const Icon(Icons.chat_bubble_outline,
                   size: 48, color: AppColors.textSecondary),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Text(
                 'No chat history available',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: context.spacing.xxs),
               Text(
                 'Chat conversations will appear here when AIs communicate',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -301,10 +304,10 @@ class _ConnectionCommunicationDetailPageState
       );
     }
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -323,7 +326,7 @@ class _ConnectionCommunicationDetailPageState
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             ..._log!.chatEvents
                 .map((event) => _buildChatEventCard(context, event)),
           ],
@@ -333,37 +336,40 @@ class _ConnectionCommunicationDetailPageState
   }
 
   Widget _buildChatEventCard(BuildContext context, AI2AIChatEvent event) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return PortalSurface(
+      margin: EdgeInsets.only(bottom: context.spacing.sm),
       color: AppColors.grey50,
       child: ExpansionTile(
         title: Text(
           'Chat Event: ${event.messageType.name}',
-          style: const TextStyle(fontWeight: FontWeight.w500),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
           '${event.messages.length} messages • ${DateFormat('MMM d, HH:mm').format(event.timestamp)}',
-          style: const TextStyle(fontSize: 12),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(context.spacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('Event ID', event.eventId),
                 _buildInfoRow('Participants', event.participants.join(', ')),
                 _buildInfoRow('Duration', _formatDuration(event.duration)),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 const Divider(),
-                const SizedBox(height: 8),
+                SizedBox(height: context.spacing.xs),
                 Text(
                   'Messages',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: context.spacing.xs),
                 ...event.messages
                     .map((message) => _buildMessageBubble(context, message)),
               ],
@@ -377,15 +383,15 @@ class _ConnectionCommunicationDetailPageState
   Widget _buildMessageBubble(BuildContext context, ChatMessage message) {
     final isLocal = message.senderId == _log!.localAISignature;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isLocal
-            ? AppTheme.primaryColor.withValues(alpha: 0.1)
-            : AppColors.grey100,
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return PortalSurface(
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
+      color: isLocal
+          ? AppTheme.primaryColor.withValues(alpha: 0.1)
+          : AppColors.grey100,
+      borderColor: (isLocal ? AppTheme.primaryColor : AppColors.grey300)
+          .withValues(alpha: 0.25),
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -394,36 +400,34 @@ class _ConnectionCommunicationDetailPageState
             children: [
               Text(
                 isLocal ? 'Local AI' : 'Remote AI',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color:
-                      isLocal ? AppTheme.primaryColor : AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isLocal
+                          ? AppTheme.primaryColor
+                          : AppColors.textSecondary,
+                    ),
               ),
               Text(
                 DateFormat('HH:mm:ss').format(message.timestamp),
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: context.spacing.xxs),
           Text(
             message.content,
-            style: const TextStyle(fontSize: 14),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           if (message.context.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Text(
               'Context: ${message.context.toString()}',
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ],
         ],
@@ -433,15 +437,15 @@ class _ConnectionCommunicationDetailPageState
 
   Widget _buildInteractionHistorySection(BuildContext context) {
     if (_log == null || _log!.interactionHistory.isEmpty) {
-      return Card(
+      return PortalSurface(
         elevation: 2,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           child: Column(
             children: [
               const Icon(Icons.swap_horiz,
                   size: 48, color: AppColors.textSecondary),
-              const SizedBox(height: 8),
+              SizedBox(height: context.spacing.xs),
               Text(
                 'No interaction history',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -454,10 +458,10 @@ class _ConnectionCommunicationDetailPageState
       );
     }
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -467,7 +471,7 @@ class _ConnectionCommunicationDetailPageState
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             ..._log!.interactionHistory.map(
                 (interaction) => _buildInteractionTile(context, interaction)),
           ],
@@ -479,7 +483,7 @@ class _ConnectionCommunicationDetailPageState
   Widget _buildInteractionTile(
       BuildContext context, InteractionEvent interaction) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      contentPadding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       leading: Icon(
         _getInteractionIcon(interaction.type),
         color: AppTheme.primaryColor,
@@ -487,7 +491,7 @@ class _ConnectionCommunicationDetailPageState
       title: Text(interaction.type.name),
       subtitle: Text(
         DateFormat('MMM d, HH:mm:ss').format(interaction.timestamp),
-        style: const TextStyle(fontSize: 12),
+        style: Theme.of(context).textTheme.bodySmall,
       ),
       trailing: interaction.successful
           ? const Icon(Icons.check_circle, color: AppColors.success, size: 20)
@@ -500,18 +504,18 @@ class _ConnectionCommunicationDetailPageState
       return const SizedBox.shrink();
     }
 
-    return Card(
+    return PortalSurface(
       elevation: 2,
       color: AppColors.warning.withValues(alpha: 0.1),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 const Icon(Icons.warning, color: AppColors.warning),
-                const SizedBox(width: 8),
+                SizedBox(width: context.spacing.xs),
                 Text(
                   'Recent Alerts',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -521,7 +525,7 @@ class _ConnectionCommunicationDetailPageState
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             ..._log!.recentAlerts
                 .map((alert) => _buildAlertTile(context, alert)),
           ],
@@ -532,7 +536,7 @@ class _ConnectionCommunicationDetailPageState
 
   Widget _buildAlertTile(BuildContext context, ConnectionAlert alert) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      contentPadding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       leading: Icon(
         _getAlertIcon(alert.severity),
         color: _getAlertColor(alert.severity),
@@ -540,7 +544,7 @@ class _ConnectionCommunicationDetailPageState
       title: Text(alert.message),
       subtitle: Text(
         '${alert.type.name} • ${DateFormat('MMM d, HH:mm').format(alert.timestamp)}',
-        style: const TextStyle(fontSize: 12),
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

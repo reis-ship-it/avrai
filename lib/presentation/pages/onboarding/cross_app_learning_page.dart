@@ -93,7 +93,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
           },
           child: Text(
             'Skip',
-            style: TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.6)
                   : AppColors.textSecondary,
@@ -113,13 +113,10 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Icon
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundColor:
+                              AppColors.primary.withValues(alpha: 0.1),
                           child: Icon(
                             Icons.psychology_outlined,
                             size: 40,
@@ -191,10 +188,9 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                                   BorderRadius.circular(context.radius.md),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Enable Smart Learning',
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -208,7 +204,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                           onPressed: _handleProceed,
                           child: Text(
                             'Continue with selected sources',
-                            style: TextStyle(
+                            style: textTheme.bodyMedium?.copyWith(
                               color: isDark
                                   ? AppColors.white.withValues(alpha: 0.6)
                                   : AppColors.textSecondary,
@@ -225,9 +221,10 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildExampleInsights(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 16,
+      padding: EdgeInsets.all(spacing.md),
+      radius: context.radius.md,
       color: isDark
           ? AppColors.white.withValues(alpha: 0.08)
           : AppColors.black.withValues(alpha: 0.04),
@@ -244,7 +241,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                 size: 18,
                 color: AppColors.primary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: spacing.xs),
               Text(
                 'Example Insights',
                 style: textTheme.titleSmall?.copyWith(
@@ -254,7 +251,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           _buildExampleItem(
             '📅',
             '"You\'re free Friday evening - here are great spots nearby!"',
@@ -284,13 +281,15 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(bottom: spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 10),
+          Text(emoji, style: textTheme.bodyLarge),
+          SizedBox(width: spacing.sm),
           Expanded(
             child: Text(
               text,
@@ -308,6 +307,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildDataSourceToggles(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -318,7 +318,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: spacing.sm),
         ...CrossAppDataSource.values.map((source) {
           // Skip app usage on iOS
           if (source == CrossAppDataSource.appUsage && !Platform.isAndroid) {
@@ -335,12 +335,15 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     final isEnabled = _consents[source] ?? true;
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      radius: 12,
+      margin: EdgeInsets.only(bottom: spacing.xs),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),
+      radius: context.radius.sm,
       color: isDark
           ? AppColors.white.withValues(alpha: 0.08)
           : AppColors.black.withValues(alpha: 0.04),
@@ -351,8 +354,8 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
               : AppColors.black.withValues(alpha: 0.08)),
       child: Row(
         children: [
-          Text(source.icon, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
+          Text(source.icon, style: textTheme.titleMedium),
+          SizedBox(width: spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +373,6 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                     color: isDark
                         ? AppColors.white.withValues(alpha: 0.54)
                         : AppColors.grey600,
-                    fontSize: 11,
                   ),
                 ),
               ],
@@ -387,9 +389,10 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildPrivacyNote(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 12,
+      padding: EdgeInsets.all(spacing.md),
+      radius: context.radius.sm,
       color: AppColors.electricBlue.withValues(alpha: isDark ? 0.15 : 0.08),
       borderColor: AppColors.electricBlue.withValues(alpha: 0.25),
       child: Row(
@@ -399,7 +402,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
             size: 24,
             color: AppColors.electricBlue,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -411,7 +414,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: spacing.xxs),
                 Text(
                   'Your data never leaves your phone. All learning happens locally.',
                   style: textTheme.bodySmall?.copyWith(

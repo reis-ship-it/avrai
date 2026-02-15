@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
@@ -15,6 +16,7 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/community/club_service.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/models/user/user.dart' as user_model;
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -604,14 +606,15 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   Widget _buildSearchBar() {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       color: AppColors.background,
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search events...',
-          hintStyle: const TextStyle(color: AppColors.textHint),
+          hintStyle: textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
           prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
           filled: true,
           fillColor: AppColors.grey100,
@@ -629,14 +632,17 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 const BorderSide(color: AppTheme.primaryColor, width: 2),
           ),
         ),
-        style: const TextStyle(color: AppColors.textPrimary),
+        style: textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
       ),
     );
   }
 
   Widget _buildFilters() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.md,
+        vertical: context.spacing.xs,
+      ),
       color: AppColors.surface,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -647,21 +653,21 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               label: _selectedCategory ?? 'All Categories',
               onTap: () => _showCategoryFilter(),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: context.spacing.xs),
 
             // Location Filter
             _buildFilterChip(
               label: _selectedLocation ?? 'All Locations',
               onTap: () => _showLocationFilter(),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: context.spacing.xs),
 
             // Date Filter
             _buildFilterChip(
               label: _dateFilters[_selectedDateFilter] ?? _dateFilters['all']!,
               onTap: () => _showDateFilter(),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: context.spacing.xs),
 
             // Price Filter
             _buildFilterChip(
@@ -669,7 +675,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                   _priceFilters[_selectedPriceFilter] ?? _priceFilters['all']!,
               onTap: () => _showPriceFilter(),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: context.spacing.xs),
 
             // Clear Filters
             if (_hasActiveFilters())
@@ -687,12 +693,17 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   Widget _buildCommunityDiscoveryCta() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: EdgeInsets.fromLTRB(
+        context.spacing.md,
+        context.spacing.sm,
+        context.spacing.md,
+        context.spacing.xs,
+      ),
       color: AppColors.surface,
       child: Row(
         children: [
           const Icon(Icons.group_outlined, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Text(
               'Discover communities ranked by true compatibility',
@@ -702,7 +713,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                   ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: context.spacing.sm),
           ElevatedButton(
             onPressed: () => context.push('/communities/discover'),
             style: ElevatedButton.styleFrom(
@@ -721,38 +732,34 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
     required VoidCallback onTap,
     bool isClear = false,
   }) {
+    final textTheme = Theme.of(context).textTheme;
+    final isAnyFilterActive = _selectedCategory != null ||
+        _selectedLocation != null ||
+        _selectedDateFilter != null ||
+        _selectedPriceFilter != null;
     return InkWell(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
+      child: Chip(
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        backgroundColor: isClear
+            ? AppColors.error.withValues(alpha: 0.1)
+            : AppColors.grey200,
+        side: BorderSide(
           color: isClear
-              ? AppColors.error.withValues(alpha: 0.1)
-              : AppColors.grey200,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isClear
-                ? AppColors.error
-                : (_selectedCategory != null ||
-                        _selectedLocation != null ||
-                        _selectedDateFilter != null ||
-                        _selectedPriceFilter != null)
-                    ? AppTheme.primaryColor
-                    : AppColors.grey300,
-          ),
+              ? AppColors.error
+              : isAnyFilterActive
+                  ? AppTheme.primaryColor
+                  : AppColors.grey300,
         ),
-        child: Text(
+        label: Text(
           label,
-          style: TextStyle(
+          style: textTheme.bodySmall?.copyWith(
             color: isClear
                 ? AppColors.error
-                : (_selectedCategory != null ||
-                        _selectedLocation != null ||
-                        _selectedDateFilter != null ||
-                        _selectedPriceFilter != null)
+                : isAnyFilterActive
                     ? AppTheme.primaryColor
                     : AppColors.textPrimary,
-            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -768,24 +775,24 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   void _showCategoryFilter() {
+    final textTheme = Theme.of(context).textTheme;
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(this.context.spacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Select Category',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: this.context.spacing.md),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -801,7 +808,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                     Navigator.pop(context);
                   },
                   selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  labelStyle: TextStyle(
+                  labelStyle: textTheme.bodyMedium?.copyWith(
                     color: _selectedCategory == null
                         ? AppTheme.primaryColor
                         : AppColors.textPrimary,
@@ -819,7 +826,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                       Navigator.pop(context);
                     },
                     selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                    labelStyle: TextStyle(
+                    labelStyle: textTheme.bodyMedium?.copyWith(
                       color: _selectedCategory == category
                           ? AppTheme.primaryColor
                           : AppColors.textPrimary,
@@ -835,22 +842,24 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   void _showLocationFilter() {
+    final textTheme = Theme.of(context).textTheme;
     // For now, show a simple text input
     // In production, this would use location services
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.background,
-        title: const Text(
+        title: Text(
           'Filter by Location',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
         ),
         content: TextField(
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Enter location...',
-            hintStyle: TextStyle(color: AppColors.textHint),
+            hintStyle:
+                textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
           onSubmitted: (value) {
             setState(() {
               _selectedLocation = value.isEmpty ? null : value;
@@ -868,16 +877,18 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               _loadEvents();
               Navigator.pop(context);
             },
-            child: const Text(
+            child: Text(
               'Clear',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
         ],
@@ -886,29 +897,30 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   void _showDateFilter() {
+    final textTheme = Theme.of(context).textTheme;
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(this.context.spacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Filter by Date',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: this.context.spacing.md),
             ..._dateFilters.entries.map((entry) {
               return ListTile(
                 title: Text(
                   entry.value,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
                 selected: _selectedDateFilter == entry.key,
                 onTap: () {
@@ -927,29 +939,30 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   void _showPriceFilter() {
+    final textTheme = Theme.of(context).textTheme;
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(this.context.spacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Filter by Price',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: this.context.spacing.md),
             ..._priceFilters.entries.map((entry) {
               return ListTile(
                 title: Text(
                   entry.value,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
                 selected: _selectedPriceFilter == entry.key,
                 onTap: () {
@@ -980,6 +993,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   Widget _buildEventList() {
+    final textTheme = Theme.of(context).textTheme;
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -996,16 +1010,14 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               size: 64,
               color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               _error!,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style:
+                  textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             ElevatedButton(
               onPressed: _loadEvents,
               child: const Text('Retry'),
@@ -1025,24 +1037,21 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               size: 64,
               color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: context.spacing.md),
+            Text(
               'No events found',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Text(
               _hasActiveFilters() || _searchController.text.isNotEmpty
                   ? 'Try adjusting your filters'
                   : 'Check back later for new events',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1059,7 +1068,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
     final isCommunityScope = _selectedScope == EventScope.community;
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       itemCount: _filteredEvents.length,
       itemBuilder: (context, index) {
         final event = _filteredEvents[index];
@@ -1069,33 +1078,31 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           children: [
             // Cross-locality indicator (optional badge)
             if (isCrossLocality && _selectedScope == EventScope.locality)
-              Container(
-                margin: const EdgeInsets.only(bottom: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.3)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 12,
-                      color: AppTheme.primaryColor,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'Nearby locality',
-                      style: TextStyle(
-                        fontSize: 10,
+              Padding(
+                padding: EdgeInsets.only(bottom: context.spacing.xxs),
+                child: Chip(
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  side: BorderSide(color: Color.fromRGBO(76, 125, 255, 0.3)),
+                  backgroundColor: Color.fromRGBO(76, 125, 255, 0.1),
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        size: 12,
                         color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: context.spacing.xxs),
+                      Text(
+                        'Nearby locality',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             // Use CommunityEventWidget for community events, ExpertiseEventWidget for expert events
@@ -1106,11 +1113,9 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 // TODO: Get upgrade eligibility from CommunityEvent when Agent 1 creates it
                 isEligibleForUpgrade: false,
                 onTap: () {
-                  Navigator.push(
+                  AppNavigator.pushBuilder(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetailsPage(event: event),
-                    ),
+                    builder: (context) => EventDetailsPage(event: event),
                   );
                 },
               )
@@ -1119,11 +1124,9 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 event: event,
                 currentUser: unifiedUser,
                 onTap: () {
-                  Navigator.push(
+                  AppNavigator.pushBuilder(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetailsPage(event: event),
-                    ),
+                    builder: (context) => EventDetailsPage(event: event),
                   );
                 },
               ),

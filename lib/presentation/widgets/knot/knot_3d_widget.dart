@@ -1,5 +1,5 @@
 // Knot 3D Widget
-// 
+//
 // Widget for 3D visualization of personality knots using Three.js WebView
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 1: 3D Knot Visualization and Conversion
@@ -22,7 +22,7 @@ import 'package:avrai/core/services/visualization/three_js_bridge_service.dart';
 import 'package:avrai/presentation/widgets/visualization/three_js_visualization_widget.dart';
 
 /// Widget for 3D visualization of personality knots
-/// 
+///
 /// Features:
 /// - True 3D rendering with Three.js WebGL
 /// - Interactive 3D view (rotation, zoom, pan via OrbitControls)
@@ -36,15 +36,15 @@ class Knot3DWidget extends StatefulWidget {
   final bool showControls;
   final Color? color;
   final Knot3DConverterService? converterService;
-  
+
   /// Whether to use Three.js WebView (true) or fallback CustomPainter (false)
   final bool useThreeJs;
-  
+
   /// Visualization style preset
   final KnotVisualizationStyle? style;
 
   // Motion-Reactive 3D Visualization System properties
-  
+
   /// Whether to show bubble container around knot
   final bool showBubble;
 
@@ -120,7 +120,7 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
     try {
       final converter = widget.converterService ?? Knot3DConverterService();
       final knot3d = converter.convertTo3D(widget.knot);
-      
+
       if (mounted) {
         setState(() {
           _knot3d = knot3d;
@@ -140,7 +140,7 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
   void _onThreeJsReady(ThreeJsBridgeService bridge) {
     _bridge = bridge;
     _threeJsReady = true;
-    
+
     // Render the knot in Three.js
     if (_knot3d != null) {
       _renderKnotInThreeJs();
@@ -151,7 +151,9 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
   }
 
   void _setupMotion() {
-    if (!widget.enableMotion || _motionService == null || _bridge == null) return;
+    if (!widget.enableMotion || _motionService == null || _bridge == null) {
+      return;
+    }
 
     // Start motion service
     _motionService!.start();
@@ -208,20 +210,24 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
 
   Future<void> _renderKnotInThreeJs() async {
     if (_bridge == null || _knot3d == null) return;
-    
+
     final isSmallSize = widget.size <= 100;
-    final lod = isSmallSize ? VisualizationLOD.low : 
-                widget.size <= 200 ? VisualizationLOD.medium : 
-                VisualizationLOD.high;
-    
-    final style = widget.style ?? KnotVisualizationStyle.metallic(
-      primaryColor: widget.color?.toHex() ?? AppColors.electricGreen.toHex(),
-      lod: lod,
-    ).copyWith(
-      autoRotate: isSmallSize,
-      autoRotateSpeed: 0.3,
-    );
-    
+    final lod = isSmallSize
+        ? VisualizationLOD.low
+        : widget.size <= 200
+            ? VisualizationLOD.medium
+            : VisualizationLOD.high;
+
+    final style = widget.style ??
+        KnotVisualizationStyle.metallic(
+          primaryColor:
+              widget.color?.toHex() ?? AppColors.electricGreen.toHex(),
+          lod: lod,
+        ).copyWith(
+          autoRotate: isSmallSize,
+          autoRotateSpeed: 0.3,
+        );
+
     await _bridge!.renderKnot(
       knot: _knot3d!,
       style: style,
@@ -237,15 +243,15 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
     if (_lastPanPosition == null) return;
 
     final delta = details.localPosition - _lastPanPosition!;
-    
+
     setState(() {
       // Rotate based on pan
       _rotationY += delta.dx * 0.01;
       _rotationX += delta.dy * 0.01;
-      
+
       // Clamp rotation
       _rotationX = _rotationX.clamp(-math.pi / 2, math.pi / 2);
-      
+
       _lastPanPosition = details.localPosition;
     });
   }
@@ -280,7 +286,7 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(strokeWidth: 2),
         ),
       );
@@ -318,11 +324,11 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
     if (widget.useThreeJs) {
       return _buildThreeJsVisualization();
     }
-    
+
     // Fallback to CustomPainter for simple 2D projection
     return _buildFallbackVisualization();
   }
-  
+
   Widget _buildThreeJsVisualization() {
     return ThreeJsVisualizationWidget(
       size: widget.size,
@@ -331,11 +337,11 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
       backgroundColor: AppColors.black,
     );
   }
-  
+
   Widget _buildFallbackVisualization() {
     // For small sizes (profile images), disable controls and auto-rotate
     final isSmallSize = widget.size <= 100;
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -360,7 +366,7 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
             ),
           ),
         ),
-        
+
         // Controls
         if (widget.showControls) ...[
           const SizedBox(height: 8),
@@ -399,7 +405,7 @@ class _Knot3DWidgetState extends State<Knot3DWidget>
 }
 
 /// Custom painter for 3D knot visualization
-/// 
+///
 /// Uses 3D to 2D projection (isometric/perspective)
 class Knot3DPainter extends CustomPainter {
   final Knot3D knot3d;
@@ -421,65 +427,65 @@ class Knot3DPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    
+
     // Project 3D coordinates to 2D
     final projectedPoints = <Offset>[];
-    
+
     for (final coord in knot3d.coordinates) {
       // Apply rotations
       var rotated = _rotateX(coord, rotationX);
       rotated = _rotateY(rotated, rotationY);
-      
+
       // Apply zoom
       rotated = rotated * zoom;
-      
+
       // Project to 2D (isometric projection)
       final x2d = center.dx + rotated.x + rotated.z * 0.5;
       final y2d = center.dy + rotated.y - rotated.z * 0.5;
-      
+
       projectedPoints.add(Offset(x2d, y2d));
     }
-    
+
     // Draw knot curve
     if (projectedPoints.length > 1) {
       final path = Path();
       path.moveTo(projectedPoints[0].dx, projectedPoints[0].dy);
-      
+
       for (int i = 1; i < projectedPoints.length; i++) {
         path.lineTo(projectedPoints[i].dx, projectedPoints[i].dy);
       }
-      
+
       // Close the path
       path.close();
-      
+
       final paint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3.0
         ..color = color;
-      
+
       canvas.drawPath(path, paint);
     }
-    
+
     // Draw crossings
     final crossingPaint = Paint()
       ..style = PaintingStyle.fill
       ..color = color;
-    
+
     for (final crossing in knot3d.crossings) {
       var rotated = _rotateX(crossing.position, rotationX);
       rotated = _rotateY(rotated, rotationY);
       rotated = rotated * zoom;
-      
+
       final x2d = center.dx + rotated.x + rotated.z * 0.5;
       final y2d = center.dy + rotated.y - rotated.z * 0.5;
-      
+
       // Draw crossing indicator
       canvas.drawCircle(
         Offset(x2d, y2d),
         5.0,
         crossingPaint,
       );
-      
+
       // Draw over/under indicator
       if (crossing.isOver) {
         final overPaint = Paint()
@@ -495,7 +501,7 @@ class Knot3DPainter extends CustomPainter {
   Vector3 _rotateX(Vector3 point, double angle) {
     final cos = math.cos(angle);
     final sin = math.sin(angle);
-    
+
     return Vector3(
       point.x,
       point.y * cos - point.z * sin,
@@ -507,7 +513,7 @@ class Knot3DPainter extends CustomPainter {
   Vector3 _rotateY(Vector3 point, double angle) {
     final cos = math.cos(angle);
     final sin = math.sin(angle);
-    
+
     return Vector3(
       point.x * cos + point.z * sin,
       point.y,

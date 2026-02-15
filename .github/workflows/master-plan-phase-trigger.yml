@@ -1,0 +1,35 @@
+name: master-plan-phase-trigger
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase_id:
+        description: "Master Plan phase id to orchestrate (1-14)"
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run only (no execution side effects)"
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  phase-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate orchestration contract
+        run: bash scripts/validate_master_plan_execution_refs.sh
+
+      - name: Phase dry run summary
+        run: bash scripts/phase_orchestration_dry_run.sh "${{ inputs.phase_id }}"
+
+      - name: Enforce dry-run-only policy
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          echo "Non-dry-run execution is intentionally blocked in this prep layer."
+          echo "Promote to execution mode only after required checks + branch protections are enabled."
+          exit 1
+

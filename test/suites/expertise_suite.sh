@@ -14,9 +14,9 @@ flutter test "$@" \
   test/unit/services/expertise_event_service_test.dart \
   test/unit/services/expertise_curation_service_test.dart \
   test/unit/services/expertise_community_service_test.dart \
-  test/integration/expertise_flow_integration_test.dart \
-  test/integration/expertise_services_integration_test.dart \
-  test/integration/expertise_event_integration_test.dart \
-  test/integration/expansion_expertise_gain_integration_test.dart \
-  test/integration/expertise_partnership_integration_test.dart
+  test/integration/expertise/expertise_flow_integration_test.dart \
+  test/integration/expertise/expertise_services_integration_test.dart \
+  test/integration/expertise/expertise_event_integration_test.dart \
+  test/integration/expertise/expansion_expertise_gain_integration_test.dart \
+  test/integration/expertise/expertise_partnership_integration_test.dart
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
@@ -66,13 +68,14 @@ class _CrossAppLearningInsightsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
 
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: CircularProgressIndicator(),
         ),
       );
@@ -125,8 +128,9 @@ class _CrossAppLearningInsightsWidgetState
   }
 
   Widget _buildEmptyState(bool isDark, TextTheme textTheme) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       decoration: BoxDecoration(
         color: isDark ? AppColors.grey800 : AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
@@ -170,13 +174,14 @@ class _CrossAppLearningInsightsWidgetState
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
     final isExpanded = _expandedSources.contains(source);
     final displayInsights = isExpanded
         ? insights
         : insights.take(widget.maxInsightsPerSource).toList();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       decoration: BoxDecoration(
         color: isDark ? AppColors.grey800 : AppColors.white,
         borderRadius: BorderRadius.circular(12),
@@ -204,12 +209,12 @@ class _CrossAppLearningInsightsWidgetState
                 : null,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               child: Row(
                 children: [
                   Text(
                     source.icon,
-                    style: const TextStyle(fontSize: 20),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -246,7 +251,12 @@ class _CrossAppLearningInsightsWidgetState
           // Insights list
           if (insights.isEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(
+                spacing.md,
+                kSpaceNone,
+                spacing.md,
+                spacing.md,
+              ),
               child: Text(
                 'No insights yet from ${source.displayName.toLowerCase()}',
                 style: textTheme.bodySmall?.copyWith(
@@ -265,7 +275,12 @@ class _CrossAppLearningInsightsWidgetState
           // Show more indicator
           if (!isExpanded && insights.length > widget.maxInsightsPerSource)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              padding: EdgeInsets.fromLTRB(
+                spacing.md,
+                kSpaceNone,
+                spacing.md,
+                spacing.sm,
+              ),
               child: Text(
                 '+ ${insights.length - widget.maxInsightsPerSource} more',
                 style: textTheme.bodySmall?.copyWith(
@@ -284,15 +299,21 @@ class _CrossAppLearningInsightsWidgetState
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: EdgeInsets.fromLTRB(
+        spacing.md,
+        kSpaceNone,
+        spacing.md,
+        spacing.sm,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 6,
             height: 6,
-            margin: const EdgeInsets.only(top: 6, right: 12),
+            margin: EdgeInsets.only(top: spacing.xxs, right: spacing.sm),
             decoration: BoxDecoration(
               color: _getInsightColor(insight.insightType),
               shape: BoxShape.circle,
@@ -305,7 +326,9 @@ class _CrossAppLearningInsightsWidgetState
                 Text(
                   insight.description,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppColors.white.withValues(alpha: 0.87) : Colors.black87,
+                    color: isDark
+                        ? AppColors.white.withValues(alpha: 0.87)
+                        : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -321,14 +344,13 @@ class _CrossAppLearningInsightsWidgetState
                       _formatTimestamp(insight.learnedAt),
                       style: textTheme.bodySmall?.copyWith(
                         color: isDark ? Colors.white38 : Colors.black38,
-                        fontSize: 11,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: spacing.xs,
+                        vertical: spacing.xxs,
                       ),
                       decoration: BoxDecoration(
                         color: _getInsightColor(insight.insightType)
@@ -339,7 +361,6 @@ class _CrossAppLearningInsightsWidgetState
                         insight.insightType.name,
                         style: textTheme.bodySmall?.copyWith(
                           color: _getInsightColor(insight.insightType),
-                          fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

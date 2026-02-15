@@ -5,12 +5,13 @@ import 'package:avrai/core/services/recommendations/dynamic_threshold_service.da
 import 'package:avrai/core/services/geographic/locality_value_analysis_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Locality Threshold Widget
 /// Agent 2: Phase 6, Week 25 - Qualification UI
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Show current threshold for user's locality
 /// - Show how locality values different activities
@@ -31,13 +32,15 @@ class LocalityThresholdWidget extends StatefulWidget {
   });
 
   @override
-  State<LocalityThresholdWidget> createState() => _LocalityThresholdWidgetState();
+  State<LocalityThresholdWidget> createState() =>
+      _LocalityThresholdWidgetState();
 }
 
 class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
   final DynamicThresholdService _thresholdService = DynamicThresholdService();
-  final LocalityValueAnalysisService _valueService = LocalityValueAnalysisService();
-  
+  final LocalityValueAnalysisService _valueService =
+      LocalityValueAnalysisService();
+
   ThresholdValues? _localityThresholds;
   Map<String, double>? _activityWeights;
   bool _isLoading = true;
@@ -139,13 +142,14 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     if (widget.locality == null) {
       return const SizedBox.shrink();
     }
 
     if (_isLoading) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         decoration: BoxDecoration(
           color: AppColors.grey100,
           borderRadius: BorderRadius.circular(12),
@@ -153,7 +157,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
             color: AppColors.textSecondary.withValues(alpha: 0.2),
           ),
         ),
-        child: const Row(
+        child: Row(
           children: [
             SizedBox(
               width: 16,
@@ -167,10 +171,9 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
             Expanded(
               child: Text(
                 'Loading locality-specific thresholds...',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ),
           ],
@@ -180,7 +183,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
 
     if (_error != null) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         decoration: BoxDecoration(
           color: AppColors.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
@@ -199,10 +202,9 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
             Expanded(
               child: Text(
                 'Error loading thresholds: $_error',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.error,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.error,
+                    ),
               ),
             ),
           ],
@@ -211,7 +213,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
@@ -235,20 +237,18 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Locality-Specific Thresholds',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     Text(
                       widget.locality!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -269,7 +269,7 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
           // Threshold Summary
           if (_localityThresholds != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(8),
@@ -277,24 +277,27 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Qualification Requirements',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   _buildThresholdRow('Visits', _localityThresholds!.minVisits),
                   if (_localityThresholds!.minRatings > 0)
-                    _buildThresholdRow('Ratings', _localityThresholds!.minRatings),
+                    _buildThresholdRow(
+                        'Ratings', _localityThresholds!.minRatings),
                   if (_localityThresholds!.minEventHosting != null)
-                    _buildThresholdRow('Events Hosted', _localityThresholds!.minEventHosting!),
+                    _buildThresholdRow(
+                        'Events Hosted', _localityThresholds!.minEventHosting!),
                   if (_localityThresholds!.minListCuration != null)
-                    _buildThresholdRow('Lists Created', _localityThresholds!.minListCuration!),
+                    _buildThresholdRow(
+                        'Lists Created', _localityThresholds!.minListCuration!),
                   if (_localityThresholds!.minCommunityEngagement != null)
-                    _buildThresholdRow('Community Engagement', _localityThresholds!.minCommunityEngagement!),
+                    _buildThresholdRow('Community Engagement',
+                        _localityThresholds!.minCommunityEngagement!),
                 ],
               ),
             ),
@@ -303,13 +306,12 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
 
           // Activity Values
           if (_activityWeights != null && _activityWeights!.isNotEmpty) ...[
-            const Text(
+            Text(
               'What Your Locality Values',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 8),
             ..._activityWeights!.entries.map((entry) {
@@ -325,24 +327,22 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
 
   Widget _buildThresholdRow(String label, int value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           Text(
             value.toString(),
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -356,8 +356,8 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
     final percentage = (weight * 100).toStringAsFixed(0);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -376,25 +376,26 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
           Expanded(
             child: Text(
               displayName,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.spacing.xs,
+              vertical: context.spacing.xxs,
+            ),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               '$percentage%',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
             ),
           ),
         ],
@@ -402,4 +403,3 @@ class _LocalityThresholdWidgetState extends State<LocalityThresholdWidget> {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Success Animation Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 4, Task 2.12)
@@ -109,7 +110,8 @@ class _SuccessAnimationState extends State<SuccessAnimation>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceLg, vertical: kSpaceMd),
           decoration: BoxDecoration(
             color: AppColors.electricGreen.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(12),
@@ -133,11 +135,10 @@ class _SuccessAnimationState extends State<SuccessAnimation>
               Flexible(
                 child: Text(
                   widget.message,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             ],

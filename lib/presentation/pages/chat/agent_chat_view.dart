@@ -12,6 +12,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/user/personality_agent_chat_service.dart';
@@ -21,6 +22,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/core/services/recommendations/agent_happiness_service.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 
@@ -74,12 +76,7 @@ class _AgentChatViewState extends State<AgentChatView> {
         });
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error loading agent: $e'),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError('Error loading agent: $e');
         }
       }
     }
@@ -124,12 +121,7 @@ class _AgentChatViewState extends State<AgentChatView> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading history: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading history: $e');
       }
     }
   }
@@ -194,12 +186,7 @@ class _AgentChatViewState extends State<AgentChatView> {
         setState(() {
           _isSending = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending message: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error sending message: $e');
       }
     }
   }
@@ -248,7 +235,7 @@ class _AgentChatViewState extends State<AgentChatView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -258,11 +245,11 @@ class _AgentChatViewState extends State<AgentChatView> {
         // Message list
         Expanded(
           child: _isLoading && _messages.isEmpty
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(),
                 )
               : _messages.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -274,25 +261,29 @@ class _AgentChatViewState extends State<AgentChatView> {
                           SizedBox(height: 16),
                           Text(
                             'Start chatting with your AI companion',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           SizedBox(height: 8),
                           Text(
                             'Ask about spots, philosophy, or anything!',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
                     )
                   : ListView.builder(
                       controller: _scrollController,
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(kSpaceMd),
                       itemCount: _messages.length,
                       itemBuilder: (context, index) {
                         final message = _messages[index];
@@ -313,15 +304,19 @@ class _AgentChatViewState extends State<AgentChatView> {
                             if (!isFromUser && !rated)
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 56, right: 16, bottom: 8),
+                                    left: 56,
+                                    right: kSpaceMd,
+                                    bottom: kSpaceXs),
                                 child: Row(
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Was this helpful?',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: AppColors.textSecondary,
+                                          ),
                                     ),
                                     const SizedBox(width: 8),
                                     IconButton(
@@ -369,8 +364,9 @@ class _AgentChatViewState extends State<AgentChatView> {
         // Typing indicator
         if (_isSending)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: const Row(
+            padding: const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceXs),
+            child: Row(
               children: [
                 Icon(
                   Icons.smart_toy,
@@ -380,31 +376,22 @@ class _AgentChatViewState extends State<AgentChatView> {
                 SizedBox(width: 8),
                 Text(
                   'Agent is typing...',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
                 ),
               ],
             ),
           ),
 
         // Input bar
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.1),
-                blurRadius: 4,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
+        Material(
+          color: AppColors.white,
+          elevation: 4,
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(kSpaceXs),
               child: Row(
                 children: [
                   Expanded(
@@ -418,8 +405,8 @@ class _AgentChatViewState extends State<AgentChatView> {
                               const BorderSide(color: AppColors.grey300),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                          horizontal: kSpaceMd,
+                          vertical: kSpaceSm,
                         ),
                       ),
                       maxLines: null,

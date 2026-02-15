@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying privacy compliance metrics
 class PrivacyComplianceCard extends StatelessWidget {
@@ -25,7 +26,7 @@ class PrivacyComplianceCard extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -41,7 +42,10 @@ class PrivacyComplianceCard extends StatelessWidget {
                 Chip(
                   label: Text(
                     '${(complianceScore * 100).round()}%',
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: color, fontWeight: FontWeight.bold),
                   ),
                   backgroundColor: color.withValues(alpha: 0.2),
                 ),
@@ -110,4 +114,3 @@ class PrivacyComplianceCard extends StatelessWidget {
     );
   }
 }
-

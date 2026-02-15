@@ -47,4 +47,17 @@ class AppColors {
   static const Color mapPrimary = electricGreen;
   static const Color mapSecondary = grey600;
   static const Color mapAccent = grey400;
+
+  // Portal glass system colors (brand-book aligned)
+  static const Color portalDayTint = Color(0x38000000); // 22% black
+  static const Color portalNightTint = Color(0x14FFFFFF); // 8% white
+  static const Color portalShadow = Color(0x73000000); // 45% black
+
+  static const Color portalDayBorderStart = Color(0x99FFFFFF);
+  static const Color portalDayBorderMid = Color(0x1AFFFFFF);
+  static const Color portalDayBorderEnd = Color(0x66000000);
+
+  static const Color portalNightBorderStart = Color(0xCCFFFFFF);
+  static const Color portalNightBorderMid = Color(0x33FFFFFF);
+  static const Color portalNightBorderEnd = Color(0x66404040);
 }

@@ -1,17 +1,18 @@
 /// Typing Indicator Widget
-/// 
+///
 /// Shows animated typing indicator for chat
-/// 
+///
 /// Phase 3 Enhancement: Typing Indicators
 /// Date: December 2025
 library;
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class TypingIndicator extends StatefulWidget {
   final String? senderName;
-  
+
   const TypingIndicator({
     super.key,
     this.senderName,
@@ -43,7 +44,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: Row(
         children: [
           const CircleAvatar(
@@ -57,7 +59,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
           ),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceSm),
             decoration: BoxDecoration(
               color: AppColors.grey200,
               borderRadius: BorderRadius.circular(18),
@@ -87,11 +90,10 @@ class _TypingIndicatorState extends State<TypingIndicator>
             const SizedBox(width: 8),
             Text(
               '${widget.senderName} is typing...',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ],
         ],
@@ -117,4 +119,3 @@ class _TypingIndicatorState extends State<TypingIndicator>
     );
   }
 }
-

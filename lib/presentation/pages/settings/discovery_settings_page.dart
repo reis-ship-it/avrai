@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -124,14 +125,16 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildEventModeToggle() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return PortalSurface(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
       padding: EdgeInsets.zero,
       child: SwitchListTile(
-        title: const Text(
+        title: Text(
           'Event Mode (Broadcast-First)',
-          style: TextStyle(
-            fontSize: 16,
+          style: textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -140,8 +143,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           _eventModeEnabled
               ? 'Uses connectionless room sensing; deep sync only in short check-in windows'
               : 'Normal discovery behavior',
-          style: const TextStyle(
-            fontSize: 14,
+          style: textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
@@ -165,43 +167,40 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildHeaderSection() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return PortalSurface(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md + spacing.xs),
+      margin: EdgeInsets.all(spacing.md),
       color: AppColors.electricGreen.withValues(alpha: 0.1),
       borderColor: AppColors.electricGreen.withValues(alpha: 0.24),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
+          const CircleAvatar(
+            radius: 28,
+            backgroundColor: AppColors.white,
+            child: Icon(
               Icons.radar,
               size: 32,
               color: AppColors.electricGreen,
             ),
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: spacing.md),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Device Discovery',
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: spacing.xxs),
                 Text(
                   'Find nearby avrai-enabled devices',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -214,14 +213,16 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildMainToggle() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return PortalSurface(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
       padding: EdgeInsets.zero,
       child: SwitchListTile(
-        title: const Text(
+        title: Text(
           'Enable Discovery',
-          style: TextStyle(
-            fontSize: 16,
+          style: textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -230,8 +231,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           _discoveryEnabled
               ? 'Actively discovering nearby devices'
               : 'Discovery is turned off',
-          style: const TextStyle(
-            fontSize: 14,
+          style: textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
@@ -254,22 +254,24 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildDiscoveryMethodsSection() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+              spacing.xl, spacing.lg, spacing.xl, spacing.sm),
           child: Text(
             'Discovery Methods',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
         ),
         PortalSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          margin: EdgeInsets.symmetric(horizontal: spacing.md),
           padding: EdgeInsets.zero,
           child: Column(
             children: [
@@ -323,23 +325,25 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildPrivacySection() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+              spacing.xl, spacing.lg, spacing.xl, spacing.sm),
           child: Row(
             children: [
               Text(
                 'Privacy Settings',
-                style: TextStyle(
-                  fontSize: 16,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(width: 8),
-              Icon(
+              SizedBox(width: spacing.xs),
+              const Icon(
                 Icons.lock_outline,
                 size: 20,
                 color: AppColors.textSecondary,
@@ -348,7 +352,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           ),
         ),
         PortalSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          margin: EdgeInsets.symmetric(horizontal: spacing.md),
           padding: EdgeInsets.zero,
           child: Column(
             children: [
@@ -389,22 +393,25 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildAdvancedSection() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+              spacing.xl, spacing.lg, spacing.xl, spacing.sm),
           child: Text(
             'Advanced',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
         ),
         PortalSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          margin: EdgeInsets.symmetric(horizontal: spacing.md),
           padding: EdgeInsets.zero,
           child: SwitchListTile(
             title: const Text('Auto-Discovery'),
@@ -430,38 +437,39 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildInfoSection() {
-    return const PortalSurface(
-      margin: EdgeInsets.all(16),
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
+    return PortalSurface(
+      margin: EdgeInsets.all(spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.lightbulb_outline,
                 size: 20,
                 color: AppColors.warning,
               ),
-              SizedBox(width: 8),
+              SizedBox(width: spacing.xs),
               Text(
                 'About Discovery',
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Text(
             '• Discovery uses device radios (WiFi/Bluetooth) and may affect battery life\n'
             '• Only avrai-enabled devices can be discovered\n'
             '• All data shared is anonymized and encrypted\n'
             '• You can stop discovery at any time\n'
             '• Discovery requires location permissions on some platforms',
-            style: TextStyle(
-              fontSize: 13,
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
             ),
@@ -472,17 +480,25 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   void _showPrivacyInfoDialog() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.lock_outline,
               color: AppColors.electricGreen,
             ),
-            SizedBox(width: 12),
-            Text('Privacy & Security'),
+            SizedBox(width: spacing.sm),
+            Text(
+              'Privacy & Security',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         content: SingleChildScrollView(
@@ -490,54 +506,54 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'How Discovery Protects Your Privacy:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               _buildPrivacyPoint(
                 Icons.shield_outlined,
                 'Anonymization',
                 'No personal information (name, email, phone) is ever shared during discovery.',
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               _buildPrivacyPoint(
                 Icons.lock,
                 'Encryption',
                 'All discovery data is encrypted using end-to-end encryption.',
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               _buildPrivacyPoint(
                 Icons.psychology,
                 'AI Personality Only',
                 'Only anonymized AI personality patterns are shared - never your actual conversations or data.',
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               _buildPrivacyPoint(
                 Icons.verified_user,
                 'You Control Discovery',
                 'Discovery can be turned on/off anytime. When off, your device is invisible to others.',
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Row(
+              SizedBox(height: spacing.md),
+              PortalSurface(
+                padding: EdgeInsets.all(spacing.sm),
+                color: AppColors.electricGreen.withValues(alpha: 0.1),
+                borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                radius: context.radius.sm,
+                child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       color: AppColors.electricGreen,
                       size: 20,
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: spacing.xs),
                     Expanded(
                       child: Text(
                         'All discovery follows ai2ai privacy principles from OUR_GUTS.md',
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -559,6 +575,9 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildPrivacyPoint(IconData icon, String title, String description) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -567,23 +586,21 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           size: 20,
           color: AppColors.primary,
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: spacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: spacing.xxs),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 13,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),

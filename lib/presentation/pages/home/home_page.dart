@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -67,9 +69,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.pushReplacementNamed(context, '/');
         }
         if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          context.showError(state.message);
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -121,12 +121,7 @@ class _HomePageState extends State<HomePage> {
                   final isNowOnline = !result.contains(ConnectivityResult.none);
 
                   if (isNowOnline && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Connection restored!'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
+                    context.showSuccess('Connection restored!');
                   }
                 },
                 showDismiss: true,
@@ -142,7 +137,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: AdaptivePlatformBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           if (index == 3) {
@@ -152,14 +147,14 @@ class _HomePageState extends State<HomePage> {
             setState(() => _currentIndex = index);
           }
         },
-        type: BottomNavigationBarType.fixed,
         selectedItemColor: AppTheme.primaryColor,
         unselectedItemColor: AppColors.textSecondary,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.place), label: 'Spots'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
-          BottomNavigationBarItem(
+        destinations: const [
+          AdaptiveBottomNavDestination(icon: Icon(Icons.map), label: 'Map'),
+          AdaptiveBottomNavDestination(icon: Icon(Icons.place), label: 'Spots'),
+          AdaptiveBottomNavDestination(
+              icon: Icon(Icons.explore), label: 'Explore'),
+          AdaptiveBottomNavDestination(
               icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
@@ -251,6 +246,8 @@ class _SpotsTabState extends State<SpotsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return AdaptivePlatformPageScaffold(
       title: 'My Lists',
       constrainBody: false,
@@ -265,8 +262,7 @@ class _SpotsTabState extends State<SpotsTab> {
                   (state.user.displayName ?? state.user.name)
                       .substring(0, 1)
                       .toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -334,7 +330,7 @@ class _SpotsTabState extends State<SpotsTab> {
                                         size: 64,
                                         color: AppColors.textSecondary,
                                       ),
-                                      const SizedBox(height: 16),
+                                      SizedBox(height: spacing.md),
                                       Text(
                                         'No lists yet. Create your first list!',
                                         style: Theme.of(context)
@@ -354,12 +350,10 @@ class _SpotsTabState extends State<SpotsTab> {
                                   return SpotListCard(
                                     list: list,
                                     onTap: () {
-                                      Navigator.push(
+                                      AppNavigator.pushBuilder(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ListDetailsPage(list: list),
-                                        ),
+                                        builder: (context) =>
+                                            ListDetailsPage(list: list),
                                       );
                                     },
                                   );
@@ -374,9 +368,9 @@ class _SpotsTabState extends State<SpotsTab> {
                                   children: [
                                     const Icon(Icons.error,
                                         size: 64, color: AppTheme.errorColor),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: spacing.md),
                                     Text('Error: ${state.message}'),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: spacing.md),
                                     ElevatedButton(
                                       onPressed: () {
                                         context
@@ -403,26 +397,26 @@ class _SpotsTabState extends State<SpotsTab> {
 
                             if (state is SpotsLoaded) {
                               if (state.respectedSpots.isEmpty) {
-                                return const Center(
+                                return Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.favorite_border,
+                                      const Icon(Icons.favorite_border,
                                           size: 64,
                                           color: AppColors.textSecondary),
-                                      SizedBox(height: 16),
+                                      SizedBox(height: spacing.md),
                                       Text(
                                         'No respected lists yet',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
+                                        style: textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      SizedBox(height: 8),
+                                      SizedBox(height: spacing.xs),
                                       Text(
                                         'Respect some lists during onboarding to see them here',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: AppColors.textSecondary),
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
@@ -435,8 +429,9 @@ class _SpotsTabState extends State<SpotsTab> {
                                 itemBuilder: (context, index) {
                                   final spot = state.respectedSpots[index];
                                   return PortalSurface(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: spacing.md,
+                                        vertical: spacing.xs),
                                     padding: EdgeInsets.zero,
                                     child: ListTile(
                                       leading: CircleAvatar(
@@ -464,9 +459,9 @@ class _SpotsTabState extends State<SpotsTab> {
                                   children: [
                                     const Icon(Icons.error,
                                         size: 64, color: AppTheme.errorColor),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: spacing.md),
                                     Text('Error: ${state.message}'),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: spacing.md),
                                     ElevatedButton(
                                       onPressed: () {
                                         context
@@ -497,13 +492,16 @@ class _SpotsTabState extends State<SpotsTab> {
   }
 
   void _showProfileMenu(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     showModalBottomSheet(
       context: context,
       builder: (context) => BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is Authenticated) {
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -513,7 +511,7 @@ class _SpotsTabState extends State<SpotsTab> {
                       child: Text(
                         state.user.displayName?.substring(0, 1).toUpperCase() ??
                             state.user.email.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
+                        style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -525,7 +523,10 @@ class _SpotsTabState extends State<SpotsTab> {
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.logout),
-                    title: const Text('Sign Out'),
+                    title: Text(
+                      'Sign Out',
+                      style: textTheme.bodyLarge,
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       context.read<AuthBloc>().add(SignOutRequested());
@@ -589,6 +590,8 @@ class _ExploreTabState extends State<ExploreTab>
       constrainBody: false,
       leading: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
+          final textTheme = Theme.of(context).textTheme;
+
           if (state is Authenticated) {
             return IconButton(
               icon: CircleAvatar(
@@ -597,8 +600,7 @@ class _ExploreTabState extends State<ExploreTab>
                 child: Text(
                   state.user.displayName?.substring(0, 1).toUpperCase() ??
                       state.user.email.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -634,13 +636,16 @@ class _ExploreTabState extends State<ExploreTab>
   }
 
   void _showProfileMenu(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     showModalBottomSheet(
       context: context,
       builder: (context) => BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is Authenticated) {
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -650,7 +655,7 @@ class _ExploreTabState extends State<ExploreTab>
                       child: Text(
                         state.user.displayName?.substring(0, 1).toUpperCase() ??
                             state.user.email.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
+                        style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -662,7 +667,10 @@ class _ExploreTabState extends State<ExploreTab>
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.logout),
-                    title: const Text('Sign Out'),
+                    title: Text(
+                      'Sign Out',
+                      style: textTheme.bodyLarge,
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       context.read<AuthBloc>().add(SignOutRequested());
@@ -720,6 +728,8 @@ class _UsersSubTabState extends State<UsersSubTab> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -734,18 +744,18 @@ class _UsersSubTabState extends State<UsersSubTab> {
               size: 64,
               color: AppTheme.errorColor,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             Text(
               'Error loading public lists',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               _error!,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             ElevatedButton(
               onPressed: _loadPublicLists,
               child: const Text('Retry'),
@@ -765,17 +775,17 @@ class _UsersSubTabState extends State<UsersSubTab> {
               size: 64,
               color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             Text(
               'Discover Public Lists',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'No public lists available yet.\nBe the first to create one!',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -786,12 +796,12 @@ class _UsersSubTabState extends State<UsersSubTab> {
     return RefreshIndicator(
       onRefresh: _loadPublicLists,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         itemCount: _publicLists.length,
         itemBuilder: (context, index) {
           final list = _publicLists[index];
           return PortalSurface(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: spacing.sm),
             padding: EdgeInsets.zero,
             child: ListTile(
               leading: CircleAvatar(
@@ -803,7 +813,9 @@ class _UsersSubTabState extends State<UsersSubTab> {
               ),
               title: Text(
                 list.title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -814,7 +826,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: spacing.xxs),
                   Row(
                     children: [
                       const Icon(
@@ -822,25 +834,23 @@ class _UsersSubTabState extends State<UsersSubTab> {
                         size: 16,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: spacing.xxs),
                       Text(
                         '${list.respectCount} respects',
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: spacing.md),
                       const Icon(
                         Icons.location_on,
                         size: 16,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: spacing.xxs),
                       Text(
                         '${list.spots.length} spots',
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -943,17 +953,16 @@ class _AISubTabState extends State<AISubTab> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         // AI Features Section
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: AppColors.grey100,
-            border: Border(
-              bottom: BorderSide(color: AppColors.grey200),
-            ),
-          ),
+        PortalSurface(
+          padding: EdgeInsets.all(spacing.md),
+          color: AppColors.grey100,
+          borderColor: AppColors.grey200,
+          radius: 0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -964,7 +973,7 @@ class _AISubTabState extends State<AISubTab> {
                       color: AppColors.textSecondary,
                     ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               // Feature Cards
               Row(
                 children: [
@@ -980,7 +989,7 @@ class _AISubTabState extends State<AISubTab> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Expanded(
                     child: _buildFeatureCard(
                       context,
@@ -993,7 +1002,7 @@ class _AISubTabState extends State<AISubTab> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               Row(
                 children: [
                   Expanded(
@@ -1010,11 +1019,10 @@ class _AISubTabState extends State<AISubTab> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: spacing.xs),
+              Text(
                 'Try: "Find coffee shops near me" or "Create a weekend list"',
-                style: TextStyle(
-                  fontSize: 12,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                   fontStyle: FontStyle.italic,
                 ),
@@ -1040,7 +1048,8 @@ class _AISubTabState extends State<AISubTab> {
         // Loading indicator
         if (_isProcessingCommand)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+                horizontal: spacing.md, vertical: spacing.xs),
             child: Row(
               children: [
                 const CircleAvatar(
@@ -1052,20 +1061,18 @@ class _AISubTabState extends State<AISubTab> {
                     color: AppColors.white,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? AppColors.grey200
-                        : AppColors.grey700,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: const Row(
+                SizedBox(width: spacing.xs),
+                PortalSurface(
+                  radius: 18,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: spacing.md, vertical: spacing.sm),
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? AppColors.grey200
+                      : AppColors.grey700,
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
@@ -1074,12 +1081,11 @@ class _AISubTabState extends State<AISubTab> {
                               AppTheme.primaryColor),
                         ),
                       ),
-                      SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Processing your request...',
-                        style: TextStyle(
+                        style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.grey600,
-                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -1106,19 +1112,15 @@ class _AISubTabState extends State<AISubTab> {
     required Color color,
     VoidCallback? onTap,
   }) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return PortalSurface(
       padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: onTap == null
-                ? Border.all(color: color.withValues(alpha: 0.3))
-                : null,
-          ),
+        borderRadius: BorderRadius.circular(context.radius.sm),
+        child: Padding(
+          padding: EdgeInsets.all(spacing.sm),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1126,39 +1128,36 @@ class _AISubTabState extends State<AISubTab> {
                 backgroundColor: color.withValues(alpha: 0.1),
                 child: Icon(icon, color: color),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               Text(
                 title,
-                style: const TextStyle(
+                style: textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: spacing.xxs / 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 10,
+                style: textTheme.labelSmall?.copyWith(
                   color: AppColors.grey600,
                 ),
                 textAlign: TextAlign.center,
               ),
               if (onTap == null)
-                Container(
-                  margin: const EdgeInsets.only(top: 4),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'ACTIVE',
-                    style: TextStyle(
-                      fontSize: 8,
-                      color: color,
-                      fontWeight: FontWeight.bold,
+                Padding(
+                  padding: EdgeInsets.only(top: spacing.xxs),
+                  child: Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: color.withValues(alpha: 0.1),
+                    label: Text(
+                      'ACTIVE',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

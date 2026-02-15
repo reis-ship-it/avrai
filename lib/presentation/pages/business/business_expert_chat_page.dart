@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_expert_chat_service_ai2ai.dart';
 import 'package:avrai/core/models/business/business_expert_message.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -6,6 +7,8 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business-Expert Chat Page
 ///
@@ -156,12 +159,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
       await _loadMessages(); // Reload to get the new message
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error sending message: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Error sending message: $e');
     } finally {
       setState(() {
         _isSending = false;
@@ -192,19 +190,20 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
             _senderType == MessageSenderType.business
                 ? (_expertName ?? 'Expert')
                 : (_businessName ?? 'Business'),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           if (_senderType == MessageSenderType.business && _expertName != null)
             Text(
               _expertName!,
-              style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style: Theme.of(context).textTheme.bodySmall,
             )
           else if (_businessName != null)
             Text(
               _businessName!,
-              style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
         ],
       ),
@@ -215,11 +214,11 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
           // Messages list
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator())
                 : _errorMessage != null
                     ? Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(kSpaceLg),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -228,20 +227,23 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                               const SizedBox(height: 16),
                               Text(
                                 _errorMessage!,
-                                style: const TextStyle(color: AppColors.error),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.error),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 24),
                               ElevatedButton(
                                 onPressed: _loadMessages,
-                                child: const Text('Retry'),
+                                child: Text('Retry'),
                               ),
                             ],
                           ),
                         ),
                       )
                     : _messages.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -250,25 +252,29 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                                 SizedBox(height: 16),
                                 Text(
                                   'No messages yet',
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 16,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
                                   'Start the conversation!',
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 14,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ),
                           )
                         : ListView.builder(
                             controller: _scrollController,
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(kSpaceMd),
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               final message = _messages[index];
@@ -280,20 +286,13 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
           ),
 
           // Input area
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
+          PortalSurface(
+            color: AppColors.white,
+            radius: 0,
+            elevation: 0.2,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(kSpaceXs),
                 child: Row(
                   children: [
                     Expanded(
@@ -307,8 +306,8 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                                 const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: kSpaceMd,
+                            vertical: kSpaceSm,
                           ),
                         ),
                         maxLines: null,
@@ -332,7 +331,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
                       style: IconButton.styleFrom(
                         backgroundColor:
                             AppTheme.primaryColor.withValues(alpha: 0.1),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(kSpaceSm),
                       ),
                     ),
                   ],
@@ -350,7 +349,7 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
     bool isFromMe,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: Row(
         mainAxisAlignment:
             isFromMe ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -371,38 +370,34 @@ class _BusinessExpertChatPageState extends State<BusinessExpertChatPage> {
             const SizedBox(width: 8),
           ],
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isFromMe ? AppTheme.primaryColor : AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+            child: PortalSurface(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceMd, vertical: kSpaceSmTight),
+              color: isFromMe ? AppTheme.primaryColor : AppColors.white,
+              borderColor: isFromMe
+                  ? AppTheme.primaryColor.withValues(alpha: 0.5)
+                  : AppColors.grey300,
+              radius: 16,
+              elevation: 0.15,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     message.content,
-                    style: TextStyle(
-                      color: isFromMe ? AppColors.white : AppColors.textPrimary,
-                      fontSize: 15,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isFromMe
+                              ? AppColors.white
+                              : AppColors.textPrimary,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formatTime(message.createdAt),
-                    style: TextStyle(
-                      color: isFromMe
-                          ? AppColors.white.withValues(alpha: 0.7)
-                          : AppColors.textSecondary,
-                      fontSize: 11,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isFromMe
+                              ? AppColors.white.withValues(alpha: 0.7)
+                              : AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),

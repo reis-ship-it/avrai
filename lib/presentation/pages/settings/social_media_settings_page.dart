@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
@@ -51,28 +53,30 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return AdaptivePlatformPageScaffold(
       title: 'Social Media Connections',
       constrainBody: false,
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Manage Social Media Connections',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'Connect your social accounts to enhance your AI personality and discover friends who use avrai.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey600,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             // Friend Discovery Link
             PortalSurface(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
@@ -80,34 +84,28 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
               child: InkWell(
                 onTap: () => context.go('/friends/discover'),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(spacing.md),
                   child: Row(
                     children: [
                       const Icon(Icons.people, color: AppTheme.primaryColor),
-                      const SizedBox(width: 12),
+                      SizedBox(width: spacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Find Friends on avrai',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.primaryColor,
-                                  ),
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor,
+                              ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: spacing.xxs),
                             Text(
                               'Discover friends who use avrai from your social connections',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.grey700,
-                                  ),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: AppColors.grey700,
+                              ),
                             ),
                           ],
                         ),
@@ -119,14 +117,14 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
             Expanded(
               child: ListView(
                 children: _connectedPlatforms.entries.map((entry) {
                   final platform = entry.key;
                   final isConnected = entry.value;
                   return PortalSurface(
-                    margin: const EdgeInsets.only(bottom: 12),
+                    margin: EdgeInsets.only(bottom: spacing.sm),
                     padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: _getPlatformIcon(platform),
@@ -135,7 +133,7 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                         isConnected
                             ? 'Connected • Enhancing your AI personality'
                             : 'Not connected • Tap to connect',
-                        style: TextStyle(
+                        style: textTheme.bodySmall?.copyWith(
                           color: isConnected
                               ? AppColors.success
                               : AppColors.grey600,
@@ -164,11 +162,11 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             PortalSurface(
               color: AppColors.electricBlue.withValues(alpha: 0.1),
               borderColor: AppColors.electricBlue,
-              radius: 8,
+              radius: context.radius.sm,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -178,24 +176,23 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                         Icons.info_outline,
                         color: AppColors.electricBlue,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Privacy & Data Usage',
-                        style: TextStyle(
+                        style: textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.electricBlue,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     '• We only use your social data to enhance your AI personality\n'
                     '• Your data is stored locally and encrypted\n'
                     '• You can disconnect anytime\n'
                     '• We never share your social data with third parties',
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodySmall?.copyWith(
                       color: AppColors.textPrimary,
                     ),
                   ),
@@ -281,12 +278,11 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
           _connectingPlatform = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$platform connected successfully'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: '$platform connected successfully',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
       }
     } catch (e) {
@@ -296,12 +292,7 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
           _connectingPlatform = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to connect $platform: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to connect $platform: $e');
       }
     }
   }
@@ -336,12 +327,11 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
         _connectedPlatforms[platform] = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$platform disconnected'),
-          backgroundColor: AppColors.warning,
-          duration: const Duration(seconds: 2),
-        ),
+      FeedbackPresenter.showSnack(
+        context,
+        message: '$platform disconnected',
+        kind: FeedbackKind.warning,
+        duration: const Duration(seconds: 2),
       );
     }
   }

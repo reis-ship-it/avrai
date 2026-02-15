@@ -12,6 +12,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -19,6 +20,7 @@ import 'package:avrai/core/services/matching/group_formation_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Group Formation Page
 ///
@@ -91,12 +93,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
                 // Navigate to group results page
                 context.go('/group/results/${state.session.sessionId}');
               } else if (state is GroupMatchingError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
+                context.showError(state.message);
               }
             },
             builder: (context, state) {
@@ -193,17 +190,11 @@ class _GroupFormationPageState extends State<GroupFormationPage>
   ) {
     final selectedCount = state.totalSelectedMembers;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.grey100,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.grey300,
-            width: 1,
-          ),
-        ),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMd),
+      radius: 0,
+      color: AppColors.grey100,
+      borderColor: AppColors.grey300,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -387,7 +378,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
         await Future.delayed(const Duration(milliseconds: 500));
       },
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         itemCount: nearbyUsers.length,
         itemBuilder: (context, index) {
           final user = nearbyUsers[index];
@@ -477,7 +468,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
       children: [
         // Search bar
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
@@ -501,7 +492,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
         // Friends list
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
             itemCount: filteredFriends.length,
             itemBuilder: (context, index) {
               final agentId = filteredFriends[index];
@@ -539,7 +530,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
     bool showCompatibility = false,
   }) {
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
       radius: 12,
       color: isSelected
           ? AppColors.primary.withValues(alpha: 0.08)
@@ -550,7 +541,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Row(
             children: [
               // Avatar
@@ -641,7 +632,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
     required VoidCallback onTap,
   }) {
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
       radius: 12,
       color: isSelected
           ? AppColors.primary.withValues(alpha: 0.08)
@@ -652,7 +643,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Row(
             children: [
               // Avatar

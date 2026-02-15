@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/ai/perpetual_list/models/models.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'suggested_list_card.dart';
 
 /// SuggestedListsSection - Section displaying AI-suggested lists
@@ -40,13 +41,14 @@ class SuggestedListsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section header
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: spacing.md),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -69,7 +71,7 @@ class SuggestedListsSection extends StatelessWidget {
               if (onSeeAll != null && suggestedLists.isNotEmpty)
                 TextButton(
                   onPressed: onSeeAll,
-                  child: const Text('See All'),
+                  child: Text('See All'),
                 ),
             ],
           ),
@@ -92,8 +94,10 @@ class SuggestedListsSection extends StatelessWidget {
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+    final spacing = context.spacing;
+    return Padding(
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.lg),
       child: Center(
         child: CircularProgressIndicator(),
       ),
@@ -102,9 +106,11 @@ class SuggestedListsSection extends StatelessWidget {
 
   Widget _buildErrorState(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.lg),
       child: Text(
         errorMessage!,
         style: theme.textTheme.bodyMedium?.copyWith(
@@ -118,11 +124,13 @@ class SuggestedListsSection extends StatelessWidget {
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final spacing = context.spacing;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.lg),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(spacing.lg),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(12),
@@ -156,18 +164,19 @@ class SuggestedListsSection extends StatelessWidget {
   }
 
   Widget _buildHorizontalList(BuildContext context) {
+    final spacing = context.spacing;
     return SizedBox(
       height: 180,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: spacing.md),
         itemCount: suggestedLists.length,
         itemBuilder: (context, index) {
           final list = suggestedLists[index];
           return SizedBox(
             width: 280,
             child: Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: spacing.sm),
               child: SuggestedListCard(
                 suggestedList: list,
                 onTap: () => onListTap?.call(list),
@@ -184,7 +193,7 @@ class SuggestedListsSection extends StatelessWidget {
 
   Widget _buildVerticalList(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: context.spacing.md),
       child: Column(
         children: suggestedLists.map((list) {
           return SuggestedListCard(

@@ -1,11 +1,11 @@
 /// AI2AI Connection View Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
-/// 
+///
 /// Displays active AI-to-AI connections with compatibility scores and explanations.
 /// Per OUR_GUTS.md: "All device interactions must go through Personality AI Layer"
-/// 
+///
 /// Features:
 /// - View active AI2AI connections (read-only)
 /// - Compatibility scores (0-100%)
@@ -13,28 +13,32 @@
 /// - Enable human-to-human conversation at 100% compatibility
 /// - Note: AIs disconnect automatically (fleeting connections)
 /// - No manual disconnect - connections are AI-managed
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying AI2AI connections with compatibility information
 class AI2AIConnectionViewWidget extends StatefulWidget {
   final bool showHumanConnectionButton;
   final Function(ConnectionMetrics)? onEnableHumanConnection;
+
   /// Optional override for tests/debug: provide a fixed list of connections.
   final List<ConnectionMetrics>? connections;
 
   /// Optional override for tests/debug: provide an orchestrator instance directly.
   final VibeConnectionOrchestrator? orchestrator;
-  
+
   const AI2AIConnectionViewWidget({
     super.key,
     this.showHumanConnectionButton = true,
@@ -42,9 +46,10 @@ class AI2AIConnectionViewWidget extends StatefulWidget {
     this.connections,
     this.orchestrator,
   });
-  
+
   @override
-  State<AI2AIConnectionViewWidget> createState() => _AI2AIConnectionViewWidgetState();
+  State<AI2AIConnectionViewWidget> createState() =>
+      _AI2AIConnectionViewWidgetState();
 }
 
 class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
@@ -52,7 +57,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   List<ConnectionMetrics> _activeConnections = [];
   Timer? _refreshTimer;
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -65,20 +70,22 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
 
     _initializeOrchestrator();
   }
-  
+
   Future<void> _initializeOrchestrator() async {
     try {
-      _orchestrator = widget.orchestrator ?? GetIt.instance<VibeConnectionOrchestrator>();
+      _orchestrator =
+          widget.orchestrator ?? GetIt.instance<VibeConnectionOrchestrator>();
       await _refreshConnections();
       _startAutoRefresh();
-      
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
     } catch (e) {
-      developer.log('Error initializing orchestrator: $e', name: 'AI2AIConnectionViewWidget');
+      developer.log('Error initializing orchestrator: $e',
+          name: 'AI2AIConnectionViewWidget');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -86,7 +93,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       }
     }
   }
-  
+
   void _startAutoRefresh() {
     // Refresh connection list every 5 seconds
     _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -95,10 +102,10 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       }
     });
   }
-  
+
   Future<void> _refreshConnections() async {
     if (_orchestrator == null) return;
-    
+
     final connections = _orchestrator!.getActiveConnections();
     if (mounted) {
       setState(() {
@@ -106,25 +113,25 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       });
     }
   }
-  
+
   @override
   void dispose() {
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
-    
+
     if (_activeConnections.isEmpty) {
       return _buildEmptyState();
     }
-    
+
     return RefreshIndicator(
       onRefresh: _refreshConnections,
       child: ListView.builder(
@@ -137,16 +144,16 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(context.spacing.xxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               decoration: const BoxDecoration(
                 color: AppColors.grey100,
                 shape: BoxShape.circle,
@@ -158,28 +165,26 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'No Active AI Connections',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Your AI hasn\'t connected with other AIs yet.\n'
               'Enable device discovery to find compatible AIs.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
             ),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(context.spacing.md),
               decoration: BoxDecoration(
                 color: AppColors.electricGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -188,7 +193,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
                   width: 1,
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(
                     Icons.info_outline,
@@ -199,10 +204,9 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
                   Expanded(
                     child: Text(
                       'AI connections are fleeting and managed automatically by your AI personality',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ],
@@ -213,14 +217,18 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
     );
   }
-  
+
   Widget _buildConnectionCard(ConnectionMetrics connection) {
     final compatibilityScore = (connection.currentCompatibility * 100).toInt();
-    final compatibilityColor = _getCompatibilityColor(connection.currentCompatibility);
+    final compatibilityColor =
+        _getCompatibilityColor(connection.currentCompatibility);
     final isFullyCompatible = compatibilityScore == 100;
-    
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(
+        horizontal: context.spacing.md,
+        vertical: context.spacing.xs,
+      ),
       elevation: 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -232,13 +240,15 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
             : BorderSide.none,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(context.spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildConnectionHeader(connection, compatibilityScore, compatibilityColor),
+            _buildConnectionHeader(
+                connection, compatibilityScore, compatibilityColor),
             const SizedBox(height: 16),
-            _buildCompatibilityBar(connection.currentCompatibility, compatibilityColor),
+            _buildCompatibilityBar(
+                connection.currentCompatibility, compatibilityColor),
             const SizedBox(height: 16),
             _buildLearningMetrics(connection),
             const SizedBox(height: 16),
@@ -256,7 +266,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
     );
   }
-  
+
   Widget _buildConnectionHeader(
     ConnectionMetrics connection,
     int compatibilityScore,
@@ -265,7 +275,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(context.spacing.sm),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -286,27 +296,28 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'AI Connection',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Connected ${_formatDuration(connection.connectionDuration)}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.spacing.sm,
+            vertical: context.spacing.xxs + context.spacing.xs / kSpaceNano,
+          ),
           decoration: BoxDecoration(
             color: compatibilityColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
@@ -317,17 +328,16 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           ),
           child: Text(
             '$compatibilityScore%',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: compatibilityColor,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: compatibilityColor,
+                ),
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildCompatibilityBar(double vibeAlignment, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,21 +345,19 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Compatibility Score',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             Text(
               _getCompatibilityLabel(vibeAlignment),
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: color,
+                  ),
             ),
           ],
         ),
@@ -366,10 +374,10 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ],
     );
   }
-  
+
   Widget _buildLearningMetrics(ConnectionMetrics connection) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
@@ -396,7 +404,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
     );
   }
-  
+
   Widget _buildMetricItem(IconData icon, String value, String label) {
     return Column(
       children: [
@@ -408,26 +416,24 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
   }
-  
+
   Widget _buildCompatibilityExplanation(ConnectionMetrics connection) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
@@ -439,7 +445,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.auto_awesome,
@@ -449,31 +455,29 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
               SizedBox(width: 8),
               Text(
                 'Why They\'re Compatible',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             _generateCompatibilityReason(connection),
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-              height: 1.5,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildHumanConnectionButton(ConnectionMetrics connection) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -485,7 +489,7 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.celebration,
@@ -496,22 +500,20 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
               Expanded(
                 child: Text(
                   'Perfect Match!',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.electricGreen,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.electricGreen,
+                      ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Your AIs are 100% compatible. You can now enable human-to-human conversation.',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -519,11 +521,13 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
             child: ElevatedButton.icon(
               onPressed: () => _enableHumanConnection(connection),
               icon: const Icon(Icons.people),
-              label: const Text('Enable Human Conversation'),
+              label: Text('Enable Human Conversation'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.electricGreen,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.spacing.sm + context.spacing.xxs,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -534,9 +538,9 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       ),
     );
   }
-  
+
   Widget _buildFleetingNotice(ConnectionMetrics connection) {
-    return const Row(
+    return Row(
       children: [
         Icon(
           Icons.access_time,
@@ -547,19 +551,18 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         Expanded(
           child: Text(
             'Fleeting connection • Managed by AI • Will disconnect automatically',
-            style: TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-              fontStyle: FontStyle.italic,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontStyle: FontStyle.italic,
+                ),
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildPrivacyIndicator() {
-    return const Row(
+    return Row(
       children: [
         Icon(
           Icons.verified_user,
@@ -570,32 +573,30 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
         Expanded(
           child: Text(
             'Privacy protected • No personal information shared',
-            style: TextStyle(
-              fontSize: 10,
-              color: AppColors.success,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
       ],
     );
   }
 
-  
   Color _getCompatibilityColor(double score) {
     if (score >= 0.9) return AppColors.electricGreen;
     if (score >= 0.7) return AppColors.success;
     if (score >= 0.5) return AppColors.warning;
     return AppColors.error;
   }
-  
+
   String _getCompatibilityLabel(double score) {
     if (score >= 0.9) return 'Perfect Match';
     if (score >= 0.7) return 'High Compatibility';
     if (score >= 0.5) return 'Moderate Match';
     return 'Low Compatibility';
   }
-  
+
   String _formatDuration(Duration duration) {
     if (duration.inHours > 0) {
       return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
@@ -605,11 +606,12 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       return '${duration.inSeconds}s';
     }
   }
-  
+
   String _generateCompatibilityReason(ConnectionMetrics connection) {
     final score = connection.currentCompatibility;
-    final insightsGained = connection.learningOutcomes['insights_gained'] as int? ?? 0;
-    
+    final insightsGained =
+        connection.learningOutcomes['insights_gained'] as int? ?? 0;
+
     if (score >= 0.9) {
       return 'Your AIs share exceptional vibe alignment and complementary learning patterns. '
           'They\'ve exchanged $insightsGained insights with high mutual benefit, '
@@ -626,21 +628,11 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           'Early learning patterns suggest limited alignment, but discoveries are ongoing.';
     }
   }
-  
+
   void _enableHumanConnection(ConnectionMetrics connection) {
     widget.onEnableHumanConnection?.call(connection);
-    
+
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Human connection enabled! You can now chat.'),
-        backgroundColor: AppColors.electricGreen,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
+    context.showSuccess('Human connection enabled! You can now chat.');
   }
 }
-

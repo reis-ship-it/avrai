@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'dart:async';
 
 /// Continuous Learning Progress Widget
-/// 
+///
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
-/// 
+///
 /// Displays progress for all 10 learning dimensions:
 /// - user_preference_understanding
 /// - location_intelligence
@@ -18,29 +19,31 @@ import 'dart:async';
 /// - personalization_depth
 /// - trend_prediction
 /// - collaboration_effectiveness
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 class ContinuousLearningProgressWidget extends StatefulWidget {
   final String userId;
   final ContinuousLearningSystem learningSystem;
-  
+
   const ContinuousLearningProgressWidget({
     super.key,
     required this.userId,
     required this.learningSystem,
   });
-  
+
   @override
-  State<ContinuousLearningProgressWidget> createState() => _ContinuousLearningProgressWidgetState();
+  State<ContinuousLearningProgressWidget> createState() =>
+      _ContinuousLearningProgressWidgetState();
 }
 
-class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningProgressWidget> {
+class _ContinuousLearningProgressWidgetState
+    extends State<ContinuousLearningProgressWidget> {
   Map<String, double> _progress = {};
   bool _isLoading = true;
   String? _errorMessage;
   final Map<String, bool> _expandedSections = {};
   Timer? _refreshTimer;
-  
+
   // Learning rates for display
   static const Map<String, double> _learningRates = {
     'user_preference_understanding': 0.15,
@@ -54,12 +57,12 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
     'trend_prediction': 0.14,
     'collaboration_effectiveness': 0.17,
   };
-  
+
   @override
   void initState() {
     super.initState();
     _loadProgress();
-    
+
     // Refresh progress periodically
     _refreshTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) _loadProgress();
@@ -71,16 +74,16 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   Future<void> _loadProgress() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final progress = await widget.learningSystem.getLearningProgress();
-      
+
       if (mounted) {
         setState(() {
           _progress = progress;
@@ -96,20 +99,22 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading learning progress',
-        child: const Card(
+        child: Card(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
-          margin: EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(
                 color: AppColors.primary,
@@ -119,7 +124,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         ),
       );
     }
-    
+
     if (_errorMessage != null) {
       return Semantics(
         label: 'Error loading learning progress',
@@ -128,9 +133,9 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -141,10 +146,9 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -153,7 +157,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                   button: true,
                   child: TextButton(
                     onPressed: _loadProgress,
-                    child: const Text('Retry'),
+                    child: Text('Retry'),
                   ),
                 ),
               ],
@@ -162,41 +166,40 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         ),
       );
     }
-    
+
     if (_progress.isEmpty) {
       return Semantics(
         label: 'No progress data available',
-        child: const Card(
+        child: Card(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
-          margin: EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Center(
               child: Text(
                 'No progress data available',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ),
           ),
         ),
       );
     }
-    
+
     // Sort dimensions by progress (descending)
     final sortedDimensions = _progress.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    
+
     // Calculate average progress
     final averageProgress = _progress.values.isEmpty
         ? 0.0
         : _progress.values.reduce((a, b) => a + b) / _progress.length;
-    
+
     return Semantics(
       label: 'Learning progress for ${_progress.length} dimensions',
       child: Card(
@@ -204,9 +207,9 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +218,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(spacing.xs),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -227,14 +230,13 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Learning Progress',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                   ],
@@ -252,11 +254,10 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                 // Dimensions List
                 Text(
                   'Learning Dimensions (${_progress.length})',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 12),
                 ...sortedDimensions.map((entry) => _buildProgressItem(
@@ -270,15 +271,16 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
       ),
     );
   }
-  
+
   Widget _buildAverageProgress(double average) {
+    final spacing = context.spacing;
     final percentage = (average * 100).toStringAsFixed(1);
     final color = _getProgressColor(average);
-    
+
     return Semantics(
       label: 'Average learning progress: $percentage%',
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
@@ -293,21 +295,19 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Average Progress',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 Text(
                   '$percentage%',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
                 ),
               ],
             ),
@@ -324,13 +324,14 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
       ),
     );
   }
-  
+
   Widget _buildProgressItem(String dimension, double progress) {
+    final spacing = context.spacing;
     final percentage = (progress * 100).toStringAsFixed(1);
     final isExpanded = _expandedSections[dimension] ?? false;
     final progressColor = _getProgressColor(progress);
     final learningRate = _learningRates[dimension] ?? 0.1;
-    
+
     return Semantics(
       label: '${_formatDimensionName(dimension)}: $percentage% progress',
       button: true,
@@ -342,8 +343,8 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         },
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
+          margin: EdgeInsets.only(bottom: spacing.sm),
+          padding: EdgeInsets.all(spacing.sm),
           decoration: BoxDecoration(
             color: AppColors.grey100,
             borderRadius: BorderRadius.circular(8),
@@ -358,7 +359,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(spacing.xxs),
                     decoration: BoxDecoration(
                       color: progressColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
@@ -376,29 +377,32 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                       children: [
                         Text(
                           _formatDimensionName(dimension),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
                             Text(
                               '$percentage%',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: progressColor,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: progressColor,
+                                  ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: LinearProgressIndicator(
                                 value: progress,
                                 backgroundColor: AppColors.grey200,
-                                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    progressColor),
                                 minHeight: 6,
                                 borderRadius: BorderRadius.circular(3),
                               ),
@@ -414,7 +418,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                   ),
                 ],
               ),
-              
+
               // Expanded section
               if (isExpanded) ...[
                 const SizedBox(height: 12),
@@ -446,12 +450,13 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
       ),
     );
   }
-  
+
   Widget _buildMetricItem(String label, String value, IconData icon) {
+    final spacing = context.spacing;
     return Semantics(
       label: '$label: $value',
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(spacing.xs),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(6),
@@ -470,18 +475,16 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
                 children: [
                   Text(
                     value,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -491,14 +494,14 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
       ),
     );
   }
-  
+
   Color _getProgressColor(double progress) {
     if (progress >= 0.75) return AppColors.success;
     if (progress >= 0.5) return AppColors.electricGreen;
     if (progress >= 0.25) return AppColors.warning;
     return AppColors.error;
   }
-  
+
   IconData _getDimensionIcon(String dimension) {
     switch (dimension) {
       case 'user_preference_understanding':
@@ -525,7 +528,7 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         return Icons.insights;
     }
   }
-  
+
   String _formatDimensionName(String dimension) {
     return dimension
         .split('_')
@@ -533,4 +536,3 @@ class _ContinuousLearningProgressWidgetState extends State<ContinuousLearningPro
         .join(' ');
   }
 }
-

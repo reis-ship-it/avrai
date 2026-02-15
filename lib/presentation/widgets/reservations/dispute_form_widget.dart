@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Dispute Form Widget
 ///
@@ -102,7 +103,7 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -113,27 +114,26 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.info_outline, color: AppTheme.primaryColor),
+                    const Icon(Icons.info_outline,
+                        color: AppTheme.primaryColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'File a Dispute',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'If you have extenuating circumstances that prevented you from attending, you can file a dispute for review. Approved disputes may qualify for refunds even outside the normal cancellation policy.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -141,17 +141,16 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
           const SizedBox(height: 16),
           Text(
             'Dispute Reason *',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
           ...DisputeReason.values.map((reason) {
             final isSelected = _selectedReason == reason;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: kSpaceXs),
               child: InkWell(
                 onTap: () {
                   setState(() {
@@ -160,7 +159,7 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
                 },
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(kSpaceSm),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppTheme.primaryColor.withValues(alpha: 0.1)
@@ -184,15 +183,15 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
                       Expanded(
                         child: Text(
                           _getReasonLabel(reason),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? AppTheme.primaryColor
-                                : AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: isSelected
+                                        ? AppTheme.primaryColor
+                                        : AppColors.textPrimary,
+                                  ),
                         ),
                       ),
                       if (isSelected)
@@ -211,7 +210,8 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
             controller: _descriptionController,
             decoration: const InputDecoration(
               labelText: 'Description *',
-              hintText: 'Please provide details about your extenuating circumstances...',
+              hintText:
+                  'Please provide details about your extenuating circumstances...',
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.description, color: AppTheme.primaryColor),
             ),
@@ -245,7 +245,7 @@ class _DisputeFormWidgetState extends State<DisputeFormWidget> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

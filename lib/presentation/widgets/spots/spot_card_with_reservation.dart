@@ -6,6 +6,7 @@
 // Wrapper widget that checks reservation status for a spot card
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
@@ -28,7 +29,8 @@ class SpotCardWithReservation extends StatefulWidget {
   });
 
   @override
-  State<SpotCardWithReservation> createState() => _SpotCardWithReservationState();
+  State<SpotCardWithReservation> createState() =>
+      _SpotCardWithReservationState();
 }
 
 class _SpotCardWithReservationState extends State<SpotCardWithReservation> {
@@ -48,7 +50,7 @@ class _SpotCardWithReservationState extends State<SpotCardWithReservation> {
 
   Future<void> _checkReservationStatus() async {
     if (_hasCheckedOnce) return; // Only check once per widget lifecycle
-    
+
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) {
       return; // No user, can't check reservations
@@ -56,15 +58,17 @@ class _SpotCardWithReservationState extends State<SpotCardWithReservation> {
 
     try {
       final reservationService = di.sl<ReservationService>();
-      final availabilityService = di.sl.isRegistered<ReservationAvailabilityService>()
-          ? di.sl<ReservationAvailabilityService>()
-          : null;
+      final availabilityService =
+          di.sl.isRegistered<ReservationAvailabilityService>()
+              ? di.sl<ReservationAvailabilityService>()
+              : null;
 
       final userId = authState.user.id;
       final tomorrow = DateTime.now().add(const Duration(days: 1));
 
       // Check for existing reservation
-      final userReservations = await reservationService.getUserReservationsForTarget(
+      final userReservations =
+          await reservationService.getUserReservationsForTarget(
         userId: userId,
         type: ReservationType.spot,
         targetId: widget.spot.id,
@@ -114,13 +118,12 @@ class _SpotCardWithReservationState extends State<SpotCardWithReservation> {
   }
 
   void _navigateToCreateReservation() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => CreateReservationPage(
-          type: ReservationType.spot,
-          targetId: widget.spot.id,
-          targetTitle: widget.spot.name,
-        ),
+    AppNavigator.pushBuilder(
+      context,
+      builder: (context) => CreateReservationPage(
+        type: ReservationType.spot,
+        targetId: widget.spot.id,
+        targetTitle: widget.spot.name,
       ),
     ).then((_) {
       // Refresh reservation status after returning
@@ -137,8 +140,8 @@ class _SpotCardWithReservationState extends State<SpotCardWithReservation> {
       isReservationAvailable: _hasCheckedOnce ? _isReservationAvailable : null,
       hasExistingReservation: _hasCheckedOnce ? _hasExistingReservation : null,
       availableCapacity: _availableCapacity,
-      onReservationTap: _hasExistingReservation || !_isReservationAvailable 
-          ? null 
+      onReservationTap: _hasExistingReservation || !_isReservationAvailable
+          ? null
           : _navigateToCreateReservation,
     );
   }

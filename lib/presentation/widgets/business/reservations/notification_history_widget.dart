@@ -10,6 +10,7 @@ import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Notification History Widget
 ///
@@ -111,7 +112,7 @@ class _NotificationHistoryWidgetState extends State<NotificationHistoryWidget> {
     if (_isLoading) {
       return const Card(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(kSpaceLg),
           child: Center(
             child: CircularProgressIndicator(),
           ),
@@ -122,7 +123,7 @@ class _NotificationHistoryWidgetState extends State<NotificationHistoryWidget> {
     if (_error != null) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(kSpaceLg),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -130,13 +131,16 @@ class _NotificationHistoryWidgetState extends State<NotificationHistoryWidget> {
               const SizedBox(height: 16),
               Text(
                 _error!,
-                style: const TextStyle(color: AppTheme.errorColor),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppTheme.errorColor),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadNotifications,
-                child: const Text('Retry'),
+                child: Text('Retry'),
               ),
             ],
           ),
@@ -147,7 +151,7 @@ class _NotificationHistoryWidgetState extends State<NotificationHistoryWidget> {
     if (_notifications.isEmpty) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(kSpaceLg),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -178,7 +182,7 @@ class _NotificationHistoryWidgetState extends State<NotificationHistoryWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Row(
               children: [
                 Text(

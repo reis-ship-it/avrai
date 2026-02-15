@@ -110,7 +110,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
                   color: AppTheme.primaryColor,
                 ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'We need your age to provide age-appropriate content and ensure legal compliance.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/services/events/post_event_feedback_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Event Feedback Page
 ///
@@ -95,12 +98,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
   Future<void> _submitFeedback() async {
     if (!_formKey.currentState!.validate()) return;
     if (_overallRating == 0.0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please provide an overall rating'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please provide an overall rating');
       return;
     }
 
@@ -132,12 +130,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Thank you for your feedback!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Thank you for your feedback!');
       }
     } catch (e) {
       setState(() {
@@ -160,62 +153,62 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(context.spacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Event Info
                 _buildEventInfo(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Overall Rating
                 _buildOverallRating(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Category Ratings
                 _buildCategoryRatings(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Highlights
                 _buildHighlights(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Improvements
                 _buildImprovements(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Would Attend Again / Recommend
                 _buildRecommendationToggles(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Comments
                 _buildComments(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Error Display
                 if (_error != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3)),
-                    ),
+                  PortalSurface(
+                    padding: EdgeInsets.all(context.spacing.md),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderColor: AppColors.error.withValues(alpha: 0.3),
+                    radius: context.radius.sm,
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline, color: AppColors.error),
-                        const SizedBox(width: 12),
+                        SizedBox(width: context.spacing.sm),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: const TextStyle(color: AppColors.error),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.error),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.spacing.xl),
                 ],
 
                 // Submit Button
@@ -224,7 +217,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    minimumSize: const Size(double.infinity, 48),
+                    minimumSize: Size(double.infinity, context.spacing.xxl),
                   ),
                   child: _isSubmitting
                       ? const SizedBox(
@@ -236,7 +229,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                                 AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Submit Feedback'),
+                      : Text('Submit Feedback'),
                 ),
               ],
             ),
@@ -247,40 +240,35 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
   }
 
   Widget _buildEventInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'How was your experience?',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             widget.event.title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: context.spacing.xxs),
           Text(
             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -291,15 +279,14 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Overall Rating *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
@@ -311,7 +298,7 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                 });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.xxs),
                 child: Icon(
                   _overallRating >= starValue ? Icons.star : Icons.star_border,
                   size: 48,
@@ -324,14 +311,13 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
           }),
         ),
         if (_overallRating > 0) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Center(
             child: Text(
               '${_overallRating.toStringAsFixed(1)} out of 5',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -343,18 +329,17 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Category Ratings',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         ..._categoryRatings.keys.map((category) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: EdgeInsets.only(bottom: context.spacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -363,24 +348,22 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
                   children: [
                     Text(
                       _getCategoryDisplayName(category),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     Text(
                       _categoryRatings[category]! > 0
                           ? '${_categoryRatings[category]!.toStringAsFixed(1)} / 5.0'
                           : 'Not rated',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: context.spacing.xs),
                 Slider(
                   value: _categoryRatings[category]!,
                   min: 0.0,
@@ -408,15 +391,14 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'What was great? (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -436,11 +418,11 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
               },
               selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primaryColor,
-              labelStyle: TextStyle(
-                color:
-                    isSelected ? AppTheme.primaryColor : AppColors.textPrimary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
+              labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isSelected
+                      ? AppTheme.primaryColor
+                      : AppColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),
             );
           }).toList(),
         ),
@@ -452,15 +434,14 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'What could be better? (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -480,11 +461,11 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
               },
               selectedColor: AppTheme.warningColor.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.warningColor,
-              labelStyle: TextStyle(
-                color:
-                    isSelected ? AppTheme.warningColor : AppColors.textPrimary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
+              labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isSelected
+                      ? AppTheme.warningColor
+                      : AppColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),
             );
           }).toList(),
         ),
@@ -493,19 +474,20 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
   }
 
   Widget _buildRecommendationToggles() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.sm,
       child: Column(
         children: [
           SwitchListTile(
-            title: const Text(
+            title: Text(
               'Would you attend again?',
-              style: TextStyle(color: AppColors.textPrimary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
             value: _wouldAttendAgain,
             onChanged: (value) {
@@ -516,9 +498,12 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
             activeThumbColor: AppTheme.primaryColor,
           ),
           SwitchListTile(
-            title: const Text(
+            title: Text(
               'Would you recommend to others?',
-              style: TextStyle(color: AppColors.textPrimary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
             value: _wouldRecommend,
             onChanged: (value) {
@@ -537,15 +522,14 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Additional Comments (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _commentsController,
           maxLines: 4,
@@ -566,7 +550,10 @@ class _EventFeedbackPageState extends State<EventFeedbackPage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
       ],
     );

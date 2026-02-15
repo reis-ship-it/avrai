@@ -3,12 +3,13 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/models/events/event_template.dart';
 import 'package:avrai/core/services/events/event_template_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Template Selection Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.9)
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Display available templates
 /// - Template cards with preview
@@ -28,7 +29,8 @@ class TemplateSelectionWidget extends StatefulWidget {
   });
 
   @override
-  State<TemplateSelectionWidget> createState() => _TemplateSelectionWidgetState();
+  State<TemplateSelectionWidget> createState() =>
+      _TemplateSelectionWidgetState();
 }
 
 class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
@@ -66,9 +68,11 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
 
     // Apply category filter
     if (_selectedCategoryFilter != null) {
-      filtered = filtered.where((t) => 
-        t.category.toLowerCase() == _selectedCategoryFilter!.toLowerCase()
-      ).toList();
+      filtered = filtered
+          .where((t) =>
+              t.category.toLowerCase() ==
+              _selectedCategoryFilter!.toLowerCase())
+          .toList();
     }
 
     // Apply search query
@@ -94,17 +98,22 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Search Bar
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Search templates...',
-              hintStyle: const TextStyle(color: AppColors.textHint),
-              prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+              hintStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textHint),
+              prefixIcon:
+                  const Icon(Icons.search, color: AppColors.textSecondary),
               filled: true,
               fillColor: AppColors.grey100,
               border: OutlineInputBorder(
@@ -117,10 +126,14 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppTheme.primaryColor, width: 2),
               ),
             ),
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textPrimary),
             onChanged: (value) {
               setState(() {
                 _searchQuery = value.isEmpty ? null : value;
@@ -132,7 +145,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
 
         // Category Filters
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: spacing.md),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -141,7 +154,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                 const SizedBox(width: 8),
                 ..._getAvailableCategories().map((category) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: EdgeInsets.only(right: spacing.xs),
                     child: _buildCategoryChip(category, category),
                   );
                 }),
@@ -162,7 +175,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
 
   Widget _buildCategoryChip(String label, String? category) {
     final isSelected = _selectedCategoryFilter == category;
-    
+
     return FilterChip(
       label: Text(label),
       selected: isSelected,
@@ -174,10 +187,10 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
       },
       selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
       checkmarkColor: AppTheme.primaryColor,
-      labelStyle: TextStyle(
-        color: isSelected ? AppTheme.primaryColor : AppColors.textPrimary,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-      ),
+      labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: isSelected ? AppTheme.primaryColor : AppColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
     );
   }
 
@@ -193,23 +206,21 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               color: AppColors.textSecondary,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No templates found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               _searchQuery != null || _selectedCategoryFilter != null
                   ? 'Try adjusting your filters'
                   : 'Templates will appear here',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -217,7 +228,7 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       itemCount: _filteredTemplates.length,
       itemBuilder: (context, index) {
         final template = _filteredTemplates[index];
@@ -228,13 +239,13 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
 
   Widget _buildTemplateCard(EventTemplate template) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: context.spacing.md),
       child: InkWell(
         onTap: () {
           widget.onTemplateSelected(template);
         },
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -242,14 +253,14 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(context.spacing.sm),
                     decoration: BoxDecoration(
                       color: AppColors.electricGreen.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       template.icon,
-                      style: const TextStyle(fontSize: 24),
+                      style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -258,102 +269,103 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                        template.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                          template.name,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           template.category,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
                   ),
                   // Price Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.spacing.xs,
+                      vertical: context.spacing.xxs,
+                    ),
                     decoration: BoxDecoration(
-                      color: template.isFree 
+                      color: template.isFree
                           ? AppColors.electricGreen.withValues(alpha: 0.1)
                           : AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       template.getPriceDisplay(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: template.isFree 
-                            ? AppColors.electricGreen
-                            : AppTheme.primaryColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: template.isFree
+                                ? AppColors.electricGreen
+                                : AppTheme.primaryColor,
+                          ),
                     ),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Description Preview
               Text(
                 template.descriptionTemplate.length > 150
                     ? '${template.descriptionTemplate.substring(0, 150)}...'
                     : template.descriptionTemplate,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Template Details
               Row(
                 children: [
-                  const Icon(Icons.access_time, size: 14, color: AppColors.textSecondary),
+                  const Icon(Icons.access_time,
+                      size: 14, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     '${template.defaultDuration.inHours}h ${template.defaultDuration.inMinutes % 60}m',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   const SizedBox(width: 16),
-                  const Icon(Icons.people, size: 14, color: AppColors.textSecondary),
+                  const Icon(Icons.people,
+                      size: 14, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     'Up to ${template.defaultMaxAttendees}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   if (template.recommendedSpotCount > 0) ...[
                     const SizedBox(width: 16),
-                    const Icon(Icons.place, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.place,
+                        size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       '${template.recommendedSpotCount} ${template.recommendedSpotCount == 1 ? 'spot' : 'spots'}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ],
               ),
-              
+
               // Tags
               if (template.tags.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -362,25 +374,27 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                   runSpacing: 6,
                   children: template.tags.take(3).map((tag) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.spacing.xs,
+                        vertical: context.spacing.xxs,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.grey200,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         tag,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     );
                   }).toList(),
                 ),
               ],
-              
+
               const SizedBox(height: 12),
-              
+
               // Use Template Button
               SizedBox(
                 width: double.infinity,
@@ -389,11 +403,11 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
                     widget.onTemplateSelected(template);
                   },
                   icon: const Icon(Icons.event_available, size: 18),
-                  label: const Text('Use Template'),
+                  label: Text('Use Template'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
                   ),
                 ),
               ),
@@ -404,4 +418,3 @@ class _TemplateSelectionWidgetState extends State<TemplateSelectionWidget> {
     );
   }
 }
-

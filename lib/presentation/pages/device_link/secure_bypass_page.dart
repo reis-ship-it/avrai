@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 import 'package:get_it/get_it.dart';
 
@@ -62,7 +65,7 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
       title: 'Account Recovery',
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(context.spacing.xl),
         child: _buildCurrentStep(),
       ),
     );
@@ -87,35 +90,35 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.error.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-          ),
+        PortalSurface(
+          padding: EdgeInsets.all(context.spacing.lg),
+          color: AppColors.error.withValues(alpha: 0.1),
+          borderColor: AppColors.error.withValues(alpha: 0.3),
+          radius: context.radius.md,
           child: Column(
             children: [
               const Icon(Icons.warning_amber, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Lost Device Recovery',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: context.spacing.sm),
               Text(
                 'Use this only if you cannot access your other devices. '
                 'This is a high-security operation.',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: context.spacing.xl),
         _buildInfoCard(
           icon: Icons.lock,
           title: 'What happens:',
@@ -126,26 +129,28 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
             'This device becomes your primary device',
           ],
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: context.spacing.xl),
         if (_deviceCount > 0)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(8),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.md),
+            color: AppColors.surface,
+            borderColor: AppColors.grey300,
+            radius: context.radius.sm,
             child: Row(
               children: [
                 const Icon(Icons.devices, size: 24),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing.sm),
                 Text(
                   '$_deviceCount device(s) will be revoked',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
           ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -154,15 +159,15 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('I understand, continue'),
+            child: Text('I understand, continue'),
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         SizedBox(
           width: double.infinity,
           child: TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
         ),
       ],
@@ -173,19 +178,21 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Verify Your Identity',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Text(
           'Enter your email and password to confirm.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
@@ -194,7 +201,7 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
             prefixIcon: Icon(Icons.email),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         TextField(
           controller: _passwordController,
           obscureText: true,
@@ -204,13 +211,16 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
           ),
         ),
         if (_error != null) ...[
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Text(
             _error!,
-            style: const TextStyle(color: AppColors.error),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.error),
           ),
         ],
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -221,7 +231,7 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Verify'),
+                : Text('Verify'),
           ),
         ),
       ],
@@ -232,19 +242,21 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Email Verification',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Text(
           'We\'ve sent a verification code to your email.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         TextField(
           controller: _verificationCodeController,
           keyboardType: TextInputType.number,
@@ -255,13 +267,16 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
           ),
         ),
         if (_error != null) ...[
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Text(
             _error!,
-            style: const TextStyle(color: AppColors.error),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.error),
           ),
         ],
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -272,14 +287,14 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Verify Code'),
+                : Text('Verify Code'),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         Center(
           child: TextButton(
             onPressed: _resendCode,
-            child: const Text('Resend Code'),
+            child: Text('Resend Code'),
           ),
         ),
       ],
@@ -291,35 +306,37 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Icon(Icons.verified_user, size: 48, color: AppColors.success),
-        const SizedBox(height: 16),
-        const Text(
+        SizedBox(height: context.spacing.md),
+        Text(
           'Identity Verified',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Text(
           'Confirm the actions to complete recovery.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         CheckboxListTile(
           value: _revokeDevices,
           onChanged: (value) => setState(() => _revokeDevices = value!),
-          title: const Text('Revoke all other devices'),
-          subtitle: const Text('They won\'t receive new messages'),
+          title: Text('Revoke all other devices'),
+          subtitle: Text('They won\'t receive new messages'),
         ),
         CheckboxListTile(
           value: _remoteWipe,
           onChanged: _revokeDevices
               ? (value) => setState(() => _remoteWipe = value!)
               : null,
-          title: const Text('Remote wipe old devices'),
-          subtitle: const Text('Delete app data on revoked devices'),
+          title: Text('Remote wipe old devices'),
+          subtitle: Text('Delete app data on revoked devices'),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -334,7 +351,7 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Complete Recovery'),
+                : Text('Complete Recovery'),
           ),
         ),
       ],
@@ -345,31 +362,33 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const SizedBox(height: 48),
+        SizedBox(height: context.spacing.xxl),
         const Icon(Icons.check_circle, size: 80, color: AppColors.success),
-        const SizedBox(height: 24),
-        const Text(
+        SizedBox(height: context.spacing.xl),
+        Text(
           'Recovery Complete',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         Text(
           'This device is now your primary device.\n'
           'You can link other devices from Settings.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 48),
+        SizedBox(height: context.spacing.xxl),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
-            child: const Text('Done'),
+            child: Text('Done'),
           ),
         ),
       ],
@@ -381,37 +400,46 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
     required String title,
     required List<String> items,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(icon, color: AppColors.primary),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           ...items.map(
             (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: context.spacing.xs),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('• ', style: TextStyle(color: AppColors.textSecondary)),
+                  Text('• ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary)),
                   Expanded(
                     child: Text(
                       item,
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                   ),
                 ],
@@ -486,9 +514,7 @@ class _SecureBypassPageState extends State<SecureBypassPage> {
   Future<void> _resendCode() async {
     await _bypassService.requestEmailVerification(_emailController.text);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code sent')),
-      );
+      context.showInfo('Verification code sent');
     }
   }
 

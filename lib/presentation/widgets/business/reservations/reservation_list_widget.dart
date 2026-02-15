@@ -6,12 +6,14 @@
 // Widget for displaying filtered list of reservations with quick actions
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/reservations/reservation_card_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation List Widget
 ///
@@ -148,23 +150,13 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
       if (!mounted) return;
 
       if (updated != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Reservation ${action}ed successfully'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        context.showSuccess('Reservation ${action}ed successfully');
         widget.onReservationUpdated?.call(updated);
       }
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: AppTheme.errorColor,
-        ),
-      );
+      context.showError('Error: $e');
     }
   }
 
@@ -219,9 +211,9 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
       children: [
         // Filters
         Card(
-          margin: const EdgeInsets.all(16),
+          margin: const EdgeInsets.all(kSpaceMd),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(kSpaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -320,12 +312,12 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                   ),
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
                   itemCount: _filteredReservations.length,
                   itemBuilder: (context, index) {
                     final reservation = _filteredReservations[index];
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: kSpaceXs),
                       child: Card(
                         child: Column(
                           children: [
@@ -338,7 +330,7 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                             // Quick Actions
                             if (reservation.status == ReservationStatus.pending)
                               Padding(
-                                padding: const EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(kSpaceXs),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -346,7 +338,7 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                                       onPressed: () => _handleQuickAction(
                                           reservation, 'confirm'),
                                       icon: const Icon(Icons.check, size: 18),
-                                      label: const Text('Confirm'),
+                                      label: Text('Confirm'),
                                       style: TextButton.styleFrom(
                                         foregroundColor: AppColors.success,
                                       ),
@@ -355,7 +347,7 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                                       onPressed: () => _handleQuickAction(
                                           reservation, 'cancel'),
                                       icon: const Icon(Icons.cancel, size: 18),
-                                      label: const Text('Cancel'),
+                                      label: Text('Cancel'),
                                       style: TextButton.styleFrom(
                                         foregroundColor: AppTheme.errorColor,
                                       ),
@@ -368,7 +360,7 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                                 reservation.reservationTime
                                     .isBefore(DateTime.now()))
                               Padding(
-                                padding: const EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(kSpaceXs),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -377,7 +369,7 @@ class _ReservationListWidgetState extends State<ReservationListWidget> {
                                           reservation, 'no_show'),
                                       icon: const Icon(Icons.person_off,
                                           size: 18),
-                                      label: const Text('Mark No-Show'),
+                                      label: Text('Mark No-Show'),
                                       style: TextButton.styleFrom(
                                         foregroundColor: AppColors.warning,
                                       ),

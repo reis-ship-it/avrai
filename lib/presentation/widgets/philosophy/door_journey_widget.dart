@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/models/user/usage_pattern.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// OUR_GUTS.md: "See your door journey"
 /// Shows which doors user has opened (spots → communities → events)
 class DoorJourneyWidget extends StatelessWidget {
   final UsagePattern usagePattern;
-  
+
   const DoorJourneyWidget({
     super.key,
     required this.usagePattern,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -23,14 +25,13 @@ class DoorJourneyWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.vpn_key, color: AppColors.primary, size: 24),
               SizedBox(width: 12),
               Text(
                 'Your Door Journey',
-                style: TextStyle(
-                  fontSize: 20,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -38,27 +39,27 @@ class DoorJourneyWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Doors you\'ve opened with your key:',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 20),
-          _buildDoorStats(),
+          _buildDoorStats(context),
           const SizedBox(height: 20),
-          _buildUsageMode(),
+          _buildUsageMode(context),
         ],
       ),
     );
   }
-  
-  Widget _buildDoorStats() {
+
+  Widget _buildDoorStats(BuildContext context) {
     return Column(
       children: [
         if (usagePattern.totalSpotVisits > 0)
           _buildDoorStat(
+            context: context,
             icon: Icons.place,
             label: 'Spots',
             count: usagePattern.totalSpotVisits,
@@ -66,6 +67,7 @@ class DoorJourneyWidget extends StatelessWidget {
           ),
         if (usagePattern.totalEventsAttended > 0)
           _buildDoorStat(
+            context: context,
             icon: Icons.event,
             label: 'Events',
             count: usagePattern.totalEventsAttended,
@@ -73,6 +75,7 @@ class DoorJourneyWidget extends StatelessWidget {
           ),
         if (usagePattern.totalCommunitiesJoined > 0)
           _buildDoorStat(
+            context: context,
             icon: Icons.group,
             label: 'Communities',
             count: usagePattern.totalCommunitiesJoined,
@@ -81,15 +84,17 @@ class DoorJourneyWidget extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildDoorStat({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required int count,
     required Color color,
   }) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Row(
         children: [
           Container(
@@ -108,16 +113,14 @@ class DoorJourneyWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   '$count opened',
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -128,13 +131,14 @@ class DoorJourneyWidget extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildUsageMode() {
+
+  Widget _buildUsageMode(BuildContext context) {
     final mode = usagePattern.primaryMode;
     final modeInfo = _getModeInfo(mode);
-    
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: modeInfo.color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -148,18 +152,16 @@ class DoorJourneyWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Your key adapts to you',
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   modeInfo.description,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
@@ -171,7 +173,7 @@ class DoorJourneyWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   _ModeInfo _getModeInfo(UsageMode mode) {
     switch (mode) {
       case UsageMode.recommendations:
@@ -206,7 +208,7 @@ class _ModeInfo {
   final IconData icon;
   final Color color;
   final String description;
-  
+
   _ModeInfo({
     required this.icon,
     required this.color,
@@ -218,20 +220,21 @@ class _ModeInfo {
 class DoorJourneyCompact extends StatelessWidget {
   final UsagePattern usagePattern;
   final VoidCallback? onTap;
-  
+
   const DoorJourneyCompact({
     super.key,
     required this.usagePattern,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
@@ -244,18 +247,16 @@ class DoorJourneyCompact extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Your Key Journey',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   Text(
                     '${usagePattern.openedDoorTypes.length} door types opened',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -269,4 +270,3 @@ class DoorJourneyCompact extends StatelessWidget {
     );
   }
 }
-

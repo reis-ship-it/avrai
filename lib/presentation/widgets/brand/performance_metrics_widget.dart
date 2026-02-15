@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Performance Metrics Widget
-/// 
+///
 /// Displays performance metrics for brand sponsorships.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class PerformanceMetricsWidget extends StatelessWidget {
   final BrandAnalytics analytics;
@@ -17,16 +18,16 @@ class PerformanceMetricsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Performance Metrics',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
@@ -36,6 +37,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildMetricItem(
+                    context,
                     'Total Events',
                     analytics.performanceMetrics.totalEvents.toString(),
                     Icons.event,
@@ -44,6 +46,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildMetricItem(
+                    context,
                     'Active Sponsorships',
                     analytics.performanceMetrics.activeSponsorships.toString(),
                     Icons.campaign,
@@ -56,6 +59,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildMetricItem(
+                    context,
                     'Average ROI',
                     '${analytics.performanceMetrics.averageROI.toStringAsFixed(0)}%',
                     Icons.trending_up,
@@ -64,6 +68,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildMetricItem(
+                    context,
                     'Brand Value',
                     '\$${analytics.performanceMetrics.totalBrandValue.toStringAsFixed(0)}',
                     Icons.star,
@@ -77,9 +82,15 @@ class PerformanceMetricsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMetricItem(String label, String value, IconData icon) {
+  Widget _buildMetricItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -94,8 +105,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -105,8 +115,7 @@ class PerformanceMetricsWidget extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
+            style: textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -118,4 +127,3 @@ class PerformanceMetricsWidget extends StatelessWidget {
 }
 
 // BrandAnalytics, PerformanceMetrics are imported from brand_analytics_page.dart
-

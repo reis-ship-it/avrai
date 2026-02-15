@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:avrai/core/design/component_tokens.dart';
+import 'package:avrai/core/navigation/app_page_transitions.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
@@ -14,6 +16,13 @@ class AppTheme {
   static const Color successColor = AppColors.success;
   static const Color warningColor = AppColors.warning;
   static const Color offlineColor = AppColors.grey500;
+  static const ButtonTokens buttonTokens = ButtonTokens();
+  static const InputTokens inputTokens = InputTokens();
+  static const CardTokens cardTokens = CardTokens();
+  static const ChipTokens chipTokens = ChipTokens();
+  static const OverlayTokens overlayTokens = OverlayTokens();
+  static const IconTokens iconTokens = IconTokens();
+  static const FeedbackTokens feedbackTokens = FeedbackTokens();
 
   // Light Theme
   static ThemeData get lightTheme {
@@ -41,9 +50,17 @@ class AppTheme {
       colorScheme: colorScheme,
       extensions: const <ThemeExtension<dynamic>>[
         AppSpacing(),
+        AppTypography(),
         AppRadius(),
         AppMotion(),
         PortalTokens(),
+        ButtonTokens(),
+        InputTokens(),
+        CardTokens(),
+        ChipTokens(),
+        OverlayTokens(),
+        IconTokens(),
+        FeedbackTokens(),
       ],
       scaffoldBackgroundColor: AppColors.white,
       textTheme: textTheme.apply(
@@ -51,6 +68,7 @@ class AppTheme {
         displayColor: AppColors.textPrimary,
       ),
       iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      pageTransitionsTheme: AppPageTransitions.pageTransitionsTheme,
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.transparent,
         foregroundColor: AppColors.textPrimary,
@@ -68,17 +86,20 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.grey200,
           foregroundColor: AppColors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
@@ -86,17 +107,19 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           side: const BorderSide(color: AppColors.grey300),
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
-      chipTheme: const ChipThemeData(
+      chipTheme: ChipThemeData(
         backgroundColor: AppColors.grey200,
         selectedColor: AppColors.electricGreen,
         disabledColor: AppColors.grey200,
         secondarySelectedColor: AppColors.electricGreen,
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: chipTokens.padding,
         labelStyle: TextStyle(color: AppColors.textPrimary),
         secondaryLabelStyle: TextStyle(color: AppColors.black),
         brightness: Brightness.light,
@@ -111,43 +134,49 @@ class AppTheme {
         filled: true,
         fillColor: const Color(0x14000000),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
           borderSide: const BorderSide(color: Color(0x26000000)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
           borderSide: const BorderSide(color: Color(0x26000000)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
+          borderSide: BorderSide(
+            color: primaryColor,
+            width: inputTokens.focusedBorderWidth,
+          ),
         ),
+        contentPadding: inputTokens.contentPadding,
         hintStyle: const TextStyle(color: AppColors.textHint),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         color: Color(0x1A000000),
         elevation: 0,
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius:
+              BorderRadius.all(Radius.circular(cardTokens.cornerRadius)),
           side: BorderSide(color: Color(0x26000000)),
         ),
       ),
-      dialogTheme: const DialogThemeData(
+      dialogTheme: DialogThemeData(
         backgroundColor: Color(0xCC0B0B0B),
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius:
+              BorderRadius.all(Radius.circular(overlayTokens.dialogRadius)),
           side: BorderSide(color: Color(0x33FFFFFF)),
         ),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Color(0xCC0B0B0B),
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(overlayTokens.bottomSheetTopRadius),
+            topRight: Radius.circular(overlayTokens.bottomSheetTopRadius),
           ),
         ),
       ),
@@ -179,9 +208,17 @@ class AppTheme {
       colorScheme: colorScheme,
       extensions: const <ThemeExtension<dynamic>>[
         AppSpacing(),
+        AppTypography(),
         AppRadius(),
         AppMotion(),
         PortalTokens(),
+        ButtonTokens(),
+        InputTokens(),
+        CardTokens(),
+        ChipTokens(),
+        OverlayTokens(),
+        IconTokens(),
+        FeedbackTokens(),
       ],
       scaffoldBackgroundColor: AppColors.grey900,
       textTheme: textTheme.apply(
@@ -189,6 +226,7 @@ class AppTheme {
         displayColor: AppColors.white,
       ),
       iconTheme: const IconThemeData(color: AppColors.white),
+      pageTransitionsTheme: AppPageTransitions.pageTransitionsTheme,
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.transparent,
         foregroundColor: AppColors.white,
@@ -206,17 +244,20 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.grey200,
           foregroundColor: AppColors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.white,
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
@@ -224,17 +265,19 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.white,
           side: const BorderSide(color: AppColors.grey700),
+          minimumSize: Size.fromHeight(buttonTokens.minHeight),
+          padding: buttonTokens.padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(buttonTokens.cornerRadius),
           ),
         ),
       ),
-      chipTheme: const ChipThemeData(
+      chipTheme: ChipThemeData(
         backgroundColor: AppColors.grey800,
         selectedColor: AppColors.electricGreen,
         disabledColor: AppColors.grey800,
         secondarySelectedColor: AppColors.electricGreen,
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: chipTokens.padding,
         labelStyle: TextStyle(color: AppColors.white),
         secondaryLabelStyle: TextStyle(color: AppColors.black),
         brightness: Brightness.dark,
@@ -249,43 +292,49 @@ class AppTheme {
         filled: true,
         fillColor: const Color(0x1AFFFFFF),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
           borderSide: const BorderSide(color: Color(0x33FFFFFF)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
           borderSide: const BorderSide(color: Color(0x33FFFFFF)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(inputTokens.cornerRadius),
+          borderSide: BorderSide(
+            color: primaryColor,
+            width: inputTokens.focusedBorderWidth,
+          ),
         ),
+        contentPadding: inputTokens.contentPadding,
         hintStyle: const TextStyle(color: AppColors.textHint),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         color: Color(0x14FFFFFF),
         elevation: 0,
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius:
+              BorderRadius.all(Radius.circular(cardTokens.cornerRadius)),
           side: BorderSide(color: Color(0x33FFFFFF)),
         ),
       ),
-      dialogTheme: const DialogThemeData(
+      dialogTheme: DialogThemeData(
         backgroundColor: Color(0xCC0B0B0B),
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius:
+              BorderRadius.all(Radius.circular(overlayTokens.dialogRadius)),
           side: BorderSide(color: Color(0x33FFFFFF)),
         ),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Color(0xCC0B0B0B),
         surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(overlayTokens.bottomSheetTopRadius),
+            topRight: Radius.circular(overlayTokens.bottomSheetTopRadius),
           ),
         ),
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/community/club.dart';
 import 'package:avrai/core/models/community/club_hierarchy.dart';
@@ -6,6 +8,7 @@ import 'package:avrai/core/services/community/club_service.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/events/create_community_event_page.dart';
 import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
@@ -14,6 +17,8 @@ import 'package:avrai/presentation/widgets/golden_expert_indicator.dart';
 import 'package:avrai/presentation/widgets/boundaries/border_visualization_widget.dart';
 import 'package:avrai/presentation/widgets/boundaries/border_management_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Club Page
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 29)
@@ -111,12 +116,7 @@ class _ClubPageState extends State<ClubPage> {
 
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please sign in to join clubs'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please sign in to join clubs');
       return;
     }
 
@@ -133,12 +133,7 @@ class _ClubPageState extends State<ClubPage> {
       await _loadClub();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully joined club!'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Successfully joined club!');
       }
     } catch (e) {
       setState(() {
@@ -147,12 +142,7 @@ class _ClubPageState extends State<ClubPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -176,12 +166,7 @@ class _ClubPageState extends State<ClubPage> {
       await _loadClub();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Left club'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Left club');
       }
     } catch (e) {
       setState(() {
@@ -193,38 +178,24 @@ class _ClubPageState extends State<ClubPage> {
 
   void _viewMembers() {
     // TODO: Navigate to members page when created
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Members page coming soon'),
-      ),
-    );
+    context.showInfo('Members page coming soon');
   }
 
   void _viewEvents() {
     // TODO: Navigate to club events page when created
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Club events page coming soon'),
-      ),
-    );
+    context.showInfo('Club events page coming soon');
   }
 
   void _createEvent() {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateCommunityEventPage(),
-      ),
+      builder: (context) => const CreateCommunityEventPage(),
     );
   }
 
   void _manageMembers() {
     // TODO: Navigate to member management page when created
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Member management page coming soon'),
-      ),
-    );
+    context.showInfo('Member management page coming soon');
   }
 
   bool _hasPermission(String permission) {
@@ -258,7 +229,7 @@ class _ClubPageState extends State<ClubPage> {
           ),
       ],
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -269,10 +240,10 @@ class _ClubPageState extends State<ClubPage> {
                   SizedBox(height: 16),
                   Text(
                     'Loading club...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -280,7 +251,7 @@ class _ClubPageState extends State<ClubPage> {
           : _error != null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: EdgeInsets.all(context.spacing.xl),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -292,26 +263,27 @@ class _ClubPageState extends State<ClubPage> {
                             color: AppColors.error,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: context.spacing.md),
+                        Text(
                           'Unable to load club',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: context.spacing.xs),
                         Text(
                           _error!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                         ElevatedButton.icon(
                           onPressed: _loadClub,
                           icon: const Icon(Icons.refresh),
@@ -319,9 +291,9 @@ class _ClubPageState extends State<ClubPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryColor,
                             foregroundColor: AppColors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: context.spacing.xl,
+                              vertical: context.spacing.sm,
                             ),
                           ),
                         ),
@@ -342,7 +314,7 @@ class _ClubPageState extends State<ClubPage> {
                           ),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: isWideScreen ? 24.0 : 0.0,
+                              horizontal: isWideScreen ? kSpaceLg : kSpaceNone,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,7 +352,7 @@ class _ClubPageState extends State<ClubPage> {
 
   Widget _buildHeaderSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.spacing.lg),
       color: AppColors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,57 +362,49 @@ class _ClubPageState extends State<ClubPage> {
               Expanded(
                 child: Text(
                   _club?.name ?? 'Club',
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary),
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.primaryColor),
-                ),
-                child: const Text(
+              Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                side: BorderSide(color: AppTheme.primaryColor),
+                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                labelPadding: EdgeInsets.zero,
+                label: Text(
                   'CLUB',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
             ],
           ),
           if (_club?.description != null && _club!.description!.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             Text(
               _club!.description!,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ],
           if (_userRole != null) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
+            SizedBox(height: context.spacing.md),
+            Chip(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              side: BorderSide.none,
+              backgroundColor: AppColors.grey200,
+              labelPadding: EdgeInsets.zero,
+              label: Text(
                 'Your Role: ${_userRole!.getDisplayName()}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600, color: AppColors.textPrimary),
               ),
             ),
           ],
@@ -451,7 +415,7 @@ class _ClubPageState extends State<ClubPage> {
 
   Widget _buildActionsSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Row(
         children: [
           Expanded(
@@ -480,12 +444,12 @@ class _ClubPageState extends State<ClubPage> {
                       _isMember ? AppColors.grey200 : AppTheme.primaryColor,
                   foregroundColor:
                       _isMember ? AppColors.textPrimary : AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Semantics(
               label: 'View club members',
@@ -496,7 +460,7 @@ class _ClubPageState extends State<ClubPage> {
                 label: Text('Members (${_club?.memberCount ?? 0})'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.textPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
                 ),
               ),
             ),
@@ -508,19 +472,16 @@ class _ClubPageState extends State<ClubPage> {
 
   Widget _buildOrganizationalStructureSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Organizational Structure',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           if (_club != null) ...[
             if (_club!.leaders.isNotEmpty)
               _buildRoleSection(
@@ -530,7 +491,8 @@ class _ClubPageState extends State<ClubPage> {
                 color: AppTheme.primaryColor,
               ),
             if (_club!.adminTeam.isNotEmpty) ...[
-              if (_club!.leaders.isNotEmpty) const SizedBox(height: 12),
+              if (_club!.leaders.isNotEmpty)
+                SizedBox(height: context.spacing.sm),
               _buildRoleSection(
                 title: 'Admins',
                 memberIds: _club!.adminTeam,
@@ -539,7 +501,7 @@ class _ClubPageState extends State<ClubPage> {
               ),
             ],
             if (_club!.memberCount > 0) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: context.spacing.sm),
               _buildRoleSection(
                 title: 'Members',
                 memberIds: _club!.memberIds.take(10).toList(), // Show first 10
@@ -563,60 +525,54 @@ class _ClubPageState extends State<ClubPage> {
     bool showCount = false,
     int? totalCount,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600, color: AppColors.textPrimary),
               ),
               if (showCount && totalCount != null) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: context.spacing.xs),
                 Text(
                   '($totalCount)',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ],
           ),
           if (memberIds.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: memberIds.take(10).map((memberId) {
                 // TODO: Load member names from user service
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey200,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
+                return Chip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide.none,
+                  backgroundColor: AppColors.grey200,
+                  labelPadding: EdgeInsets.zero,
+                  label: Text(
                     'User ${memberId.substring(0, 8)}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textPrimary),
                   ),
                 );
               }).toList(),
@@ -624,10 +580,10 @@ class _ClubPageState extends State<ClubPage> {
           ] else
             Text(
               'No $title',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
         ],
       ),
@@ -636,26 +592,23 @@ class _ClubPageState extends State<ClubPage> {
 
   Widget _buildInformationSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Information',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildInfoCard(
             icon: Icons.event,
             title: 'Events',
             value: '${_club?.eventCount ?? 0} events',
             onTap: _viewEvents,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildInfoCard(
             icon: Icons.people,
             title: 'Members',
@@ -663,7 +616,7 @@ class _ClubPageState extends State<ClubPage> {
             onTap: _viewMembers,
           ),
           if (_isMember && _hasPermission('canCreateEvents')) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildInfoCard(
               icon: Icons.add_circle,
               title: 'Create Event',
@@ -687,13 +640,11 @@ class _ClubPageState extends State<ClubPage> {
       button: onTap != null,
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.grey300),
-          ),
+        child: PortalSurface(
+          padding: EdgeInsets.all(context.spacing.md),
+          color: AppColors.surface,
+          borderColor: AppColors.grey300,
+          radius: context.radius.md,
           child: Row(
             children: [
               Icon(
@@ -701,26 +652,24 @@ class _ClubPageState extends State<ClubPage> {
                 color: AppTheme.primaryColor,
                 size: 24,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: context.spacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       value,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -739,19 +688,16 @@ class _ClubPageState extends State<ClubPage> {
 
   Widget _buildMetricsSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Metrics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Row(
             children: [
               Expanded(
@@ -762,7 +708,7 @@ class _ClubPageState extends State<ClubPage> {
                   icon: Icons.trending_up,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: _buildMetricCard(
                   title: 'Stability',
@@ -773,7 +719,7 @@ class _ClubPageState extends State<ClubPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildMetricCard(
             title: 'Engagement',
             value:
@@ -792,14 +738,11 @@ class _ClubPageState extends State<ClubPage> {
     required IconData icon,
     bool fullWidth = false,
   }) {
-    return Container(
-      width: fullWidth ? double.infinity : null,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    final card = PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -810,47 +753,46 @@ class _ClubPageState extends State<ClubPage> {
                 size: 20,
                 color: AppTheme.primaryColor,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
         ],
       ),
     );
+
+    if (fullWidth) {
+      return SizedBox(width: double.infinity, child: card);
+    }
+    return card;
   }
 
   Widget _buildExpertiseCoverageSection() {
     if (_club == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Expertise Coverage',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ExpertiseCoverageWidget(
             originalLocality: _club!.originalLocality,
             currentLocalities: _club!.currentLocalities,
@@ -858,7 +800,7 @@ class _ClubPageState extends State<ClubPage> {
             // TODO: Add localityCoverage when GeographicExpansionService is available
             localityCoverage: const {},
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           // Expansion Timeline
           ExpansionTimelineWidget(
             originalLocality: _club!.originalLocality,
@@ -869,12 +811,12 @@ class _ClubPageState extends State<ClubPage> {
             commutePatterns: const {},
             coverageOverTime: const {},
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           // Border Visualization (Week 32 - Neighborhood Boundaries)
           if (_club!.originalLocality.isNotEmpty ||
               _club!.currentLocalities.isNotEmpty)
             _buildBorderVisualizationSection(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           // Leader Expertise Display
           if (_club!.leaders.isNotEmpty) _buildLeaderExpertiseSection(),
         ],
@@ -893,44 +835,43 @@ class _ClubPageState extends State<ClubPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Neighborhood Boundaries',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: context.spacing.xs),
+        Text(
           'View boundaries between localities to understand community connections',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         // Border Visualization Widget
-        Container(
+        SizedBox(
           height: 300,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: BorderVisualizationWidget(
-              city: city,
-              locality: _club!.originalLocality.isNotEmpty
-                  ? _club!.originalLocality
-                  : null,
-              showSoftBorderSpots: true,
-              showRefinementIndicators: true,
-              onBorderTapped: (locality1, locality2) {
-                // Show border management dialog
-                _showBorderManagementDialog(
-                    context, locality1, locality2, city);
-              },
+          child: PortalSurface(
+            padding: EdgeInsets.zero,
+            color: AppColors.surface,
+            borderColor: AppColors.grey300,
+            radius: context.radius.sm,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(context.radius.sm),
+              child: BorderVisualizationWidget(
+                city: city,
+                locality: _club!.originalLocality.isNotEmpty
+                    ? _club!.originalLocality
+                    : null,
+                showSoftBorderSpots: true,
+                showRefinementIndicators: true,
+                onBorderTapped: (locality1, locality2) {
+                  // Show border management dialog
+                  _showBorderManagementDialog(
+                      context, locality1, locality2, city);
+                },
+              ),
             ),
           ),
         ),
@@ -977,24 +918,18 @@ class _ClubPageState extends State<ClubPage> {
             children: [
               // Header
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: AppColors.grey100,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
+                padding: EdgeInsets.all(context.spacing.md),
+                color: AppColors.grey100,
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
                         'Border: $locality1 / $locality2',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                       ),
                     ),
                     IconButton(
@@ -1027,18 +962,15 @@ class _ClubPageState extends State<ClubPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Leader Expertise',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         ..._club!.leaders.map((leaderId) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: context.spacing.sm),
             child: _buildLeaderExpertiseCard(leaderId: leaderId),
           );
         }),
@@ -1053,31 +985,26 @@ class _ClubPageState extends State<ClubPage> {
     const isGoldenExpert = false; // TODO: Check golden expert status
     final locality = _club?.originalLocality; // TODO: Get leader's locality
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
+              CircleAvatar(
+                radius: context.radius.lg,
+                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
                 child: const Icon(
                   Icons.star,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1086,15 +1013,16 @@ class _ClubPageState extends State<ClubPage> {
                       children: [
                         Text(
                           'Leader ${leaderId.substring(0, 8)}...',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary),
                         ),
                         // ignore: dead_code - Reserved for future golden expert feature
                         if (isGoldenExpert && locality != null) ...[
-                          const SizedBox(width: 8),
+                          SizedBox(width: context.spacing.xs),
                           GoldenExpertIndicator(
                             userId: leaderId,
                             locality: locality,
@@ -1104,27 +1032,26 @@ class _ClubPageState extends State<ClubPage> {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
+                    SizedBox(height: context.spacing.xxs),
+                    Text(
                       'Expertise gained through club expansion',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           // TODO: Show actual expertise levels when available
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.grey100,
-              borderRadius: BorderRadius.circular(8),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            color: AppColors.grey100,
+            borderColor: AppColors.grey300,
+            radius: context.radius.sm,
             child: Row(
               children: [
                 const Icon(
@@ -1132,14 +1059,14 @@ class _ClubPageState extends State<ClubPage> {
                   size: 16,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: context.spacing.xs),
                 Expanded(
                   child: Text(
                     'Expertise in ${_club!.currentLocalities.length} locality(ies)',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
               ],

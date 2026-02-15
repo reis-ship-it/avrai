@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,8 @@ class _GeoSyncoSummaryCardState extends State<GeoSyncoSummaryCard> {
   @override
   void didUpdateWidget(covariant GeoSyncoSummaryCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.cityCode != widget.cityCode || oldWidget.geoId != widget.geoId) {
+    if (oldWidget.cityCode != widget.cityCode ||
+        oldWidget.geoId != widget.geoId) {
       // ignore: unawaited_futures
       _load();
     }
@@ -85,7 +87,7 @@ class _GeoSyncoSummaryCardState extends State<GeoSyncoSummaryCard> {
     final oneLiner = (_summary?['one_liner'] ?? '').toString().trim();
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(14),
@@ -106,7 +108,7 @@ class _GeoSyncoSummaryCardState extends State<GeoSyncoSummaryCard> {
           Container(
             width: 10,
             height: 10,
-            margin: const EdgeInsets.only(top: 4),
+            margin: const EdgeInsets.only(top: kSpaceXxs),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor,
               borderRadius: BorderRadius.circular(999),
@@ -152,4 +154,3 @@ class _GeoSyncoSummaryCardState extends State<GeoSyncoSummaryCard> {
     );
   }
 }
-

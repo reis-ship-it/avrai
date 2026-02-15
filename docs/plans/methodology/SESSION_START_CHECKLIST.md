@@ -1,6 +1,6 @@
 # Session Start Checklist (v2)
 
-**Updated:** February 10, 2026  
+**Updated:** February 15, 2026  
 **Purpose:** Quick reference card for the tiered context protocol  
 **Full Protocol:** `docs/plans/methodology/START_HERE_NEW_TASK.md`
 
@@ -43,6 +43,7 @@
 - [ ] Read Foundational Decisions (`docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` → quick reference table)
 - [ ] Read Phase Rationale (`docs/plans/rationale/PHASE_X_RATIONALE.md`) -- full document
 - [ ] Read Cross-Phase Connections (`docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`) -- this phase's section
+- [ ] Read coherence matrix and map required scenarios (`docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md`)
 - [ ] Read Master Plan section (`docs/MASTER_PLAN.md` → Phase X)
 - [ ] Check status (`docs/agents/status/status_tracker.md`)
 - [ ] Search for existing implementations
@@ -58,6 +59,7 @@
 - [ ] Read DOORS.md -- answer all four questions
 - [ ] Read Phase Rationale for EVERY affected phase
 - [ ] Read Cross-Phase Connections -- especially "Critical Cross-Cutting Contracts"
+- [ ] Map affected scope to required `RCM-*` scenarios/evidence in `docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md`
 - [ ] Read Master Plan sections for all affected phases
 - [ ] Check Master Plan Tracker for related plans
 - [ ] Search ALL affected existing implementations
@@ -86,6 +88,7 @@ When user asks "where are we with X":
 | Why it's designed this way | `docs/plans/rationale/PHASE_X_RATIONALE.md` |
 | Decisions that apply everywhere | `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` |
 | What flows between phases | `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` |
+| What coherence/inter-app scenarios are mandatory | `docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md` |
 | Current status | `docs/agents/status/status_tracker.md` |
 | Where plans live | `docs/MASTER_PLAN_TRACKER.md` |
 | Core philosophy | `docs/plans/philosophy_implementation/DOORS.md` |

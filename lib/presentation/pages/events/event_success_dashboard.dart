@@ -9,7 +9,9 @@ import 'package:avrai/core/services/events/post_event_feedback_service.dart';
 import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Event Success Dashboard
 ///
@@ -106,16 +108,19 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               _error!,
-              style: const TextStyle(color: AppColors.error),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.error),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             ElevatedButton(
               onPressed: _loadMetrics,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -130,38 +135,38 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(context.spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Success Level Badge
             _buildSuccessLevelBadge(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Key Metrics
             _buildKeyMetrics(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // NPS Score
             _buildNPSScore(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Success Factors
             if (_metrics!.successFactors.isNotEmpty) ...[
               _buildSuccessFactors(),
-              const SizedBox(height: 24),
+              SizedBox(height: context.spacing.xl),
             ],
 
             // Improvement Areas
             if (_metrics!.improvementAreas.isNotEmpty) ...[
               _buildImprovementAreas(),
-              const SizedBox(height: 24),
+              SizedBox(height: context.spacing.xl),
             ],
 
             // Partner Satisfaction
             if (_metrics!.partnerSatisfaction.isNotEmpty) ...[
               _buildPartnerSatisfaction(),
-              const SizedBox(height: 24),
+              SizedBox(height: context.spacing.xl),
             ],
 
             // Recommendations
@@ -201,36 +206,32 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3), width: 2),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.xl),
+      color: badgeColor.withValues(alpha: 0.1),
+      borderColor: badgeColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(badgeIcon, size: 48, color: badgeColor),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   badgeText,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: badgeColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: badgeColor,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Text(
                   widget.event.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -244,15 +245,14 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Key Metrics',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         Row(
           children: [
             Expanded(
@@ -264,7 +264,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                 AppTheme.primaryColor,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: _buildMetricCard(
                 'Revenue',
@@ -276,7 +276,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Row(
           children: [
             Expanded(
@@ -288,7 +288,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                 AppTheme.warningColor,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: _buildMetricCard(
                 'Feedback',
@@ -311,46 +311,41 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
     IconData icon,
     Color color,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(icon, size: 20, color: color),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           Text(
             subtitle,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -376,128 +371,130 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
       npsLabel = 'Poor';
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(Icons.trending_up, color: npsColor),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: context.spacing.xs),
+              Text(
                 'Net Promoter Score (NPS)',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Row(
             children: [
               Text(
                 nps.toStringAsFixed(0),
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: npsColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: npsColor,
+                    ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: context.spacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       npsLabel,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: npsColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: npsColor,
+                          ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       '${_metrics!.attendeesWhoWouldRecommend} would recommend',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           // NPS Scale
           Row(
             children: [
-              Expanded(
-                child: Container(
+              const Expanded(
+                child: SizedBox(
                   height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.error,
-                    borderRadius: BorderRadius.circular(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    child: ColoredBox(color: AppColors.error),
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Container(
+              SizedBox(width: context.spacing.xxs),
+              const Expanded(
+                child: SizedBox(
                   height: 8,
-                  decoration: BoxDecoration(
-                    color: AppTheme.warningColor,
-                    borderRadius: BorderRadius.circular(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    child: ColoredBox(color: AppTheme.warningColor),
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Container(
+              SizedBox(width: context.spacing.xxs),
+              const Expanded(
+                child: SizedBox(
                   height: 8,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor,
-                    borderRadius: BorderRadius.circular(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    child: ColoredBox(color: AppTheme.primaryColor),
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Container(
+              SizedBox(width: context.spacing.xxs),
+              const Expanded(
+                child: SizedBox(
                   height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen,
-                    borderRadius: BorderRadius.circular(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    child: ColoredBox(color: AppColors.electricGreen),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const Row(
+          SizedBox(height: context.spacing.xs),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('-100',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.textSecondary)),
               Text('0',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.textSecondary)),
               Text('50',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.textSecondary)),
               Text('100',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.textSecondary)),
             ],
           ),
         ],
@@ -506,47 +503,42 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
   }
 
   Widget _buildSuccessFactors() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.electricGreen.withValues(alpha: 0.1),
+      borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.check_circle, color: AppColors.electricGreen),
               SizedBox(width: 8),
               Text(
                 'Success Factors',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           ..._metrics!.successFactors.map((factor) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: context.spacing.xs),
               child: Row(
                 children: [
                   const Icon(Icons.check,
                       size: 16, color: AppColors.electricGreen),
-                  const SizedBox(width: 8),
+                  SizedBox(width: context.spacing.xs),
                   Expanded(
                     child: Text(
                       factor,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -559,46 +551,42 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
   }
 
   Widget _buildImprovementAreas() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.warningColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppTheme.warningColor.withValues(alpha: 0.1),
+      borderColor: AppTheme.warningColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.trending_up, color: AppTheme.warningColor),
               SizedBox(width: 8),
               Text(
                 'Improvement Areas',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           ..._metrics!.improvementAreas.map((area) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: context.spacing.xs),
               child: Row(
                 children: [
                   const Icon(Icons.arrow_forward,
                       size: 16, color: AppTheme.warningColor),
-                  const SizedBox(width: 8),
+                  SizedBox(width: context.spacing.xs),
                   Expanded(
                     child: Text(
                       area,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -611,43 +599,39 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
   }
 
   Widget _buildPartnerSatisfaction() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.handshake, color: AppTheme.primaryColor),
               SizedBox(width: 8),
               Text(
                 'Partner Satisfaction',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           ..._metrics!.partnerSatisfaction.entries.map((entry) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: context.spacing.sm),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
                       'Partner ${entry.key.substring(0, 8)}...',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                   Row(
@@ -663,14 +647,13 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
                               : AppColors.grey400,
                         );
                       }),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Text(
                         entry.value.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ],
                   ),
@@ -679,25 +662,23 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
             );
           }),
           if (_metrics!.partnersWouldCollaborateAgain) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.electricGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
+            SizedBox(height: context.spacing.sm),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.sm),
+              color: AppColors.electricGreen.withValues(alpha: 0.1),
+              borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+              radius: context.radius.sm,
+              child: Row(
                 children: [
                   Icon(Icons.check_circle,
                       color: AppColors.electricGreen, size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Partners would collaborate again',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.electricGreen,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.electricGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),
@@ -711,47 +692,43 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
   Widget _buildRecommendations() {
     final recommendations = _generateRecommendations();
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.lightbulb, color: AppTheme.primaryColor),
               SizedBox(width: 8),
               Text(
                 'Actionable Recommendations',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           ...recommendations.map((recommendation) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: context.spacing.sm),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Icon(Icons.arrow_forward,
                       size: 16, color: AppTheme.primaryColor),
-                  const SizedBox(width: 8),
+                  SizedBox(width: context.spacing.xs),
                   Expanded(
                     child: Text(
                       recommendation,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],

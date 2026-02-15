@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying network health score as an enhanced gauge with visual improvements
 /// Features: Better gradients, historical trend indicators (sparkline), animated transitions,
@@ -118,11 +119,12 @@ class _NetworkHealthGaugeState extends State<NetworkHealthGauge>
         final historicalData = _generateHistoricalData();
 
         return Semantics(
-          label: 'Network health gauge showing $percentage percent, status: $label',
+          label:
+              'Network health gauge showing $percentage percent, status: $label',
           child: Card(
             elevation: 2,
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(kSpaceLg),
               child: Column(
                 children: [
                   Text(
@@ -230,7 +232,7 @@ class _NetworkHealthGaugeState extends State<NetworkHealthGauge>
 
     return Container(
       height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
       child: CustomPaint(
         painter: _SparklinePainter(data, color),
         child: Container(),
@@ -292,7 +294,8 @@ class _SparklinePainter extends CustomPainter {
     for (int i = 0; i < data.length; i++) {
       final normalizedY = (data[i] - minValue) / normalizedRange;
       final x = i * stepX;
-      final y = size.height - (normalizedY * size.height * 0.8) - (size.height * 0.1);
+      final y =
+          size.height - (normalizedY * size.height * 0.8) - (size.height * 0.1);
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -321,4 +324,3 @@ class _SparklinePainter extends CustomPainter {
     return oldDelegate.data != data || oldDelegate.color != color;
   }
 }
-

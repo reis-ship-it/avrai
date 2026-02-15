@@ -1,8 +1,8 @@
 /// Streaming Response Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 /// Displays AI responses with typing animation as they stream in.
-/// 
+///
 /// Features:
 /// - Character-by-character typing animation
 /// - Streaming text from LLM responses
@@ -10,7 +10,7 @@
 /// - Speed control (fast/normal/slow)
 /// - Auto-scroll as text appears
 /// - Stop streaming button
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
@@ -18,6 +18,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget that displays streaming text with typing animation
 class StreamingResponseWidget extends StatefulWidget {
@@ -28,7 +29,7 @@ class StreamingResponseWidget extends StatefulWidget {
   final VoidCallback? onComplete;
   final VoidCallback? onStop;
   final bool autoScroll;
-  
+
   const StreamingResponseWidget({
     super.key,
     required this.textStream,
@@ -39,25 +40,27 @@ class StreamingResponseWidget extends StatefulWidget {
     this.onStop,
     this.autoScroll = true,
   });
-  
+
   @override
-  State<StreamingResponseWidget> createState() => _StreamingResponseWidgetState();
+  State<StreamingResponseWidget> createState() =>
+      _StreamingResponseWidgetState();
 }
 
-class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with SingleTickerProviderStateMixin {
+class _StreamingResponseWidgetState extends State<StreamingResponseWidget>
+    with SingleTickerProviderStateMixin {
   final StringBuffer _buffer = StringBuffer();
   String _displayedText = '';
   bool _isStreaming = true;
   bool _cursorVisible = true;
-  
+
   StreamSubscription<String>? _streamSubscription;
   Timer? _typingTimer;
   Timer? _cursorTimer;
   final ScrollController _scrollController = ScrollController();
-  
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -65,13 +68,13 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
     _startCursorBlink();
     _listenToStream();
   }
-  
+
   void _initAnimations() {
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -79,13 +82,13 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       parent: _fadeController,
       curve: Curves.easeIn,
     ));
-    
+
     _fadeController.forward();
   }
-  
+
   void _startCursorBlink() {
     if (!widget.showCursor) return;
-    
+
     _cursorTimer = Timer.periodic(const Duration(milliseconds: 530), (timer) {
       if (mounted) {
         setState(() {
@@ -94,7 +97,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       }
     });
   }
-  
+
   void _listenToStream() {
     _streamSubscription = widget.textStream.listen(
       (chunk) {
@@ -116,25 +119,25 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       },
     );
   }
-  
+
   void _processBuffer() {
     // Process buffer character by character with typing effect
     if (_typingTimer != null && _typingTimer!.isActive) {
       return; // Already processing
     }
-    
+
     _typingTimer = Timer.periodic(widget.typingSpeed, (timer) {
       if (!mounted || !_isStreaming) {
         timer.cancel();
         return;
       }
-      
+
       final bufferText = _buffer.toString();
       if (_displayedText.length < bufferText.length) {
         setState(() {
           _displayedText = bufferText.substring(0, _displayedText.length + 1);
         });
-        
+
         if (widget.autoScroll) {
           _scrollToBottom();
         }
@@ -143,7 +146,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       }
     });
   }
-  
+
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -155,30 +158,30 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       }
     });
   }
-  
+
   void _finishStreaming() {
     setState(() {
       _isStreaming = false;
       _displayedText = _buffer.toString();
     });
-    
+
     _typingTimer?.cancel();
     widget.onComplete?.call();
   }
-  
+
   void _stopStreaming() {
     if (!_isStreaming) return;
-    
+
     setState(() {
       _isStreaming = false;
       _displayedText = _buffer.toString();
     });
-    
+
     _streamSubscription?.cancel();
     _typingTimer?.cancel();
     widget.onStop?.call();
   }
-  
+
   @override
   void dispose() {
     _streamSubscription?.cancel();
@@ -188,7 +191,7 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
@@ -200,24 +203,24 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: SelectableText.rich(
                   TextSpan(
                     text: _displayedText,
                     style: widget.textStyle ??
-                        const TextStyle(
-                          fontSize: 15,
-                          height: 1.5,
-                          color: AppColors.textPrimary,
-                        ),
+                        Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              height: 1.5,
+                              color: AppColors.textPrimary,
+                            ),
                     children: [
                       if (_isStreaming && widget.showCursor && _cursorVisible)
-                        const TextSpan(
+                        TextSpan(
                           text: '▊',
-                          style: TextStyle(
-                            color: AppColors.electricGreen,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.electricGreen,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                     ],
                   ),
@@ -225,16 +228,16 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
               ),
             ),
           ),
-          if (_isStreaming && widget.onStop != null)
-            _buildStopButton(),
+          if (_isStreaming && widget.onStop != null) _buildStopButton(),
         ],
       ),
     );
   }
-  
+
   Widget _buildStopButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceSm),
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(
@@ -247,11 +250,12 @@ class _StreamingResponseWidgetState extends State<StreamingResponseWidget> with 
       child: OutlinedButton.icon(
         onPressed: _stopStreaming,
         icon: const Icon(Icons.stop_circle_outlined, size: 18),
-        label: const Text('Stop Generating'),
+        label: Text('Stop Generating'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.error,
           side: const BorderSide(color: AppColors.error),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          padding: const EdgeInsets.symmetric(
+              vertical: kSpaceSm, horizontal: kSpaceMdWide),
         ),
       ),
     );
@@ -265,7 +269,7 @@ class TypingTextWidget extends StatefulWidget {
   final Duration typingSpeed;
   final bool showCursor;
   final VoidCallback? onComplete;
-  
+
   const TypingTextWidget({
     super.key,
     required this.text,
@@ -274,7 +278,7 @@ class TypingTextWidget extends StatefulWidget {
     this.showCursor = true,
     this.onComplete,
   });
-  
+
   @override
   State<TypingTextWidget> createState() => _TypingTextWidgetState();
 }
@@ -283,18 +287,18 @@ class _TypingTextWidgetState extends State<TypingTextWidget> {
   String _displayedText = '';
   bool _cursorVisible = true;
   bool _isTyping = true;
-  
+
   Timer? _typingTimer;
   Timer? _cursorTimer;
   int _currentIndex = 0;
-  
+
   @override
   void initState() {
     super.initState();
     _startTyping();
     _startCursorBlink();
   }
-  
+
   void _startTyping() {
     _typingTimer = Timer.periodic(widget.typingSpeed, (timer) {
       if (_currentIndex < widget.text.length) {
@@ -311,10 +315,10 @@ class _TypingTextWidgetState extends State<TypingTextWidget> {
       }
     });
   }
-  
+
   void _startCursorBlink() {
     if (!widget.showCursor) return;
-    
+
     _cursorTimer = Timer.periodic(const Duration(milliseconds: 530), (timer) {
       if (mounted) {
         setState(() {
@@ -323,33 +327,32 @@ class _TypingTextWidgetState extends State<TypingTextWidget> {
       }
     });
   }
-  
+
   @override
   void dispose() {
     _typingTimer?.cancel();
     _cursorTimer?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
         text: _displayedText,
         style: widget.textStyle ??
-            const TextStyle(
-              fontSize: 15,
-              height: 1.5,
-              color: AppColors.textPrimary,
-            ),
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  height: 1.5,
+                  color: AppColors.textPrimary,
+                ),
         children: [
           if (_isTyping && widget.showCursor && _cursorVisible)
-            const TextSpan(
+            TextSpan(
               text: '▊',
-              style: TextStyle(
-                color: AppColors.electricGreen,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.electricGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
         ],
       ),
@@ -361,20 +364,21 @@ class _TypingTextWidgetState extends State<TypingTextWidget> {
 class TypingIndicator extends StatefulWidget {
   final Color color;
   final double size;
-  
+
   const TypingIndicator({
     super.key,
     this.color = AppColors.electricGreen,
     this.size = 8.0,
   });
-  
+
   @override
   State<TypingIndicator> createState() => _TypingIndicatorState();
 }
 
-class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProviderStateMixin {
+class _TypingIndicatorState extends State<TypingIndicator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  
+
   @override
   void initState() {
     super.initState();
@@ -383,13 +387,13 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
       vsync: this,
     )..repeat();
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -400,12 +404,13 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
           builder: (context, child) {
             final delay = index * 0.2;
             final value = (_controller.value - delay) % 1.0;
-            final opacity = (value < 0.5) 
+            final opacity = (value < 0.5)
                 ? (value * 2).clamp(0.3, 1.0)
                 : (2 - value * 2).clamp(0.3, 1.0);
-            
+
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: widget.size * 0.3),
+              padding: EdgeInsets.symmetric(
+                  horizontal: widget.size * kSpaceHairline),
               child: Opacity(
                 opacity: opacity,
                 child: Container(
@@ -424,4 +429,3 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
     );
   }
 }
-

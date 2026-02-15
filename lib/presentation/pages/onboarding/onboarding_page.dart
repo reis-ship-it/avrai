@@ -8,12 +8,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/device/device_capability_service.dart';
 import 'package:avrai/core/services/local_llm/local_llm_auto_install_service.dart';
 import 'package:avrai/core/services/local_llm/local_llm_macos_auto_install_service.dart';
 import 'package:avrai/core/services/local_llm/local_llm_provisioning_state_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/on_device_ai_capability_gate.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
 import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
@@ -202,13 +204,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       'started_from': 'onboarding',
                     });
                 if (!mounted || !context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Proof run active: ${runId.substring(0, 8)}…',
-                    ),
-                    backgroundColor: AppColors.success,
-                  ),
+                context.showSuccess(
+                  'Proof run active: ${runId.substring(0, 8)}…',
                 );
               } catch (e, st) {
                 developer.log(
@@ -218,12 +215,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   stackTrace: st,
                 );
                 if (!mounted || !context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Proof run start failed: $e'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
+                context.showError('Proof run start failed: $e');
               }
             },
           ),
@@ -413,8 +405,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildBottomNavigation() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       child: Row(
         children: [
           Expanded(
@@ -648,12 +641,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
         // Show error dialog to user
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to complete onboarding'),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to complete onboarding');
         }
         return;
       }
@@ -915,58 +903,60 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Text(
             'Permissions & Legal',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Enable connectivity and accept terms to continue',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.grey600,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Permissions Section
           PortalSurface(
             borderColor: AppColors.grey500.withValues(alpha: 0.2),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.security,
                       color: AppColors.primary,
                       size: 20,
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: spacing.xs),
                     Text(
                       'Permissions',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-                PermissionsPage(),
+                SizedBox(height: spacing.sm),
+                const PermissionsPage(),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: spacing.md + spacing.xs),
 
           // Age Verification Section
           PortalSurface(
@@ -981,17 +971,16 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
                       color: Theme.of(context).colorScheme.primary,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
+                    SizedBox(width: spacing.xs),
+                    Text(
                       'Age Verification',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 AgeCollectionPage(
                   selectedBirthday: widget.selectedBirthday,
                   onBirthdayChanged: widget.onBirthdayChanged,
@@ -1000,7 +989,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: spacing.md + spacing.xs),
 
           // Legal Acceptance Section
           PortalSurface(
@@ -1020,27 +1009,25 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
                           : Theme.of(context).colorScheme.primary,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
+                    SizedBox(width: spacing.xs),
+                    Text(
                       'Terms & Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 Text(
                   _legalAccepted
                       ? 'You have accepted the Terms of Service and Privacy Policy.'
                       : 'Please review and accept our Terms of Service and Privacy Policy to continue.',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.grey700,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: spacing.md),
                 SizedBox(
                   width: double.infinity,
                   child: _legalAccepted
@@ -1193,20 +1180,24 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Connect & Discover',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: textTheme.headlineSmall,
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: spacing.xs),
+          Text(
             'Enable ai2ai discovery to connect with nearby SPOTS users and their AI personalities',
+            style: textTheme.bodyMedium,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
           PortalSurface(
             padding: EdgeInsets.zero,
             child: SwitchListTile(
@@ -1224,7 +1215,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           PortalSurface(
             padding: EdgeInsets.zero,
             child: SwitchListTile(
@@ -1242,7 +1233,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
                   : null,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           StreamBuilder<LocalLlmProvisioningState>(
             stream: _provisioningStreamWithInitial,
             builder: (context, snapshot) {
@@ -1308,13 +1299,14 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
                 children: [
                   Text(
                     text,
-                    style:
-                        const TextStyle(fontSize: 12, color: AppColors.grey600),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.grey600,
+                    ),
                   ),
                   if (phase == LocalLlmProvisioningPhase.downloading &&
                       progress != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: EdgeInsets.only(top: spacing.xxs),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(999),
                         child: LinearProgressIndicator(
@@ -1331,10 +1323,10 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
               );
             },
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: spacing.md),
+          Text(
             'When enabled, your anonymized personality data will be used to discover compatible AI personalities nearby. All connections are privacy-preserving and go through the AI layer.',
-            style: TextStyle(fontSize: 12, color: AppColors.grey600),
+            style: textTheme.bodySmall?.copyWith(color: AppColors.grey600),
           ),
         ],
       ),

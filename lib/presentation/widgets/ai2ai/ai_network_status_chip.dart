@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -72,12 +73,14 @@ class _AINetworkStatusChipState extends State<AINetworkStatusChip> {
     if (_activeCount <= 0) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXxs),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+                horizontal: kSpaceSmTight, vertical: kSpaceXsTight),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),

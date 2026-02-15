@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
@@ -31,6 +33,7 @@ import 'package:avrai/presentation/widgets/map/map_boundary.dart';
 import 'package:avrai/presentation/widgets/map/map_boundary_converter.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class MapView extends StatefulWidget {
   final SpotList? initialSelectedList;
@@ -367,36 +370,25 @@ class _MapViewState extends State<MapView> {
       if (requestedPermission == LocationPermission.denied) {
         developer.log('Location permission still denied', name: 'MapView');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text(
-                    'Location permission is required for map functionality')),
+          context.showWarning(
+            'Location permission is required for map functionality',
           );
         }
       } else if (requestedPermission == LocationPermission.deniedForever) {
         developer.log('Location permission denied forever', name: 'MapView');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content:
-                    Text('Please enable location permissions in settings')),
-          );
+          context.showWarning('Please enable location permissions in settings');
         }
       } else {
         developer.log('Location permission granted', name: 'MapView');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission granted!')),
-          );
+          context.showSuccess('Location permission granted!');
         }
       }
     } else if (permission == LocationPermission.deniedForever) {
       developer.log('Location permission denied forever', name: 'MapView');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Please enable location permissions in settings')),
-        );
+        context.showWarning('Please enable location permissions in settings');
       }
     } else {
       developer.log('Location permission already granted', name: 'MapView');
@@ -567,19 +559,14 @@ class _MapViewState extends State<MapView> {
       // For now, just show all spots since we don't have distance calculation
       // In a real app, you'd filter by distance from current location
       context.read<SpotsBloc>().add(SearchSpots(query: ''));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Showing all spots near your location'),
-          duration: Duration(seconds: 2),
-        ),
+      FeedbackPresenter.showSnack(
+        context,
+        message: 'Showing all spots near your location',
+        duration: const Duration(seconds: 2),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Location not available. Please enable location services.'),
-          backgroundColor: AppTheme.warningColor,
-        ),
+      context.showWarning(
+        'Location not available. Please enable location services.',
       );
     }
     setState(() {
@@ -628,11 +615,10 @@ class _MapViewState extends State<MapView> {
                     child: Text(
                       state.user.displayName?.substring(0, 1).toUpperCase() ??
                           state.user.email.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                   onPressed: () {
@@ -663,7 +649,7 @@ class _MapViewState extends State<MapView> {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.list),
-                              title: const Text('All Spots'),
+                              title: Text('All Spots'),
                               selected: _selectedList == null,
                               onTap: () => Navigator.pop(context, null),
                             ),
@@ -736,7 +722,8 @@ class _MapViewState extends State<MapView> {
         children: [
           // Enhanced search bar
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceXs),
             child: Column(
               children: [
                 // Search input
@@ -756,10 +743,10 @@ class _MapViewState extends State<MapView> {
                     onSubmitted: _handleSearch,
                     decoration: InputDecoration(
                       hintText: 'Search spots, categories, or "near me"...',
-                      hintStyle: const TextStyle(
-                        color: AppColors.textHint,
-                        fontSize: 16,
-                      ),
+                      hintStyle:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textHint,
+                              ),
                       prefixIcon: Icon(
                         Icons.search,
                         color: _isSearching
@@ -777,18 +764,18 @@ class _MapViewState extends State<MapView> {
                           : null,
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: kSpaceMd,
+                        vertical: kSpaceSm,
                       ),
                     ),
-                    style: const TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
 
                 // Search suggestions
                 if (_showSuggestions && _searchSuggestions.isNotEmpty)
                   Container(
-                    margin: const EdgeInsets.only(top: 4),
+                    margin: const EdgeInsets.only(top: kSpaceXxs),
                     decoration: BoxDecoration(
                       color: Theme.of(context).brightness == Brightness.light
                           ? AppColors.white
@@ -804,7 +791,7 @@ class _MapViewState extends State<MapView> {
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceXs),
                       itemCount: _searchSuggestions.length,
                       itemBuilder: (context, index) {
                         final suggestion = _searchSuggestions[index];
@@ -817,7 +804,7 @@ class _MapViewState extends State<MapView> {
                           ),
                           title: Text(
                             suggestion,
-                            style: const TextStyle(fontSize: 14),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           onTap: () => _onSuggestionTap(suggestion),
                         );
@@ -831,7 +818,7 @@ class _MapViewState extends State<MapView> {
           // Map content
           Expanded(
             child: _isLoadingLocation
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -844,7 +831,7 @@ class _MapViewState extends State<MapView> {
                 : BlocBuilder<SpotsBloc, SpotsState>(
                     builder: (context, spotState) {
                       if (spotState is SpotsLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator());
                       }
                       if (spotState is SpotsLoaded) {
                         List<Spot> spots = spotState.filteredSpots.isNotEmpty
@@ -996,7 +983,8 @@ class _MapViewState extends State<MapView> {
                                 left: 8,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 6),
+                                      horizontal: kSpaceSmTight,
+                                      vertical: kSpaceXsTight),
                                   decoration: BoxDecoration(
                                     color: AppColors.white,
                                     borderRadius: BorderRadius.circular(8),
@@ -1007,16 +995,17 @@ class _MapViewState extends State<MapView> {
                                       ),
                                     ],
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Map: flutter_map (iOS Google Maps disabled)',
-                                    style: TextStyle(fontSize: 12),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                 ),
                               ),
                           ],
                         );
                       }
-                      return const Center(child: Text('No spots loaded'));
+                      return Center(child: Text('No spots loaded'));
                     },
                   ),
           ),
@@ -1025,7 +1014,7 @@ class _MapViewState extends State<MapView> {
       floatingActionButton: _locationError != null
           ? FloatingActionButton.extended(
               onPressed: _getCurrentLocation,
-              label: const Text('Retry Location'),
+              label: Text('Retry Location'),
               icon: const Icon(Icons.refresh),
             )
           : null,
@@ -1051,7 +1040,7 @@ class _MapViewState extends State<MapView> {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         height: MediaQuery.of(context).size.height * 0.7,
         child: Column(
           children: [
@@ -1103,7 +1092,7 @@ class _MapViewState extends State<MapView> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(kSpaceSm),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -1123,13 +1112,15 @@ class _MapViewState extends State<MapView> {
                               const SizedBox(height: 8),
                               Text(
                                 theme.name,
-                                style: TextStyle(
-                                  color: theme.textColor,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  fontSize: 14,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: theme.textColor,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                    ),
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1137,10 +1128,13 @@ class _MapViewState extends State<MapView> {
                               const SizedBox(height: 4),
                               Text(
                                 theme.tileServerName,
-                                style: TextStyle(
-                                  color: theme.textColor.withValues(alpha: 0.7),
-                                  fontSize: 11,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: theme.textColor
+                                          .withValues(alpha: 0.7),
+                                    ),
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1179,20 +1173,19 @@ class _MapViewState extends State<MapView> {
         builder: (context) {
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: StatefulBuilder(
                 builder: (context, setSheetState) {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Select boundary scope',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
@@ -1241,10 +1234,10 @@ class _MapViewState extends State<MapView> {
                       const SizedBox(height: 12),
                       Text(
                         'Note: neighborhood boundaries are currently available for large localities (e.g. Brooklyn, Los Angeles).',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary.withValues(alpha: 0.9),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary
+                                  .withValues(alpha: 0.9),
+                            ),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -1252,7 +1245,7 @@ class _MapViewState extends State<MapView> {
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () => Navigator.pop(context, null),
-                              child: const Text('Cancel'),
+                              child: Text('Cancel'),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -1266,7 +1259,7 @@ class _MapViewState extends State<MapView> {
                                 'cityCode': selectedCityCode,
                                 'localityName': selectedLocalityName,
                               }),
-                              child: const Text('Apply'),
+                              child: Text('Apply'),
                             ),
                           ),
                         ],
@@ -1600,19 +1593,17 @@ class _MapViewState extends State<MapView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text('Close'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.push(
+              AppNavigator.pushBuilder(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => SpotDetailsPage(spot: spot),
-                ),
+                builder: (context) => SpotDetailsPage(spot: spot),
               );
             },
-            child: const Text('View Details'),
+            child: Text('View Details'),
           ),
         ],
       ),
@@ -1626,7 +1617,7 @@ class _MapViewState extends State<MapView> {
         builder: (context, state) {
           if (state is Authenticated) {
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1636,10 +1627,10 @@ class _MapViewState extends State<MapView> {
                       child: Text(
                         state.user.displayName?.substring(0, 1).toUpperCase() ??
                             state.user.email.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
                     title: Text(state.user.displayName ?? 'User'),
@@ -1648,7 +1639,7 @@ class _MapViewState extends State<MapView> {
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.logout),
-                    title: const Text('Sign Out'),
+                    title: Text('Sign Out'),
                     onTap: () {
                       Navigator.pop(context);
                       context.read<AuthBloc>().add(SignOutRequested());

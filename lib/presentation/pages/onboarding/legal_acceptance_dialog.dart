@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/presentation/pages/legal/terms_of_service_page.dart';
 import 'package:avrai/presentation/pages/legal/privacy_policy_page.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Legal Acceptance Dialog
-/// 
+///
 /// Shows during onboarding to require Terms and Privacy Policy acceptance
 class LegalAcceptanceDialog extends StatelessWidget {
   final bool requireTerms;
@@ -19,6 +21,9 @@ class LegalAcceptanceDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AlertDialog(
       title: const Text('Legal Agreements Required'),
       content: SingleChildScrollView(
@@ -26,22 +31,21 @@ class LegalAcceptanceDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'To continue, please review and accept our legal agreements:',
-              style: TextStyle(fontSize: 14),
+              style: textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             if (requireTerms)
               ListTile(
                 leading: const Icon(Icons.gavel, color: AppTheme.primaryColor),
                 title: const Text('Terms of Service'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
-                  Navigator.push(
+                  AppNavigator.pushBuilder(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const TermsOfServicePage(requireAcceptance: true),
-                    ),
+                    builder: (context) =>
+                        const TermsOfServicePage(requireAcceptance: true),
                   ).then((accepted) {
                     if (accepted == true && context.mounted) {
                       Navigator.pop(context);
@@ -58,15 +62,15 @@ class LegalAcceptanceDialog extends StatelessWidget {
               ),
             if (requirePrivacy)
               ListTile(
-                leading: const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
+                leading:
+                    const Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
                 title: const Text('Privacy Policy'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
-                  Navigator.push(
+                  AppNavigator.pushBuilder(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const PrivacyPolicyPage(requireAcceptance: true),
-                    ),
+                    builder: (context) =>
+                        const PrivacyPolicyPage(requireAcceptance: true),
                   ).then((accepted) {
                     if (accepted == true && context.mounted) {
                       Navigator.pop(context);
@@ -103,4 +107,3 @@ class LegalAcceptanceDialog extends StatelessWidget {
     );
   }
 }
-

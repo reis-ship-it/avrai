@@ -1,44 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
-import 'package:google_maps_flutter/google_maps_flutter.dart' show BitmapDescriptor;
+import 'package:google_maps_flutter/google_maps_flutter.dart'
+    show BitmapDescriptor;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
 import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Border Visualization Widget
-/// 
+///
 /// Displays neighborhood boundaries on a map with hard and soft borders.
 /// Shows doors (boundary visualization) that users can understand.
-/// 
+///
 /// **Philosophy:** Make neighborhood boundaries visible and accessible.
 /// Display hard/soft borders clearly to help users understand community connections.
 class BorderVisualizationWidget extends StatefulWidget {
   /// Google Maps controller (required for Google Maps integration)
   final gmap.GoogleMapController? mapController;
-  
+
   /// Locality to display boundaries for (optional - shows all if null)
   final String? locality;
-  
+
   /// City to load boundaries for (required)
   final String city;
-  
+
   /// Whether to show soft border spots
   final bool showSoftBorderSpots;
-  
+
   /// Whether to show refinement indicators
   final bool showRefinementIndicators;
-  
+
   /// Callback when a border is tapped
   final void Function(String locality1, String locality2)? onBorderTapped;
-  
+
   /// Callback when a soft border spot is tapped
   final void Function(String spotId)? onSoftBorderSpotTapped;
-  
+
   /// Height of the widget
   final double? height;
-  
+
   /// Width of the widget
   final double? width;
 
@@ -56,11 +58,11 @@ class BorderVisualizationWidget extends StatefulWidget {
   });
 
   @override
-  State<BorderVisualizationWidget> createState() => _BorderVisualizationWidgetState();
+  State<BorderVisualizationWidget> createState() =>
+      _BorderVisualizationWidgetState();
 }
 
-class _BorderVisualizationWidgetState
-    extends State<BorderVisualizationWidget> {
+class _BorderVisualizationWidgetState extends State<BorderVisualizationWidget> {
   final AppLogger _logger = const AppLogger(
     defaultTag: 'SPOTS',
     minimumLevel: LogLevel.debug,
@@ -90,7 +92,7 @@ class _BorderVisualizationWidgetState
       // TODO: Replace with actual NeighborhoodBoundaryService when available
       // For now, use mock data to demonstrate the UI
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Mock boundary data
       _hardBorders = _getMockHardBorders();
       _softBorders = _getMockSoftBorders();
@@ -211,7 +213,7 @@ class _BorderVisualizationWidgetState
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(kSpaceLg),
           child: StandardErrorWidget(
             message: _error ?? 'Error loading boundaries',
             onRetry: _loadBoundaries,
@@ -229,7 +231,7 @@ class _BorderVisualizationWidgetState
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -241,10 +243,9 @@ class _BorderVisualizationWidgetState
             SizedBox(height: 16),
             Text(
               'No boundaries available',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -256,7 +257,7 @@ class _BorderVisualizationWidgetState
     // This widget provides boundary data to be overlaid on a map
     // The actual map rendering is handled by the parent (MapView)
     // This widget provides the polylines and markers to add to the map
-    
+
     return SizedBox(
       height: widget.height,
       width: widget.width,
@@ -277,7 +278,7 @@ class _BorderVisualizationWidgetState
 
   Widget _buildLegend() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -348,10 +349,9 @@ class _BorderVisualizationWidgetState
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -361,29 +361,29 @@ class _BorderVisualizationWidgetState
     return ListView(
       children: [
         if (_hardBorders.isNotEmpty) ...[
-          const Text(
+          Text(
             'Hard Borders',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
-          ..._hardBorders.map((border) => _buildBoundaryCard(border, isHard: true)),
+          ..._hardBorders
+              .map((border) => _buildBoundaryCard(border, isHard: true)),
           const SizedBox(height: 16),
         ],
         if (_softBorders.isNotEmpty) ...[
-          const Text(
+          Text(
             'Soft Borders',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
-          ..._softBorders.map((border) => _buildBoundaryCard(border, isHard: false)),
+          ..._softBorders
+              .map((border) => _buildBoundaryCard(border, isHard: false)),
         ],
       ],
     );
@@ -391,7 +391,7 @@ class _BorderVisualizationWidgetState
 
   Widget _buildBoundaryCard(BoundaryPolyline border, {required bool isHard}) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: kSpaceXs),
       child: ListTile(
         leading: Icon(
           isHard ? Icons.border_clear : Icons.border_color,
@@ -399,18 +399,16 @@ class _BorderVisualizationWidgetState
         ),
         title: Text(
           '${border.locality1} / ${border.locality2}',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
         subtitle: Text(
           isHard ? 'Well-defined boundary' : 'Blended area',
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         trailing: widget.showRefinementIndicators && border.isRefined
             ? const Icon(
@@ -558,4 +556,3 @@ class DashedLinePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

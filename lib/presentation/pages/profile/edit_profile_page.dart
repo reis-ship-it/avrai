@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/controllers/profile_update_controller.dart';
@@ -65,24 +66,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_error!),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(_error!);
         }
         return;
       }
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Profile updated successfully!');
       }
     } catch (e) {
       setState(() {
@@ -91,12 +82,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_error!),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError(_error!);
       }
     }
   }
@@ -142,10 +128,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Expanded(
                       child: Text(
                         _error!,
-                        style: const TextStyle(
-                          color: AppTheme.errorColor,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.errorColor,
+                            ),
                       ),
                     ),
                   ],
@@ -163,7 +148,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Update Profile'),
+                    : Text('Update Profile'),
               ),
             ),
           ],

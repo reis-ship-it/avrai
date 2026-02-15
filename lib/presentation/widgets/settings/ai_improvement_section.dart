@@ -1,15 +1,15 @@
 /// AI Improvement Metrics Section
-/// 
+///
 /// Part of Feature Matrix Phase 2: Medium Priority UI/UX
 /// Section 2.2: AI Self-Improvement Visibility
-/// 
+///
 /// Widget showing AI improvement metrics in Settings/Account page:
 /// - Overall improvement score
 /// - Performance dimensions with scores
 /// - Improvement rate and trend
 /// - Accuracy measurements
 /// - Total improvements count
-/// 
+///
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
@@ -17,21 +17,22 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget displaying AI improvement metrics section
 class AIImprovementSection extends StatefulWidget {
   /// User ID to show metrics for
   final String userId;
-  
+
   /// Improvement tracking service
   final AIImprovementTrackingService trackingService;
-  
+
   const AIImprovementSection({
     super.key,
     required this.userId,
     required this.trackingService,
   });
-  
+
   @override
   State<AIImprovementSection> createState() => _AIImprovementSectionState();
 }
@@ -40,12 +41,12 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
   AIImprovementMetrics? _metrics;
   AccuracyMetrics? _accuracyMetrics;
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
     _loadMetrics();
-    
+
     // Listen to metrics stream for real-time updates
     widget.trackingService.metricsStream.listen((metrics) {
       if (mounted && metrics.userId == widget.userId) {
@@ -55,16 +56,18 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       }
     });
   }
-  
+
   Future<void> _loadMetrics() async {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
-      final metrics = await widget.trackingService.getCurrentMetrics(widget.userId);
-      final accuracyMetrics = await widget.trackingService.getAccuracyMetrics(widget.userId);
-      
+      final metrics =
+          await widget.trackingService.getCurrentMetrics(widget.userId);
+      final accuracyMetrics =
+          await widget.trackingService.getAccuracyMetrics(widget.userId);
+
       if (mounted) {
         setState(() {
           _metrics = metrics;
@@ -80,16 +83,18 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading AI improvement metrics',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(),
             ),
@@ -97,14 +102,14 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         ),
       );
     }
-    
+
     if (_metrics == null) {
       return Semantics(
         label: 'No improvement data available',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: Text('No improvement data available'),
             ),
@@ -112,7 +117,7 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         ),
       );
     }
-    
+
     return Semantics(
       label: 'AI Improvement Metrics',
       child: Card(
@@ -120,9 +125,9 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -143,12 +148,13 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       ),
     );
   }
-  
+
   Widget _buildHeader() {
+    final spacing = context.spacing;
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(spacing.xs),
           decoration: BoxDecoration(
             color: AppColors.electricGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -160,14 +166,13 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
           ),
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Text(
             'AI Improvement Metrics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ),
         Semantics(
@@ -186,14 +191,15 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       ],
     );
   }
-  
+
   Widget _buildOverallScore() {
+    final spacing = context.spacing;
     final score = _metrics!.overallScore;
     final scoreColor = _getScoreColor(score);
     final scoreLabel = _getScoreLabel(score);
-    
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: scoreColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -207,27 +213,26 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Overall AI Performance',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               Text(
                 scoreLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: scoreColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: scoreColor,
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Semantics(
-            label: 'Overall AI performance: ${(score * 100).toStringAsFixed(1)}%',
+            label:
+                'Overall AI performance: ${(score * 100).toStringAsFixed(1)}%',
             value: '${(score * 100).toStringAsFixed(1)}%',
             child: LinearProgressIndicator(
               value: score,
@@ -242,18 +247,16 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
             children: [
               Text(
                 '${(score * 100).toStringAsFixed(1)}%',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: scoreColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: scoreColor,
+                    ),
               ),
               Text(
                 '${_metrics!.totalImprovements} improvements',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -261,14 +264,14 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       ),
     );
   }
-  
+
   Widget _buildAccuracySection() {
     if (_accuracyMetrics == null) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.verified_outlined,
@@ -278,11 +281,10 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
             SizedBox(width: 8),
             Text(
               'Accuracy Measurements',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
@@ -307,12 +309,13 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       ],
     );
   }
-  
+
   Widget _buildAccuracyItem(String label, double score, String subtitle) {
+    final spacing = context.spacing;
     final color = _getScoreColor(score);
-    
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -325,19 +328,17 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -358,22 +359,22 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
           const SizedBox(width: 8),
           Text(
             '${(score * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildPerformanceScores() {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.speed,
@@ -383,18 +384,17 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
             SizedBox(width: 8),
             Text(
               'Performance Scores',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         ..._metrics!.performanceScores.entries.map((entry) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: spacing.xs),
             child: _buildScoreItem(
               _formatDimensionName(entry.key),
               entry.value,
@@ -404,12 +404,13 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
       ],
     );
   }
-  
+
   Widget _buildDimensionScores() {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.insights,
@@ -419,18 +420,17 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
             SizedBox(width: 8),
             Text(
               'Improvement Dimensions',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         ..._metrics!.dimensionScores.entries.take(6).map((entry) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: spacing.xs),
             child: _buildScoreItem(
               _formatDimensionName(entry.key),
               entry.value,
@@ -446,25 +446,24 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
                 // Show all dimensions dialog
                 _showAllDimensionsDialog();
               },
-              child: const Text('View all dimensions'),
+              child: Text('View all dimensions'),
             ),
           ),
       ],
     );
   }
-  
+
   Widget _buildScoreItem(String label, double score) {
     final color = _getScoreColor(score);
-    
+
     return Row(
       children: [
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ),
         const SizedBox(width: 12),
@@ -485,25 +484,25 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
           width: 45,
           child: Text(
             '${(score * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
             textAlign: TextAlign.right,
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildImprovementRate() {
+    final spacing = context.spacing;
     final rate = _metrics!.improvementRate;
     final isPositive = rate > 0;
     final color = isPositive ? AppColors.success : AppColors.error;
-    
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -518,42 +517,40 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              isPositive 
+              isPositive
                   ? 'Improving at ${(rate * 100).toStringAsFixed(1)}% per week'
                   : 'Stable performance',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: color,
+                  ),
             ),
           ),
           Text(
             'Updated ${_formatTimeAgo(_metrics!.lastUpdated)}',
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Color _getScoreColor(double score) {
     if (score >= 0.9) return AppColors.success;
     if (score >= 0.75) return AppColors.electricGreen;
     if (score >= 0.6) return AppColors.warning;
     return AppColors.error;
   }
-  
+
   String _getScoreLabel(double score) {
     if (score >= 0.9) return 'Excellent';
     if (score >= 0.75) return 'Good';
     if (score >= 0.6) return 'Fair';
     return 'Needs Improvement';
   }
-  
+
   String _formatDimensionName(String dimension) {
     return dimension
         .replaceAll('_', ' ')
@@ -561,32 +558,36 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
   }
-  
+
   String _formatTimeAgo(DateTime time) {
     final duration = DateTime.now().difference(time);
-    
+
     if (duration.inMinutes < 1) return 'just now';
     if (duration.inMinutes < 60) return '${duration.inMinutes}m ago';
     if (duration.inHours < 24) return '${duration.inHours}h ago';
     return '${duration.inDays}d ago';
   }
-  
+
   void _showInfoDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('AI Improvement Metrics'),
-        content: const SingleChildScrollView(
+        title: Text('AI Improvement Metrics'),
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Your AI continuously learns and improves across multiple dimensions:',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 12),
-              Text('• Accuracy: How well recommendations match your preferences'),
+              Text(
+                  '• Accuracy: How well recommendations match your preferences'),
               SizedBox(height: 8),
               Text('• Speed: How quickly AI processes and responds'),
               SizedBox(height: 8),
@@ -600,7 +601,10 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
               SizedBox(height: 12),
               Text(
                 'Metrics update every 5 minutes based on your interactions.',
-                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ),
@@ -608,25 +612,26 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+            child: Text('Got it'),
           ),
         ],
       ),
     );
   }
-  
+
   void _showAllDimensionsDialog() {
+    final spacing = context.spacing;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('All Improvement Dimensions'),
+        title: Text('All Improvement Dimensions'),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView(
             shrinkWrap: true,
             children: _metrics!.dimensionScores.entries.map((entry) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.only(bottom: spacing.sm),
                 child: _buildScoreItem(
                   _formatDimensionName(entry.key),
                   entry.value,
@@ -638,11 +643,10 @@ class _AIImprovementSectionState extends State<AIImprovementSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text('Close'),
           ),
         ],
       ),
     );
   }
 }
-

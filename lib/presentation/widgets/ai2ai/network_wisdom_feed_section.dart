@@ -5,6 +5,7 @@ import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Small "From the network" section for home/discovery that shows network wisdom feed items.
 ///
@@ -95,7 +96,7 @@ class _NetworkWisdomFeedSectionState extends State<NetworkWisdomFeedSection> {
     }
     if (_loading) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: kSpaceXs),
         child: Center(
           child: SizedBox(
             width: 24,
@@ -112,13 +113,13 @@ class _NetworkWisdomFeedSectionState extends State<NetworkWisdomFeedSection> {
 
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: kSpaceXs),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 8),
+            padding: const EdgeInsets.only(left: kSpaceMd, bottom: kSpaceXs),
             child: Text(
               'From the network',
               style: theme.textTheme.titleSmall?.copyWith(

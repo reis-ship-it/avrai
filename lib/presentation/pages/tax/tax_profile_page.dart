@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/payment/tax_profile.dart';
 import 'package:avrai/core/services/payment/tax_compliance_service.dart';
 import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Tax Profile Page
 ///
@@ -98,12 +101,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
   Future<void> _submitW9() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedClassification == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a tax classification'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please select a tax classification');
       return;
     }
 
@@ -151,12 +149,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('W-9 submitted successfully'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('W-9 submitted successfully');
         Navigator.pop(context);
       }
     } catch (e) {
@@ -188,17 +181,17 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
               child: Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(context.spacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Info Card
                       _buildInfoCard(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing.xl),
 
                       // Tax Classification
                       _buildClassificationSelection(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing.xl),
 
                       // SSN Input
                       if (!_needsEIN(_selectedClassification ??
@@ -206,49 +199,48 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                         _buildSSNInput(),
                       if (!_needsEIN(_selectedClassification ??
                           TaxClassification.individual))
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                       // EIN Input (for businesses)
                       if (_selectedClassification != null &&
                           _needsEIN(_selectedClassification!)) ...[
                         _buildEINInput(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                         _buildBusinessNameInput(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                       ],
 
                       // Existing Profile Info
                       if (_existingProfile?.w9Submitted ?? false) ...[
                         _buildSubmittedInfo(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                       ],
 
                       // Error Display
                       if (_error != null) ...[
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                color: AppColors.error.withValues(alpha: 0.3)),
-                          ),
+                        PortalSurface(
+                          padding: EdgeInsets.all(context.spacing.md),
+                          color: AppColors.error.withValues(alpha: 0.1),
+                          borderColor: AppColors.error.withValues(alpha: 0.3),
+                          radius: context.radius.sm,
                           child: Row(
                             children: [
                               const Icon(Icons.error_outline,
                                   color: AppColors.error),
-                              const SizedBox(width: 12),
+                              SizedBox(width: context.spacing.sm),
                               Expanded(
                                 child: Text(
                                   _error!,
-                                  style:
-                                      const TextStyle(color: AppColors.error),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: AppColors.error),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                       ],
 
                       // Submit Button
@@ -270,7 +262,7 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                                         AppColors.white),
                                   ),
                                 )
-                              : const Text('Submit W-9'),
+                              : Text('Submit W-9'),
                         ),
                     ],
                   ),
@@ -281,64 +273,58 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
   }
 
   Widget _buildInfoCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+      borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.info, color: AppTheme.primaryColor),
               SizedBox(width: 8),
               Text(
                 'avrai Tax Service - Free & Easy',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text(
+          SizedBox(height: context.spacing.sm),
+          Text(
             'If you earn \$600 or more in a calendar year, avrai will automatically handle your tax reporting. We\'ll generate your 1099-K form and file it with the IRS—all free, all easy.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.electricGreen.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
-            ),
+          SizedBox(height: context.spacing.sm),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            color: AppColors.electricGreen.withValues(alpha: 0.1),
+            borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+            radius: context.spacing.sm / 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(Icons.check_circle,
                         color: AppColors.electricGreen, size: 20),
                     SizedBox(width: 8),
                     Text(
                       'Why choose SPOTS tax service?',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: context.spacing.xs),
                 _buildBenefitPoint('✓ Free - No accountant fees'),
                 _buildBenefitPoint('✓ Automatic - We handle everything'),
                 _buildBenefitPoint('✓ Secure - Your info is encrypted'),
@@ -346,14 +332,13 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Column(
+          SizedBox(height: context.spacing.sm),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            color: AppColors.warning.withValues(alpha: 0.1),
+            borderColor: AppColors.warning.withValues(alpha: 0.3),
+            radius: context.spacing.sm / 2,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -363,21 +348,19 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
                     SizedBox(width: 8),
                     Text(
                       'Important: IRS Reporting Requirement',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
                 SizedBox(height: 8),
                 Text(
                   'SPOTS is legally required to report all earnings over \$600 to the IRS, even if you don\'t submit a W-9. If you don\'t submit a W-9, the IRS will contact you directly to obtain your tax information. Submitting your W-9 now makes everything easier and ensures accurate reporting.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),
@@ -389,13 +372,12 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
 
   Widget _buildBenefitPoint(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.only(bottom: context.spacing.xxs),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
       ),
     );
   }
@@ -404,15 +386,14 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Tax Classification *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         RadioGroup<TaxClassification>(
           groupValue: _selectedClassification,
           onChanged: (val) {
@@ -432,14 +413,16 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
               return RadioListTile<TaxClassification>(
                 title: Text(
                   _getClassificationDisplayName(classification),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
                 subtitle: Text(
                   _getClassificationDescription(classification),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 value: classification,
                 activeColor: AppTheme.primaryColor,
@@ -455,15 +438,14 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Social Security Number (SSN) *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _ssnController,
           keyboardType: TextInputType.number,
@@ -490,7 +472,10 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             fillColor: AppColors.surface,
             suffixIcon: const Icon(Icons.lock, color: AppColors.textSecondary),
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
           obscureText: true,
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -503,13 +488,12 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             return null;
           },
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: context.spacing.xs),
+        Text(
           'Your SSN is encrypted and stored securely. Only the last 4 digits will be displayed after submission.',
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -519,15 +503,14 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Employer Identification Number (EIN) *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _einController,
           keyboardType: TextInputType.number,
@@ -553,7 +536,10 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'EIN is required for business classifications';
@@ -573,15 +559,14 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Business Name (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _businessNameController,
           decoration: InputDecoration(
@@ -601,45 +586,43 @@ class _TaxProfilePageState extends State<TaxProfilePage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
       ],
     );
   }
 
   Widget _buildSubmittedInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border:
-            Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.electricGreen.withValues(alpha: 0.1),
+      borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+      radius: context.radius.sm,
       child: Row(
         children: [
           const Icon(Icons.check_circle, color: AppColors.electricGreen),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'W-9 Submitted',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.electricGreen,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.electricGreen,
+                      ),
                 ),
                 if (_existingProfile?.w9SubmittedAt != null) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: context.spacing.xxs),
                   Text(
                     'Submitted on ${_formatDate(_existingProfile!.w9SubmittedAt!)}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ],

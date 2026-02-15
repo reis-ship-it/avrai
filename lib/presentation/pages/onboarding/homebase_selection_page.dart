@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai/core/services/geographic/geo_city_pack_service.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -622,28 +623,30 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
   @override
   Widget build(BuildContext context) {
     final isFlutterTest = _isWidgetTestBinding;
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Text(
             'Where\'s your homebase?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Position the marker over your homebase. Only the location name will appear on your profile.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+            style: textTheme.bodyLarge?.copyWith(
+              color: AppColors.grey600,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Map Container
           Expanded(
@@ -704,26 +707,11 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                       ),
 
                     // Fixed center marker (always in center of map)
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.white,
-                            width: 3,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
+                    const Center(
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: AppTheme.primaryColor,
+                        child: Icon(
                           Icons.location_on,
                           color: AppColors.white,
                           size: 20,
@@ -735,19 +723,18 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                     if (_isLoadingLocation || !_mapLoaded)
                       Container(
                         color: AppColors.black.withValues(alpha: 0.3),
-                        child: const Center(
+                        child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              CircularProgressIndicator(
+                              const CircularProgressIndicator(
                                 color: AppColors.white,
                               ),
-                              SizedBox(height: 16),
+                              SizedBox(height: spacing.md),
                               Text(
                                 'Loading map...',
-                                style: TextStyle(
+                                style: textTheme.bodyLarge?.copyWith(
                                   color: AppColors.white,
-                                  fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -762,23 +749,14 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                         top: 16,
                         left: 16,
                         right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.black.withValues(alpha: 0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
+                        child: Chip(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                          side: BorderSide.none,
+                          backgroundColor: AppTheme.primaryColor,
+                          labelPadding: EdgeInsets.zero,
+                          label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(
@@ -786,14 +764,13 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                                 color: AppColors.white,
                                 size: 16,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: spacing.xs),
                               Flexible(
                                 child: Text(
                                   _selectedNeighborhood!,
-                                  style: const TextStyle(
+                                  style: textTheme.bodyMedium?.copyWith(
                                     color: AppColors.white,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
                                   ),
                                 ),
                               ),
@@ -808,12 +785,11 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                         bottom: 16,
                         left: 16,
                         right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                        child: PortalSurface(
+                          padding: EdgeInsets.all(spacing.sm),
+                          color: AppColors.warning.withValues(alpha: 0.9),
+                          borderColor: AppColors.warning,
+                          radius: context.radius.sm,
                           child: Row(
                             children: [
                               const Icon(
@@ -821,28 +797,27 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                                 color: AppColors.white,
                                 size: 20,
                               ),
-                              const SizedBox(width: 8),
-                              const Expanded(
+                              SizedBox(width: spacing.xs),
+                              Expanded(
                                 child: Text(
                                   'Location access needed to find your neighborhood',
-                                  style: TextStyle(
+                                  style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.white,
-                                    fontSize: 12,
                                   ),
                                 ),
                               ),
                               TextButton(
                                 onPressed: _getCurrentLocation,
                                 style: TextButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: spacing.xs),
                                   minimumSize: Size.zero,
                                   tapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Enable',
-                                  style: TextStyle(
+                                  style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -859,12 +834,11 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                         bottom: 16,
                         left: 16,
                         right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.grey600.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                        child: PortalSurface(
+                          padding: EdgeInsets.all(spacing.sm),
+                          color: AppColors.grey600.withValues(alpha: 0.9),
+                          borderColor: AppColors.grey600,
+                          radius: context.radius.sm,
                           child: Row(
                             children: [
                               const Icon(
@@ -872,21 +846,20 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
                                 color: AppColors.white,
                                 size: 20,
                               ),
-                              const SizedBox(width: 8),
-                              const Expanded(
+                              SizedBox(width: spacing.xs),
+                              Expanded(
                                 child: Text(
                                   'Tap to refresh location',
-                                  style: TextStyle(
+                                  style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.white,
-                                    fontSize: 12,
                                   ),
                                 ),
                               ),
                               TextButton(
                                 onPressed: _getCurrentLocation,
-                                child: const Text(
+                                child: Text(
                                   'Retry',
-                                  style: TextStyle(
+                                  style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.white,
                                     fontWeight: FontWeight.bold,
                                   ),

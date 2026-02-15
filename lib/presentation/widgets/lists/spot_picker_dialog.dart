@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SpotPickerDialog extends StatefulWidget {
   final SpotList list;
@@ -38,7 +40,8 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
         'sessionId': 'debug-session',
         'runId': 'pre-fix-init',
         'hypothesisId': 'H4',
-        'location': 'lib/presentation/widgets/lists/spot_picker_dialog.dart:initState',
+        'location':
+            'lib/presentation/widgets/lists/spot_picker_dialog.dart:initState',
         'message': 'SpotPickerDialog initialized',
         'data': {
           'listId': widget.list.id,
@@ -49,7 +52,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.toLowerCase();
@@ -78,7 +81,8 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
           'sessionId': 'debug-session',
           'runId': 'pre-fix-toggle',
           'hypothesisId': 'H2',
-          'location': 'lib/presentation/widgets/lists/spot_picker_dialog.dart:_toggleSpotSelection',
+          'location':
+              'lib/presentation/widgets/lists/spot_picker_dialog.dart:_toggleSpotSelection',
           'message': 'Spot selection toggled',
           'data': {
             'spotId': spotId,
@@ -86,11 +90,12 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
             'selectedCount': _selectedSpotIds.length,
           },
         };
-        File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-            .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+        File('/Users/reisgordon/SPOTS/.cursor/debug.log').writeAsStringSync(
+            '${jsonEncode(payload)}\n',
+            mode: FileMode.append);
       } catch (_) {}
       // #endregion
-      
+
       if (_selectedSpotIds.contains(spotId)) {
         _selectedSpotIds.remove(spotId);
       } else {
@@ -109,7 +114,8 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
         'sessionId': 'debug-session',
         'runId': 'pre-fix-add',
         'hypothesisId': 'H3',
-        'location': 'lib/presentation/widgets/lists/spot_picker_dialog.dart:_addSelectedSpots',
+        'location':
+            'lib/presentation/widgets/lists/spot_picker_dialog.dart:_addSelectedSpots',
         'message': 'Add selected spots',
         'data': {
           'selectedCount': _selectedSpotIds.length,
@@ -120,14 +126,9 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
           .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
     } catch (_) {}
     // #endregion
-    
+
     if (_selectedSpotIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one spot'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
+      context.showWarning('Please select at least one spot');
       return;
     }
 
@@ -144,7 +145,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Row(
                 children: [
                   Expanded(
@@ -153,16 +154,18 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                       children: [
                         Text(
                           'Add Spots to ${widget.list.title}',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '${_selectedSpotIds.length} selected',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.grey600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.grey600,
+                                  ),
                         ),
                       ],
                     ),
@@ -178,7 +181,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
 
             // Search Bar
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -204,7 +207,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
               child: BlocBuilder<SpotsBloc, SpotsState>(
                 builder: (context, state) {
                   if (state is SpotsLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   if (state is SpotsError) {
@@ -222,9 +225,11 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              context.read<SpotsBloc>().add(LoadSpotsWithRespected());
+                              context
+                                  .read<SpotsBloc>()
+                                  .add(LoadSpotsWithRespected());
                             },
-                            child: const Text('Retry'),
+                            child: Text('Retry'),
                           ),
                         ],
                       ),
@@ -241,7 +246,8 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                         'sessionId': 'debug-session',
                         'runId': 'pre-fix-loaded',
                         'hypothesisId': 'H5',
-                        'location': 'lib/presentation/widgets/lists/spot_picker_dialog.dart:SpotsLoaded',
+                        'location':
+                            'lib/presentation/widgets/lists/spot_picker_dialog.dart:SpotsLoaded',
                         'message': 'Spots loaded for filtering',
                         'data': {
                           'spotsCount': state.spots.length,
@@ -251,30 +257,34 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                         },
                       };
                       File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-                          .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+                          .writeAsStringSync('${jsonEncode(payload)}\n',
+                              mode: FileMode.append);
                     } catch (_) {}
                     // #endregion
-                    
+
                     final allSpots = [...state.spots, ...state.respectedSpots];
-                    
+
                     // Filter out spots already in list and excluded spots
                     final availableSpots = allSpots.where((spot) {
-                      final isExcluded = widget.excludedSpotIds.contains(spot.id) ||
-                          widget.list.spotIds.contains(spot.id);
+                      final isExcluded =
+                          widget.excludedSpotIds.contains(spot.id) ||
+                              widget.list.spotIds.contains(spot.id);
                       if (isExcluded) return false;
-                      
+
                       // Apply search filter
                       if (_searchQuery.isNotEmpty) {
                         // #region agent log
                         // Debug mode: log search filtering (no PII values)
                         try {
                           final payload = <String, dynamic>{
-                            'id': 'log_${DateTime.now().millisecondsSinceEpoch}_H1',
+                            'id':
+                                'log_${DateTime.now().millisecondsSinceEpoch}_H1',
                             'timestamp': DateTime.now().millisecondsSinceEpoch,
                             'sessionId': 'debug-session',
                             'runId': 'pre-fix-search',
                             'hypothesisId': 'H1',
-                            'location': 'lib/presentation/widgets/lists/spot_picker_dialog.dart:searchFilter',
+                            'location':
+                                'lib/presentation/widgets/lists/spot_picker_dialog.dart:searchFilter',
                             'message': 'Search filter applied',
                             'data': {
                               'searchQueryLength': _searchQuery.length,
@@ -283,14 +293,22 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                             },
                           };
                           File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-                              .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+                              .writeAsStringSync('${jsonEncode(payload)}\n',
+                                  mode: FileMode.append);
                         } catch (_) {}
                         // #endregion
-                        
+
                         return spot.name.toLowerCase().contains(_searchQuery) ||
-                            spot.category.toLowerCase().contains(_searchQuery) ||
-                            spot.description.toLowerCase().contains(_searchQuery) ||
-                            (spot.address?.toLowerCase().contains(_searchQuery) ?? false);
+                            spot.category
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            spot.description
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            (spot.address
+                                    ?.toLowerCase()
+                                    .contains(_searchQuery) ??
+                                false);
                       }
                       return true;
                     }).toList();
@@ -317,7 +335,10 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                               _searchQuery.isNotEmpty
                                   ? 'Try a different search term'
                                   : 'Create spots first to add them to lists',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: AppColors.grey600,
                                   ),
                             ),
@@ -327,30 +348,32 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                     }
 
                     return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
                       itemCount: availableSpots.length,
                       itemBuilder: (context, index) {
                         final spot = availableSpots[index];
                         final isSelected = _selectedSpotIds.contains(spot.id);
 
                         return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
+                          margin: const EdgeInsets.only(bottom: kSpaceXs),
                           child: InkWell(
                             onTap: () => _toggleSpotSelection(spot.id),
                             child: Padding(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(kSpaceSm),
                               child: Row(
                                 children: [
                                   // Checkbox
                                   Checkbox(
                                     value: isSelected,
-                                    onChanged: (_) => _toggleSpotSelection(spot.id),
+                                    onChanged: (_) =>
+                                        _toggleSpotSelection(spot.id),
                                   ),
                                   const SizedBox(width: 12),
                                   // Spot Info
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           spot.name,
@@ -382,31 +405,33 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                                           ],
                                         ),
                                         ...[
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.location_on,
-                                              size: 14,
-                                              color: AppColors.grey600,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Expanded(
-                                              child: Text(
-                                                spot.address!,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                      color: AppColors.grey600,
-                                                    ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                size: 14,
+                                                color: AppColors.grey600,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  spot.address!,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            AppColors.grey600,
+                                                      ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ),
@@ -419,7 +444,7 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
                     );
                   }
 
-                  return const Center(child: Text('No spots loaded'));
+                  return Center(child: Text('No spots loaded'));
                 },
               ),
             ),
@@ -428,13 +453,13 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
 
             // Footer Actions
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -456,4 +481,3 @@ class _SpotPickerDialogState extends State<SpotPickerDialog> {
     );
   }
 }
-

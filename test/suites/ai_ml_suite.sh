@@ -14,10 +14,10 @@ flutter test "$@" \
   test/unit/services/user_preference_learning_service_test.dart \
   test/widget/pages/network/ \
   test/widget/pages/profile/ \
-  test/integration/ai2ai_complete_integration_test.dart \
-  test/integration/ai2ai_ecosystem_test.dart \
-  test/integration/ai2ai_learning_methods_integration_test.dart \
-  test/integration/continuous_learning_integration_test.dart \
-  test/integration/ai_improvement_tracking_integration_test.dart \
-  test/integration/ui_llm_integration_test.dart
+  test/integration/ai/ai2ai_complete_integration_test.dart \
+  test/integration/ai/ai2ai_ecosystem_test.dart \
+  test/integration/ai/ai2ai_learning_methods_integration_test.dart \
+  test/integration/ai/continuous_learning_integration_test.dart \
+  test/integration/ai/ai_improvement_tracking_integration_test.dart \
+  test/integration/ai/ui_llm_integration_test.dart
 

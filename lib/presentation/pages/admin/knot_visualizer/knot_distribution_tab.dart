@@ -1,15 +1,17 @@
 // Knot Distribution Tab
-// 
+//
 // Admin tab for viewing knot distributions
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 9: Admin Knot Visualizer
 
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/knot_admin_service.dart';
 import 'package:avrai_knot/models/knot/knot_distribution_data.dart';
 import 'package:avrai/presentation/widgets/admin/knot_type_distribution_chart.dart';
 import 'package:avrai/presentation/widgets/admin/knot_complexity_distribution_chart.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Tab for viewing knot distributions
 class KnotDistributionTab extends StatefulWidget {
@@ -66,7 +68,7 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
       children: [
         // Filters
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Row(
             children: [
               Expanded(
@@ -78,8 +80,10 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
                   ),
                   items: const [
                     DropdownMenuItem(value: null, child: Text('All Locations')),
-                    DropdownMenuItem(value: 'Brooklyn', child: Text('Brooklyn')),
-                    DropdownMenuItem(value: 'Manhattan', child: Text('Manhattan')),
+                    DropdownMenuItem(
+                        value: 'Brooklyn', child: Text('Brooklyn')),
+                    DropdownMenuItem(
+                        value: 'Manhattan', child: Text('Manhattan')),
                     // Add more locations as needed
                   ],
                   onChanged: (value) {
@@ -99,7 +103,8 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem(value: null, child: Text('All Categories')),
+                    DropdownMenuItem(
+                        value: null, child: Text('All Categories')),
                     DropdownMenuItem(value: 'coffee', child: Text('Coffee')),
                     DropdownMenuItem(value: 'food', child: Text('Food')),
                     // Add more categories as needed
@@ -123,7 +128,8 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
               : _errorMessage != null
                   ? Center(child: Text('Error: $_errorMessage'))
                   : _distributionData == null
-                      ? const Center(child: Text('No distribution data available'))
+                      ? const Center(
+                          child: Text('No distribution data available'))
                       : _buildDistributionContent(),
         ),
       ],
@@ -134,12 +140,12 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
     final data = _distributionData!;
 
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
         // Statistics
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -160,9 +166,9 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
         const SizedBox(height: 16),
 
         // Knot Type Distribution
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -186,9 +192,9 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
         const SizedBox(height: 16),
 
         // Crossing Number Distribution
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -212,9 +218,9 @@ class _KnotDistributionTabState extends State<KnotDistributionTab> {
         const SizedBox(height: 16),
 
         // Writhe Distribution
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

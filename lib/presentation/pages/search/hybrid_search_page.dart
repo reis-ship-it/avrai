@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
@@ -10,6 +11,8 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class HybridSearchPage extends StatefulWidget {
   const HybridSearchPage({super.key});
@@ -92,12 +95,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Location services are disabled. Please enable them.'),
-              backgroundColor: AppTheme.warningColor,
-            ),
+          context.showWarning(
+            'Location services are disabled. Please enable them.',
           );
         }
         return;
@@ -108,12 +107,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permissions are denied.'),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
+            context.showError('Location permissions are denied.');
           }
           return;
         }
@@ -121,12 +115,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
       if (permission == LocationPermission.deniedForever) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Location permissions are permanently denied. Please enable them in settings.'),
-              backgroundColor: AppTheme.errorColor,
-            ),
+          context.showError(
+            'Location permissions are permanently denied. Please enable them in settings.',
           );
         }
         return;
@@ -148,12 +138,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error getting location: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error getting location: $e');
       }
     }
   }
@@ -176,15 +161,12 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       body: Column(
         children: [
           // Search Header with OUR_GUTS.md Info
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: AppColors.grey100,
-              border: Border(
-                bottom: BorderSide(color: AppColors.grey200),
-              ),
-            ),
-            child: const Column(
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMd),
+            color: AppColors.grey100,
+            borderColor: AppColors.grey200,
+            radius: 0,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -194,10 +176,10 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                     Expanded(
                       child: Text(
                         'Community-First Search',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                   ],
@@ -205,10 +187,9 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                 SizedBox(height: 4),
                 Text(
                   'Per OUR_GUTS.md: Community spots are prioritized over external data sources for authentic, local knowledge.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -216,7 +197,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
           // Search Bar
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Row(
               children: [
                 Expanded(
@@ -270,7 +251,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           if (_showFilters) _buildFilters(),
 
           // Results
-          const Expanded(
+          Expanded(
             child: HybridSearchResults(),
           ),
         ],
@@ -279,14 +260,12 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
   }
 
   Widget _buildFilters() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: const BoxDecoration(
-        color: AppColors.grey100,
-        border: Border(
-          bottom: BorderSide(color: AppColors.grey300),
-        ),
-      ),
+    return PortalSurface(
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
+      color: AppColors.grey100,
+      borderColor: AppColors.grey300,
+      radius: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -300,7 +279,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
           // External Data Toggle
           SwitchListTile(
-            title: const Text('Include External Data'),
+            title: Text('Include External Data'),
             subtitle: Text(
               _includeExternal
                   ? 'Google Places and OpenStreetMap included'
@@ -323,8 +302,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
           // Reservation Available Filter
           SwitchListTile(
-            title: const Text('Reservations Available'),
-            subtitle: const Text(
+            title: Text('Reservations Available'),
+            subtitle: Text(
               'Show only spots that accept reservations',
             ),
             value: _reservationAvailable,

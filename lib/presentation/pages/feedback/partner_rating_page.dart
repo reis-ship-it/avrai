@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/services/events/post_event_feedback_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Partner Rating Page
 ///
@@ -66,12 +69,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
   Future<void> _submitRating() async {
     if (!_formKey.currentState!.validate()) return;
     if (_overallRating == 0.0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please provide an overall rating'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please provide an overall rating');
       return;
     }
 
@@ -122,12 +120,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Thank you for your rating!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Thank you for your rating!');
       }
     } catch (e) {
       setState(() {
@@ -150,58 +143,58 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(context.spacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Partner Info
                 _buildPartnerInfo(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Overall Rating
                 _buildOverallRating(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Detailed Ratings
                 _buildDetailedRatings(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Would Partner Again
                 _buildWouldPartnerAgain(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Positive Feedback
                 _buildPositives(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Improvement Suggestions
                 _buildImprovements(),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing.xl),
 
                 // Error Display
                 if (_error != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3)),
-                    ),
+                  PortalSurface(
+                    padding: EdgeInsets.all(context.spacing.md),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderColor: AppColors.error.withValues(alpha: 0.3),
+                    radius: context.radius.sm,
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline, color: AppColors.error),
-                        const SizedBox(width: 12),
+                        SizedBox(width: context.spacing.sm),
                         Expanded(
                           child: Text(
                             _error!,
-                            style: const TextStyle(color: AppColors.error),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.error),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.spacing.xl),
                 ],
 
                 // Submit Button
@@ -210,7 +203,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    minimumSize: const Size(double.infinity, 48),
+                    minimumSize: Size(double.infinity, context.spacing.xxl),
                   ),
                   child: _isSubmitting
                       ? const SizedBox(
@@ -222,7 +215,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
                                 AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Submit Rating'),
+                      : Text('Submit Rating'),
                 ),
               ],
             ),
@@ -233,40 +226,35 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
   }
 
   Widget _buildPartnerInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Rate Your Partner',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             'Event: ${widget.event.title}',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: context.spacing.xxs),
           Text(
             'Role: ${_getRoleDisplayName(widget.partnershipRole)}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -277,15 +265,14 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Overall Rating *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
@@ -297,7 +284,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
                 });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.xxs),
                 child: Icon(
                   _overallRating >= starValue ? Icons.star : Icons.star_border,
                   size: 48,
@@ -310,14 +297,13 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           }),
         ),
         if (_overallRating > 0) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Center(
             child: Text(
               '${_overallRating.toStringAsFixed(1)} out of 5',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -329,27 +315,26 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Detailed Ratings',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         _buildRatingSlider('Professionalism', _professionalism, (value) {
           setState(() {
             _professionalism = value;
           });
         }),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         _buildRatingSlider('Communication', _communication, (value) {
           setState(() {
             _communication = value;
           });
         }),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         _buildRatingSlider('Reliability', _reliability, (value) {
           setState(() {
             _reliability = value;
@@ -369,22 +354,20 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             Text(
               value > 0 ? '${value.toStringAsFixed(1)} / 5.0' : 'Not rated',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Slider(
           value: value,
           min: 0.0,
@@ -402,15 +385,14 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Would you partner again? *',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
@@ -422,7 +404,7 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
                 });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.xxs),
                 child: Icon(
                   _wouldPartnerAgain >= starValue
                       ? Icons.star
@@ -437,14 +419,13 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
           }),
         ),
         if (_wouldPartnerAgain > 0) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Center(
             child: Text(
               _getWouldPartnerAgainText(_wouldPartnerAgain),
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -456,15 +437,14 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Positive Feedback (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _positivesController,
           maxLines: 3,
@@ -485,7 +465,10 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
       ],
     );
@@ -495,15 +478,14 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Improvement Suggestions (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         TextFormField(
           controller: _improvementsController,
           maxLines: 3,
@@ -524,7 +506,10 @@ class _PartnerRatingPageState extends State<PartnerRatingPage> {
             filled: true,
             fillColor: AppColors.surface,
           ),
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textPrimary),
         ),
       ],
     );

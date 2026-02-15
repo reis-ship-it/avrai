@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -26,6 +29,7 @@ import 'package:avrai/presentation/widgets/reservations/special_requests_widget.
 import 'package:avrai/presentation/widgets/reservations/reservation_suggestions_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Reservation Creation Page
 /// Phase 15: Reservation System Implementation
@@ -490,14 +494,13 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
 
       // Navigate to confirmation page
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ReservationConfirmationPage(
-              reservation: reservation,
-              compatibilityScore: result.compatibilityScore,
-              queuePosition: result.queuePosition,
-              waitlistPosition: result.waitlistPosition,
-            ),
+        AppNavigator.replaceBuilder(
+          context,
+          builder: (context) => ReservationConfirmationPage(
+            reservation: reservation,
+            compatibilityScore: result.compatibilityScore,
+            queuePosition: result.queuePosition,
+            waitlistPosition: result.waitlistPosition,
           ),
         );
       }
@@ -525,10 +528,10 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
       body: _currentUser == null
           ? Semantics(
               label: 'Loading user information',
-              child: const Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator()),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -538,17 +541,18 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                       Semantics(
                         label: 'Error: $_error',
                         liveRegion: true,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: AppTheme.errorColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.errorColor),
-                          ),
+                        child: PortalSurface(
+                          padding: const EdgeInsets.all(kSpaceSm),
+                          margin: const EdgeInsets.only(bottom: kSpaceMd),
+                          color: AppTheme.errorColor.withValues(alpha: 0.1),
+                          borderColor: AppTheme.errorColor,
+                          radius: 8,
                           child: Text(
                             _error!,
-                            style: const TextStyle(color: AppTheme.errorColor),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppTheme.errorColor),
                           ),
                         ),
                       ),
@@ -753,8 +757,8 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     // Availability Result
                     if (_isCheckingAvailability)
                       Container(
-                        padding: const EdgeInsets.all(16),
-                        child: const Row(
+                        padding: const EdgeInsets.all(kSpaceMd),
+                        child: Row(
                           children: [
                             SizedBox(
                               width: 16,
@@ -768,7 +772,10 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                             SizedBox(width: 8),
                             Text(
                               'Checking availability...',
-                              style: TextStyle(color: AppColors.textSecondary),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -776,17 +783,18 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                     else if (_availabilityResult != null &&
                         !_availabilityResult!.isAvailable &&
                         !_showWaitlist)
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.errorColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppTheme.errorColor),
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceMd),
+                        color: AppTheme.errorColor.withValues(alpha: 0.1),
+                        borderColor: AppTheme.errorColor,
+                        radius: 8,
                         child: Text(
                           _availabilityResult!.reason ??
                               'Reservation not available',
-                          style: const TextStyle(color: AppTheme.errorColor),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppTheme.errorColor),
                         ),
                       ),
 
@@ -809,12 +817,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                           if (mounted && entry != null) {
                             // Create a temporary reservation for confirmation page
                             // In real implementation, this would be handled by the controller
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Added to waitlist!'),
-                                backgroundColor: AppTheme.successColor,
-                              ),
-                            );
+                            context.showSuccess('Added to waitlist!');
                             Navigator.of(context).pop();
                           }
                         },
@@ -832,8 +835,8 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                       Semantics(
                         label: 'Calculating compatibility score',
                         child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: const Row(
+                          padding: const EdgeInsets.all(kSpaceMd),
+                          child: Row(
                             children: [
                               SizedBox(
                                 width: 16,
@@ -847,8 +850,10 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                               SizedBox(width: 8),
                               Text(
                                 'Calculating compatibility...',
-                                style:
-                                    TextStyle(color: AppColors.textSecondary),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.textSecondary),
                               ),
                             ],
                           ),
@@ -858,13 +863,11 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                       Semantics(
                         label:
                             'Quantum compatibility score: ${(_compatibilityScore! * 100).toStringAsFixed(0)} percent',
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.primaryColor),
-                          ),
+                        child: PortalSurface(
+                          padding: const EdgeInsets.all(kSpaceMd),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                          borderColor: AppTheme.primaryColor,
+                          radius: 8,
                           child: Row(
                             children: [
                               Semantics(
@@ -875,11 +878,13 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                               const SizedBox(width: 8),
                               Text(
                                 'Quantum Compatibility: ${(_compatibilityScore! * 100).toStringAsFixed(0)}%',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryColor,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.primaryColor,
+                                    ),
                               ),
                             ],
                           ),
@@ -919,7 +924,8 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primaryColor,
                           foregroundColor: AppColors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding:
+                              const EdgeInsets.symmetric(vertical: kSpaceMd),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -934,10 +940,12 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
                                       AppColors.white),
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Create Reservation',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                       ),
                     ),

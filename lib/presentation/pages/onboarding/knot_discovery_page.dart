@@ -7,6 +7,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_knot/models/knot/knot_community.dart';
@@ -61,6 +62,7 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
   bool _isLoadingKnot = true;
   bool _isLoadingTribes = false;
   bool _isLoadingGroup = false;
+  bool _hasShownKnotBirthNotice = false;
   String? _error;
 
   @override
@@ -200,16 +202,14 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (_hasShownKnotBirthNotice) return;
       if (widget.knotBirthOutcome == null ||
           widget.knotBirthOutcome == 'completed') {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Knot birth used fallback mode (${widget.knotBirthReason ?? widget.knotBirthOutcome}).',
-          ),
-        ),
+      _hasShownKnotBirthNotice = true;
+      context.showWarning(
+        'Knot birth used fallback mode (${widget.knotBirthReason ?? widget.knotBirthOutcome}).',
       );
     });
 
@@ -330,18 +330,14 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
                       onRefresh: _loadTribes,
                       onTribeSelected: (tribe) {
                         // TODO: Navigate to community page or show details
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Selected: ${tribe.community.name}'),
-                          ),
-                        );
+                        context.showInfo('Selected: ${tribe.community.name}');
                       },
                     ),
                     // Group tab
                     _onboardingGroup.isEmpty && !_isLoadingGroup
                         ? Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(32.0),
+                              padding: EdgeInsets.all(spacing.xxl),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [

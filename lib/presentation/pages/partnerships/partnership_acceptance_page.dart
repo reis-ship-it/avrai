@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/events/event_partnership.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
@@ -7,12 +8,14 @@ import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnership Acceptance Page
 ///
@@ -86,12 +89,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Partnership accepted!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Partnership accepted!');
       }
     } catch (e) {
       setState(() {
@@ -99,12 +97,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error accepting partnership: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error accepting partnership: $e');
       }
     }
   }
@@ -113,20 +106,20 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Decline Partnership?'),
-        content: const Text(
-            'Are you sure you want to decline this partnership proposal?'),
+        title: Text('Decline Partnership?'),
+        content:
+            Text('Are you sure you want to decline this partnership proposal?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.error,
             ),
-            child: const Text('Decline'),
+            child: Text('Decline'),
           ),
         ],
       ),
@@ -143,20 +136,11 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Partnership declined'),
-          ),
-        );
+        context.showWarning('Partnership declined');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error declining partnership: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error declining partnership: $e');
       }
     }
   }
@@ -190,30 +174,28 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
           children: [
             // Proposal Header
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Partnership Proposal',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: context.spacing.xs),
                   if (widget.partnership.user != null)
                     Text(
                       'from ${widget.partnership.user!.displayName}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   if (widget.partnership.vibeCompatibilityScore != null) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     CompatibilityBadge(
                       compatibility: widget.partnership.vibeCompatibilityScore!,
                     ),
@@ -222,25 +204,24 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Event Preview
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Event Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     _buildInfoRow(Icons.event, event.title),
                     _buildInfoRow(
                         Icons.calendar_today, _formatDateTime(event.startTime)),
@@ -256,30 +237,29 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Partnership Details
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Partnership Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     _buildInfoRow(Icons.handshake,
                         'Type: ${widget.partnership.type.displayName}'),
                     if (agreement != null &&
                         agreement.terms['revenueSplit'] != null) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: context.spacing.xs),
                       _buildInfoRow(
                         Icons.account_balance_wallet,
                         'Revenue Split: ${agreement.terms['revenueSplit']['userPercentage'].toStringAsFixed(0)}% / ${agreement.terms['revenueSplit']['businessPercentage'].toStringAsFixed(0)}%',
@@ -287,54 +267,55 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                     ],
                     if (widget
                         .partnership.sharedResponsibilities.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      const Text(
+                      SizedBox(height: context.spacing.sm),
+                      Text(
                         'Responsibilities:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: context.spacing.xs),
                       ...widget.partnership.sharedResponsibilities
                           .map((resp) => Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 8, bottom: 4),
+                                padding: EdgeInsets.only(
+                                  left: context.spacing.xs,
+                                  bottom: context.spacing.xxs,
+                                ),
                                 child: Row(
                                   children: [
                                     const Icon(Icons.check,
                                         size: 16,
                                         color: AppColors.electricGreen),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: context.spacing.xs),
                                     Text(
                                       resp,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.textPrimary,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: AppColors.textPrimary,
+                                          ),
                                     ),
                                   ],
                                 ),
                               )),
                     ],
                     if (agreement?.customArrangementDetails != null) ...[
-                      const SizedBox(height: 12),
-                      const Text(
+                      SizedBox(height: context.spacing.sm),
+                      Text(
                         'Custom Terms:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: context.spacing.xs),
                       Text(
                         agreement!.customArrangementDetails!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ],
@@ -342,24 +323,23 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Revenue Breakdown (if paid event)
             if (event.price != null && event.price! > 0) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Estimated Revenue Breakdown',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     if (revenueSplit != null)
                       RevenueSplitDisplay(
                         split: revenueSplit,
@@ -367,25 +347,25 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                         showLockStatus: false,
                       )
                     else
-                      const PortalSurface(
-                        padding: EdgeInsets.all(16),
+                      PortalSurface(
+                        padding: EdgeInsets.all(kSpaceMd),
                         child: Text(
                           'Revenue split will be calculated after event details are finalized',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Action Buttons
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(context.spacing.lg),
               child: Column(
                 children: [
                   SizedBox(
@@ -395,7 +375,8 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: context.spacing.md),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -409,16 +390,18 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                                 color: AppColors.white,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Accept Partnership',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
@@ -426,19 +409,20 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
                         side: const BorderSide(color: AppColors.grey300),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: context.spacing.md),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Decline'),
+                      child: Text('Decline'),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
           ],
         ),
       ),
@@ -447,18 +431,17 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 8),
+          SizedBox(width: context.spacing.xs),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],

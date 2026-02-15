@@ -10,6 +10,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/services/reservation/reservation_waitlist_service.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Waitlist Join Widget
 ///
@@ -128,7 +129,7 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
   Widget build(BuildContext context) {
     if (_position != null) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         decoration: BoxDecoration(
           color: AppTheme.primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
@@ -144,11 +145,10 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
                 Expanded(
                   child: Text(
                     'You are on the waitlist',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                        ),
                   ),
                 ),
               ],
@@ -156,18 +156,16 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
             const SizedBox(height: 8),
             Text(
               'Your position: #$_position',
-              style: const TextStyle(
-                color: AppTheme.primaryColor,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.primaryColor,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
               'You will be notified when a spot becomes available.',
-              style: const TextStyle(
-                color: AppTheme.primaryColor,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.primaryColor,
+                  ),
             ),
           ],
         ),
@@ -175,7 +173,7 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: AppTheme.warningColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -191,22 +189,20 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
               Expanded(
                 child: Text(
                   'Sold Out',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.warningColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.warningColor,
+                      ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'This event/spot is currently sold out. Join the waitlist to be notified if a spot becomes available.',
-            style: TextStyle(
-              color: AppTheme.warningColor,
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.warningColor,
+                ),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -228,7 +224,7 @@ class _WaitlistJoinWidgetState extends State<WaitlistJoinWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.warningColor,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceSm),
               ),
             ),
           ),

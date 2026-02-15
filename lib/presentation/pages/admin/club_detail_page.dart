@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Club/Community Detail Page
 /// View detailed information about a club/community and its members with AI agents
@@ -55,12 +58,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading club/community: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading club/community: $e');
       }
     }
   }
@@ -77,7 +75,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _data == null
               ? Center(
                   child: Column(
@@ -96,14 +94,14 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Header Card
-                      Card(
+                      PortalSurface(
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(kSpaceMd),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -149,8 +147,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                                 _data!.isClub
                                                     ? 'Club'
                                                     : 'Community',
-                                                style: const TextStyle(
-                                                    fontSize: 11),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall,
                                               ),
                                               padding: EdgeInsets.zero,
                                             ),
@@ -158,8 +157,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                             Chip(
                                               label: Text(
                                                 _data!.category,
-                                                style: const TextStyle(
-                                                    fontSize: 11),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall,
                                               ),
                                               padding: EdgeInsets.zero,
                                             ),
@@ -213,9 +213,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                       if (_data!.isClub &&
                           _data!.leaders != null &&
                           _data!.leaders!.isNotEmpty) ...[
-                        Card(
+                        PortalSurface(
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(kSpaceMd),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -251,9 +251,10 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                                 ?.toString()
                                                 .substring(0, 12) ??
                                             leaderId.substring(0, 12),
-                                        style: const TextStyle(
-                                            fontFamily: 'monospace',
-                                            fontSize: 11),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(fontFamily: 'monospace'),
                                       ),
                                     );
                                   }).toList(),
@@ -268,9 +269,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                       if (_data!.isClub &&
                           _data!.adminTeam != null &&
                           _data!.adminTeam!.isNotEmpty) ...[
-                        Card(
+                        PortalSurface(
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(kSpaceMd),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -306,9 +307,10 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                                 ?.toString()
                                                 .substring(0, 12) ??
                                             adminId.substring(0, 12),
-                                        style: const TextStyle(
-                                            fontFamily: 'monospace',
-                                            fontSize: 11),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(fontFamily: 'monospace'),
                                       ),
                                     );
                                   }).toList(),
@@ -321,9 +323,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                       ],
 
                       // Members with AI Agents Section
-                      Card(
+                      PortalSurface(
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(kSpaceMd),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -349,13 +351,13 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: AppColors.electricGreen
-                                      .withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                              PortalSurface(
+                                padding: const EdgeInsets.all(kSpaceSm),
+                                color: AppColors.electricGreen
+                                    .withValues(alpha: 0.1),
+                                borderColor: AppColors.electricGreen
+                                    .withValues(alpha: 0.2),
+                                radius: 8,
                                 child: Row(
                                   children: [
                                     const Icon(Icons.privacy_tip,
@@ -370,7 +372,6 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                             .bodySmall
                                             ?.copyWith(
                                               color: AppColors.grey700,
-                                              fontSize: 11,
                                             ),
                                       ),
                                     ),
@@ -387,8 +388,9 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                     _data!.adminTeam?.contains(memberId) ??
                                         false;
 
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 8),
+                                return PortalSurface(
+                                  margin:
+                                      const EdgeInsets.only(bottom: kSpaceXs),
                                   color:
                                       AppColors.grey500.withValues(alpha: 0.05),
                                   child: ExpansionTile(
@@ -417,21 +419,25 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                     ),
                                     title: Text(
                                       'Member: ${memberId.substring(0, 12)}...',
-                                      style: const TextStyle(
-                                        fontFamily: 'monospace',
-                                        fontSize: 12,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontFamily: 'monospace',
+                                          ),
                                     ),
                                     subtitle: Text(
                                       'AI Signature: ${aiAgent['ai_signature']?.toString().substring(0, 16) ?? 'N/A'}...',
-                                      style: const TextStyle(
-                                        fontFamily: 'monospace',
-                                        fontSize: 11,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontFamily: 'monospace',
+                                          ),
                                     ),
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.all(16),
+                                        padding: const EdgeInsets.all(kSpaceMd),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -456,13 +462,13 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
                                             _buildAIAgentInfo('AI Connections',
                                                 '${aiAgent['ai_connections'] ?? 0}'),
                                             if (isLeader)
-                                              const Chip(
+                                              Chip(
                                                 label: Text('Leader'),
                                                 avatar:
                                                     Icon(Icons.star, size: 16),
                                               ),
                                             if (isAdmin)
-                                              const Chip(
+                                              Chip(
                                                 label: Text('Admin'),
                                                 avatar: Icon(
                                                     Icons.admin_panel_settings,
@@ -494,21 +500,25 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
         children: [
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             label,
-            style: const TextStyle(fontSize: 10),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
     );
   }
 
   Widget _buildAIAgentInfo(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -516,19 +526,17 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
             width: 120,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'monospace',
+                  ),
             ),
           ),
         ],

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Product Contribution Widget
-/// 
+///
 /// Allows brands to specify product contributions for sponsorships.
 /// Tracks product name, quantity, and value.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class ProductContributionWidget extends StatefulWidget {
   final String? productName;
@@ -27,7 +28,8 @@ class ProductContributionWidget extends StatefulWidget {
   });
 
   @override
-  State<ProductContributionWidget> createState() => _ProductContributionWidgetState();
+  State<ProductContributionWidget> createState() =>
+      _ProductContributionWidgetState();
 }
 
 class _ProductContributionWidgetState extends State<ProductContributionWidget> {
@@ -64,17 +66,16 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Product Contribution',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -89,7 +90,8 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: const Icon(Icons.inventory_2, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.inventory_2,
+                    color: AppColors.textSecondary),
               ),
               onChanged: (value) {
                 widget.onProductNameChanged?.call(value);
@@ -100,13 +102,12 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
             // Quantity
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Quantity',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                 ),
                 Row(
@@ -129,18 +130,18 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kSpaceMd, vertical: kSpaceXs),
                       decoration: BoxDecoration(
                         color: AppColors.grey100,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '$_quantity',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                     IconButton(
@@ -174,9 +175,11 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: const Icon(Icons.attach_money, color: AppColors.textSecondary),
+                prefixIcon: const Icon(Icons.attach_money,
+                    color: AppColors.textSecondary),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               onChanged: (value) {
                 _unitPrice = double.tryParse(value);
                 _updateTotalValue();
@@ -187,7 +190,7 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
             // Total Value
             if (totalValue != null) ...[
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -195,21 +198,19 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Total Product Value',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     Text(
                       '\$${totalValue.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                          ),
                     ),
                   ],
                 ),
@@ -229,4 +230,3 @@ class _ProductContributionWidgetState extends State<ProductContributionWidget> {
     }
   }
 }
-

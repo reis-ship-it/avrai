@@ -6,11 +6,14 @@
 // Page shown after successful reservation creation
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Confirmation Page
 ///
@@ -49,7 +52,7 @@ class ReservationConfirmationPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(kSpaceXl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -57,12 +60,9 @@ class ReservationConfirmationPage extends StatelessWidget {
                 const SizedBox(height: 40),
 
                 // Success Icon
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppTheme.successColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor: AppTheme.successColor.withValues(alpha: 0.1),
                   child: const Icon(
                     Icons.check_circle,
                     size: 80,
@@ -73,13 +73,12 @@ class ReservationConfirmationPage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Success Message
-                const Text(
+                Text(
                   'Reservation Confirmed!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -91,34 +90,26 @@ class ReservationConfirmationPage extends StatelessWidget {
                       : waitlistPosition != null
                           ? 'Your reservation has been confirmed and added to the waitlist.'
                           : 'Your reservation has been confirmed.',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 32),
 
                 // Reservation Details Card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.grey300),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceMdWide),
+                  color: AppColors.white,
+                  borderColor: AppColors.grey300,
+                  radius: 12,
+                  elevation: 0,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildInfoRow(
+                        context,
                         Icons.event,
                         'Type',
                         reservation.type
@@ -129,12 +120,14 @@ class ReservationConfirmationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       _buildInfoRow(
+                        context,
                         Icons.calendar_today,
                         'Date & Time',
                         _formatDateTime(reservation.reservationTime),
                       ),
                       const SizedBox(height: 12),
                       _buildInfoRow(
+                        context,
                         Icons.people,
                         'Party Size',
                         reservation.partySize.toString(),
@@ -142,6 +135,7 @@ class ReservationConfirmationPage extends StatelessWidget {
                       if (reservation.ticketCount != reservation.partySize) ...[
                         const SizedBox(height: 12),
                         _buildInfoRow(
+                          context,
                           Icons.confirmation_number,
                           'Tickets',
                           reservation.ticketCount.toString(),
@@ -150,6 +144,7 @@ class ReservationConfirmationPage extends StatelessWidget {
                       if (reservation.ticketPrice != null) ...[
                         const SizedBox(height: 12),
                         _buildInfoRow(
+                          context,
                           Icons.attach_money,
                           'Ticket Price',
                           '\$${reservation.ticketPrice!.toStringAsFixed(2)}',
@@ -158,6 +153,7 @@ class ReservationConfirmationPage extends StatelessWidget {
                       if (reservation.depositAmount != null) ...[
                         const SizedBox(height: 12),
                         _buildInfoRow(
+                          context,
                           Icons.payment,
                           'Deposit',
                           '\$${reservation.depositAmount!.toStringAsFixed(2)}',
@@ -167,6 +163,7 @@ class ReservationConfirmationPage extends StatelessWidget {
                           reservation.specialRequests!.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         _buildInfoRow(
+                          context,
                           Icons.note,
                           'Special Requests',
                           reservation.specialRequests!,
@@ -175,6 +172,7 @@ class ReservationConfirmationPage extends StatelessWidget {
                       if (compatibilityScore != null) ...[
                         const SizedBox(height: 12),
                         _buildInfoRow(
+                          context,
                           Icons.star,
                           'Compatibility',
                           '${(compatibilityScore! * 100).toStringAsFixed(0)}%',
@@ -187,13 +185,11 @@ class ReservationConfirmationPage extends StatelessWidget {
                 // Queue Position (if applicable)
                 if (queuePosition != null) ...[
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.primaryColor),
-                    ),
+                  PortalSurface(
+                    padding: const EdgeInsets.all(kSpaceMd),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    borderColor: AppTheme.primaryColor,
+                    radius: 8,
                     child: Row(
                       children: [
                         const Icon(Icons.queue, color: AppTheme.primaryColor),
@@ -201,10 +197,12 @@ class ReservationConfirmationPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Your queue position: #$queuePosition',
-                            style: const TextStyle(
-                              color: AppTheme.primaryColor,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.primaryColor,
+                                ),
                           ),
                         ),
                       ],
@@ -215,13 +213,11 @@ class ReservationConfirmationPage extends StatelessWidget {
                 // Waitlist Position (if applicable)
                 if (waitlistPosition != null) ...[
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.warningColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.warningColor),
-                    ),
+                  PortalSurface(
+                    padding: const EdgeInsets.all(kSpaceMd),
+                    color: AppTheme.warningColor.withValues(alpha: 0.1),
+                    borderColor: AppTheme.warningColor,
+                    radius: 8,
                     child: Row(
                       children: [
                         const Icon(Icons.access_time,
@@ -230,10 +226,12 @@ class ReservationConfirmationPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Your waitlist position: #$waitlistPosition',
-                            style: const TextStyle(
-                              color: AppTheme.warningColor,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.warningColor,
+                                ),
                           ),
                         ),
                       ],
@@ -248,21 +246,19 @@ class ReservationConfirmationPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      AppNavigator.replaceBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => ReservationDetailPage(
-                            reservationId: reservation.id,
-                          ),
+                        builder: (context) => ReservationDetailPage(
+                          reservationId: reservation.id,
                         ),
                       );
                     },
                     icon: const Icon(Icons.event_note, size: 20),
-                    label: const Text('View Reservation Details'),
+                    label: Text('View Reservation Details'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -276,9 +272,12 @@ class ReservationConfirmationPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: const Text(
+                  child: Text(
                     'Back to Home',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
               ],
@@ -289,7 +288,12 @@ class ReservationConfirmationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -301,20 +305,18 @@ class ReservationConfirmationPage extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),

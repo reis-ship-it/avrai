@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/events/event_template.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -7,9 +9,12 @@ import 'package:avrai/core/services/events/event_template_service.dart';
 import 'package:avrai/core/controllers/event_creation_controller.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/pages/events/event_published_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// OUR_GUTS.md: "The key opens doors to events"
 /// Easy Event Hosting - Phase 2: Quick Event Builder
@@ -108,8 +113,11 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         if (_currentStep > 0)
           TextButton(
             onPressed: _canGoBack && !_isLoading ? _previousStep : null,
-            child: const Text('Back',
-                style: TextStyle(color: AppTheme.primaryColor)),
+            child: Text('Back',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppTheme.primaryColor)),
           ),
       ],
       body: Column(
@@ -125,9 +133,13 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
   }
 
   Widget _buildProgressIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    return PortalSurface(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.xl,
+        vertical: context.spacing.md,
+      ),
       color: AppColors.surface,
+      radius: 0,
       child: Row(
         children: List.generate(4, (index) {
           final isActive = index == _currentStep;
@@ -136,12 +148,16 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           return Expanded(
             child: Container(
               height: 4,
-              margin: EdgeInsets.only(right: index < 3 ? 8 : 0),
-              decoration: BoxDecoration(
-                color: isCompleted || isActive
-                    ? AppTheme.primaryColor
-                    : AppColors.grey300,
+              margin: EdgeInsets.only(
+                right: index < 3 ? context.spacing.xs : kSpaceNone,
+              ),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(2),
+                child: ColoredBox(
+                  color: isCompleted || isActive
+                      ? AppTheme.primaryColor
+                      : AppColors.grey300,
+                ),
               ),
             ),
           );
@@ -176,25 +192,23 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         : _templateService.getExpertTemplates();
 
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.spacing.xl),
       children: [
-        const Text(
+        Text(
           'Choose Event Type',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: context.spacing.xs),
+        Text(
           'Pick a template to get started quickly',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: context.spacing.xl),
         ...templates.map((template) => _buildTemplateCard(template)),
       ],
     );
@@ -211,74 +225,66 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           _price = template.suggestedPrice;
         });
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryColor.withValues(alpha: 0.1)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-            width: 2,
-          ),
-        ),
+      child: PortalSurface(
+        margin: EdgeInsets.only(bottom: context.spacing.md),
+        padding: EdgeInsets.all(context.spacing.md),
+        color: isSelected
+            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+            : AppColors.surface,
+        borderColor: isSelected ? AppTheme.primaryColor : AppColors.grey300,
+        radius: context.radius.md,
         child: Row(
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Text(
-                  template.icon,
-                  style: const TextStyle(fontSize: 32),
-                ),
+            CircleAvatar(
+              radius: context.radius.xl,
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+              child: Text(
+                template.icon,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: context.spacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     template.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: context.spacing.xxs),
                   Text(
                     '${template.defaultDuration.inHours}h • ${template.recommendedSpotCount} spots • ${template.getPriceDisplay()}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   if (template.tags.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.spacing.xs),
                     Wrap(
                       spacing: 6,
                       children: template.tags.take(3).map((tag) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
+                        return Chip(
+                          label: Text(
                             tag,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: AppTheme.primaryColor,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.primaryColor,
+                                ),
+                          ),
+                          side: BorderSide.none,
+                          backgroundColor:
+                              AppTheme.primaryColor.withValues(alpha: 0.2),
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: kSpaceXxs,
                           ),
                         );
                       }).toList(),
@@ -302,41 +308,38 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
 
   Widget _buildDateTimeSelection() {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.spacing.xl),
       children: [
-        const Text(
+        Text(
           'When?',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: context.spacing.xs),
+        Text(
           'Choose date and time for your event',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
 
         // Quick date options
-        const Text(
+        Text(
           'Quick Options',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         _buildQuickDateOption('This Weekend', _suggestNextWeekend()),
         _buildQuickDateOption(
             'Next Weekend', _suggestNextWeekend().add(const Duration(days: 7))),
 
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
 
         // Custom date picker
         ElevatedButton.icon(
@@ -350,7 +353,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.surface,
             foregroundColor: AppColors.textPrimary,
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(context.spacing.lg),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: const BorderSide(color: AppColors.grey300),
@@ -369,19 +372,14 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
 
     return GestureDetector(
       onTap: () => setState(() => _selectedDateTime = dateTime),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryColor.withValues(alpha: 0.1)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-            width: 2,
-          ),
-        ),
+      child: PortalSurface(
+        margin: EdgeInsets.only(bottom: context.spacing.sm),
+        padding: EdgeInsets.all(context.spacing.lg),
+        color: isSelected
+            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+            : AppColors.surface,
+        borderColor: isSelected ? AppTheme.primaryColor : AppColors.grey300,
+        radius: context.radius.md,
         child: Row(
           children: [
             Expanded(
@@ -390,18 +388,16 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   Text(
                     _formatDateTime(dateTime),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -472,25 +468,23 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
 
   Widget _buildSpotSelection() {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.spacing.xl),
       children: [
-        const Text(
+        Text(
           'Choose Spots',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.spacing.xs),
         Text(
           'Select ${_selectedTemplate?.recommendedSpotCount ?? 3} spots for your event',
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
 
         // Placeholder for spot selection
         // In full implementation, this would show user's spots in category
@@ -500,15 +494,21 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
               Icon(Icons.location_on,
                   size: 64,
                   color: AppTheme.primaryColor.withValues(alpha: 0.5)),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: context.spacing.md),
+              Text(
                 'Spot selection UI coming soon',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: context.spacing.xs),
+              Text(
                 'For now, spots will be selected automatically',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -538,33 +538,30 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
     );
 
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.spacing.xl),
       children: [
-        const Text(
+        Text(
           'Review & Publish',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: context.spacing.xs),
+        Text(
           'Everything look good?',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: context.spacing.xxl),
 
         // Event preview card
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        PortalSurface(
+          padding: EdgeInsets.all(context.spacing.lg),
+          color: AppColors.surface,
+          borderColor: AppColors.grey300,
+          radius: context.radius.md,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -572,22 +569,21 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 children: [
                   Text(
                     _selectedTemplate!.icon,
-                    style: const TextStyle(fontSize: 32),
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: context.spacing.sm),
                   Expanded(
                     child: Text(
                       event.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               _buildInfoRow(
                   Icons.calendar_today, _formatDateTime(event.startTime)),
               _buildInfoRow(Icons.schedule,
@@ -597,14 +593,13 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
               if (event.price != null)
                 _buildInfoRow(
                     Icons.attach_money, '\$${event.price!.toStringAsFixed(0)}'),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               Text(
                 event.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
               ),
             ],
           ),
@@ -615,17 +610,16 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 20, color: AppTheme.primaryColor),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Text(
             text,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -637,44 +631,33 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
   // ========================================================================
 
   Widget _buildNavigationBar() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.xl),
+      color: AppColors.surface,
+      radius: 0,
+      elevation: 0.35,
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (_error != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border:
-                      Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-                ),
+              PortalSurface(
+                margin: EdgeInsets.only(bottom: context.spacing.sm),
+                padding: EdgeInsets.all(context.spacing.sm),
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderColor: AppColors.error.withValues(alpha: 0.3),
+                radius: context.radius.sm,
                 child: Row(
                   children: [
                     const Icon(Icons.error_outline,
                         color: AppColors.error, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: context.spacing.xs),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: const TextStyle(
-                          color: AppColors.error,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.error,
+                            ),
                       ),
                     ),
                   ],
@@ -687,7 +670,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: context.spacing.md),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -703,10 +686,9 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
                       )
                     : Text(
                         _currentStep == 3 ? 'Publish Event' : 'Continue',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
               ),
             ),
@@ -805,23 +787,16 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_error!),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError(_error!);
         }
         return;
       }
 
       if (mounted && result.event != null) {
         // Navigate to success page
-        Navigator.pushReplacement(
+        AppNavigator.replaceBuilder(
           context,
-          MaterialPageRoute(
-            builder: (context) => EventPublishedPage(event: result.event!),
-          ),
+          builder: (context) => EventPublishedPage(event: result.event!),
         );
       }
     } catch (e) {
@@ -831,12 +806,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }

@@ -7,6 +7,7 @@ import 'package:avrai/core/services/device/wearable_data_service.dart';
 import 'package:avrai_knot/models/dynamic_knot.dart';
 import 'package:avrai/presentation/widgets/knot/breathing_knot_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Page for knot meditation feature
 /// Phase 4: Dynamic Knots (Mood/Energy)
@@ -150,7 +151,7 @@ class _KnotMeditationPageState extends State<KnotMeditationPage> {
       body: Center(
         child: _error != null
             ? Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -220,8 +221,8 @@ class _KnotMeditationPageState extends State<KnotMeditationPage> {
                         label: const Text('Start Meditation'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
+                            horizontal: kSpaceXl,
+                            vertical: kSpaceMd,
                           ),
                         ),
                       ),

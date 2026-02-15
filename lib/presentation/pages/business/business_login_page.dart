@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/services/business/business_auth_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Login Page
 /// Secure login for business account access
@@ -107,10 +110,9 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
   }
 
   void _navigateToDashboard() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const BusinessDashboardPage(),
-      ),
+    AppNavigator.replaceBuilder(
+      context,
+      builder: (context) => const BusinessDashboardPage(),
     );
   }
 
@@ -139,7 +141,7 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(kSpaceLg),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Form(
@@ -247,13 +249,11 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
 
                     // Error message
                     if (_errorMessage != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.error),
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceSm),
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        borderColor: AppColors.error,
+                        radius: 8,
                         child: Row(
                           children: [
                             const Icon(Icons.error_outline,
@@ -262,7 +262,10 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                             Expanded(
                               child: Text(
                                 _errorMessage!,
-                                style: const TextStyle(color: AppColors.error),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.error),
                               ),
                             ),
                           ],
@@ -273,16 +276,14 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
 
                     // Lockout message
                     if (_lockoutRemaining != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.warning),
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceSm),
+                        color: AppColors.warning.withValues(alpha: 0.1),
+                        borderColor: AppColors.warning,
+                        radius: 8,
                         child: Column(
                           children: [
-                            const Row(
+                            Row(
                               children: [
                                 Icon(Icons.lock_clock,
                                     color: AppColors.warning),
@@ -290,10 +291,13 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                                 Expanded(
                                   child: Text(
                                     'Account locked',
-                                    style: TextStyle(
-                                      color: AppColors.warning,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.warning,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -301,7 +305,10 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                             const SizedBox(height: 4),
                             Text(
                               'Try again in ${_lockoutRemaining!.inMinutes} minutes',
-                              style: const TextStyle(color: AppColors.warning),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: AppColors.warning),
                             ),
                           ],
                         ),
@@ -314,10 +321,9 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                         _remainingAttempts! > 0) ...[
                       Text(
                         '$_remainingAttempts attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
-                        style: const TextStyle(
-                          color: AppColors.warning,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.warning,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -331,7 +337,7 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -346,12 +352,14 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
                                     AppColors.white),
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Login',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                     ),
                     const SizedBox(height: 24),

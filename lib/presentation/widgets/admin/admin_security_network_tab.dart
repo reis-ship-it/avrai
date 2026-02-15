@@ -4,6 +4,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/monitoring/network_activity_monitor.dart';
 import 'package:avrai/core/monitoring/ai2ai_network_activity_event.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Security / Network tab for God-Mode dashboard.
 ///
@@ -61,7 +62,7 @@ class _AdminSecurityNetworkTabState extends State<AdminSecurityNetworkTab> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -83,15 +84,18 @@ class _AdminSecurityNetworkTabState extends State<AdminSecurityNetworkTab> {
             if (_monitor == null)
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Row(
                     children: [
                       Icon(Icons.info_outline, color: AppColors.textSecondary),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Network Activity Monitor not available.',
-                          style: TextStyle(color: AppColors.textSecondary),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                       ),
                     ],
@@ -103,7 +107,7 @@ class _AdminSecurityNetworkTabState extends State<AdminSecurityNetworkTab> {
             if (_events.isEmpty && _monitor != null)
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(kSpaceLg),
                   child: Center(
                     child: Text(
                       'No recent AI2AI network events.',
@@ -124,17 +128,17 @@ class _AdminSecurityNetworkTabState extends State<AdminSecurityNetworkTab> {
       BuildContext context, AI2AINetworkActivityEvent event) {
     final color = _colorForEventType(event.eventType);
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: kSpaceXs),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(kSpaceSm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceXs, vertical: kSpaceXxs),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),

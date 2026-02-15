@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying visual network graph of AI2AI connections
 class ConnectionVisualizationWidget extends StatelessWidget {
@@ -18,7 +19,7 @@ class ConnectionVisualizationWidget extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,7 +44,7 @@ class ConnectionVisualizationWidget extends StatelessWidget {
             const SizedBox(height: 16),
             if (overview.totalActiveConnections == 0)
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Center(
                   child: Column(
                     children: [
@@ -80,7 +81,7 @@ class ConnectionVisualizationWidget extends StatelessWidget {
   Widget _buildNetworkGraph(BuildContext context) {
     // Simplified network visualization
     // In a full implementation, this would use a graph library like flutter_graphview
-    
+
     return CustomPaint(
       painter: NetworkGraphPainter(
         connections: overview.topPerformingConnections,
@@ -163,14 +164,17 @@ class NetworkGraphPainter extends CustomPainter {
     canvas.drawCircle(center, 20, centerPaint);
 
     // Draw connection nodes in a circle around center
-    final nodeCount = totalConnections.clamp(0, 12); // Limit to 12 nodes for clarity
+    final nodeCount =
+        totalConnections.clamp(0, 12); // Limit to 12 nodes for clarity
     final angleStep = (2 * 3.14159) / nodeCount;
 
     for (int i = 0; i < nodeCount; i++) {
       // ignore: unused_local_variable - Reserved for future circular layout implementation
       final angle = angleStep * i;
-      final nodeX = center.dx + radius * (1 + 0.3 * (i % 3)) * (i.isEven ? 1 : -1) * (i < 6 ? 1 : -1);
-      final nodeY = center.dy + radius * (1 + 0.3 * (i % 3)) * (i < 3 || i > 9 ? 1 : -1);
+      final nodeX = center.dx +
+          radius * (1 + 0.3 * (i % 3)) * (i.isEven ? 1 : -1) * (i < 6 ? 1 : -1);
+      final nodeY =
+          center.dy + radius * (1 + 0.3 * (i % 3)) * (i < 3 || i > 9 ? 1 : -1);
       final nodePosition = Offset(nodeX, nodeY);
 
       // Determine node color
@@ -179,7 +183,7 @@ class NetworkGraphPainter extends CustomPainter {
           : (i < connections.length + needsAttention.length
               ? needsAttention[i - connections.length]
               : 'node_$i');
-      
+
       final isTopPerforming = connections.contains(nodeId);
       final needsAttn = needsAttention.contains(nodeId);
 
@@ -217,4 +221,3 @@ class NetworkGraphPainter extends CustomPainter {
         oldDelegate.totalConnections != totalConnections;
   }
 }
-

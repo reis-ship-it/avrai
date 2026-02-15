@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Actions Widget
 ///
@@ -67,8 +68,8 @@ class ReservationActionsWidget extends StatelessWidget {
         // Modification Info
         if (!canModify && modificationReason != null)
           Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(kSpaceSm),
+            margin: const EdgeInsets.only(bottom: kSpaceMd),
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -88,11 +89,10 @@ class ReservationActionsWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         modificationReason!,
-                        style: const TextStyle(
-                          color: AppTheme.warningColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.warningColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
                   ],
@@ -101,10 +101,9 @@ class ReservationActionsWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Modifications: $modificationCount/3',
-                    style: const TextStyle(
-                      color: AppTheme.warningColor,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.warningColor,
+                        ),
                   ),
                 ],
               ],
@@ -116,11 +115,11 @@ class ReservationActionsWidget extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: isLoading ? null : onCheckIn,
             icon: const Icon(Icons.check_circle),
-            label: const Text('Check In'),
+            label: Text('Check In'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.successColor,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -141,7 +140,7 @@ class ReservationActionsWidget extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: AppTheme.primaryColor,
               side: const BorderSide(color: AppTheme.primaryColor),
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -150,7 +149,8 @@ class ReservationActionsWidget extends StatelessWidget {
         ],
 
         // Dispute Button
-        if (reservation.disputeStatus == DisputeStatus.none && onDispute != null &&
+        if (reservation.disputeStatus == DisputeStatus.none &&
+            onDispute != null &&
             (reservation.status == ReservationStatus.cancelled ||
                 !_isActive)) ...[
           if (_canCheckIn || (canModify && _isActive))
@@ -158,11 +158,11 @@ class ReservationActionsWidget extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: isLoading ? null : onDispute,
             icon: const Icon(Icons.help_outline),
-            label: const Text('File Dispute'),
+            label: Text('File Dispute'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppTheme.warningColor,
               side: const BorderSide(color: AppTheme.warningColor),
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -174,18 +174,19 @@ class ReservationActionsWidget extends StatelessWidget {
         if (_canCancel && onCancel != null) ...[
           if (_canCheckIn ||
               (canModify && _isActive) ||
-              (reservation.disputeStatus == DisputeStatus.none && onDispute != null &&
+              (reservation.disputeStatus == DisputeStatus.none &&
+                  onDispute != null &&
                   (reservation.status == ReservationStatus.cancelled ||
                       !_isActive)))
             const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: isLoading ? null : onCancel,
             icon: const Icon(Icons.cancel),
-            label: const Text('Cancel Reservation'),
+            label: Text('Cancel Reservation'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorColor,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

@@ -13,6 +13,9 @@ import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/core/services/misc/legal_document_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Checkout Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -166,6 +169,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final ticketPrice = widget.event.price ?? 0.0;
     final subtotal = ticketPrice * _quantity;
     final totalAmount = subtotal + _salesTax;
@@ -184,52 +188,49 @@ class _CheckoutPageState extends State<CheckoutPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Event Details Card
-            Container(
-              padding: const EdgeInsets.all(20),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
+              borderColor: AppColors.grey300,
+              radius: 0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CircleAvatar(
+                        radius: context.radius.xl,
+                        backgroundColor:
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
                         child: Text(
                           widget.event.getEventTypeEmoji(),
-                          style: const TextStyle(fontSize: 32),
+                          style: textTheme.headlineMedium,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: context.spacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.event.title,
-                              style: const TextStyle(
-                                fontSize: 20,
+                              style: textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: context.spacing.xxs),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: textTheme.bodyMedium
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   _buildDetailRow(Icons.calendar_today,
                       _formatDateTime(widget.event.startTime)),
                   if (widget.event.location != null)
@@ -240,88 +241,79 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Order Summary
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Order Summary',
-                    style: TextStyle(
-                      fontSize: 20,
+                    style: textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Ticket Price
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
                           'Ticket Price',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.textPrimary),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
                         '\$${ticketPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: textTheme.bodyLarge?.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
 
                   // Subtotal
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
                           'Subtotal',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.textPrimary),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
                         '\$${subtotal.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: textTheme.bodyLarge?.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
 
                   // Sales Tax
                   if (_isLoadingTax)
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
                           child: Text(
                             'Sales Tax',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: textTheme.bodyLarge
+                                ?.copyWith(color: AppColors.textPrimary),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -336,7 +328,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
@@ -346,10 +338,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   Flexible(
                                     child: Text(
                                       'Sales Tax',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.textPrimary,
-                                      ),
+                                      style: textTheme.bodyLarge?.copyWith(
+                                          color: AppColors.textPrimary),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -365,8 +355,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             Flexible(
                               child: Text(
                                 'Tax-Exempt',
-                                style: TextStyle(
-                                  fontSize: 14,
+                                style: textTheme.bodyMedium?.copyWith(
                                   color: AppColors.electricGreen,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -376,13 +365,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ],
                         ),
                         if (_exemptionReason != null) ...[
-                          const SizedBox(height: 4),
+                          SizedBox(height: context.spacing.xxs),
                           Text(
                             _exemptionReason!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
                           ),
                         ],
                       ],
@@ -395,23 +382,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Flexible(
+                              Flexible(
                                 child: Text(
                                   'Sales Tax',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                  style: textTheme.bodyLarge
+                                      ?.copyWith(color: AppColors.textPrimary),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               if (_taxRate > 0) ...[
-                                const SizedBox(width: 4),
+                                SizedBox(width: context.spacing.xxs),
                                 Flexible(
                                   child: Text(
                                     '(${_taxRate.toStringAsFixed(2)}%)',
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                    style: textTheme.bodySmall?.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -423,29 +407,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                         Text(
                           '\$${_salesTax.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.bodyLarge?.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
                   const Divider(color: AppColors.grey300),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
 
                   // Quantity Selector
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
                           'Quantity',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.textPrimary),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -463,17 +444,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   : AppColors.grey400,
                             ),
                           ),
-                          Container(
+                          Chip(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            side: BorderSide.none,
+                            backgroundColor: AppColors.grey100,
+                            labelPadding: EdgeInsets.zero,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: AppColors.grey100,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
+                                horizontal: kSpaceMd, vertical: kSpaceXs),
+                            label: Text(
                               '$_quantity',
-                              style: const TextStyle(
-                                fontSize: 18,
+                              style: textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
@@ -499,30 +481,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                   if (availableTickets <= 5 && availableTickets > 0)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(top: context.spacing.xs),
                       child: Text(
                         'Only $availableTickets tickets remaining!',
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: textTheme.bodySmall?.copyWith(
                           color: AppTheme.warningColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   const Divider(color: AppColors.grey300),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Total
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
                           'Total',
-                          style: TextStyle(
-                            fontSize: 20,
+                          style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
@@ -531,8 +511,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       Text(
                         '\$${totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryColor,
                         ),
@@ -543,37 +522,34 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
 
             // Event Waiver Section
             if (_isCheckingWaiver)
               const Padding(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(kSpaceMdWide),
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (!_hasAcceptedWaiver) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warningColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                        color: AppTheme.warningColor.withValues(alpha: 0.3)),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
+                child: PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.md),
+                  color: AppTheme.warningColor.withValues(alpha: 0.1),
+                  borderColor: AppTheme.warningColor.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(Icons.warning, color: AppTheme.warningColor),
-                          SizedBox(width: 8),
+                          const Icon(Icons.warning,
+                              color: AppTheme.warningColor),
+                          SizedBox(width: context.spacing.xs),
                           Expanded(
                             child: Text(
                               'Event Waiver Required',
-                              style: TextStyle(
-                                fontSize: 16,
+                              style: textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
@@ -581,21 +557,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
+                      SizedBox(height: context.spacing.xs),
+                      Text(
                         'You must accept the event waiver before completing your purchase.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: context.spacing.sm),
                       ElevatedButton(
                         onPressed: _acceptWaiver,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primaryColor,
                           foregroundColor: AppColors.white,
-                          minimumSize: const Size(double.infinity, 48),
+                          minimumSize:
+                              Size(double.infinity, context.spacing.xxl),
                         ),
                         child: const Text('Review & Accept Waiver'),
                       ),
@@ -603,13 +578,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
             ],
 
             // Payment Form (only show if waiver accepted)
             if (_hasAcceptedWaiver)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: PaymentFormWidget(
                   amount: totalAmount,
                   quantity: _quantity,
@@ -626,29 +601,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
 
             if (_error != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.error.withValues(alpha: 0.3),
-                    ),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
+                child: PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -657,7 +626,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ],
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
           ],
         ),
       ),
@@ -665,19 +634,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildDetailRow(IconData icon, String text) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 8),
+          SizedBox(width: context.spacing.xs),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style:
+                  textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
             ),
           ),
         ],

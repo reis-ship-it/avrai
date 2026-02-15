@@ -18,10 +18,10 @@
 //   )
 
 import 'dart:ui';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
-
 
 /// iOS 26-style Liquid Glass container with blur and translucent appearance.
 ///
@@ -118,7 +118,7 @@ class LiquidGlassContainer extends StatelessWidget {
     return LiquidGlassContainer(
       borderRadius: borderRadius,
       blurSigma: 12,
-      padding: padding ?? const EdgeInsets.all(16),
+      padding: padding ?? const EdgeInsets.all(kSpaceMd),
       margin: margin,
       onTap: onTap,
       child: child,
@@ -134,7 +134,7 @@ class LiquidGlassContainer extends StatelessWidget {
       borderRadius: 24,
       blurSigma: 25,
       showShadow: true,
-      padding: padding ?? const EdgeInsets.all(20),
+      padding: padding ?? const EdgeInsets.all(kSpaceMdWide),
       child: child,
     );
   }
@@ -222,8 +222,8 @@ class LiquidGlassContainer extends StatelessWidget {
             boxShadow: showShadow
                 ? [
                     BoxShadow(
-                      color:
-                          AppColors.black.withValues(alpha: isDark ? 0.3 : 0.08),
+                      color: AppColors.black
+                          .withValues(alpha: isDark ? 0.3 : 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -272,7 +272,7 @@ class LiquidGlassNavigationBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: height,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: kSpaceMd),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,

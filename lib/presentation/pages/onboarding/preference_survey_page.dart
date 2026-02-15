@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 class PreferenceSurveyPage extends StatefulWidget {
@@ -172,27 +173,30 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Text(
             'What do you love?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Select your preferences to help us find the perfect spots for you.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+            style: textTheme.bodyLarge?.copyWith(
+              color: AppColors.grey600,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Progress indicator with 15 goal
           Column(
@@ -203,36 +207,36 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
                 children: [
                   Text(
                     'Select 15 preferences (recommended)',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Text(
                     '${_getSelectedCount()}/15',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: textTheme.titleSmall?.copyWith(
+                      color: AppTheme.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               LinearProgressIndicator(
                 value: _getSelectedCount() / 15.0,
                 backgroundColor: AppColors.grey300,
                 valueColor:
                     const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               Text(
                 '${_getSelectedCount()} preferences selected',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.grey600,
-                    ),
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.grey600,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Search field
           TextField(
@@ -267,7 +271,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
               });
             },
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Categories
           Expanded(
@@ -301,9 +305,11 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
   Widget _buildCategorySection(String category, List<String> options) {
     final selectedOptions = _preferences[category] ?? [];
     final isExpanded = _openSection == category;
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: spacing.md),
       padding: EdgeInsets.zero,
       child: ExpansionTile(
         initiallyExpanded: isExpanded,
@@ -323,27 +329,28 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
               color: AppTheme.primaryColor,
               size: 20,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: spacing.sm),
             Expanded(
               child: Text(
                 category,
-                style: const TextStyle(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             if (selectedOptions.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
+              Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: const VisualDensity(
+                  horizontal: -4,
+                  vertical: -4,
                 ),
-                child: Text(
+                backgroundColor: AppTheme.primaryColor,
+                side: BorderSide.none,
+                label: Text(
                   '${selectedOptions.length}',
-                  style: const TextStyle(
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.white,
-                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -352,10 +359,10 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(spacing.md),
             child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: spacing.xs,
+              runSpacing: spacing.xs,
               children: options.map((option) {
                 final isSelected = selectedOptions.contains(option);
                 return FilterChip(
@@ -376,7 +383,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
                   },
                   selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
                   checkmarkColor: AppTheme.primaryColor,
-                  labelStyle: TextStyle(
+                  labelStyle: textTheme.bodySmall?.copyWith(
                     color: isSelected ? AppTheme.primaryColor : null,
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,

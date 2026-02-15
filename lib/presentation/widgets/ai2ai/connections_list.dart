@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying list of active AI2AI connections
 class ConnectionsList extends StatelessWidget {
@@ -17,7 +19,7 @@ class ConnectionsList extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -39,7 +41,7 @@ class ConnectionsList extends StatelessWidget {
             const SizedBox(height: 16),
             if (overview.totalActiveConnections == 0)
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Center(
                   child: Text(
                     'No active connections',
@@ -101,7 +103,7 @@ class ConnectionsList extends StatelessWidget {
     final color = isPerforming ? AppColors.success : AppColors.warning;
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(vertical: kSpaceXs),
       leading: CircleAvatar(
         backgroundColor: color.withValues(alpha: 0.2),
         child: Icon(
@@ -124,12 +126,10 @@ class ConnectionsList extends StatelessWidget {
       ),
       trailing: const Icon(Icons.chevron_right),
       onTap: () {
-        Navigator.push(
+        AppNavigator.pushBuilder(
           context,
-          MaterialPageRoute(
-            builder: (context) => ConnectionCommunicationDetailPage(
-              connectionId: connectionId,
-            ),
+          builder: (context) => ConnectionCommunicationDetailPage(
+            connectionId: connectionId,
           ),
         );
       },

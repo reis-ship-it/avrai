@@ -279,7 +279,7 @@ class _KnotFormationSyncWidgetState extends State<KnotFormationSyncWidget> {
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -292,7 +292,10 @@ class _KnotFormationSyncWidgetState extends State<KnotFormationSyncWidget> {
         child: Center(
           child: Text(
             'Error: $_error',
-            style: TextStyle(color: AppColors.error),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.error),
           ),
         ),
       );

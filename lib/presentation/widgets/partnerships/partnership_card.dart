@@ -4,11 +4,12 @@ import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnership Card Widget
-/// 
+///
 /// Displays partnership information in list views.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class PartnershipCard extends StatelessWidget {
   final EventPartnership partnership;
@@ -30,7 +31,7 @@ class PartnershipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final business = partnership.business;
     final agreement = partnership.agreement;
-    
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -40,7 +41,7 @@ class PartnershipCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -76,20 +77,20 @@ class PartnershipCard extends StatelessWidget {
                       children: [
                         Text(
                           business?.name ?? 'Business',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         if (business?.categories.isNotEmpty ?? false) ...[
                           const SizedBox(height: 4),
                           Text(
                             business!.categories.join(', '),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                           ),
                         ],
                       ],
@@ -108,16 +109,16 @@ class PartnershipCard extends StatelessWidget {
               if (event != null) ...[
                 Row(
                   children: [
-                    const Icon(Icons.event, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.event,
+                        size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         event!.title,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                   ],
@@ -125,24 +126,24 @@ class PartnershipCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today,
+                        size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       _formatDate(event!.startTime),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(width: 16),
-                    const Icon(Icons.confirmation_number, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.confirmation_number,
+                        size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       '${event!.attendeeCount} / ${event!.maxAttendees} tickets',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -150,17 +151,18 @@ class PartnershipCard extends StatelessWidget {
               ],
 
               // Revenue Split Info
-              if (agreement != null && agreement.terms['revenueSplit'] != null) ...[
+              if (agreement != null &&
+                  agreement.terms['revenueSplit'] != null) ...[
                 Row(
                   children: [
-                    const Icon(Icons.account_balance_wallet, size: 14, color: AppColors.textSecondary),
+                    const Icon(Icons.account_balance_wallet,
+                        size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       'Revenue: ${agreement.terms['revenueSplit']['userPercentage'].toStringAsFixed(0)}% / ${agreement.terms['revenueSplit']['businessPercentage'].toStringAsFixed(0)}% split',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -168,7 +170,7 @@ class PartnershipCard extends StatelessWidget {
               ],
 
               // Status Badge
-              _buildStatusBadge(),
+              _buildStatusBadge(context),
 
               // Actions
               if (showActions) ...[
@@ -182,7 +184,7 @@ class PartnershipCard extends StatelessWidget {
                           foregroundColor: AppColors.textPrimary,
                           side: const BorderSide(color: AppColors.grey300),
                         ),
-                        child: const Text('View Details'),
+                        child: Text('View Details'),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -193,7 +195,7 @@ class PartnershipCard extends StatelessWidget {
                           backgroundColor: AppTheme.primaryColor,
                           foregroundColor: AppColors.white,
                         ),
-                        child: const Text('Manage'),
+                        child: Text('Manage'),
                       ),
                     ),
                   ],
@@ -206,7 +208,7 @@ class PartnershipCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     final status = partnership.status;
     Color badgeColor;
     String statusText;
@@ -242,7 +244,8 @@ class PartnershipCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -252,18 +255,29 @@ class PartnershipCard extends StatelessWidget {
       ),
       child: Text(
         statusText,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: badgeColor,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: badgeColor,
+            ),
       ),
     );
   }
 
   String _formatDate(DateTime date) {
-    final month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.month - 1];
+    final month = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ][date.month - 1];
     return '$month ${date.day}, ${date.year}';
   }
 }
-

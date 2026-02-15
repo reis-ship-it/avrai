@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -49,17 +51,12 @@ class _SignupPageState extends State<SignupPage> {
                 _isSubmitting = false;
               });
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
+            context.showError(state.message);
           }
         },
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(kSpaceLg),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: MediaQuery.of(context).size.height -
@@ -107,10 +104,9 @@ class _SignupPageState extends State<SignupPage> {
                       TextFormField(
                         key: const Key('name_field'),
                         controller: _nameController,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                         decoration: const InputDecoration(
                           labelText: 'Full Name',
                           prefixIcon: Icon(Icons.person),
@@ -129,10 +125,9 @@ class _SignupPageState extends State<SignupPage> {
                         key: const Key('email_field'),
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                         decoration: const InputDecoration(
                           labelText: 'Email',
                           prefixIcon: Icon(Icons.email),
@@ -158,10 +153,9 @@ class _SignupPageState extends State<SignupPage> {
                         key: const Key('password_field'),
                         controller: _passwordController,
                         obscureText: _obscurePassword,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                         decoration: InputDecoration(
                           labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock),
@@ -195,10 +189,9 @@ class _SignupPageState extends State<SignupPage> {
                         key: const Key('confirm_password_field'),
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                         decoration: InputDecoration(
                           labelText: 'Confirm Password',
                           prefixIcon: const Icon(Icons.lock_outline),
@@ -245,7 +238,7 @@ class _SignupPageState extends State<SignupPage> {
                                           AppColors.white),
                                     ),
                                   )
-                                : const Text('Sign Up'),
+                                : Text('Sign Up'),
                           );
                         },
                       ),
@@ -263,7 +256,7 @@ class _SignupPageState extends State<SignupPage> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text('Sign In'),
+                            child: Text('Sign In'),
                           ),
                         ],
                       ),

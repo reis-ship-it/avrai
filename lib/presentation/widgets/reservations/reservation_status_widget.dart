@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Status Widget
 ///
@@ -69,7 +70,8 @@ class ReservationStatusWidget extends StatelessWidget {
 
     if (compact) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+            horizontal: kSpaceXs, vertical: kSpaceXxs),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(4),
@@ -82,11 +84,10 @@ class ReservationStatusWidget extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
           ],
         ),
@@ -94,7 +95,7 @@ class ReservationStatusWidget extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -107,11 +108,10 @@ class ReservationStatusWidget extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),

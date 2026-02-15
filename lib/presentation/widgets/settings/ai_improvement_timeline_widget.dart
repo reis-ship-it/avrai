@@ -1,14 +1,14 @@
 /// AI Improvement History Timeline Widget
-/// 
+///
 /// Part of Feature Matrix Phase 2: Medium Priority UI/UX
 /// Section 2.2: AI Self-Improvement Visibility
-/// 
+///
 /// Widget showing AI improvement history as a timeline:
 /// - Timeline of improvements
 /// - Major milestones
 /// - Evolution events
 /// - Achievement markers
-/// 
+///
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
@@ -16,43 +16,47 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying AI improvement history timeline
 class AIImprovementTimelineWidget extends StatefulWidget {
   /// User ID to show timeline for
   final String userId;
-  
+
   /// Improvement tracking service
   final AIImprovementTrackingService trackingService;
-  
+
   const AIImprovementTimelineWidget({
     super.key,
     required this.userId,
     required this.trackingService,
   });
-  
+
   @override
-  State<AIImprovementTimelineWidget> createState() => _AIImprovementTimelineWidgetState();
+  State<AIImprovementTimelineWidget> createState() =>
+      _AIImprovementTimelineWidgetState();
 }
 
-class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidget> {
+class _AIImprovementTimelineWidgetState
+    extends State<AIImprovementTimelineWidget> {
   List<ImprovementMilestone> _milestones = [];
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
     _loadMilestones();
   }
-  
+
   void _loadMilestones() {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final milestones = widget.trackingService.getMilestones(widget.userId);
-      
+
       setState(() {
         _milestones = milestones;
         _isLoading = false;
@@ -63,9 +67,10 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Semantics(
       label: 'AI Improvement History Timeline',
       child: Card(
@@ -73,18 +78,18 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
               const SizedBox(height: 16),
               if (_isLoading)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.all(24.0),
+                    padding: EdgeInsets.all(spacing.lg),
                     child: CircularProgressIndicator(),
                   ),
                 )
@@ -98,12 +103,13 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       ),
     );
   }
-  
+
   Widget _buildHeader() {
+    final spacing = context.spacing;
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(spacing.xs),
           decoration: BoxDecoration(
             color: AppColors.electricGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -119,20 +125,18 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Improvement History',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               Text(
                 '${_milestones.length} milestones achieved',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -140,11 +144,12 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       ],
     );
   }
-  
+
   Widget _buildEmptyState() {
+    final spacing = context.spacing;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(spacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -173,7 +178,7 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       ),
     );
   }
-  
+
   Widget _buildTimeline() {
     return ListView.builder(
       shrinkWrap: true,
@@ -183,7 +188,7 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
         final milestone = _milestones[index];
         final isFirst = index == 0;
         final isLast = index == _milestones.length - 1;
-        
+
         return _buildTimelineItem(
           milestone: milestone,
           isFirst: isFirst,
@@ -192,14 +197,15 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       },
     );
   }
-  
+
   Widget _buildTimelineItem({
     required ImprovementMilestone milestone,
     required bool isFirst,
     required bool isLast,
   }) {
+    final spacing = context.spacing;
     final improvementColor = _getImprovementColor(milestone.improvement);
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -251,8 +257,8 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
         // Milestone content
         Expanded(
           child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
+            margin: EdgeInsets.only(bottom: spacing.md),
+            padding: EdgeInsets.all(spacing.sm),
             decoration: BoxDecoration(
               color: AppColors.grey100,
               borderRadius: BorderRadius.circular(8),
@@ -265,17 +271,16 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
                     Expanded(
                       child: Text(
                         milestone.description,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: kSpaceXs,
+                        vertical: kSpaceXxs,
                       ),
                       decoration: BoxDecoration(
                         color: improvementColor.withValues(alpha: 0.2),
@@ -283,11 +288,10 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
                       ),
                       child: Text(
                         '+${(milestone.improvement * 100).toStringAsFixed(0)}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: improvementColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: improvementColor,
+                            ),
                       ),
                     ),
                   ],
@@ -298,19 +302,17 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
                     Expanded(
                       child: Text(
                         _formatDimensionName(milestone.dimension),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                     Text(
                       _formatTimeAgo(milestone.timestamp),
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                   ],
                 ),
@@ -343,16 +345,18 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
       ],
     );
   }
-  
+
   Widget _buildScoreBadge(String label, double score, {required bool isFrom}) {
+    final spacing = context.spacing;
     final color = _getScoreColor(score);
-    
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.xs,
+        vertical: spacing.xxs,
+      ),
       decoration: BoxDecoration(
-        color: isFrom 
-            ? AppColors.grey200 
-            : color.withValues(alpha: 0.2),
+        color: isFrom ? AppColors.grey200 : color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
@@ -360,44 +364,42 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
         children: [
           Text(
             '$label:',
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(width: 4),
           Text(
             '${(score * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: isFrom ? AppColors.textSecondary : color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isFrom ? AppColors.textSecondary : color,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Color _getImprovementColor(double improvement) {
     if (improvement >= 0.15) return AppColors.success;
     if (improvement >= 0.10) return AppColors.electricGreen;
     return AppColors.primary;
   }
-  
+
   IconData _getImprovementIcon(double improvement) {
     if (improvement >= 0.15) return Icons.star;
     if (improvement >= 0.10) return Icons.arrow_upward;
     return Icons.trending_up;
   }
-  
+
   Color _getScoreColor(double score) {
     if (score >= 0.9) return AppColors.success;
     if (score >= 0.75) return AppColors.electricGreen;
     if (score >= 0.6) return AppColors.warning;
     return AppColors.error;
   }
-  
+
   String _formatDimensionName(String dimension) {
     return dimension
         .replaceAll('_', ' ')
@@ -405,10 +407,10 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
   }
-  
+
   String _formatTimeAgo(DateTime time) {
     final duration = DateTime.now().difference(time);
-    
+
     if (duration.inMinutes < 1) return 'just now';
     if (duration.inMinutes < 60) return '${duration.inMinutes}m ago';
     if (duration.inHours < 24) return '${duration.inHours}h ago';
@@ -417,4 +419,3 @@ class _AIImprovementTimelineWidgetState extends State<AIImprovementTimelineWidge
     return '${(duration.inDays / 30).floor()}mo ago';
   }
 }
-

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -10,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Step 3: Combined Permissions page.
 ///
@@ -236,12 +238,11 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
       if (Platform.isMacOS || Platform.isIOS) {
         final serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Please enable Location Services in your device settings.'),
-              duration: Duration(seconds: 4),
-            ),
+          FeedbackPresenter.showSnack(
+            context,
+            message: 'Please enable Location Services in your device settings.',
+            kind: FeedbackKind.warning,
+            duration: const Duration(seconds: 4),
           );
         }
 
@@ -321,12 +322,12 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
       } catch (e) {
         // Show manual instructions if URL launch fails
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Please open System Settings > Privacy & Security > Location Services'),
-              duration: Duration(seconds: 5),
-            ),
+          FeedbackPresenter.showSnack(
+            context,
+            message:
+                'Please open System Settings > Privacy & Security > Location Services',
+            kind: FeedbackKind.warning,
+            duration: const Duration(seconds: 5),
           );
         }
       }
@@ -342,9 +343,10 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -355,29 +357,25 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'avrai needs a few permissions to personalize your experience and connect you with the AI network.',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Privacy Card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primaryLight.withValues(alpha: 0.3),
-              ),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(spacing.md),
+            color: AppColors.primaryLight.withValues(alpha: 0.1),
+            borderColor: AppColors.primaryLight.withValues(alpha: 0.3),
+            radius: context.radius.md,
             child: Row(
               children: [
                 Icon(Icons.shield, color: AppColors.primary),
-                const SizedBox(width: 12),
+                SizedBox(width: spacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +386,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: spacing.xxs),
                       Text(
                         'All AI learning happens on-device. Your personal data is never shared.',
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -402,7 +400,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             ),
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Permission Groups
           _buildPermissionGroup(
@@ -415,7 +413,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             permissions: [Permission.locationWhenInUse],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           _buildPermissionGroup(
             context: context,
@@ -438,7 +436,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             ],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           _buildPermissionGroup(
             context: context,
@@ -451,7 +449,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             permissions: [Permission.nearbyWifiDevices],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           _buildPermissionGroup(
             context: context,
@@ -464,28 +462,23 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             permissions: [Permission.locationAlways],
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Cross-App AI Learning Sources Section
           _buildCrossAppConsentSection(context),
 
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Status Summary
           if (_hasCheckedPermissions)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _isLocationGranted
-                    ? AppColors.success.withValues(alpha: 0.1)
-                    : AppColors.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _isLocationGranted
-                      ? AppColors.success
-                      : AppColors.warning,
-                ),
-              ),
+            PortalSurface(
+              padding: EdgeInsets.all(spacing.md),
+              color: _isLocationGranted
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : AppColors.warning.withValues(alpha: 0.1),
+              borderColor:
+                  _isLocationGranted ? AppColors.success : AppColors.warning,
+              radius: context.radius.md,
               child: Row(
                 children: [
                   Icon(
@@ -496,7 +489,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
                         ? AppColors.success
                         : AppColors.warning,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Expanded(
                     child: Text(
                       _isLocationGranted
@@ -516,7 +509,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               ),
             ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Action Buttons
           if (!_isLocationGranted || !_isAI2AIFullyGranted)
@@ -534,12 +527,12 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
                 label: Text(
                     _isLoading ? 'Requesting...' : 'Enable All Permissions'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: spacing.md),
                 ),
               ),
             ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
 
           SizedBox(
             width: double.infinity,
@@ -548,7 +541,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               icon: const Icon(Icons.settings),
               label: const Text('Open System Settings'),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: spacing.md),
               ),
             ),
           ),
@@ -556,7 +549,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
           // Platform-specific note
           if (Platform.isMacOS || Platform.isIOS)
             Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: EdgeInsets.only(top: spacing.md),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -565,7 +558,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
                     size: 16,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: spacing.xs),
                   Expanded(
                     child: Text(
                       Platform.isMacOS
@@ -597,6 +590,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
     bool isRecommended = false,
   }) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     Color statusColor;
     IconData statusIcon;
@@ -623,13 +617,11 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
           ? AppColors.success.withValues(alpha: 0.5)
           : AppColors.grey300,
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
+        contentPadding:
+            EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
+        leading: CircleAvatar(
+          radius: 18,
+          backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
           child: Icon(icon, color: AppColors.primary),
         ),
         title: Row(
@@ -642,15 +634,14 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             ),
             if (isRequired)
               Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
+                padding: EdgeInsets.only(left: spacing.xs),
+                child: Chip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide.none,
+                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                  labelPadding: EdgeInsets.zero,
+                  label: Text(
                     'Required',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.error,
@@ -661,15 +652,14 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               ),
             if (isMandatory && !isRequired)
               Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
+                padding: EdgeInsets.only(left: spacing.xs),
+                child: Chip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide.none,
+                  backgroundColor: AppColors.warning.withValues(alpha: 0.1),
+                  labelPadding: EdgeInsets.zero,
+                  label: Text(
                     'Mandatory',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.warning,
@@ -680,15 +670,14 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               ),
             if (isRecommended)
               Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey600.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
+                padding: EdgeInsets.only(left: spacing.xs),
+                child: Chip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide.none,
+                  backgroundColor: AppColors.grey600.withValues(alpha: 0.1),
+                  labelPadding: EdgeInsets.zero,
+                  label: Text(
                     'Recommended',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.grey600,
@@ -709,7 +698,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(statusIcon, color: statusColor, size: 20),
-            const SizedBox(width: 4),
+            SizedBox(width: spacing.xxs),
             Text(
               statusText,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -725,6 +714,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
 
   Widget _buildCrossAppConsentSection(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -733,7 +723,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
         Row(
           children: [
             Icon(Icons.apps, color: AppColors.primary, size: 24),
-            const SizedBox(width: 8),
+            SizedBox(width: spacing.xs),
             Text(
               'AI Learning Sources',
               style: theme.textTheme.titleMedium?.copyWith(
@@ -741,13 +731,13 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               ),
             ),
             const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
+            Chip(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              side: BorderSide.none,
+              backgroundColor: AppColors.grey200,
+              labelPadding: EdgeInsets.zero,
+              label: Text(
                 'Optional',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: AppColors.grey600,
@@ -756,14 +746,14 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: spacing.xs),
         Text(
           'Your AI can learn from these sources to better understand your preferences. All processing happens on-device.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: spacing.md),
 
         // Cross-App Consent Toggles
         PortalSurface(
@@ -819,18 +809,17 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
     required String subtitle,
   }) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
     final isEnabled = _crossAppConsents[source] ?? true;
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isEnabled
-              ? AppColors.primaryLight.withValues(alpha: 0.2)
-              : AppColors.grey200,
-          borderRadius: BorderRadius.circular(8),
-        ),
+      contentPadding:
+          EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xxs),
+      leading: CircleAvatar(
+        radius: 18,
+        backgroundColor: isEnabled
+            ? AppColors.primaryLight.withValues(alpha: 0.2)
+            : AppColors.grey200,
         child: Icon(
           icon,
           color: isEnabled ? AppColors.primary : AppColors.grey500,

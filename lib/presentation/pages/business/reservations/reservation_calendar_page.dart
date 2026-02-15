@@ -6,6 +6,7 @@
 // Page for displaying reservations in calendar format
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_service.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -15,6 +16,7 @@ import 'package:avrai/presentation/widgets/reservations/reservation_card_widget.
 import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Calendar Page
 ///
@@ -112,7 +114,7 @@ class _ReservationCalendarPageState extends State<ReservationCalendarPage> {
       body: _error != null
           ? Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -121,20 +123,23 @@ class _ReservationCalendarPageState extends State<ReservationCalendarPage> {
                     const SizedBox(height: 16),
                     Text(
                       _error!,
-                      style: const TextStyle(color: AppTheme.errorColor),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppTheme.errorColor),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _loadReservations,
-                      child: const Text('Retry'),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),
               ),
             )
           : _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : Column(
                   children: [
                     // Calendar Widget
@@ -151,99 +156,105 @@ class _ReservationCalendarPageState extends State<ReservationCalendarPage> {
                     // Selected Date Reservations
                     Expanded(
                       flex: 2,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.grey50,
-                          border: Border(
-                            top: BorderSide(color: AppColors.grey300, width: 1),
+                      child: Column(
+                        children: [
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: AppColors.grey300,
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          Expanded(
+                            child: ColoredBox(
+                              color: AppColors.grey50,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    _selectedDate != null
-                                        ? '${_formatDate(_selectedDate!)} (${_selectedDateReservations.length})'
-                                        : 'Select a date',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.textPrimary,
+                                  Padding(
+                                    padding: const EdgeInsets.all(kSpaceMd),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          _selectedDate != null
+                                              ? '${_formatDate(_selectedDate!)} (${_selectedDateReservations.length})'
+                                              : 'Select a date',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.textPrimary,
+                                              ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _selectedDateReservations.isEmpty
+                                        ? Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.event_busy,
+                                                  size: 48,
+                                                  color: AppColors.grey400,
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  'No reservations',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: AppColors
+                                                            .textSecondary,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: kSpaceMd),
+                                            itemCount: _selectedDateReservations
+                                                .length,
+                                            itemBuilder: (context, index) {
+                                              final reservation =
+                                                  _selectedDateReservations[
+                                                      index];
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: kSpaceXs),
+                                                child: ReservationCardWidget(
+                                                  reservation: reservation,
+                                                  onTap: () async {
+                                                    final result =
+                                                        await AppNavigator
+                                                            .pushBuilder(
+                                                      context,
+                                                      builder: (context) =>
+                                                          ReservationDetailPage(
+                                                        reservationId:
+                                                            reservation.id,
+                                                      ),
+                                                    );
+                                                    if (result == true) {
+                                                      _loadReservations();
+                                                    }
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
                                   ),
                                 ],
                               ),
                             ),
-                            Expanded(
-                              child: _selectedDateReservations.isEmpty
-                                  ? Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.event_busy,
-                                            size: 48,
-                                            color: AppColors.grey400,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'No reservations',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                  color:
-                                                      AppColors.textSecondary,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      itemCount:
-                                          _selectedDateReservations.length,
-                                      itemBuilder: (context, index) {
-                                        final reservation =
-                                            _selectedDateReservations[index];
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 8),
-                                          child: ReservationCardWidget(
-                                            reservation: reservation,
-                                            onTap: () async {
-                                              final result =
-                                                  await Navigator.of(context)
-                                                      .push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ReservationDetailPage(
-                                                    reservationId:
-                                                        reservation.id,
-                                                  ),
-                                                ),
-                                              );
-                                              if (result == true) {
-                                                _loadReservations();
-                                              }
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

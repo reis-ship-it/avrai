@@ -16,8 +16,10 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/services/reservation/reservation_recommendation_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying AI-powered reservation suggestions
 class ReservationSuggestionsWidget extends StatefulWidget {
@@ -65,8 +67,8 @@ class _ReservationSuggestionsWidgetState
     });
 
     try {
-      final suggestions = await widget.recommendationService
-          .getAIPoweredReservations(
+      final suggestions =
+          await widget.recommendationService.getAIPoweredReservations(
         userId: widget.userId,
         limit: widget.maxSuggestions,
       );
@@ -89,13 +91,14 @@ class _ReservationSuggestionsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     if (_isLoading) {
       return Semantics(
         label: 'Loading reservation suggestions',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(
                 color: AppTheme.primaryColor,
@@ -110,9 +113,9 @@ class _ReservationSuggestionsWidgetState
       return Semantics(
         label: 'Error loading suggestions',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 Icon(
@@ -123,16 +126,15 @@ class _ReservationSuggestionsWidgetState
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: _loadSuggestions,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -148,9 +150,9 @@ class _ReservationSuggestionsWidgetState
     return Semantics(
       label: 'AI-powered reservation suggestions',
       child: Card(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -175,20 +177,20 @@ class _ReservationSuggestionsWidgetState
           size: 24,
         ),
         const SizedBox(width: 8),
-        const Text(
+        Text(
           'AI Suggestions for You',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
   }
 
   Widget _buildSuggestionCard(ReservationRecommendation suggestion) {
+    final spacing = context.spacing;
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       elevation: 2,
       child: InkWell(
         onTap: () {
@@ -208,7 +210,7 @@ class _ReservationSuggestionsWidgetState
         },
         borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: EdgeInsets.all(spacing.sm),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -217,17 +219,16 @@ class _ReservationSuggestionsWidgetState
                   Expanded(
                     child: Text(
                       suggestion.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ),
                   // Compatibility score badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                      horizontal: kSpaceXs,
+                      vertical: kSpaceXxs,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.success.withValues(alpha: 0.1),
@@ -235,11 +236,10 @@ class _ReservationSuggestionsWidgetState
                     ),
                     child: Text(
                       '${(suggestion.compatibility * 100).toStringAsFixed(0)}% match',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.success,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.success,
+                          ),
                     ),
                   ),
                 ],
@@ -248,10 +248,9 @@ class _ReservationSuggestionsWidgetState
                 const SizedBox(height: 8),
                 Text(
                   suggestion.description!,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -259,7 +258,7 @@ class _ReservationSuggestionsWidgetState
               if (suggestion.aiReason != null) ...[
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(spacing.xs),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -275,11 +274,11 @@ class _ReservationSuggestionsWidgetState
                       Expanded(
                         child: Text(
                           suggestion.aiReason!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppTheme.primaryColor,
-                            fontStyle: FontStyle.italic,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.primaryColor,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                         ),
                       ),
                     ],
@@ -298,10 +297,9 @@ class _ReservationSuggestionsWidgetState
                     const SizedBox(width: 4),
                     Text(
                       _formatDateTime(suggestion.recommendedTime!),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -326,7 +324,7 @@ class _ReservationSuggestionsWidgetState
                       }
                     },
                     icon: const Icon(Icons.event_available, size: 16),
-                    label: const Text('Reserve'),
+                    label: Text('Reserve'),
                   ),
                 ],
               ),

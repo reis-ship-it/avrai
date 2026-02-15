@@ -17,6 +17,7 @@ SUITE_FILES=(
   "geographic_suite.sh"
   "security_suite.sh"
   "infrastructure_suite.sh"
+  "design_suite.sh"
 )
 
 for suite_file in "${SUITE_FILES[@]}"; do
@@ -26,4 +27,3 @@ for suite_file in "${SUITE_FILES[@]}"; do
   echo "============================================================"
   bash "${SUITES_DIR}/${suite_file}" "$@"
 done
-

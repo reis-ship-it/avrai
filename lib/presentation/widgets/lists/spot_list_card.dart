@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/list.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SpotListCard extends StatelessWidget {
   final SpotList list;
@@ -16,9 +17,9 @@ class SpotListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(kSpaceMd),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           child: Icon(
@@ -47,8 +48,8 @@ class SpotListCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                    horizontal: kSpaceXs,
+                    vertical: kSpaceXxs,
                   ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer,

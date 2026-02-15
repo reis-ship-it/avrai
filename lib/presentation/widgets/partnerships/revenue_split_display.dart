@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:avrai/core/models/payment/revenue_split.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Revenue Split Display Widget
 ///
@@ -41,7 +42,7 @@ class RevenueSplitDisplay extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,19 +56,18 @@ class RevenueSplitDisplay extends StatelessWidget {
                     size: 24,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Revenue Breakdown',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   if (showLockStatus && split.isLocked) ...[
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                          horizontal: kSpaceXs, vertical: kSpaceXxs),
                       decoration: BoxDecoration(
                         color: AppColors.electricGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -75,7 +75,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                           color: AppColors.electricGreen.withValues(alpha: 0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -86,11 +86,13 @@ class RevenueSplitDisplay extends StatelessWidget {
                           SizedBox(width: 4),
                           Text(
                             'Locked',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.electricGreen,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: AppColors.electricGreen,
+                                  fontWeight: FontWeight.w500,
+                                ),
                           ),
                         ],
                       ),
@@ -102,6 +104,7 @@ class RevenueSplitDisplay extends StatelessWidget {
 
               // Total Revenue
               _buildRevenueRow(
+                context: context,
                 label: 'Total Revenue',
                 amount: split.totalAmount,
                 isTotal: true,
@@ -112,6 +115,7 @@ class RevenueSplitDisplay extends StatelessWidget {
               if (showDetails) ...[
                 // Platform Fee
                 _buildFeeRow(
+                  context: context,
                   label: 'Platform Fee',
                   amount: split.platformFee,
                   percentage: split.platformFeePercentage,
@@ -121,6 +125,7 @@ class RevenueSplitDisplay extends StatelessWidget {
 
                 // Processing Fee
                 _buildFeeRow(
+                  context: context,
                   label: 'Processing Fee',
                   amount: split.processingFee,
                   percentage: split.processingFeePercentage,
@@ -133,6 +138,7 @@ class RevenueSplitDisplay extends StatelessWidget {
 
               // Net Revenue
               _buildRevenueRow(
+                context: context,
                 label: 'Net Revenue',
                 amount: split.splitAmount,
                 isTotal: false,
@@ -142,19 +148,19 @@ class RevenueSplitDisplay extends StatelessWidget {
 
               // Partner Splits (N-way)
               if (split.parties.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Partner Distribution',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 8),
-                ...split.parties.map((party) => _buildPartyRow(party)),
+                ...split.parties.map((party) => _buildPartyRow(context, party)),
               ] else if (split.hostPayout != null) ...[
                 // Solo event (legacy)
                 _buildRevenueRow(
+                  context: context,
                   label: 'Host Payout',
                   amount: split.hostPayout!,
                   isTotal: false,
@@ -165,7 +171,7 @@ class RevenueSplitDisplay extends StatelessWidget {
               if (showLockStatus && !split.isLocked) ...[
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(kSpaceSm),
                   decoration: BoxDecoration(
                     color: AppColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -173,7 +179,7 @@ class RevenueSplitDisplay extends StatelessWidget {
                       color: AppColors.warning.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(
                         Icons.warning_amber_rounded,
@@ -184,10 +190,10 @@ class RevenueSplitDisplay extends StatelessWidget {
                       Expanded(
                         child: Text(
                           'Revenue split must be locked before event starts',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ),
                     ],
@@ -202,6 +208,7 @@ class RevenueSplitDisplay extends StatelessWidget {
   }
 
   Widget _buildRevenueRow({
+    required BuildContext context,
     required String label,
     required double amount,
     required bool isTotal,
@@ -216,8 +223,10 @@ class RevenueSplitDisplay extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(
-                fontSize: isTotal ? 18 : 16,
+              style: (isTotal
+                      ? Theme.of(context).textTheme.titleMedium
+                      : Theme.of(context).textTheme.bodyMedium)
+                  ?.copyWith(
                 fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
                 color: AppColors.textPrimary,
               ),
@@ -225,17 +234,18 @@ class RevenueSplitDisplay extends StatelessWidget {
             if (ticketsSold != null && ticketsSold > 0)
               Text(
                 '($ticketsSold tickets)',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
           ],
         ),
         Text(
           _currency.format(amount),
-          style: TextStyle(
-            fontSize: isTotal ? 24 : 18,
+          style: (isTotal
+                  ? Theme.of(context).textTheme.titleMedium
+                  : Theme.of(context).textTheme.bodyMedium)
+              ?.copyWith(
             fontWeight: FontWeight.bold,
             color: isHighlighted
                 ? AppColors.electricGreen
@@ -249,6 +259,7 @@ class RevenueSplitDisplay extends StatelessWidget {
   }
 
   Widget _buildFeeRow({
+    required BuildContext context,
     required String label,
     required double amount,
     required double percentage,
@@ -263,41 +274,38 @@ class RevenueSplitDisplay extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
         ),
         Text(
           '${_currency.format(amount)} (${percentage.toStringAsFixed(1)}%)',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
   }
 
-  Widget _buildPartyRow(SplitParty party) {
+  Widget _buildPartyRow(BuildContext context, SplitParty party) {
     final partyTypeLabel = party.type.displayName;
     final partyName = party.name ?? partyTypeLabel;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(kSpaceSm),
         decoration: BoxDecoration(
           color: AppColors.electricGreen.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
@@ -316,29 +324,29 @@ class RevenueSplitDisplay extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                            horizontal: kSpaceXsTight, vertical: kSpaceNano),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           partyTypeLabel,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.primaryColor,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppTheme.primaryColor,
+                                  ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           partyName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textPrimary,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -348,10 +356,9 @@ class RevenueSplitDisplay extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${party.percentage.toStringAsFixed(1)}% of net revenue',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ],
@@ -360,20 +367,18 @@ class RevenueSplitDisplay extends StatelessWidget {
             if (party.amount != null)
               Text(
                 _currency.format(party.amount!),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.electricGreen,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.electricGreen,
+                    ),
               )
             else if (party.percentage > 0)
               Text(
                 '${party.percentage.toStringAsFixed(1)}%',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
               ),
           ],
         ),

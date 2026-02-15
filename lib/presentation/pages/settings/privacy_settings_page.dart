@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/core/services/matching/personality_sync_service.dart';
 import 'package:avrai/core/controllers/sync_controller.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
@@ -10,6 +12,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});
@@ -101,12 +104,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
   Future<void> _handleCloudSyncToggle(bool value) async {
     if (_currentUserId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please sign in to enable cloud sync'),
-          backgroundColor: AppTheme.errorColor,
-        ),
-      );
+      context.showError('Please sign in to enable cloud sync');
       return;
     }
 
@@ -146,37 +144,24 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         setState(() {
           _cloudSyncEnabled = value;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              value
-                  ? 'Cloud sync enabled. Your AI agent will sync across devices.'
-                  : 'Cloud sync disabled.',
-            ),
-            backgroundColor: value ? AppTheme.successColor : AppColors.grey600,
-          ),
-        );
+        if (value) {
+          context.showSuccess(
+            'Cloud sync enabled. Your AI agent will sync across devices.',
+          );
+        } else {
+          context.showInfo('Cloud sync disabled.');
+        }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating cloud sync: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error updating cloud sync: $e');
       }
     }
   }
 
   Future<void> _handleSyncNow() async {
     if (_currentUserId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please sign in to sync your data'),
-          backgroundColor: AppTheme.errorColor,
-        ),
-      );
+      context.showError('Please sign in to sync your data');
       return;
     }
 
@@ -217,19 +202,9 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         });
 
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Sync completed successfully'),
-              backgroundColor: AppTheme.successColor,
-            ),
-          );
+          context.showSuccess('Sync completed successfully');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Sync failed: ${result.error ?? "Unknown error"}'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Sync failed: ${result.error ?? "Unknown error"}');
         }
       }
     } catch (e) {
@@ -237,12 +212,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         setState(() {
           _isSyncing = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error syncing: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error syncing: $e');
       }
     }
   }
@@ -284,51 +254,56 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Privacy Settings',
       scrollable: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // OUR_GUTS.md Commitment
-            const PortalSurface(
+            PortalSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.verified_user, color: AppTheme.successColor),
-                      SizedBox(width: 8),
+                      const Icon(Icons.verified_user,
+                          color: AppTheme.successColor),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'OUR_GUTS.md Commitment',
-                        style: TextStyle(
+                        style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.successColor,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     '"Privacy and Control Are Non-Negotiable" - You own your data, you control your experience, and you decide what to share.',
-                    style: TextStyle(color: AppTheme.successColor),
+                    style: textTheme.bodyMedium
+                        ?.copyWith(color: AppTheme.successColor),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Core Privacy Controls
             Text(
               'Core Privacy Controls',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildDropdownTile(
               'Profile Visibility',
@@ -356,23 +331,23 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Icons.share_location,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // AI & Learning Controls
             Text(
               'AI & Learning Controls',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'Control how AI learns from your behavior and preferences',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildSwitchTile(
               'AI2AI Learning',
@@ -401,7 +376,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             // Sync Now button (only show if sync is enabled)
             if (_cloudSyncEnabled)
               PortalSurface(
-                margin: const EdgeInsets.only(bottom: 8),
+                margin: const EdgeInsets.only(bottom: kSpaceXs),
                 padding: EdgeInsets.zero,
                 child: ListTile(
                   leading: const Icon(Icons.sync, color: AppTheme.primaryColor),
@@ -421,16 +396,16 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 ),
               ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Public Sharing
             Text(
               'Public Sharing',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildSwitchTile(
               'Public Profile',
@@ -448,16 +423,16 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Icons.list,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Data & Analytics
             Text(
               'Data & Analytics',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildDropdownTile(
               'Data Retention',
@@ -484,16 +459,16 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               Icons.ad_units,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Data Rights
             Text(
               'Your Data Rights',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -530,7 +505,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Reset Settings
             PortalSurface(
@@ -538,24 +513,25 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.restore, color: AppTheme.warningColor),
-                      SizedBox(width: 8),
+                      const Icon(Icons.restore, color: AppTheme.warningColor),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Reset Privacy Settings',
-                        style: TextStyle(
+                        style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.warningColor,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: spacing.xs),
+                  Text(
                     'Reset all privacy settings to their default values',
+                    style: textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                   ElevatedButton(
                     onPressed: _resetPrivacySettings,
                     // Use global ElevatedButtonTheme
@@ -578,7 +554,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     IconData icon,
   ) {
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
       child: SwitchListTile(
         title: Text(title),
         subtitle: Text(subtitle),
@@ -598,7 +574,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     IconData icon,
   ) {
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
       child: ListTile(
         leading: Icon(icon, color: AppTheme.primaryColor),
         title: Text(title),
@@ -618,12 +594,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   }
 
   void _exportData() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-            'Data export initiated. You will receive an email with download instructions.'),
-        backgroundColor: AppTheme.successColor,
-      ),
+    context.showSuccess(
+      'Data export initiated. You will receive an email with download instructions.',
     );
   }
 
@@ -643,12 +615,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                      'Account deletion requires additional verification. Check your email.'),
-                  backgroundColor: AppTheme.errorColor,
-                ),
+              context.showError(
+                'Account deletion requires additional verification. Check your email.',
               );
             },
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
@@ -660,11 +628,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   }
 
   void _openPrivacyPolicy() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Opening privacy policy...'),
-      ),
-    );
+    context.showInfo('Opening privacy policy...');
   }
 
   void _resetPrivacySettings() {
@@ -694,12 +658,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 _dataRetention = '1 Year';
               });
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Privacy settings reset to defaults'),
-                  backgroundColor: AppTheme.successColor,
-                ),
-              );
+              context.showSuccess('Privacy settings reset to defaults');
             },
             child: const Text('Reset'),
           ),

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/gradient_scrim.dart';
 import 'package:avrai/presentation/widgets/onboarding/floating_text_widget.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -94,6 +95,18 @@ class _WelcomePageState extends State<WelcomePage>
     final spacing = context.spacing;
     final radius = context.radius;
     final textTheme = Theme.of(context).textTheme;
+    final floatingTextStyle = textTheme.displayMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+          height: 1.4,
+          letterSpacing: 0.5,
+        ) ??
+        textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+          height: 1.4,
+          letterSpacing: 0.5,
+        );
 
     return AdaptivePlatformPageScaffold(
       title: 'Welcome',
@@ -111,17 +124,14 @@ class _WelcomePageState extends State<WelcomePage>
         child: GestureDetector(
           onTap: _handleTapContinue,
           behavior: HitTestBehavior.opaque,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.05),
-                  AppColors.grey50.withValues(alpha: 0.15),
-                ],
-              ),
-            ),
+          child: GradientScrim(
+            padding: EdgeInsets.zero,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.surface.withValues(alpha: 0.05),
+              AppColors.grey50.withValues(alpha: 0.15),
+            ],
             child: AdaptivePageScaffold(
               useSafeArea: false,
               child: Stack(
@@ -164,15 +174,9 @@ class _WelcomePageState extends State<WelcomePage>
                           child: Padding(
                             padding:
                                 EdgeInsets.symmetric(horizontal: spacing.xl),
-                            child: const FloatingTextWidget(
+                            child: FloatingTextWidget(
                               text: 'Hi, tell me\nabout yourself',
-                              textStyle: TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                                height: 1.4,
-                                letterSpacing: 0.5,
-                              ),
+                              textStyle: floatingTextStyle,
                             ),
                           ),
                         ),
@@ -181,15 +185,15 @@ class _WelcomePageState extends State<WelcomePage>
                           hint: 'Tap anywhere to continue',
                           child: Padding(
                             padding: EdgeInsets.only(bottom: spacing.xxl),
-                            child: const Column(
+                            child: Column(
                               children: [
                                 Icon(
                                   Icons.arrow_downward_rounded,
                                   color: AppColors.textSecondary,
                                   size: 24,
                                 ),
-                                SizedBox(height: 8),
-                                PulsingHintWidget(
+                                SizedBox(height: spacing.xs),
+                                const PulsingHintWidget(
                                   text: 'Tap to continue',
                                 ),
                               ],

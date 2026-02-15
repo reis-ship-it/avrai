@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/disputes/fraud_score.dart';
 import 'package:avrai/core/models/disputes/fraud_recommendation.dart';
@@ -7,7 +8,9 @@ import 'package:avrai/core/services/fraud/fraud_detection_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Fraud Review Page (Admin)
 ///
@@ -106,12 +109,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Decision saved: ${decision.toUpperCase()}'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Decision saved: ${decision.toUpperCase()}');
         Navigator.pop(context);
       }
     } catch (e) {
@@ -139,41 +137,44 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                     children: [
                       const Icon(Icons.error_outline,
                           size: 64, color: AppColors.error),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       Text(
                         _error ?? 'Failed to load fraud review data',
-                        style: const TextStyle(color: AppColors.error),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.error),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       ElevatedButton(
                         onPressed: _loadData,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(context.spacing.lg),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Risk Score Badge
                         _buildRiskScoreBadge(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Event Details
                         _buildEventDetails(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Fraud Signals
                         _buildFraudSignals(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Recommendation
                         _buildRecommendation(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Admin Actions
                         if (!_fraudScore!.reviewedByAdmin) _buildAdminActions(),
@@ -201,35 +202,31 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
       riskLevel = 'Low Risk';
     }
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3), width: 2),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.xl),
+      color: badgeColor.withValues(alpha: 0.1),
+      borderColor: badgeColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(Icons.shield, size: 48, color: badgeColor),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   riskLevel,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: badgeColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: badgeColor,
+                      ),
                 ),
                 Text(
                   'Risk Score: ${(score * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -240,25 +237,22 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
   }
 
   Widget _buildEventDetails() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Event Details',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildDetailRow('Title', _event!.title),
           _buildDetailRow(
               'Host', _event!.host.displayName ?? _event!.host.email),
@@ -275,7 +269,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: context.spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -283,20 +277,18 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],
@@ -306,53 +298,46 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
 
   Widget _buildFraudSignals() {
     if (_fraudScore!.signals.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.electricGreen.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border:
-              Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-        ),
-        child: const Row(
+      return PortalSurface(
+        padding: EdgeInsets.all(context.spacing.lg),
+        color: AppColors.electricGreen.withValues(alpha: 0.1),
+        borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+        radius: context.radius.md,
+        child: Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.electricGreen),
             SizedBox(width: 12),
             Text(
               'No fraud signals detected',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.electricGreen,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.electricGreen,
+                  ),
             ),
           ],
         ),
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Fraud Signals (${_fraudScore!.signals.length})',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ..._fraudScore!.signals.map((signal) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: context.spacing.sm),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -361,35 +346,35 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                     color: AppTheme.warningColor,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: context.spacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           signal.displayName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: context.spacing.xxs),
                         Text(
                           signal.description,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: context.spacing.xxs),
                         Text(
                           'Risk Weight: ${(signal.riskWeight * 100).toStringAsFixed(0)}%',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                            fontStyle: FontStyle.italic,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                         ),
                       ],
                     ),
@@ -432,35 +417,31 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: recColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: recColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: recColor.withValues(alpha: 0.1),
+      borderColor: recColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(recIcon, size: 32, color: recColor),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Recommendation',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 Text(
                   recText,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: recColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: recColor,
+                      ),
                 ),
               ],
             ),
@@ -474,34 +455,33 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Admin Decision',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         if (_error != null) ...[
-          Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            margin: EdgeInsets.only(bottom: context.spacing.md),
+            color: AppColors.error.withValues(alpha: 0.1),
+            borderColor: AppColors.error.withValues(alpha: 0.3),
+            radius: context.radius.sm,
             child: Row(
               children: [
                 const Icon(Icons.error_outline,
                     color: AppColors.error, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: context.spacing.xs),
                 Expanded(
                   child: Text(
                     _error!,
-                    style:
-                        const TextStyle(color: AppColors.error, fontSize: 12),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.error),
                   ),
                 ),
               ],
@@ -516,7 +496,7 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                     ? null
                     : () => _updateAdminDecision('approve'),
                 icon: const Icon(Icons.check),
-                label: const Text('Approve'),
+                label: Text('Approve'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.electricGreen,
                   side: const BorderSide(color: AppColors.electricGreen),
@@ -524,14 +504,14 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: _isProcessing
                     ? null
                     : () => _updateAdminDecision('require_verification'),
                 icon: const Icon(Icons.verified_user),
-                label: const Text('Verify'),
+                label: Text('Verify'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
                   side: const BorderSide(color: AppTheme.primaryColor),
@@ -539,13 +519,13 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed:
                     _isProcessing ? null : () => _updateAdminDecision('reject'),
                 icon: const Icon(Icons.cancel),
-                label: const Text('Reject'),
+                label: Text('Reject'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.error,
                   side: const BorderSide(color: AppColors.error),
@@ -560,44 +540,38 @@ class _FraudReviewPageState extends State<FraudReviewPage> {
   }
 
   Widget _buildReviewStatus() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.electricGreen.withValues(alpha: 0.1),
+      borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           const Icon(Icons.check_circle, color: AppColors.electricGreen),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Reviewed',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.electricGreen,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.electricGreen,
+                      ),
                 ),
                 Text(
                   'Decision: ${_fraudScore!.adminDecision?.toUpperCase() ?? 'N/A'}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 if (_fraudScore!.reviewedAt != null)
                   Text(
                     'Reviewed on ${_formatDate(_fraudScore!.reviewedAt!)}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
               ],
             ),

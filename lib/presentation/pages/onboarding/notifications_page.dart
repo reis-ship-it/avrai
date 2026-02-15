@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 import 'package:permission_handler/permission_handler.dart';
@@ -102,28 +103,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Icon
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
+          CircleAvatar(
+            radius: 56,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
             child: Icon(
               Icons.notifications_active,
               size: 64,
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Title
           Text(
@@ -133,7 +132,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
 
           // Subtitle
           Text(
@@ -143,7 +142,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Benefits list
           _buildBenefitItem(
@@ -152,14 +151,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
             title: 'Reservation Reminders',
             description: "Never miss a reservation with timely reminders",
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           _buildBenefitItem(
             context: context,
             icon: Icons.groups,
             title: 'Community Updates',
             description: "Stay connected with events and activities near you",
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           _buildBenefitItem(
             context: context,
             icon: Icons.auto_awesome,
@@ -167,7 +166,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             description:
                 "Get personalized suggestions when something great is nearby",
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           _buildBenefitItem(
             context: context,
             icon: Icons.message,
@@ -175,21 +174,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
             description: "Know when friends or communities reach out",
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Status indicator
           if (_isGranted != null)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _isGranted!
-                    ? AppColors.success.withValues(alpha: 0.1)
-                    : AppColors.grey100,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _isGranted! ? AppColors.success : AppColors.grey300,
-                ),
-              ),
+            PortalSurface(
+              padding: EdgeInsets.all(spacing.md),
+              color: _isGranted!
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : AppColors.grey100,
+              borderColor: _isGranted! ? AppColors.success : AppColors.grey300,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -199,7 +193,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         ? AppColors.success
                         : AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Text(
                     _isGranted!
                         ? 'Notifications enabled!'
@@ -215,7 +209,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Enable button
           if (_isGranted != true)
@@ -233,12 +227,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 label:
                     Text(_isLoading ? 'Enabling...' : 'Enable Notifications'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: spacing.md),
                 ),
               ),
             ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           // Skip hint
           Text(
@@ -260,23 +254,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
     required String description,
   }) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return PortalSurface(
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
             child: Icon(
               icon,
               color: AppColors.primary,
               size: 20,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +279,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: spacing.xxs / 2),
                 Text(
                   description,
                   style: theme.textTheme.bodySmall?.copyWith(

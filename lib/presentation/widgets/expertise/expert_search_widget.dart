@@ -4,6 +4,7 @@ import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/services/expertise/expert_search_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_pin_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expert Search Widget
 /// UI for searching and finding experts
@@ -27,7 +28,7 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
   final ExpertSearchService _searchService = ExpertSearchService();
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  
+
   List<ExpertSearchResult> _results = [];
   bool _isLoading = false;
   ExpertiseLevel? _selectedMinLevel;
@@ -79,8 +80,10 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
 
     try {
       final results = await _searchService.searchExperts(
-        category: _categoryController.text.isEmpty ? null : _categoryController.text,
-        location: _locationController.text.isEmpty ? null : _locationController.text,
+        category:
+            _categoryController.text.isEmpty ? null : _categoryController.text,
+        location:
+            _locationController.text.isEmpty ? null : _locationController.text,
         minLevel: _selectedMinLevel,
         maxResults: 20,
       );
@@ -109,7 +112,7 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
         const SizedBox(height: 16),
         // Results
         if (_isLoading)
-          const Center(child: CircularProgressIndicator())
+          Center(child: CircularProgressIndicator())
         else if (_results.isEmpty)
           _buildEmptyState()
         else
@@ -165,7 +168,11 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
     return Wrap(
       spacing: 8,
       children: [
-        const Text('Min Level:', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text('Min Level:',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w600)),
         ...ExpertiseLevel.values.map((level) {
           final isSelected = _selectedMinLevel == level;
           return FilterChip(
@@ -184,25 +191,23 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         children: [
           Icon(Icons.search_off, size: 64, color: AppColors.textSecondary),
           SizedBox(height: 16),
           Text(
             'No experts found',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Try adjusting your search criteria',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -223,12 +228,13 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
 
   Widget _buildExpertCard(ExpertSearchResult result) {
     final user = result.user;
-    final pins = user.getExpertisePins()
+    final pins = user
+        .getExpertisePins()
         .where((pin) => result.matchingCategories.contains(pin.category))
         .toList();
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.grey200,
@@ -236,7 +242,10 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
               ? Image.network(user.photoUrl!)
               : Text(
                   (user.displayName ?? user.email)[0].toUpperCase(),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
         ),
         title: Text(user.displayName ?? user.email),
@@ -246,16 +255,21 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
             if (result.location != null)
               Text(
                 result.location!,
-                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             const SizedBox(height: 4),
             Wrap(
               spacing: 4,
               runSpacing: 4,
-              children: pins.map((pin) => ExpertisePinWidget(
-                pin: pin,
-                showDetails: false,
-              )).toList(),
+              children: pins
+                  .map((pin) => ExpertisePinWidget(
+                        pin: pin,
+                        showDetails: false,
+                      ))
+                  .toList(),
             ),
           ],
         ),
@@ -264,18 +278,16 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
           children: [
             Text(
               '${(result.relevanceScore * 100).toStringAsFixed(0)}%',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.electricGreen,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.electricGreen,
+                  ),
             ),
-            const Text(
+            Text(
               'match',
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -284,4 +296,3 @@ class _ExpertSearchWidgetState extends State<ExpertSearchWidget> {
     );
   }
 }
-

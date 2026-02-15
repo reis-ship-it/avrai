@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/payment/revenue_split.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Sponsorship Revenue Split Display Widget
 ///
@@ -37,12 +38,12 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.account_balance_wallet,
@@ -52,11 +53,10 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
                 SizedBox(width: 8),
                 Text(
                   'Revenue Breakdown (with Sponsorship)',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),
@@ -64,6 +64,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
 
             // Total Revenue
             _buildRevenueRow(
+              context: context,
               label: 'Total Revenue',
               amount: split.totalAmount,
               isTotal: true,
@@ -74,6 +75,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
             if (showDetails) ...[
               // Platform Fee
               _buildFeeRow(
+                context: context,
                 label: 'Platform Fee',
                 amount: split.platformFee,
                 percentage: split.platformFeePercentage,
@@ -83,6 +85,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
 
               // Processing Fee
               _buildFeeRow(
+                context: context,
                 label: 'Processing Fee',
                 amount: split.processingFee,
                 percentage: split.processingFeePercentage,
@@ -95,6 +98,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
 
             // Net Revenue
             _buildRevenueRow(
+              context: context,
               label: 'Net Revenue',
               amount: split.splitAmount,
               isTotal: false,
@@ -104,7 +108,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
 
             // Sponsorship Contribution Highlight
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -115,7 +119,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Row(
+                  Row(
                     children: [
                       Icon(
                         Icons.campaign,
@@ -125,21 +129,19 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
                       SizedBox(width: 8),
                       Text(
                         'Your Sponsorship Contribution',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ],
                   ),
                   Text(
                     '\$${sponsorshipContribution.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                        ),
                   ),
                 ],
               ),
@@ -148,16 +150,15 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
 
             // Partner Splits (N-way including sponsors)
             if (split.parties.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Revenue Distribution',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
-              ...split.parties.map((party) => _buildPartyRow(party)),
+              ...split.parties.map((party) => _buildPartyRow(context, party)),
             ],
           ],
         ),
@@ -166,6 +167,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
   }
 
   Widget _buildRevenueRow({
+    required BuildContext context,
     required String label,
     required double amount,
     required bool isTotal,
@@ -180,8 +182,10 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(
-                fontSize: isTotal ? 18 : 16,
+              style: (isTotal
+                      ? Theme.of(context).textTheme.titleMedium
+                      : Theme.of(context).textTheme.bodyMedium)
+                  ?.copyWith(
                 fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
                 color: AppColors.textPrimary,
               ),
@@ -189,30 +193,29 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
             if (ticketsSold != null && ticketsSold > 0)
               Text(
                 '($ticketsSold tickets)',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
           ],
         ),
         Text(
           '\$${amount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: isTotal ? 24 : 18,
-            fontWeight: FontWeight.bold,
-            color: isHighlighted
-                ? AppColors.electricGreen
-                : isTotal
-                    ? AppTheme.primaryColor
-                    : AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: isHighlighted
+                    ? AppColors.electricGreen
+                    : isTotal
+                        ? AppTheme.primaryColor
+                        : AppColors.textPrimary,
+              ),
         ),
       ],
     );
   }
 
   Widget _buildFeeRow({
+    required BuildContext context,
     required String label,
     required double amount,
     required double percentage,
@@ -227,42 +230,39 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
         ),
         Text(
           '\$${amount.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
   }
 
-  Widget _buildPartyRow(SplitParty party) {
+  Widget _buildPartyRow(BuildContext context, SplitParty party) {
     final partyTypeLabel = party.type.displayName;
     final partyName = party.name ?? partyTypeLabel;
     final isSponsor = party.type == SplitPartyType.sponsor;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(kSpaceSm),
         decoration: BoxDecoration(
           color: isSponsor
               ? AppTheme.primaryColor.withValues(alpha: 0.1)
@@ -285,7 +285,7 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                            horizontal: kSpaceXsTight, vertical: kSpaceNano),
                         decoration: BoxDecoration(
                           color: isSponsor
                               ? AppTheme.primaryColor.withValues(alpha: 0.2)
@@ -294,22 +294,22 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
                         ),
                         child: Text(
                           partyTypeLabel,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.primaryColor,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppTheme.primaryColor,
+                                  ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           partyName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textPrimary,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -319,10 +319,9 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${party.percentage.toStringAsFixed(1)}% of net revenue',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ],
@@ -331,22 +330,20 @@ class SponsorshipRevenueSplitDisplay extends StatelessWidget {
             if (party.amount != null)
               Text(
                 '\$${party.amount!.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isSponsor
-                      ? AppTheme.primaryColor
-                      : AppColors.electricGreen,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isSponsor
+                          ? AppTheme.primaryColor
+                          : AppColors.electricGreen,
+                    ),
               )
             else if (party.percentage > 0)
               Text(
                 '${party.percentage.toStringAsFixed(1)}%',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
               ),
           ],
         ),

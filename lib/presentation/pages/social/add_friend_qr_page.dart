@@ -7,6 +7,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/chat/friend_qr_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -14,6 +15,8 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Add Friend QR Page
 ///
@@ -69,12 +72,7 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading QR code: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading QR code: $e');
       }
     }
   }
@@ -87,7 +85,7 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
       appBarForegroundColor: AppColors.white,
       constrainBody: false,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _qrCodeData == null
               ? Center(
                   child: Column(
@@ -99,64 +97,49 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                         color: AppColors.error,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Unable to generate QR code',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: _loadAgentId,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(kSpaceLg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         'Let your friend scan this QR code',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'They can scan this code to send you a friend request',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
                       // QR Code Display
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: AppColors.grey300,
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.grey300.withValues(alpha: 0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceLg),
+                        color: AppColors.white,
+                        borderColor: AppColors.grey300,
+                        radius: 16,
                         child: QrImageView(
                           data: _qrCodeData!,
                           version: QrVersions.auto,
@@ -174,20 +157,15 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                       ),
                       const SizedBox(height: 32),
                       // Agent ID Display (for manual entry fallback)
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.grey100,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.grey300,
-                            width: 1,
-                          ),
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceMd),
+                        color: AppColors.grey100,
+                        borderColor: AppColors.grey300,
+                        radius: 12,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
                                 Icon(
                                   Icons.info_outline,
@@ -197,22 +175,26 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                                 SizedBox(width: 8),
                                 Text(
                                   'Or share your Agent ID manually',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 12),
                             SelectableText(
                               _agentId ?? '',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'monospace',
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontFamily: 'monospace',
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             TextButton.icon(
@@ -221,17 +203,16 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                                 if (_agentId != null) {
                                   Clipboard.setData(
                                       ClipboardData(text: _agentId!));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content:
-                                          Text('Agent ID copied to clipboard'),
-                                      duration: Duration(seconds: 2),
-                                    ),
+                                  FeedbackPresenter.showSnack(
+                                    context,
+                                    message: 'Agent ID copied to clipboard',
+                                    kind: FeedbackKind.success,
+                                    duration: const Duration(seconds: 2),
                                   );
                                 }
                               },
                               icon: const Icon(Icons.copy, size: 16),
-                              label: const Text('Copy Agent ID'),
+                              label: Text('Copy Agent ID'),
                               style: TextButton.styleFrom(
                                 foregroundColor: AppColors.primary,
                               ),
@@ -241,18 +222,13 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                       ),
                       const SizedBox(height: 24),
                       // Instructions
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color:
-                                AppColors.electricGreen.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Column(
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceMd),
+                        color: AppColors.electricGreen.withValues(alpha: 0.1),
+                        borderColor:
+                            AppColors.electricGreen.withValues(alpha: 0.3),
+                        radius: 12,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
@@ -265,11 +241,13 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                                 SizedBox(width: 8),
                                 Text(
                                   'How it works',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
                                 ),
                               ],
                             ),
@@ -279,11 +257,13 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
                               '2. They scan it with their phone\n'
                               '3. They send you a friend request\n'
                               '4. You accept to become friends',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                                height: 1.5,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    height: 1.5,
+                                  ),
                             ),
                           ],
                         ),

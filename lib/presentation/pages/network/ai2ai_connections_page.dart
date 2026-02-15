@@ -15,6 +15,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
@@ -26,6 +27,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Comprehensive page for AI2AI networking and device discovery
 class AI2AIConnectionsPage extends StatefulWidget {
@@ -188,23 +190,20 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
 
   Widget _buildDiscoveryStatusCard() {
     return PortalSurface(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(kSpaceMd),
       radius: 16,
       color:
           _isScanning ? AppColors.electricGreen.withValues(alpha: 0.08) : null,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       child: Column(
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _isScanning
-                      ? AppColors.electricGreen.withValues(alpha: 0.2)
-                      : AppColors.grey200,
-                  shape: BoxShape.circle,
-                ),
+              CircleAvatar(
+                radius: 34,
+                backgroundColor: _isScanning
+                    ? AppColors.electricGreen.withValues(alpha: 0.2)
+                    : AppColors.grey200,
                 child: Icon(
                   _isScanning ? Icons.radar : Icons.radar_outlined,
                   color: _isScanning
@@ -220,21 +219,19 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                   children: [
                     Text(
                       _isScanning ? 'Discovery Active' : 'Discovery Inactive',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       _isScanning
                           ? 'Scanning for nearby devices...'
                           : 'Start to discover nearby AI devices',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -252,7 +249,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 backgroundColor:
                     _isScanning ? AppColors.error : AppColors.electricGreen,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -269,19 +266,19 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
     final activeConnections = _orchestrator?.getActiveConnections() ?? [];
 
     return PortalSurface(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       radius: 12,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Network Statistics',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -316,12 +313,9 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
       IconData icon, String value, String label, Color color) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
+        CircleAvatar(
+          radius: 26,
+          backgroundColor: color.withValues(alpha: 0.1),
           child: Icon(
             icon,
             color: color,
@@ -331,19 +325,17 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
         const SizedBox(height: 8),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -351,43 +343,37 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
 
   Widget _buildQuickActionsCard() {
     return PortalSurface(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(kSpaceMd),
       radius: 12,
       padding: EdgeInsets.zero,
       child: Column(
         children: [
           ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
+            leading: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               child: const Icon(
                 Icons.settings,
                 color: AppColors.primary,
               ),
             ),
-            title: const Text('Discovery Settings'),
-            subtitle: const Text('Configure discovery methods and privacy'),
+            title: Text('Discovery Settings'),
+            subtitle: Text('Configure discovery methods and privacy'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _navigateToSettings,
           ),
           const Divider(height: 1),
           ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.electricGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
+            leading: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.electricGreen.withValues(alpha: 0.1),
               child: const Icon(
                 Icons.info_outline,
                 color: AppColors.electricGreen,
               ),
             ),
-            title: const Text('How Discovery Works'),
-            subtitle: const Text('Learn about AI2AI networking'),
+            title: Text('How Discovery Works'),
+            subtitle: Text('Learn about AI2AI networking'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showDiscoveryInfoDialog,
           ),
@@ -400,7 +386,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
     if (!_isScanning) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(kSpaceXl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -410,33 +396,31 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 color: AppColors.grey300,
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Discovery is off',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Start discovery to find nearby avrai devices',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: _toggleDiscovery,
                 icon: const Icon(Icons.play_arrow),
-                label: const Text('Start Discovery'),
+                label: Text('Start Discovery'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.electricGreen,
                   foregroundColor: AppColors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceXl, vertical: kSpaceMd),
                 ),
               ),
             ],
@@ -460,11 +444,9 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
   }
 
   void _navigateToSettings() {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => const DiscoverySettingsPage(),
-      ),
+      builder: (context) => const DiscoverySettingsPage(),
     ).then((_) {
       // Refresh after returning from settings
       _refreshDevices();
@@ -475,7 +457,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.psychology,
@@ -490,9 +472,12 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'How It Works:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               _buildInfoPoint(
@@ -511,13 +496,12 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 '5. At 100% compatibility, human conversation is enabled',
               ),
               const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Row(
+              PortalSurface(
+                padding: const EdgeInsets.all(kSpaceSm),
+                color: AppColors.electricGreen.withValues(alpha: 0.1),
+                borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                radius: 8,
+                child: Row(
                   children: [
                     Icon(
                       Icons.verified_user,
@@ -528,10 +512,9 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                     Expanded(
                       child: Text(
                         'All interactions follow ai2ai principles from OUR_GUTS.md',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                   ],
@@ -543,7 +526,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+            child: Text('Got it'),
           ),
         ],
       ),
@@ -552,7 +535,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
 
   Widget _buildInfoPoint(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -565,10 +548,9 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],

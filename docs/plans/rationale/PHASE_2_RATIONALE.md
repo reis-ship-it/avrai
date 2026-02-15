@@ -90,4 +90,14 @@ When you add Laplace noise to protect privacy, you spend "privacy budget" (epsil
 
 ---
 
+## Additional Design Rationale
+
+### Why AI Learning Trajectory Visualization (2.1.8D)
+
+**The problem:** `AIImprovementTrackingService` already tracks how the AI improves over time -- accuracy trends, category confidence growth, uncertainty areas. But this data is completely invisible to users. Users have no way to see that their AI is getting smarter, which undermines trust and the "learning together" narrative.
+
+**Why this matters for doors philosophy:** If the AI is a "key" that opens doors, users should be able to see the key getting better at its job over time. Showing "Your AI is 23% more accurate than last month" builds trust. Showing "Still learning your nightlife preferences" sets expectations. Showing "Coffee shops: very confident" validates that the system works.
+
+---
+
 **Last Updated:** February 10, 2026 -- Version 1.1 (v12 gap fill: added Data Transparency rationale 2.1.8-2.1.8C)

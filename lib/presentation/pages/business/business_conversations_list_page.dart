@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_expert_chat_service_ai2ai.dart';
 import 'package:avrai/core/services/business/business_business_chat_service_ai2ai.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -113,24 +115,21 @@ class _BusinessConversationsListPageState
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Experts'),
+                Text('Experts'),
                 if (_unreadCounts['experts'] != null &&
                     _unreadCounts['experts']! > 0) ...[
                   const SizedBox(width: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: AppColors.error,
+                    label: Text(
                       '${_unreadCounts['experts']}',
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                 ],
@@ -141,24 +140,21 @@ class _BusinessConversationsListPageState
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Businesses'),
+                Text('Businesses'),
                 if (_unreadCounts['businesses'] != null &&
                     _unreadCounts['businesses']! > 0) ...[
                   const SizedBox(width: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: AppColors.error,
+                    label: Text(
                       '${_unreadCounts['businesses']}',
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                 ],
@@ -179,11 +175,11 @@ class _BusinessConversationsListPageState
 
   Widget _buildExpertConversationsTab() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
     if (_expertConversations.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -192,18 +188,16 @@ class _BusinessConversationsListPageState
             SizedBox(height: 16),
             Text(
               'No conversations with experts yet',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 8),
             Text(
               'Start chatting with experts to build partnerships',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -227,11 +221,11 @@ class _BusinessConversationsListPageState
 
   Widget _buildBusinessConversationsTab() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
     if (_businessConversations.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -239,18 +233,16 @@ class _BusinessConversationsListPageState
             SizedBox(height: 16),
             Text(
               'No conversations with businesses yet',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 8),
             Text(
               'Connect with other businesses for partnerships',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -303,16 +295,15 @@ class _BusinessConversationsListPageState
       ),
       title: Text(
         title,
-        style: TextStyle(
-          fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+            ),
       ),
       subtitle: Text(
         subtitle ?? '',
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -321,26 +312,23 @@ class _BusinessConversationsListPageState
           if (lastMessageAt != null)
             Text(
               _formatTime(lastMessageAt),
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           if (unreadCount > 0) ...[
             const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.error,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
+            Chip(
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              side: BorderSide.none,
+              backgroundColor: AppColors.error,
+              label: Text(
                 '$unreadCount',
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
           ],
@@ -349,23 +337,17 @@ class _BusinessConversationsListPageState
       onTap: () {
         if (isBusinessBusiness) {
           // TODO: Navigate to business-business chat
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Business-business chat coming soon'),
-            ),
-          );
+          context.showInfo('Business-business chat coming soon');
         } else {
           final expertId = conversation['expert_id'] as String?;
           if (expertId != null) {
-            Navigator.push(
+            AppNavigator.pushBuilder(
               context,
-              MaterialPageRoute(
-                builder: (context) => BusinessExpertChatPage(
-                  businessId: widget.businessId,
-                  expertId: expertId,
-                  businessName: conversation['business_name'] as String?,
-                  expertName: conversation['expert_name'] as String?,
-                ),
+              builder: (context) => BusinessExpertChatPage(
+                businessId: widget.businessId,
+                expertId: expertId,
+                businessName: conversation['business_name'] as String?,
+                expertName: conversation['expert_name'] as String?,
               ),
             );
           }

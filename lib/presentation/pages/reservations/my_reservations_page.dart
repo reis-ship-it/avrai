@@ -1,6 +1,8 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -202,7 +204,7 @@ class _MyReservationsPageState extends State<MyReservationsPage>
       body: _isLoading
           ? Semantics(
               label: 'Loading reservations',
-              child: const Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator()),
             )
           : _error != null
               ? Semantics(
@@ -217,7 +219,10 @@ class _MyReservationsPageState extends State<MyReservationsPage>
                         const SizedBox(height: 16),
                         Text(
                           _error!,
-                          style: const TextStyle(color: AppTheme.errorColor),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppTheme.errorColor),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
@@ -230,7 +235,7 @@ class _MyReservationsPageState extends State<MyReservationsPage>
                               backgroundColor: AppTheme.primaryColor,
                               foregroundColor: AppColors.white,
                             ),
-                            child: const Text('Retry'),
+                            child: Text('Retry'),
                           ),
                         ),
                       ],
@@ -242,7 +247,7 @@ class _MyReservationsPageState extends State<MyReservationsPage>
                   children: List.generate(4, (index) {
                     final reservations = _getReservationsForTab(index);
                     return reservations.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -254,10 +259,12 @@ class _MyReservationsPageState extends State<MyReservationsPage>
                                 SizedBox(height: 16),
                                 Text(
                                   'No reservations',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ),
@@ -266,19 +273,18 @@ class _MyReservationsPageState extends State<MyReservationsPage>
                             onRefresh: _loadReservations,
                             child: ListView.builder(
                               itemCount: reservations.length,
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(kSpaceMd),
                               itemBuilder: (context, i) {
                                 final reservation = reservations[i];
                                 return ReservationCardWidget(
                                   reservation: reservation,
                                   onTap: () async {
                                     final result =
-                                        await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ReservationDetailPage(
-                                          reservationId: reservation.id,
-                                        ),
+                                        await AppNavigator.pushBuilder(
+                                      context,
+                                      builder: (context) =>
+                                          ReservationDetailPage(
+                                        reservationId: reservation.id,
                                       ),
                                     );
                                     if (result == true) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -11,6 +12,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Payment Success Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -120,7 +122,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(kSpaceXl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,12 +130,10 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 const SizedBox(height: 40),
 
                 // Success Icon
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor:
+                      AppColors.electricGreen.withValues(alpha: 0.1),
                   child: const Icon(
                     Icons.check_circle,
                     size: 80,
@@ -144,13 +144,12 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 const SizedBox(height: 24),
 
                 // Success Message
-                const Text(
+                Text(
                   'Payment Successful!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -160,10 +159,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   _registrationComplete
                       ? 'You are registered for ${widget.quantity > 1 ? "${widget.quantity} tickets" : "the event"}!'
                       : 'Registering you for the event...',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -174,15 +172,11 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
 
                 if (_error != null) ...[
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.error.withValues(alpha: 0.3),
-                      ),
-                    ),
+                  PortalSurface(
+                    padding: const EdgeInsets.all(kSpaceSm),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderColor: AppColors.error.withValues(alpha: 0.3),
+                    radius: 8,
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline, color: AppColors.error),
@@ -190,10 +184,12 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                         Expanded(
                           child: Text(
                             _error!,
-                            style: const TextStyle(
-                              color: AppColors.error,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.error,
+                                ),
                           ),
                         ),
                       ],
@@ -205,22 +201,19 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
 
                 // Event Preview Card
                 PortalSurface(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(kSpaceMdWide),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.electricGreen
-                                  .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor:
+                                AppColors.electricGreen.withValues(alpha: 0.1),
                             child: Text(
                               widget.event.getEventTypeEmoji(),
-                              style: const TextStyle(fontSize: 24),
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -230,19 +223,23 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                               children: [
                                 Text(
                                   widget.event.title,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   widget.event.getEventTypeDisplayName(),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ),
@@ -269,20 +266,18 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      AppNavigator.replaceBuilder(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EventDetailsPage(event: widget.event),
-                        ),
+                        builder: (context) =>
+                            EventDetailsPage(event: widget.event),
                       );
                     },
                     icon: const Icon(Icons.event, size: 20),
-                    label: const Text('View Event Details'),
+                    label: Text('View Event Details'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -296,9 +291,12 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: const Text(
+                  child: Text(
                     'Back to Home',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
               ],
@@ -311,7 +309,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Row(
         children: [
           Icon(icon, size: 16, color: AppColors.textSecondary),
@@ -319,10 +317,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],

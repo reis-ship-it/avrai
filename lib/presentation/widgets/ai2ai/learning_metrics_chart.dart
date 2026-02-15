@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying learning metrics as an enhanced interactive chart
 /// Features: Interactive features, multiple chart types, time range selectors
 enum ChartType { line, bar, area }
+
 enum TimeRange { hour, day, week, month }
 
 /// Widget displaying learning metrics as an interactive chart
@@ -59,12 +61,13 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
       final variation = (i % 3) * 0.05 - 0.075;
       dataPoints.add({
         'timestamp': timestamp.millisecondsSinceEpoch.toDouble(),
-        'matchingSuccessRate': (baseMetrics.matchingSuccessRate + variation)
-            .clamp(0.0, 1.0),
+        'matchingSuccessRate':
+            (baseMetrics.matchingSuccessRate + variation).clamp(0.0, 1.0),
         'learningConvergenceSpeed':
             (baseMetrics.learningConvergenceSpeed + variation).clamp(0.0, 1.0),
         'vibeSynchronizationQuality':
-            (baseMetrics.vibeSynchronizationQuality + variation).clamp(0.0, 1.0),
+            (baseMetrics.vibeSynchronizationQuality + variation)
+                .clamp(0.0, 1.0),
         'networkResponsiveness':
             (baseMetrics.networkResponsiveness + variation).clamp(0.0, 1.0),
       });
@@ -73,7 +76,8 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
     return dataPoints;
   }
 
-  void _showMetricDetails(BuildContext context, String metricName, double value) {
+  void _showMetricDetails(
+      BuildContext context, String metricName, double value) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -99,7 +103,7 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text('Close'),
           ),
         ],
       ),
@@ -128,7 +132,7 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
       child: Card(
         elevation: 2,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -231,9 +235,9 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
           }
         },
         selectedColor: AppColors.primary,
-        labelStyle: TextStyle(
-          color: isSelected ? AppColors.white : AppColors.textPrimary,
-        ),
+        labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: isSelected ? AppColors.white : AppColors.textPrimary,
+            ),
       ),
     );
   }
@@ -249,10 +253,10 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
         // Calculate which data point was tapped
         // This is a simplified implementation
         if (historicalData.isNotEmpty) {
-          final index = ((localPosition.dx / box.size.width) *
-                  historicalData.length)
-              .floor()
-              .clamp(0, historicalData.length - 1);
+          final index =
+              ((localPosition.dx / box.size.width) * historicalData.length)
+                  .floor()
+                  .clamp(0, historicalData.length - 1);
           final dataPoint = historicalData[index];
           _showMetricDetails(
             context,
@@ -263,7 +267,7 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
       },
       child: Container(
         height: height,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(kSpaceXs),
         decoration: BoxDecoration(
           color: AppColors.grey50,
           borderRadius: BorderRadius.circular(8),

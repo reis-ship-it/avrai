@@ -96,6 +96,73 @@ class AdaptivePaneLayout extends StatelessWidget {
   }
 }
 
+class AdaptiveBottomNavDestination {
+  final Widget icon;
+  final String label;
+
+  const AdaptiveBottomNavDestination({
+    required this.icon,
+    required this.label,
+  });
+}
+
+class AdaptivePlatformBottomNavigationBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+  final List<AdaptiveBottomNavDestination> destinations;
+  final Color? selectedItemColor;
+  final Color? unselectedItemColor;
+  final Color? backgroundColor;
+
+  const AdaptivePlatformBottomNavigationBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+    required this.destinations,
+    this.selectedItemColor,
+    this.unselectedItemColor,
+    this.backgroundColor,
+  });
+
+  bool _isCupertinoPlatform(TargetPlatform platform) {
+    return platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final platform = Theme.of(context).platform;
+    final items = destinations
+        .map(
+          (d) => BottomNavigationBarItem(
+            icon: d.icon,
+            label: d.label,
+          ),
+        )
+        .toList(growable: false);
+
+    if (_isCupertinoPlatform(platform)) {
+      return CupertinoTabBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        items: items,
+        activeColor: selectedItemColor ?? CupertinoColors.activeBlue,
+        inactiveColor: unselectedItemColor ?? CupertinoColors.inactiveGray,
+        backgroundColor: backgroundColor,
+      );
+    }
+
+    return BottomNavigationBar(
+      currentIndex: currentIndex,
+      onTap: onTap,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: selectedItemColor,
+      unselectedItemColor: unselectedItemColor,
+      backgroundColor: backgroundColor,
+      items: items,
+    );
+  }
+}
+
 class AdaptivePlatformPageScaffold extends StatelessWidget {
   final String title;
   final Widget? titleWidget;
@@ -179,6 +246,31 @@ class AdaptivePlatformPageScaffold extends StatelessWidget {
                   ),
           ),
           child: content,
+        );
+      }
+
+      if (showNavigationBar && materialBottom != null) {
+        return CupertinoPageScaffold(
+          backgroundColor: backgroundColor,
+          navigationBar: CupertinoNavigationBar(
+            middle: titleWidget ?? Text(title),
+            leading: resolvedLeading,
+            trailing: actions == null || actions!.isEmpty
+                ? null
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: actions!,
+                  ),
+          ),
+          child: Column(
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: materialBottom!,
+              ),
+              Expanded(child: content),
+            ],
+          ),
         );
       }
     }

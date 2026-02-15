@@ -20,10 +20,12 @@
 //   )
 
 import 'dart:io';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/text_styles.dart';
 
 import 'package:avrai/core/services/device/haptics_service.dart';
 
@@ -55,15 +57,17 @@ class AdaptiveButton extends StatelessWidget {
     if (Platform.isIOS) {
       return CupertinoButton(
         color: filled ? (color ?? AppColors.electricGreen) : null,
-        padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: padding ??
+            const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceSm),
         borderRadius: borderRadius ?? BorderRadius.circular(8),
         onPressed: onPressed != null
             ? () {
                 HapticsService.light();
                 onPressed!();
               }
-            : null, minimumSize: Size(minSize ?? 44.0, minSize ?? 44.0),
+            : null,
+        minimumSize: Size(minSize ?? 44.0, minSize ?? 44.0),
         child: child,
       );
     }
@@ -73,8 +77,9 @@ class AdaptiveButton extends StatelessWidget {
         backgroundColor: filled ? (color ?? AppColors.electricGreen) : null,
         foregroundColor:
             filled ? AppColors.black : (color ?? AppColors.electricGreen),
-        padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: padding ??
+            const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceSm),
         minimumSize: Size(minSize ?? 64, minSize ?? 44),
         shape: RoundedRectangleBorder(
           borderRadius: borderRadius ?? BorderRadius.circular(8),
@@ -111,7 +116,10 @@ class AdaptiveTextButton extends StatelessWidget {
               }
             : null,
         child: DefaultTextStyle(
-          style: TextStyle(color: color ?? AppColors.electricGreen),
+          style: (Theme.of(context).textTheme.bodyMedium ??
+                  AppTextStyles.textTheme.bodyMedium ??
+                  DefaultTextStyle.of(context).style)
+              .copyWith(color: color ?? AppColors.electricGreen),
           child: child,
         ),
       );
@@ -297,7 +305,8 @@ class AdaptiveTextField extends StatelessWidget {
         prefix: prefix,
         suffix: suffix,
         autofocus: autofocus,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+            horizontal: kSpaceSm, vertical: kSpaceSm),
         decoration: BoxDecoration(
           color: CupertinoColors.systemGrey6,
           borderRadius: BorderRadius.circular(8),
@@ -413,11 +422,11 @@ Future<DateTime?> showAdaptiveDatePicker({
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  child: const Text('Cancel'),
+                  child: Text('Cancel'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 CupertinoButton(
-                  child: const Text('Done'),
+                  child: Text('Done'),
                   onPressed: () {
                     HapticsService.selection();
                     Navigator.of(context).pop();
@@ -479,11 +488,11 @@ Future<TimeOfDay?> showAdaptiveTimePicker({
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  child: const Text('Cancel'),
+                  child: Text('Cancel'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 CupertinoButton(
-                  child: const Text('Done'),
+                  child: Text('Done'),
                   onPressed: () {
                     HapticsService.selection();
                     Navigator.of(context).pop();

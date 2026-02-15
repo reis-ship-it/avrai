@@ -11,11 +11,11 @@ flutter test "$@" \
   test/unit/services/partnership_profile_service_test.dart \
   test/unit/services/sponsorship_service_test.dart \
   test/widget/pages/partnerships/ \
-  test/integration/partnership_flow_integration_test.dart \
-  test/integration/partnership_profile_flow_integration_test.dart \
-  test/integration/profile_partnership_display_integration_test.dart \
+  test/integration/partnerships/partnership_flow_integration_test.dart \
+  test/integration/partnerships/partnership_profile_flow_integration_test.dart \
+  test/integration/partnerships/profile_partnership_display_integration_test.dart \
   test/integration/controllers/partnership_proposal_controller_integration_test.dart \
   test/integration/controllers/partnership_checkout_controller_integration_test.dart \
   test/integration/ui/partnership_ui_integration_test.dart \
-  test/integration/brand_sponsorship_flow_integration_test.dart
+  test/integration/brand/brand_sponsorship_flow_integration_test.dart
 

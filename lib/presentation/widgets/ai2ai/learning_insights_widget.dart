@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying recent learning insights
 class LearningInsightsWidget extends StatelessWidget {
@@ -16,7 +17,7 @@ class LearningInsightsWidget extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +41,7 @@ class LearningInsightsWidget extends StatelessWidget {
               const SizedBox(height: 16),
               if (insights.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(kSpaceLg),
                   child: Center(
                     child: Column(
                       children: [
@@ -52,16 +53,18 @@ class LearningInsightsWidget extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           'No insights yet',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Insights will appear as your AI learns from interactions',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textHint,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textHint,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -81,10 +84,10 @@ class LearningInsightsWidget extends StatelessWidget {
 
   Widget _buildInsightCard(BuildContext context, SharedInsight insight) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: kSpaceXs),
       color: AppColors.grey50,
       child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
+        contentPadding: const EdgeInsets.all(kSpaceSm),
         leading: CircleAvatar(
           backgroundColor: _getInsightColor(insight).withValues(alpha: 0.2),
           child: Icon(
@@ -114,7 +117,6 @@ class LearningInsightsWidget extends StatelessWidget {
                   '${insight.dimension}: ${(insight.value * 100).round()}%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
-                        fontSize: 10,
                       ),
                 ),
                 const SizedBox(width: 8),
@@ -122,7 +124,6 @@ class LearningInsightsWidget extends StatelessWidget {
                   '• Reliability: ${(insight.reliability * 100).round()}%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
-                        fontSize: 10,
                       ),
                 ),
                 const SizedBox(width: 8),
@@ -130,7 +131,6 @@ class LearningInsightsWidget extends StatelessWidget {
                   '• ${_formatTimestamp(insight.timestamp)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
-                        fontSize: 10,
                       ),
                 ),
               ],
@@ -168,4 +168,3 @@ class LearningInsightsWidget extends StatelessWidget {
     }
   }
 }
-

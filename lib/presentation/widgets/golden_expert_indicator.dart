@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Golden Expert Indicator Widget
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 31)
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required - NO direct Colors.* usage)
-/// 
+///
 /// Features:
 /// - Display golden expert status badge/indicator
 /// - Show residency length
@@ -15,22 +16,22 @@ import 'package:avrai/core/theme/app_theme.dart';
 class GoldenExpertIndicator extends StatelessWidget {
   /// User ID (to check golden expert status)
   final String userId;
-  
+
   /// Locality where user is a golden expert
   final String? locality;
-  
+
   /// Residency length in years (if available)
   final int? residencyYears;
-  
+
   /// Influence weight (if available, e.g., 1.3x for 30 years)
   final double? influenceWeight;
-  
+
   /// Display style
   final GoldenExpertDisplayStyle displayStyle;
-  
+
   /// Show detailed information (residency, weight)
   final bool showDetails;
-  
+
   /// Size of the indicator
   final double? size;
 
@@ -51,9 +52,9 @@ class GoldenExpertIndicator extends StatelessWidget {
       case GoldenExpertDisplayStyle.badge:
         return _buildBadge();
       case GoldenExpertDisplayStyle.indicator:
-        return _buildIndicator();
+        return _buildIndicator(context);
       case GoldenExpertDisplayStyle.card:
-        return _buildCard();
+        return _buildCard(context);
     }
   }
 
@@ -64,7 +65,7 @@ class GoldenExpertIndicator extends StatelessWidget {
       child: Tooltip(
         message: _getTooltipMessage(),
         child: Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(kSpaceXsTight),
           decoration: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
@@ -84,7 +85,8 @@ class GoldenExpertIndicator extends StatelessWidget {
   }
 
   /// Build indicator style (icon with text)
-  Widget _buildIndicator() {
+  Widget _buildIndicator(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Semantics(
       label: 'Golden Expert${locality != null ? ' in $locality' : ''}',
       child: Row(
@@ -96,10 +98,9 @@ class GoldenExpertIndicator extends StatelessWidget {
             size: size ?? 18,
           ),
           const SizedBox(width: 4),
-          const Text(
+          Text(
             'Golden Expert',
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppTheme.primaryColor,
             ),
@@ -108,8 +109,7 @@ class GoldenExpertIndicator extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '($residencyYears years)',
-              style: const TextStyle(
-                fontSize: 11,
+              style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -120,11 +120,12 @@ class GoldenExpertIndicator extends StatelessWidget {
   }
 
   /// Build card style (detailed information)
-  Widget _buildCard() {
+  Widget _buildCard(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Semantics(
       label: 'Golden Expert information',
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(kSpaceSm),
         decoration: BoxDecoration(
           color: AppTheme.primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
@@ -145,10 +146,9 @@ class GoldenExpertIndicator extends StatelessWidget {
                   size: size ?? 24,
                 ),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Golden Expert',
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
                   ),
@@ -167,8 +167,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     locality!,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textPrimary,
                     ),
                   ),
@@ -187,8 +186,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '$residencyYears years of residency',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -207,8 +205,7 @@ class GoldenExpertIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${(influenceWeight! * 100).toStringAsFixed(0)}% influence weight',
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -237,11 +234,10 @@ class GoldenExpertIndicator extends StatelessWidget {
 enum GoldenExpertDisplayStyle {
   /// Small badge (icon only)
   badge,
-  
+
   /// Indicator (icon + text)
   indicator,
-  
+
   /// Card (detailed information)
   card,
 }
-

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/spots/spot.dart';
-import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class CommunityValidationWidget extends StatefulWidget {
   final Spot spot;
@@ -14,7 +15,8 @@ class CommunityValidationWidget extends StatefulWidget {
   });
 
   @override
-  State<CommunityValidationWidget> createState() => _CommunityValidationWidgetState();
+  State<CommunityValidationWidget> createState() =>
+      _CommunityValidationWidgetState();
 }
 
 class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
@@ -25,7 +27,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
 
   final List<String> _accuracyLabels = [
     'Very Poor',
-    'Poor', 
+    'Poor',
     'Fair',
     'Good',
     'Excellent',
@@ -48,8 +50,8 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
   }
 
   bool get _isExternalData {
-    return widget.spot.metadata.containsKey('is_external') && 
-           widget.spot.metadata['is_external'] == true;
+    return widget.spot.metadata.containsKey('is_external') &&
+        widget.spot.metadata['is_external'] == true;
   }
 
   String get _dataSource {
@@ -63,9 +65,9 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
     }
 
     return Card(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(kSpaceMd),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -82,19 +84,17 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Community Validation',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       Text(
                         'Help verify this $_dataSource data',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey600,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.grey600,
+                            ),
                       ),
                     ],
                   ),
@@ -102,40 +102,42 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                 _buildSourceBadge(),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // OUR_GUTS.md Message
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.grey200),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.info, color: AppColors.textSecondary, size: 16),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Per OUR_GUTS.md: Your community validation helps maintain authentic, trustworthy place data.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Accuracy Rating
-            const Text(
+            Text(
               'How accurate is this information?',
-              style: TextStyle(fontWeight: FontWeight.w500),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -145,10 +147,10 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                 return ChoiceChip(
                   label: Text(
                     '${index + 1}★',
-                    style: TextStyle(
-                      color: isSelected ? AppColors.black : AppColors.grey700,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color:
+                              isSelected ? AppColors.black : AppColors.grey700,
+                        ),
                   ),
                   selected: isSelected,
                   onSelected: (selected) {
@@ -163,24 +165,26 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
             ),
             if (_selectedAccuracy != null)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.only(top: kSpaceXxs),
                 child: Text(
                   _accuracyLabels[_selectedAccuracy!],
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _getAccuracyColor(_selectedAccuracy!),
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _getAccuracyColor(_selectedAccuracy!),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Issues (if accuracy is low)
             if (_selectedAccuracy != null && _selectedAccuracy! < 3) ...[
-              const Text(
+              Text(
                 'What seems to be the issue?',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -191,10 +195,11 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                   return FilterChip(
                     label: Text(
                       issue,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isSelected ? AppColors.black : AppColors.grey700,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isSelected
+                                ? AppColors.black
+                                : AppColors.grey700,
+                          ),
                     ),
                     selected: isSelected,
                     onSelected: (selected) {
@@ -209,11 +214,14 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
               ),
               const SizedBox(height: 16),
             ],
-            
+
             // Additional Comments
-            const Text(
+            Text(
               'Additional comments (optional)',
-              style: TextStyle(fontWeight: FontWeight.w500),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -223,44 +231,44 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                contentPadding: const EdgeInsets.all(12),
+                contentPadding: const EdgeInsets.all(kSpaceSm),
               ),
               maxLines: 3,
               maxLength: 200,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Submit Button
             SizedBox(
               width: double.infinity,
-                child: ElevatedButton(
+              child: ElevatedButton(
                 onPressed: _selectedAccuracy != null && !_isValidating
                     ? _submitValidation
                     : null,
-                  // Use global ElevatedButtonTheme
-                 child: _isValidating
+                // Use global ElevatedButtonTheme
+                child: _isValidating
                     ? const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                           valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.black),
                         ),
                       )
-                    : const Text('Submit Validation'),
+                    : Text('Submit Validation'),
               ),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Privacy Note
-            const Text(
+            Text(
               'Your validation is anonymous and helps improve data quality for the community.',
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColors.grey600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.grey600,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -273,7 +281,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
     final source = _dataSource;
     Color color;
     String displayName;
-    
+
     switch (source.toLowerCase()) {
       case 'google_places':
         color = AppColors.grey600;
@@ -290,7 +298,8 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         border: Border.all(color: color),
@@ -298,11 +307,10 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
       ),
       child: Text(
         displayName,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
       ),
     );
   }
@@ -331,13 +339,13 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
     try {
       // Simulate API call to submit validation
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // In a real implementation, this would:
       // 1. Send validation data to backend
       // 2. Update spot's validation score
       // 3. Flag for review if accuracy is low
       // 4. Track user's validation history
-      
+
       // ignore: unused_local_variable - Reserved for future validation analytics
       final validationData = {
         'spot_id': widget.spot.id,
@@ -349,37 +357,17 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
         'timestamp': DateTime.now().toIso8601String(),
         'user_id': 'anonymous', // In real app, use actual user ID
       };
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: AppColors.white),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Thank you! Your validation helps improve community data quality.',
-                    style: TextStyle(color: AppColors.white),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: AppTheme.successColor,
-            duration: Duration(seconds: 3),
-          ),
+        context.showSuccess(
+          'Thank you! Your validation helps improve community data quality.',
         );
-        
+
         widget.onValidationComplete?.call();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error submitting validation: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error submitting validation: $e');
       }
     } finally {
       if (mounted) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -6,6 +7,7 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Event Published Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.11)
@@ -47,11 +49,9 @@ avrai - know you belong.''';
   }
 
   void _viewEvent(BuildContext context) {
-    Navigator.pushReplacement(
+    AppNavigator.replaceBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => EventDetailsPage(event: event),
-      ),
+      builder: (context) => EventDetailsPage(event: event),
     );
   }
 
@@ -75,7 +75,7 @@ avrai - know you belong.''';
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(kSpaceXl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,12 +83,10 @@ avrai - know you belong.''';
                 const SizedBox(height: 40),
 
                 // Success Icon
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor:
+                      AppColors.electricGreen.withValues(alpha: 0.1),
                   child: const Icon(
                     Icons.check_circle,
                     size: 80,
@@ -99,24 +97,22 @@ avrai - know you belong.''';
                 const SizedBox(height: 24),
 
                 // Success Message
-                const Text(
+                Text(
                   'Event Published!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 12),
 
-                const Text(
+                Text(
                   'Your event is now live and discoverable by others',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -125,22 +121,20 @@ avrai - know you belong.''';
                 // Event Preview Card
                 PortalSurface(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(kSpaceMdWide),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.electricGreen
-                                    .withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColors.electricGreen
+                                  .withValues(alpha: 0.1),
                               child: Text(
                                 event.getEventTypeEmoji(),
-                                style: const TextStyle(fontSize: 24),
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -150,19 +144,23 @@ avrai - know you belong.''';
                                 children: [
                                   Text(
                                     event.title,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textPrimary,
+                                        ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     event.getEventTypeDisplayName(),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: AppColors.textSecondary,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -172,11 +170,11 @@ avrai - know you belong.''';
                         const SizedBox(height: 16),
                         Text(
                           event.description,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                            height: 1.5,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    height: 1.5,
+                                  ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -189,10 +187,12 @@ avrai - know you belong.''';
                             Expanded(
                               child: Text(
                                 _formatDateTime(event.startTime),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                             ),
                             if (event.location != null) ...[
@@ -202,10 +202,12 @@ avrai - know you belong.''';
                               Expanded(
                                 child: Text(
                                   event.location!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -225,11 +227,11 @@ avrai - know you belong.''';
                   child: ElevatedButton.icon(
                     onPressed: () => _viewEvent(context),
                     icon: const Icon(Icons.event, size: 20),
-                    label: const Text('View Event'),
+                    label: Text('View Event'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -244,10 +246,10 @@ avrai - know you belong.''';
                   child: OutlinedButton.icon(
                     onPressed: () => _shareEvent(context),
                     icon: const Icon(Icons.share, size: 20),
-                    label: const Text('Share Event'),
+                    label: Text('Share Event'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       side: const BorderSide(color: AppColors.grey300),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -262,9 +264,12 @@ avrai - know you belong.''';
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
-                  child: const Text(
+                  child: Text(
                     'Back to Home',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
               ],

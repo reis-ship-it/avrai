@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/business/business_account_form_widget.dart';
@@ -25,19 +26,8 @@ class BusinessAccountCreationPage extends StatelessWidget {
         onAccountCreated: (account) {
           // Navigate to business dashboard or show success
           Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  'Business account "${account.name}" created successfully!'),
-              backgroundColor: AppColors.electricGreen,
-              action: SnackBarAction(
-                label: 'View',
-                textColor: AppColors.white,
-                onPressed: () {
-                  // Navigate to business dashboard
-                },
-              ),
-            ),
+          context.showSuccess(
+            'Business account "${account.name}" created successfully!',
           );
         },
       ),

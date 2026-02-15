@@ -11,6 +11,7 @@
 // - Adaptive quality on/off
 
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -117,7 +118,7 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -144,22 +145,22 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+      padding: const EdgeInsets.only(
+          left: kSpaceMd, top: kSpaceMd, bottom: kSpaceXs),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
       ),
     );
   }
 
   Widget _buildMotionEnabledSwitch() {
     return SwitchListTile(
-      title: const Text('Device Motion'),
-      subtitle: const Text('Respond to device tilt and shake'),
+      title: Text('Device Motion'),
+      subtitle: Text('Respond to device tilt and shake'),
       value: _motionEnabled,
       onChanged: (value) {
         setState(() => _motionEnabled = value);
@@ -174,14 +175,14 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
 
   Widget _buildSensitivitySlider() {
     return ListTile(
-      title: const Text('Motion Sensitivity'),
+      title: Text('Motion Sensitivity'),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 8),
           Row(
             children: [
-              const Text('Low', style: TextStyle(fontSize: 12)),
+              Text('Low', style: Theme.of(context).textTheme.bodySmall),
               Expanded(
                 child: Slider(
                   value: _motionSensitivity,
@@ -197,7 +198,7 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
                   },
                 ),
               ),
-              const Text('High', style: TextStyle(fontSize: 12)),
+              Text('High', style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ],
@@ -208,8 +209,8 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
 
   Widget _buildReduceMotionSwitch() {
     return SwitchListTile(
-      title: const Text('Reduce Motion'),
-      subtitle: const Text('Minimize motion effects (accessibility)'),
+      title: Text('Reduce Motion'),
+      subtitle: Text('Minimize motion effects (accessibility)'),
       value: _reduceMotion,
       onChanged: (value) {
         setState(() => _reduceMotion = value);
@@ -224,8 +225,8 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
 
   Widget _buildBubbleEffectsSwitch() {
     return SwitchListTile(
-      title: const Text('Bubble Effects'),
-      subtitle: const Text('Show glass bubble around knots'),
+      title: Text('Bubble Effects'),
+      subtitle: Text('Show glass bubble around knots'),
       value: _bubbleEffects,
       onChanged: (value) {
         setState(() => _bubbleEffects = value);
@@ -240,8 +241,8 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
 
   Widget _buildAdaptiveQualitySwitch() {
     return SwitchListTile(
-      title: const Text('Adaptive Quality'),
-      subtitle: const Text('Reduce effects when battery is low'),
+      title: Text('Adaptive Quality'),
+      subtitle: Text('Reduce effects when battery is low'),
       value: _adaptiveQuality,
       onChanged: (value) {
         setState(() => _adaptiveQuality = value);
@@ -280,7 +281,8 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: Row(
         children: [
           Container(
@@ -294,10 +296,9 @@ class _MotionSettingsWidgetState extends State<MotionSettingsWidget> {
           const SizedBox(width: 8),
           Text(
             statusText,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),

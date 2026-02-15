@@ -1,5 +1,5 @@
 // Knot 3D Animation Widget
-// 
+//
 // Widget for animated 3D knot evolution visualization
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 1: 3D Knot Visualization and Conversion
@@ -14,7 +14,7 @@ import 'package:avrai_knot/services/knot/knot_3d_converter_service.dart';
 import 'package:avrai/presentation/widgets/knot/knot_3d_widget.dart';
 
 /// Widget for animated 3D knot evolution
-/// 
+///
 /// Features:
 /// - Load knot evolution history
 /// - Interpolate between snapshots in 3D space
@@ -54,19 +54,19 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeInOut,
       ),
     );
-    
+
     _loadEvolutionHistory();
   }
 
@@ -95,7 +95,7 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
         setState(() {
           _evolutionKnots = trajectory;
           _isLoading = false;
-          
+
           if (_evolutionKnots.isEmpty) {
             _error = 'No evolution history found';
           }
@@ -113,11 +113,11 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
 
   void _play() {
     if (_evolutionKnots.length < 2) return;
-    
+
     setState(() {
       _isPlaying = true;
     });
-    
+
     _animationController.forward().then((_) {
       if (mounted && _currentIndex < _evolutionKnots.length - 1) {
         setState(() {
@@ -158,18 +158,18 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
   PersonalityKnot? _getCurrentKnot() {
     if (_evolutionKnots.isEmpty) return null;
     if (_currentIndex >= _evolutionKnots.length) return _evolutionKnots.last;
-    
+
     final current = _evolutionKnots[_currentIndex];
-    
+
     // If playing and not at last knot, interpolate to next
     if (_isPlaying && _currentIndex < _evolutionKnots.length - 1) {
       final next = _evolutionKnots[_currentIndex + 1];
       final factor = _animation.value;
-      
+
       // Simple interpolation (would use polynomial in Phase 3)
       return _interpolateKnots(current, next, factor);
     }
-    
+
     return current;
   }
 
@@ -182,23 +182,25 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
     final jones1 = knot1.invariants.jonesPolynomial;
     final jones2 = knot2.invariants.jonesPolynomial;
     final interpolatedJones = <double>[];
-    
-    final maxLength = jones1.length > jones2.length ? jones1.length : jones2.length;
+
+    final maxLength =
+        jones1.length > jones2.length ? jones1.length : jones2.length;
     for (int i = 0; i < maxLength; i++) {
       final val1 = i < jones1.length ? jones1[i] : 0.0;
       final val2 = i < jones2.length ? jones2[i] : 0.0;
       interpolatedJones.add(val1 * (1 - factor) + val2 * factor);
     }
-    
+
     // Interpolate other invariants
-    final interpolatedCrossings = ((knot1.invariants.crossingNumber * (1 - factor)) +
-            (knot2.invariants.crossingNumber * factor))
-        .round();
-    
+    final interpolatedCrossings =
+        ((knot1.invariants.crossingNumber * (1 - factor)) +
+                (knot2.invariants.crossingNumber * factor))
+            .round();
+
     final interpolatedWrithe = ((knot1.invariants.writhe * (1 - factor)) +
             (knot2.invariants.writhe * factor))
         .round();
-    
+
     return PersonalityKnot(
       agentId: knot1.agentId,
       invariants: KnotInvariants(
@@ -233,7 +235,7 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -246,7 +248,10 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
         child: Center(
           child: Text(
             'Error: $_error',
-            style: const TextStyle(color: AppColors.error),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.error),
           ),
         ),
       );
@@ -256,7 +261,7 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: Text('No evolution history'),
         ),
       );
@@ -267,7 +272,7 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: Text('No knot data'),
         ),
       );
@@ -284,18 +289,18 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
           color: widget.color,
           converterService: widget.converterService,
         ),
-        
+
         // Timeline controls
         const SizedBox(height: 16),
-        
+
         // Progress indicator
         Text(
           '${_currentIndex + 1} / ${_evolutionKnots.length}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Timeline slider
         Slider(
           value: _currentIndex.toDouble(),
@@ -307,18 +312,17 @@ class _Knot3DAnimationWidgetState extends State<Knot3DAnimationWidget>
             _scrubTo(value.round());
           },
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Playback controls
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               icon: const Icon(Icons.skip_previous),
-              onPressed: _currentIndex > 0
-                  ? () => _scrubTo(_currentIndex - 1)
-                  : null,
+              onPressed:
+                  _currentIndex > 0 ? () => _scrubTo(_currentIndex - 1) : null,
               tooltip: 'Previous',
             ),
             IconButton(

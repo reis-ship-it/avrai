@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/p2p/federated_learning.dart' as federated;
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Admin widget displaying all federated learning rounds
 /// Shows active and completed rounds with participant details
@@ -10,32 +12,34 @@ import 'package:avrai/core/theme/colors.dart';
 class AdminFederatedRoundsWidget extends StatefulWidget {
   final AdminGodModeService godModeService;
   final Duration refreshInterval;
-  
+
   const AdminFederatedRoundsWidget({
     super.key,
     required this.godModeService,
     this.refreshInterval = const Duration(seconds: 10),
   });
-  
+
   @override
-  State<AdminFederatedRoundsWidget> createState() => _AdminFederatedRoundsWidgetState();
+  State<AdminFederatedRoundsWidget> createState() =>
+      _AdminFederatedRoundsWidgetState();
 }
 
-class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget> {
+class _AdminFederatedRoundsWidgetState
+    extends State<AdminFederatedRoundsWidget> {
   bool _showCompleted = true;
   List<GodModeFederatedRoundInfo>? _rounds;
   bool _isLoading = true;
   String? _error;
   Timer? _refreshTimer;
   DateTime? _lastUpdated;
-  
+
   @override
   void initState() {
     super.initState();
     _loadRounds();
     _startAutoRefresh();
   }
-  
+
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(widget.refreshInterval, (timer) {
       if (mounted) {
@@ -43,13 +47,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       }
     });
   }
-  
+
   @override
   void dispose() {
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   Future<void> _loadRounds({bool showLoading = true}) async {
     if (showLoading) {
       setState(() {
@@ -57,12 +61,12 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         _error = null;
       });
     }
-    
+
     try {
       final rounds = await widget.godModeService.getAllFederatedLearningRounds(
         includeCompleted: _showCompleted,
       );
-      
+
       if (mounted) {
         setState(() {
           _rounds = rounds;
@@ -80,7 +84,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -88,18 +92,18 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: context.spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             if (_isLoading)
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(context.spacing.xl),
                   child: CircularProgressIndicator(),
                 ),
               )
@@ -114,56 +118,53 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildHeader() {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(context.spacing.xs),
           decoration: BoxDecoration(
             color: AppColors.electricGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.school,
             color: AppColors.electricGreen,
             size: 24,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Federated Learning Rounds',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               if (_lastUpdated != null)
                 Text(
                   'Auto-refresh: ${_formatTimeAgo(_lastUpdated!)}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
             ],
           ),
         ),
         Row(
           children: [
-            const Text(
+            Text(
               'Show Completed',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Switch(
               value: _showCompleted,
               onChanged: (value) {
@@ -177,7 +178,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
           ],
         ),
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.refresh,
             color: AppColors.textSecondary,
           ),
@@ -187,11 +188,11 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ],
     );
   }
-  
+
   String _formatTimeAgo(DateTime time) {
     final now = DateTime.now();
     final difference = now.difference(time);
-    
+
     if (difference.inSeconds < 10) {
       return 'just now';
     } else if (difference.inSeconds < 60) {
@@ -202,34 +203,32 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       return '${difference.inHours}h ago';
     }
   }
-  
+
   Widget _buildError() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(context.spacing.xl),
         child: Column(
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               color: AppColors.error,
               size: 48,
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16),
+            Text(
               'Error loading rounds',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _error ?? 'Unknown error',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -237,11 +236,11 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(context.spacing.xl),
         child: Column(
           children: [
             Icon(
@@ -252,19 +251,17 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             SizedBox(height: 16),
             Text(
               'No Learning Rounds',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             SizedBox(height: 8),
             Text(
               'No federated learning rounds are currently active',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -272,19 +269,20 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildRoundsList() {
     return Column(
-      children: _rounds!.map((roundInfo) => _buildRoundCard(roundInfo)).toList(),
+      children:
+          _rounds!.map((roundInfo) => _buildRoundCard(roundInfo)).toList(),
     );
   }
-  
+
   Widget _buildRoundCard(GodModeFederatedRoundInfo roundInfo) {
     final round = roundInfo.round;
     final statusColor = _getStatusColor(round.status);
-    
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: context.spacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -294,33 +292,32 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         ),
       ),
       child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        childrenPadding: const EdgeInsets.all(16),
+        tilePadding: EdgeInsets.symmetric(
+            horizontal: context.spacing.md, vertical: context.spacing.xs),
+        childrenPadding: EdgeInsets.all(context.spacing.md),
         backgroundColor: AppColors.surface,
         collapsedBackgroundColor: AppColors.surface,
         title: Row(
           children: [
             _buildStatusBadge(round.status, statusColor),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     round.objective.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Round ${round.roundNumber} • ${roundInfo.durationString}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -329,35 +326,33 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
           ],
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: EdgeInsets.only(top: context.spacing.xs),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.people,
                 size: 16,
                 color: AppColors.textSecondary,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 '${roundInfo.participants.length} participants',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
-              const SizedBox(width: 16),
-              const Icon(
+              SizedBox(width: 16),
+              Icon(
                 Icons.trending_up,
                 size: 16,
                 color: AppColors.textSecondary,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 '${(round.globalModel.accuracy * 100).toStringAsFixed(1)}% accuracy',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -368,14 +363,14 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildRoundDetails(GodModeFederatedRoundInfo roundInfo) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Divider(),
-        const SizedBox(height: 8),
-        
+        Divider(),
+        SizedBox(height: 8),
+
         // Learning Objective Section
         _buildDetailSection(
           'Learning Objective',
@@ -385,14 +380,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             children: [
               Text(
                 roundInfo.round.objective.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(context.spacing.sm),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
@@ -402,20 +396,19 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.info_outline,
                       size: 20,
                       color: AppColors.electricGreen,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         roundInfo.learningRationale,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textPrimary,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                   ],
@@ -424,9 +417,9 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             ],
           ),
         ),
-        
-        const SizedBox(height: 16),
-        
+
+        SizedBox(height: 16),
+
         // Performance Metrics Section
         _buildDetailSection(
           'Performance Metrics',
@@ -456,9 +449,9 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             ],
           ),
         ),
-        
-        const SizedBox(height: 16),
-        
+
+        SizedBox(height: 16),
+
         // Participants Section
         _buildDetailSection(
           'AI Participants (${roundInfo.participants.length})',
@@ -472,7 +465,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ],
     );
   }
-  
+
   Widget _buildDetailSection(String title, IconData icon, Widget content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,37 +477,35 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               size: 18,
               color: AppColors.electricGreen,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         content,
       ],
     );
   }
-  
+
   Widget _buildMetricRow(String label, double value, bool isRisk) {
     final color = _getMetricColor(value, isRisk);
-    
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           SizedBox(
@@ -525,24 +516,23 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Text(
             '${(value * 100).toStringAsFixed(1)}%',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildParticipantRow(RoundParticipant participant) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -553,39 +543,37 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen.withValues(alpha: 0.1)
                   : AppColors.grey200,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               Icons.android,
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen
                   : AppColors.textSecondary,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   participant.aiPersonalityName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   'User: ${participant.userId}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -595,28 +583,26 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             children: [
               Text(
                 '${participant.contributionCount} contributions',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
+                    ),
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: 2),
               Text(
                 participant.joinedTimeAgo,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Container(
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen
                   : AppColors.grey300,
               borderRadius: BorderRadius.circular(4),
@@ -626,25 +612,26 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildStatusBadge(federated.RoundStatus status, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(
+          horizontal: context.spacing.sm,
+          vertical: context.spacing.xxs + context.spacing.xs / kSpaceNano),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         _getStatusText(status),
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
       ),
     );
   }
-  
+
   Widget _buildLearningTypeIcon(federated.LearningType type) {
     IconData icon;
     switch (type) {
@@ -661,9 +648,9 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         icon = Icons.trending_up;
         break;
     }
-    
+
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(context.spacing.xs),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -675,7 +662,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Color _getStatusColor(federated.RoundStatus status) {
     switch (status) {
       case federated.RoundStatus.initializing:
@@ -690,7 +677,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         return AppColors.error;
     }
   }
-  
+
   String _getStatusText(federated.RoundStatus status) {
     switch (status) {
       case federated.RoundStatus.initializing:
@@ -705,14 +692,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         return 'Failed';
     }
   }
-  
+
   Color _getMetricColor(double value, bool isRisk) {
     if (isRisk) value = 1.0 - value; // Invert for risk metrics
-    
+
     if (value >= 0.9) return AppColors.success;
     if (value >= 0.7) return AppColors.electricGreen;
     if (value >= 0.5) return AppColors.warning;
     return AppColors.error;
   }
 }
-

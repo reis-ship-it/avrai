@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_recognition_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expertise Recognition Widget
 /// Displays community recognition and appreciation
@@ -28,7 +29,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
       future: _getRecognitions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         final recognitions = snapshot.data ?? [];
@@ -36,12 +37,12 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(recognitions.length),
+            _buildHeader(context, recognitions.length),
             const SizedBox(height: 8),
             if (recognitions.isEmpty)
-              _buildEmptyState()
+              _buildEmptyState(context)
             else
-              _buildRecognitionsList(recognitions),
+              _buildRecognitionsList(context, recognitions),
             if (onRecognize != null) ...[
               const SizedBox(height: 16),
               _buildRecognizeButton(),
@@ -52,60 +53,57 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildHeader(BuildContext context, int count) {
     return Row(
       children: [
-        const Text(
+        Text(
           'Community Recognition',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceXs, vertical: kSpaceNano),
           decoration: BoxDecoration(
             color: AppColors.grey200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             '$count',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(Icons.favorite_border, size: 48, color: AppColors.textSecondary),
           SizedBox(height: 16),
           Text(
             'No recognition yet',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Be the first to recognize this expert!',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -113,18 +111,20 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildRecognitionsList(List<ExpertRecognition> recognitions) {
+  Widget _buildRecognitionsList(
+      BuildContext context, List<ExpertRecognition> recognitions) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: recognitions.length,
       itemBuilder: (context, index) {
-        return _buildRecognitionCard(recognitions[index]);
+        return _buildRecognitionCard(context, recognitions[index]);
       },
     );
   }
 
-  Widget _buildRecognitionCard(ExpertRecognition recognition) {
+  Widget _buildRecognitionCard(
+      BuildContext context, ExpertRecognition recognition) {
     IconData icon;
     Color color;
 
@@ -144,7 +144,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
     }
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: color.withValues(alpha: 0.1),
@@ -152,7 +152,10 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
         ),
         title: Text(
           recognition.recognizer.displayName ?? recognition.recognizer.email,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,17 +165,16 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               _formatDate(recognition.createdAt),
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
         trailing: Chip(
           label: Text(
             recognition.type.name.toUpperCase(),
-            style: const TextStyle(fontSize: 10),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           backgroundColor: color.withValues(alpha: 0.1),
           side: BorderSide(color: color.withValues(alpha: 0.3)),
@@ -185,7 +187,7 @@ class ExpertiseRecognitionWidget extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: () => onRecognize?.call(expert),
       icon: const Icon(Icons.favorite),
-      label: const Text('Recognize Expert'),
+      label: Text('Recognize Expert'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.electricGreen,
         foregroundColor: AppColors.white,
@@ -221,7 +223,7 @@ class FeaturedExpertWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -239,7 +241,7 @@ class FeaturedExpertWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.star,
@@ -249,10 +251,9 @@ class FeaturedExpertWidget extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 'Featured Expert',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
@@ -269,7 +270,7 @@ class FeaturedExpertWidget extends StatelessWidget {
                         (featuredExpert.expert.displayName ??
                                 featuredExpert.expert.email)[0]
                             .toUpperCase(),
-                        style: const TextStyle(fontSize: 20),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
               ),
               const SizedBox(width: 16),
@@ -280,18 +281,16 @@ class FeaturedExpertWidget extends StatelessWidget {
                     Text(
                       featuredExpert.expert.displayName ??
                           featuredExpert.expert.email,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${featuredExpert.recognitionCount} recognitions',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),

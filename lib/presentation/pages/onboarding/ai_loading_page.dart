@@ -476,6 +476,7 @@ class _AILoadingPageState extends State<AILoadingPage>
   @override
   Widget build(BuildContext context) {
     final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     // Get user ID for audio (if available)
     String? userId;
@@ -536,14 +537,10 @@ class _AILoadingPageState extends State<AILoadingPage>
                                 AnimatedBuilder(
                                   animation: _loadingAnimation,
                                   builder: (context, child) {
-                                    return Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primaryColor,
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                      child: const Icon(
+                                    return CircleAvatar(
+                                      radius: 40,
+                                      backgroundColor: AppTheme.primaryColor,
+                                      child: Icon(
                                         Icons.psychology,
                                         color: AppColors.white,
                                         size: 40,
@@ -581,14 +578,12 @@ class _AILoadingPageState extends State<AILoadingPage>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(3, (index) {
-                                    return Container(
-                                      margin: EdgeInsets.symmetric(
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(
                                           horizontal: spacing.xxs),
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        color: AppTheme.primaryColor,
-                                        shape: BoxShape.circle,
+                                      child: const CircleAvatar(
+                                        radius: 4,
+                                        backgroundColor: AppTheme.primaryColor,
                                       ),
                                     );
                                   }),
@@ -688,8 +683,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                     ),
                     child: Text(
                       _canContinue ? 'Continue' : 'Setting up...',
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),

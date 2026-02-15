@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:avrai/core/crypto/signal/device_registration_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
@@ -61,7 +62,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
       ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _buildDeviceList(),
+          : _buildDeviceList(context),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showLinkDeviceOptions(context),
         icon: const Icon(Icons.add_link),
@@ -70,7 +71,10 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
     );
   }
 
-  Widget _buildDeviceList() {
+  Widget _buildDeviceList(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     if (_devices.isEmpty) {
       return Center(
         child: Column(
@@ -81,18 +85,17 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
               size: 64,
               color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
             Text(
               'No devices linked',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleLarge?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'Link a device to sync your data across platforms',
-              style: TextStyle(color: AppColors.textHint),
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
             ),
           ],
         ),
@@ -102,7 +105,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
     final currentDeviceId = _deviceService.currentDevice?.deviceId;
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       itemCount: _devices.length,
       itemBuilder: (context, index) {
         final device = _devices[index];
@@ -232,18 +235,20 @@ class _DeviceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     final lastSeen = DateFormat.yMMMd().add_jm().format(device.lastSeenAt);
     final isActive = device.status == DeviceStatus.active;
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              _buildDeviceIcon(),
-              const SizedBox(width: 12),
+              _buildDeviceIcon(context),
+              SizedBox(width: spacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,26 +257,23 @@ class _DeviceCard extends StatelessWidget {
                       children: [
                         Text(
                           device.deviceName,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (isCurrentDevice) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
+                          SizedBox(width: spacing.xs),
+                          Chip(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            side: BorderSide.none,
+                            backgroundColor:
+                                AppColors.primary.withValues(alpha: 0.1),
+                            labelPadding: EdgeInsets.zero,
+                            label: Text(
                               'This Device',
-                              style: TextStyle(
-                                fontSize: 12,
+                              style: textTheme.bodySmall?.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -279,36 +281,34 @@ class _DeviceCard extends StatelessWidget {
                           ),
                         ],
                         if (device.isPrimary) ...[
-                          const SizedBox(width: 8),
+                          SizedBox(width: spacing.xs),
                           const Icon(Icons.star,
                               size: 16, color: AppColors.warning),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: spacing.xxs),
                     Text(
                       '${device.platform.toUpperCase()} • ${device.deviceModel ?? 'Unknown'}',
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              _buildStatusBadge(isActive),
+              _buildStatusBadge(context, isActive),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           const Divider(height: 1),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Last seen: $lastSeen',
-                style: TextStyle(
-                  fontSize: 12,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.textHint,
                 ),
               ),
@@ -339,7 +339,7 @@ class _DeviceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDeviceIcon() {
+  Widget _buildDeviceIcon(BuildContext context) {
     IconData icon;
     switch (device.platform) {
       case 'ios':
@@ -361,42 +361,42 @@ class _DeviceCard extends StatelessWidget {
         icon = Icons.devices;
     }
 
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
+    final spacing = context.spacing;
+
+    return SizedBox(
+      width: spacing.xl,
+      height: spacing.xl,
+      child: PortalSurface(
+        padding: EdgeInsets.zero,
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderColor: AppColors.grey300,
+        radius: context.radius.sm,
+        child: Icon(icon, color: AppColors.textSecondary),
       ),
-      child: Icon(icon, color: AppColors.textSecondary),
     );
   }
 
-  Widget _buildStatusBadge(bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive
-            ? AppColors.success.withValues(alpha: 0.1)
-            : AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
+  Widget _buildStatusBadge(BuildContext context, bool isActive) {
+    final textTheme = Theme.of(context).textTheme;
+    return Chip(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      side: BorderSide.none,
+      backgroundColor: isActive
+          ? AppColors.success.withValues(alpha: 0.1)
+          : AppColors.error.withValues(alpha: 0.1),
+      labelPadding: EdgeInsets.zero,
+      label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: isActive ? AppColors.success : AppColors.error,
-              shape: BoxShape.circle,
-            ),
+          CircleAvatar(
+            radius: 4,
+            backgroundColor: isActive ? AppColors.success : AppColors.error,
           ),
-          const SizedBox(width: 4),
+          SizedBox(width: context.spacing.xxs),
           Text(
             isActive ? 'Active' : device.status.name,
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.bodySmall?.copyWith(
               color: isActive ? AppColors.success : AppColors.error,
               fontWeight: FontWeight.w500,
             ),

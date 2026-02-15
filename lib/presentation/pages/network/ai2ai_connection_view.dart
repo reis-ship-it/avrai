@@ -15,12 +15,14 @@ library;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Page that displays active AI2AI connections
 class AI2AIConnectionView extends StatefulWidget {
@@ -138,12 +140,11 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Connection disconnected'),
-          backgroundColor: AppColors.electricGreen,
-          duration: Duration(seconds: 2),
-        ),
+      FeedbackPresenter.showSnack(
+        context,
+        message: 'Connection disconnected',
+        kind: FeedbackKind.success,
+        duration: const Duration(seconds: 2),
       );
     }
   }
@@ -168,14 +169,14 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
             ? _buildEmptyState()
             : SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
                     const SizedBox(height: 16),
                     ..._connections.map((connection) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: kSpaceSm),
                           child: _buildConnectionCard(connection),
                         )),
                   ],
@@ -188,28 +189,25 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   Widget _buildHeader() {
     return Row(
       children: [
-        const Text(
+        Text(
           'Active Connections',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.electricGreen.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
+        Chip(
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          side: BorderSide.none,
+          backgroundColor: AppColors.electricGreen.withValues(alpha: 0.1),
+          label: Text(
             '${_connections.length}',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.electricGreen,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.electricGreen,
+                ),
           ),
         ),
       ],
@@ -217,7 +215,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -229,19 +227,17 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
           SizedBox(height: 16),
           Text(
             'No active connections',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'AI2AI connections will appear here when established',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textHint,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textHint,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -263,19 +259,15 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
             : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      shape: BoxShape.circle,
-                    ),
+                  CircleAvatar(
+                    radius: 6,
+                    backgroundColor: statusColor,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -284,39 +276,34 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                       children: [
                         Text(
                           _getStatusLabel(connection.status),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: statusColor,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: statusColor,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Connection ${connection.connectionId.substring(0, 8)}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: qualityColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: qualityColor.withValues(alpha: 0.1),
+                    label: Text(
                       qualityRating.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: qualityColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: qualityColor,
+                          ),
                     ),
                   ),
                 ],
@@ -361,10 +348,9 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                   const SizedBox(width: 4),
                   Text(
                     _formatDuration(connection.connectionDuration),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   const Spacer(),
                   if (connection.interactionHistory.isNotEmpty)
@@ -378,10 +364,10 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                         const SizedBox(width: 4),
                         Text(
                           '${connection.interactionHistory.length} interactions',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
@@ -401,11 +387,11 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                         size: 16,
                         color: AppColors.electricGreen,
                       ),
-                      label: const Text(
+                      label: Text(
                         'View Details',
-                        style: TextStyle(
-                          color: AppColors.electricGreen,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.electricGreen,
+                            ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.electricGreen),
@@ -422,11 +408,11 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                         size: 16,
                         color: AppColors.error,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Disconnect',
-                        style: TextStyle(
-                          color: AppColors.error,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.error,
+                            ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.error),
@@ -453,19 +439,17 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );

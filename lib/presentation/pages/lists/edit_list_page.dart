@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class EditListPage extends StatefulWidget {
   final SpotList list;
@@ -81,12 +83,7 @@ class _EditListPageState extends State<EditListPage> {
       context.read<ListsBloc>().add(UpdateList(updatedList));
 
       Navigator.pop(context, updatedList);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('List updated successfully'),
-          backgroundColor: AppTheme.successColor,
-        ),
-      );
+      context.showSuccess('List updated successfully');
     }
   }
 
@@ -94,14 +91,14 @@ class _EditListPageState extends State<EditListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete List'),
+        title: Text('Delete List'),
         content: Text(
           'Are you sure you want to delete "${widget.list.title}"? This action cannot be undone and will remove all spots from this list.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -109,15 +106,10 @@ class _EditListPageState extends State<EditListPage> {
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Go back to previous page
               Navigator.pop(context); // Go back to lists
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${widget.list.title} deleted'),
-                  backgroundColor: AppTheme.errorColor,
-                ),
-              );
+              context.showError('${widget.list.title} deleted');
             },
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
-            child: const Text('Delete'),
+            child: Text('Delete'),
           ),
         ],
       ),
@@ -130,18 +122,18 @@ class _EditListPageState extends State<EditListPage> {
     final shouldDiscard = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Discard Changes?'),
-        content: const Text(
-            'You have unsaved changes. Are you sure you want to go back?'),
+        title: Text('Discard Changes?'),
+        content:
+            Text('You have unsaved changes. Are you sure you want to go back?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep Editing'),
+            child: Text('Keep Editing'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
-            child: const Text('Discard'),
+            child: Text('Discard'),
           ),
         ],
       ),
@@ -172,14 +164,17 @@ class _EditListPageState extends State<EditListPage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
                     Icon(Icons.delete, color: AppTheme.errorColor),
                     SizedBox(width: 8),
                     Text('Delete List',
-                        style: TextStyle(color: AppTheme.errorColor)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppTheme.errorColor)),
                   ],
                 ),
               ),
@@ -190,13 +185,13 @@ class _EditListPageState extends State<EditListPage> {
         body: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Basic Information
                 PortalSurface(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -271,7 +266,7 @@ class _EditListPageState extends State<EditListPage> {
 
                 // Privacy Settings
                 PortalSurface(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -291,7 +286,7 @@ class _EditListPageState extends State<EditListPage> {
                       ),
                       const SizedBox(height: 16),
                       SwitchListTile(
-                        title: const Text('Public List'),
+                        title: Text('Public List'),
                         subtitle: Text(
                           _isPublic
                               ? 'Everyone can see this list and give it respect'
@@ -316,7 +311,7 @@ class _EditListPageState extends State<EditListPage> {
 
                 // List Stats
                 PortalSurface(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -343,7 +338,7 @@ class _EditListPageState extends State<EditListPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
-                                const Text('Spots'),
+                                Text('Spots'),
                               ],
                             ),
                           ),
@@ -360,7 +355,7 @@ class _EditListPageState extends State<EditListPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
-                                const Text('Respects'),
+                                Text('Respects'),
                               ],
                             ),
                           ),
@@ -383,7 +378,7 @@ class _EditListPageState extends State<EditListPage> {
                           if (!context.mounted) return;
                           Navigator.pop(context);
                         },
-                        child: const Text('Cancel'),
+                        child: Text('Cancel'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -391,7 +386,7 @@ class _EditListPageState extends State<EditListPage> {
                       child: ElevatedButton(
                         onPressed: _saveChanges,
                         // Use global ElevatedButtonTheme
-                        child: const Text('Save Changes'),
+                        child: Text('Save Changes'),
                       ),
                     ),
                   ],

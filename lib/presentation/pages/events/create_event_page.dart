@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/events/event_review_page.dart';
 import 'package:avrai/presentation/widgets/events/locality_selection_widget.dart';
 import 'package:avrai/presentation/widgets/events/geographic_scope_indicator_widget.dart';
 import 'package:avrai/core/services/geographic/geographic_scope_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Event Creation Form Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.8)
@@ -191,12 +195,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Future<void> _selectEndTime() async {
     if (_startTime == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select start time first'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
+      context.showWarning('Please select start time first');
       return;
     }
 
@@ -249,12 +248,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
         if (selectedEnd.isBefore(_startTime!)) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('End time must be after start time'),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError('End time must be after start time');
           return;
         }
 
@@ -297,12 +291,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
       if (mounted) {
         // Show success and navigate back
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Event "${event.title}" created successfully!'),
-            backgroundColor: AppTheme.successColor,
-            duration: const Duration(seconds: 3),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Event "${event.title}" created successfully!',
+          kind: FeedbackKind.success,
         );
 
         // Navigate back
@@ -315,12 +307,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -372,12 +359,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         _expertiseError =
             'You must have expertise in the selected category to host events.';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category you have expertise in'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please select a category you have expertise in');
       return;
     }
 
@@ -389,65 +371,45 @@ class _CreateEventPageState extends State<CreateEventPage> {
         _expertiseError =
             'You need Local level or higher expertise in $_selectedCategory to host events.';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'You need Local level+ expertise in $_selectedCategory to host events'),
-          backgroundColor: AppColors.error,
-        ),
+      context.showError(
+        'You need Local level+ expertise in $_selectedCategory to host events',
       );
       return;
     }
 
     // Validate geographic scope
     if (!_validateGeographicScope()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              _geographicScopeError ?? 'Geographic scope validation failed'),
-          backgroundColor: AppColors.error,
-        ),
+      context.showError(
+        _geographicScopeError ?? 'Geographic scope validation failed',
       );
       return;
     }
 
     // Validate dates
     if (_startTime == null || _endTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select start and end times'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please select start and end times');
       return;
     }
 
     if (_endTime!.isBefore(_startTime!)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('End time must be after start time'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('End time must be after start time');
       return;
     }
 
     // Navigate to review page
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => EventReviewPage(
-          title: _titleController.text.trim(),
-          description: _descriptionController.text.trim(),
-          category: _selectedCategory!,
-          eventType: _selectedEventType!,
-          startTime: _startTime!,
-          endTime: _endTime!,
-          location: _locationController.text.trim(),
-          maxAttendees: _maxAttendees,
-          price: _price,
-          isPublic: _isPublic,
-        ),
+      builder: (context) => EventReviewPage(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        category: _selectedCategory!,
+        eventType: _selectedEventType!,
+        startTime: _startTime!,
+        endTime: _endTime!,
+        location: _locationController.text.trim(),
+        maxAttendees: _maxAttendees,
+        price: _price,
+        isPublic: _isPublic,
       ),
     );
   }
@@ -461,7 +423,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         backgroundColor: AppColors.background,
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(context.spacing.xxl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -470,22 +432,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   size: 64,
                   color: AppColors.textSecondary,
                 ),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: context.spacing.md),
+                Text(
                   'Event Hosting Unlocked',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: context.spacing.md),
                 Text(
                   _expertiseError!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -502,40 +462,36 @@ class _CreateEventPageState extends State<CreateEventPage> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(context.spacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Expertise Check Display
               if (_selectedCategory != null && _userExpertise != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.electricGreen.withValues(alpha: 0.3),
-                    ),
-                  ),
+                PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.electricGreen.withValues(alpha: 0.1),
+                  borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.check_circle,
                           color: AppColors.electricGreen, size: 20),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           'Expertise: ${_userExpertise![_selectedCategory!]?.displayName ?? "Unknown"} level in $_selectedCategory',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: context.spacing.lg),
               ],
 
               // Event Title
@@ -544,14 +500,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Event Title *',
                   hintText: 'Enter event title',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Event title is required';
@@ -559,7 +521,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Event Description
               TextFormField(
@@ -567,14 +529,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Description *',
                   hintText: 'Describe your event',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -583,7 +551,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Category Dropdown
               DropdownButtonFormField<String>(
@@ -596,7 +564,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 items: _availableCategories.map((category) {
                   final level = _userExpertise![category];
                   return DropdownMenuItem(
@@ -605,22 +576,23 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       children: [
                         Text(category),
                         if (level != null) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.electricGreen
-                                  .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
+                          SizedBox(width: context.spacing.xs),
+                          Chip(
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            side: BorderSide.none,
+                            backgroundColor:
+                                AppColors.electricGreen.withValues(alpha: 0.1),
+                            label: Text(
                               level.displayName,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.electricGreen,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                             ),
                           ),
                         ],
@@ -643,7 +615,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Geographic Scope Indicator
               if (_selectedCategory != null && _currentUser != null) ...[
@@ -651,7 +623,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   user: _currentUser!,
                   category: _selectedCategory!,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: context.spacing.md),
               ],
 
               // Locality Selection
@@ -668,7 +640,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: context.spacing.md),
               ],
 
               // Event Type Dropdown
@@ -682,7 +654,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 items: _eventTypes.map((type) {
                   return DropdownMenuItem(
                     value: type,
@@ -701,7 +676,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Start Date/Time
               InkWell(
@@ -720,15 +695,15 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     _startTime != null
                         ? '${_formatDate(_startTime!)} at ${_formatTime(_startTime!)}'
                         : 'Select start time',
-                    style: TextStyle(
-                      color: _startTime != null
-                          ? AppColors.textPrimary
-                          : AppColors.textHint,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _startTime != null
+                              ? AppColors.textPrimary
+                              : AppColors.textHint,
+                        ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // End Date/Time
               InkWell(
@@ -747,15 +722,15 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     _endTime != null
                         ? '${_formatDate(_endTime!)} at ${_formatTime(_endTime!)}'
                         : 'Select end time',
-                    style: TextStyle(
-                      color: _endTime != null
-                          ? AppColors.textPrimary
-                          : AppColors.textHint,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _endTime != null
+                              ? AppColors.textPrimary
+                              : AppColors.textHint,
+                        ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Location
               TextFormField(
@@ -763,7 +738,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Location *',
                   hintText: 'Enter event location',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -771,7 +749,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   fillColor: AppColors.grey100,
                   suffixIcon: const Icon(Icons.location_on),
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Location is required';
@@ -779,7 +760,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Max Attendees
               TextFormField(
@@ -787,14 +768,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Max Attendees',
                   hintText: 'Enter max attendees',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
                   fillColor: AppColors.grey100,
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   final parsed = int.tryParse(value);
@@ -803,7 +790,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   }
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Price (Optional - if set, event is paid)
               TextFormField(
@@ -811,7 +798,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 decoration: InputDecoration(
                   labelText: 'Price (Optional)',
                   hintText: 'Leave empty for free event',
-                  hintStyle: const TextStyle(color: AppColors.textHint),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textHint),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -819,7 +809,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   fillColor: AppColors.grey100,
                   prefixText: '\$ ',
                 ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 onChanged: (value) {
@@ -835,12 +828,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   }
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
 
               // Public/Private Toggle
               SwitchListTile(
-                title: const Text('Public Event'),
-                subtitle: const Text('Anyone can discover this event'),
+                title: Text('Public Event'),
+                subtitle: Text('Anyone can discover this event'),
                 value: _isPublic,
                 onChanged: (value) {
                   setState(() {
@@ -851,24 +844,23 @@ class _CreateEventPageState extends State<CreateEventPage> {
               ),
 
               if (_error != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                SizedBox(height: context.spacing.md),
+                PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.error,
+                                  ),
                         ),
                       ),
                     ],
@@ -876,7 +868,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 ),
               ],
 
-              const SizedBox(height: 24),
+              SizedBox(height: context.spacing.xl),
 
               // Submit Button
               SizedBox(
@@ -886,19 +878,19 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: context.spacing.md),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: AppColors.white)
-                      : const Text(
+                      : Text(
                           'Review & Publish',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                 ),
               ),

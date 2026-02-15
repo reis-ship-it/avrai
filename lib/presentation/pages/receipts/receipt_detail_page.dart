@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_op_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_receipt_v0.dart';
@@ -98,9 +100,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
       developer.log('sign_existing failed',
           name: 'ReceiptDetailPage', error: e, stackTrace: st);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to sign: $e')),
-      );
+      context.showError('Failed to sign: $e');
     }
   }
 
@@ -151,11 +151,11 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
         ),
       ],
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : receipt == null
-              ? const Center(child: Text('Receipt not found.'))
+              ? Center(child: Text('Receipt not found.'))
               : ListView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   children: [
                     _summaryCard(receipt),
                     const SizedBox(height: 12),
@@ -169,13 +169,16 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
 
   Widget _summaryCard(LedgerReceiptV0 receipt) {
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             receipt.event.eventType,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text('Domain: ${receipt.event.domain.wireName}'),
@@ -214,7 +217,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
     };
 
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -224,8 +227,10 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
               const SizedBox(width: 8),
               Text(
                 statusText,
-                style:
-                    TextStyle(fontWeight: FontWeight.w600, color: statusColor),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w600, color: statusColor),
               ),
             ],
           ),
@@ -246,15 +251,18 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
               if (sig == null)
                 OutlinedButton(
                   onPressed: _sign,
-                  child: const Text('Generate signature'),
+                  child: Text('Generate signature'),
                 ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'To verify signatures, ship a public key with '
             '--dart-define=LEDGER_RECEIPTS_PUBLIC_KEY_B64_V1=...',
-            style: TextStyle(fontSize: 12, color: AppColors.grey600),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppColors.grey600),
           ),
         ],
       ),
@@ -265,13 +273,16 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
     final payloadPretty =
         const JsonEncoder.withIndent('  ').convert(receipt.event.payload);
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Payload',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           SelectableText(payloadPretty),

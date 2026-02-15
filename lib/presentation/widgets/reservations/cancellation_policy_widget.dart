@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Cancellation Policy Widget
 ///
@@ -40,7 +41,8 @@ class CancellationPolicyWidget extends StatelessWidget {
   /// Check if cancellation qualifies for refund
   bool get _qualifiesForRefund {
     final cancelTime = cancellationTime ?? DateTime.now();
-    final hoursUntilReservation = reservationTime.difference(cancelTime).inHours;
+    final hoursUntilReservation =
+        reservationTime.difference(cancelTime).inHours;
     return hoursUntilReservation >= policy.hoursBefore;
   }
 
@@ -76,7 +78,7 @@ class CancellationPolicyWidget extends StatelessWidget {
     final timeUntil = _timeUntilReservation;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: qualifies
             ? AppTheme.successColor.withValues(alpha: 0.1)
@@ -93,17 +95,19 @@ class CancellationPolicyWidget extends StatelessWidget {
             children: [
               Icon(
                 qualifies ? Icons.check_circle : Icons.warning_amber_rounded,
-                color: qualifies ? AppTheme.successColor : AppTheme.warningColor,
+                color:
+                    qualifies ? AppTheme.successColor : AppTheme.warningColor,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   qualifies ? 'Refund Eligible' : 'Refund Not Eligible',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: qualifies ? AppTheme.successColor : AppTheme.warningColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: qualifies
+                            ? AppTheme.successColor
+                            : AppTheme.warningColor,
+                      ),
                 ),
               ),
             ],
@@ -111,33 +115,31 @@ class CancellationPolicyWidget extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Cancellation Policy:',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             'Cancel at least ${policy.hoursBefore} hours before reservation for ${policy.fullRefund ? "full" : policy.partialRefund ? "partial" : "no"} refund',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Time until reservation: ${_formatDuration(timeUntil)}',
-            style: TextStyle(
-              fontSize: 14,
-              color: qualifies ? AppTheme.successColor : AppTheme.warningColor,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color:
+                      qualifies ? AppTheme.successColor : AppTheme.warningColor,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           if (refundAmount != null && refundAmount > 0) ...[
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(kSpaceXs),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
@@ -148,11 +150,10 @@ class CancellationPolicyWidget extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     'Estimated refund: \$${refundAmount.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                        ),
                   ),
                 ],
               ),
@@ -162,31 +163,28 @@ class CancellationPolicyWidget extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Partial refund: ${(policy.refundPercentage! * 100).toStringAsFixed(0)}%',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
           if (policy.hasCancellationFee && policy.cancellationFee != null) ...[
             const SizedBox(height: 4),
             Text(
               'Cancellation fee: \$${policy.cancellationFee!.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppTheme.errorColor,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.errorColor,
+                  ),
             ),
           ],
           if (!qualifies) ...[
             const SizedBox(height: 8),
             Text(
               'You can still cancel, but no refund will be issued. Consider filing a dispute if you have extenuating circumstances.',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ],
         ],

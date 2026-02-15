@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -9,6 +10,7 @@ import 'package:avrai/presentation/widgets/brand/performance_metrics_widget.dart
 import 'package:avrai/presentation/widgets/brand/brand_exposure_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Brand Analytics Page
 ///
@@ -150,21 +152,19 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
                 color: AppColors.textSecondary.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'No analytics data available',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Start sponsoring events to see analytics',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -219,17 +219,16 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
           children: [
             // Time Range Selector
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(kSpaceMdWide),
               color: AppColors.surface,
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'Time Range:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -260,22 +259,21 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
             const SizedBox(height: 20),
 
             // ROI Overview
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: kSpaceMdWide),
               child: Text(
                 '📊 ROI Overview',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ),
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
               child: PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -327,7 +325,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
 
             // ROI Chart
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
               child: ROICartWidget(
                 analytics: _analytics!,
               ),
@@ -337,7 +335,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
 
             // Performance Metrics
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
               child: PerformanceMetricsWidget(
                 analytics: _analytics!,
               ),
@@ -347,7 +345,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
 
             // Brand Exposure
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
               child: BrandExposureWidget(
                 analytics: _analytics!,
               ),
@@ -357,55 +355,57 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
 
             // Top Performing Events
             if (_analytics!.topPerformingEvents.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: kSpaceMdWide),
                 child: Text(
                   '🏆 Top Performing Events',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
               const SizedBox(height: 12),
               ..._analytics!.topPerformingEvents.take(5).map((event) => Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kSpaceMdWide, vertical: kSpaceXs),
                     child: PortalSurface(
                       padding: EdgeInsets.zero,
                       child: ListTile(
                         leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.event,
-                            color: AppTheme.primaryColor,
+                          padding: EdgeInsets.zero,
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundColor:
+                                AppTheme.primaryColor.withValues(alpha: 0.1),
+                            child: const Icon(
+                              Icons.event,
+                              color: AppTheme.primaryColor,
+                            ),
                           ),
                         ),
                         title: Text(
                           event.eventName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         subtitle: Text(
                           'ROI: ${event.roiPercentage.toStringAsFixed(0)}%',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                         trailing: Text(
                           '\$${event.totalReturns.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.electricGreen,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.electricGreen,
+                                  ),
                         ),
                       ),
                     ),
@@ -423,26 +423,31 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   Widget _buildAnalyticsRow(String label, String value,
       {bool isTotal = false, bool indent = false, Color? color}) {
     return Padding(
-      padding: EdgeInsets.only(left: indent ? 16 : 0, bottom: 8),
+      padding: EdgeInsets.only(
+          left: indent ? kSpaceMd : kSpaceNone, bottom: kSpaceXs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: AppColors.textPrimary,
-            ),
+            style: (isTotal
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium)
+                ?.copyWith(
+                    fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                    color: AppColors.textPrimary),
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize: isTotal ? 20 : 16,
-              fontWeight: FontWeight.bold,
-              color: color ??
-                  (isTotal ? AppTheme.primaryColor : AppColors.textPrimary),
-            ),
+            style: (isTotal
+                    ? Theme.of(context).textTheme.headlineSmall
+                    : Theme.of(context).textTheme.titleMedium)
+                ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color ??
+                        (isTotal
+                            ? AppTheme.primaryColor
+                            : AppColors.textPrimary)),
           ),
         ],
       ),
@@ -452,11 +457,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   Future<void> _exportAnalytics() async {
     // Export analytics report
     // Would integrate with export service
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Exporting analytics report...'),
-      ),
-    );
+    context.showInfo('Exporting analytics report...');
   }
 }
 

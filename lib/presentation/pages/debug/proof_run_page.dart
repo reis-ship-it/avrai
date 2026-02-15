@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -368,7 +369,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
         ),
       ],
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         children: [
           _buildCard(
             title: 'Run',
@@ -381,18 +382,18 @@ class _ProofRunPageState extends State<ProofRunPage> {
               children: [
                 ElevatedButton(
                   onPressed: _startRun,
-                  child: const Text('Start run'),
+                  child: Text('Start run'),
                 ),
                 OutlinedButton(
                   onPressed: (runId != null) ? _finishRun : null,
-                  child: const Text('Finish'),
+                  child: Text('Finish'),
                 ),
               ],
             ),
           ),
           if (_error != null)
             Padding(
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: kSpaceSm),
               child: _buildBanner(_error!),
             ),
           const SizedBox(height: 12),
@@ -408,7 +409,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
                   onPressed: (runId != null)
                       ? () => _markMilestone('proof_onboarding_completed')
                       : null,
-                  child: const Text('Onboarding done'),
+                  child: Text('Onboarding done'),
                 ),
                 OutlinedButton(
                   onPressed: (runId != null)
@@ -416,7 +417,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
                             'proof_offline_ai_provisioning_started',
                           )
                       : null,
-                  child: const Text('Offline AI started'),
+                  child: Text('Offline AI started'),
                 ),
                 OutlinedButton(
                   onPressed: (runId != null)
@@ -424,7 +425,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
                             'proof_offline_ai_provisioning_installed',
                           )
                       : null,
-                  child: const Text('Offline AI installed'),
+                  child: Text('Offline AI installed'),
                 ),
               ],
             ),
@@ -497,7 +498,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
             ].join('\n'),
             trailing: ElevatedButton(
               onPressed: (runId != null) ? _exportRun : null,
-              child: const Text('Export'),
+              child: Text('Export'),
             ),
           ),
         ],
@@ -523,16 +524,17 @@ class _ProofRunPageState extends State<ProofRunPage> {
   }
 
   Widget _buildBanner(String message) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.35)),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceSm),
+      color: AppColors.error.withValues(alpha: 0.1),
+      borderColor: AppColors.error.withValues(alpha: 0.35),
+      radius: 12,
       child: Text(
         message,
-        style: const TextStyle(color: AppColors.error),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(color: AppColors.error),
       ),
     );
   }
@@ -543,7 +545,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
     Widget? trailing,
   }) {
     return PortalSurface(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -553,11 +555,10 @@ class _ProofRunPageState extends State<ProofRunPage> {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
               if (trailing != null) trailing,
@@ -566,11 +567,10 @@ class _ProofRunPageState extends State<ProofRunPage> {
           const SizedBox(height: 8),
           Text(
             body,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-              height: 1.35,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.35,
+                ),
           ),
         ],
       ),

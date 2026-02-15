@@ -6,6 +6,7 @@
 // Main dashboard page for business owners to manage reservations
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_service.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -16,6 +17,8 @@ import 'package:avrai/presentation/pages/business/business_reservations_page.dar
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Dashboard Page
 ///
@@ -87,7 +90,7 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
       body: _error != null
           ? Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -96,24 +99,27 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
                     const SizedBox(height: 16),
                     Text(
                       _error!,
-                      style: const TextStyle(color: AppTheme.errorColor),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppTheme.errorColor),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _loadReservations,
-                      child: const Text('Retry'),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),
               ),
             )
           : _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                   onRefresh: _loadReservations,
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -148,13 +154,10 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
                               icon: Icons.calendar_today,
                               color: AppTheme.primaryColor,
                               onTap: () {
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ReservationCalendarPage(
-                                      businessId: widget.businessId,
-                                    ),
+                                  builder: (context) => ReservationCalendarPage(
+                                    businessId: widget.businessId,
                                   ),
                                 );
                               },
@@ -166,13 +169,11 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
                               icon: Icons.list,
                               color: AppColors.electricGreen,
                               onTap: () {
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BusinessReservationsPage(
-                                      businessId: widget.businessId,
-                                    ),
+                                  builder: (context) =>
+                                      BusinessReservationsPage(
+                                    businessId: widget.businessId,
                                   ),
                                 );
                               },
@@ -184,14 +185,12 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
                               icon: Icons.analytics,
                               color: AppTheme.primaryColor,
                               onTap: () {
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BusinessReservationAnalyticsPage(
-                                      businessId: widget.businessId,
-                                      type: ReservationType.business,
-                                    ),
+                                  builder: (context) =>
+                                      BusinessReservationAnalyticsPage(
+                                    businessId: widget.businessId,
+                                    type: ReservationType.business,
                                   ),
                                 );
                               },
@@ -213,16 +212,14 @@ class _ReservationDashboardPageState extends State<ReservationDashboardPage> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return PortalSurface(
+      radius: 12,
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

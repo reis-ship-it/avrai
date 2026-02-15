@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
-import 'package:avrai/core/models/events/event_partnership.dart' show PartnershipStatus;
+import 'package:avrai/presentation/presentation_spacing.dart';
+import 'package:avrai/core/models/events/event_partnership.dart'
+    show PartnershipStatus;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 
 /// Partnership Card Widget for Profile Display
-/// 
+///
 /// Displays a single partnership card on user profiles.
 /// Different from the existing PartnershipCard in partnerships/ folder.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class ProfilePartnershipCard extends StatelessWidget {
   final UserPartnership partnership;
@@ -26,6 +28,7 @@ class ProfilePartnershipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -35,7 +38,7 @@ class ProfilePartnershipCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -78,8 +81,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                       children: [
                         Text(
                           partnership.partnerName,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
@@ -87,9 +89,9 @@ class ProfilePartnershipCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            _buildTypeBadge(),
+                            _buildTypeBadge(context),
                             const SizedBox(width: 8),
-                            _buildStatusBadge(),
+                            _buildStatusBadge(context),
                           ],
                         ),
                       ],
@@ -130,8 +132,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '${partnership.eventCount} ${partnership.eventCount == 1 ? 'event' : 'events'}',
-                      style: const TextStyle(
-                        fontSize: 12,
+                      style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -152,8 +153,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       _formatDateRange(),
-                      style: const TextStyle(
-                        fontSize: 12,
+                      style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -174,8 +174,7 @@ class ProfilePartnershipCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '${(partnership.vibeCompatibility! * 100).toStringAsFixed(0)}% match',
-                      style: const TextStyle(
-                        fontSize: 12,
+                      style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -189,7 +188,8 @@ class ProfilePartnershipCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeBadge() {
+  Widget _buildTypeBadge(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     Color badgeColor;
     switch (partnership.type) {
       case ProfilePartnershipType.business:
@@ -204,7 +204,8 @@ class ProfilePartnershipCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -214,8 +215,7 @@ class ProfilePartnershipCard extends StatelessWidget {
       ),
       child: Text(
         partnership.type.displayName,
-        style: TextStyle(
-          fontSize: 10,
+        style: textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w500,
           color: badgeColor,
         ),
@@ -223,7 +223,8 @@ class ProfilePartnershipCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     Color badgeColor;
     String statusText;
 
@@ -258,7 +259,8 @@ class ProfilePartnershipCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -268,8 +270,7 @@ class ProfilePartnershipCard extends StatelessWidget {
       ),
       child: Text(
         statusText,
-        style: TextStyle(
-          fontSize: 10,
+        style: textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w500,
           color: badgeColor,
         ),
@@ -290,26 +291,36 @@ class ProfilePartnershipCard extends StatelessWidget {
 
   String _formatDateRange() {
     if (partnership.startDate == null) return '';
-    
+
     final start = partnership.startDate!;
     final end = partnership.endDate;
-    
-    final startStr = '${_getMonthName(start.month)} ${start.day}, ${start.year}';
-    
+
+    final startStr =
+        '${_getMonthName(start.month)} ${start.day}, ${start.year}';
+
     if (end == null) {
       return 'Since $startStr';
     }
-    
+
     final endStr = '${_getMonthName(end.month)} ${end.day}, ${end.year}';
     return '$startStr - $endStr';
   }
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return months[month - 1];
   }
 }
-

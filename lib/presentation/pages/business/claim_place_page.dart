@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -9,6 +10,7 @@ import 'package:avrai/core/services/places/place_claim_service.dart';
 import 'package:avrai/domain/usecases/search/hybrid_search_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Page for a business to claim a place by Google Place ID.
 ///
@@ -153,7 +155,7 @@ class _ClaimPlacePageState extends State<ClaimPlacePage> {
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -179,8 +181,8 @@ class _ClaimPlacePageState extends State<ClaimPlacePage> {
                   hintText: 'e.g. Blue Bottle Coffee, 123 Main St',
                   border: const OutlineInputBorder(),
                   suffixIcon: _isSearching
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
+                      ? Padding(
+                          padding: EdgeInsets.all(kSpaceSm),
                           child: SizedBox(
                             width: 20,
                             height: 20,
@@ -193,7 +195,8 @@ class _ClaimPlacePageState extends State<ClaimPlacePage> {
               ),
               if (_searchResults.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Card(
+                PortalSurface(
+                  padding: EdgeInsets.zero,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxHeight: 200),
                     child: ListView.builder(
@@ -269,14 +272,20 @@ class _ClaimPlacePageState extends State<ClaimPlacePage> {
               const SizedBox(height: 16),
               Text(
                 _errorMessage!,
-                style: const TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
               ),
             ],
             if (_successMessage != null) ...[
               const SizedBox(height: 16),
               Text(
                 _successMessage!,
-                style: const TextStyle(color: AppColors.success),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.success),
               ),
             ],
             const SizedBox(height: 24),
@@ -288,7 +297,7 @@ class _ClaimPlacePageState extends State<ClaimPlacePage> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Claim place'),
+                  : Text('Claim place'),
             ),
           ],
         ),

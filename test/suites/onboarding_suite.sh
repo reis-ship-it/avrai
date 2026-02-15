@@ -9,6 +9,6 @@ flutter test --dart-define=FLUTTER_TEST=true "$@" \
   test/unit/data/datasources/local/onboarding_completion_service_test.dart \
   test/unit/domain/usecases/lists/ \
   test/widget/pages/onboarding/ \
-  test/integration/onboarding_flow_integration_test.dart \
+  test/integration/onboarding/onboarding_flow_integration_test.dart \
   test/integration/onboarding/
 

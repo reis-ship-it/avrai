@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai2ai_learning_service.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget displaying AI2AI learning effectiveness metrics
 class AI2AILearningEffectivenessWidget extends StatefulWidget {
@@ -76,13 +77,15 @@ class _AI2AILearningEffectivenessWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading learning effectiveness metrics',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(),
             ),
@@ -95,9 +98,9 @@ class _AI2AILearningEffectivenessWidgetState
       return Semantics(
         label: 'Error loading effectiveness metrics',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -108,16 +111,15 @@ class _AI2AILearningEffectivenessWidgetState
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: _loadMetrics,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -137,16 +139,16 @@ class _AI2AILearningEffectivenessWidgetState
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -158,14 +160,13 @@ class _AI2AILearningEffectivenessWidgetState
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Learning Effectiveness',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -218,8 +219,9 @@ class _AI2AILearningEffectivenessWidgetState
   }
 
   Widget _buildOverallScore(double score) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
@@ -230,21 +232,19 @@ class _AI2AILearningEffectivenessWidgetState
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Overall Effectiveness',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             '${(score * 100).toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: _getScoreColor(score),
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: _getScoreColor(score),
+                ),
           ),
           const SizedBox(height: 12),
           LinearProgressIndicator(
@@ -279,19 +279,17 @@ class _AI2AILearningEffectivenessWidgetState
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   Text(
                     '${(value * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _getScoreColor(value),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: _getScoreColor(value),
+                        ),
                   ),
                 ],
               ),
@@ -313,8 +311,9 @@ class _AI2AILearningEffectivenessWidgetState
   }
 
   Widget _buildSummaryStats() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -353,19 +352,17 @@ class _AI2AILearningEffectivenessWidgetState
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );

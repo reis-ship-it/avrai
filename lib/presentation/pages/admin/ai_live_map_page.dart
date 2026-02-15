@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// AI Live Map Page
 /// Shows all active AI agents on a live map with their location, data, and predictions
@@ -66,12 +69,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading AI agents: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading AI agents: $e');
       }
     }
   }
@@ -128,7 +126,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         children: [
           // Map
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : gmap.GoogleMap(
                   initialCameraPosition: gmap.CameraPosition(
                     target: _getMapCenter(),
@@ -147,18 +145,11 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
             top: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+            child: PortalSurface(
+              padding: const EdgeInsets.all(kSpaceMd),
+              color: AppColors.white,
+              borderColor: AppColors.grey300,
+              radius: 0,
               child: Row(
                 children: [
                   Expanded(
@@ -198,34 +189,20 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Container(
-                constraints: const BoxConstraints(maxHeight: 400),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
+              child: PortalSurface(
+                padding: EdgeInsets.zero,
+                color: AppColors.white,
+                borderColor: AppColors.grey300,
+                radius: 20,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Drag handle
                     Container(
-                      margin: const EdgeInsets.only(top: 8),
+                      margin: const EdgeInsets.only(top: kSpaceXs),
                       width: 40,
                       height: 4,
-                      decoration: BoxDecoration(
-                        color: AppColors.grey300,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                      color: AppColors.grey300,
                     ),
 
                     // Close button
@@ -242,9 +219,10 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                     ),
 
                     // Agent Info
-                    Expanded(
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 400),
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(kSpaceMd),
                         child: _buildAgentInfo(_selectedAgent!),
                       ),
                     ),
@@ -290,10 +268,9 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                   ),
                   Text(
                     agent.aiSignature,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontFamily: 'monospace',
+                        ),
                   ),
                 ],
               ),
@@ -353,7 +330,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         else
           ...agent.predictedActions.take(5).map((action) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: kSpaceXs),
               child: Row(
                 children: [
                   Expanded(
@@ -362,7 +339,10 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                       children: [
                         Text(
                           action.action,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
                         ),
                         Text(
                           action.category,
@@ -387,12 +367,11 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
 
         if (topAction != null) ...[
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.electricGreen.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceSm),
+            color: AppColors.electricGreen.withValues(alpha: 0.1),
+            borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+            radius: 8,
             child: Row(
               children: [
                 const Icon(Icons.auto_awesome,
@@ -410,7 +389,10 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                       ),
                       Text(
                         topAction.action,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -423,12 +405,11 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         const SizedBox(height: 16),
 
         // Privacy Notice
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.electricGreen.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
+        PortalSurface(
+          padding: const EdgeInsets.all(kSpaceSm),
+          color: AppColors.electricGreen.withValues(alpha: 0.1),
+          borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+          radius: 8,
           child: Row(
             children: [
               const Icon(Icons.privacy_tip,
@@ -439,7 +420,6 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                   'Privacy: Only AI-related data and location (vibe indicators) are shown. No personal information (name, email, phone, home address) is displayed.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.grey700,
-                        fontSize: 11,
                       ),
                 ),
               ),
@@ -452,7 +432,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -460,16 +440,15 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
             width: 120,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 12),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
         ],

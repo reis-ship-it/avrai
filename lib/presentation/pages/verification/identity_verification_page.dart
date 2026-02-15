@@ -6,10 +6,13 @@ import 'package:avrai/core/models/misc/verification_session.dart';
 import 'package:avrai/core/services/security/identity_verification_service.dart';
 import 'package:avrai/core/services/payment/tax_compliance_service.dart';
 import 'package:avrai/core/services/payment/payment_service.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Identity Verification Page
 ///
@@ -110,12 +113,8 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Verification session created. Please complete the verification process.'),
-            backgroundColor: AppColors.electricGreen,
-          ),
+        context.showSuccess(
+          'Verification session created. Please complete the verification process.',
         );
       }
     } catch (e) {
@@ -136,12 +135,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error opening verification link: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error opening verification link: $e');
       }
     }
   }
@@ -178,10 +172,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(kSpaceMdWide),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -205,14 +199,11 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                     // Error Display
                     if (_error != null) ...[
                       const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: AppColors.error.withValues(alpha: 0.3)),
-                        ),
+                      PortalSurface(
+                        padding: const EdgeInsets.all(kSpaceMd),
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        borderColor: AppColors.error.withValues(alpha: 0.3),
+                        radius: 8,
                         child: Row(
                           children: [
                             const Icon(Icons.error_outline,
@@ -221,7 +212,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                             Expanded(
                               child: Text(
                                 _error!,
-                                style: const TextStyle(color: AppColors.error),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.error),
                               ),
                             ),
                           ],
@@ -236,28 +230,25 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
   }
 
   Widget _buildInfoCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMdWide),
+      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+      borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
+      radius: 12,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.verified_user, color: AppTheme.primaryColor, size: 32),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Identity Verification',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
             ],
@@ -267,11 +258,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             _needsVerification
                 ? 'You need to verify your identity to continue receiving payments. This is required for users earning \$5,000+ per month or \$20,000+ lifetime.'
                 : 'Identity verification is not currently required. You\'ll be notified if verification becomes necessary.',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-              height: 1.5,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  height: 1.5,
+                ),
           ),
         ],
       ),
@@ -317,13 +307,11 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMdWide),
+      color: statusColor.withValues(alpha: 0.1),
+      borderColor: statusColor.withValues(alpha: 0.3),
+      radius: 12,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -337,18 +325,16 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                   children: [
                     Text(
                       'Status: $statusText',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: statusColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: statusColor,
+                          ),
                     ),
                     Text(
                       'Started: ${_formatDate(_session!.createdAt)}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -360,11 +346,10 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             const SizedBox(height: 12),
             Text(
               'Expires: ${_formatDateTime(_session!.expiresAt!)}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppTheme.warningColor,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.warningColor,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ],
         ],
@@ -373,23 +358,20 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
   }
 
   Widget _buildInstructions() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMdWide),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: 12,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Verification Instructions',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 16),
           _buildInstructionStep(
@@ -419,36 +401,28 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
 
   Widget _buildInstructionStep(int step, String instruction) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: const BoxDecoration(
-              color: AppTheme.primaryColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '$step',
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          CircleAvatar(
+            radius: 12,
+            backgroundColor: AppTheme.primaryColor,
+            child: Text(
+              '$step',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               instruction,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],
@@ -474,31 +448,27 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                 ),
               )
-            : const Text('Start Verification'),
+            : Text('Start Verification'),
       );
     }
 
     if (_session!.status == VerificationStatus.verified) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.electricGreen.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border:
-              Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-        ),
-        child: const Row(
+      return PortalSurface(
+        padding: const EdgeInsets.all(kSpaceMdWide),
+        color: AppColors.electricGreen.withValues(alpha: 0.1),
+        borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+        radius: 12,
+        child: Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.electricGreen, size: 32),
             SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Your identity has been verified successfully!',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.electricGreen,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.electricGreen,
+                    ),
               ),
             ),
           ],
@@ -514,7 +484,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             onPressed:
                 _session!.verificationUrl != null ? _openVerificationUrl : null,
             icon: const Icon(Icons.open_in_new),
-            label: const Text('Continue Verification'),
+            label: Text('Continue Verification'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppColors.white,
@@ -523,12 +493,11 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
           ),
           if (_session!.status == VerificationStatus.processing) ...[
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Your verification is being processed. Please check back later.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -555,7 +524,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                 ),
               )
-            : const Text('Retry Verification'),
+            : Text('Retry Verification'),
       );
     }
 

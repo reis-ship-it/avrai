@@ -1,33 +1,34 @@
 /// Action Confirmation Dialog Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Action Execution UI & Integration
-/// 
+///
 /// Displays a confirmation dialog before executing an AI action, showing:
 /// - Action type and preview
 /// - What will happen when confirmed
 /// - Cancel and Confirm options
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/ai/action_models.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Dialog widget that shows action preview before execution
-/// 
+///
 /// Displays a user-friendly preview of what action will be executed,
 /// allowing users to confirm or cancel before the action happens.
 class ActionConfirmationDialog extends StatelessWidget {
   /// The action intent to preview
   final ActionIntent intent;
-  
+
   /// Callback when user confirms the action
   final VoidCallback onConfirm;
-  
+
   /// Callback when user cancels the action
   final VoidCallback onCancel;
-  
+
   /// Whether to show confidence level (default: false)
   final bool showConfidence;
 
@@ -46,7 +47,7 @@ class ActionConfirmationDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      title: const Row(
+      title: Row(
         children: [
           Icon(
             Icons.info_outline,
@@ -56,11 +57,10 @@ class ActionConfirmationDialog extends StatelessWidget {
           SizedBox(width: 8),
           Text(
             'Confirm Action',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -69,10 +69,10 @@ class ActionConfirmationDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildActionPreview(),
+            _buildActionPreview(context),
             if (showConfidence) ...[
               const SizedBox(height: 16),
-              _buildConfidenceIndicator(),
+              _buildConfidenceIndicator(context),
             ],
           ],
         ),
@@ -83,12 +83,12 @@ class ActionConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: const Text(
+          child: Text(
             'Cancel',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
         ElevatedButton(
@@ -103,11 +103,11 @@ class ActionConfirmationDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text(
+          child: Text(
             'Confirm',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
       ],
@@ -115,62 +115,69 @@ class ActionConfirmationDialog extends StatelessWidget {
   }
 
   /// Builds the action preview based on intent type
-  Widget _buildActionPreview() {
+  Widget _buildActionPreview(BuildContext context) {
     if (intent is CreateSpotIntent) {
-      return _buildCreateSpotPreview(intent as CreateSpotIntent);
+      return _buildCreateSpotPreview(context, intent as CreateSpotIntent);
     } else if (intent is CreateListIntent) {
-      return _buildCreateListPreview(intent as CreateListIntent);
+      return _buildCreateListPreview(context, intent as CreateListIntent);
     } else if (intent is AddSpotToListIntent) {
-      return _buildAddSpotToListPreview(intent as AddSpotToListIntent);
+      return _buildAddSpotToListPreview(context, intent as AddSpotToListIntent);
     } else {
-      return _buildGenericPreview();
+      return _buildGenericPreview(context);
     }
   }
 
   /// Builds preview for CreateSpotIntent
-  Widget _buildCreateSpotPreview(CreateSpotIntent intent) {
+  Widget _buildCreateSpotPreview(
+      BuildContext context, CreateSpotIntent intent) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Create Spot',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         _buildPreviewItem(
+          context: context,
           icon: Icons.place,
           label: 'Name',
           value: intent.name,
         ),
         if (intent.description.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.description,
             label: 'Description',
             value: intent.description,
           ),
         _buildPreviewItem(
+          context: context,
           icon: Icons.category,
           label: 'Category',
           value: intent.category,
         ),
         if (intent.address != null && intent.address!.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.location_on,
             label: 'Address',
             value: intent.address!,
           ),
         _buildPreviewItem(
+          context: context,
           icon: Icons.my_location,
           label: 'Location',
-          value: '${intent.latitude.toStringAsFixed(4)}, ${intent.longitude.toStringAsFixed(4)}',
+          value:
+              '${intent.latitude.toStringAsFixed(4)}, ${intent.longitude.toStringAsFixed(4)}',
         ),
         if (intent.tags.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.label,
             label: 'Tags',
             value: intent.tags.join(', '),
@@ -180,44 +187,49 @@ class ActionConfirmationDialog extends StatelessWidget {
   }
 
   /// Builds preview for CreateListIntent
-  Widget _buildCreateListPreview(CreateListIntent intent) {
+  Widget _buildCreateListPreview(
+      BuildContext context, CreateListIntent intent) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Create List',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         _buildPreviewItem(
+          context: context,
           icon: Icons.list,
           label: 'Title',
           value: intent.title,
         ),
         if (intent.description.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.description,
             label: 'Description',
             value: intent.description,
           ),
         if (intent.category != null && intent.category!.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.category,
             label: 'Category',
             value: intent.category!,
           ),
         _buildPreviewItem(
+          context: context,
           icon: intent.isPublic ? Icons.public : Icons.lock,
           label: 'Visibility',
           value: intent.isPublic ? 'Public' : 'Private',
         ),
         if (intent.tags.isNotEmpty)
           _buildPreviewItem(
+            context: context,
             icon: Icons.label,
             label: 'Tags',
             value: intent.tags.join(', '),
@@ -227,7 +239,8 @@ class ActionConfirmationDialog extends StatelessWidget {
   }
 
   /// Builds preview for AddSpotToListIntent
-  Widget _buildAddSpotToListPreview(AddSpotToListIntent intent) {
+  Widget _buildAddSpotToListPreview(
+      BuildContext context, AddSpotToListIntent intent) {
     final spotName = intent.metadata['spotName'] as String? ?? 'Spot';
     final listName = intent.metadata['listName'] as String? ?? 'List';
 
@@ -235,21 +248,22 @@ class ActionConfirmationDialog extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Add Spot to List',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         _buildPreviewItem(
+          context: context,
           icon: Icons.place,
           label: 'Spot',
           value: spotName,
         ),
         _buildPreviewItem(
+          context: context,
           icon: Icons.list,
           label: 'List',
           value: listName,
@@ -259,25 +273,24 @@ class ActionConfirmationDialog extends StatelessWidget {
   }
 
   /// Builds generic preview for unknown intent types
-  Widget _buildGenericPreview() {
+  Widget _buildGenericPreview(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Execute Action: ${intent.type}',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Are you sure you want to execute this action?',
-          style: TextStyle(
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -285,12 +298,13 @@ class ActionConfirmationDialog extends StatelessWidget {
 
   /// Builds a preview item row
   Widget _buildPreviewItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -306,19 +320,17 @@ class ActionConfirmationDialog extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),
@@ -329,7 +341,7 @@ class ActionConfirmationDialog extends StatelessWidget {
   }
 
   /// Builds confidence indicator
-  Widget _buildConfidenceIndicator() {
+  Widget _buildConfidenceIndicator(BuildContext context) {
     final confidencePercent = (intent.confidence * 100).toInt();
     final confidenceColor = intent.confidence >= 0.8
         ? AppColors.electricGreen
@@ -338,7 +350,7 @@ class ActionConfirmationDialog extends StatelessWidget {
             : AppColors.error;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -359,13 +371,12 @@ class ActionConfirmationDialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Confidence Level',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -374,18 +385,18 @@ class ActionConfirmationDialog extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: intent.confidence,
                         backgroundColor: AppColors.grey300,
-                        valueColor: AlwaysStoppedAnimation<Color>(confidenceColor),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(confidenceColor),
                         minHeight: 6,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '$confidencePercent%',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: confidenceColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: confidenceColor,
+                          ),
                     ),
                   ],
                 ),
@@ -397,4 +408,3 @@ class ActionConfirmationDialog extends StatelessWidget {
     );
   }
 }
-

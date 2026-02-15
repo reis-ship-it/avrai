@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/design_system.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class EditSpotPage extends StatefulWidget {
   final Spot spot;
@@ -113,12 +116,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Location updated successfully'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Location updated successfully');
       }
     } catch (e) {
       setState(() {
@@ -149,12 +147,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
       context.read<SpotsBloc>().add(UpdateSpot(updatedSpot));
 
       Navigator.pop(context, updatedSpot);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Spot updated successfully'),
-          backgroundColor: AppTheme.successColor,
-        ),
-      );
+      context.showSuccess('Spot updated successfully');
     }
   }
 
@@ -162,14 +155,14 @@ class _EditSpotPageState extends State<EditSpotPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Spot'),
+        title: Text('Delete Spot'),
         content: Text(
           'Are you sure you want to delete "${widget.spot.name}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -177,15 +170,10 @@ class _EditSpotPageState extends State<EditSpotPage> {
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Go back to previous page
               Navigator.pop(context); // Go back to spots list
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${widget.spot.name} deleted'),
-                  backgroundColor: AppTheme.errorColor,
-                ),
-              );
+              context.showError('${widget.spot.name} deleted');
             },
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
-            child: const Text('Delete'),
+            child: Text('Delete'),
           ),
         ],
       ),
@@ -198,18 +186,18 @@ class _EditSpotPageState extends State<EditSpotPage> {
     final shouldDiscard = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Discard Changes?'),
-        content: const Text(
-            'You have unsaved changes. Are you sure you want to go back?'),
+        title: Text('Discard Changes?'),
+        content:
+            Text('You have unsaved changes. Are you sure you want to go back?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep Editing'),
+            child: Text('Keep Editing'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
-            child: const Text('Discard'),
+            child: Text('Discard'),
           ),
         ],
       ),
@@ -220,6 +208,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
@@ -240,14 +229,17 @@ class _EditSpotPageState extends State<EditSpotPage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
                     Icon(Icons.delete, color: AppTheme.errorColor),
                     SizedBox(width: 8),
                     Text('Delete Spot',
-                        style: TextStyle(color: AppTheme.errorColor)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppTheme.errorColor)),
                   ],
                 ),
               ),
@@ -258,14 +250,14 @@ class _EditSpotPageState extends State<EditSpotPage> {
         body: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Basic Information
                 PortalSurface(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -333,12 +325,12 @@ class _EditSpotPageState extends State<EditSpotPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: spacing.md),
 
                 // Location Information
                 PortalSurface(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -385,7 +377,10 @@ class _EditSpotPageState extends State<EditSpotPage> {
                           const SizedBox(height: 8),
                           Text(
                             _locationError!,
-                            style: const TextStyle(color: AppTheme.errorColor),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppTheme.errorColor),
                           ),
                         ],
                       ],
@@ -406,7 +401,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
                           if (!context.mounted) return;
                           Navigator.pop(context);
                         },
-                        child: const Text('Cancel'),
+                        child: Text('Cancel'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -414,7 +409,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
                       child: ElevatedButton(
                         onPressed: _saveChanges,
                         // Use global ElevatedButtonTheme
-                        child: const Text('Save Changes'),
+                        child: Text('Save Changes'),
                       ),
                     ),
                   ],

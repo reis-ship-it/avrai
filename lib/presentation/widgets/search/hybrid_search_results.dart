@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/spots/spot.dart';
@@ -10,6 +11,7 @@ import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class HybridSearchResults extends StatelessWidget {
   const HybridSearchResults({super.key});
@@ -19,7 +21,7 @@ class HybridSearchResults extends StatelessWidget {
     return BlocBuilder<HybridSearchBloc, HybridSearchState>(
       builder: (context, state) {
         if (state is HybridSearchInitial) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -31,18 +33,16 @@ class HybridSearchResults extends StatelessWidget {
                 SizedBox(height: 16),
                 Text(
                   'Search for spots',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
                 SizedBox(height: 8),
                 Text(
                   'Find community spots and external places',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -83,9 +83,12 @@ class HybridSearchResults extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Try a different search term or location',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -125,7 +128,7 @@ class HybridSearchResults extends StatelessWidget {
       color:
           state.isCommunityPrioritized ? AppColors.grey100 : AppColors.grey100,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(kSpaceSm),
         child: Column(
           children: [
             Row(
@@ -146,27 +149,25 @@ class HybridSearchResults extends StatelessWidget {
                         state.isCommunityPrioritized
                             ? 'Community-First Results'
                             : 'External Data Heavy',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       Text(
                         '${state.totalCount} total • ${state.communityCount} community • ${state.externalCount} external',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
                 ),
                 Text(
                   '${(state.searchDuration.inMilliseconds)}ms',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -178,7 +179,7 @@ class HybridSearchResults extends StatelessWidget {
                   return Chip(
                     label: Text(
                       '${entry.key}: ${entry.value}',
-                      style: const TextStyle(fontSize: 12),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     backgroundColor: AppColors.grey100,
                     side: const BorderSide(color: AppColors.grey300),
@@ -199,9 +200,10 @@ class HybridSearchResults extends StatelessWidget {
         spot.metadata['is_external'] != true;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXxs),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(kSpaceMd),
         leading: CircleAvatar(
           backgroundColor: indicator.badgeColor,
           child: Icon(
@@ -215,7 +217,10 @@ class HybridSearchResults extends StatelessWidget {
             Expanded(
               child: Text(
                 spot.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             // Use SourceIndicator for consistent source display
@@ -239,15 +244,15 @@ class HybridSearchResults extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceXs, vertical: kSpaceXxs),
                   decoration: BoxDecoration(
                     color: AppColors.grey200,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     spot.category,
-                    style: const TextStyle(fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 if (spot.rating > 0) ...[
@@ -256,7 +261,7 @@ class HybridSearchResults extends StatelessWidget {
                   const SizedBox(width: 2),
                   Text(
                     '${spot.rating}',
-                    style: const TextStyle(fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
                 if (spot.address != null) ...[
@@ -267,8 +272,10 @@ class HybridSearchResults extends StatelessWidget {
                   Expanded(
                     child: Text(
                       spot.address!,
-                      style: const TextStyle(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -320,11 +327,9 @@ class HybridSearchResults extends StatelessWidget {
           ],
         ),
         onTap: () {
-          Navigator.push(
+          AppNavigator.pushBuilder(
             context,
-            MaterialPageRoute(
-              builder: (context) => SpotDetailsPage(spot: spot),
-            ),
+            builder: (context) => SpotDetailsPage(spot: spot),
           );
         },
       ),

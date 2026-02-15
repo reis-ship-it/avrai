@@ -1,18 +1,19 @@
 /// Message Search Bar Widget
-/// 
+///
 /// Search bar for filtering/searching messages in chat
-/// 
+///
 /// Phase 3 Enhancement: Message Search
 /// Date: December 2025
 library;
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class MessageSearchBar extends StatefulWidget {
   final Function(String query) onSearch;
   final VoidCallback? onClear;
-  
+
   const MessageSearchBar({
     super.key,
     required this.onSearch,
@@ -52,7 +53,8 @@ class _MessageSearchBarState extends State<MessageSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXs),
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(
@@ -81,8 +83,8 @@ class _MessageSearchBarState extends State<MessageSearchBar> {
                   borderSide: const BorderSide(color: AppColors.grey300),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+                  horizontal: kSpaceMd,
+                  vertical: kSpaceSm,
                 ),
               ),
               onChanged: _handleSearch,
@@ -93,4 +95,3 @@ class _MessageSearchBarState extends State<MessageSearchBar> {
     );
   }
 }
-

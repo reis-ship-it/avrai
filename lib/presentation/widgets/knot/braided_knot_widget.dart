@@ -1,5 +1,5 @@
 // Braided Knot Widget
-// 
+//
 // Widget for visualizing braided knots
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 2: Knot Weaving
@@ -7,9 +7,11 @@
 import 'package:flutter/material.dart';
 import 'package:avrai_knot/models/knot/braided_knot.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/text_styles.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget for visualizing a braided knot
-/// 
+///
 /// Displays the topological structure of two personality knots woven together
 class BraidedKnotWidget extends StatelessWidget {
   final BraidedKnot braidedKnot;
@@ -27,6 +29,7 @@ class BraidedKnotWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -41,16 +44,16 @@ class BraidedKnotWidget extends StatelessWidget {
             child: Container(),
           ),
         ),
-        
+
         // Labels and metrics (if enabled)
         if (showLabels || showMetrics) ...[
           const SizedBox(height: 8),
           if (showLabels)
             Text(
               braidedKnot.relationshipType.displayName,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.textPrimary,
+              ),
             ),
           if (showMetrics) ...[
             const SizedBox(height: 4),
@@ -95,8 +98,10 @@ class BraidedKnotWidget extends StatelessWidget {
     double value,
     Color color,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -107,17 +112,17 @@ class BraidedKnotWidget extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: textTheme.labelMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(width: 4),
           Text(
             '${(value * 100).toStringAsFixed(0)}%',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: color,
-                ),
+            style: textTheme.bodySmall?.copyWith(
+              color: color,
+            ),
           ),
         ],
       ),
@@ -139,15 +144,18 @@ class BraidedKnotPainter extends CustomPainter {
     final radius = size.width * 0.35;
 
     // Get relationship type color
-    final relationshipColor = _getRelationshipColor(braidedKnot.relationshipType);
+    final relationshipColor =
+        _getRelationshipColor(braidedKnot.relationshipType);
 
     // Draw knot A (left side)
     final knotACenter = Offset(center.dx - radius * 0.3, center.dy);
-    _drawKnot(canvas, knotACenter, radius * 0.4, relationshipColor.withValues(alpha: 0.6), 'A');
+    _drawKnot(canvas, knotACenter, radius * 0.4,
+        relationshipColor.withValues(alpha: 0.6), 'A');
 
     // Draw knot B (right side)
     final knotBCenter = Offset(center.dx + radius * 0.3, center.dy);
-    _drawKnot(canvas, knotBCenter, radius * 0.4, relationshipColor.withValues(alpha: 0.6), 'B');
+    _drawKnot(canvas, knotBCenter, radius * 0.4,
+        relationshipColor.withValues(alpha: 0.6), 'B');
 
     // Draw braided interweaving
     _drawBraiding(canvas, knotACenter, knotBCenter, radius, relationshipColor);
@@ -184,9 +192,8 @@ class BraidedKnotPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: label,
-        style: TextStyle(
+        style: AppTextStyles.textTheme.labelMedium?.copyWith(
           color: color,
-          fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -223,7 +230,7 @@ class BraidedKnotPainter extends CustomPainter {
       // Create curved path between knots
       final path = Path();
       path.moveTo(knotACenter.dx, knotACenter.dy);
-      
+
       // Control points for bezier curve
       final controlPoint1 = Offset(
         knotACenter.dx + (knotBCenter.dx - knotACenter.dx) * 0.3,
@@ -233,7 +240,7 @@ class BraidedKnotPainter extends CustomPainter {
         knotACenter.dx + (knotBCenter.dx - knotACenter.dx) * 0.7,
         knotBCenter.dy - radius * 0.5 * (i.isEven ? -1 : 1),
       );
-      
+
       path.cubicTo(
         controlPoint1.dx,
         controlPoint1.dy,
@@ -242,7 +249,7 @@ class BraidedKnotPainter extends CustomPainter {
         knotBCenter.dx,
         knotBCenter.dy,
       );
-      
+
       // Alternate over/under based on braid sequence
       if (i < braidedKnot.braidSequence.length - 1) {
         final isOver = braidedKnot.braidSequence[i + 1] > 0.5;

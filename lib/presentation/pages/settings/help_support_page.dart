@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,52 +11,57 @@ class HelpSupportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Help & Support',
       scrollable: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Welcome Message
-            const PortalSurface(
+            PortalSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.support_agent, color: AppColors.textSecondary),
-                      SizedBox(width: 8),
+                      const Icon(Icons.support_agent,
+                          color: AppColors.textSecondary),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'We\'re Here to Help',
-                        style: TextStyle(
+                        style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
-                          fontSize: 18,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'avrai is designed to be effortless and seamless. If you need help or have questions, we\'re here to support you.',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Quick Help
             Text(
               'Quick Help',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -98,16 +104,16 @@ class HelpSupportPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Contact Support
             Text(
               'Contact Support',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -143,16 +149,16 @@ class HelpSupportPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Resources
             Text(
               'Resources',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -188,25 +194,26 @@ class HelpSupportPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // System Information
             Text(
               'System Information',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoRow('App Version', '1.0.0'),
-                  _buildInfoRow('Build Number', '100'),
-                  _buildInfoRow('Platform', Theme.of(context).platform.name),
-                  _buildInfoRow('Support ID',
+                  _buildInfoRow(context, 'App Version', '1.0.0'),
+                  _buildInfoRow(context, 'Build Number', '100'),
+                  _buildInfoRow(
+                      context, 'Platform', Theme.of(context).platform.name),
+                  _buildInfoRow(context, 'Support ID',
                       'USR-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}'),
                 ],
               ),
@@ -232,14 +239,24 @@ class HelpSupportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: EdgeInsets.symmetric(vertical: spacing.xxs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(value, style: const TextStyle(color: AppColors.textSecondary)),
+          Text(
+            label,
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+          ),
+          Text(
+            value,
+            style:
+                textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
         ],
       ),
     );

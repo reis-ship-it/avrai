@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
+import 'package:avrai/core/design/design_system.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -7,6 +9,7 @@ import 'package:avrai/presentation/widgets/common/success_animation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class CreateSpotPage extends StatefulWidget {
   const CreateSpotPage({super.key});
@@ -115,12 +118,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
   void _saveSpot() {
     if (_formKey.currentState!.validate()) {
       if (_latitude == null || _longitude == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enable location services to create a spot'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Please enable location services to create a spot');
         return;
       }
 
@@ -162,6 +160,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return AdaptivePlatformPageScaffold(
       title: 'Create Spot',
       actions: [
@@ -173,7 +172,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
       ],
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Form(
           key: _formKey,
           child: Column(
@@ -194,7 +193,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing.md),
 
               // Category Dropdown
               DropdownButtonFormField<String>(
@@ -215,7 +214,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                   });
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing.md),
 
               // Description
               TextFormField(
@@ -227,7 +226,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                 ),
                 maxLines: 3,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing.md),
 
               // Address
               TextFormField(
@@ -238,12 +237,12 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                   prefixIcon: Icon(Icons.location_on),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: spacing.lg),
 
               // Location Section
               PortalSurface(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -252,12 +251,14 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                           const Icon(Icons.my_location,
                               color: AppTheme.primaryColor),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Location',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const Spacer(),
                           if (_latitude != null && _longitude != null)
@@ -267,7 +268,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                       ),
                       const SizedBox(height: 8),
                       if (_isLoadingLocation)
-                        const Row(
+                        Row(
                           children: [
                             SizedBox(
                               width: 16,
@@ -287,8 +288,10 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                             Expanded(
                               child: Text(
                                 _locationError!,
-                                style:
-                                    const TextStyle(color: AppTheme.errorColor),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppTheme.errorColor),
                               ),
                             ),
                           ],
@@ -299,11 +302,11 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                           children: [
                             Text(
                               'Latitude: ${_latitude!.toStringAsFixed(6)}',
-                              style: const TextStyle(fontSize: 12),
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                             Text(
                               'Longitude: ${_longitude!.toStringAsFixed(6)}',
-                              style: const TextStyle(fontSize: 12),
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
@@ -311,7 +314,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                       ElevatedButton.icon(
                         onPressed: _getCurrentLocation,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh Location'),
+                        label: Text('Refresh Location'),
                         // Use global ElevatedButtonTheme
                       ),
                     ],
@@ -325,10 +328,13 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
                 onPressed: _saveSpot,
                 // Use global ElevatedButtonTheme; keep padding only
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16)),
-                child: const Text(
+                    padding: const EdgeInsets.symmetric(vertical: kSpaceMd)),
+                child: Text(
                   'Create Spot',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/social_media/social_media_discovery_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Friend Discovery Page
 ///
@@ -89,12 +91,7 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error finding friends: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error finding friends: $e');
       }
     }
   }
@@ -128,29 +125,14 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
             }
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Friend request accepted!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          context.showSuccess('Friend request accepted!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to accept friend request'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Failed to accept friend request');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error accepting request: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error accepting request: $e');
       }
     }
   }
@@ -184,29 +166,14 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
             }
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Connection request sent!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          context.showSuccess('Connection request sent!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send connection request'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Failed to send connection request');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error connecting: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error connecting: $e');
       }
     }
   }
@@ -274,9 +241,9 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
         children: [
           // Header Card
           PortalSurface(
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(kSpaceMd),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -355,7 +322,7 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
           // Results
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator())
                 : _friendSuggestions.isEmpty
                     ? Center(
                         child: Column(
@@ -385,12 +352,13 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
                         ),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: kSpaceMd),
                         itemCount: _friendSuggestions.length,
                         itemBuilder: (context, index) {
                           final friend = _friendSuggestions[index];
                           return PortalSurface(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: kSpaceSm),
                             padding: EdgeInsets.zero,
                             child: ListTile(
                               leading: CircleAvatar(
@@ -416,8 +384,10 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
                                 friend.displayName ??
                                     friend.username ??
                                     'Friend',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,37 +401,44 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
                                       Text(
                                         friend.platform[0].toUpperCase() +
                                             friend.platform.substring(1),
-                                        style: const TextStyle(
-                                          color: AppColors.grey600,
-                                          fontSize: 12,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.grey600,
+                                            ),
                                       ),
                                       if (friend.mutualFriendsCount !=
                                           null) ...[
                                         const SizedBox(width: 8),
                                         Text(
                                           '• ${friend.mutualFriendsCount} mutual',
-                                          style: const TextStyle(
-                                            color: AppColors.grey600,
-                                            fontSize: 12,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: AppColors.grey600,
+                                              ),
                                         ),
                                       ],
                                     ],
                                   ),
                                   Text(
                                     _getStatusText(friend.status),
-                                    style: TextStyle(
-                                      color: friend.status ==
-                                              FriendConnectionStatus.connected
-                                          ? Colors.green
-                                          : friend.status ==
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: friend.status ==
                                                   FriendConnectionStatus
-                                                      .requestSent
-                                              ? Colors.orange
-                                              : AppColors.grey600,
-                                      fontSize: 12,
-                                    ),
+                                                      .connected
+                                              ? Colors.green
+                                              : friend.status ==
+                                                      FriendConnectionStatus
+                                                          .requestSent
+                                                  ? Colors.orange
+                                                  : AppColors.grey600,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -470,14 +447,14 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
                                   ? TextButton(
                                       onPressed: () =>
                                           _connectWithFriend(friend),
-                                      child: const Text('Connect'),
+                                      child: Text('Connect'),
                                     )
                                   : friend.status ==
                                           FriendConnectionStatus.requestReceived
                                       ? TextButton(
                                           onPressed: () =>
                                               _acceptFriendRequest(friend),
-                                          child: const Text('Accept'),
+                                          child: Text('Accept'),
                                         )
                                       : null,
                             ),

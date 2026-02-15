@@ -200,6 +200,12 @@ Without protection, everyone opens the same doors. You lose what makes you uniqu
 
 **Result:** You can authentically change over time, but your doors stay yours. People can find you based on doors you're opening NOW or doors you opened THEN.
 
+### **Human Condition Spectra (Undefined Traits)**
+- AVRAI treats fuzzy human concepts as contextual spectrums, not fixed labels.
+- Inferences are modeled as state/trait/phase with confidence, scope, and decay.
+- Users can challenge beliefs with scoped overrides without destabilizing shared reality layers.
+- Reference plan: `docs/plans/philosophy_implementation/HUMAN_CONDITION_SPECTRA_PLAN.md`
+
 ---
 
 ## 📊 **The 12 Dimensions**
@@ -387,4 +393,3 @@ That's AVRAI.
 *This is the complete philosophy of AVRAI. All development, all features, all decisions must align with this. When in doubt, ask: "Is this being a good key?"*
 
 *The philosophy hasn't changed since December 2025. The doors are the same. The mechanism for opening them has evolved from hardcoded formulas to a learned world model -- the key got smarter, but it opens the same doors.*
-

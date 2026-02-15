@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expansion Timeline Widget
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 30)
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required - NO direct Colors.* usage)
-/// 
+///
 /// Features:
 /// - Display expansion timeline showing how community/club expanded from original locality
 /// - Timeline of expansion events (when, where, how)
@@ -16,23 +17,23 @@ import 'package:avrai/core/theme/app_theme.dart';
 class ExpansionTimelineWidget extends StatelessWidget {
   /// Original locality where club/community formed
   final String? originalLocality;
-  
+
   /// Expansion history (list of expansion events)
   /// Format: List of maps with 'locality', 'timestamp', 'method' (event/commute), 'coverage'
   final List<Map<String, dynamic>> expansionHistory;
-  
+
   /// Coverage milestones (75% thresholds reached)
   /// Format: List of maps with 'level' (city/state/national/global/universal), 'timestamp', 'coverage'
   final List<Map<String, dynamic>> coverageMilestones;
-  
+
   /// Events hosted in each locality
   /// Format: Map of locality → list of event names/IDs
   final Map<String, List<String>> eventsByLocality;
-  
+
   /// Commute patterns (people traveling to events)
   /// Format: Map of locality → list of source localities
   final Map<String, List<String>> commutePatterns;
-  
+
   /// Coverage percentages over time
   /// Format: Map of timestamp → coverage percentage
   final Map<DateTime, double> coverageOverTime;
@@ -50,7 +51,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -60,7 +61,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.timeline,
@@ -70,44 +71,44 @@ class ExpansionTimelineWidget extends StatelessWidget {
               SizedBox(width: 12),
               Text(
                 'Expansion Timeline',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Original Locality
           if (originalLocality != null)
             _buildTimelineItem(
+              context: context,
               title: 'Original Locality',
               subtitle: originalLocality!,
               icon: Icons.location_on,
               isStart: true,
               isMilestone: true,
             ),
-          
+
           // Expansion History
           if (expansionHistory.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Expansion Events',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 12),
             ...expansionHistory.asMap().entries.map((entry) {
               final index = entry.key;
               final event = entry.value;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: kSpaceSm),
                 child: _buildExpansionEventItem(
+                  context: context,
                   event: event,
                   index: index,
                   isLast: index == expansionHistory.length - 1,
@@ -115,38 +116,38 @@ class ExpansionTimelineWidget extends StatelessWidget {
               );
             }),
           ],
-          
+
           // Coverage Milestones
           if (coverageMilestones.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Coverage Milestones',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 12),
             ...coverageMilestones.map((milestone) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildMilestoneItem(milestone: milestone),
+                padding: const EdgeInsets.only(bottom: kSpaceSm),
+                child:
+                    _buildMilestoneItem(context: context, milestone: milestone),
               );
             }),
           ],
-          
+
           // Empty State
           if (expansionHistory.isEmpty && coverageMilestones.isEmpty)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(
                     Icons.info_outline,
@@ -157,10 +158,9 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'No expansion history available yet',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ],
@@ -172,6 +172,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
   }
 
   Widget _buildTimelineItem({
+    required BuildContext context,
     required String title,
     required String subtitle,
     required IconData icon,
@@ -188,9 +189,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: isMilestone
-                    ? AppTheme.primaryColor
-                    : AppColors.grey400,
+                color: isMilestone ? AppTheme.primaryColor : AppColors.grey400,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: AppColors.white,
@@ -215,16 +214,14 @@ class ExpansionTimelineWidget extends StatelessWidget {
         // Content
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(kSpaceSm),
             decoration: BoxDecoration(
               color: isMilestone
                   ? AppTheme.primaryColor.withValues(alpha: 0.1)
                   : AppColors.grey100,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isMilestone
-                    ? AppTheme.primaryColor
-                    : AppColors.grey300,
+                color: isMilestone ? AppTheme.primaryColor : AppColors.grey300,
               ),
             ),
             child: Column(
@@ -232,19 +229,17 @@ class ExpansionTimelineWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -255,6 +250,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
   }
 
   Widget _buildExpansionEventItem({
+    required BuildContext context,
     required Map<String, dynamic> event,
     required int index,
     required bool isLast,
@@ -263,7 +259,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
     final timestamp = event['timestamp'] as DateTime?;
     final method = event['method'] as String? ?? 'event';
     final coverage = event['coverage'] as double?;
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -294,7 +290,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
         // Content
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(kSpaceSm),
             decoration: BoxDecoration(
               color: AppColors.grey100,
               borderRadius: BorderRadius.circular(8),
@@ -306,7 +302,9 @@ class ExpansionTimelineWidget extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      method == 'commute' ? Icons.directions_transit : Icons.event,
+                      method == 'commute'
+                          ? Icons.directions_transit
+                          : Icons.event,
                       size: 16,
                       color: AppTheme.primaryColor,
                     ),
@@ -314,11 +312,10 @@ class ExpansionTimelineWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         locality,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                   ],
@@ -327,10 +324,9 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
                 if (coverage != null) ...[
@@ -349,34 +345,33 @@ class ExpansionTimelineWidget extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${(coverage * 100).toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.primaryColor,
+                            ),
                       ),
                     ],
                   ),
                 ],
                 // Show events or commute patterns if available
-                if (eventsByLocality.containsKey(locality) && eventsByLocality[locality]!.isNotEmpty) ...[
+                if (eventsByLocality.containsKey(locality) &&
+                    eventsByLocality[locality]!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     '${eventsByLocality[locality]!.length} event(s)',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
-                if (commutePatterns.containsKey(locality) && commutePatterns[locality]!.isNotEmpty) ...[
+                if (commutePatterns.containsKey(locality) &&
+                    commutePatterns[locality]!.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     'Commute from ${commutePatterns[locality]!.length} locality(ies)',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ],
@@ -388,17 +383,18 @@ class ExpansionTimelineWidget extends StatelessWidget {
   }
 
   Widget _buildMilestoneItem({
+    required BuildContext context,
     required Map<String, dynamic> milestone,
   }) {
     final level = milestone['level'] as String? ?? 'unknown';
     final timestamp = milestone['timestamp'] as DateTime?;
     final coverage = milestone['coverage'] as double? ?? 0.0;
-    
+
     final displayName = _getLevelDisplayName(level);
     final icon = _getLevelIcon(level);
-    
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -410,7 +406,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(kSpaceXs),
             decoration: const BoxDecoration(
               color: AppTheme.primaryColor,
               shape: BoxShape.circle,
@@ -430,26 +426,25 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   children: [
                     Text(
                       displayName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kSpaceXsTight, vertical: kSpaceNano),
                       decoration: BoxDecoration(
                         color: AppTheme.primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Text(
+                      child: Text(
                         '75% ACHIEVED',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.white,
+                            ),
                       ),
                     ),
                   ],
@@ -458,21 +453,19 @@ class ExpansionTimelineWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
                 if (coverage > 0) ...[
                   const SizedBox(height: 8),
                   Text(
                     '${(coverage * 100).toStringAsFixed(0)}% coverage',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.primaryColor,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryColor,
+                        ),
                   ),
                 ],
               ],
@@ -486,7 +479,7 @@ class ExpansionTimelineWidget extends StatelessWidget {
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inDays > 365) {
       return '${(difference.inDays / 365).floor()} year(s) ago';
     } else if (difference.inDays > 30) {
@@ -534,4 +527,3 @@ class ExpansionTimelineWidget extends StatelessWidget {
     }
   }
 }
-

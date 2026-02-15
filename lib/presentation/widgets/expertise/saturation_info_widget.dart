@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/quantum/saturation_metrics.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Saturation Info Widget
-/// 
+///
 /// Displays category saturation information and how it affects expertise requirements.
 /// Shows 6-factor breakdown and recommendations.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to expertise recognition
 /// - Maintains quality through transparent saturation info
@@ -24,7 +25,7 @@ class SaturationInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -45,28 +46,27 @@ class SaturationInfoWidget extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Category Saturation',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: kSpaceSm, vertical: kSpaceXsTight),
                 decoration: BoxDecoration(
                   color: _getRecommendationColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   saturationMetrics.recommendation.displayName,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: _getRecommendationColor(),
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: _getRecommendationColor(),
+                      ),
                 ),
               ),
             ],
@@ -80,21 +80,19 @@ class SaturationInfoWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Saturation Score',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${(saturationMetrics.saturationScore * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
@@ -103,21 +101,19 @@ class SaturationInfoWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Expert Ratio',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${(saturationMetrics.saturationRatio * 100).toStringAsFixed(2)}%',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
@@ -133,7 +129,8 @@ class SaturationInfoWidget extends StatelessWidget {
               value: saturationMetrics.saturationScore.clamp(0.0, 1.0),
               minHeight: 8,
               backgroundColor: AppColors.grey200,
-              valueColor: AlwaysStoppedAnimation<Color>(_getRecommendationColor()),
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(_getRecommendationColor()),
             ),
           ),
           const SizedBox(height: 16),
@@ -143,20 +140,24 @@ class SaturationInfoWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStat(
+                  context: context,
                   label: 'Experts',
                   value: saturationMetrics.currentExpertCount.toString(),
                 ),
               ),
               Expanded(
                 child: _buildStat(
+                  context: context,
                   label: 'Users',
                   value: saturationMetrics.totalUserCount.toString(),
                 ),
               ),
               Expanded(
                 child: _buildStat(
+                  context: context,
                   label: 'Quality',
-                  value: '${(saturationMetrics.qualityScore * 100).toStringAsFixed(0)}%',
+                  value:
+                      '${(saturationMetrics.qualityScore * 100).toStringAsFixed(0)}%',
                 ),
               ),
             ],
@@ -167,64 +168,70 @@ class SaturationInfoWidget extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '6-Factor Analysis',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 12),
-            _buildFactorRow('Supply Ratio', saturationMetrics.factors.supplyRatio, 0.25),
-            _buildFactorRow('Quality Distribution', saturationMetrics.factors.qualityDistribution, 0.20),
-            _buildFactorRow('Utilization Rate', saturationMetrics.factors.utilizationRate, 0.20),
-            _buildFactorRow('Demand Signal', saturationMetrics.factors.demandSignal, 0.15),
-            _buildFactorRow('Growth Velocity', saturationMetrics.factors.growthVelocity, 0.10),
-            _buildFactorRow('Geographic Distribution', saturationMetrics.factors.geographicDistribution, 0.10),
+            _buildFactorRow(context, 'Supply Ratio',
+                saturationMetrics.factors.supplyRatio, 0.25),
+            _buildFactorRow(context, 'Quality Distribution',
+                saturationMetrics.factors.qualityDistribution, 0.20),
+            _buildFactorRow(context, 'Utilization Rate',
+                saturationMetrics.factors.utilizationRate, 0.20),
+            _buildFactorRow(context, 'Demand Signal',
+                saturationMetrics.factors.demandSignal, 0.15),
+            _buildFactorRow(context, 'Growth Velocity',
+                saturationMetrics.factors.growthVelocity, 0.10),
+            _buildFactorRow(context, 'Geographic Distribution',
+                saturationMetrics.factors.geographicDistribution, 0.10),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildStat({required String label, required String value}) {
+  Widget _buildStat(
+      {required BuildContext context,
+      required String label,
+      required String value}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
       ],
     );
   }
 
-  Widget _buildFactorRow(String label, double value, double weight) {
+  Widget _buildFactorRow(
+      BuildContext context, String label, double value, double weight) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
@@ -235,7 +242,8 @@ class SaturationInfoWidget extends StatelessWidget {
                 value: value.clamp(0.0, 1.0),
                 minHeight: 4,
                 backgroundColor: AppColors.grey200,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
             ),
           ),
@@ -244,10 +252,9 @@ class SaturationInfoWidget extends StatelessWidget {
             width: 40,
             child: Text(
               '${(weight * 100).toStringAsFixed(0)}%',
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.right,
             ),
           ),
@@ -269,4 +276,3 @@ class SaturationInfoWidget extends StatelessWidget {
     }
   }
 }
-

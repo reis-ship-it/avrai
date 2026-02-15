@@ -8,6 +8,7 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/reservation/reservation_recurrence_service.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -15,6 +16,8 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Recurring Reservations Page
 ///
@@ -118,30 +121,15 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Recurring series paused'),
-              backgroundColor: AppTheme.successColor,
-            ),
-          );
+          context.showSuccess('Recurring series paused');
           await _loadSeries();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to pause series'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to pause series');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -157,21 +145,21 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Recurring Series'),
-        content: const Text(
+        title: Text('Cancel Recurring Series'),
+        content: Text(
           'Are you sure you want to cancel this recurring reservation series? This will not cancel existing reservations, but will stop creating new ones.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('No'),
+            child: Text('No'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Yes, Cancel'),
+            child: Text('Yes, Cancel'),
           ),
         ],
       ),
@@ -190,30 +178,15 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Recurring series cancelled'),
-              backgroundColor: AppTheme.successColor,
-            ),
-          );
+          context.showSuccess('Recurring series cancelled');
           await _loadSeries();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to cancel series'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to cancel series');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -252,7 +225,7 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(
                   child: Column(
@@ -266,7 +239,10 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                       const SizedBox(height: 16),
                       Text(
                         _error!,
-                        style: const TextStyle(color: AppTheme.errorColor),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppTheme.errorColor),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -276,7 +252,7 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                           backgroundColor: AppTheme.primaryColor,
                           foregroundColor: AppColors.white,
                         ),
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
@@ -292,31 +268,36 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                             color: AppColors.textSecondary,
                           ),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'No recurring reservations',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Create a recurring reservation to see it here',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(kSpaceMd),
                       itemCount: _series.length,
                       itemBuilder: (context, index) {
                         final series = _series[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 16),
+                        return PortalSurface(
+                          margin: const EdgeInsets.only(bottom: kSpaceMd),
+                          padding: EdgeInsets.zero,
                           child: ExpansionTile(
                             leading: Icon(
                               series.isPaused
@@ -335,16 +316,19 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                                 series.pattern.type,
                                 series.pattern.interval,
                               ),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             subtitle: Text(
                               '${series.instanceIds.length} reservation${series.instanceIds.length == 1 ? '' : 's'}',
                             ),
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(kSpaceMd),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -383,43 +367,39 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                                     const SizedBox(height: 16),
 
                                     // Status Badge
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
+                                    Chip(
+                                      side: BorderSide(
                                         color: series.isPaused
                                             ? AppTheme.warningColor
-                                                .withValues(alpha: 0.1)
                                             : series.isCancelled
                                                 ? AppTheme.errorColor
-                                                    .withValues(alpha: 0.1)
-                                                : AppTheme.successColor
-                                                    .withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: series.isPaused
-                                              ? AppTheme.warningColor
-                                              : series.isCancelled
-                                                  ? AppTheme.errorColor
-                                                  : AppTheme.successColor,
-                                        ),
+                                                : AppTheme.successColor,
                                       ),
-                                      child: Text(
+                                      backgroundColor: series.isPaused
+                                          ? AppTheme.warningColor
+                                              .withValues(alpha: 0.1)
+                                          : series.isCancelled
+                                              ? AppTheme.errorColor
+                                                  .withValues(alpha: 0.1)
+                                              : AppTheme.successColor
+                                                  .withValues(alpha: 0.1),
+                                      label: Text(
                                         series.isPaused
                                             ? 'Paused'
                                             : series.isCancelled
                                                 ? 'Cancelled'
                                                 : 'Active',
-                                        style: TextStyle(
-                                          color: series.isPaused
-                                              ? AppTheme.warningColor
-                                              : series.isCancelled
-                                                  ? AppTheme.errorColor
-                                                  : AppTheme.successColor,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: series.isPaused
+                                                  ? AppTheme.warningColor
+                                                  : series.isCancelled
+                                                      ? AppTheme.errorColor
+                                                      : AppTheme.successColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
 
@@ -436,20 +416,14 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                                                     ? null
                                                     : () {
                                                         // TODO(Phase 10.3): Implement resume
-                                                        ScaffoldMessenger.of(
-                                                          context,
-                                                        ).showSnackBar(
-                                                          const SnackBar(
-                                                            content: Text(
-                                                              'Resume feature coming soon',
-                                                            ),
-                                                          ),
+                                                        context.showInfo(
+                                                          'Resume feature coming soon',
                                                         );
                                                       },
                                                 icon: const Icon(
                                                   Icons.play_arrow,
                                                 ),
-                                                label: const Text('Resume'),
+                                                label: Text('Resume'),
                                                 style: OutlinedButton.styleFrom(
                                                   foregroundColor:
                                                       AppTheme.successColor,
@@ -469,7 +443,7 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                                                           series.id,
                                                         ),
                                                 icon: const Icon(Icons.pause),
-                                                label: const Text('Pause'),
+                                                label: Text('Pause'),
                                                 style: OutlinedButton.styleFrom(
                                                   foregroundColor:
                                                       AppTheme.warningColor,
@@ -489,7 +463,7 @@ class _RecurringReservationsPageState extends State<RecurringReservationsPage> {
                                                 : () =>
                                                     _cancelSeries(series.id),
                                             icon: const Icon(Icons.cancel),
-                                            label: const Text('Cancel'),
+                                            label: Text('Cancel'),
                                             style: OutlinedButton.styleFrom(
                                               foregroundColor:
                                                   AppTheme.errorColor,
@@ -532,16 +506,19 @@ class _DetailRow extends StatelessWidget {
           width: 120,
           child: Text(
             label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                ),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textPrimary),
           ),
         ),
       ],

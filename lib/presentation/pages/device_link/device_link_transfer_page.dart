@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -93,7 +94,7 @@ class _DeviceLinkTransferPageState extends State<DeviceLinkTransferPage> {
       automaticallyImplyLeading: !_isComplete && _error == null,
       constrainBody: false,
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(kSpaceLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -101,19 +102,17 @@ class _DeviceLinkTransferPageState extends State<DeviceLinkTransferPage> {
             const SizedBox(height: 32),
             Text(
               _getStatusTitle(),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Text(
               _getStatusMessage(),
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
@@ -126,30 +125,35 @@ class _DeviceLinkTransferPageState extends State<DeviceLinkTransferPage> {
               const SizedBox(height: 16),
               Text(
                 '${(_progress * 100).toInt()}%',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
               ),
               if (_totalMessages > 0) ...[
                 const SizedBox(height: 8),
                 Text(
                   '$_messagesTransferred / $_totalMessages items',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ],
             if (_error != null) ...[
               Text(
                 _error!,
-                style: const TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _startTransfer,
-                child: const Text('Retry'),
+                child: Text('Retry'),
               ),
             ],
             if (_isComplete) ...[
@@ -158,7 +162,7 @@ class _DeviceLinkTransferPageState extends State<DeviceLinkTransferPage> {
                 onPressed: () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
-                child: const Text('Done'),
+                child: Text('Done'),
               ),
             ],
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -123,9 +124,10 @@ class _LegalAgePageState extends State<LegalAgePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -136,14 +138,14 @@ class _LegalAgePageState extends State<LegalAgePage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             "Let's get you set up. First, we need to verify a few things.",
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Birthday Section
           Text(
@@ -152,30 +154,26 @@ class _LegalAgePageState extends State<LegalAgePage> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'You must be 18 or older to use avrai.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           // Birthday Picker Button
           InkWell(
             onTap: _selectBirthday,
             borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: _selectedBirthday != null
-                      ? (_isAgeValid ? AppColors.success : AppColors.error)
-                      : AppColors.grey300,
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
+            child: PortalSurface(
+              padding: EdgeInsets.all(spacing.md),
+              color: Colors.transparent,
+              borderColor: _selectedBirthday != null
+                  ? (_isAgeValid ? AppColors.success : AppColors.error)
+                  : AppColors.grey300,
+              radius: context.radius.sm,
               child: Row(
                 children: [
                   Icon(
@@ -184,7 +182,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
                         ? (_isAgeValid ? AppColors.success : AppColors.error)
                         : AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: spacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +198,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
                           ),
                         ),
                         if (_calculatedAge != null) ...[
-                          const SizedBox(height: 4),
+                          SizedBox(height: spacing.xxs),
                           Text(
                             '$_calculatedAge years old',
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -225,7 +223,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
           // Age validation message
           if (_selectedBirthday != null && !_isAgeValid)
             Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: EdgeInsets.only(top: spacing.xs),
               child: Row(
                 children: [
                   Icon(
@@ -233,7 +231,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
                     color: AppColors.error,
                     size: 16,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: spacing.xs),
                   Text(
                     'You must be at least 18 years old to use avrai.',
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -244,7 +242,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
               ),
             ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: spacing.xxl),
 
           // Legal Agreements Section
           Text(
@@ -253,14 +251,14 @@ class _LegalAgePageState extends State<LegalAgePage> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Please review and accept our terms to continue.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
 
           // Terms of Service
           _buildAgreementTile(
@@ -277,7 +275,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
             onReadMore: _openTermsOfService,
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
 
           // Privacy Policy
           _buildAgreementTile(
@@ -294,18 +292,14 @@ class _LegalAgePageState extends State<LegalAgePage> {
             onReadMore: _openPrivacyPolicy,
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Privacy info card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primaryLight.withValues(alpha: 0.3),
-              ),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(spacing.md),
+            color: AppColors.primaryLight.withValues(alpha: 0.1),
+            borderColor: AppColors.primaryLight.withValues(alpha: 0.3),
+            radius: context.radius.sm,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -313,7 +307,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
                   Icons.shield_outlined,
                   color: AppColors.primary,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: spacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +318,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: spacing.xxs),
                       Text(
                         'avrai uses on-device AI to personalize your experience. '
                         'Your data stays on your device and is never shared without your consent.',
@@ -352,13 +346,15 @@ class _LegalAgePageState extends State<LegalAgePage> {
     required VoidCallback onReadMore,
   }) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return PortalSurface(
       padding: EdgeInsets.zero,
       borderColor: isAccepted ? AppColors.success : AppColors.grey300,
       child: ListTile(
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding:
+            EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
         leading: Checkbox(
           value: isAccepted,
           onChanged: (_) => onTap(),

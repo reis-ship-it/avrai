@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Ticket Count Picker Widget
 ///
@@ -67,12 +68,11 @@ class TicketCountPickerWidget extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Ticket Count',
                       border: const OutlineInputBorder(),
-                      prefixIcon:
-                          const Icon(Icons.confirmation_number, color: AppTheme.primaryColor),
-                      helperText:
-                          maxTickets != null && maxTickets! < partySize
-                              ? 'Business limit: $maxTickets tickets'
-                              : 'Can be different from party size if business has limits',
+                      prefixIcon: const Icon(Icons.confirmation_number,
+                          color: AppTheme.primaryColor),
+                      helperText: maxTickets != null && maxTickets! < partySize
+                          ? 'Business limit: $maxTickets tickets'
+                          : 'Can be different from party size if business has limits',
                     ),
                     onChanged: (value) {
                       final count = int.tryParse(value) ?? 1;
@@ -113,22 +113,28 @@ class TicketCountPickerWidget extends StatelessWidget {
             ),
             if (showDifference && difference != 0)
               Container(
-                margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(top: kSpaceXs),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: difference > 0
                       ? AppTheme.warningColor.withValues(alpha: 0.1)
                       : AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: difference > 0 ? AppTheme.warningColor : AppTheme.primaryColor,
+                    color: difference > 0
+                        ? AppTheme.warningColor
+                        : AppTheme.primaryColor,
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      difference > 0 ? Icons.info_outline : Icons.check_circle_outline,
-                      color: difference > 0 ? AppTheme.warningColor : AppTheme.primaryColor,
+                      difference > 0
+                          ? Icons.info_outline
+                          : Icons.check_circle_outline,
+                      color: difference > 0
+                          ? AppTheme.warningColor
+                          : AppTheme.primaryColor,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -137,10 +143,11 @@ class TicketCountPickerWidget extends StatelessWidget {
                         difference > 0
                             ? '$difference more ${difference == 1 ? 'ticket' : 'tickets'} than party size'
                             : '${difference.abs()} fewer ${difference.abs() == 1 ? 'ticket' : 'tickets'} than party size',
-                        style: TextStyle(
-                          color: difference > 0 ? AppTheme.warningColor : AppTheme.primaryColor,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: difference > 0
+                                  ? AppTheme.warningColor
+                                  : AppTheme.primaryColor,
+                            ),
                       ),
                     ),
                   ],

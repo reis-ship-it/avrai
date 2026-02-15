@@ -3,7 +3,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 
 /// Event Scope Tab Widget
-/// 
+///
 /// Provides tab-based filtering for events by geographic scope:
 /// - Community (non-expert events)
 /// - Locality (neighborhood-level)
@@ -13,7 +13,7 @@ import 'package:avrai/core/theme/app_theme.dart';
 /// - Globe (worldwide)
 /// - Universe (all events)
 /// - Clubs/Communities
-/// 
+///
 /// **Design:** Uses AppColors/AppTheme (100% adherence required)
 /// **Pattern:** Follows existing tab implementations (e.g., my_events_page.dart)
 class EventScopeTabWidget extends StatefulWidget {
@@ -80,14 +80,12 @@ class _EventScopeTabWidgetState extends State<EventScopeTabWidget>
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppTheme.primaryColor,
         indicatorWeight: 2,
-        labelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-        ),
+        labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+        unselectedLabelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.normal,
+            ),
         tabs: EventScope.values.map((scope) {
           return Tab(
             text: scope.displayName,
@@ -177,4 +175,3 @@ enum EventScope {
     }
   }
 }
-

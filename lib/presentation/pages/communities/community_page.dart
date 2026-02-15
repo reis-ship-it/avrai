@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/community/community.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_knot/models/knot/community_metrics.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -11,6 +14,8 @@ import 'package:avrai/presentation/pages/events/create_community_event_page.dart
 import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
 import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Community Page
 /// Agent 2: Frontend & UX Specialist (Phase 6)
@@ -107,12 +112,7 @@ class _CommunityPageState extends State<CommunityPage> {
 
     final authState = context.read<AuthBloc>().state;
     if (authState is! Authenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please sign in to join communities'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Please sign in to join communities');
       return;
     }
 
@@ -128,12 +128,7 @@ class _CommunityPageState extends State<CommunityPage> {
       await _loadCommunity();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully joined community!'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Successfully joined community!');
       }
     } catch (e) {
       setState(() {
@@ -142,12 +137,7 @@ class _CommunityPageState extends State<CommunityPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     }
   }
@@ -170,12 +160,7 @@ class _CommunityPageState extends State<CommunityPage> {
       await _loadCommunity();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Left community'),
-            backgroundColor: AppTheme.successColor,
-          ),
-        );
+        context.showSuccess('Left community');
       }
     } catch (e) {
       setState(() {
@@ -187,28 +172,18 @@ class _CommunityPageState extends State<CommunityPage> {
 
   void _viewMembers() {
     // TODO: Navigate to members page when created
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Members page coming soon'),
-      ),
-    );
+    context.showInfo('Members page coming soon');
   }
 
   void _viewEvents() {
     // TODO: Navigate to community events page when created
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Community events page coming soon'),
-      ),
-    );
+    context.showInfo('Community events page coming soon');
   }
 
   void _createEvent() {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateCommunityEventPage(),
-      ),
+      builder: (context) => const CreateCommunityEventPage(),
     );
   }
 
@@ -219,7 +194,7 @@ class _CommunityPageState extends State<CommunityPage> {
       constrainBody: false,
       backgroundColor: AppColors.background,
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -230,10 +205,9 @@ class _CommunityPageState extends State<CommunityPage> {
                   SizedBox(height: 16),
                   Text(
                     'Loading community...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -241,7 +215,7 @@ class _CommunityPageState extends State<CommunityPage> {
           : _error != null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: EdgeInsets.all(context.spacing.xl),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -253,36 +227,36 @@ class _CommunityPageState extends State<CommunityPage> {
                             color: AppColors.error,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: context.spacing.md),
+                        Text(
                           'Unable to load community',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: context.spacing.xs),
                         Text(
                           _error!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
                         ElevatedButton.icon(
                           onPressed: _loadCommunity,
                           icon: const Icon(Icons.refresh),
-                          label: const Text('Retry'),
+                          label: Text('Retry'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryColor,
                             foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
+                              horizontal: kSpaceLg,
+                              vertical: kSpaceSm,
                             ),
                           ),
                         ),
@@ -303,7 +277,7 @@ class _CommunityPageState extends State<CommunityPage> {
                           ),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: isWideScreen ? 24.0 : 0.0,
+                              horizontal: isWideScreen ? kSpaceLg : kSpaceNone,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,31 +315,29 @@ class _CommunityPageState extends State<CommunityPage> {
     if (_community == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.spacing.lg),
       color: AppColors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             _community!.name,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           if (_community!.description != null &&
               _community!.description!.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             Text(
               _community!.description!,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Row(
             children: [
               const Icon(
@@ -373,20 +345,19 @@ class _CommunityPageState extends State<CommunityPage> {
                 size: 16,
                 color: AppColors.textSecondary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Expanded(
                 child: Row(
                   children: [
                     Text(
                       'Founded by ${_community!.founderId.substring(0, 8)}...',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     // TODO: Check if founder is golden expert using GoldenExpertAIInfluenceService
                     // if (isFounderGoldenExpert) ...[
-                    //   const SizedBox(width: 8),
+                    //   SizedBox(width: context.spacing.xs),
                     //   GoldenExpertIndicator(
                     //     userId: _community!.founderId,
                     //     locality: _community!.originalLocality.isNotEmpty
@@ -408,7 +379,7 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Widget _buildActionsSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Row(
         children: [
           Expanded(
@@ -438,12 +409,12 @@ class _CommunityPageState extends State<CommunityPage> {
                       _isMember ? AppColors.grey200 : AppTheme.primaryColor,
                   foregroundColor:
                       _isMember ? AppColors.textPrimary : AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Semantics(
               label: 'View community members',
@@ -454,7 +425,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 label: Text('Members (${_community?.memberCount ?? 0})'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.textPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
                 ),
               ),
             ),
@@ -466,26 +437,25 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Widget _buildInformationSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Information',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildInfoCard(
             icon: Icons.event,
             title: 'Events',
             value: '${_community?.eventCount ?? 0} events',
             onTap: _viewEvents,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildInfoCard(
             icon: Icons.people,
             title: 'Members',
@@ -493,7 +463,7 @@ class _CommunityPageState extends State<CommunityPage> {
             onTap: _viewMembers,
           ),
           if (_isMember) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildInfoCard(
               icon: Icons.add_circle,
               title: 'Create Event',
@@ -517,13 +487,11 @@ class _CommunityPageState extends State<CommunityPage> {
       button: onTap != null,
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.grey300),
-          ),
+        child: PortalSurface(
+          padding: EdgeInsets.all(context.spacing.md),
+          color: AppColors.surface,
+          borderColor: AppColors.grey300,
+          radius: context.radius.md,
           child: Row(
             children: [
               Icon(
@@ -531,26 +499,24 @@ class _CommunityPageState extends State<CommunityPage> {
                 color: AppTheme.primaryColor,
                 size: 24,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: context.spacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       value,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -569,19 +535,18 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Widget _buildMetricsSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Metrics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Row(
             children: [
               Expanded(
@@ -592,7 +557,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   icon: Icons.trending_up,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: _buildMetricCard(
                   title: 'Diversity',
@@ -603,7 +568,7 @@ class _CommunityPageState extends State<CommunityPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           Row(
             children: [
               Expanded(
@@ -615,7 +580,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   icon: Icons.hub,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: _buildMetricCard(
                   title: 'Your Weave Fit',
@@ -627,7 +592,7 @@ class _CommunityPageState extends State<CommunityPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildMetricCard(
             title: 'Activity Level',
             value: _community?.getActivityLevelDisplayName().toUpperCase() ??
@@ -646,14 +611,11 @@ class _CommunityPageState extends State<CommunityPage> {
     required IconData icon,
     bool fullWidth = false,
   }) {
-    return Container(
-      width: fullWidth ? double.infinity : null,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    final card = PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -664,47 +626,49 @@ class _CommunityPageState extends State<CommunityPage> {
                 size: 20,
                 color: AppTheme.primaryColor,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: context.spacing.xs),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
     );
+
+    if (fullWidth) {
+      return SizedBox(width: double.infinity, child: card);
+    }
+    return card;
   }
 
   Widget _buildGeographicSection() {
     if (_community == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Geographic Coverage',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           // Expertise Coverage Widget (with expansion tracking)
           ExpertiseCoverageWidget(
             originalLocality: _community!.originalLocality,
@@ -713,7 +677,7 @@ class _CommunityPageState extends State<CommunityPage> {
             coverageData: const {},
             localityCoverage: const {},
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           // Expansion Timeline
           ExpansionTimelineWidget(
             originalLocality: _community!.originalLocality,
@@ -724,7 +688,7 @@ class _CommunityPageState extends State<CommunityPage> {
             commutePatterns: const {},
             coverageOverTime: const {},
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           // Expansion Progress Summary
           _buildExpansionProgressSummary(),
         ],
@@ -735,17 +699,15 @@ class _CommunityPageState extends State<CommunityPage> {
   Widget _buildExpansionProgressSummary() {
     if (_community == null) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.trending_up,
@@ -755,34 +717,32 @@ class _CommunityPageState extends State<CommunityPage> {
               SizedBox(width: 8),
               Text(
                 'Expansion Progress',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildLocationCard(
             icon: Icons.location_on,
             title: 'Original Locality',
             value: _community!.originalLocality,
           ),
           if (_community!.currentLocalities.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildLocationCard(
               icon: Icons.map,
               title: 'Current Localities',
               value: _community!.currentLocalities.join(', '),
             ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.grey100,
-                borderRadius: BorderRadius.circular(8),
-              ),
+            SizedBox(height: context.spacing.sm),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.sm),
+              color: AppColors.grey100,
+              borderColor: AppColors.grey300,
+              radius: context.radius.sm,
               child: Row(
                 children: [
                   const Icon(
@@ -790,14 +750,13 @@ class _CommunityPageState extends State<CommunityPage> {
                     size: 16,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: context.spacing.xs),
                   Expanded(
                     child: Text(
                       'Active in ${_community!.currentLocalities.length} locality(ies)',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ],
@@ -814,13 +773,11 @@ class _CommunityPageState extends State<CommunityPage> {
     required String title,
     required String value,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(
@@ -828,26 +785,24 @@ class _CommunityPageState extends State<CommunityPage> {
             color: AppTheme.primaryColor,
             size: 24,
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),

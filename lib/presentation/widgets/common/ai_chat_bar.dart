@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class AIChatBar extends StatefulWidget {
   final String? hintText;
@@ -68,7 +69,8 @@ class _AIChatBarState extends State<AIChatBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.light
             ? AppColors.grey100
@@ -100,26 +102,26 @@ class _AIChatBarState extends State<AIChatBar> {
                 decoration: InputDecoration(
                   hintText: widget.hintText ??
                       'Ask AI about spots, recommendations...',
-                  hintStyle: const TextStyle(
-                    color: AppColors.textHint,
-                    fontSize: 16,
-                  ),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textHint,
+                      ),
                   prefixIcon: Icon(
                     Icons.smart_toy,
-                    color: _hasFocus ? AppTheme.primaryColor : AppColors.grey600,
+                    color:
+                        _hasFocus ? AppTheme.primaryColor : AppColors.grey600,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                    horizontal: kSpaceMd,
+                    vertical: kSpaceSm,
                   ),
                 ),
-                style: const TextStyle(fontSize: 16),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             if (widget.isLoading)
-              const Padding(
-                padding: EdgeInsets.only(right: 8),
+              Padding(
+                padding: EdgeInsets.only(right: kSpaceXs),
                 child: SizedBox(
                   width: 20,
                   height: 20,

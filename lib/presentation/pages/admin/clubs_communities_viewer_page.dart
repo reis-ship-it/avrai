@@ -1,34 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/admin/club_detail_page.dart';
 import 'package:intl/intl.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Clubs/Communities Viewer Page
 /// View clubs and communities with member AI agent information
 class ClubsCommunitiesViewerPage extends StatefulWidget {
   final AdminGodModeService? godModeService;
-  
+
   const ClubsCommunitiesViewerPage({
     super.key,
     this.godModeService,
   });
 
   @override
-  State<ClubsCommunitiesViewerPage> createState() => _ClubsCommunitiesViewerPageState();
+  State<ClubsCommunitiesViewerPage> createState() =>
+      _ClubsCommunitiesViewerPageState();
 }
 
-class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage> {
+class _ClubsCommunitiesViewerPageState
+    extends State<ClubsCommunitiesViewerPage> {
   List<ClubCommunityData> _clubsCommunities = [];
   List<ClubCommunityData> _filteredClubsCommunities = [];
   bool _isLoading = true;
-  
+
   // Filter state
   final TextEditingController _memberFilterController = TextEditingController();
   bool _showOnlyWithFollowing = false;
   final int _minFollowers = 1;
   String? _selectedCategory;
-  
+
   // Following data
   Map<String, int> _usersWithFollowing = {};
 
@@ -39,18 +45,19 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
     _loadUsersWithFollowing();
     _memberFilterController.addListener(_applyFilters);
   }
-  
+
   @override
   void dispose() {
     _memberFilterController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadUsersWithFollowing() async {
     if (widget.godModeService == null) return;
-    
+
     try {
-      final usersWithFollowing = await widget.godModeService!.getUsersWithFollowing(
+      final usersWithFollowing =
+          await widget.godModeService!.getUsersWithFollowing(
         minFollowers: _minFollowers,
       );
       setState(() {
@@ -60,7 +67,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
       // Silently fail - filtering will just not work
     }
   }
-  
+
   void _applyFilters() {
     setState(() {
       _filteredClubsCommunities = _clubsCommunities.where((item) {
@@ -68,30 +75,33 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
         if (_selectedCategory != null && item.category != _selectedCategory) {
           return false;
         }
-        
+
         // Member filter (search by member ID or AI signature)
         if (_memberFilterController.text.isNotEmpty) {
           final searchTerm = _memberFilterController.text.toLowerCase();
           final hasMatchingMember = item.memberAIAgents.keys.any((memberId) {
-            final aiSignature = item.memberAIAgents[memberId]?['ai_signature']?.toString().toLowerCase();
+            final aiSignature = item.memberAIAgents[memberId]?['ai_signature']
+                ?.toString()
+                .toLowerCase();
             return memberId.toLowerCase().contains(searchTerm) ||
-                   (aiSignature != null && aiSignature.contains(searchTerm));
+                (aiSignature != null && aiSignature.contains(searchTerm));
           });
           if (!hasMatchingMember) {
             return false;
           }
         }
-        
+
         // Following filter
         if (_showOnlyWithFollowing) {
-          final hasMemberWithFollowing = item.memberAIAgents.keys.any((memberId) {
+          final hasMemberWithFollowing =
+              item.memberAIAgents.keys.any((memberId) {
             return _usersWithFollowing.containsKey(memberId);
           });
           if (!hasMemberWithFollowing) {
             return false;
           }
         }
-        
+
         return true;
       }).toList();
     });
@@ -104,7 +114,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
       });
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -122,12 +132,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading clubs/communities: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading clubs/communities: $e');
       }
     }
   }
@@ -137,7 +142,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Row(
             children: [
               Expanded(
@@ -157,38 +162,41 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceMd, vertical: kSpaceXs),
+          margin: const EdgeInsets.symmetric(horizontal: kSpaceMd),
+          child: PortalSurface(
+            padding: const EdgeInsets.symmetric(
+                horizontal: kSpaceMd, vertical: kSpaceXs),
             color: AppColors.electricGreen.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.privacy_tip, color: AppColors.electricGreen, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Privacy: AI Signatures and location data (vibe indicators) are visible. No personal data (name, email, phone, home address) is displayed.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.grey700,
-                        fontSize: 11,
-                      ),
+            borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+            radius: 8,
+            child: Row(
+              children: [
+                const Icon(Icons.privacy_tip,
+                    color: AppColors.electricGreen, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Privacy: AI Signatures and location data (vibe indicators) are visible. No personal data (name, email, phone, home address) is displayed.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.grey700,
+                        ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // Filters
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.grey100,
-            borderRadius: BorderRadius.circular(8),
-          ),
+        PortalSurface(
+          margin: const EdgeInsets.symmetric(horizontal: kSpaceMd),
+          padding: const EdgeInsets.all(kSpaceMd),
+          color: AppColors.grey100,
+          borderColor: AppColors.grey300,
+          radius: 8,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -199,7 +207,7 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                     ),
               ),
               const SizedBox(height: 12),
-              
+
               // Member search
               TextField(
                 controller: _memberFilterController,
@@ -220,9 +228,9 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                   isDense: true,
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Following filter
               Row(
                 children: [
@@ -235,12 +243,13 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                       _applyFilters();
                     },
                   ),
-                  const Expanded(
-                    child: Text('Only show clubs/communities with members who have a following'),
+                  Expanded(
+                    child: Text(
+                        'Only show clubs/communities with members who have a following'),
                   ),
                 ],
               ),
-              
+
               // Category filter
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
@@ -252,8 +261,12 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                   isDense: true,
                 ),
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('All Categories')),
-                  ..._clubsCommunities.map((item) => item.category).toSet().map((category) {
+                  const DropdownMenuItem(
+                      value: null, child: Text('All Categories')),
+                  ..._clubsCommunities
+                      .map((item) => item.category)
+                      .toSet()
+                      .map((category) {
                     return DropdownMenuItem(
                       value: category,
                       child: Text(category),
@@ -270,12 +283,12 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : _filteredClubsCommunities.isEmpty
                   ? Center(
                       child: Column(
@@ -289,9 +302,10 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                           const SizedBox(height: 16),
                           Text(
                             'No clubs or communities found',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: AppColors.grey500,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: AppColors.grey500,
+                                    ),
                           ),
                         ],
                       ),
@@ -302,24 +316,30 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                         itemCount: _filteredClubsCommunities.length,
                         itemBuilder: (context, index) {
                           final item = _filteredClubsCommunities[index];
-                          return Card(
+                          return PortalSurface(
                             margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                              horizontal: kSpaceMd,
+                              vertical: kSpaceXs,
                             ),
                             child: ListTile(
                               leading: CircleAvatar(
                                 backgroundColor: item.isClub
                                     ? AppColors.grey600.withValues(alpha: 0.2)
-                                    : AppColors.electricGreen.withValues(alpha: 0.2),
+                                    : AppColors.electricGreen
+                                        .withValues(alpha: 0.2),
                                 child: Icon(
                                   item.isClub ? Icons.group : Icons.people,
-                                  color: item.isClub ? AppColors.grey600 : AppColors.electricGreen,
+                                  color: item.isClub
+                                      ? AppColors.grey600
+                                      : AppColors.electricGreen,
                                 ),
                               ),
                               title: Text(
                                 item.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,7 +356,9 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                                       Chip(
                                         label: Text(
                                           item.isClub ? 'Club' : 'Community',
-                                          style: const TextStyle(fontSize: 11),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall,
                                         ),
                                         padding: EdgeInsets.zero,
                                       ),
@@ -344,7 +366,9 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                                       Chip(
                                         label: Text(
                                           item.category,
-                                          style: const TextStyle(fontSize: 11),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall,
                                         ),
                                         padding: EdgeInsets.zero,
                                       ),
@@ -353,27 +377,29 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
                                   const SizedBox(height: 4),
                                   Text(
                                     '${item.memberCount} members • ${item.eventCount} events',
-                                    style: const TextStyle(fontSize: 12),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                   if (item.lastEventAt != null)
                                     Text(
                                       'Last event: ${DateFormat('MMM d, y').format(item.lastEventAt!)}',
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        color: AppColors.grey500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: AppColors.grey500,
+                                          ),
                                     ),
                                 ],
                               ),
-                              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                              trailing:
+                                  const Icon(Icons.arrow_forward_ios, size: 16),
                               onTap: () {
-                                Navigator.push(
+                                AppNavigator.pushBuilder(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ClubDetailPage(
-                                      clubCommunityId: item.id,
-                                      godModeService: widget.godModeService,
-                                    ),
+                                  builder: (context) => ClubDetailPage(
+                                    clubCommunityId: item.id,
+                                    godModeService: widget.godModeService,
                                   ),
                                 );
                               },
@@ -387,4 +413,3 @@ class _ClubsCommunitiesViewerPageState extends State<ClubsCommunitiesViewerPage>
     );
   }
 }
-

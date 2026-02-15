@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -81,8 +82,8 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
                 final subtitle =
                     '${r.event.domain.wireName} • ${r.event.occurredAt.toLocal()}';
                 return PortalSurface(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: kSpaceSm, vertical: kSpaceXsTight),
                   padding: EdgeInsets.zero,
                   child: ListTile(
                     leading: Icon(

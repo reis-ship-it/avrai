@@ -1,5 +1,5 @@
 // Braiding Animation Widget
-// 
+//
 // Widget for animating the braiding process between two personality knots
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 2: Knot Weaving
@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_knot/models/knot/braided_knot.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/text_styles.dart';
 
 /// Widget for animating the braiding process
-/// 
+///
 /// Shows an animated visualization of two personality knots being woven together
 class BraidingAnimationWidget extends StatefulWidget {
   final PersonalityKnot knotA;
@@ -31,7 +32,8 @@ class BraidingAnimationWidget extends StatefulWidget {
   });
 
   @override
-  State<BraidingAnimationWidget> createState() => _BraidingAnimationWidgetState();
+  State<BraidingAnimationWidget> createState() =>
+      _BraidingAnimationWidgetState();
 }
 
 class _BraidingAnimationWidgetState extends State<BraidingAnimationWidget>
@@ -127,7 +129,8 @@ class BraidingAnimationPainter extends CustomPainter {
     // End: knots close together, braided (progress = 1.0)
     final startDistance = radius * 0.8;
     final endDistance = radius * 0.1;
-    final currentDistance = startDistance - (startDistance - endDistance) * progress;
+    final currentDistance =
+        startDistance - (startDistance - endDistance) * progress;
 
     // Knot A position (left side, moving toward center)
     final knotACenter = Offset(
@@ -207,9 +210,8 @@ class BraidingAnimationPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: label,
-        style: TextStyle(
+        style: AppTextStyles.textTheme.labelMedium?.copyWith(
           color: color,
-          fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -236,7 +238,8 @@ class BraidingAnimationPainter extends CustomPainter {
     // Draw interweaving strands based on braid sequence
     // Number of strands increases with progress
     const maxStrands = 6;
-    final numStrands = (maxStrands * braidingProgress).ceil().clamp(1, maxStrands);
+    final numStrands =
+        (maxStrands * braidingProgress).ceil().clamp(1, maxStrands);
 
     for (int i = 0; i < numStrands; i++) {
       final strandProgress = (i / numStrands).clamp(0.0, 1.0);

@@ -208,11 +208,11 @@ class _ReservationFormWidgetState extends State<ReservationFormWidget> {
               _reservationTime != null
                   ? _reservationTime!.toLocal().toString().split('.')[0]
                   : 'Select date and time',
-              style: TextStyle(
-                color: _reservationTime != null
-                    ? AppColors.black
-                    : AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _reservationTime != null
+                        ? AppColors.black
+                        : AppColors.textSecondary,
+                  ),
             ),
           ),
         ),

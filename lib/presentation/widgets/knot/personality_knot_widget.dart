@@ -1,5 +1,5 @@
 // Personality Knot Widget
-// 
+//
 // Widget for visualizing a single personality knot
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 3: Onboarding Integration
@@ -8,9 +8,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/text_styles.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget for visualizing a single personality knot
-/// 
+///
 /// Displays the topological structure of a personality knot
 class PersonalityKnotWidget extends StatelessWidget {
   final PersonalityKnot knot;
@@ -30,6 +32,7 @@ class PersonalityKnotWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -45,16 +48,16 @@ class PersonalityKnotWidget extends StatelessWidget {
             child: Container(),
           ),
         ),
-        
+
         // Labels and metrics (if enabled)
         if (showLabels || showMetrics) ...[
           const SizedBox(height: 8),
           if (showLabels)
             Text(
               'Your Knot',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.textPrimary,
+              ),
             ),
           if (showMetrics) ...[
             const SizedBox(height: 4),
@@ -92,8 +95,10 @@ class PersonalityKnotWidget extends StatelessWidget {
     double value,
     Color color,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -101,10 +106,10 @@ class PersonalityKnotWidget extends StatelessWidget {
       ),
       child: Text(
         '$label: ${value.toStringAsFixed(0)}',
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+        style: textTheme.labelMedium?.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -144,20 +149,19 @@ class PersonalityKnotPainter extends CustomPainter {
           center.dx + radius * math.cos(angle),
           center.dy + radius * math.sin(angle),
         );
-        
+
         // Draw crossing indicator
         final crossingPaint = Paint()
           ..style = PaintingStyle.fill
           ..color = color;
         canvas.drawCircle(crossingPos, 6, crossingPaint);
-        
+
         // Draw over/under indicator based on writhe
         final textPainter = TextPainter(
           text: TextSpan(
             text: knot.invariants.writhe > 0 ? 'O' : 'U',
-            style: const TextStyle(
+            style: AppTextStyles.textTheme.labelSmall?.copyWith(
               color: AppColors.white,
-              fontSize: 8,
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/payment/revenue_split.dart';
 import 'package:avrai/core/services/payment/payout_service.dart';
@@ -9,6 +10,8 @@ import 'package:avrai/presentation/widgets/business/business_stats_card.dart';
 import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Earnings Dashboard Page
 ///
@@ -98,12 +101,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading earnings: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading earnings: $e');
       }
     }
   }
@@ -117,7 +115,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
       appBarForegroundColor: AppColors.white,
       appBarElevation: 0,
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
@@ -126,7 +124,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                 children: [
                   // Business Header
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(kSpaceMdWide),
                     color: AppColors.surface,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,16 +154,18 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                                 children: [
                                   Text(
                                     widget.business.name,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textPrimary,
+                                        ),
                                   ),
                                   if (widget
                                           .business.verification?.isComplete ??
                                       false)
-                                    const Row(
+                                    Row(
                                       children: [
                                         Icon(
                                           Icons.verified,
@@ -175,11 +175,13 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                                         SizedBox(width: 4),
                                         Text(
                                           'Verified Business',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: AppColors.electricGreen,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: AppColors.electricGreen,
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -196,7 +198,8 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
 
                   // Quick Stats
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
                     child: Row(
                       children: [
                         Expanded(
@@ -224,59 +227,60 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
 
                   // Earnings Summary
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Earnings Summary',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            _buildSummaryRow(
-                              'Total Earned',
-                              '\$${_totalEarned.toStringAsFixed(2)}',
-                              isTotal: true,
-                            ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
+                    child: PortalSurface(
+                      padding: const EdgeInsets.all(kSpaceMd),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Earnings Summary',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildSummaryRow(
+                            'Total Earned',
+                            '\$${_totalEarned.toStringAsFixed(2)}',
+                            isTotal: true,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildSummaryRow(
+                            'Pending Payout',
+                            '\$${_pendingPayout.toStringAsFixed(2)}',
+                            color: AppColors.warning,
+                          ),
+                          if (_nextPayoutDate != null) ...[
                             const SizedBox(height: 8),
                             _buildSummaryRow(
-                              'Pending Payout',
-                              '\$${_pendingPayout.toStringAsFixed(2)}',
-                              color: AppColors.warning,
-                            ),
-                            if (_nextPayoutDate != null) ...[
-                              const SizedBox(height: 8),
-                              _buildSummaryRow(
-                                'Next Payout',
-                                _formatDate(_nextPayoutDate!),
-                                color: AppColors.textSecondary,
-                              ),
-                            ],
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  // Navigate to full earnings history
-                                  // TODO: Create earnings history page
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.textPrimary,
-                                  side: const BorderSide(
-                                      color: AppColors.grey300),
-                                ),
-                                child: const Text('View All Earnings'),
-                              ),
+                              'Next Payout',
+                              _formatDate(_nextPayoutDate!),
+                              color: AppColors.textSecondary,
                             ),
                           ],
-                        ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                // Navigate to full earnings history
+                                // TODO: Create earnings history page
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.textPrimary,
+                                side:
+                                    const BorderSide(color: AppColors.grey300),
+                              ),
+                              child: Text('View All Earnings'),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -285,21 +289,20 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
 
                   // Recent Revenue Splits
                   if (_revenueSplits.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: kSpaceMdWide),
                       child: Text(
                         'Recent Revenue',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     ..._revenueSplits.take(5).map((split) => Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
+                              horizontal: kSpaceMdWide, vertical: kSpaceXs),
                           child: RevenueSplitDisplay(
                             split: split,
                             showDetails: false,
@@ -308,7 +311,7 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                         )),
                   ] else ...[
                     Padding(
-                      padding: const EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(kSpaceXl),
                       child: Center(
                         child: Column(
                           children: [
@@ -319,21 +322,25 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
                                   .withValues(alpha: 0.5),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               'No earnings yet',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               'Start hosting events to see your earnings here',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -356,20 +363,24 @@ class _EarningsDashboardPageState extends State<EarningsDashboardPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: AppColors.textPrimary,
-          ),
+          style: (isTotal
+                  ? Theme.of(context).textTheme.titleMedium
+                  : Theme.of(context).textTheme.bodyMedium)
+              ?.copyWith(
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  color: AppColors.textPrimary),
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: isTotal ? 20 : 16,
-            fontWeight: FontWeight.bold,
-            color: color ??
-                (isTotal ? AppTheme.primaryColor : AppColors.textPrimary),
-          ),
+          style: (isTotal
+                  ? Theme.of(context).textTheme.headlineSmall
+                  : Theme.of(context).textTheme.titleMedium)
+              ?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color ??
+                      (isTotal
+                          ? AppTheme.primaryColor
+                          : AppColors.textPrimary)),
         ),
       ],
     );

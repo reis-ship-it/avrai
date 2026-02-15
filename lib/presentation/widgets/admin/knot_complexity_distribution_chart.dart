@@ -1,5 +1,5 @@
 // Knot Complexity Distribution Chart
-// 
+//
 // Interactive bar chart for crossing number and writhe distribution
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Optional Enhancement: Interactive Charts
@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Bar chart widget for crossing number distribution
 class KnotCrossingNumberChart extends StatelessWidget {
@@ -25,7 +26,7 @@ class KnotCrossingNumberChart extends StatelessWidget {
     if (distribution.isEmpty) {
       return SizedBox(
         height: height,
-        child: const Center(
+        child: Center(
           child: Text('No crossing number data available'),
         ),
       );
@@ -57,14 +58,14 @@ class KnotCrossingNumberChart extends StatelessWidget {
                   final key = value.toInt();
                   if (sortedEntries.any((e) => e.key == key)) {
                     return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: kSpaceXs),
                       child: Text(
                         key.toString(),
-                        style: const TextStyle(fontSize: 10),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     );
                   }
-                  return const Text('');
+                  return Text('');
                 },
               ),
             ),
@@ -75,7 +76,7 @@ class KnotCrossingNumberChart extends StatelessWidget {
                 getTitlesWidget: (value, meta) {
                   return Text(
                     value.toInt().toString(),
-                    style: const TextStyle(fontSize: 10),
+                    style: Theme.of(context).textTheme.bodySmall,
                   );
                 },
               ),
@@ -90,7 +91,8 @@ class KnotCrossingNumberChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: maxValue > 10 ? (maxValue / 5).ceil().toDouble() : 1,
+            horizontalInterval:
+                maxValue > 10 ? (maxValue / 5).ceil().toDouble() : 1,
           ),
           borderData: FlBorderData(show: true),
           barGroups: sortedEntries.map((entry) {
@@ -130,7 +132,7 @@ class KnotWritheChart extends StatelessWidget {
     if (distribution.isEmpty) {
       return SizedBox(
         height: height,
-        child: const Center(
+        child: Center(
           child: Text('No writhe data available'),
         ),
       );
@@ -162,14 +164,14 @@ class KnotWritheChart extends StatelessWidget {
                   final key = value.toInt();
                   if (sortedEntries.any((e) => e.key == key)) {
                     return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: kSpaceXs),
                       child: Text(
                         key.toString(),
-                        style: const TextStyle(fontSize: 10),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     );
                   }
-                  return const Text('');
+                  return Text('');
                 },
               ),
             ),
@@ -180,7 +182,7 @@ class KnotWritheChart extends StatelessWidget {
                 getTitlesWidget: (value, meta) {
                   return Text(
                     value.toInt().toString(),
-                    style: const TextStyle(fontSize: 10),
+                    style: Theme.of(context).textTheme.bodySmall,
                   );
                 },
               ),
@@ -195,7 +197,8 @@ class KnotWritheChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: maxValue > 10 ? (maxValue / 5).ceil().toDouble() : 1,
+            horizontalInterval:
+                maxValue > 10 ? (maxValue / 5).ceil().toDouble() : 1,
           ),
           borderData: FlBorderData(show: true),
           barGroups: sortedEntries.map((entry) {

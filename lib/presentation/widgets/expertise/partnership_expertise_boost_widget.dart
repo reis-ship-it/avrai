@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnership Expertise Boost Widget
-/// 
+///
 /// Displays how partnerships contribute to expertise calculation.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class PartnershipExpertiseBoostWidget extends StatelessWidget {
   final double totalBoost;
@@ -25,7 +26,9 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (totalBoost <= 0 && activePartnerships == 0 && completedPartnerships == 0) {
+    if (totalBoost <= 0 &&
+        activePartnerships == 0 &&
+        completedPartnerships == 0) {
       return const SizedBox.shrink();
     }
 
@@ -35,7 +38,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,7 +46,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(
                       Icons.handshake,
@@ -53,23 +56,21 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                     SizedBox(width: 12),
                     Text(
                       'Partnership Boost',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
                 if (onViewPartnerships != null)
                   TextButton(
                     onPressed: onViewPartnerships,
-                    child: const Text(
+                    child: Text(
                       'View All',
-                      style: TextStyle(
-                        color: AppTheme.primaryColor,
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.primaryColor,
+                          ),
                     ),
                   ),
               ],
@@ -79,7 +80,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
 
             // Total Boost Indicator
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -93,21 +94,19 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Total Boost',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '+${(totalBoost * 100).toStringAsFixed(1)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
                       ),
                     ],
                   ),
@@ -127,6 +126,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildStatCard(
+                    context,
                     'Active',
                     activePartnerships.toString(),
                     Icons.event_available,
@@ -136,6 +136,7 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildStatCard(
+                    context,
                     'Completed',
                     completedPartnerships.toString(),
                     Icons.check_circle,
@@ -148,35 +149,32 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             // Category Breakdown (if available)
             if (boostByCategory.isNotEmpty) ...[
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Boost by Category',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
               ...boostByCategory.entries.map((entry) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: kSpaceXs),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         entry.key,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       Text(
                         '+${(entry.value * 100).toStringAsFixed(1)}%',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.primaryColor,
+                            ),
                       ),
                     ],
                   ),
@@ -187,12 +185,12 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             // Info Text
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(
                     Icons.info_outline,
@@ -205,10 +203,9 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
                       'Partnerships boost your expertise in related categories. '
                       'Active partnerships provide ongoing boosts, while completed '
                       'partnerships contribute to your expertise history.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ],
@@ -220,9 +217,15 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -239,18 +242,16 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               Text(
                 value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
               ),
             ],
           ),
@@ -259,4 +260,3 @@ class PartnershipExpertiseBoostWidget extends StatelessWidget {
     );
   }
 }
-

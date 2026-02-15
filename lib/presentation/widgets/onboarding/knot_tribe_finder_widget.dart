@@ -1,5 +1,5 @@
 // Knot Tribe Finder Widget
-// 
+//
 // Widget for finding and displaying knot tribes during onboarding
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 3: Onboarding Integration
@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_knot/models/knot/knot_community.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/knot/personality_knot_widget.dart';
 
 /// Widget for finding and displaying knot tribes
-/// 
+///
 /// Shows the user's knot and communities with similar topological structures
 class KnotTribeFinderWidget extends StatelessWidget {
   final PersonalityKnot userKnot;
@@ -31,12 +32,13 @@ class KnotTribeFinderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -61,7 +63,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
         // User's knot visualization
         Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: EdgeInsets.symmetric(vertical: spacing.md),
             child: Column(
               children: [
                 Text(
@@ -88,7 +90,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
         // Tribes list
         Expanded(
           child: isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : tribes.isEmpty
                   ? _buildEmptyState(context)
                   : _buildTribesList(context),
@@ -98,9 +100,10 @@ class KnotTribeFinderWidget extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final spacing = context.spacing;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(spacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -129,7 +132,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRefresh,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Refresh'),
+                label: Text('Refresh'),
               ),
             ],
           ],
@@ -140,7 +143,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
 
   Widget _buildTribesList(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(context.spacing.md),
       itemCount: tribes.length,
       itemBuilder: (context, index) {
         final tribe = tribes[index];
@@ -151,14 +154,12 @@ class KnotTribeFinderWidget extends StatelessWidget {
 
   Widget _buildTribeCard(BuildContext context, KnotCommunity tribe) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12.0),
+      margin: EdgeInsets.only(bottom: context.spacing.sm),
       child: InkWell(
-        onTap: onTribeSelected != null
-            ? () => onTribeSelected!(tribe)
-            : null,
+        onTap: onTribeSelected != null ? () => onTribeSelected!(tribe) : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(context.spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -178,7 +179,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              
+
               // Community description
               if (tribe.community.description != null) ...[
                 Text(
@@ -191,7 +192,7 @@ class KnotTribeFinderWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               // Community metrics
               Row(
                 children: [
@@ -211,11 +212,14 @@ class KnotTribeFinderWidget extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               // Category badge
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.spacing.xs,
+                  vertical: context.spacing.xxs,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -247,7 +251,10 @@ class KnotTribeFinderWidget extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.sm,
+        vertical: context.spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
@@ -281,7 +288,10 @@ class KnotTribeFinderWidget extends StatelessWidget {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.xs,
+        vertical: context.spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),

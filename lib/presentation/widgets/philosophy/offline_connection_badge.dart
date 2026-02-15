@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// OUR_GUTS.md: "The key works offline"
 /// Shows when AI2AI connections happen offline
 class OfflineConnectionBadge extends StatelessWidget {
   final bool isOffline;
   final int? queuedConnectionsCount;
-  
+
   const OfflineConnectionBadge({
     super.key,
     required this.isOffline,
     this.queuedConnectionsCount,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (!isOffline && (queuedConnectionsCount ?? 0) == 0) {
       return const SizedBox.shrink();
     }
-    
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+          horizontal: kSpaceSm, vertical: kSpaceXsTight),
       decoration: BoxDecoration(
-        color: isOffline 
-            ? AppColors.warning.withValues(alpha: 0.1) 
+        color: isOffline
+            ? AppColors.warning.withValues(alpha: 0.1)
             : AppColors.success.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -41,14 +43,13 @@ class OfflineConnectionBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            isOffline 
-                ? 'Offline Mode' 
+            isOffline
+                ? 'Offline Mode'
                 : '${queuedConnectionsCount ?? 0} ready to sync',
-            style: TextStyle(
-              fontSize: 12,
-              color: isOffline ? AppColors.warning : AppColors.success,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isOffline ? AppColors.warning : AppColors.success,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -60,19 +61,19 @@ class OfflineConnectionBadge extends StatelessWidget {
 class OfflineConnectionIcon extends StatelessWidget {
   final bool isOffline;
   final VoidCallback? onTap;
-  
+
   const OfflineConnectionIcon({
     super.key,
     required this.isOffline,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (!isOffline) {
       return const SizedBox.shrink();
     }
-    
+
     return IconButton(
       icon: const Icon(
         Icons.cloud_off,
@@ -82,20 +83,24 @@ class OfflineConnectionIcon extends StatelessWidget {
       onPressed: onTap ?? () => _showOfflineDialog(context),
     );
   }
-  
+
   void _showOfflineDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.cloud_off, color: AppColors.warning),
             SizedBox(width: 12),
-            Text('Working Offline', style: TextStyle(color: AppColors.textPrimary)),
+            Text('Working Offline',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textPrimary)),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Your key still works!\n\n'
           '✅ AI learns with you\n'
           '✅ AI2AI connections work\n'
@@ -103,16 +108,22 @@ class OfflineConnectionIcon extends StatelessWidget {
           '✅ Discoveries saved\n\n'
           'When you\'re back online, your connections will sync '
           'and you\'ll get network insights.',
-          style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it', style: TextStyle(color: AppColors.primary)),
+            child: Text('Got it',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.primary)),
           ),
         ],
       ),
     );
   }
 }
-

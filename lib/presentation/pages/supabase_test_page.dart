@@ -5,6 +5,8 @@ import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_core/avra_core.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Test page to verify Supabase integration
 class SupabaseTestPage extends StatefulWidget {
@@ -446,14 +448,14 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
       title: 'Supabase Test (Realtime + DB)',
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Auth controls
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -505,9 +507,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             ),
             const SizedBox(height: 12),
             // SPOTS Account controls
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -541,9 +543,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             ),
             const SizedBox(height: 12),
             // Realtime Controls
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 child: Row(
                   children: [
                     ElevatedButton(
@@ -564,9 +566,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
               ),
             ),
             // Status Card
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -607,9 +609,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             const SizedBox(height: 16),
             // Latest Profile Summary (from coordinator)
             if (_lastProfileSummary != null)
-              Card(
+              PortalSurface(
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(kSpaceSm),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -624,9 +626,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
 
             const SizedBox(height: 16),
             // Realtime Messages
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -663,9 +665,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             const SizedBox(height: 16),
 
             // Spots Section
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -709,9 +711,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
             const SizedBox(height: 16),
 
             // Lists Section
-            Card(
+            PortalSurface(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

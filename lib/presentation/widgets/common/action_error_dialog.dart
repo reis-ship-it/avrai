@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/ai/action_models.dart';
 import 'package:avrai/core/services/misc/action_error_handler.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Dialog widget that shows action failure details
 class ActionErrorDialog extends StatefulWidget {
@@ -69,7 +70,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      title: const Row(
+      title: Row(
         children: [
           Icon(
             Icons.error_outline,
@@ -79,11 +80,10 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
           SizedBox(width: 8),
           Text(
             'Action Failed',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -94,7 +94,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
           children: [
             if (widget.intent != null) ...[
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: AppColors.grey100,
                   borderRadius: BorderRadius.circular(8),
@@ -114,11 +114,10 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                     Expanded(
                       child: Text(
                         _getFailureContext(widget.intent!),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                     ),
                   ],
@@ -128,16 +127,15 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             ],
             Text(
               userFriendlyError,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-                height: 1.5,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.5,
+                  ),
             ),
             if (suggestions.isNotEmpty) ...[
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -149,7 +147,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(
                           Icons.lightbulb_outline,
@@ -159,34 +157,38 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                         SizedBox(width: 8),
                         Text(
                           'Suggestions',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     ...suggestions.map((suggestion) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
+                          padding: const EdgeInsets.only(bottom: kSpaceXxs),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 '• ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                               Expanded(
                                 child: Text(
                                   suggestion,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: AppColors.textSecondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ),
                             ],
@@ -200,7 +202,7 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
               const SizedBox(height: 16),
               if (_showDetails) ...[
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(kSpaceSm),
                   decoration: BoxDecoration(
                     color: AppColors.grey100,
                     borderRadius: BorderRadius.circular(8),
@@ -212,22 +214,20 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Technical Details',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         widget.technicalDetails ?? widget.error,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                          fontFamily: 'monospace',
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontFamily: 'monospace',
+                            ),
                       ),
                     ],
                   ),
@@ -248,10 +248,10 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             },
             child: Text(
               _showDetails ? 'Hide Details' : 'View Details',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
         TextButton(
@@ -259,12 +259,12 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
             widget.onDismiss();
             Navigator.of(context).pop();
           },
-          child: const Text(
+          child: Text(
             'Cancel',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
         // Show retry button if retry callback is provided and error is retryable
@@ -281,11 +281,11 @@ class _ActionErrorDialogState extends State<ActionErrorDialog> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Retry',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
       ],

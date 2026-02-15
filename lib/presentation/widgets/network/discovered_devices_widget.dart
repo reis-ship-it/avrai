@@ -1,24 +1,26 @@
 /// Discovered Devices Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1: Critical UI/UX
 /// Section 1.2: Device Discovery UI
-/// 
+///
 /// Reusable widget for displaying discovered devices with connection options.
 /// Can be embedded in different pages or contexts.
-/// 
+///
 /// Features:
 /// - List view of discovered devices
 /// - Device info display (name, type, proximity, signal strength)
 /// - Connection initiation buttons
 /// - Real-time updates
 /// - Privacy-preserving personality indicators
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'dart:developer' as developer;
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
 import 'package:get_it/get_it.dart';
@@ -29,7 +31,7 @@ class DiscoveredDevicesWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final Function(DiscoveredDevice)? onDeviceTap;
   final bool showConnectionButton;
-  
+
   const DiscoveredDevicesWidget({
     super.key,
     required this.devices,
@@ -37,21 +39,22 @@ class DiscoveredDevicesWidget extends StatefulWidget {
     this.onDeviceTap,
     this.showConnectionButton = true,
   });
-  
+
   @override
-  State<DiscoveredDevicesWidget> createState() => _DiscoveredDevicesWidgetState();
+  State<DiscoveredDevicesWidget> createState() =>
+      _DiscoveredDevicesWidgetState();
 }
 
 class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
   final Map<String, bool> _connectingDevices = {};
   VibeConnectionOrchestrator? _orchestrator;
-  
+
   @override
   void initState() {
     super.initState();
     _initializeOrchestrator();
   }
-  
+
   void _initializeOrchestrator() {
     try {
       _orchestrator = GetIt.instance<VibeConnectionOrchestrator>();
@@ -63,7 +66,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       );
     }
   }
-  
+
   Future<void> _connectToDevice(DiscoveredDevice device) async {
     setState(() {
       _connectingDevices[device.deviceId] = true;
@@ -82,12 +85,12 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       }
       return;
     }
-    
+
     try {
       // Connection logic will be handled by orchestrator
       // For now, show feedback to user
       await Future.delayed(const Duration(seconds: 1));
-      
+
       if (mounted) {
         _showSnackBar('Connecting to ${device.deviceName}...');
         setState(() {
@@ -103,23 +106,22 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       }
     }
   }
-  
+
   void _showSnackBar(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
+    FeedbackPresenter.showSnack(
+      context,
+      message: message,
+      duration: const Duration(seconds: 2),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (widget.devices.isEmpty) {
       return _buildEmptyState();
     }
-    
+
     return RefreshIndicator(
       onRefresh: () async {
         widget.onRefresh?.call();
@@ -134,11 +136,12 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
-    return const Center(
+    final spacing = context.spacing;
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(32),
+        padding: EdgeInsets.all(spacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -150,46 +153,48 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
             SizedBox(height: 16),
             Text(
               'No devices discovered',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 8),
             Text(
               'Make sure discovery is enabled and nearby devices are active',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildDeviceCard(DiscoveredDevice device) {
+    final spacing = context.spacing;
     final proximityScore = device.proximityScore;
     final proximityColor = _getProximityColor(proximityScore);
     final proximityLabel = _getProximityLabel(proximityScore);
     final isConnecting = _connectingDevices[device.deviceId] ?? false;
-    
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(
+        horizontal: spacing.md,
+        vertical: spacing.xs,
+      ),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
-        onTap: widget.onDeviceTap != null 
+        onTap: widget.onDeviceTap != null
             ? () => widget.onDeviceTap!(device)
             : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -203,19 +208,18 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
                       children: [
                         Text(
                           device.deviceName,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         _buildDeviceType(device.type),
                       ],
                     ),
                   ),
-                  if (device.personalityData != null)
-                    _buildPersonalityBadge(),
+                  if (device.personalityData != null) _buildPersonalityBadge(),
                 ],
               ),
               const SizedBox(height: 12),
@@ -230,12 +234,13 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       ),
     );
   }
-  
+
   Widget _buildDeviceIcon(DiscoveredDevice device) {
+    final spacing = context.spacing;
     final proximityColor = _getProximityColor(device.proximityScore);
-    
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: proximityColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -247,7 +252,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       ),
     );
   }
-  
+
   Widget _buildDeviceType(DeviceType type) {
     String typeLabel;
     switch (type) {
@@ -267,19 +272,22 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
         typeLabel = 'WebRTC';
         break;
     }
-    
+
     return Text(
       typeLabel,
-      style: const TextStyle(
-        fontSize: 14,
-        color: AppColors.textSecondary,
-      ),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
     );
   }
-  
+
   Widget _buildPersonalityBadge() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.sm,
+        vertical: spacing.xxs,
+      ),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -289,7 +297,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
@@ -300,17 +308,16 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
           SizedBox(width: 6),
           Text(
             'AI Enabled',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.white,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.white,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildDeviceMetrics(
     DiscoveredDevice device,
     String proximityLabel,
@@ -333,10 +340,14 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       ],
     );
   }
-  
+
   Widget _buildMetricChip(IconData icon, String label, Color color) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.xs,
+        vertical: spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -348,18 +359,18 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildConnectionButton(DiscoveredDevice device, bool isConnecting) {
+    final spacing = context.spacing;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -380,7 +391,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
               ? AppColors.electricGreen
               : AppColors.primary,
           foregroundColor: AppColors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: spacing.sm),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -388,7 +399,7 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
       ),
     );
   }
-  
+
   IconData _getDeviceIconData(DeviceType type) {
     switch (type) {
       case DeviceType.wifi:
@@ -403,13 +414,13 @@ class _DiscoveredDevicesWidgetState extends State<DiscoveredDevicesWidget> {
         return Icons.web;
     }
   }
-  
+
   Color _getProximityColor(double score) {
     if (score >= 0.7) return AppColors.success;
     if (score >= 0.4) return AppColors.warning;
     return AppColors.error;
   }
-  
+
   String _getProximityLabel(double score) {
     if (score >= 0.7) return 'Very Close';
     if (score >= 0.4) return 'Nearby';

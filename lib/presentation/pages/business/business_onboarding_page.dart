@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/controllers/business_onboarding_controller.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -6,6 +8,8 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Onboarding Page
 ///
@@ -134,39 +138,22 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
         if (result.success) {
           // Show success message if there's a warning (partial success)
           if (result.warning != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(result.warning!),
-                backgroundColor: AppTheme.warningColor,
-              ),
-            );
+            context.showWarning(result.warning!);
           }
 
           // Navigate to dashboard
-          Navigator.pushReplacement(
+          AppNavigator.replaceBuilder(
             context,
-            MaterialPageRoute(
-              builder: (context) => const BusinessDashboardPage(),
-            ),
+            builder: (context) => const BusinessDashboardPage(),
           );
         } else {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error completing onboarding: ${result.error}'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Error completing onboarding: ${result.error}');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error: $e');
       }
     } finally {
       if (mounted) {
@@ -193,20 +180,25 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
       body: Column(
         children: [
           // Progress indicator
-          Container(
-            padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Row(
               children: List.generate(
                 _steps.length,
                 (index) => Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 4,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    decoration: BoxDecoration(
-                      color: index <= _currentStep
-                          ? AppTheme.primaryColor
-                          : AppColors.grey300,
-                      borderRadius: BorderRadius.circular(2),
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: kSpaceNano),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: ColoredBox(
+                          color: index <= _currentStep
+                              ? AppTheme.primaryColor
+                              : AppColors.grey300,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -231,25 +223,18 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
           ),
 
           // Navigation buttons
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMd),
+            color: AppColors.white,
+            radius: 0,
+            elevation: 0.2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (_currentStep > 0)
                   OutlinedButton(
                     onPressed: _previousStep,
-                    child: const Text('Back'),
+                    child: Text('Back'),
                   )
                 else
                   const SizedBox.shrink(),
@@ -284,7 +269,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildWelcomeStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -316,7 +301,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildExpertPreferencesStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -327,17 +312,23 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Tell us about the expertise you need for your business',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add expert preferences form
-          const Expanded(
+          Expanded(
             child: Center(
               child: Text(
                 'Expert preferences form coming soon',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -348,7 +339,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildPatronPreferencesStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -359,17 +350,23 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Describe your ideal customers and patrons',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add patron preferences form
-          const Expanded(
+          Expanded(
             child: Center(
               child: Text(
                 'Patron preferences form coming soon',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -380,7 +377,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildTeamSetupStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -391,17 +388,23 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Add team members to your business account (optional)',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
           // TODO: Add team member invitation form
-          const Expanded(
+          Expanded(
             child: Center(
               child: Text(
                 'Team member invitation coming soon',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -412,7 +415,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildAIAgentSetupStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -423,15 +426,19 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
                 ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Your business will have a shared AI agent that learns from all team members',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
-          Card(
+          PortalSurface(
+            padding: EdgeInsets.zero,
             child: SwitchListTile(
-              title: const Text('Enable Shared AI Agent'),
-              subtitle: const Text(
+              title: Text('Enable Shared AI Agent'),
+              subtitle: Text(
                 'All team members will contribute to a shared business personality',
               ),
               value: _setupSharedAgent,
@@ -444,20 +451,22 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
           ),
           const SizedBox(height: 16),
           if (_setupSharedAgent)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
+            PortalSurface(
+              padding: const EdgeInsets.all(kSpaceMd),
+              color: AppColors.success.withValues(alpha: 0.1),
+              borderColor: AppColors.success.withValues(alpha: 0.3),
+              radius: 8,
+              child: Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.success),
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Your shared agent will learn from all team member interactions and create a unified business personality for better matching.',
-                      style: TextStyle(color: AppColors.success),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.success),
                     ),
                   ),
                 ],
@@ -470,7 +479,7 @@ class _BusinessOnboardingPageState extends State<BusinessOnboardingPage> {
 
   Widget _buildCompleteStep() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

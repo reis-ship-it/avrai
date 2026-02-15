@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/expertise/expertise_pin.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expertise Badge Widget
 /// Shows expert validation badge on spot cards
@@ -20,28 +21,29 @@ class ExpertiseBadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Filter pins relevant to this spot's category
-    final relevantPins = expertPins.where((pin) => 
-      pin.category.toLowerCase() == category.toLowerCase()
-    ).toList();
+    final relevantPins = expertPins
+        .where((pin) => pin.category.toLowerCase() == category.toLowerCase())
+        .toList();
 
     if (relevantPins.isEmpty) {
       return const SizedBox.shrink();
     }
 
     if (compact) {
-      return _buildCompactBadge(relevantPins);
+      return _buildCompactBadge(context, relevantPins);
     }
 
-    return _buildFullBadge(relevantPins);
+    return _buildFullBadge(context, relevantPins);
   }
 
-  Widget _buildCompactBadge(List<ExpertisePin> pins) {
+  Widget _buildCompactBadge(BuildContext context, List<ExpertisePin> pins) {
     final pin = pins.first;
     final pinColor = pin.getPinColor();
     final pinIcon = pin.getPinIcon();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: pinColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -61,20 +63,18 @@ class ExpertiseBadgeWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             'Expert',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: pinColor,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: pinColor,
+                ),
           ),
           if (pins.length > 1) ...[
             const SizedBox(width: 4),
             Text(
               '+${pins.length - 1}',
-              style: const TextStyle(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ],
@@ -82,13 +82,14 @@ class ExpertiseBadgeWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFullBadge(List<ExpertisePin> pins) {
+  Widget _buildFullBadge(BuildContext context, List<ExpertisePin> pins) {
     final pin = pins.first;
     final pinColor = pin.getPinColor();
     final pinIcon = pin.getPinIcon();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+          horizontal: kSpaceSm, vertical: kSpaceXsTight),
       decoration: BoxDecoration(
         color: pinColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
@@ -112,19 +113,17 @@ class ExpertiseBadgeWidget extends StatelessWidget {
             children: [
               Text(
                 'Verified by Experts',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: pinColor,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: pinColor,
+                    ),
               ),
               if (pins.length > 1)
                 Text(
                   '${pins.length} $category Experts',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
             ],
           ),
@@ -153,7 +152,7 @@ class ExpertIndicator extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(kSpaceXxs),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.1),
         shape: BoxShape.circle,
@@ -166,4 +165,3 @@ class ExpertIndicator extends StatelessWidget {
     );
   }
 }
-

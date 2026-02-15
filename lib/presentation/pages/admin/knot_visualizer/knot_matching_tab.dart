@@ -5,9 +5,11 @@
 // Phase 9: Admin Knot Visualizer
 
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/knot_admin_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Tab for analyzing knot matching insights
 class KnotMatchingTab extends StatefulWidget {
@@ -55,7 +57,7 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
     return RefreshIndicator(
       onRefresh: _loadMatchingInsights,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
               ? Center(
                   child: Column(
@@ -68,13 +70,13 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _loadMatchingInsights,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : _matchingInsights == null
-                  ? const Center(child: Text('No matching insights available'))
+                  ? Center(child: Text('No matching insights available'))
                   : _buildMatchingContent(),
     );
   }
@@ -83,12 +85,12 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
     final insights = _matchingInsights!;
 
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
         // Overview Statistics
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,13 +107,15 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                 const SizedBox(height: 8),
                 _buildStatRow(
                   'Average Matching Score',
-                  (insights['averageMatchingScore'] as num? ?? 0.0).toStringAsFixed(3),
+                  (insights['averageMatchingScore'] as num? ?? 0.0)
+                      .toStringAsFixed(3),
                   Icons.star,
                 ),
                 const SizedBox(height: 8),
                 _buildStatRow(
                   'Average Integrated Compatibility',
-                  (insights['integratedCompatibilityAverage'] as num? ?? 0.0).toStringAsFixed(3),
+                  (insights['integratedCompatibilityAverage'] as num? ?? 0.0)
+                      .toStringAsFixed(3),
                   Icons.link,
                 ),
               ],
@@ -122,9 +126,9 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
         const SizedBox(height: 16),
 
         // Compatibility Comparison
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -158,9 +162,9 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
         const SizedBox(height: 16),
 
         // Success Rate by Knot Type
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -171,12 +175,13 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                 const SizedBox(height: 16),
                 if ((insights['successRateByKnotType'] as Map?)?.isEmpty ??
                     true)
-                  const Text('No knot type data available')
+                  Text('No knot type data available')
                 else
                   ...(insights['successRateByKnotType'] as Map<String, dynamic>)
                       .entries
                       .map((entry) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: kSpaceXs),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -187,9 +192,12 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                                     Text(entry.key),
                                     Text(
                                       '${((entry.value as num) * 100).toStringAsFixed(1)}%',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -197,7 +205,8 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                                 LinearProgressIndicator(
                                   value: (entry.value as num).toDouble(),
                                   backgroundColor: AppColors.grey200,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
                                     AppColors.success,
                                   ),
                                 ),
@@ -212,9 +221,9 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
         const SizedBox(height: 16),
 
         // Top Matching Patterns
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -224,12 +233,13 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
                 ),
                 const SizedBox(height: 16),
                 if ((insights['topMatchingPatterns'] as List?)?.isEmpty ?? true)
-                  const Text('No matching patterns available')
+                  Text('No matching patterns available')
                 else
                   ...(insights['topMatchingPatterns'] as List<dynamic>)
                       .take(5)
                       .map((pattern) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: kSpaceXs),
                             child: ListTile(
                               leading: const Icon(Icons.pattern),
                               title: Text(pattern['description'] ?? 'Pattern'),
@@ -256,10 +266,9 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
@@ -275,7 +284,10 @@ class _KnotMatchingTabState extends State<KnotMatchingTab> {
             Text(label),
             Text(
               value.toStringAsFixed(3),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),

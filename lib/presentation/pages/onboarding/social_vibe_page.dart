@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/models/user/dimension_question.dart';
 import 'package:avrai/core/services/onboarding/onboarding_question_bank.dart';
@@ -109,12 +111,14 @@ class _SocialVibePageState extends State<SocialVibePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return Column(
       children: [
         // Header
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          padding: EdgeInsets.only(
+              left: spacing.lg, right: spacing.lg, top: spacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -124,7 +128,7 @@ class _SocialVibePageState extends State<SocialVibePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
               Text(
                 'How do you like to connect with others?',
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -134,32 +138,38 @@ class _SocialVibePageState extends State<SocialVibePage> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: spacing.md),
 
         // Progress indicator
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: spacing.lg),
           child: Row(
             children: List.generate(_questions.length, (index) {
               final isCompleted = _answers.containsKey(_questions[index].id);
               final isCurrent = index == _currentQuestionIndex;
               return Expanded(
-                child: Container(
-                  height: 4,
-                  margin: EdgeInsets.only(
-                      right: index < _questions.length - 1 ? 8 : 0),
-                  decoration: BoxDecoration(
-                    color: isCompleted || isCurrent
-                        ? AppColors.primary
-                        : AppColors.grey300,
-                    borderRadius: BorderRadius.circular(2),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right:
+                        index < _questions.length - 1 ? spacing.xs : kSpaceNone,
+                  ),
+                  child: SizedBox(
+                    height: 4,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(2),
+                      child: ColoredBox(
+                        color: isCompleted || isCurrent
+                            ? AppColors.primary
+                            : AppColors.grey300,
+                      ),
+                    ),
                   ),
                 ),
               );
             }),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: spacing.lg),
 
         // Questions PageView
         Expanded(
@@ -171,7 +181,7 @@ class _SocialVibePageState extends State<SocialVibePage> {
             itemBuilder: (context, index) {
               final question = _questions[index];
               return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: spacing.lg),
                 child: DimensionQuestionWidget(
                   question: question,
                   currentValue: _answers[question.id],
@@ -186,7 +196,7 @@ class _SocialVibePageState extends State<SocialVibePage> {
 
         // Navigation
         Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(spacing.lg),
           child: Row(
             children: [
               if (_currentQuestionIndex > 0)
@@ -196,18 +206,18 @@ class _SocialVibePageState extends State<SocialVibePage> {
                   label: const Text('Back'),
                 )
               else
-                const SizedBox(width: 100),
+                SizedBox(width: spacing.xxl + spacing.lg),
               const Spacer(),
               if (_currentQuestionIndex < _questions.length - 1)
                 ElevatedButton(
                   onPressed:
                       _isCurrentQuestionAnswered() ? _goToNextQuestion : null,
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Next'),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, size: 18),
+                      const Text('Next'),
+                      SizedBox(width: spacing.xxs),
+                      const Icon(Icons.arrow_forward, size: 18),
                     ],
                   ),
                 ),

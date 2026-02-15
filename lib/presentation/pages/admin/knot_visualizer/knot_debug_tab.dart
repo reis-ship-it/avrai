@@ -1,14 +1,17 @@
 // Knot Debug Tab
-// 
+//
 // Admin tab for knot debugging tools
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 9: Admin Knot Visualizer
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/knot_admin_service.dart';
 import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Tab for knot debugging tools
 class KnotDebugTab extends StatefulWidget {
@@ -53,39 +56,31 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
   Future<void> _loadKnot() async {
     final agentId = _agentIdController.text.trim();
     if (agentId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an agent ID')),
-      );
+      context.showError('Please enter an agent ID');
       return;
     }
 
     try {
       final knot = await _knotAdminService.getUserKnot(agentId);
       if (!mounted) return;
-      
+
       setState(() {
         _loadedKnot = knot;
       });
 
       if (knot == null) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Knot not found')),
-        );
+        context.showWarning('Knot not found');
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      context.showError('Error: $e');
     }
   }
 
   Future<void> _validateKnot() async {
     if (_loadedKnot == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please load a knot first')),
-      );
+      context.showError('Please load a knot first');
       return;
     }
 
@@ -100,9 +95,8 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
       setState(() {
         _isValidating = false;
         _isValid = isValid;
-        _validationMessage = isValid
-            ? 'Knot structure is valid'
-            : 'Knot structure is invalid';
+        _validationMessage =
+            isValid ? 'Knot structure is valid' : 'Knot structure is invalid';
       });
     } catch (e) {
       setState(() {
@@ -116,13 +110,13 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
         // System Statistics
         if (_systemStats != null)
-          Card(
+          PortalSurface(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -132,7 +126,8 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
                   ),
                   const SizedBox(height: 8),
                   ..._systemStats!.entries.map((entry) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: kSpaceXxs),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -149,9 +144,9 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
         const SizedBox(height: 16),
 
         // Load Knot
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -170,7 +165,7 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _loadKnot,
-                  child: const Text('Load Knot'),
+                  child: Text('Load Knot'),
                 ),
               ],
             ),
@@ -181,9 +176,9 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
           const SizedBox(height: 16),
 
           // Knot Details
-          Card(
+          PortalSurface(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -212,16 +207,16 @@ class _KnotDebugTabState extends State<KnotDebugTab> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Validate Knot'),
+                        : Text('Validate Knot'),
                   ),
                   if (_isValid != null) ...[
                     const SizedBox(height: 8),
                     Text(
                       _validationMessage ?? '',
-                      style: TextStyle(
-                        color: _isValid! ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: _isValid! ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ],

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
 
   Widget _kv(String k, Object? v) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: kSpaceXsTight),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,16 +97,19 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
             width: 170,
             child: Text(
               k,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               (v ?? '').toString(),
-              style: const TextStyle(color: AppColors.textPrimary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
           ),
         ],
@@ -133,11 +137,14 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
       constrainBody: false,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           children: [
-            const Text(
+            Text(
               'Inspect stable_key → area_id mapping and dual city tracking fields.',
-              style: TextStyle(color: AppColors.textPrimary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -156,7 +163,10 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
               const SizedBox(height: 12),
               Text(
                 _error!,
-                style: const TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
               ),
             ],
             if (_row != null) ...[

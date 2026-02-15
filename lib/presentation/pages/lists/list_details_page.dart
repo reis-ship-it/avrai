@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/social_media/social_media_sharing_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
@@ -19,6 +19,7 @@ import 'package:avrai/core/ai/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class ListDetailsPage extends StatefulWidget {
   final SpotList list;
@@ -141,8 +142,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   const SizedBox(width: 8),
                   Text(
                     'Delete List',
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
                   ),
                 ],
               ),
@@ -154,33 +157,23 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       body: Column(
         children: [
           // List Header
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMd),
+            color: Theme.of(context).colorScheme.surface,
+            radius: 0,
+            elevation: 0.2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
+                    Chip(
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      side: BorderSide.none,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
+                      label: Text(
                         widget.list.category ?? 'Uncategorized',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context)
@@ -278,7 +271,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               _showAddSpotsDialog(context);
                             },
                             icon: const Icon(Icons.add_location),
-                            label: const Text('Add Spots'),
+                            label: Text('Add Spots'),
                           ),
                         ],
                       ),
@@ -287,15 +280,15 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
                   return ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     itemCount: spotsInList.length,
                     itemBuilder: (context, index) {
                       final spot = spotsInList[index];
                       return PortalSurface(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: kSpaceSm),
                         padding: EdgeInsets.zero,
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
+                          contentPadding: const EdgeInsets.all(kSpaceMd),
                           leading: CircleAvatar(
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
@@ -332,18 +325,15 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
+                                  Chip(
+                                    visualDensity: VisualDensity.compact,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    side: BorderSide.none,
+                                    backgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer,
+                                    label: Text(
                                       spot.category,
                                       style: Theme.of(context)
                                           .textTheme
@@ -418,7 +408,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   );
                 }
 
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator());
               },
             ),
           ),
@@ -459,7 +449,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Share List'),
+        title: Text('Share List'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -472,9 +462,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Share to Social Media',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         ...snapshot.data!.map((platform) => ListTile(
@@ -496,8 +489,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               // Standard Sharing Options
               ListTile(
                 leading: const Icon(Icons.share),
-                title: const Text('Share via...'),
-                subtitle: const Text('Share to other apps'),
+                title: Text('Share via...'),
+                subtitle: Text('Share to other apps'),
                 onTap: () {
                   Navigator.pop(context);
                   _shareToOtherApps();
@@ -505,8 +498,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.link),
-                title: const Text('Copy Link'),
-                subtitle: const Text('Copy shareable link'),
+                title: Text('Copy Link'),
+                subtitle: Text('Copy shareable link'),
                 onTap: () {
                   Navigator.pop(context);
                   _copyListLink(context);
@@ -515,8 +508,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               if (widget.list.isPublic) ...[
                 ListTile(
                   leading: const Icon(Icons.public),
-                  title: const Text('Public List'),
-                  subtitle: const Text('Anyone can view this list'),
+                  title: Text('Public List'),
+                  subtitle: Text('Anyone can view this list'),
                   onTap: () {
                     Navigator.pop(context);
                     _sharePublicList();
@@ -529,7 +522,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
         ],
       ),
@@ -604,11 +597,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
       // Show loading
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sharing to $platform...'),
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Sharing to $platform...',
+          kind: FeedbackKind.info,
+          duration: const Duration(seconds: 2),
         );
       }
 
@@ -625,29 +618,14 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
       if (context.mounted) {
         if (results[platform] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Shared to $platform successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          context.showSuccess('Shared to $platform successfully!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to share to $platform'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError('Failed to share to $platform');
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sharing: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error sharing: $e');
       }
     }
   }
@@ -674,11 +652,7 @@ avrai - know you belong.''';
     final listLink = 'https://avrai.app/list/${widget.list.id}';
 
     Clipboard.setData(ClipboardData(text: listLink));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('List link copied to clipboard'),
-      ),
-    );
+    context.showInfo('List link copied to clipboard');
   }
 
   void _sharePublicList() {
@@ -699,27 +673,25 @@ avrai - know you belong.''';
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete List'),
+        title: Text('Delete List'),
         content: Text(
             'Are you sure you want to delete "${widget.list.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               context.read<ListsBloc>().add(DeleteList(widget.list.id));
               Navigator.pop(context);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${widget.list.title} deleted')),
-              );
+              context.showWarning('${widget.list.title} deleted');
             },
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text('Delete'),
           ),
         ],
       ),
@@ -748,13 +720,8 @@ avrai - know you belong.''';
       if (!mounted || !context.mounted) return;
       context.read<ListsBloc>().add(UpdateList(updatedList));
       if (!mounted || !context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Added ${selectedSpotIds.length} spot${selectedSpotIds.length > 1 ? 's' : ''} to ${widget.list.title}',
-          ),
-          backgroundColor: AppTheme.successColor,
-        ),
+      context.showSuccess(
+        'Added ${selectedSpotIds.length} spot${selectedSpotIds.length > 1 ? 's' : ''} to ${widget.list.title}',
       );
     }
   }
@@ -763,13 +730,13 @@ avrai - know you belong.''';
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Spot'),
+        title: Text('Remove Spot'),
         content: Text(
             'Are you sure you want to remove "${spot.name}" from this list?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -785,16 +752,12 @@ avrai - know you belong.''';
               context.read<ListsBloc>().add(UpdateList(updatedList));
 
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${spot.name} removed from list'),
-                ),
-              );
+              context.showWarning('${spot.name} removed from list');
             },
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text('Remove'),
           ),
         ],
       ),

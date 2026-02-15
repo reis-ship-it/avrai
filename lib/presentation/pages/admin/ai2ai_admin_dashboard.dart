@@ -12,10 +12,12 @@ import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
 import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
 import 'package:avrai/presentation/widgets/admin/admin_collaborative_activity_widget.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Admin Dashboard for AI2AI Network Monitoring
 /// Displays network health, connections, learning metrics, privacy, and performance
@@ -197,21 +199,17 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         // Stream connection status indicator
         if (_isStreamConnected)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
             child: Row(
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.success,
-                    shape: BoxShape.circle,
-                  ),
+                const CircleAvatar(
+                  radius: 4,
+                  backgroundColor: AppColors.success,
                 ),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   'Live',
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(width: 8),
               ],
@@ -238,7 +236,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         _healthReport == null &&
         _connectionsOverview == null &&
         _realTimeMetrics == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null &&
@@ -251,23 +249,29 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: AppColors.error),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Error Loading Dashboard',
-              style: TextStyle(fontSize: 18, color: AppColors.error),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: AppColors.error),
             ),
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceXl),
               child: Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _refreshDashboard,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -277,14 +281,14 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
     return RefreshIndicator(
       onRefresh: _refreshDashboard,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Last update timestamp
             if (_lastUpdate != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.only(bottom: kSpaceMd),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -293,8 +297,10 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                     const SizedBox(width: 4),
                     Text(
                       'Last update: ${_formatTime(_lastUpdate!)}',
-                      style: const TextStyle(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -302,15 +308,12 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
 
             // Error banner if partial error
             if (_errorMessage != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border:
-                      Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-                ),
+              PortalSurface(
+                padding: const EdgeInsets.all(kSpaceSm),
+                margin: const EdgeInsets.only(bottom: kSpaceMd),
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderColor: AppColors.error.withValues(alpha: 0.3),
+                radius: 8,
                 child: Row(
                   children: [
                     const Icon(Icons.warning_amber,
@@ -319,13 +322,15 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: const TextStyle(
-                            color: AppColors.error, fontSize: 12),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: AppColors.error),
                       ),
                     ),
                     TextButton(
                       onPressed: _refreshDashboard,
-                      child: const Text('Retry'),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),
@@ -417,9 +422,9 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
   }
 
   Widget _buildEmptyState(String title, String message) {
-    return Card(
+    return PortalSurface(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(kSpaceLg),
         child: Column(
           children: [
             const Icon(Icons.info_outline,
@@ -427,16 +432,16 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 8),
             Text(
               message,
-              style:
-                  const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],

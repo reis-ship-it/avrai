@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/business/business_expert_preferences.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Expert Preferences Widget
 /// Allows businesses to set detailed preferences for expert matching
@@ -15,10 +16,12 @@ class BusinessExpertPreferencesWidget extends StatefulWidget {
   });
 
   @override
-  State<BusinessExpertPreferencesWidget> createState() => _BusinessExpertPreferencesWidgetState();
+  State<BusinessExpertPreferencesWidget> createState() =>
+      _BusinessExpertPreferencesWidgetState();
 }
 
-class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferencesWidget> {
+class _BusinessExpertPreferencesWidgetState
+    extends State<BusinessExpertPreferencesWidget> {
   late BusinessExpertPreferences _preferences;
 
   // Expertise
@@ -65,88 +68,135 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
   final List<String> _excludedLocations = [];
 
   static const List<String> _expertiseOptions = [
-    'Coffee', 'Restaurants', 'Bars', 'Pastry', 'Wine', 'Cocktails',
-    'Food', 'Dining', 'Retail', 'Shopping', 'Hospitality', 'Service',
+    'Coffee',
+    'Restaurants',
+    'Bars',
+    'Pastry',
+    'Wine',
+    'Cocktails',
+    'Food',
+    'Dining',
+    'Retail',
+    'Shopping',
+    'Hospitality',
+    'Service',
   ];
 
   static const List<String> _personalityTraits = [
-    'Outgoing', 'Detail-oriented', 'Creative', 'Analytical',
-    'Collaborative', 'Independent', 'Leadership', 'Patient',
-    'Enthusiastic', 'Professional', 'Innovative', 'Reliable',
+    'Outgoing',
+    'Detail-oriented',
+    'Creative',
+    'Analytical',
+    'Collaborative',
+    'Independent',
+    'Leadership',
+    'Patient',
+    'Enthusiastic',
+    'Professional',
+    'Innovative',
+    'Reliable',
   ];
 
   static const List<String> _workStyles = [
-    'Collaborative', 'Independent', 'Leadership', 'Team Player',
-    'Self-directed', 'Structured', 'Flexible', 'Fast-paced',
+    'Collaborative',
+    'Independent',
+    'Leadership',
+    'Team Player',
+    'Self-directed',
+    'Structured',
+    'Flexible',
+    'Fast-paced',
   ];
 
   static const List<String> _communicationStyles = [
-    'Direct', 'Diplomatic', 'Enthusiastic', 'Professional',
-    'Casual', 'Formal', 'Clear', 'Concise',
+    'Direct',
+    'Diplomatic',
+    'Enthusiastic',
+    'Professional',
+    'Casual',
+    'Formal',
+    'Clear',
+    'Concise',
   ];
 
   static const List<String> _availabilityOptions = [
-    'Weekdays', 'Evenings', 'Weekends', 'Morning', 'Afternoon',
-    'Night', 'Flexible', 'By Appointment',
+    'Weekdays',
+    'Evenings',
+    'Weekends',
+    'Morning',
+    'Afternoon',
+    'Night',
+    'Flexible',
+    'By Appointment',
   ];
 
   static const List<String> _engagementTypes = [
-    'Consulting', 'Partnership', 'Mentorship', 'Advisory',
-    'Collaboration', 'Project-based', 'Ongoing', 'One-time',
+    'Consulting',
+    'Partnership',
+    'Mentorship',
+    'Advisory',
+    'Collaboration',
+    'Project-based',
+    'Ongoing',
+    'One-time',
   ];
 
   @override
   void initState() {
     super.initState();
-    _preferences = widget.initialPreferences ?? const BusinessExpertPreferences();
+    _preferences =
+        widget.initialPreferences ?? const BusinessExpertPreferences();
     _loadPreferences();
   }
 
   void _loadPreferences() {
     _requiredExpertise.clear();
     _requiredExpertise.addAll(_preferences.requiredExpertiseCategories);
-    
+
     _preferredExpertise.clear();
     _preferredExpertise.addAll(_preferences.preferredExpertiseCategories);
-    
+
     _minExpertLevel = _preferences.minExpertLevel;
     _preferredExpertLevel = _preferences.preferredExpertLevel;
     _preferredLocation = _preferences.preferredLocation;
     _maxDistanceKm = _preferences.maxDistanceKm;
     _allowRemote = _preferences.allowRemote;
-    
+
     _minAge = _preferences.preferredAgeRange?.minAge;
     _maxAge = _preferences.preferredAgeRange?.maxAge;
-    
+
     _preferredLanguages.clear();
     _preferredLanguages.addAll(_preferences.preferredLanguages ?? []);
-    
+
     _minYearsExperience = _preferences.minYearsExperience;
     _preferredBackgrounds.clear();
     _preferredBackgrounds.addAll(_preferences.preferredBackgrounds ?? []);
     _preferredSkills.clear();
     _preferredSkills.addAll(_preferences.preferredSkills ?? []);
-    
+
     _preferredPersonalityTraits.clear();
-    _preferredPersonalityTraits.addAll(_preferences.preferredPersonalityTraits ?? []);
+    _preferredPersonalityTraits
+        .addAll(_preferences.preferredPersonalityTraits ?? []);
     _preferredWorkStyles.clear();
     _preferredWorkStyles.addAll(_preferences.preferredWorkStyles ?? []);
     _preferredCommunicationStyles.clear();
-    _preferredCommunicationStyles.addAll(_preferences.preferredCommunicationStyles ?? []);
-    
+    _preferredCommunicationStyles
+        .addAll(_preferences.preferredCommunicationStyles ?? []);
+
     _preferredAvailability.clear();
     _preferredAvailability.addAll(_preferences.preferredAvailability ?? []);
     _requireFlexibleSchedule = _preferences.requireFlexibleSchedule;
-    
+
     _preferredEngagementTypes.clear();
-    _preferredEngagementTypes.addAll(_preferences.preferredEngagementTypes ?? []);
+    _preferredEngagementTypes
+        .addAll(_preferences.preferredEngagementTypes ?? []);
     _preferredCommitmentLevel = _preferences.preferredCommitmentLevel;
     _preferLongTermRelationships = _preferences.preferLongTermRelationships;
-    
+
     _aiKeywords.clear();
     _aiKeywords.addAll(_preferences.aiKeywords ?? []);
     _aiMatchingPrompt = _preferences.aiMatchingPrompt;
-    
+
     _excludedExpertise.clear();
     _excludedExpertise.addAll(_preferences.excludedExpertise ?? []);
     _excludedLocations.clear();
@@ -166,22 +216,34 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
         preferredAgeRange: (_minAge != null || _maxAge != null)
             ? AgeRange(minAge: _minAge, maxAge: _maxAge)
             : null,
-        preferredLanguages: _preferredLanguages.isEmpty ? null : _preferredLanguages,
+        preferredLanguages:
+            _preferredLanguages.isEmpty ? null : _preferredLanguages,
         minYearsExperience: _minYearsExperience,
-        preferredBackgrounds: _preferredBackgrounds.isEmpty ? null : _preferredBackgrounds,
+        preferredBackgrounds:
+            _preferredBackgrounds.isEmpty ? null : _preferredBackgrounds,
         preferredSkills: _preferredSkills.isEmpty ? null : _preferredSkills,
-        preferredPersonalityTraits: _preferredPersonalityTraits.isEmpty ? null : _preferredPersonalityTraits,
-        preferredWorkStyles: _preferredWorkStyles.isEmpty ? null : _preferredWorkStyles,
-        preferredCommunicationStyles: _preferredCommunicationStyles.isEmpty ? null : _preferredCommunicationStyles,
-        preferredAvailability: _preferredAvailability.isEmpty ? null : _preferredAvailability,
+        preferredPersonalityTraits: _preferredPersonalityTraits.isEmpty
+            ? null
+            : _preferredPersonalityTraits,
+        preferredWorkStyles:
+            _preferredWorkStyles.isEmpty ? null : _preferredWorkStyles,
+        preferredCommunicationStyles: _preferredCommunicationStyles.isEmpty
+            ? null
+            : _preferredCommunicationStyles,
+        preferredAvailability:
+            _preferredAvailability.isEmpty ? null : _preferredAvailability,
         requireFlexibleSchedule: _requireFlexibleSchedule,
-        preferredEngagementTypes: _preferredEngagementTypes.isEmpty ? null : _preferredEngagementTypes,
+        preferredEngagementTypes: _preferredEngagementTypes.isEmpty
+            ? null
+            : _preferredEngagementTypes,
         preferredCommitmentLevel: _preferredCommitmentLevel,
         preferLongTermRelationships: _preferLongTermRelationships,
         aiKeywords: _aiKeywords.isEmpty ? null : _aiKeywords,
         aiMatchingPrompt: _aiMatchingPrompt,
-        excludedExpertise: _excludedExpertise.isEmpty ? null : _excludedExpertise,
-        excludedLocations: _excludedLocations.isEmpty ? null : _excludedLocations,
+        excludedExpertise:
+            _excludedExpertise.isEmpty ? null : _excludedExpertise,
+        excludedLocations:
+            _excludedLocations.isEmpty ? null : _excludedLocations,
       );
     });
     widget.onPreferencesChanged(_preferences);
@@ -193,20 +255,18 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Expert Matching Preferences',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Tell us about the types of experts you want to connect with. The AI will use these preferences to find the best matches.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 24),
 
@@ -253,10 +313,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
                   ),
                   items: [
                     const DropdownMenuItem(value: null, child: Text('Any')),
-                    ...List.generate(6, (i) => DropdownMenuItem(
-                      value: i,
-                      child: Text('Level $i'),
-                    )),
+                    ...List.generate(
+                        6,
+                        (i) => DropdownMenuItem(
+                              value: i,
+                              child: Text('Level $i'),
+                            )),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -276,10 +338,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
                   ),
                   items: [
                     const DropdownMenuItem(value: null, child: Text('Any')),
-                    ...List.generate(6, (i) => DropdownMenuItem(
-                      value: i,
-                      child: Text('Level $i'),
-                    )),
+                    ...List.generate(
+                        6,
+                        (i) => DropdownMenuItem(
+                              value: i,
+                              child: Text('Level $i'),
+                            )),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -328,7 +392,7 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
               const SizedBox(width: 16),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Allow Remote'),
+                  title: Text('Allow Remote'),
                   value: _allowRemote,
                   onChanged: (value) {
                     setState(() {
@@ -436,7 +500,7 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
           ),
           const SizedBox(height: 16),
           CheckboxListTile(
-            title: const Text('Require Flexible Schedule'),
+            title: Text('Require Flexible Schedule'),
             value: _requireFlexibleSchedule,
             onChanged: (value) {
               setState(() {
@@ -469,10 +533,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
             ),
             items: [
               const DropdownMenuItem(value: null, child: Text('Any')),
-              ...List.generate(5, (i) => DropdownMenuItem(
-                value: i + 1,
-                child: Text('Level ${i + 1}'),
-              )),
+              ...List.generate(
+                  5,
+                  (i) => DropdownMenuItem(
+                        value: i + 1,
+                        child: Text('Level ${i + 1}'),
+                      )),
             ],
             onChanged: (value) {
               setState(() {
@@ -483,7 +549,7 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
           ),
           const SizedBox(height: 16),
           CheckboxListTile(
-            title: const Text('Prefer Long-term Relationships'),
+            title: Text('Prefer Long-term Relationships'),
             value: _preferLongTermRelationships,
             onChanged: (value) {
               setState(() {
@@ -496,9 +562,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
 
           // AI/ML Keywords
           _buildSectionTitle('AI Matching Keywords'),
-          const Text(
+          Text(
             'Add keywords to help AI find better matches',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           TextFormField(
@@ -511,7 +580,10 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
               _aiKeywords.clear();
               if (value.isNotEmpty) {
                 _aiKeywords.addAll(
-                  value.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty),
+                  value
+                      .split(',')
+                      .map((s) => s.trim())
+                      .where((s) => s.isNotEmpty),
                 );
               }
               _updatePreferences();
@@ -535,9 +607,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
 
           // Exclusion Criteria
           _buildSectionTitle('Exclusion Criteria'),
-          const Text(
+          Text(
             'Specify what to avoid (optional)',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           _buildChipSelector(
@@ -559,13 +634,12 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
@@ -582,7 +656,10 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
         if (label != null) ...[
           Text(
             label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
         ],
@@ -610,4 +687,3 @@ class _BusinessExpertPreferencesWidgetState extends State<BusinessExpertPreferen
     );
   }
 }
-

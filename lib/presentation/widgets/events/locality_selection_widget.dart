@@ -6,12 +6,13 @@ import 'package:avrai/core/services/geographic/geographic_scope_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
 import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Locality Selection Widget
 /// Agent 2: Phase 6, Week 24 - Geographic Scope UI
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Show available localities based on user's expertise level
 /// - Filter localities based on geographic scope
@@ -34,7 +35,8 @@ class LocalitySelectionWidget extends StatefulWidget {
   });
 
   @override
-  State<LocalitySelectionWidget> createState() => _LocalitySelectionWidgetState();
+  State<LocalitySelectionWidget> createState() =>
+      _LocalitySelectionWidgetState();
 }
 
 class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
@@ -69,7 +71,8 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
           });
 
           // Auto-select if only one option
-          if (_availableLocalities.length == 1 && widget.selectedLocality == null) {
+          if (_availableLocalities.length == 1 &&
+              widget.selectedLocality == null) {
             widget.onLocalitySelected(_availableLocalities.first);
           }
           return;
@@ -111,7 +114,8 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
       return 'As a State expert, you can host events in all localities within your state.';
     } else if (level == ExpertiseLevel.national) {
       return 'As a National expert, you can host events in all localities within your nation.';
-    } else if (level == ExpertiseLevel.global || level == ExpertiseLevel.universal) {
+    } else if (level == ExpertiseLevel.global ||
+        level == ExpertiseLevel.universal) {
       return 'As a ${level.displayName} expert, you can host events anywhere.';
     }
 
@@ -136,15 +140,14 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Label with tooltip
-        const Row(
+        Row(
           children: [
             Text(
               'Locality *',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             SizedBox(width: 8),
             Tooltip(
@@ -164,7 +167,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
         // Helpful message
         if (helpfulMessage.isNotEmpty) ...[
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(kSpaceSm),
             decoration: BoxDecoration(
               color: AppColors.electricGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -183,10 +186,9 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 Expanded(
                   child: Text(
                     helpfulMessage,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                 ),
               ],
@@ -199,7 +201,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
         if (_isLoading)
           // Loading state
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             decoration: BoxDecoration(
               color: AppColors.grey100,
               borderRadius: BorderRadius.circular(12),
@@ -220,7 +222,10 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
             decoration: InputDecoration(
               labelText: 'Select Locality',
               hintText: 'Choose a locality',
-              hintStyle: const TextStyle(color: AppColors.textHint),
+              hintStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textHint),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -228,7 +233,10 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
               fillColor: AppColors.grey100,
               errorText: widget.errorMessage,
             ),
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textPrimary),
             items: _availableLocalities.map((locality) {
               return DropdownMenuItem(
                 value: locality,
@@ -246,7 +254,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
         else
           // No localities available
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             decoration: BoxDecoration(
               color: AppColors.error.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -254,7 +262,7 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 color: AppColors.error.withValues(alpha: 0.3),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Icon(
                   Icons.error_outline,
@@ -265,10 +273,9 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
                 Expanded(
                   child: Text(
                     'No localities available. Please check your location settings.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.error,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.error,
+                        ),
                   ),
                 ),
               ],
@@ -286,4 +293,3 @@ class _LocalitySelectionWidgetState extends State<LocalitySelectionWidget> {
     );
   }
 }
-

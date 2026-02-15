@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 import 'package:avrai/core/models/user/dimension_question.dart';
 
@@ -40,6 +41,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +50,10 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(
+                horizontal: spacing.sm,
+                vertical: spacing.xxs,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
@@ -105,6 +110,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
 
   Widget _buildSliderQuestion(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
     final config = widget.question.sliderConfig!;
     final currentValue =
         (widget.currentValue as double?) ?? config.defaultValue;
@@ -134,7 +140,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
 
         // Low/High labels
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: spacing.md),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -180,8 +186,10 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
               return GestureDetector(
                 onTap: () => widget.onAnswerChanged(stop.value),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing.sm,
+                    vertical: spacing.xxs,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary.withValues(alpha: 0.2)
@@ -212,6 +220,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
 
   Widget _buildChoiceQuestion(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
     final selectedId = widget.currentValue as String?;
 
     return RadioGroup<String>(
@@ -222,12 +231,12 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
           final isSelected = option.id == selectedId;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: spacing.sm),
             child: InkWell(
               onTap: () => widget.onAnswerChanged(option.id),
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(spacing.md),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary.withValues(alpha: 0.1)
@@ -242,7 +251,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
                   children: [
                     if (option.icon != null) ...[
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(spacing.xs),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primary.withValues(alpha: 0.2)
@@ -266,8 +275,9 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
                           Text(
                             option.label,
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight:
-                                  isSelected ? FontWeight.w600 : FontWeight.w500,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
                               // Explicit color so text stays readable even if the
                               // app theme is dark while the option background is light.
                               color: isSelected
@@ -302,6 +312,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
 
   Widget _buildMultiChoiceQuestion(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = context.spacing;
     final selectedIds = (widget.currentValue as List<String>?) ?? [];
     final maxSelections = widget.question.maxSelections;
 
@@ -311,7 +322,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
         final isMaxReached = selectedIds.length >= maxSelections && !isSelected;
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(bottom: spacing.sm),
           child: InkWell(
             onTap: isMaxReached
                 ? null
@@ -328,7 +339,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
             child: Opacity(
               opacity: isMaxReached ? 0.5 : 1.0,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(spacing.md),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary.withValues(alpha: 0.1)
@@ -343,7 +354,7 @@ class _DimensionQuestionWidgetState extends State<DimensionQuestionWidget> {
                   children: [
                     if (option.icon != null) ...[
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(spacing.xs),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primary.withValues(alpha: 0.2)

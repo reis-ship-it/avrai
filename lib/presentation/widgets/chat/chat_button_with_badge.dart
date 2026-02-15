@@ -1,8 +1,8 @@
 /// Chat Button with Badge Widget
-/// 
+///
 /// AppBar action button for chat with unread message badge
 /// Shows total unread count across all chat types
-/// 
+///
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
 library;
@@ -14,6 +14,7 @@ import 'package:avrai/core/services/chat/friend_chat_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class ChatButtonWithBadge extends StatefulWidget {
   const ChatButtonWithBadge({super.key});
@@ -75,7 +76,7 @@ class _ChatButtonWithBadgeState extends State<ChatButtonWithBadge> {
               right: -4,
               top: -4,
               child: Container(
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(kSpaceXxs),
                 decoration: const BoxDecoration(
                   color: AppColors.error,
                   shape: BoxShape.circle,
@@ -86,11 +87,10 @@ class _ChatButtonWithBadgeState extends State<ChatButtonWithBadge> {
                 ),
                 child: Text(
                   _totalUnreadCount > 99 ? '99+' : '$_totalUnreadCount',
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -104,4 +104,3 @@ class _ChatButtonWithBadgeState extends State<ChatButtonWithBadge> {
     );
   }
 }
-

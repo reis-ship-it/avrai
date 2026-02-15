@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/legal/privacy_policy.dart';
 import 'package:avrai/core/services/misc/legal_document_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Privacy Policy Page
 ///
@@ -84,21 +87,11 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Privacy Policy accepted'),
-            backgroundColor: AppColors.electricGreen,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: AppColors.white,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Privacy Policy accepted',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
         if (widget.requireAcceptance) {
           Navigator.pop(context, true);
@@ -121,9 +114,10 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       body: Column(
         children: [
           // Header Info
-          Container(
-            padding: const EdgeInsets.all(20),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMdWide),
             color: AppColors.surface,
+            radius: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -135,44 +129,48 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Version ${PrivacyPolicy.version}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                           Text(
                             'Effective: ${_formatDate(PrivacyPolicy.effectiveDate)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
                     ),
                     if (_hasAccepted)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
+                      Chip(
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        side: BorderSide.none,
+                        backgroundColor: Color.fromRGBO(0, 255, 102, 0.1),
+                        label: Row(
                           children: [
                             Icon(Icons.check_circle,
                                 size: 16, color: AppColors.electricGreen),
                             SizedBox(width: 4),
                             Text(
                               'Accepted',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.electricGreen,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ],
                         ),
@@ -184,40 +182,35 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           ),
 
           // Privacy Policy Content
-          const Expanded(
+          Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(kSpaceMdWide),
               child: Text(
                 PrivacyPolicy.content,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                  height: 1.6,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      height: 1.6,
+                    ),
               ),
             ),
           ),
 
           // Accept Button (if required or not yet accepted)
           if (widget.requireAcceptance || !_hasAccepted) ...[
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.grey300)),
-              ),
+            PortalSurface(
+              padding: const EdgeInsets.all(kSpaceMdWide),
+              color: AppColors.surface,
+              borderColor: AppColors.grey300,
+              radius: 0,
               child: Column(
                 children: [
                   if (_error != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3)),
-                      ),
+                    PortalSurface(
+                      padding: const EdgeInsets.all(kSpaceSm),
+                      margin: const EdgeInsets.only(bottom: kSpaceMd),
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderColor: AppColors.error.withValues(alpha: 0.3),
+                      radius: 8,
                       child: Row(
                         children: [
                           const Icon(Icons.error_outline,
@@ -226,8 +219,10 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                           Expanded(
                             child: Text(
                               _error!,
-                              style: const TextStyle(
-                                  color: AppColors.error, fontSize: 12),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AppColors.error),
                             ),
                           ),
                         ],
@@ -251,7 +246,7 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                                   AppColors.white),
                             ),
                           )
-                        : const Text('I Accept the Privacy Policy'),
+                        : Text('I Accept the Privacy Policy'),
                   ),
                 ],
               ),

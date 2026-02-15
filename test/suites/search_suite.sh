@@ -9,5 +9,5 @@ flutter test "$@" \
   test/unit/domain/usecases/search/ \
   test/unit/data/repositories/hybrid_search_repository_test.dart \
   test/widget/pages/search/ \
-  test/integration/hybrid_search_performance_test.dart
+  test/integration/services/hybrid_search_performance_test.dart
 

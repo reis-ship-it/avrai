@@ -1,20 +1,21 @@
 /// AI Thinking Indicator Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 /// Provides visual feedback while LLM is processing requests.
-/// 
+///
 /// Features:
 /// - Animated thinking indicator
 /// - Context loading states (personality, vibe, AI2AI insights)
 /// - Optional "what AI is considering" visibility
 /// - Timeout handling with helpful messages
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Enum representing different AI processing stages
 enum AIThinkingStage {
@@ -32,7 +33,7 @@ class AIThinkingIndicator extends StatefulWidget {
   final Duration timeout;
   final VoidCallback? onTimeout;
   final bool compact;
-  
+
   const AIThinkingIndicator({
     super.key,
     this.stage = AIThinkingStage.generatingResponse,
@@ -41,30 +42,31 @@ class AIThinkingIndicator extends StatefulWidget {
     this.onTimeout,
     this.compact = false,
   });
-  
+
   @override
   State<AIThinkingIndicator> createState() => _AIThinkingIndicatorState();
 }
 
-class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTickerProviderStateMixin {
+class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
   Timer? _timeoutTimer;
   bool _timedOut = false;
-  
+
   @override
   void initState() {
     super.initState();
     _initAnimations();
     _startTimeoutTimer();
   }
-  
+
   void _initAnimations() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.6,
       end: 1.0,
@@ -73,7 +75,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
       curve: Curves.easeInOut,
     ));
   }
-  
+
   void _startTimeoutTimer() {
     _timeoutTimer = Timer(widget.timeout, () {
       if (mounted) {
@@ -84,31 +86,33 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
       }
     });
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     _timeoutTimer?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (_timedOut) {
       return _buildTimeoutMessage();
     }
-    
+
     if (widget.compact) {
       return _buildCompactIndicator();
     }
-    
+
     return _buildFullIndicator();
   }
-  
+
   Widget _buildFullIndicator() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: EdgeInsets.all(spacing.md + spacing.xxs),
+      margin:
+          EdgeInsets.symmetric(vertical: spacing.xs, horizontal: spacing.md),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
@@ -130,20 +134,18 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
                   children: [
                     Text(
                       _getStageTitle(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     if (widget.showDetails) ...[
                       const SizedBox(height: 6),
                       Text(
                         _getStageDescription(),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ],
@@ -159,10 +161,14 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
       ),
     );
   }
-  
+
   Widget _buildCompactIndicator() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.sm,
+        vertical: spacing.xs,
+      ),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
@@ -174,25 +180,25 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           const SizedBox(width: 8),
           Text(
             _getStageTitle(),
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.electricGreen,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.electricGreen,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildAnimatedIcon({double size = 24}) {
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
+        final spacing = context.spacing;
         return Opacity(
           opacity: _pulseAnimation.value,
           child: Container(
-            padding: EdgeInsets.all(size * 0.25),
+            padding: EdgeInsets.all(spacing.xs),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -212,10 +218,10 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
       },
     );
   }
-  
+
   Widget _buildProgressBar() {
     final progress = _getStageProgress();
-    
+
     return Column(
       children: [
         ClipRRect(
@@ -224,7 +230,8 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
             value: progress,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+            valueColor:
+                const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
           ),
         ),
         const SizedBox(height: 8),
@@ -233,29 +240,29 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           children: [
             Text(
               _getProgressLabel(),
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             Text(
               '${(progress * 100).toInt()}%',
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.electricGreen,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.electricGreen,
+                  ),
             ),
           ],
         ),
       ],
     );
   }
-  
+
   Widget _buildTimeoutMessage() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: EdgeInsets.all(spacing.md),
+      margin:
+          EdgeInsets.symmetric(vertical: spacing.xs, horizontal: spacing.md),
       decoration: BoxDecoration(
         color: AppColors.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -264,7 +271,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
           width: 1,
         ),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.access_time,
@@ -278,19 +285,17 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
               children: [
                 Text(
                   'Taking longer than usual',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'The AI is still thinking. This might take a moment...',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -299,7 +304,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
       ),
     );
   }
-  
+
   String _getStageTitle() {
     switch (widget.stage) {
       case AIThinkingStage.loadingContext:
@@ -314,7 +319,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
         return 'Finalizing response...';
     }
   }
-  
+
   String _getStageDescription() {
     switch (widget.stage) {
       case AIThinkingStage.loadingContext:
@@ -329,7 +334,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
         return 'Almost ready...';
     }
   }
-  
+
   IconData _getStageIcon() {
     switch (widget.stage) {
       case AIThinkingStage.loadingContext:
@@ -344,7 +349,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
         return Icons.check_circle_outline;
     }
   }
-  
+
   double _getStageProgress() {
     switch (widget.stage) {
       case AIThinkingStage.loadingContext:
@@ -359,7 +364,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
         return 0.95;
     }
   }
-  
+
   String _getProgressLabel() {
     switch (widget.stage) {
       case AIThinkingStage.loadingContext:
@@ -380,20 +385,21 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator> with SingleTi
 class AIThinkingDots extends StatefulWidget {
   final Color color;
   final double size;
-  
+
   const AIThinkingDots({
     super.key,
     this.color = AppColors.electricGreen,
     this.size = 8.0,
   });
-  
+
   @override
   State<AIThinkingDots> createState() => _AIThinkingDotsState();
 }
 
-class _AIThinkingDotsState extends State<AIThinkingDots> with SingleTickerProviderStateMixin {
+class _AIThinkingDotsState extends State<AIThinkingDots>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  
+
   @override
   void initState() {
     super.initState();
@@ -402,13 +408,13 @@ class _AIThinkingDotsState extends State<AIThinkingDots> with SingleTickerProvid
       vsync: this,
     )..repeat();
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -419,12 +425,12 @@ class _AIThinkingDotsState extends State<AIThinkingDots> with SingleTickerProvid
           builder: (context, child) {
             final delay = index * 0.2;
             final value = (_controller.value - delay) % 1.0;
-            final opacity = (value < 0.5) 
+            final opacity = (value < 0.5)
                 ? (value * 2).clamp(0.3, 1.0)
                 : (2 - value * 2).clamp(0.3, 1.0);
-            
+
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: widget.size * 0.3),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.xxs),
               child: Opacity(
                 opacity: opacity,
                 child: Container(
@@ -443,4 +449,3 @@ class _AIThinkingDotsState extends State<AIThinkingDots> with SingleTickerProvid
     );
   }
 }
-

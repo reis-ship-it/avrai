@@ -2,7 +2,7 @@
 
 **Created:** February 10, 2026  
 **Purpose:** Explains the "why" behind every architecture-wide decision in the Master Plan. Read this before starting ANY phase.  
-**Companion to:** `docs/MASTER_PLAN.md` (what to build), `docs/MASTER_PLAN_TRACKER.md` (where things live)  
+**Companion to:** `docs/MASTER_PLAN.md` (what to build), `docs/MASTER_PLAN_TRACKER.md` (where things live), `docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md` (what must be proven coherent)  
 **Status:** Active -- update when foundational decisions change
 
 ---
@@ -416,16 +416,16 @@ Both must be high for the agent to be happy. An agent that understands the user 
 
 | Phase | Most Relevant Decisions |
 |------:|------------------------|
-| 1 | #1 (intelligence-first), #5 (Drift over ObjectBox), #7 (chat-as-accelerator), #8 (AI2AI only -- organic discovery mesh), #12 (doors -- discovered locations) |
-| 2 | #4 (on-device/privacy), #15 (post-quantum) |
-| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities) |
-| 4 | #2 (energy-based), #3 (VICReg), #11 (feature flag replacement), #14 (bilateral energy) |
-| 5 | #3 (VICReg), #4 (on-device), #7 (chat-as-accelerator) |
-| 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline) |
-| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device) |
-| 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory) |
-| 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline) |
-| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization) |
+| 1 | #1 (intelligence-first), #5 (Drift over ObjectBox), #7 (chat-as-accelerator), #8 (AI2AI only -- organic discovery mesh), #12 (doors -- discovered locations), #23 (friend system lifecycle) |
+| 2 | #4 (on-device/privacy), #15 (post-quantum), #24 (data visibility -- AI visibility), #25 (BLE payload budget -- post-quantum overhead) |
+| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities), #22 (self-optimization -- feature weights), #24 (data visibility -- weather/app usage/friend features) |
+| 4 | #2 (energy-based), #3 (VICReg), #11 (feature flag replacement), #14 (bilateral energy), #22 (self-optimization -- energy function tuning), #23 (friend system -- community energy), #33 (social QoL layer), #35 (ad-hoc groups -- joint energy) |
+| 5 | #3 (VICReg), #4 (on-device), #7 (chat-as-accelerator), #31 (passive life pattern engine) |
+| 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline), #22 (self-optimization -- guardrail thresholds), #25 (BLE payload budget -- mesh chat), #32 (active life pattern engine -- SLM intent), #34 (notification philosophy) |
+| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device), #22 (self-optimization -- bounded autonomy), #23 (friend system -- braided knot evolution), #31 (passive life pattern engine), #33 (social QoL layer), #34 (notification philosophy) |
+| 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory), #22 (self-optimization -- locality advisory thresholds), #25 (BLE payload budget -- locality agent), #33 (social QoL layer), #35 (ad-hoc group formation) |
+| 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline), #32 (active life pattern engine) |
+| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization), #23 (friend system -- GDPR cascading deletion), #24 (data visibility -- creator dashboard/trending/GDPR export), #33 (social QoL layer) |
 | 11 | #6 (ONNX/quantum-ready), #3 (VICReg for JEPA) |
 
 ---
@@ -506,23 +506,422 @@ Both must be high for the agent to be happy. An agent that understands the user 
 
 ---
 
-## Quick Reference: Key Decisions by Phase Relevance
+### Decision 22: Autonomous Self-Optimization with Bounded Autonomy (Phase 7.9)
 
-| Phase | Most Relevant Decisions |
-|------:|------------------------|
-| 1 | #1 (intelligence-first), #5 (Drift over ObjectBox), #7 (chat-as-accelerator), #8 (AI2AI only -- organic discovery mesh), #12 (doors -- discovered locations) |
-| 2 | #4 (on-device/privacy), #15 (post-quantum) |
-| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities) |
-| 4 | #2 (energy-based), #3 (VICReg), #11 (feature flag replacement), #14 (bilateral energy) |
-| 5 | #3 (VICReg), #4 (on-device), #7 (chat-as-accelerator) |
-| 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline) |
-| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device) |
-| 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory) |
-| 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline) |
-| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization) |
-| 11 | #6 (ONNX/quantum-ready), #3 (VICReg for JEPA) |
+**What:** The system continuously evaluates its own features, strategies, and parameters through canary experiments, adjusting those that improve happiness and reverting those that don't.
+
+**Why:** "AIs must always be self-improving" requires not just better model weights but also validating which inputs matter. Manual parameter tuning doesn't scale; the system must optimize itself.
+
+**Alternatives considered:**
+- **(a) Manual tuning by engineers** -- doesn't scale, slow iteration
+- **(b) Full autonomy without guardrails** -- unsafe, hard to debug
+- **(c) Bounded autonomy with human notification** -- chosen. Safe experimentation within human-set bounds, full transparency
+
+**Key constraint:** Privacy-protected parameters (encryption, consent defaults, DP epsilon, k-anonymity) are NEVER autonomously optimizable. Safety guardrails include global happiness floor circuit breaker, per-experiment circuit breaker, consecutive failure limit, and per-user exemption.
+
+**Affects:** All phases (every parameter becomes a candidate for optimization), Phase 3.1 (feature weights), Phase 4.1 (energy function tuning), Phase 6.2 (guardrail thresholds), Phase 8.9 (locality advisory thresholds).
+
+**LeCun mapping:** This is the Configurator module made autonomous.
 
 ---
 
-**Last Updated:** February 11, 2026  
-**Version:** 1.4 (added Zeng et al. 2026 external validation to Decisions #1, #2, #9 -- academic consensus validates anti-fragmentation, energy-based over reasoning-only, unified perception. Previous: 1.3 Decisions #17-#21)
+### Decision 23: Friend System as First-Class World Model Entity (Phase 10.4A, 1.2.27-29)
+
+**What:** Friendships get full lifecycle management (request → accept → evolve → unfriend/block), braided knot evolution, tiered weighting, and outcome tracking as episodic tuples.
+
+**Why:** Friendships are "doors" that lead to other doors (communities, events, shared experiences). The AI must learn from the complete friendship lifecycle, not just the existence of a connection.
+
+**Key constraint:** GDPR requires cascading data deletion on unfriend/block (braided knots dissolved, social signals purged, AI2AI exchanges excluded). Friend cap of 500 prevents O(N²) braided knot cost explosion.
+
+**Affects:** Phase 1.2 (outcome data), Phase 3.1 (friend network features in state vector), Phase 4.4 (community energy considers friend membership), Phase 6.2 (social nudges for friend-joined-community), Phase 7.1 (evolution cascade re-weaves braided knots).
+
+---
+
+### Decision 24: Data Visibility as a First-Class Concern (Phases 3.1.20A-D, 10.4B-E, 2.1.8D)
+
+**What:** All collected data must be surfaced to its relevant audience: users see AI learning progress, creators see performance analytics, admins see decision audit trails, third parties see DP-protected aggregates. Trending data gets real implementation (not stubs).
+
+**Why:** Blind data is wasted data. Weather is collected but the world model can't use it. App usage is tracked but the state encoder doesn't see it. Creators can't see their impact. Users can't see their AI improving. Every invisible data stream is a missed feedback loop.
+
+**Key constraint:** User-facing transparency must never expose raw episodic tuples or other users' data. Creator analytics use DP-protected aggregates. Admin access is audit-logged.
+
+**Affects:** Phase 2.1 (AI visibility), Phase 3.1 (weather, app usage, friend network, cross-app features wired into state vector), Phase 10 (trending, creator dashboard, decision audit, GDPR export).
+
+---
+
+### Decision 25: BLE Advertisement Payload Budget (Phase 6.6.6-6.6.7)
+
+**What:** A versioned payload schema allocates the ~31 bytes of BLE advertisement space across competing features (AI2AI personality, organic spot discovery, device discovery, mesh chat, locality agent) with prioritized multiplexing.
+
+**Why:** Multiple features now compete for the same BLE advertisement space. Without a budget, features silently clobber each other's data.
+
+**Affects:** Phase 1.7 (organic spot discovery over BLE), Phase 6.6 (mesh chat), Phase 8.9 (locality agent), Phase 2.5 (post-quantum adds overhead to BLE payloads).
+
+---
+
+### Decision 26: Guardrail Immutability (Meta-Guardrail)
+
+**What:** Safety guardrail parameters (7.9E.0-7.9E.7) are NEVER registered as `OptimizableParameter`s and can ONLY be changed through code deploy by the AVRAI creator.
+
+**Why:** If the self-optimization engine could modify its own safety limits, it could disable them -- creating catastrophic failure. The creator's unhappiness = system goes to 0. Guardrails are the constitution the engine cannot amend.
+
+**Impact:** 7.9E.0 implements compile-time + runtime validation. `GuardrailConstants` sealed class with `static const` values.
+
+**Affects:** Phase 7.9 (all subsections respect immutable guardrails).
+
+---
+
+### Decision 27: User-Driven Self-Healing
+
+**What:** Users can submit explicit requests to steer optimization via `UserRequestIntakeService`, with immediate per-user parameter adjustment for tunable parameters.
+
+**Why:** The AI learns from behavior (implicit) and from what users say (explicit). Explicit requests are the strongest signal -- users literally telling the system what they want. Ignoring explicit feedback while optimizing on implicit signals is backwards.
+
+**Impact:** Phase 7.9F adds 5 tasks. User-initiated overrides take priority over system-initiated experiments for that parameter.
+
+**Affects:** Phase 7.9F → 7.9C (parameter system), 6.7 (SLM classification), 1.2 (outcome tracking).
+
+---
+
+### Decision 28: Collective Democracy-by-Happiness
+
+**What:** When 50+ users independently request the same change, the system auto-triggers a canary experiment. Changes validated by happiness improvement get rolled out system-wide.
+
+**Why:** Collective user intelligence is a signal the system should act on. But popularity ≠ quality, so every collective request still passes through the happiness validation pipeline. Minority protection prevents tyranny of the majority.
+
+**Impact:** Phase 7.9G adds 5 tasks. Semantic clustering, threshold-triggered experiments, minority protection guard.
+
+**Affects:** Phase 7.9G → 7.9C (experiment orchestration), 7.9D (admin notification), 1.1A (semantic embeddings for clustering).
+
+---
+
+### Decision 29: Multi-Transport AI2AI
+
+**What:** AI2AI communication uses the best available transport: BLE (always available, low bandwidth), WiFi local network (same subnet, high bandwidth), or WiFi Direct (peer-to-peer, highest bandwidth). VPN detection triggers graceful fallback to BLE-only.
+
+**Why:** BLE's 31-byte payload budget is a hard constraint that forces lossy compression for learning insights. WiFi provides kilobytes-to-megabytes bandwidth, completely solving the payload problem for same-network devices. WiFi Direct enables event-mode deep sync. VPN blocks local discovery (privacy choice respected) but shouldn't break the system.
+
+**Impact:** Phase 6.6.8-6.6.12 (5 tasks). Signal Protocol encryption is transport-agnostic. `AI2AITransportSelector` picks best channel.
+
+**Affects:** Phase 6.6 → 8.5/8.6 (AI2AI insight exchange benefits from WiFi bandwidth), 7.8 (multi-device sync via WiFi Direct), 9.4G (service marketplace federated data).
+
+---
+
+### Decision 30: Services Marketplace as First-Class World Model Entity
+
+**What:** Service providers are a new quantum entity type (`QuantumEntityType.serviceProvider`) with full 10D feature encoding, braided knots, bidirectional energy scoring, MPC action types, and outcome collection.
+
+**Why:** Services are doors. A painter, dog walker, or stylist enhances a user's life -- same as a spot, event, or community. Treating services as second-class (no world model integration) would mean worse matching, no compatibility prediction, no timing intelligence. The world model should know about ALL the doors.
+
+**Impact:** Phase 9.4 adds 27 tasks across 7 subsections. State vector +10D. 5 new MPC actions. 1 new bidirectional energy pairing.
+
+**Affects:** Phase 9.4 → 3.1 (feature extraction), 4.1 (energy function), 6.1 (MPC planner), 8.9 (locality demand), 8.1 (federated quality signals), 1.2 (outcome collection), 10.4A (friend recommendations for services).
+
+---
+
+### Decision 31: Life Pattern Intelligence (Passive Engine)
+
+**The Decision:** The system learns from the user's LIFE, not just app usage. Background location, widget checks, and absence patterns build a per-user routine model on-device.
+
+**Why:** App-open learning captures maybe 10% of a user's life. The remaining 90% happens when the app isn't open. The passive engine closes this gap by learning from OS-level signals (significant location changes, widget refreshes) that run even when the app is closed.
+
+**Why not alternative:** Cloud-based location tracking (Foursquare model) would be simpler but violates privacy principles. Passive on-device processing keeps all raw location data local.
+
+**What breaks if ignored:** The world model sees only a thin slice of user behavior. Routine-aware suggestions (time-of-day, day-of-week, habitual patterns) remain impossible. Phase 7.10A routine model never materializes.
+
+---
+
+### Decision 32: Active Life Pattern Engine (SLM as Conversational Planner)
+
+**The Decision:** The SLM becomes the user's conversational interface for sharing intent, plans, and context. It extracts structured intents and triggers world model services via a tool-calling framework.
+
+**Why:** Explicit user statements are the highest-confidence signals the system can receive (8x weight). A conversational interface is natural and non-invasive -- the user volunteers information when they want to.
+
+**Why not alternative:** Form-based preference entry (like Yelp filters) captures intent but feels transactional. A conversation captures nuance ("I want somewhere quiet but not too fancy for my mom's birthday") that structured forms can't.
+
+**What breaks if ignored:** The system misses high-value explicit signals. Users who prefer to articulate intent have no natural outlet. Phase 6.7B intent extraction and tool-calling framework remain unimplemented.
+
+---
+
+### Decision 33: Social Quality-of-Life Layer
+
+**The Decision:** The people around the user are a first-class feature in the world model. Per-friend happiness correlations, group composition intelligence, and social absence detection drive proactive social suggestions.
+
+**Why:** Happiness research consistently shows that social connection is the strongest predictor of well-being. A system that only optimizes for places/activities misses the fundamental insight that WHO you're with matters more than WHERE you are.
+
+**What breaks if ignored:** Recommendations ignore the social dimension. The system can't suggest "invite Sarah" or "you haven't seen Alex in 3 weeks." Social absence detection and group composition intelligence never materialize.
+
+---
+
+### Decision 34: Notification Philosophy (Passive Engine Boundaries)
+
+**The Decision:** The passive engine is an observer, not an interrogator. It NEVER asks location questions, RARELY asks labeling questions (max 1/week), and exhausts all inference before prompting.
+
+**Why:** Location-based notifications that reference specific locations feel like surveillance. The system must earn trust by being helpful without being intrusive. A 1/week hard cap on labeling questions (immutable guardrail) ensures the system can never become annoying.
+
+**What breaks if ignored:** Users feel surveilled. Notification fatigue drives churn. The 1/week labeling cap is a meta-guardrail per Decision 26 -- it must be immutable.
+
+---
+
+### Decision 35: Ad-Hoc Group Formation (SLM-Triggered)
+
+**The Decision:** Users can form ad-hoc groups through natural conversation ("the 5 of us are hungry"), triggering BLE discovery, confirmation pop-ups, and joint energy scoring -- all in under 5 seconds.
+
+**Why:** Existing group negotiation (8.6) is agent-initiated based on entanglement. But real-world group decisions happen spontaneously. The SLM must be able to handle "right now" group needs with speed over optimality.
+
+**What breaks if ignored:** Spontaneous group formation requires multi-step manual coordination. "Right now" group needs go unmet. Phase 8.6B ad-hoc group formation remains unimplemented.
+
+---
+
+### Decision 36: Multi-Dimensional Self-Calibrating Happiness
+
+**The Decision:** Happiness is not a single number. It's a vector of learned dimensions (discovery, social, routine, professional, growth, trust) with self-calibrating per-user weights and self-adjusting dimension definitions.
+
+**Why:** A single happiness score hides critical information. A user at 0.7 who's socially thriving but professionally miserable needs different help than a user at 0.7 who's professionally thriving but socially isolated. Per-user learned weights let the system understand what happiness MEANS for each individual. Self-adjusting dimensions let the system discover happiness factors we haven't thought of.
+
+**What breaks if ignored:** The system can't diagnose WHY a user is unhappy. It can't optimize for professional fulfillment (critical for earners). Locality thresholds are static (60% everywhere), missing that different populations have different baselines.
+
+---
+
+### Decision 37: DSL Self-Modification Engine (Layer 1 Self-Coding)
+
+**The Decision:** ~80% of what AVRAI would want to change about itself is expressible as declarative strategy compositions, not compiled code. The DSL engine enables safe on-device self-modification without app store updates.
+
+**Why:** App store updates take days. Model weight updates take hours. DSL rule updates take seconds. Most optimization opportunities (weight overrides, guardrail additions, notification timing, strategy selection) don't need code changes -- they need configuration changes with safety validation.
+
+**What breaks if ignored:** Self-optimization is limited to parameter tuning within rigid code structures. Most improvements require code changes via the admin platform (Phase 12), which is slower and requires human review. The system's self-improvement speed is capped at human review throughput.
+
+---
+
+### Decision 38: Tax & Legal Compliance via Locality/Universe Models
+
+**The Decision:** Tax and legal compliance rules are stored IN the locality agents and universe model hierarchy, not in a separate compliance database. Rules flow DOWN through the hierarchy (national → state → city). Cross-jurisdiction reconciliation is automatic.
+
+**Why:** Tax rules are fundamentally geographic. Tying them to the same geographic hierarchy that powers everything else (locality agents, universe models) means: (a) when a new jurisdiction joins the federation, it brings its tax rules with it, (b) the system automatically knows which rules apply based on WHERE a transaction occurs, (c) cross-jurisdiction earners get automatic reconciliation because the hierarchy already knows the relationship between jurisdictions.
+
+**What breaks if ignored:** Tax compliance becomes a standalone system that duplicates geographic knowledge. Adding a new jurisdiction requires updating two systems (world model + tax). Cross-jurisdiction reconciliation requires manual geographic mapping. The universe model hierarchy's power is wasted.
+
+---
+
+### Decision 39: Hybrid Expertise System (Behavioral + Credentialed)
+
+**The Decision:** Expertise comes from two sources -- behavioral evidence from life patterns AND verified credentials. Both contribute to a fused hybrid score. The system learns what makes experts successful and helps emerging experts find better patterns.
+
+**Why:** Purely behavioral expertise misses the chemistry PhD who just moved to town. Purely credentialed expertise misses the self-taught baker with 500 dinner parties. The hybrid approach recognizes both paths, with behavioral and credentials reinforcing each other. Expert success pattern analysis creates a feedback loop: the more experts the system observes, the better it gets at guiding new experts.
+
+**What breaks if ignored:** New residents with extensive credentials start at zero expertise. Self-taught practitioners never get recognized. The system can't guide emerging experts because it doesn't know what success looks like.
+
+---
+
+### Decision 40: AVRAI Admin Platform as Separate Desktop Application
+
+**The Decision:** The admin platform is a standalone Flutter Desktop application with its own dedicated API layer. Third parties build on the same API through the Partner SDK. The admin app is NOT a web dashboard and NOT part of the mobile app.
+
+**Why:** Desktop gives: (a) persistent monitoring (always on, not a mobile screen), (b) multi-pane views (system monitor + code studio + experiment dashboard simultaneously), (c) local LLM execution for code generation (keeps AVRAI IP off third-party APIs), (d) a clear security boundary (admin functions physically separate from user functions). The shared API layer means the same security, audit, and access control applies to admin and third-party access.
+
+**What breaks if ignored:** Code generation is limited to cloud APIs (IP risk). Admin UX is cramped on mobile. Third parties need a separate API from admin (double maintenance). Security boundary between admin and user functions is blurred.
+
+---
+
+### Decision 41: Fractal Federation Architecture (Universe Model)
+
+**The Decision:** The federation hierarchy is fractal: world → organization universe → category model → AVRAI universe. Each level has absolute data sovereignty. Only DP-protected gradients flow upward. Intelligence flows downward as model priors. The same pattern works for universities, corporations, and governments (city → state → national → international).
+
+**Why:** Real-world organizations are hierarchical. A single-level federation (all instances equal) misses that UC Berkeley and UC Davis share insights that don't apply to Google. The fractal model captures natural organizational relationships while maintaining privacy: each level adds DP noise before passing upward, so the AVRAI universe can't reconstruct individual instance data. Governments have deeper hierarchies (4 levels) than corporations (2-3 levels), and the same architecture handles both.
+
+**What breaks if ignored:** University system-wide insights are lost (each campus is isolated). Government hierarchy is impossible. Cross-instance learning is flat (can't distinguish UC-specific from university-universal patterns). New instances don't benefit from category-specific intelligence.
+
+---
+
+### Decision 42: Seamless World Model Adoption
+
+**The Decision:** World models come to users automatically. When a new white-label instance covers a user's location or affiliation, the user's device discovers it, creates a new context layer with a new agent_id, and enriches recommendations -- all silently.
+
+**Why:** Users should never know or care about the infrastructure behind their experience. If their city starts providing AVRAI services, they shouldn't have to download a new app, create a new account, or toggle a setting. They should just notice that recommendations got better. This is the ultimate expression of "technology serves life."
+
+**What breaks if ignored:** Users must manually discover and opt into new instances. Coverage expansion requires marketing/onboarding for each new instance. Users in white-label areas who already have public AVRAI must manage two apps.
+
+---
+
+### Decision 43: Meta-Learning Engine (Learning How to Learn)
+
+**The Decision:** The system records every learning event (consolidation, experiment, federation round, model update) in a structured Learning Cycle Ledger with causal parent references. Weekly meta-analysis identifies which learning methods work best. The system proposes changes to its own learning process -- all within bounded hyperparameters and with full admin visibility.
+
+**Why:** A system that learns but never reflects on HOW it learns has a ceiling. Every consolidation uses the same frequency. Every experiment uses the same canary size. Every federation round uses the same parameters. Over time, what's optimal changes: new users need different learning strategies than established users. High-deviation users need different consolidation frequency than routine users. The meta-learning engine removes this ceiling by making the learning process itself optimizable.
+
+**What breaks if ignored:** Learning hyperparameters are hardcoded forever. Experiments take the same duration regardless of how much data exists. Federation runs the same number of rounds even when diminishing returns set in after round 3. The system can't discover that "explicit ratings matter 3x more in the first 30 days" because it never compares signal effectiveness across learning cycles. New federation instances start with model intelligence but not meta-learning intelligence -- they repeat the same learning mistakes the first instances already solved.
+
+---
+
+### Decision #44: Value Intelligence System (Proving Value is as Important as Delivering Value)
+
+**Decision:** Build a first-class Value Intelligence System (Phase 12.4) with a causal chain attribution engine, intelligent hindsight surveys, stakeholder-specific metrics, controlled pilot toolkit, automated report generation, and self-proving intelligence. Every in-app interaction is AVRAI-attributed. Surveys feel like the AI learning, not data extraction. Proof aggregates fractally up the federation hierarchy.
+
+**Alternatives considered:**
+- **Scattered dashboards**: Each stakeholder gets their own hand-built dashboard. Problem: no causal attribution, no common framework, no aggregate proof.
+- **Post-hoc surveys only**: Ask users and institutions after the fact. Problem: survey fatigue, recall bias, no causal chain, no counterfactual.
+- **Revenue-only metrics**: Prove value only through revenue. Problem: misses social value, community health, life quality improvements -- which are AVRAI's core proposition.
+
+**Why:** Without provable value, no institution renews, no investor invests, no government funds, and no business pays. AVRAI's value proposition is that it opens doors -- but that claim must be empirically verifiable. The attribution engine walks backward through episodic memory to find every AVRAI touchpoint in a user's outcome chain. The hindsight survey engine learns when each user gives the best feedback and asks during reflective moments, not post-event. The pilot toolkit provides controlled experiments with statistical rigor. Self-proving intelligence uses the world model's own accuracy and learning velocity as proof. Fractal aggregation gives every level of the federation hierarchy appropriate value metrics.
+
+**What breaks if ignored:** AVRAI delivers value but can't prove it. University contracts go to competitors with better dashboards. Investors see no defensibility metrics. Businesses can't compare AVRAI vs. Google Ads. Government pilots produce anecdotal evidence, not statistical proof. The system opens doors but nobody documents which doors it opened.
+
+### Decision #45: Knowledge-Wisdom-Conviction Architecture (The System Develops Understanding)
+
+**Decision:** Implement a hierarchical intelligence progression: Data → Knowledge → Wisdom → Conviction. Knowledge entries are structured claims extracted during consolidation. Wisdom is the contextual application layer that selects and weights knowledge for the current situation. Convictions are knowledge that has been tried, tested, and found true across enough contexts. Convictions flow fractally: bottom-up from lived experience, top-down as cold-start intelligence. Every entity in the system (user, community, locality, instance, world, universe) develops its own knowledge, wisdom, and convictions.
+
+**Alternatives considered:**
+- **Model weights only**: Let the neural network learn everything implicitly. Problem: no explainability, no way to share structured insights across federation, no human-auditable beliefs.
+- **Rule-based system**: Encode expert rules manually. Problem: doesn't scale, can't learn, can't adapt to different populations.
+- **Knowledge-only (no conviction tier)**: Track knowledge without the conviction promotion mechanism. Problem: the system would treat a pattern observed once the same as one observed 10,000 times.
+
+**Why:** A system that learns WHAT but not WHY or WHEN is dangerous. Wisdom prevents misapplication of knowledge. Conviction prevents the system from constantly second-guessing validated truths while remaining open to revision. The fractal architecture ensures that a truth discovered at one level can benefit all levels without compromising data sovereignty. The emotional experience vector prevents the system from flattening the human experience into pure positivity optimization.
+
+**What breaks if ignored:** The system has knowledge but no judgment. It applies patterns indiscriminately without context. It can't share structured insights across the federation. It has no mechanism for earned certainty or structured self-questioning.
+
+### Decision #46: Agent Cognition & Continuity (The Agent Thinks, Not Just Reacts)
+
+**Decision:** Give the agent persistent working memory (`AgentContext`) across wake cycles, scheduled thinking sessions during device idle time, multi-horizon reasoning (hours/days-weeks/months-seasons), and the ability to self-schedule future wake-ups. The agent's thinking process feeds the meta-learning engine so the system learns how it thinks.
+
+**Alternatives considered:**
+- **Reactive-only**: The agent only acts on explicit triggers. Problem: no deliberation, no long-term planning, no hypothesis development.
+- **Cloud-based reasoning**: Move thinking to the cloud. Problem: violates offline-first principle, introduces latency, requires network.
+- **Always-on foreground service**: Keep the agent running continuously. Problem: battery drain, user annoyance, platform policy violations.
+
+**Why:** A recommendation engine reacts. A personal AI companion thinks. The agent needs to observe patterns over days, develop hypotheses, and wait for the right moment to act. Platform-specific background execution strategies (BGProcessingTask on iOS, WorkManager on Android) allow genuine background reasoning within OS constraints.
+
+**What breaks if ignored:** The agent is reactive, not deliberative. It can't develop hypotheses about the user's trajectory. Multi-horizon planning is impossible. The user doesn't experience a living agent -- they experience a smart search engine.
+
+### Decision #47: Self-Interrogation (The System Questions Its Own Beliefs)
+
+**Decision:** The system periodically examines its own convictions through structured self-questioning, cross-scope comparison, stress testing, and integration of human challenges. A conviction that goes unchallenged stops improving.
+
+**Why:** Without self-interrogation, convictions calcify. The system becomes confident about things that are no longer true. Self-questioning is the engine that keeps the pursuit of understanding moving.
+
+### Decision #48: Researcher Access (Opening Doors for Academic Understanding)
+
+**Decision:** Build a dedicated researcher access pathway with IRB-compatible anonymization, consent framework, research API, longitudinal cohorts, and a sandbox environment. Research findings feed back into the conviction system.
+
+**Why:** Researchers ask questions the system can't generate internally. Their findings strengthen or challenge convictions. AVRAI's uniquely rich dataset (longitudinal behavior with happiness outcomes) would be wasted if only used commercially.
+
+### Decision #49: Composite Entity Identity (Real-World Entities Are Multi-Dimensional)
+
+**Decision:** Allow single real-world entities to occupy multiple quantum entity types simultaneously (business + event host + service provider). Linked through a shared `entity_root_id` with cross-role learning via the conviction system.
+
+**Why:** Real-world entities don't fit into single categories. A hairdresser business that hosts wine-and-art nights is simultaneously a business, event host, and service provider. Forcing them into one role loses data and creates a poor experience.
+
+### Decision #50: Conviction Oracle (A Physical Place to Sit with System Truths)
+
+**Decision:** Dedicate a physically isolated machine (or hardened container) to house the universe-scope conviction store with a creator-only conversational interface. The oracle receives DP-protected conviction serializations from the federation, maintains the complete conviction audit trail, and provides an LLM-backed chat interface for querying, challenging, injecting, freezing, and simulating convictions. Air-gapped from raw user data by design.
+
+**Why:** Universe-scope convictions represent the highest-order truths AVRAI has discovered across all populations. The creator needs a direct, private, conversational line to this intelligence -- not buried in dashboards, but a dedicated place to sit with the system's understanding and question it. The self-interrogation system (Phase 7.9J) runs continuously, so when the creator visits, the oracle genuinely has new thoughts to share. Physical isolation ensures: (a) conviction data cannot be conflated with user-identifying data, (b) a single point of trust for the system's deepest beliefs, (c) a philosophical space, not just a technical endpoint.
+
+**Alternatives considered:**
+1. **Admin platform module only** -- Rejected because the admin platform serves many purposes; conviction introspection deserves focused, dedicated space without UI clutter
+2. **Cloud-hosted service** -- Viable as a fallback (containerized with SSH/VPN), but a physical machine creates a stronger philosophical connection and eliminates cloud provider dependency for the most sensitive data
+3. **No dedicated service** -- Rejected because querying universe convictions through general-purpose APIs loses the conversational, narrative quality that makes the oracle valuable
+
+### Decision #51: Sensory Architecture (The System Has Eyes, Ears, a Mouth, and Senses)
+
+**Decision:** Map every component to a sensory metaphor: Eyes (observation bus, self-model), Ears (input normalization), Mouth (output delivery with grounding), Senses (raw signal acquisition), Brain (decision core). All senses feed each other bidirectionally via the observation bus. No sense is dominant.
+
+**Why:** The system's architecture was implicitly organized around these roles, but without an explicit mapping, components evolved in isolation. The sensory architecture formalizes the cross-feeding requirement: the energy function's diagnostics inform the translation layer's vocabulary; the SLM's grounding rate informs the state encoder's feature weighting; sensor degradation informs input normalization. Making these relationships explicit prevents architectural drift where components optimize locally but degrade globally.
+
+**Alternatives considered:**
+1. **Implicit cross-component communication** -- Rejected because it leads to point-to-point coupling without systematic coverage
+2. **Centralized orchestrator** -- Rejected because it creates a bottleneck and single point of failure; the observation bus is decentralized
+3. **No metaphor (pure technical)** -- The metaphor helps with communication and reasoning about the system, and maps to the Humanity Mapping (awareness, agency, resilience)
+
+### Decision #52: Universal Self-Healing Doctrine (Every Non-Guardrail Component Can Improve Itself)
+
+**Decision:** Declare that every component of the system -- not just models and parameters, but mathematical output formats, data pipeline structures, model architectures, inter-component protocols, translation vocabularies, and input processing rules -- is a candidate for self-improvement. Self-healing proposals go through the self-optimization engine (Phase 7.9) and are validated by the observation bus (Phase 7.12). Only guardrails (Phase 7.9E), privacy protections (Phase 2), and the conviction challenge protocol (Phase 7.9J) are exempt.
+
+**Why:** Previous self-optimization was limited to model parameters and feature flags. But many performance improvements require changing the formats, schemas, or structures that connect components. If the energy function's output format is suboptimal for the translation layer, fixing this requires changing the output format -- not just the model weights. The system needs the authority and mechanism to improve its own infrastructure, not just its intelligence functions.
+
+**Alternatives considered:**
+1. **Self-healing limited to models and parameters** -- Rejected because the biggest improvements often come from structural changes (format optimization, pipeline restructuring)
+2. **No guardrail exemption** -- Rejected because guardrails and privacy must be immutable to maintain trust
+3. **Human-only infrastructure changes** -- Viable but prevents autonomous improvement of non-critical structural decisions; the observation bus provides enough diagnostic evidence for safe automated proposals
+
+### Decision #53: Reality Model Definition (AVRAI as a Reality Model, Not a Language Model)
+
+**Decision:** Formally define AVRAI as a "Reality Model" -- the full hierarchy of world models (individual) → universe models (collective) → reality (composition). The reality model is distinct from language models (SLM/LLM) which serve as the "mouth" and "ears" interfaces. The reality model learns from actual behavior, is grounded in physical space and time, composes collective reality from individual experiences, tracks emotional states, self-interrogates its convictions, and holds truths provisionally.
+
+**Why:** The distinction prevents architectural confusion between the brain (small ONNX networks that produce numeric outputs representing reality) and the mouth (SLM/LLM that produces text). All intelligence and understanding lives in the reality model. The SLM is an interface to that intelligence, not intelligence itself. This definition also positions the system as fundamentally different from LLM-based products: AVRAI understands behavior and experience; LLMs understand language.
+
+**Alternatives considered:**
+1. **"World model" only** -- Insufficient because the system spans multiple scales (individual → collective → universal) that "world model" doesn't capture
+2. **"AI system" (generic)** -- Misses the philosophical distinction between modeling language and modeling reality
+3. **No formal definition** -- Leads to confusion about which components are "the brain" vs. "the mouth"
+
+### Decision #54: Hardware Abstraction Hierarchy (Classical → NPU → Quantum)
+
+**Decision:** Expand the existing `QuantumComputeProvider` into a three-tier `HardwareComputeRouter`: classical CPU (always available), AI chips/NPU (available today on flagship devices), and cloud quantum (future). Each operation is routed to the optimal tier based on operation type, device capability, battery level, and latency requirement. The Sensor Abstraction Layer ensures new hardware sensors register on the same interface.
+
+**Why:** The existing quantum abstraction skipped the NPU tier that's available today. Modern flagship phones have dedicated AI chips (Apple Neural Engine, Google Tensor TPU, Qualcomm Hexagon) that provide 2-5x speedup for the exact operations AVRAI runs most frequently (ONNX model inference). Ignoring this hardware wastes real, available performance. The three-tier hierarchy ensures the system works on any device (classical fallback) while accelerating on what's available.
+
+**Alternatives considered:**
+1. **Quantum-only abstraction** -- Rejected because NPUs are available now and provide immediate benefit
+2. **Framework-specific acceleration (CoreML, NNAPI)** -- Too tightly coupled to platform; ONNX Runtime delegates provide cross-platform abstraction
+3. **No hardware abstraction** -- Would require re-architecture when NPU or quantum hardware is adopted
+
+### Decision #55: Agent Happiness Philosophy and User Agency Doctrine
+
+**Decision:** Codify two principles: (1) Agent happiness measures quality of life improvement, not prediction accuracy. Both successful and unsuccessful predictions are equally valuable learning signals. (2) Users always have a choice to act on suggestions. Non-participation is a valid, informative signal. Over-suggestion triggers frequency reduction, not persuasion increase.
+
+**Why:** Without explicit principles, optimization systems naturally converge toward maximizing prediction accuracy and user action rates -- which leads to engagement traps. AVRAI's purpose is to open doors, not optimize clicks. A prediction the user ignores teaches the model about user preferences and agency. A prediction the user follows teaches the model about good recommendations. Both are valuable. The user agency doctrine also prevents the system from interpreting declined suggestions as failures and escalating to more aggressive recommendations.
+
+**Alternatives considered:**
+1. **Accuracy-first optimization** -- Rejected because it would lead to safe, obvious recommendations (high accuracy but low value)
+2. **No formal principle** -- Leads to implicit accuracy optimization by default
+3. **User agency without learning** -- Rejected because non-participation data is too valuable to discard
+
+---
+
+## v16 Quick Reference
+
+| Name | Description | Phase | Related Phases |
+|------|-------------|------:|-----------------|
+| Multi-Dimensional Happiness | Learned happiness dimensions with self-calibrating per-user weights | 4.5B | 8.9B, 7.9, 5.1, 6.1 |
+| DSL Self-Modification | Safe on-device strategy composition without code changes | 7.9H | 7.9C, 7.9E, 7.7 |
+| Tax & Legal Compliance | Jurisdiction rules stored in locality agents/universe hierarchy | 9.4H | 8.9, 13, 9.4E, 5.1 |
+| Hybrid Expertise | Behavioral evidence + verified credentials → fused expertise score | 9.5 | 7.10A, 6.7B, 8.1, 13 |
+| Partnership Matching | Agents proactively scout B2B, expert, and community partnerships | 9.5B | 4.4, 8.6, 9.4, 8.1 |
+| Admin Platform | Desktop app with AI Code Studio, system monitor, partner SDK | 12 | 7.9, 7.7, 9.5.5, 9.2.6 |
+| Universe Model | Fractal federation: world → org → category → AVRAI universe | 13 | 8.1, 8.9E, 7.7, 1.5D |
+| Seamless Adoption | World models auto-activate for users based on location | 13.1.5 | 6.6, 13.1.3, AgentIdService |
+| University Lifecycle | Freshman→senior progression learned from category model | 13.3 | 5.1, 9.5, 8.6 |
+| Cross-Instance Intelligence | Learning/healing/adapting/coding across federation levels | 13.4 | 7.9H, 12.2, 8.1, 7.9F |
+| Meta-Learning Engine | Learning Cycle Ledger + weekly meta-analysis + process optimization + 7 immutable meta-guardrails | 7.9I | 1.1C, 7.9C, 7.9E, 12.1.3, 13.2 |
+| Value Intelligence | Causal chain attribution + hindsight surveys + stakeholder metrics + pilot toolkit + self-proving intelligence | 12.4 | 1.1, 5.1, 4.5B, 6.7B, 7.9I, 7.10A, 13.2 |
+| Knowledge-Wisdom-Conviction | Knowledge store + wisdom layer + conviction formation/challenge + fractal bidirectional flow + emotional experience vector | 1.1D | 1.1C, 4.5B, 7.9I, 7.9J, 13.2, 13.4 |
+| Self-Interrogation | Conviction review + cross-scope comparison + stress testing + human challenge + constructive disruption | 7.9J | 1.1D, 7.9I, 5.1, 12.1.3, 14 |
+| Agent Cognition | Persistent AgentContext + thinking sessions + multi-horizon reasoning + self-scheduled triggers | 7.11 | 7.4, 7.9I, 1.1D.2, 6.7B, 6.1 |
+| Composite Entity Identity | Multi-role entities with cross-role learning via conviction system | 9.6 | 1.1D, 4.4, 1.7, 12.1.3 |
+| Researcher Access | IRB-compatible anonymization + research API + longitudinal cohorts + sandbox + feedback loop | 14 | 2.2, 8, 12, 13, 1.1D |
+| Conviction Oracle | Dedicated universe conviction server with creator-only conversational interface, simulation sandbox | 12.5 | 1.1D, 7.9J, 7.9I, 7.11, 12, 13, 2 |
+| Emotional Experience | Full emotional spectrum (7 emotions + mixed) as episodic context and wisdom layer input | 1.1D.7 | 4.5B, 3.1, 6.1, 7.10C |
+| Sensory Architecture | Eyes/Ears/Mouth/Senses/Brain mapped to technical components with bidirectional cross-feeding | 7.12, 6.7C, 3.1, 6.7 | All phases |
+| Universal Self-Healing | Every non-guardrail component can diagnose, experiment on, and improve itself | 7.9, 7.12 | 6.7C, 7.9H, 13.4 |
+| Reality Model | Full hierarchy: world models → universe models → reality. Multi-layered understanding of humanity | 5, 8, 13, 1.1D | All phases |
+| Hardware Abstraction | Three-tier compute: Classical CPU → AI chip/NPU → Quantum. Sensor abstraction for future hardware | 11.4C-F | 7.5, 7.12, 7.10B |
+| Agent Happiness Philosophy | Predictions are metrics, not baselines; both outcomes equally valuable for learning | Core | 4.5B, 7.9, 6.1 |
+| User Agency Doctrine | Non-participation is valid signal; over-suggestion triggers reduction, not persuasion | Core | 1.2.16, 6.1, 7.10D |
+| Translation Layer | Self-healing semantic bridge between numeric reality model outputs and conversational language | 6.7C | 6.7, 7.9, 7.12, 7.9H |
+
+---
+
+## Life Pattern Intelligence Quick Reference
+
+| Name | Description | Phase | Related Phases |
+|------|-------------|------:|-----------------|
+| Passive Life Pattern Engine | Background location + widget + absence → routine model on-device | 7.10A | 1.7, 5.1.9, 5.1.11, 7.4 |
+| Active Life Pattern Engine | SLM intent extraction + tool-calling framework (7 tools) | 6.7B | 6.7, 7.10A.2, 8.6B, 9.4 |
+| Social Quality-of-Life Layer | Per-friend happiness correlation + group composition + social absence detection | 7.10C | 4.4, 8.6, 10.4A |
+| Notification Philosophy | 4-tier hierarchy: never/rarely/user-only/active-engine-ok + inference exhaustion | 7.10D | 7.9E, 6.2.6 |
+| Ad-Hoc Group Formation | SLM intent → BLE scan → confirm → joint score → book | 8.6B | 6.7B.2, 6.6, 4.4, 9.4 |
+
+---
+
+**Last Updated:** February 13, 2026  
+**Version:** 4.0 (added Decisions #51-55: Sensory Architecture, Universal Self-Healing Doctrine, Reality Model Definition, Hardware Abstraction Hierarchy, Agent Happiness Philosophy & User Agency Doctrine. Previous: 3.1 added Decision #50: Conviction Oracle. Previous: 3.0 added Decisions #45-49. Previous: 2.0)

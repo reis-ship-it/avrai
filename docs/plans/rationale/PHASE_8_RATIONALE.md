@@ -113,4 +113,36 @@ Locality happiness is a META-metric (how well is the system working here?), not 
 
 ---
 
-**Last Updated:** February 11, 2026 (v1.2 -- added Zeng et al. 2026 context -- modular continuous evolution as distributed concept. Previous: v1.1 Locality Happiness Advisory)
+## Why Cross-Locality Behavioral Archetypes (8.9E)
+
+**The problem:** Locality agents share vibe vectors (what a place feels like), but not behavioral patterns (what people do there). Two localities can have different vibes but behaviorally similar users. Without archetype matching, cross-locality advisory misses "people like you, in a place unlike yours, found this strategy helpful."
+
+**Why behavioral archetypes:** A compact representation of user behavior patterns: what they do, when they do it, how much they explore, and whether they prefer solo or group activities. Computed from aggregate data, never individual profiles.
+
+**Why timezone-aware normalization:** "Morning coffee" in Tokyo and "morning coffee" in Portland is the same archetype. Without timezone normalization, temporal patterns become meaningless across timezone boundaries. The `AtomicClockService` already supports this -- just use local time for archetype computation.
+
+**Why cross-archetype testing:** The self-optimization engine (7.9) should validate that parameter changes work across different behavioral types. Testing only on the majority archetype would over-optimize for the average and hurt edge cases. Opposite-archetype testing catches this.
+
+**Why archetype evolution:** When a user's behavioral archetype shifts (e.g., "evening social" → "morning solo" after a life change), the system should adapt. The archetype transition is itself a strong signal for the transition predictor.
+
+### Why Ad-Hoc Group Formation (8.6B)
+
+**Problem:** Group negotiation (8.6) is agent-initiated -- agents detect high entanglement and propose joint activities. But real-world group decisions happen spontaneously: "the 5 of us are hungry right now." The system has no way to handle user-initiated, immediate group needs.
+
+**Solution:** SLM intent extraction (Phase 6.7B) detects group intent → triggers BLE scan for nearby AVRAI agents → sends confirmation pop-ups → runs simplified joint energy scoring (average, not negotiated, for speed) → surfaces group recommendation in < 5 seconds. Handles partial AVRAI coverage gracefully (searches for stated group size even if not all members are on AVRAI).
+
+**Why not alternatives:**
+- "Just use the existing group negotiation (8.6)" -- Too slow. Entanglement-based negotiation is deliberate and agent-initiated. Ad-hoc groups need answers in seconds, not minutes.
+- "Manual search, user picks for group" -- Loses the collaborative aspect. When multiple agents contribute preferences, the result is better for everyone.
+- "Skip partial coverage handling" -- Most groups will have mixed AVRAI adoption. Graceful degradation is essential for real-world utility.
+
+**Pre-flight checklist for Phase 8.6B:**
+- [ ] Phase 6.7B SLM intent extraction and tool-calling exist
+- [ ] Phase 6.6 BLE discovery works for nearby agent detection
+- [ ] AI2AI protocol supports lightweight confirmation messages
+- [ ] Phase 4.4 energy function can run in simplified aggregation mode
+- [ ] Phase 9.4 service booking exists for group booking bridge
+
+---
+
+**Last Updated:** February 12, 2026 (v1.3 -- added Cross-Locality Behavioral Archetypes 8.9E rationale. Previous: v1.2 Zeng et al. 2026 context)

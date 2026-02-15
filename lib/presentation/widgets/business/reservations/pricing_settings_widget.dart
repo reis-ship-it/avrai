@@ -6,10 +6,11 @@
 // Widget for configuring pricing settings (free/paid, deposits, group pricing)
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/core/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Pricing Settings Widget
 ///
@@ -213,21 +214,11 @@ class _PricingSettingsWidgetState extends State<PricingSettingsWidget> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Pricing settings saved'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        context.showSuccess('Pricing settings saved');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving settings: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error saving settings: $e');
       }
     }
   }
@@ -237,7 +228,7 @@ class _PricingSettingsWidgetState extends State<PricingSettingsWidget> {
     if (_isLoading) {
       return const Card(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(kSpaceLg),
           child: Center(child: CircularProgressIndicator()),
         ),
       );
@@ -245,7 +236,7 @@ class _PricingSettingsWidgetState extends State<PricingSettingsWidget> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

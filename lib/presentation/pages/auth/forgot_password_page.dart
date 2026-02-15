@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/core/theme/app_theme.dart';
-import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -41,33 +41,23 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         listener: (context, state) {
           if (state is PasswordResetSent) {
             setState(() => _isSubmitting = false);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Reset link sent to ${state.email}'),
-                backgroundColor: AppColors.success,
-              ),
-            );
+            context.showSuccess('Reset link sent to ${state.email}');
             Navigator.pop(context);
           } else if (state is AuthError) {
             setState(() => _isSubmitting = false);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
+            context.showError(state.message);
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(kSpaceLg),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Enter your email address and we\'ll send you a link to reset your password.',
-                  style: TextStyle(fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -96,7 +86,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Send Reset Link'),
+                      : Text('Send Reset Link'),
                 ),
               ],
             ),

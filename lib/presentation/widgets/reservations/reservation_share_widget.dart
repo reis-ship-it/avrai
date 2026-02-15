@@ -7,11 +7,13 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_sharing_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Share Widget
 ///
@@ -93,13 +95,8 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Reservation shared with $_selectedUserName successfully',
-              ),
-              backgroundColor: AppTheme.successColor,
-            ),
+          context.showSuccess(
+            'Reservation shared with $_selectedUserName successfully',
           );
 
           // Notify parent
@@ -109,12 +106,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
             _error = result.error ?? 'Failed to share reservation';
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to share reservation'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to share reservation');
         }
       }
     } catch (e, stackTrace) {
@@ -130,12 +122,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
           _error = 'Failed to share: ${e.toString()}';
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to share: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to share: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -153,7 +140,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select User'),
+        title: Text('Select User'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -173,26 +160,25 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
               },
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Note: Full user search coming soon',
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               // Will be handled by onSubmitted
             },
-            child: const Text('Select'),
+            child: Text('Select'),
           ),
         ],
       ),
@@ -209,7 +195,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -222,13 +208,12 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Share Reservation',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
               ),
             ],
           ),
@@ -237,7 +222,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
 
           // Reservation Info
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -246,25 +231,24 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Reservation Details',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Type: ${widget.reservation.type.name}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
                   'Time: ${widget.reservation.reservationTime.toLocal().toString().split('.')[0]}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
                   'Party Size: ${widget.reservation.partySize}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -273,12 +257,11 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
           const SizedBox(height: 24),
 
           // User Selection
-          const Text(
+          Text(
             'Share With',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           InkWell(
@@ -292,11 +275,11 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
               ),
               child: Text(
                 _selectedUserName ?? 'Tap to search for user',
-                style: TextStyle(
-                  color: _selectedUserName != null
-                      ? AppColors.black
-                      : AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _selectedUserName != null
+                          ? AppColors.black
+                          : AppColors.textSecondary,
+                    ),
               ),
             ),
           ),
@@ -304,24 +287,23 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
           const SizedBox(height: 24),
 
           // Permission Level Selection
-          const Text(
+          Text(
             'Permission Level',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           SegmentedButton<SharingPermission>(
             segments: [
               ButtonSegment(
                 value: SharingPermission.readOnly,
-                label: const Text('Read Only'),
+                label: Text('Read Only'),
                 icon: const Icon(Icons.visibility),
               ),
               ButtonSegment(
                 value: SharingPermission.fullAccess,
-                label: const Text('Full Access'),
+                label: Text('Full Access'),
                 icon: const Icon(Icons.edit),
               ),
             ],
@@ -335,7 +317,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
 
           const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(kSpaceSm),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -355,7 +337,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                     _permission == SharingPermission.readOnly
                         ? 'User can view reservation details but cannot modify or cancel'
                         : 'User can view, modify, and cancel this reservation',
-                    style: const TextStyle(fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
               ],
@@ -366,7 +348,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
           if (_error != null) ...[
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -383,10 +365,9 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                   Expanded(
                     child: Text(
                       _error!,
-                      style: const TextStyle(
-                        color: AppTheme.errorColor,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.errorColor,
+                          ),
                     ),
                   ),
                 ],
@@ -406,12 +387,12 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryColor,
                       side: const BorderSide(color: AppTheme.primaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -422,7 +403,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -437,7 +418,7 @@ class _ReservationShareWidgetState extends State<ReservationShareWidget> {
                                 AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Share Reservation'),
+                      : Text('Share Reservation'),
                 ),
               ),
             ],

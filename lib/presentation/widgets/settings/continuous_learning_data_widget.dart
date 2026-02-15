@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Continuous Learning Data Collection Widget
-/// 
+///
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
-/// 
+///
 /// Displays data collection status for all 10 data sources:
 /// - user_actions
 /// - location_data
@@ -18,34 +20,36 @@ import 'dart:async';
 /// - community_interactions
 /// - ai2ai_communications
 /// - external_context
-/// 
+///
 /// Shows data collection activity indicators, data volume/statistics, and health status.
 /// Uses AppColors/AppTheme for 100% design token compliance.
 class ContinuousLearningDataWidget extends StatefulWidget {
   final String userId;
   final ContinuousLearningSystem learningSystem;
-  
+
   const ContinuousLearningDataWidget({
     super.key,
     required this.userId,
     required this.learningSystem,
   });
-  
+
   @override
-  State<ContinuousLearningDataWidget> createState() => _ContinuousLearningDataWidgetState();
+  State<ContinuousLearningDataWidget> createState() =>
+      _ContinuousLearningDataWidgetState();
 }
 
-class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWidget> {
+class _ContinuousLearningDataWidgetState
+    extends State<ContinuousLearningDataWidget> {
   DataCollectionStatus? _dataStatus;
   bool _isLoading = true;
   String? _errorMessage;
   Timer? _refreshTimer;
-  
+
   @override
   void initState() {
     super.initState();
     _loadDataStatus();
-    
+
     // Refresh data status periodically
     _refreshTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) _loadDataStatus();
@@ -57,16 +61,16 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   Future<void> _loadDataStatus() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final status = await widget.learningSystem.getDataCollectionStatus();
-      
+
       if (mounted) {
         setState(() {
           _dataStatus = status;
@@ -82,16 +86,18 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading data collection status',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(
                 color: AppColors.primary,
@@ -101,14 +107,14 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
         ),
       );
     }
-    
+
     if (_errorMessage != null) {
       return Semantics(
         label: 'Error loading data collection status',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -119,10 +125,9 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -131,7 +136,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                   button: true,
                   child: TextButton(
                     onPressed: _loadDataStatus,
-                    child: const Text('Retry'),
+                    child: Text('Retry'),
                   ),
                 ),
               ],
@@ -140,38 +145,38 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
         ),
       );
     }
-    
+
     if (_dataStatus == null || _dataStatus!.sourceStatuses.isEmpty) {
       return Semantics(
         label: 'No data collection status available',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Center(
               child: Text(
                 'No data collection status available',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ),
           ),
         ),
       );
     }
-    
+
     return Semantics(
-      label: 'Data collection status for ${_dataStatus!.sourceStatuses.length} sources',
+      label:
+          'Data collection status for ${_dataStatus!.sourceStatuses.length} sources',
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -179,7 +184,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -191,50 +196,50 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Data Collection Status',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Summary Metrics
               _buildSummaryMetrics(),
               const SizedBox(height: 24),
-              
+
               // Data Sources List
               const Divider(),
               const SizedBox(height: 16),
               Text(
                 'Data Sources (${_dataStatus!.sourceStatuses.length})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 12),
-              ..._dataStatus!.sourceStatuses.entries.map((entry) => _buildDataSourceCard(
-                entry.key,
-                entry.value,
-              )),
+              ..._dataStatus!.sourceStatuses.entries
+                  .map((entry) => _buildDataSourceCard(
+                        entry.key,
+                        entry.value,
+                      )),
             ],
           ),
         ),
       ),
     );
   }
-  
+
   Widget _buildSummaryMetrics() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(12),
@@ -266,8 +271,9 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
       ),
     );
   }
-  
-  Widget _buildSummaryMetricItem(String label, String value, IconData icon, Color color) {
+
+  Widget _buildSummaryMetricItem(
+      String label, String value, IconData icon, Color color) {
     return Semantics(
       label: '$label: $value',
       child: Column(
@@ -280,34 +286,34 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildDataSourceCard(String sourceName, DataSourceStatus status) {
+    final spacing = context.spacing;
     final healthColor = _getHealthColor(status.healthStatus);
     final healthIcon = _getHealthIcon(status.healthStatus);
-    
+
     return Semantics(
-      label: '${_formatSourceName(sourceName)}: ${status.healthStatus}, ${_formatDataVolume(status.dataVolume)}',
+      label:
+          '${_formatSourceName(sourceName)}: ${status.healthStatus}, ${_formatDataVolume(status.dataVolume)}',
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
+        margin: EdgeInsets.only(bottom: spacing.sm),
+        padding: EdgeInsets.all(spacing.sm),
         decoration: BoxDecoration(
           color: AppColors.grey100,
           borderRadius: BorderRadius.circular(8),
@@ -322,7 +328,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.all(spacing.xxs),
                   decoration: BoxDecoration(
                     color: healthColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -340,39 +346,42 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                     children: [
                       Text(
                         _formatSourceName(sourceName),
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: kSpaceXs, vertical: kSpaceNano),
                             decoration: BoxDecoration(
                               color: healthColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               _formatHealthStatus(status.healthStatus),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: healthColor,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: healthColor,
+                                  ),
                             ),
                           ),
                           if (status.isActive) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: kSpaceXs, vertical: kSpaceNano),
                               decoration: BoxDecoration(
                                 color: AppColors.success.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
@@ -383,11 +392,13 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                                   SizedBox(width: 4),
                                   Text(
                                     'Active',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.success,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.success,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -425,12 +436,13 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
       ),
     );
   }
-  
+
   Widget _buildDataMetricItem(String label, String value, IconData icon) {
+    final spacing = context.spacing;
     return Semantics(
       label: '$label: $value',
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(spacing.xs),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(6),
@@ -449,18 +461,16 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
                 children: [
                   Text(
                     value,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -470,7 +480,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
       ),
     );
   }
-  
+
   Color _getHealthColor(String healthStatus) {
     switch (healthStatus.toLowerCase()) {
       case 'healthy':
@@ -483,7 +493,7 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
         return AppColors.textSecondary;
     }
   }
-  
+
   IconData _getHealthIcon(String healthStatus) {
     switch (healthStatus.toLowerCase()) {
       case 'healthy':
@@ -496,18 +506,18 @@ class _ContinuousLearningDataWidgetState extends State<ContinuousLearningDataWid
         return Icons.help_outline;
     }
   }
-  
+
   String _formatHealthStatus(String healthStatus) {
     return healthStatus[0].toUpperCase() + healthStatus.substring(1);
   }
-  
+
   String _formatSourceName(String source) {
     return source
         .split('_')
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
   }
-  
+
   String _formatDataVolume(int bytes) {
     if (bytes < 1024) {
       return '$bytes B';

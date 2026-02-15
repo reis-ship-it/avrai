@@ -5,11 +5,13 @@ import 'package:avrai/core/models/events/event_partnership.dart';
 import 'package:avrai/core/models/payment/revenue_split.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
 import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
 import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
 import 'package:avrai/presentation/pages/payment/payment_failure_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
@@ -95,52 +97,55 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Event Details Card
-            Container(
-              padding: const EdgeInsets.all(20),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
+              radius: 0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CircleAvatar(
+                        radius: context.radius.xl,
+                        backgroundColor:
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
                         child: Text(
                           widget.event.getEventTypeEmoji(),
-                          style: const TextStyle(fontSize: 32),
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: context.spacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.event.title,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: context.spacing.xxs),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   _buildDetailRow(Icons.calendar_today,
                       _formatDateTime(widget.event.startTime)),
                   if (widget.event.location != null)
@@ -151,22 +156,24 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                   // Partnership Info
                   if (isPartnershipEvent &&
                       widget.partnership!.business != null) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     const Divider(color: AppColors.grey300),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     Row(
                       children: [
                         const Icon(Icons.handshake,
                             size: 18, color: AppTheme.primaryColor),
-                        const SizedBox(width: 8),
+                        SizedBox(width: context.spacing.xs),
                         Expanded(
                           child: Text(
                             'Partnership Event with ${widget.partnership!.business!.name}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                         ),
                       ],
@@ -176,70 +183,66 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Revenue Split Display (if partnership event)
             if (isPartnershipEvent && _revenueSplit != null) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: RevenueSplitDisplay(
                   split: _revenueSplit!,
                   showDetails: true,
                   showLockStatus: true,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Order Summary
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Order Summary',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Ticket Price
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Ticket Price',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       Text(
                         '\$${ticketPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.spacing.sm),
 
                   // Quantity Selector
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Quantity',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       Row(
                         children: [
@@ -259,20 +262,21 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
                                   : AppColors.grey400,
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: AppColors.grey100,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
+                          Chip(
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            side: BorderSide.none,
+                            backgroundColor: AppColors.grey100,
+                            label: Text(
                               '$_quantity',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
                           ),
                           IconButton(
@@ -300,40 +304,37 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
 
                   if (availableTickets <= 5 && availableTickets > 0)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(top: context.spacing.xs),
                       child: Text(
                         'Only $availableTickets tickets remaining!',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.warningColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.warningColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   const Divider(color: AppColors.grey300),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
 
                   // Total
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Total',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       Text(
                         '\$${totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
                       ),
                     ],
                   ),
@@ -341,11 +342,11 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
 
             // Payment Form
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: PaymentFormWidget(
                 amount: totalAmount,
                 quantity: _quantity,
@@ -362,29 +363,25 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
             ),
 
             if (_error != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.error.withValues(alpha: 0.3),
-                    ),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
+                child: PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.error,
+                                  ),
                         ),
                       ),
                     ],
@@ -393,7 +390,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
               ),
             ],
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xxl),
           ],
         ),
       ),
@@ -402,18 +399,17 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
 
   Widget _buildDetailRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 8),
+          SizedBox(width: context.spacing.xs),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],

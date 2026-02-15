@@ -6,10 +6,12 @@
 // Widget for configuring seating charts (optional feature)
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Seating Chart Settings Widget
 ///
@@ -73,21 +75,11 @@ class _SeatingChartSettingsWidgetState
           _seatingChartsEnabled);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Seating chart settings saved'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        context.showSuccess('Seating chart settings saved');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving settings: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error saving settings: $e');
       }
     }
   }
@@ -97,7 +89,7 @@ class _SeatingChartSettingsWidgetState
     if (_isLoading) {
       return const Card(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(kSpaceLg),
           child: Center(child: CircularProgressIndicator()),
         ),
       );
@@ -105,7 +97,7 @@ class _SeatingChartSettingsWidgetState
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -141,7 +133,7 @@ class _SeatingChartSettingsWidgetState
             if (_seatingChartsEnabled) ...[
               const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -162,10 +154,11 @@ class _SeatingChartSettingsWidgetState
                         const SizedBox(width: 8),
                         Text(
                           'Coming Soon',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
                         ),
                       ],
                     ),

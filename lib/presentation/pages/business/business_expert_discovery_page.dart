@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_expert_outreach_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/pages/business/business_expert_chat_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Expert Discovery Page
 ///
@@ -79,10 +83,10 @@ class _BusinessExpertDiscoveryPageState
                   const SizedBox(width: 4),
                   Text(
                     'Compatibility: ${(expert.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                    style: const TextStyle(
-                      color: AppColors.success,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.success,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
@@ -104,7 +108,7 @@ class _BusinessExpertDiscoveryPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -112,7 +116,7 @@ class _BusinessExpertDiscoveryPageState
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Send'),
+            child: Text('Send'),
           ),
         ],
       ),
@@ -126,30 +130,26 @@ class _BusinessExpertDiscoveryPageState
       );
 
       if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Outreach sent successfully!'),
-            backgroundColor: AppColors.success,
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Outreach sent successfully!',
+          kind: FeedbackKind.success,
         );
 
         // Navigate to chat page
-        Navigator.push(
+        AppNavigator.pushBuilder(
           context,
-          MaterialPageRoute(
-            builder: (context) => BusinessExpertChatPage(
-              businessId: widget.businessId,
-              expertId: expert.expertId,
-              expertName: expert.expertName,
-            ),
+          builder: (context) => BusinessExpertChatPage(
+            businessId: widget.businessId,
+            expertId: expert.expertId,
+            expertName: expert.expertName,
           ),
         );
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error sending outreach'),
-            backgroundColor: AppColors.error,
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Error sending outreach',
+          kind: FeedbackKind.error,
         );
       }
     }
@@ -166,20 +166,20 @@ class _BusinessExpertDiscoveryPageState
           icon: const Icon(Icons.filter_list),
           onPressed: () {
             // TODO: Show filter dialog
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Filter options coming soon'),
-              ),
+            FeedbackPresenter.showSnack(
+              context,
+              message: 'Filter options coming soon',
+              kind: FeedbackKind.info,
             );
           },
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(kSpaceLg),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -188,13 +188,16 @@ class _BusinessExpertDiscoveryPageState
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          style: const TextStyle(color: AppColors.error),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.error),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: _loadRecommendedExperts,
-                          child: const Text('Retry'),
+                          child: Text('Retry'),
                         ),
                       ],
                     ),
@@ -208,20 +211,24 @@ class _BusinessExpertDiscoveryPageState
                           const Icon(Icons.search_off,
                               size: 64, color: AppColors.textSecondary),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'No experts found',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Try adjusting your compatibility threshold',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           const SizedBox(height: 24),
                           ElevatedButton(
@@ -231,7 +238,7 @@ class _BusinessExpertDiscoveryPageState
                               });
                               _loadRecommendedExperts();
                             },
-                            child: const Text('Lower Threshold'),
+                            child: Text('Lower Threshold'),
                           ),
                         ],
                       ),
@@ -239,7 +246,7 @@ class _BusinessExpertDiscoveryPageState
                   : RefreshIndicator(
                       onRefresh: _loadRecommendedExperts,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(kSpaceMd),
                         itemCount: _recommendedExperts.length,
                         itemBuilder: (context, index) {
                           final expert = _recommendedExperts[index];
@@ -251,13 +258,14 @@ class _BusinessExpertDiscoveryPageState
   }
 
   Widget _buildExpertCard(ExpertMatch expert) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return PortalSurface(
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _sendOutreach(expert),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -279,35 +287,31 @@ class _BusinessExpertDiscoveryPageState
                       children: [
                         Text(
                           expert.expertName ?? 'Expert',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         if (expert.metadata?['expertise'] != null)
                           Text(
                             expert.metadata!['expertise'] as String,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                       ],
                     ),
                   ),
                   if (expert.compatibilityScore != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            _getCompatibilityColor(expert.compatibilityScore!)
-                                .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
+                    Chip(
+                      side: BorderSide.none,
+                      backgroundColor:
+                          _getCompatibilityColor(expert.compatibilityScore!)
+                              .withValues(alpha: 0.1),
+                      label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -319,12 +323,14 @@ class _BusinessExpertDiscoveryPageState
                           const SizedBox(width: 4),
                           Text(
                             '${(expert.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                            style: TextStyle(
-                              color: _getCompatibilityColor(
-                                  expert.compatibilityScore!),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: _getCompatibilityColor(
+                                      expert.compatibilityScore!),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -338,7 +344,7 @@ class _BusinessExpertDiscoveryPageState
                   OutlinedButton.icon(
                     onPressed: () => _sendOutreach(expert),
                     icon: const Icon(Icons.send, size: 16),
-                    label: const Text('Reach Out'),
+                    label: Text('Reach Out'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryColor,
                     ),

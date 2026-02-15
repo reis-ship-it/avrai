@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Brand Exposure Widget
-/// 
+///
 /// Displays brand exposure metrics from sponsorships.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class BrandExposureWidget extends StatelessWidget {
   final BrandAnalytics analytics;
@@ -18,62 +19,67 @@ class BrandExposureWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final exposure = analytics.exposureMetrics;
-    
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Brand Exposure Metrics',
-              style: TextStyle(
-                fontSize: 18,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Total Reach
             _buildExposureRow(
+              context,
               Icons.people,
               'Total Reach',
               _formatNumber(exposure.totalReach),
               'Total audience reached',
             ),
             const SizedBox(height: 12),
-            
+
             // Impressions
             _buildExposureRow(
+              context,
               Icons.visibility,
               'Impressions',
               _formatNumber(exposure.totalImpressions),
               'Total impressions',
             ),
             const SizedBox(height: 12),
-            
+
             // Product Sampling
             _buildExposureRow(
+              context,
               Icons.shopping_bag,
               'Product Sampling',
               exposure.productSampling.toString(),
               'People who sampled products',
             ),
             const SizedBox(height: 12),
-            
+
             // Email Signups
             _buildExposureRow(
+              context,
               Icons.email,
               'Email Signups',
               exposure.emailSignups.toString(),
               'New email subscribers',
             ),
             const SizedBox(height: 12),
-            
+
             // Website Visits
             _buildExposureRow(
+              context,
               Icons.language,
               'Website Visits',
               exposure.websiteVisits.toString(),
@@ -85,9 +91,16 @@ class BrandExposureWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildExposureRow(IconData icon, String label, String value, String description) {
+  Widget _buildExposureRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+    String description,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -102,8 +115,7 @@ class BrandExposureWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
@@ -111,8 +123,7 @@ class BrandExposureWidget extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -121,8 +132,7 @@ class BrandExposureWidget extends StatelessWidget {
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
+            style: textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppTheme.primaryColor,
             ),
@@ -143,4 +153,3 @@ class BrandExposureWidget extends StatelessWidget {
 }
 
 // BrandAnalytics, BrandExposureMetrics are imported from brand_analytics_page.dart
-

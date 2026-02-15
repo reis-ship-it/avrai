@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying user's active AI2AI connections
 class UserConnectionsDisplay extends StatelessWidget {
@@ -16,7 +17,7 @@ class UserConnectionsDisplay extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -38,7 +39,7 @@ class UserConnectionsDisplay extends StatelessWidget {
             const SizedBox(height: 16),
             if (overview.totalActiveConnections == 0)
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Center(
                   child: Column(
                     children: [
@@ -94,7 +95,8 @@ class UserConnectionsDisplay extends StatelessWidget {
                 const SizedBox(height: 8),
                 ...overview.topPerformingConnections.take(3).map(
                       (connectionId) => ListTile(
-                        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: kSpaceXxs),
                         leading: const CircleAvatar(
                           backgroundColor: AppColors.success,
                           child: Icon(
@@ -109,9 +111,10 @@ class UserConnectionsDisplay extends StatelessWidget {
                         ),
                         subtitle: Text(
                           'High performance',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.success,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.success,
+                                  ),
                         ),
                       ),
                     ),
@@ -143,4 +146,3 @@ class UserConnectionsDisplay extends StatelessWidget {
     );
   }
 }
-

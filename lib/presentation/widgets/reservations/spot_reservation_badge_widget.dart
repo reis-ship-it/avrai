@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Spot Reservation Badge Widget
 ///
@@ -42,8 +43,12 @@ class SpotReservationBadgeWidget extends StatelessWidget {
     if (!isAvailable) {
       return compact ? 'Unavailable' : 'Reservations unavailable';
     }
-    if (availableCapacity != null && availableCapacity! > 0 && availableCapacity! <= 5) {
-      return compact ? '$availableCapacity left' : '$availableCapacity spots left';
+    if (availableCapacity != null &&
+        availableCapacity! > 0 &&
+        availableCapacity! <= 5) {
+      return compact
+          ? '$availableCapacity left'
+          : '$availableCapacity spots left';
     }
     return compact ? 'Available' : 'Reservations available';
   }
@@ -55,7 +60,9 @@ class SpotReservationBadgeWidget extends StatelessWidget {
     if (!isAvailable) {
       return AppTheme.errorColor;
     }
-    if (availableCapacity != null && availableCapacity! > 0 && availableCapacity! <= 5) {
+    if (availableCapacity != null &&
+        availableCapacity! > 0 &&
+        availableCapacity! <= 5) {
       return AppTheme.warningColor;
     }
     return AppTheme.successColor;
@@ -68,7 +75,9 @@ class SpotReservationBadgeWidget extends StatelessWidget {
     if (!isAvailable) {
       return Icons.cancel;
     }
-    if (availableCapacity != null && availableCapacity! > 0 && availableCapacity! <= 5) {
+    if (availableCapacity != null &&
+        availableCapacity! > 0 &&
+        availableCapacity! <= 5) {
       return Icons.warning_amber_rounded;
     }
     return Icons.event_available;
@@ -82,8 +91,8 @@ class SpotReservationBadgeWidget extends StatelessWidget {
 
     final badge = Container(
       padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 12,
-        vertical: compact ? 4 : 6,
+        horizontal: compact ? kSpaceXs : kSpaceSm,
+        vertical: compact ? kSpaceXxs : kSpaceXsTight,
       ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
@@ -97,11 +106,10 @@ class SpotReservationBadgeWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             text,
-            style: TextStyle(
-              fontSize: compact ? 11 : 12,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),

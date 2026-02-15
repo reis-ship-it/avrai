@@ -57,6 +57,63 @@ class AppSpacing extends ThemeExtension<AppSpacing> {
 }
 
 @immutable
+class AppTypography extends ThemeExtension<AppTypography> {
+  final double display;
+  final double heading;
+  final double title;
+  final double body;
+  final double caption;
+  final double button;
+  final double brandLetterSpacing;
+
+  const AppTypography({
+    this.display = 30,
+    this.heading = 20,
+    this.title = 16,
+    this.body = 15,
+    this.caption = 12,
+    this.button = 16,
+    this.brandLetterSpacing = 4,
+  });
+
+  @override
+  AppTypography copyWith({
+    double? display,
+    double? heading,
+    double? title,
+    double? body,
+    double? caption,
+    double? button,
+    double? brandLetterSpacing,
+  }) {
+    return AppTypography(
+      display: display ?? this.display,
+      heading: heading ?? this.heading,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      caption: caption ?? this.caption,
+      button: button ?? this.button,
+      brandLetterSpacing: brandLetterSpacing ?? this.brandLetterSpacing,
+    );
+  }
+
+  @override
+  AppTypography lerp(ThemeExtension<AppTypography>? other, double t) {
+    if (other is! AppTypography) return this;
+    return AppTypography(
+      display: lerpDouble(display, other.display, t),
+      heading: lerpDouble(heading, other.heading, t),
+      title: lerpDouble(title, other.title, t),
+      body: lerpDouble(body, other.body, t),
+      caption: lerpDouble(caption, other.caption, t),
+      button: lerpDouble(button, other.button, t),
+      brandLetterSpacing:
+          lerpDouble(brandLetterSpacing, other.brandLetterSpacing, t),
+    );
+  }
+}
+
+@immutable
 class AppRadius extends ThemeExtension<AppRadius> {
   final double sm;
   final double md;
@@ -138,6 +195,14 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
   final double slateBlur;
   final double slateCornerRadius;
   final double slateBorderWidth;
+  final double surfaceCornerRadius;
+  final double surfaceBlur;
+  final double surfaceBorderWidth;
+  final double surfaceShadowBlur;
+  final double surfaceShadowYOffset;
+  final double surfaceShadowSpread;
+  final double surfaceDayTintAlpha;
+  final double surfaceNightTintAlpha;
   final double edgePadding;
   final double recessedMapCornerRadius;
   final double recessedMapBorderWidth;
@@ -150,6 +215,14 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
     this.slateBlur = 25,
     this.slateCornerRadius = 32,
     this.slateBorderWidth = 1.5,
+    this.surfaceCornerRadius = 32,
+    this.surfaceBlur = 25,
+    this.surfaceBorderWidth = 1.5,
+    this.surfaceShadowBlur = 40,
+    this.surfaceShadowYOffset = 20,
+    this.surfaceShadowSpread = -10,
+    this.surfaceDayTintAlpha = 0.22,
+    this.surfaceNightTintAlpha = 0.08,
     this.edgePadding = 12,
     this.recessedMapCornerRadius = 20,
     this.recessedMapBorderWidth = 1,
@@ -164,6 +237,14 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
     double? slateBlur,
     double? slateCornerRadius,
     double? slateBorderWidth,
+    double? surfaceCornerRadius,
+    double? surfaceBlur,
+    double? surfaceBorderWidth,
+    double? surfaceShadowBlur,
+    double? surfaceShadowYOffset,
+    double? surfaceShadowSpread,
+    double? surfaceDayTintAlpha,
+    double? surfaceNightTintAlpha,
     double? edgePadding,
     double? recessedMapCornerRadius,
     double? recessedMapBorderWidth,
@@ -176,6 +257,15 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
       slateBlur: slateBlur ?? this.slateBlur,
       slateCornerRadius: slateCornerRadius ?? this.slateCornerRadius,
       slateBorderWidth: slateBorderWidth ?? this.slateBorderWidth,
+      surfaceCornerRadius: surfaceCornerRadius ?? this.surfaceCornerRadius,
+      surfaceBlur: surfaceBlur ?? this.surfaceBlur,
+      surfaceBorderWidth: surfaceBorderWidth ?? this.surfaceBorderWidth,
+      surfaceShadowBlur: surfaceShadowBlur ?? this.surfaceShadowBlur,
+      surfaceShadowYOffset: surfaceShadowYOffset ?? this.surfaceShadowYOffset,
+      surfaceShadowSpread: surfaceShadowSpread ?? this.surfaceShadowSpread,
+      surfaceDayTintAlpha: surfaceDayTintAlpha ?? this.surfaceDayTintAlpha,
+      surfaceNightTintAlpha:
+          surfaceNightTintAlpha ?? this.surfaceNightTintAlpha,
       edgePadding: edgePadding ?? this.edgePadding,
       recessedMapCornerRadius:
           recessedMapCornerRadius ?? this.recessedMapCornerRadius,
@@ -199,6 +289,21 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
       slateCornerRadius:
           lerpDouble(slateCornerRadius, other.slateCornerRadius, t),
       slateBorderWidth: lerpDouble(slateBorderWidth, other.slateBorderWidth, t),
+      surfaceCornerRadius:
+          lerpDouble(surfaceCornerRadius, other.surfaceCornerRadius, t),
+      surfaceBlur: lerpDouble(surfaceBlur, other.surfaceBlur, t),
+      surfaceBorderWidth:
+          lerpDouble(surfaceBorderWidth, other.surfaceBorderWidth, t),
+      surfaceShadowBlur:
+          lerpDouble(surfaceShadowBlur, other.surfaceShadowBlur, t),
+      surfaceShadowYOffset:
+          lerpDouble(surfaceShadowYOffset, other.surfaceShadowYOffset, t),
+      surfaceShadowSpread:
+          lerpDouble(surfaceShadowSpread, other.surfaceShadowSpread, t),
+      surfaceDayTintAlpha:
+          lerpDouble(surfaceDayTintAlpha, other.surfaceDayTintAlpha, t),
+      surfaceNightTintAlpha:
+          lerpDouble(surfaceNightTintAlpha, other.surfaceNightTintAlpha, t),
       edgePadding: lerpDouble(edgePadding, other.edgePadding, t),
       recessedMapCornerRadius: lerpDouble(
         recessedMapCornerRadius,

@@ -1,29 +1,30 @@
 /// Standard Loading Widget
-/// 
+///
 /// Phase 7, Section 42 (7.4.4): UI Integration Improvements
 /// Agent 2: Frontend & UX Specialist
-/// 
+///
 /// Provides a consistent loading indicator pattern across all UI components.
 /// Standardizes loading indicators, loading messages, and loading placement.
-/// 
+///
 /// Uses AppColors and AppTheme for 100% design token compliance.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Standardized loading widget for consistent loading states across the app
 class StandardLoadingWidget extends StatelessWidget {
   /// Optional loading message
   final String? message;
-  
+
   /// Size of the loading indicator (defaults to 40)
   final double size;
-  
+
   /// Stroke width of the circular progress indicator (defaults to 3)
   final double strokeWidth;
-  
+
   /// Compact mode - smaller size and text (defaults to false)
   final bool compact;
 
@@ -37,6 +38,7 @@ class StandardLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -55,8 +57,7 @@ class StandardLoadingWidget extends StatelessWidget {
             SizedBox(height: compact ? 12 : 16),
             Text(
               message!,
-              style: TextStyle(
-                fontSize: compact ? 12 : 14,
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
@@ -72,30 +73,34 @@ class StandardLoadingWidget extends StatelessWidget {
     String? message,
     double size = 20,
   }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: size,
-          height: size,
-          child: const CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              AppTheme.primaryColor,
+    return Builder(
+      builder: (context) {
+        final textTheme = Theme.of(context).textTheme;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: size,
+              height: size,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.primaryColor,
+                ),
+              ),
             ),
-          ),
-        ),
-        if (message != null) ...[
-          const SizedBox(width: 8),
-          Text(
-            message,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ],
+            if (message != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                message,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 
@@ -117,7 +122,7 @@ class StandardLoadingWidget extends StatelessWidget {
     EdgeInsets? padding,
   }) {
     return Container(
-      padding: padding ?? const EdgeInsets.all(24),
+      padding: padding ?? const EdgeInsets.all(kSpaceLg),
       child: StandardLoadingWidget(
         message: message,
         size: 40,
@@ -137,4 +142,3 @@ class StandardLoadingWidget extends StatelessWidget {
     );
   }
 }
-

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/social_media/social_media_connection_service.dart';
@@ -49,23 +51,26 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Connect Social Media (Optional)',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: textTheme.headlineSmall,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Connect your social accounts to enhance your AI personality and discover friends who use avrai. You can skip this step and connect later in settings.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.grey600,
-                ),
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.grey600,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
           // Batch connection option (only during onboarding)
           if (widget.isOnboarding) ...[
             PortalSurface(
@@ -78,28 +83,27 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                     children: [
                       const Icon(Icons.auto_awesome,
                           color: AppTheme.primaryColor),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Quick Connect',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryColor,
-                                ),
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'Select multiple platforms and connect them all at once. This is only available during onboarding.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.grey600,
-                        ),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.grey600,
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: spacing.xs,
+                    runSpacing: spacing.xs,
                     children: _connectedPlatforms.keys.map((platform) {
                       final isSelected = _selectedForBatch.contains(platform);
                       final isConnected = _connectedPlatforms[platform] == true;
@@ -123,7 +127,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -151,7 +155,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
           ],
           Expanded(
             child: ListView(
@@ -159,7 +163,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                 final platform = entry.key;
                 final isConnected = entry.value;
                 return PortalSurface(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: EdgeInsets.only(bottom: spacing.sm),
                   padding: EdgeInsets.zero,
                   child: ListTile(
                     leading: _getPlatformIcon(platform),
@@ -168,7 +172,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                       isConnected
                           ? 'Connected'
                           : 'Connect to enhance your AI personality',
-                      style: TextStyle(
+                      style: textTheme.bodySmall?.copyWith(
                         color:
                             isConnected ? AppColors.success : AppColors.grey600,
                       ),
@@ -196,23 +200,24 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
               }).toList(),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           // Add custom account option
           OutlinedButton.icon(
             onPressed: _showAddCustomAccountDialog,
             icon: const Icon(Icons.add_circle_outline),
             label: const Text('Add Custom Account'),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                  horizontal: spacing.md, vertical: spacing.sm),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing.md),
           Text(
             'Privacy Note: We only use your social data to enhance your AI personality and help you discover friends. You can disconnect anytime in settings.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.grey600,
-                  fontStyle: FontStyle.italic,
-                ),
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.grey600,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
       ),
@@ -241,7 +246,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               TextField(
                 controller: clientIdController,
                 decoration: const InputDecoration(
@@ -250,7 +255,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               TextField(
                 controller: discoveryUrlController,
                 decoration: const InputDecoration(
@@ -260,7 +265,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing.md),
               TextField(
                 controller: profileEndpointController,
                 decoration: const InputDecoration(
@@ -356,12 +361,11 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
       widget.onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$platformDisplay connected successfully'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: '$platformDisplay connected successfully',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
       }
     } catch (e) {
@@ -373,12 +377,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to connect: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to connect: $e');
       }
     }
   }
@@ -481,13 +480,11 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         widget
             .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'Connected ${connections.length} platform(s) successfully'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 3),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Connected ${connections.length} platform(s) successfully',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
@@ -496,12 +493,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
           _isBatchConnecting = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to connect platforms: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to connect platforms: $e');
       }
     }
   }
@@ -545,12 +537,11 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
         widget
             .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$platform connected successfully'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: '$platform connected successfully',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
       }
     } catch (e) {
@@ -560,12 +551,7 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
           _connectingPlatform = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to connect $platform: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to connect $platform: $e');
       }
     }
   }
@@ -623,21 +609,15 @@ class _SocialMediaConnectionPageState extends State<SocialMediaConnectionPage> {
             .onConnectionsChanged(Map<String, bool>.from(_connectedPlatforms));
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$platform disconnected'),
-            backgroundColor: AppColors.warning,
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: '$platform disconnected',
+          kind: FeedbackKind.warning,
+          duration: const Duration(seconds: 2),
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to disconnect $platform: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to disconnect $platform: $e');
       }
     }
   }

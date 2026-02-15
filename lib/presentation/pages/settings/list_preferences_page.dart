@@ -3,6 +3,7 @@ import 'package:avrai/core/services/lists/list_preference_service.dart';
 import 'package:avrai/core/ai/perpetual_list/models/models.dart';
 import 'package:avrai/core/ai/perpetual_list/filters/age_aware_list_filter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
@@ -49,49 +50,50 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return AdaptivePlatformPageScaffold(
       title: 'List Preferences',
       constrainBody: false,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               children: [
                 // Timing preferences section
                 _buildSectionHeader(context, 'When to suggest lists'),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 _buildTimeSlotToggles(context),
-                const SizedBox(height: 24),
+                SizedBox(height: spacing.lg),
 
                 // Frequency section
                 _buildSectionHeader(context, 'Frequency'),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 _buildFrequencySettings(context),
-                const SizedBox(height: 24),
+                SizedBox(height: spacing.lg),
 
                 // Exploration balance section
                 _buildSectionHeader(context, 'Exploration vs Familiar'),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 _buildExplorationSlider(context),
-                const SizedBox(height: 24),
+                SizedBox(height: spacing.lg),
 
                 // Categories section
                 _buildSectionHeader(context, 'Categories'),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 _buildCategoryToggles(context),
-                const SizedBox(height: 24),
+                SizedBox(height: spacing.lg),
 
                 // Sensitive categories section (age-gated)
                 if ((widget.userAge ?? 18) >= 18) ...[
                   _buildSectionHeader(context, 'Sensitive Categories'),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   _buildSensitiveCategoryToggles(context),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
                 ],
 
                 // Notifications section
                 _buildSectionHeader(context, 'Notifications'),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 _buildNotificationSettings(context),
               ],
             ),
@@ -237,10 +239,12 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
 
   Widget _buildExplorationSlider(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
 
     return PortalSurface(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -249,11 +253,15 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
               children: [
                 Text(
                   'Familiar',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 Text(
                   'Explore',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -328,16 +336,17 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
     final sensitiveCategories = AgeAwareListFilter.sensitiveCategories;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final spacing = context.spacing;
 
     return PortalSurface(
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(spacing.md),
             child: Row(
               children: [
                 Icon(Icons.warning_amber, color: colorScheme.error, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: spacing.xs),
                 Expanded(
                   child: Text(
                     'These categories require explicit opt-in and are 18+ only.',

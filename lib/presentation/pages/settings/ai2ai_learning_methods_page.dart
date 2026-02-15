@@ -10,6 +10,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// AI2AI Learning Methods Page
 ///
@@ -72,6 +73,8 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return AdaptivePlatformPageScaffold(
       title: 'AI2AI Learning Methods',
       constrainBody: false,
@@ -94,7 +97,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
           if (_errorMessage != null) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(spacing.lg),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -103,25 +106,23 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
                       size: 64,
                       color: AppColors.error,
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    SizedBox(height: spacing.md),
+                    Text(
                       'Error',
-                      style: TextStyle(
-                        fontSize: 20,
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: spacing.xs),
                     Text(
                       _errorMessage!,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: spacing.lg),
                     ElevatedButton(
                       onPressed: _initializeService,
                       child: const Text('Retry'),
@@ -140,79 +141,75 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
 
           return ListView(
             key: const Key('ai2ai_learning_methods_page_list'),
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(spacing.md),
             children: [
               // Header
               _buildHeader(context),
-              const SizedBox(height: 24),
+              SizedBox(height: spacing.lg),
 
               // Section 1: Learning Methods Overview
               _buildSectionHeader(context, 'Learning Methods Overview'),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: spacing.xs),
+              Text(
                 'See how your AI learns from other AIs',
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               AI2AILearningMethodsWidget(
                 userId: userId,
                 learningService: _learningService!,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: spacing.xl),
 
               // Section 2: Learning Effectiveness
               _buildSectionHeader(context, 'Learning Effectiveness Metrics'),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: spacing.xs),
+              Text(
                 'Track how effectively your AI is learning',
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               AI2AILearningEffectivenessWidget(
                 userId: userId,
                 learningService: _learningService!,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: spacing.xl),
 
               // Section 3: Learning Insights
               _buildSectionHeader(context, 'Active Learning Insights'),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: spacing.xs),
+              Text(
                 'Recent insights from AI2AI interactions',
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               AI2AILearningInsightsWidget(
                 userId: userId,
                 learningService: _learningService!,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: spacing.xl),
 
               // Section 4: Learning Recommendations
               _buildSectionHeader(context, 'Learning Recommendations'),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: spacing.xs),
+              Text(
                 'Optimal learning partners and development areas',
-                style: TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: spacing.sm),
               AI2AILearningRecommendationsWidget(
                 userId: userId,
                 learningService: _learningService!,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: spacing.lg),
 
               // Footer
               _buildFooter(context),
@@ -229,38 +226,33 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
       borderColor: AppColors.primary.withValues(alpha: 0.24),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.2),
             child: const Icon(
               Icons.psychology,
               color: AppColors.primary,
               size: 32,
             ),
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: context.spacing.md),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'AI2AI Learning Methods',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Text(
                   'See how your AI learns from other AIs',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -273,63 +265,62 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
     );
   }
 
   Widget _buildFooter(BuildContext context) {
-    return const PortalSurface(
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
+    return PortalSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 color: AppColors.primary,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              SizedBox(width: spacing.xs),
               Text(
                 'Learn More',
-                style: TextStyle(
-                  fontSize: 16,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Text(
             'AI2AI learning enables your AI to learn from interactions with other AIs '
             'through secure, privacy-preserving connections. Your AI discovers new '
             'personality insights, learns from cross-personality patterns, and evolves '
             'through collective intelligence. All learning happens on your device to '
             'protect your privacy.',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),
-          SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.shield,
                 color: AppColors.success,
                 size: 16,
               ),
-              SizedBox(width: 4),
+              SizedBox(width: spacing.xxs),
               Text(
                 'Your data stays on your device',
-                style: TextStyle(
-                  fontSize: 13,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.success,
                   fontWeight: FontWeight.w600,
                 ),

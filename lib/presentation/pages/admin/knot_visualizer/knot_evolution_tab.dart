@@ -5,9 +5,11 @@
 // Phase 9: Admin Knot Visualizer
 
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/knot_admin_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Tab for tracking knot evolution
 class KnotEvolutionTab extends StatefulWidget {
@@ -61,7 +63,7 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
       children: [
         // Filters
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Row(
             children: [
               Expanded(
@@ -81,7 +83,7 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
               const SizedBox(width: 16),
               ElevatedButton(
                 onPressed: _loadEvolutionData,
-                child: const Text('Load'),
+                child: Text('Load'),
               ),
             ],
           ),
@@ -92,7 +94,7 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
           child: RefreshIndicator(
             onRefresh: _loadEvolutionData,
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator())
                 : _errorMessage != null
                     ? Center(
                         child: Column(
@@ -105,14 +107,13 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadEvolutionData,
-                              child: const Text('Retry'),
+                              child: Text('Retry'),
                             ),
                           ],
                         ),
                       )
                     : _evolutionData == null
-                        ? const Center(
-                            child: Text('No evolution data available'))
+                        ? Center(child: Text('No evolution data available'))
                         : _buildEvolutionContent(),
           ),
         ),
@@ -136,18 +137,18 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
     final agentId = data['agentId'] as String? ?? 'Unknown';
 
     if (snapshots.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No evolution snapshots available for this agent'),
       );
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
         // Header
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -175,22 +176,18 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
           final writhe = snapshot['writhe'] as int;
           final complexity = snapshot['complexity'] as num;
 
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8.0),
+          return PortalSurface(
+            margin: const EdgeInsets.only(bottom: kSpaceXs),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Row(
                 children: [
                   // Timeline indicator
                   Column(
                     children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.primary,
-                        ),
+                      const CircleAvatar(
+                        radius: 6,
+                        backgroundColor: AppColors.primary,
                       ),
                       if (index < snapshots.length - 1)
                         Container(
@@ -208,10 +205,10 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
                       children: [
                         Text(
                           _formatTimestamp(timestamp),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -239,11 +236,11 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
 
   Widget _buildAggregateEvolution(Map<String, dynamic> data) {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -260,16 +257,18 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
                 const SizedBox(height: 8),
                 _buildStatRow(
                   'Average Snapshots per User',
-                  (data['averageSnapshotsPerUser'] as num? ?? 0.0).toStringAsFixed(1),
+                  (data['averageSnapshotsPerUser'] as num? ?? 0.0)
+                      .toStringAsFixed(1),
                   Icons.timeline,
                 ),
                 const SizedBox(height: 16),
                 if ((data['evolutionTrends'] as List?)?.isEmpty ?? true)
-                  const Text('No evolution trends available')
+                  Text('No evolution trends available')
                 else
                   ...(data['evolutionTrends'] as List<dynamic>)
                       .map((trend) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: kSpaceXxs),
                             child: Text('• ${trend['description'] ?? 'Trend'}'),
                           )),
               ],
@@ -288,22 +287,24 @@ class _KnotEvolutionTabState extends State<KnotEvolutionTab> {
         Expanded(child: Text(label)),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
   Widget _buildMetricChip(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.grey100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      side: BorderSide.none,
+      backgroundColor: AppColors.grey100,
+      label: Text(
         '$label: $value',
-        style: const TextStyle(fontSize: 12),
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

@@ -3,7 +3,7 @@
 **Date:** November 30, 2025, 9:54 PM CST  
 **Purpose:** Real-time status tracking for agent dependencies and communication  
 **Status:** 🟢 Active - Phase 6 Complete, Phase 7 Section 47-48 Complete, Section 51-52 IN PROGRESS (Section 49-50 Deferred)
-**Last Updated:** January 2, 2026 (Master Plan status made canonical here; removed duplicated status snapshots elsewhere)
+**Last Updated:** February 15, 2026 (Normalized cross-doc coherence wiring: added canonical `REALITY_COHERENCE_TEST_MATRIX.md` references across architecture/design/methodology/supabase planning surfaces and confirmed orchestration validation)
 
 ---
 
@@ -40,6 +40,33 @@ To avoid drift and contradictory “status snapshots” across docs:
 **What changed:** Removed `packages/* → package:spots/...` imports via package-owned canonicals + app shims, and moved app-dependent services out of packages.  
 **Work log:** `docs/agents/reports/agent_cursor/phase_4/2026-01-03_architecture_stabilization_repo_hygiene_store_ready_complete.md`  
 **Verification:** `dart run scripts/ci/check_architecture.dart` baseline is now **0** (no tolerated package→app import violations).
+
+### **Master Plan Update: Phase 10 Orchestration + Design Integration Contracts (prep layer)**
+**Status:** ✅ **Planning artifacts updated + validated**  
+**What changed:**
+- Added architecture backlog stories:
+  - `MPA-P10-E2-S4` (consumer knot journey state-machine + telemetry contract)
+  - `MPA-P10-E2-S5` (world planes ambient/immersive contract + fallback/telemetry)
+- Expanded orchestration required references to include design-principles and methodology docs:
+  - Design: `docs/design/MASTER_PLAN_DESIGN_LINKAGE.md`, `docs/design/DESIGN_COVERAGE_MATRIX.md`, `docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md`, `docs/design/SENSORY_FEEDBACK_GUIDELINES.md`
+  - Methodology: `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`, `docs/plans/methodology/SESSION_START_CHECKLIST.md`, `docs/plans/methodology/START_HERE_NEW_TASK.md`, `docs/plans/methodology/PHASE_SECTION_SUBSECTION_FORMAT.md`
+- Synchronized orchestration enforcement across:
+  - `docs/plans/master_plan_execution.yaml`
+  - `docs/plans/architecture/MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md`
+  - `.github/workflows/master-plan-orchestration-validate.yml`
+  - `.cursorrules`, `.cursorrules_master_plan`, `.cursorrules_plan_tracker`
+**Verification:**
+- `bash scripts/validate_master_plan_execution_refs.sh` passed.
+
+### **Master Plan Update: Phase 2.8 Coherence Matrix Normalization (repo-wide planning/docs sweep)**
+**Status:** ✅ **Planning docs normalized**  
+**What changed:**
+- Added canonical coherence matrix artifact and scenario contracts:
+  - `docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md`
+- Normalized inter-app/coherence references across architecture, design, methodology, and supabase function docs.
+- Added required `RCM-*` scenario mapping prompts to session-start and new-task methodology docs.
+**Verification:**
+- `bash scripts/validate_master_plan_execution_refs.sh` passed.
 
 ### **Master Plan Update: Phase 22 — Outside Data‑Buyer Insights (DP export)**
 **Status:** ✅ **Deployed + verified end-to-end** (migrations applied, function deployed, sample export run, deny-list checked)  
@@ -2285,4 +2312,3 @@ If you're waiting for a dependency:
 - ✅ Check this file before starting work that depends on others
 - ✅ Signal completion of work that others depend on
 - ✅ Check regularly if you're blocked
-

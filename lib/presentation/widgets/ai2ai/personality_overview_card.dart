@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying personality overview with dimensions, confidence, and archetype
 class PersonalityOverviewCard extends StatelessWidget {
@@ -16,7 +17,7 @@ class PersonalityOverviewCard extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,7 +33,7 @@ class PersonalityOverviewCard extends StatelessWidget {
                 Chip(
                   label: Text(
                     profile.archetype.toUpperCase(),
-                    style: const TextStyle(fontSize: 10),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   backgroundColor: AppColors.success.withValues(alpha: 0.2),
                 ),
@@ -63,7 +64,8 @@ class PersonalityOverviewCard extends StatelessWidget {
                 value: profile.authenticity,
                 minHeight: 8,
                 backgroundColor: AppColors.grey200,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.success),
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppColors.success),
               ),
             ),
             const SizedBox(height: 24),
@@ -111,14 +113,17 @@ class PersonalityOverviewCard extends StatelessWidget {
     double value,
     double confidence,
   ) {
-    final displayName = dimension.replaceAll('_', ' ').split(' ').map(
-          (word) => word.isEmpty
-              ? word
-              : word[0].toUpperCase() + word.substring(1),
-        ).join(' ');
+    final displayName = dimension
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map(
+          (word) =>
+              word.isEmpty ? word : word[0].toUpperCase() + word.substring(1),
+        )
+        .join(' ');
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -172,4 +177,3 @@ class PersonalityOverviewCard extends StatelessWidget {
     return AppColors.grey500;
   }
 }
-

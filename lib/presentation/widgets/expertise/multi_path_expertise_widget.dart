@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/expertise/multi_path_expertise.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Multi-Path Expertise Widget
-/// 
+///
 /// Displays expertise breakdown across all 6 paths to expertise.
 /// Shows progress for each path and overall weighted score.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to expertise through multiple paths
 /// - Recognizes different types of expertise
 /// - Supports diverse ways to become an expert
-/// 
+///
 /// **Path Weights:**
 /// - Exploration (40%): Visits, reviews, check-ins
 /// - Credentials (25%): Degrees, certifications
@@ -44,7 +45,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -56,28 +57,27 @@ class MultiPathExpertiseWidget extends StatelessWidget {
           // Header
           Row(
             children: [
-              const Text(
+              Text(
                 'Expertise Paths',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: kSpaceSm, vertical: kSpaceXsTight),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${(totalScore * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.electricGreen,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.electricGreen,
+                      ),
                 ),
               ),
             ],
@@ -87,6 +87,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
           // Path breakdown
           if (exploration != null)
             _buildPathCard(
+              context: context,
               title: 'Exploration',
               weight: '40%',
               score: exploration!.score,
@@ -98,6 +99,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
             ),
           if (credential != null)
             _buildPathCard(
+              context: context,
               title: 'Credentials',
               weight: '25%',
               score: credential!.score,
@@ -109,6 +111,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
             ),
           if (influence != null)
             _buildPathCard(
+              context: context,
               title: 'Influence',
               weight: '20%',
               score: influence!.score,
@@ -120,6 +123,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
             ),
           if (professional != null)
             _buildPathCard(
+              context: context,
               title: 'Professional',
               weight: '25%',
               score: professional!.score,
@@ -131,6 +135,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
             ),
           if (community != null)
             _buildPathCard(
+              context: context,
               title: 'Community',
               weight: '15%',
               score: community!.score,
@@ -142,6 +147,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
             ),
           if (local != null)
             _buildPathCard(
+              context: context,
               title: 'Local',
               weight: 'Varies',
               score: local!.score,
@@ -158,6 +164,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
   }
 
   Widget _buildPathCard({
+    required BuildContext context,
     required String title,
     required String weight,
     required double score,
@@ -167,7 +174,7 @@ class MultiPathExpertiseWidget extends StatelessWidget {
     bool isGolden = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Row(
         children: [
           // Icon
@@ -194,11 +201,10 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     if (isGolden) ...[
                       const SizedBox(width: 4),
@@ -207,22 +213,20 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                         size: 14,
                         color: AppColors.warning,
                       ),
-                      const Text(
+                      Text(
                         'Golden',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.warning,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.warning,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ],
                     const Spacer(),
                     Text(
                       weight,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -230,10 +234,9 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     details,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
                 const SizedBox(height: 8),
@@ -250,10 +253,9 @@ class MultiPathExpertiseWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${(score * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -279,7 +281,8 @@ class CompactMultiPathExpertiseWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceSm, vertical: kSpaceXs),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -295,23 +298,20 @@ class CompactMultiPathExpertiseWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '${(totalScore * 100).toStringAsFixed(0)}%',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(width: 4),
           Text(
             '($activePaths paths)',
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
     );
   }
 }
-

@@ -1,16 +1,17 @@
 /// Friends Chat List View
-/// 
+///
 /// Displays list of friend conversations
 /// - Shows recent conversations
 /// - Unread indicators
 /// - Last message preview
-/// 
+///
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
 library;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/chat/friend_chat_service.dart';
@@ -44,14 +45,14 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
       setState(() {
         _userId = authState.user.id;
       });
-      
+
       await _loadChatList();
     }
   }
 
   Future<void> _loadChatList() async {
     if (_userId == null) return;
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -62,14 +63,14 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
       final friendIds = <String>[]; // Get from user.friends
       final friendNames = <String, String>{};
       final friendPhotoUrls = <String, String>{};
-      
+
       final chatList = await _chatService.getFriendsChatList(
         _userId!,
         friendIds,
         friendNames: friendNames,
         friendPhotoUrls: friendPhotoUrls,
       );
-      
+
       if (mounted) {
         setState(() {
           _chatList = chatList;
@@ -81,12 +82,7 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading chats: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading chats: $e');
       }
     }
   }
@@ -94,7 +90,7 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -102,11 +98,11 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
     return RefreshIndicator(
       onRefresh: _loadChatList,
       child: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(),
             )
           : _chatList.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -118,18 +114,16 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
                       SizedBox(height: 16),
                       Text(
                         'No conversations yet',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       SizedBox(height: 8),
                       Text(
                         'Start chatting with your friends!',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -160,25 +154,26 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
           Expanded(
             child: Text(
               chat.friendName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           if (chat.unreadCount > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(12),
+            Chip(
+              side: BorderSide.none,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: const VisualDensity(
+                horizontal: -4,
+                vertical: -4,
               ),
-              child: Text(
+              backgroundColor: AppTheme.primaryColor,
+              label: Text(
                 '${chat.unreadCount}',
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
         ],
@@ -191,19 +186,18 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
             chat.lastMessagePreview ?? 'No messages',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             chat.lastMessageTime != null
                 ? _formatTimestamp(chat.lastMessageTime!)
                 : '',
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -229,4 +223,3 @@ class _FriendsChatListViewState extends State<FriendsChatListView> {
     }
   }
 }
-

@@ -4,6 +4,7 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/business/business_patron_preferences.dart';
 import 'package:avrai/core/services/business/user_business_matching_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Compatibility Widget
 /// Shows users how well they match a specific business's patron preferences
@@ -24,14 +25,17 @@ class BusinessCompatibilityWidget extends StatelessWidget {
       future: _getCompatibilityScore(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
           return Center(
             child: Text(
               'Error: ${snapshot.error}',
-              style: const TextStyle(color: AppColors.error),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppColors.error),
             ),
           );
         }
@@ -41,7 +45,7 @@ class BusinessCompatibilityWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        return _buildCompatibilityCard(score);
+        return _buildCompatibilityCard(context, score);
       },
     );
   }
@@ -54,13 +58,14 @@ class BusinessCompatibilityWidget extends StatelessWidget {
     return await service.getUserCompatibilityScore(user, business);
   }
 
-  Widget _buildCompatibilityCard(BusinessCompatibilityScore score) {
+  Widget _buildCompatibilityCard(
+      BuildContext context, BusinessCompatibilityScore score) {
     final isGoodMatch = score.isGoodMatch;
     final preferences = business.patronPreferences;
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,17 +76,17 @@ class BusinessCompatibilityWidget extends StatelessWidget {
                   color: AppColors.electricGreen,
                 ),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Your Compatibility',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceSm, vertical: kSpaceXsTight),
                   decoration: BoxDecoration(
                     color: isGoodMatch
                         ? AppColors.electricGreen.withValues(alpha: 0.1)
@@ -90,62 +95,72 @@ class BusinessCompatibilityWidget extends StatelessWidget {
                   ),
                   child: Text(
                     '${score.percentageScore}%',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isGoodMatch
-                          ? AppColors.electricGreen
-                          : AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isGoodMatch
+                              ? AppColors.electricGreen
+                              : AppColors.textSecondary,
+                        ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            
+
             if (preferences != null) ...[
               // What the business is looking for
-              _buildSectionTitle('What ${business.name} is Looking For'),
+              _buildSectionTitle(
+                  context, 'What ${business.name} is Looking For'),
               const SizedBox(height: 8),
-              
+
               if (preferences.preferredVibePreferences?.isNotEmpty == true) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.mood,
                   label: 'Vibe',
                   value: preferences.preferredVibePreferences!.join(', '),
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               if (preferences.preferredInterests?.isNotEmpty == true) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.favorite,
                   label: 'Interests',
                   value: preferences.preferredInterests!.take(3).join(', '),
                 ),
                 const SizedBox(height: 8),
               ],
-              
-              if (preferences.preferredPersonalityTraits?.isNotEmpty == true) ...[
+
+              if (preferences.preferredPersonalityTraits?.isNotEmpty ==
+                  true) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.person,
                   label: 'Personality',
-                  value: preferences.preferredPersonalityTraits!.take(3).join(', '),
+                  value: preferences.preferredPersonalityTraits!
+                      .take(3)
+                      .join(', '),
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               if (preferences.preferredSpendingLevel != null) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.attach_money,
                   label: 'Spending Level',
-                  value: preferences.preferredSpendingLevel?.displayName ?? 'Not specified',
+                  value: preferences.preferredSpendingLevel?.displayName ??
+                      'Not specified',
                 ),
                 const SizedBox(height: 8),
               ],
-              
-              if (preferences.preferLocalPatrons || preferences.preferTourists) ...[
+
+              if (preferences.preferLocalPatrons ||
+                  preferences.preferTourists) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.location_on,
                   label: 'Location Preference',
                   value: preferences.preferLocalPatrons
@@ -154,101 +169,100 @@ class BusinessCompatibilityWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               if (preferences.preferCommunityMembers) ...[
                 _buildInfoRow(
+                  context: context,
                   icon: Icons.group,
                   label: 'Community',
                   value: 'Prefers Community Members',
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               const SizedBox(height: 16),
             ],
-            
+
             // How you match
-            _buildSectionTitle('How You Match'),
+            _buildSectionTitle(context, 'How You Match'),
             const SizedBox(height: 8),
-            
+
             if (score.matchedCriteria.isNotEmpty) ...[
               ...score.matchedCriteria.map((criterion) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check_circle,
-                      size: 20,
-                      color: AppColors.electricGreen,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        criterion,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textPrimary,
+                    padding: const EdgeInsets.only(bottom: kSpaceXs),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle,
+                          size: 20,
+                          color: AppColors.electricGreen,
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            criterion,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textPrimary,
+                                    ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  )),
             ] else ...[
-              const Text(
+              Text(
                 'Complete your profile to see how you match',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-            
-            if (score.missingCriteria.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _buildSectionTitle('What You\'re Missing'),
-              const SizedBox(height: 8),
-              ...score.missingCriteria.take(3).map((criterion) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                      size: 20,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        criterion,
-                        style: const TextStyle(
-                          fontSize: 14,
+              ),
+            ],
+
+            if (score.missingCriteria.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildSectionTitle(context, 'What You\'re Missing'),
+              const SizedBox(height: 8),
+              ...score.missingCriteria.take(3).map((criterion) => Padding(
+                    padding: const EdgeInsets.only(bottom: kSpaceXs),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          size: 20,
                           color: AppColors.textSecondary,
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            criterion,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  )),
             ],
-            
+
             if (preferences?.aiMatchingPrompt != null) ...[
               const SizedBox(height: 16),
-              _buildSectionTitle('What They Say'),
+              _buildSectionTitle(context, 'What They Say'),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: AppColors.grey100,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   preferences!.aiMatchingPrompt!,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ),
             ],
@@ -258,17 +272,17 @@ class BusinessCompatibilityWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
     );
   }
 
   Widget _buildInfoRow({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
@@ -284,19 +298,17 @@ class BusinessCompatibilityWidget extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
@@ -305,4 +317,3 @@ class BusinessCompatibilityWidget extends StatelessWidget {
     );
   }
 }
-

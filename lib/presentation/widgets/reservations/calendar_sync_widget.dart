@@ -7,11 +7,13 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_calendar_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Calendar Sync Widget
 ///
@@ -87,13 +89,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
             _error = null;
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  const Text('Reservation synced to calendar successfully'),
-              backgroundColor: AppTheme.successColor,
-            ),
-          );
+          context.showSuccess('Reservation synced to calendar successfully');
 
           // Notify parent
           widget.onSyncComplete?.call();
@@ -102,12 +98,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
             _error = result.error ?? 'Failed to sync to calendar';
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to sync to calendar'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to sync to calendar');
         }
       }
     } catch (e, stackTrace) {
@@ -123,12 +114,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
           _error = 'Failed to sync: ${e.toString()}';
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to sync: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to sync: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -161,13 +147,8 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'To remove from calendar, please delete the event manually from your device calendar.',
-            ),
-            backgroundColor: AppTheme.warningColor,
-          ),
+        context.showWarning(
+          'To remove from calendar, please delete the event manually from your device calendar.',
         );
 
         // Note: We can't actually remove the calendar event, but we can
@@ -188,12 +169,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
           _error = 'Failed to unsync: ${e.toString()}';
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to unsync: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to unsync: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -207,8 +183,8 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(kSpaceMd),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXs),
       decoration: BoxDecoration(
         color: _isSynced
             ? AppTheme.successColor.withValues(alpha: 0.1)
@@ -234,13 +210,12 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
               Expanded(
                 child: Text(
                   _isSynced ? 'Synced to Calendar' : 'Sync to Calendar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: _isSynced
-                        ? AppTheme.successColor
-                        : AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: _isSynced
+                            ? AppTheme.successColor
+                            : AppTheme.primaryColor,
+                      ),
                 ),
               ),
             ],
@@ -251,29 +226,26 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
             const SizedBox(height: 8),
             Text(
               'This reservation has been added to your device calendar.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
             if (_calendarEventId != null) ...[
               const SizedBox(height: 4),
               Text(
                 'Event ID: ${_calendarEventId!.substring(0, _calendarEventId!.length > 20 ? 20 : _calendarEventId!.length)}...',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ] else ...[
             const SizedBox(height: 8),
             Text(
               'Add this reservation to your device calendar to receive reminders and view it alongside your other events.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
 
@@ -281,7 +253,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
           if (_error != null) ...[
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -298,10 +270,9 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
                   Expanded(
                     child: Text(
                       _error!,
-                      style: const TextStyle(
-                        color: AppTheme.errorColor,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.errorColor,
+                          ),
                     ),
                   ),
                 ],
@@ -316,11 +287,11 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
             OutlinedButton.icon(
               onPressed: _isLoading ? null : _unsyncFromCalendar,
               icon: const Icon(Icons.event_busy),
-              label: const Text('Remove from Calendar'),
+              label: Text('Remove from Calendar'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.warningColor,
                 side: const BorderSide(color: AppTheme.warningColor),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -329,11 +300,10 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
             const SizedBox(height: 8),
             Text(
               'Note: You may need to manually remove the event from your device calendar.',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ] else ...[
             // Sync button
@@ -354,7 +324,7 @@ class _CalendarSyncWidgetState extends State<CalendarSyncWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

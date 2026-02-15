@@ -65,4 +65,18 @@ The world model runs on-device. If feature extraction takes 200ms and the energy
 
 ---
 
+## Additional Design Rationale
+
+### Why Weather, App Usage, Friend Network & Cross-App Features (3.1.20A-3.1.20D)
+
+**The problem:** Four data streams are collected but never reach the state encoder:
+1. **Weather** -- `ContinuousLearningSystem` has weather data but the 145D→156D state vector had no weather slot. Weather affects where users want to go (outdoor spots on sunny days, indoor on rainy).
+2. **App usage** -- `UsagePatternTracker` and `AppUsageService` collect session data but the MPC planner doesn't know HOW the user uses the app (frequent short sessions vs. rare long ones).
+3. **Friend network** -- Friend count, braided knot compatibility, and friend-driven activity rate are available from `SocialSignalProvider` but not in the state vector.
+4. **Cross-app** -- `CrossAppLearningInsightService` records insights but nothing extracts numeric features for the 3D slot reserved in Phase 3.1.11.
+
+**Why these are all additive (not replacements):** These features add 14D to the state vector (3D weather + 4D app usage + 4D friend network + 3D cross-app extraction). Default weight is 0.0 until validated by the self-optimization engine (Phase 7.9) or manually enabled. This means they can't hurt -- they only help if they correlate with happiness.
+
+---
+
 **Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 external validation for unified perception. Previous: 1.0)

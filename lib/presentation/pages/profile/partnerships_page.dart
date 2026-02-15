@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -9,6 +10,7 @@ import 'package:avrai/presentation/widgets/profile/partnership_display_widget.da
 import 'package:avrai/presentation/widgets/profile/partnership_visibility_toggle.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnerships Detail Page
 ///
@@ -102,7 +104,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
     return AdaptivePlatformPageScaffold(
       title: 'Partnerships',
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: _loadPartnerships,
               child: SingleChildScrollView(
@@ -111,21 +113,19 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header
-                    const Text(
+                    Text(
                       'Your Partnerships',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Manage your partnerships and visibility settings',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     SizedBox(height: spacing.lg),
 
@@ -146,12 +146,8 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                       showVisibilityControls: true,
                       onPartnershipTap: (partnership) {
                         // Navigate to partnership details if needed
-                        // For now, just show a snackbar
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text('Partnership: ${partnership.partnerName}'),
-                          ),
+                        context.showInfo(
+                          'Partnership: ${partnership.partnerName}',
                         );
                       },
                       onVisibilityChanged: (isPublic) {
@@ -175,11 +171,11 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
   Widget _buildExpertiseBoostSection() {
     return PortalSurface(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.trending_up,
@@ -189,22 +185,20 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                 SizedBox(width: 12),
                 Text(
                   'Expertise Boost',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Your partnerships contribute to your expertise calculation. '
               'Active and completed partnerships boost your expertise in related categories.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 16),
             TextButton.icon(
@@ -213,7 +207,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
                 // context.go('/profile/expertise-dashboard');
               },
               icon: const Icon(Icons.school),
-              label: const Text('View Expertise Dashboard'),
+              label: Text('View Expertise Dashboard'),
               style: TextButton.styleFrom(
                 foregroundColor: AppTheme.primaryColor,
               ),

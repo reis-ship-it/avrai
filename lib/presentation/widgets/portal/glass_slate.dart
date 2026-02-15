@@ -36,27 +36,26 @@ class GlassSlate extends StatelessWidget {
     // Colors based on Day/Night mode
     // Make the glass clearer (less tinted) so the background world reads as "behind glass"
     // instead of being painted over. Keep a hint of tint for legibility.
-    final tintColor = isDark
-        ? AppColors.black.withValues(alpha: 0.22) // Smoked, but clearer
-        : AppColors.white.withValues(alpha: 0.08); // Mist glass
+    final tintColor =
+        isDark ? AppColors.portalDayTint : AppColors.portalNightTint;
 
     final borderGradient = isDark
         ? const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0x99FFFFFF), // White Highlight (Top Left)
-              Color(0x1AFFFFFF), // Transparent Mid
-              Color(0x66000000), // Shadow (Bottom Right)
+              AppColors.portalDayBorderStart,
+              AppColors.portalDayBorderMid,
+              AppColors.portalDayBorderEnd,
             ],
           )
         : const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xCCFFFFFF), // Pearl Highlight
-              Color(0x33FFFFFF),
-              Color(0x66404040), // Charcoal Shadow
+              AppColors.portalNightBorderStart,
+              AppColors.portalNightBorderMid,
+              AppColors.portalNightBorderEnd,
             ],
           );
 
@@ -66,7 +65,7 @@ class GlassSlate extends StatelessWidget {
         borderRadius: resolvedBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.45),
+            color: AppColors.portalShadow,
             blurRadius: 40,
             offset: const Offset(0, 20),
             spreadRadius: -10,

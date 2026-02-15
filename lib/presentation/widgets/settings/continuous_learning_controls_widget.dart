@@ -1,59 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Continuous Learning Controls Widget
-/// 
+///
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
-/// 
+///
 /// Provides controls for continuous learning system:
 /// - Start/stop continuous learning toggle
 /// - Learning parameter controls (if applicable)
 /// - Privacy settings section with toggles
 /// - Enable/disable features toggles
-/// 
+///
 /// Uses AppColors/AppTheme for 100% design token compliance.
 class ContinuousLearningControlsWidget extends StatefulWidget {
   final String userId;
   final ContinuousLearningSystem learningSystem;
-  
+
   const ContinuousLearningControlsWidget({
     super.key,
     required this.userId,
     required this.learningSystem,
   });
-  
+
   @override
-  State<ContinuousLearningControlsWidget> createState() => _ContinuousLearningControlsWidgetState();
+  State<ContinuousLearningControlsWidget> createState() =>
+      _ContinuousLearningControlsWidgetState();
 }
 
-class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningControlsWidget> {
+class _ContinuousLearningControlsWidgetState
+    extends State<ContinuousLearningControlsWidget> {
   bool _isLearningActive = false;
   bool _isLoadingStatus = true;
   bool _isToggling = false;
   String? _errorMessage;
-  
+
   // Privacy settings
   bool _privacyDataCollection = true;
   bool _privacyLocationData = true;
   bool _privacySocialData = true;
   bool _privacyAi2AiSharing = true;
-  
+
   @override
   void initState() {
     super.initState();
     _loadStatus();
   }
-  
+
   Future<void> _loadStatus() async {
     setState(() {
       _isLoadingStatus = true;
       _errorMessage = null;
     });
-    
+
     try {
       final status = await widget.learningSystem.getLearningStatus();
-      
+
       if (mounted) {
         setState(() {
           _isLearningActive = status.isActive;
@@ -69,20 +72,20 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
       }
     }
   }
-  
+
   Future<void> _toggleContinuousLearning(bool value) async {
     setState(() {
       _isToggling = true;
       _errorMessage = null;
     });
-    
+
     try {
       if (value) {
         await widget.learningSystem.startContinuousLearning();
       } else {
         await widget.learningSystem.stopContinuousLearning();
       }
-      
+
       if (mounted) {
         setState(() {
           _isLearningActive = value;
@@ -92,16 +95,18 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to ${value ? 'start' : 'stop'} continuous learning: $e';
+          _errorMessage =
+              'Failed to ${value ? 'start' : 'stop'} continuous learning: $e';
           _isToggling = false;
           _isLearningActive = !value; // Revert to previous state
         });
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Semantics(
       label: 'Continuous learning controls',
       child: Card(
@@ -109,9 +114,9 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -119,7 +124,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -131,24 +136,23 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Learning Controls',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Error Message
               if (_errorMessage != null) ...[
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(spacing.sm),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -168,10 +172,10 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.error,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.error,
+                                  ),
                         ),
                       ),
                     ],
@@ -179,15 +183,15 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                 ),
                 const SizedBox(height: 16),
               ],
-              
+
               // Start/Stop Toggle
               _buildStartStopSection(),
               const SizedBox(height: 24),
-              
+
               // Divider
               const Divider(),
               const SizedBox(height: 24),
-              
+
               // Privacy Settings
               _buildPrivacySection(),
             ],
@@ -196,12 +200,14 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
       ),
     );
   }
-  
+
   Widget _buildStartStopSection() {
+    final spacing = context.spacing;
     return Semantics(
-      label: 'Continuous learning ${_isLearningActive ? 'is active' : 'is inactive'}',
+      label:
+          'Continuous learning ${_isLearningActive ? 'is active' : 'is inactive'}',
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         decoration: BoxDecoration(
           color: _isLearningActive
               ? AppColors.success.withValues(alpha: 0.1)
@@ -221,7 +227,9 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
               children: [
                 Icon(
                   _isLearningActive ? Icons.play_circle : Icons.pause_circle,
-                  color: _isLearningActive ? AppColors.success : AppColors.textSecondary,
+                  color: _isLearningActive
+                      ? AppColors.success
+                      : AppColors.textSecondary,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -229,23 +237,21 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Continuous Learning',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _isLearningActive
                             ? 'Learning is actively improving your AI'
                             : 'Learning is paused',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -286,12 +292,13 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
       ),
     );
   }
-  
+
   Widget _buildPrivacySection() {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.privacy_tip,
@@ -301,24 +308,22 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
             SizedBox(width: 8),
             Text(
               'Privacy Settings',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Control what data is used for continuous learning',
-          style: TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         const SizedBox(height: 16),
-        
+
         // Privacy Toggles
         _buildPrivacyToggle(
           'Data Collection',
@@ -351,15 +356,15 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
           (value) => setState(() => _privacyAi2AiSharing = value),
           Icons.share,
         ),
-        
+
         const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(spacing.sm),
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Row(
+          child: Row(
             children: [
               Icon(
                 Icons.shield,
@@ -370,10 +375,9 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
               Expanded(
                 child: Text(
                   'All learning happens on your device. Your data never leaves your device.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ),
             ],
@@ -382,7 +386,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
       ],
     );
   }
-  
+
   Widget _buildPrivacyToggle(
     String title,
     String description,
@@ -390,6 +394,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
+    final spacing = context.spacing;
     return Semantics(
       label: '$title: ${value ? 'enabled' : 'disabled'}',
       button: true,
@@ -397,7 +402,7 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
         onTap: () => onChanged(!value),
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(spacing.sm),
           decoration: BoxDecoration(
             color: AppColors.grey100,
             borderRadius: BorderRadius.circular(8),
@@ -422,19 +427,17 @@ class _ContinuousLearningControlsWidgetState extends State<ContinuousLearningCon
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       description,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),

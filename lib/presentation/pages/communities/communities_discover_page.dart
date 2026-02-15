@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/community/community.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Community discovery page (join/discover ranking)
 ///
@@ -111,7 +114,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         onRefresh: _load,
         color: AppColors.electricGreen,
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : authState is! Authenticated
                 ? _buildSignedOutState()
                 : _error != null
@@ -119,7 +122,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                     : _communities.isEmpty
                         ? _buildEmptyState()
                         : ListView.separated(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(kSpaceMd),
                             itemCount: _communities.length,
                             separatorBuilder: (_, __) =>
                                 const SizedBox(height: 12),
@@ -145,13 +148,11 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
             'Weave ${(breakdown.weaveFit * 100).toStringAsFixed(0)}%';
     final isJoining = _joiningCommunityIds.contains(community.id);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey200),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMd),
+      color: AppColors.surface,
+      borderColor: AppColors.grey200,
+      radius: 12,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -166,19 +167,18 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                       ),
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
+              Chip(
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                side: BorderSide.none,
+                backgroundColor:
+                    AppColors.electricGreen.withValues(alpha: 0.12),
+                label: Text(
                   scoreText,
-                  style: const TextStyle(
-                    color: AppColors.electricGreen,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.electricGreen,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
@@ -222,9 +222,12 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                     foregroundColor: AppColors.white,
                     side: const BorderSide(color: AppColors.grey300),
                   ),
-                  child: const Text(
+                  child: Text(
                     'View',
-                    style: TextStyle(color: AppColors.textPrimary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textPrimary),
                   ),
                 ),
               ),
@@ -305,12 +308,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       await _communityService.addMember(community, userId);
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Joined ${community.name}'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
-      );
+      context.showSuccess('Joined ${community.name}');
 
       // Keep the page responsive: remove the joined community from the list.
       setState(() {
@@ -326,18 +324,13 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       setState(() {
         _joiningCommunityIds.remove(community.id);
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to join: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Failed to join: $e');
     }
   }
 
   Widget _buildSignedOutState() {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       children: [
         const SizedBox(height: 32),
         const Icon(
@@ -369,9 +362,12 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
             foregroundColor: AppColors.white,
             side: const BorderSide(color: AppColors.grey300),
           ),
-          child: const Text(
+          child: Text(
             'Go to login',
-            style: TextStyle(color: AppColors.textPrimary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textPrimary),
           ),
         ),
       ],
@@ -380,7 +376,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
 
   Widget _buildEmptyState() {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       children: [
         const SizedBox(height: 32),
         const Icon(
@@ -411,7 +407,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
 
   Widget _buildErrorState(String message) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       children: [
         const SizedBox(height: 32),
         const Icon(
@@ -443,7 +439,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
             backgroundColor: AppTheme.primaryColor,
             foregroundColor: AppColors.white,
           ),
-          child: const Text('Retry'),
+          child: Text('Retry'),
         ),
       ],
     );

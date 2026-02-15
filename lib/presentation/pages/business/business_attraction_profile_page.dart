@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/models/business/business_account.dart';
@@ -94,7 +95,7 @@ class _BusinessAttractionProfilePageState
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -108,7 +109,7 @@ class _BusinessAttractionProfilePageState
             ...VibeConstants.coreDimensions.map((d) {
               final v = _dimensions[d] ?? 0.5;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -152,14 +153,20 @@ class _BusinessAttractionProfilePageState
               const SizedBox(height: 8),
               Text(
                 _errorMessage!,
-                style: const TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
               ),
             ],
             if (_successMessage != null) ...[
               const SizedBox(height: 8),
               Text(
                 _successMessage!,
-                style: const TextStyle(color: AppColors.success),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.success),
               ),
             ],
             const SizedBox(height: 24),
@@ -171,7 +178,7 @@ class _BusinessAttractionProfilePageState
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save attraction profile'),
+                  : Text('Save attraction profile'),
             ),
           ],
         ),

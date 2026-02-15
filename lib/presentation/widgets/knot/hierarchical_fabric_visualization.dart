@@ -1,5 +1,5 @@
 // Hierarchical Fabric Visualization Widget
-// 
+//
 // Widget for visualizing hierarchical fabric layouts
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 5.5: Hierarchical Fabric Visualization System
@@ -16,16 +16,16 @@ import 'package:avrai/presentation/widgets/knot/hierarchical_fabric_painter.dart
 class HierarchicalFabricVisualization extends StatefulWidget {
   /// The knot fabric to visualize
   final KnotFabric fabric;
-  
+
   /// Whether to show glue (connection lines)
   final bool showGlue;
-  
+
   /// Whether to show clusters
   final bool showClusters;
-  
+
   /// Whether to show bridge strands
   final bool showBridgeStrands;
-  
+
   /// Size of the visualization
   final double size;
 
@@ -58,7 +58,7 @@ class _HierarchicalFabricVisualizationState
     // TODO: Get layout service from DI
     // For now, this is a placeholder - the actual service should be injected
     // _layoutService = GetIt.instance<HierarchicalLayoutService>();
-    
+
     // Convert PersonalityKnot to EntityKnot for layout generation
     // This is a simplified conversion - in production, you'd want proper conversion
     final entityKnots = widget.fabric.userKnots.map((knot) {
@@ -79,7 +79,7 @@ class _HierarchicalFabricVisualizationState
           cluster: entityKnots,
           fabric: widget.fabric,
         );
-        
+
         if (mounted) {
           setState(() {
             _layout = layout;
@@ -87,7 +87,8 @@ class _HierarchicalFabricVisualizationState
         }
       } catch (e) {
         // Handle error
-        developer.log('Error generating layout: $e', name: 'HierarchicalFabricVisualization');
+        developer.log('Error generating layout: $e',
+            name: 'HierarchicalFabricVisualization');
       }
     }
   }
@@ -98,7 +99,7 @@ class _HierarchicalFabricVisualizationState
       return SizedBox(
         width: widget.size,
         height: widget.size,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(),
         ),
       );

@@ -1,14 +1,14 @@
 /// AI Improvement Impact Widget
-/// 
+///
 /// Part of Feature Matrix Phase 2: Medium Priority UI/UX
 /// Section 2.2: AI Self-Improvement Visibility
-/// 
+///
 /// Widget explaining AI improvement impact:
 /// - Explain improvement impact on user experience
 /// - Show user benefits from improvements
 /// - Transparency into AI evolution
 /// - Real-world impact examples
-/// 
+///
 /// Location: Settings/Account page
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
@@ -16,23 +16,25 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai_improvement_tracking_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget displaying AI improvement impact explanation
 class AIImprovementImpactWidget extends StatelessWidget {
   /// User ID to show impact for
   final String userId;
-  
+
   /// Improvement tracking service
   final AIImprovementTrackingService trackingService;
-  
+
   const AIImprovementImpactWidget({
     super.key,
     required this.userId,
     required this.trackingService,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Semantics(
       label: 'AI Improvement Impact Explanation',
       child: Card(
@@ -40,31 +42,32 @@ class AIImprovementImpactWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 16),
-              _buildImpactSummary(),
+              _buildImpactSummary(context),
               const SizedBox(height: 16),
-              _buildBenefitsSection(),
+              _buildBenefitsSection(context),
               const SizedBox(height: 16),
-              _buildTransparencySection(),
+              _buildTransparencySection(context),
             ],
           ),
         ),
       ),
     );
   }
-  
-  Widget _buildHeader() {
+
+  Widget _buildHeader(BuildContext context) {
+    final spacing = context.spacing;
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(spacing.xs),
           decoration: BoxDecoration(
             color: AppColors.electricGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -76,23 +79,23 @@ class AIImprovementImpactWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Text(
             'What This Means for You',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ),
       ],
     );
   }
-  
-  Widget _buildImpactSummary() {
+
+  Widget _buildImpactSummary(BuildContext context) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -111,7 +114,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.auto_awesome,
@@ -121,34 +124,35 @@ class AIImprovementImpactWidget extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 'AI Evolution Impact',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'As your AI improves, you experience:',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 12),
           _buildImpactPoint(
+            context: context,
             icon: Icons.recommend,
             title: 'Better Recommendations',
             description: 'More accurate spot suggestions matching your taste',
           ),
           _buildImpactPoint(
+            context: context,
             icon: Icons.speed,
             title: 'Faster Responses',
             description: 'Quicker AI processing and instant suggestions',
           ),
           _buildImpactPoint(
+            context: context,
             icon: Icons.psychology,
             title: 'Deeper Understanding',
             description: 'AI learns your preferences and patterns better',
@@ -157,19 +161,21 @@ class AIImprovementImpactWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildImpactPoint({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String description,
   }) {
+    final spacing = context.spacing;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: EdgeInsets.all(spacing.xxs),
             decoration: BoxDecoration(
               color: AppColors.electricGreen.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(6),
@@ -187,19 +193,17 @@ class AIImprovementImpactWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -208,12 +212,12 @@ class AIImprovementImpactWidget extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildBenefitsSection() {
+
+  Widget _buildBenefitsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.card_giftcard,
@@ -223,16 +227,16 @@ class AIImprovementImpactWidget extends StatelessWidget {
             SizedBox(width: 8),
             Text(
               'Your Benefits',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         _buildBenefitCard(
+          context: context,
           title: 'Personalization',
           description: 'AI adapts to your unique preferences',
           icon: Icons.person,
@@ -240,6 +244,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _buildBenefitCard(
+          context: context,
           title: 'Discovery',
           description: 'Find hidden gems that match your vibe',
           icon: Icons.explore,
@@ -247,6 +252,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _buildBenefitCard(
+          context: context,
           title: 'Efficiency',
           description: 'Less time searching, more time enjoying',
           icon: Icons.flash_on,
@@ -254,6 +260,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _buildBenefitCard(
+          context: context,
           title: 'Community',
           description: 'Connect with like-minded people through AI',
           icon: Icons.people,
@@ -262,15 +269,17 @@ class AIImprovementImpactWidget extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildBenefitCard({
+    required BuildContext context,
     required String title,
     required String description,
     required IconData icon,
     required Color color,
   }) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -278,7 +287,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(spacing.xs),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -296,18 +305,16 @@ class AIImprovementImpactWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -316,12 +323,13 @@ class AIImprovementImpactWidget extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildTransparencySection() {
+
+  Widget _buildTransparencySection(BuildContext context) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.visibility,
@@ -331,17 +339,16 @@ class AIImprovementImpactWidget extends StatelessWidget {
             SizedBox(width: 8),
             Text(
               'Transparency & Control',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           decoration: BoxDecoration(
             color: AppColors.grey100,
             borderRadius: BorderRadius.circular(12),
@@ -350,21 +357,25 @@ class AIImprovementImpactWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTransparencyPoint(
+                context: context,
                 icon: Icons.check_circle_outline,
                 text: 'You always know what your AI is learning',
               ),
               const SizedBox(height: 10),
               _buildTransparencyPoint(
+                context: context,
                 icon: Icons.check_circle_outline,
                 text: 'All improvements are privacy-preserving',
               ),
               const SizedBox(height: 10),
               _buildTransparencyPoint(
+                context: context,
                 icon: Icons.check_circle_outline,
                 text: 'You control learning participation',
               ),
               const SizedBox(height: 10),
               _buildTransparencyPoint(
+                context: context,
                 icon: Icons.check_circle_outline,
                 text: 'Progress tracked in real-time',
               ),
@@ -381,7 +392,7 @@ class AIImprovementImpactWidget extends StatelessWidget {
                       Icons.settings,
                       size: 18,
                     ),
-                    label: const Text('Privacy Settings'),
+                    label: Text('Privacy Settings'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.electricGreen,
                     ),
@@ -394,8 +405,9 @@ class AIImprovementImpactWidget extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildTransparencyPoint({
+    required BuildContext context,
     required IconData icon,
     required String text,
   }) {
@@ -411,14 +423,12 @@ class AIImprovementImpactWidget extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
         ),
       ],
     );
   }
 }
-

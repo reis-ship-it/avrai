@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/controllers/list_creation_controller.dart';
@@ -8,6 +9,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -102,24 +104,14 @@ class _CreateListPageState extends State<CreateListPage> {
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_error!),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(_error!);
         }
         return;
       }
 
       // Show warning if present (partial success)
       if (result.warning != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.warning!),
-            backgroundColor: AppTheme.warningColor,
-          ),
-        );
+        context.showWarning(result.warning!);
       }
 
       // Refresh lists via BLoC
@@ -127,12 +119,8 @@ class _CreateListPageState extends State<CreateListPage> {
         context.read<ListsBloc>().add(LoadLists());
         Navigator.pop(context);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'List "${result.list?.title ?? ''}" created successfully!'),
-            backgroundColor: AppTheme.successColor,
-          ),
+        context.showSuccess(
+          'List "${result.list?.title ?? ''}" created successfully!',
         );
       }
     } catch (e) {
@@ -142,12 +130,7 @@ class _CreateListPageState extends State<CreateListPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_error!),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError(_error!);
       }
     }
   }
@@ -158,8 +141,8 @@ class _CreateListPageState extends State<CreateListPage> {
       title: 'Create List',
       actions: [
         if (_isCreating)
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: EdgeInsets.all(kSpaceMd),
             child: SizedBox(
               width: 20,
               height: 20,
@@ -175,7 +158,7 @@ class _CreateListPageState extends State<CreateListPage> {
       ],
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Form(
           key: _formKey,
           child: Column(
@@ -244,8 +227,8 @@ class _CreateListPageState extends State<CreateListPage> {
               PortalSurface(
                 padding: EdgeInsets.zero,
                 child: SwitchListTile(
-                  title: const Text('Public List'),
-                  subtitle: const Text('Make this list visible to others'),
+                  title: Text('Public List'),
+                  subtitle: Text('Make this list visible to others'),
                   value: _isPublic,
                   onChanged: (value) {
                     setState(() {
@@ -257,15 +240,11 @@ class _CreateListPageState extends State<CreateListPage> {
 
               if (_error != null) ...[
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.errorColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppTheme.errorColor.withValues(alpha: 0.3),
-                    ),
-                  ),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceSm),
+                  color: AppTheme.errorColor.withValues(alpha: 0.1),
+                  borderColor: AppTheme.errorColor.withValues(alpha: 0.3),
+                  radius: 8,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline,
@@ -274,10 +253,10 @@ class _CreateListPageState extends State<CreateListPage> {
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppTheme.errorColor,
-                            fontSize: 14,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.errorColor,
+                                  ),
                         ),
                       ),
                     ],
@@ -290,7 +269,7 @@ class _CreateListPageState extends State<CreateListPage> {
               // Info Card
               PortalSurface(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

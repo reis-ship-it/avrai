@@ -4,6 +4,7 @@ import 'package:avrai/presentation/widgets/settings/federated_learning_status_wi
 import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
 import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
@@ -21,63 +22,63 @@ class FederatedLearningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Federated Learning',
       constrainBody: false,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         children: [
           // Header
           _buildHeader(context),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Section 1: Settings & Explanation
           _buildSectionHeader(context, 'Settings & Participation'),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           const FederatedLearningSettingsSection(),
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Section 2: Active Rounds
           _buildSectionHeader(context, 'Active Learning Rounds'),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: spacing.xs),
+          Text(
             'See what your AI is learning right now',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           const FederatedLearningStatusWidget(),
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Section 3: Privacy Metrics
           _buildSectionHeader(context, 'Your Privacy Metrics'),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: spacing.xs),
+          Text(
             'See how your privacy is protected',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           const PrivacyMetricsWidget(),
-          const SizedBox(height: 32),
+          SizedBox(height: spacing.xl),
 
           // Section 4: History
           _buildSectionHeader(context, 'Participation History'),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: spacing.xs),
+          Text(
             'Your contributions to AI improvement',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           const FederatedParticipationHistoryWidget(),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Footer
           _buildFooter(context),
@@ -87,41 +88,40 @@ class FederatedLearningPage extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return PortalSurface(
+      radius: context.radius.md,
       color: AppColors.electricGreen.withValues(alpha: 0.1),
       borderColor: AppColors.electricGreen.withValues(alpha: 0.24),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.electricGreen.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
+          CircleAvatar(
+            radius: spacing.lg + spacing.xs,
+            backgroundColor: AppColors.electricGreen.withValues(alpha: 0.2),
             child: const Icon(
               Icons.school,
               color: AppColors.electricGreen,
-              size: 32,
+              size: 30,
             ),
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: spacing.md),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Privacy-Preserving AI Training',
-                  style: TextStyle(
-                    fontSize: 18,
+                  style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: spacing.xxs),
                 Text(
                   'Help improve AI without sharing your data',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -134,10 +134,11 @@ class FederatedLearningPage extends StatelessWidget {
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
+      style: textTheme.titleLarge?.copyWith(
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
       ),
@@ -145,53 +146,54 @@ class FederatedLearningPage extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return const PortalSurface(
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
+    return PortalSurface(
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 color: AppColors.primary,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              SizedBox(width: spacing.xs),
               Text(
                 'Learn More',
-                style: TextStyle(
-                  fontSize: 16,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Text(
             'Federated learning is a privacy-preserving approach to AI training. '
             'Your device trains a local model on your data, then sends only encrypted '
             'model updates (not your actual data) to be aggregated with others. '
             'The improved global model is then distributed back to all participants.',
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),
-          SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.shield,
                 color: AppColors.success,
                 size: 16,
               ),
-              SizedBox(width: 4),
+              SizedBox(width: spacing.xxs),
               Text(
                 'Your data never leaves your device',
-                style: TextStyle(
-                  fontSize: 13,
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.success,
                   fontWeight: FontWeight.w600,
                 ),

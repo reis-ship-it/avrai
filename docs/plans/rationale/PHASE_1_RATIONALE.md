@@ -133,6 +133,10 @@ The hierarchy ensures the energy function weights its training data appropriatel
 - [ ] `FormulaABTestingService` (1.3.2) is ready for parallel-run mode
 - [ ] Feature flag support for formula replacement is in place (1.3.4)
 
+**Before starting Phase 1.1D (Conviction Memory):**
+- [ ] Phase 1.1C consolidation must be functional (knowledge extraction runs during consolidation)
+- [ ] Phase 4.1 energy function must be queryable (wisdom layer uses energy function for applicability scoring)
+
 **Before starting Phase 5 (Transition Predictor):**
 - [ ] Episodic tuples contain `next_state` snapshots (not just outcomes)
 - [ ] Consolidation scheduler (1.1C) runs successfully, providing a training window
@@ -155,4 +159,27 @@ The hierarchy ensures the energy function weights its training data appropriatel
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.3 (added Zeng et al. 2026 external validation for memory architecture. Previous: 1.2 negative outcome amplification, organic discovery extensions)
+## Additional Design Rationale
+
+### Why Friendship Lifecycle Outcome Collection (1.2.27-1.2.29)
+
+**The problem:** The outcome data pipeline captures 26 types of episodic tuples (visits, events, chats, partnerships), but friendship outcomes are completely missing. When two users become friends through a community, that's never recorded. When friends co-attend an event, that's never linked. When a friendship ends (unfriend), there's no negative signal. The world model is blind to the most important "doors" -- the people.
+
+**Why "met through" attribution (1.2.28) is uniquely valuable:** This captures the causal chain: community → friendship. It's proof that a community opened a door to a meaningful connection. This is exactly what the doors philosophy measures -- and exactly what the community-perspective energy function (Phase 4.4) needs to score community value.
+
+**Why friend-driven activity (1.2.29) matters:** When user A visits a spot because friend B visited it, that's social influence on real-world behavior. It's different from organic discovery (the user found it themselves) and different from AI recommendation (the system suggested it). It's the friend acting as a "door" to a new experience.
+
+### Why Conviction Memory (1.1D)
+
+**Problem:** The system collects data and learns patterns, but has no structured way to distinguish between a pattern observed once and a truth validated thousands of times. It has no contextual judgment layer for applying knowledge appropriately. It has no mechanism for the full emotional spectrum.
+
+**Solution:** Phase 1.1D implements the Knowledge-Wisdom-Conviction hierarchy. Knowledge entries are structured claims. The wisdom layer applies knowledge contextually. Convictions are earned truths with full audit trails. Emotional context vectors capture the full human experience. Fractal bidirectional flow connects all scopes.
+
+**Alternatives considered:**
+- **Model weights only (no explainability):** Would capture patterns but give no interpretable structure for "why" or "how sure" the system is. Users and auditors cannot inspect or debug.
+- **Rule-based:** Does not scale. Cannot adapt to new domains or learn from outcomes.
+- **Knowledge-only without conviction tier:** Treats all patterns equally — a single observation would carry the same weight as a truth validated thousands of times, leading to overconfidence in weak signals.
+
+---
+
+**Last Updated:** February 10, 2026 -- Version 1.4 (added Why Conviction Memory 1.1D, Phase 1.1D pre-flight checklist. Previous: 1.3 Zeng et al. 2026 external validation for memory architecture)

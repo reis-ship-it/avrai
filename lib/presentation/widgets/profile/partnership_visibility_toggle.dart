@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Partnership Visibility Toggle Widget
-/// 
+///
 /// Provides privacy controls for partnership visibility on profiles.
-/// 
+///
 /// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class PartnershipVisibilityToggle extends StatelessWidget {
   final UserPartnership partnership;
@@ -28,7 +29,7 @@ class PartnershipVisibilityToggle extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,21 +51,19 @@ class PartnershipVisibilityToggle extends StatelessWidget {
                     children: [
                       Text(
                         partnership.partnerName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         partnership.isPublic
                             ? 'Visible on your profile'
                             : 'Hidden from your profile',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -84,7 +83,7 @@ class PartnershipVisibilityToggle extends StatelessWidget {
 }
 
 /// Bulk Partnership Visibility Controls
-/// 
+///
 /// Allows users to control visibility for multiple partnerships at once.
 class BulkPartnershipVisibilityControls extends StatelessWidget {
   final List<UserPartnership> partnerships;
@@ -104,17 +103,16 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Bulk Visibility Settings',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -129,7 +127,7 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
                       onBulkVisibilityChanged(visibilityMap);
                     },
                     icon: const Icon(Icons.visibility),
-                    label: const Text('Show All'),
+                    label: Text('Show All'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.grey300),
@@ -147,7 +145,7 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
                       onBulkVisibilityChanged(visibilityMap);
                     },
                     icon: const Icon(Icons.visibility_off),
-                    label: const Text('Hide All'),
+                    label: Text('Hide All'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.grey300),
@@ -162,4 +160,3 @@ class BulkPartnershipVisibilityControls extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying privacy controls for AI2AI participation
 class PrivacyControlsWidget extends StatefulWidget {
@@ -19,7 +20,7 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -38,8 +39,8 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
             const SizedBox(height: 16),
             // AI2AI Participation Toggle
             SwitchListTile(
-              title: const Text('AI2AI Participation'),
-              subtitle: const Text(
+              title: Text('AI2AI Participation'),
+              subtitle: Text(
                 'Allow your AI personality to connect with other AIs',
               ),
               value: _ai2aiEnabled,
@@ -53,8 +54,8 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
             const Divider(),
             // Privacy Level Selector
             ListTile(
-              title: const Text('Privacy Level'),
-              subtitle: const Text('Maximum anonymization recommended'),
+              title: Text('Privacy Level'),
+              subtitle: Text('Maximum anonymization recommended'),
               trailing: DropdownButton<String>(
                 value: _privacyLevel,
                 items: const [
@@ -83,8 +84,8 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
             const Divider(),
             // Share Learning Insights Toggle
             SwitchListTile(
-              title: const Text('Share Learning Insights'),
-              subtitle: const Text(
+              title: Text('Share Learning Insights'),
+              subtitle: Text(
                 'Contribute anonymized insights to improve the network',
               ),
               value: _shareLearningInsights,
@@ -97,7 +98,7 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
             ),
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppColors.success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -108,7 +109,8 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.verified_user, size: 16, color: AppColors.success),
+                  const Icon(Icons.verified_user,
+                      size: 16, color: AppColors.success),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -128,4 +130,3 @@ class _PrivacyControlsWidgetState extends State<PrivacyControlsWidget> {
     );
   }
 }
-

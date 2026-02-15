@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/ai/perpetual_list/models/models.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// SuggestedListDetailsPage - Detail view for an AI-suggested list
 ///
@@ -61,23 +63,22 @@ class SuggestedListDetailsPage extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMdWide),
+      color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+      borderColor: colorScheme.primaryContainer,
+      radius: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // AI Suggested badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
+          Chip(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+            side: BorderSide.none,
+            backgroundColor: colorScheme.secondaryContainer,
+            labelPadding: EdgeInsets.zero,
+            label: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
@@ -191,7 +192,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
     }).toList();
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -214,18 +215,13 @@ class SuggestedListDetailsPage extends StatelessWidget {
           const SizedBox(height: 12),
           ...explanations.map((explanation) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: kSpaceXs),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 6),
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      shape: BoxShape.circle,
-                    ),
+                  CircleAvatar(
+                    radius: 3,
+                    backgroundColor: colorScheme.primary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -265,7 +261,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -277,13 +273,11 @@ class SuggestedListDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (suggestedList.places.isEmpty)
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color:
-                    colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
+            PortalSurface(
+              padding: const EdgeInsets.all(kSpaceLg),
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderColor: colorScheme.outlineVariant,
+              radius: 12,
               child: Center(
                 child: Text(
                   'No places available',
@@ -301,17 +295,17 @@ class SuggestedListDetailsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final place = suggestedList.places[index];
                 return PortalSurface(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: kSpaceSm),
                   padding: EdgeInsets.zero,
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: colorScheme.primaryContainer,
                       child: Text(
                         '${index + 1}',
-                        style: TextStyle(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
                     title: Text(
@@ -342,16 +336,16 @@ class SuggestedListDetailsPage extends StatelessWidget {
   Widget _buildBottomActions(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _dismissList(context),
                 icon: const Icon(Icons.close),
-                label: const Text('Not Interested'),
+                label: Text('Not Interested'),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: kSpaceSm),
                 ),
               ),
             ),
@@ -360,9 +354,9 @@ class SuggestedListDetailsPage extends StatelessWidget {
               child: FilledButton.icon(
                 onPressed: () => _saveList(context),
                 icon: const Icon(Icons.bookmark),
-                label: const Text('Save List'),
+                label: Text('Save List'),
                 style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: kSpaceSm),
                 ),
               ),
             ),
@@ -373,42 +367,30 @@ class SuggestedListDetailsPage extends StatelessWidget {
   }
 
   void _saveList(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('List saved to your collection'),
-        behavior: SnackBarBehavior.floating,
-      ),
+    FeedbackPresenter.showSnack(
+      context,
+      message: 'List saved to your collection',
+      kind: FeedbackKind.success,
     );
     Navigator.of(context).pop();
   }
 
   void _dismissList(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('List dismissed'),
-        behavior: SnackBarBehavior.floating,
-      ),
+    FeedbackPresenter.showSnack(
+      context,
+      message: 'List dismissed',
+      kind: FeedbackKind.warning,
     );
     Navigator.of(context).pop();
   }
 
   void _shareList(BuildContext context) {
     // TODO(Phase 5.6): Implement sharing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sharing coming soon'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    context.showInfo('Sharing coming soon');
   }
 
   void _navigateToPlace(BuildContext context, String placeId) {
     // TODO(Phase 2.1): Navigate to place details
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Navigate to place: $placeId'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    context.showInfo('Navigate to place: $placeId');
   }
 }

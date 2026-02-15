@@ -7,6 +7,7 @@ import 'package:avrai/core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai/core/services/onboarding/onboarding_suggestion_event_store.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 class FriendsRespectPage extends StatefulWidget {
@@ -271,27 +272,30 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Text(
             'Connect & Discover',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primaryColor,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           Text(
             'Respect lists created by people in your local area. These lists will appear in your spots page after onboarding.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+            style: textTheme.bodyLarge?.copyWith(
+              color: AppColors.grey600,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
 
           // Local lists section
           Expanded(
@@ -305,12 +309,12 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                       color: AppTheme.primaryColor,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: spacing.xs),
                     Text(
                       'Local Public Lists',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const Spacer(),
                     if (_selectedLists.isNotEmpty)
@@ -329,14 +333,14 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: spacing.xs),
                 Text(
                   'Lists created by people in your area',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.grey600,
-                      ),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.grey600,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: spacing.md),
 
                 // Lists
                 Expanded(
@@ -348,7 +352,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                       final isSelected = _selectedLists.contains(listName);
 
                       return PortalSurface(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: EdgeInsets.only(bottom: spacing.sm),
                         padding: EdgeInsets.zero,
                         child: Column(
                           children: [
@@ -366,17 +370,17 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                               ),
                               title: Text(
                                 listName,
-                                style: const TextStyle(
+                                style: textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: spacing.xxs),
                                   // User profile info
                                   _buildUserProfileInfo(list),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: spacing.xxs),
                                   Row(
                                     children: [
                                       const Icon(
@@ -384,12 +388,11 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                         size: 12,
                                         color: AppColors.grey600,
                                       ),
-                                      const SizedBox(width: 2),
+                                      SizedBox(width: spacing.xxs / 2),
                                       Expanded(
                                         child: Text(
                                           list['location'] as String,
-                                          style: const TextStyle(
-                                            fontSize: 11,
+                                          style: textTheme.labelSmall?.copyWith(
                                             color: AppColors.grey600,
                                           ),
                                           overflow: TextOverflow.ellipsis,
@@ -397,8 +400,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       ),
                                       Text(
                                         '${list['spots']} spots',
-                                        style: const TextStyle(
-                                          fontSize: 11,
+                                        style: textTheme.labelSmall?.copyWith(
                                           color: AppColors.grey600,
                                         ),
                                       ),
@@ -433,18 +435,15 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                         itemLabel: listName,
                                       ));
                                     },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? AppTheme.primaryColor
-                                            : AppColors.grey200,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Icon(
+                                    child: Chip(
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      side: BorderSide.none,
+                                      backgroundColor: isSelected
+                                          ? AppTheme.primaryColor
+                                          : AppColors.grey200,
+                                      label: Icon(
                                         isSelected ? Icons.check : Icons.add,
                                         size: 14,
                                         color: isSelected
@@ -453,7 +452,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: spacing.xs),
                                   // View details arrow
                                   const Icon(
                                     Icons.arrow_forward_ios,
@@ -478,6 +477,8 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   }
 
   Widget _buildUserProfileInfo(Map<String, dynamic> list) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     final userProfile = list['userProfile'] as Map<String, dynamic>;
     final expertise = userProfile['expertise'] as String;
     final locations = userProfile['locations'] as List<String>;
@@ -485,7 +486,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
     final differentSpotsCount = userProfile['differentSpotsCount'] as int;
 
     return PortalSurface(
-      padding: const EdgeInsets.all(6),
+      padding: EdgeInsets.all(spacing.xxs),
       color: AppColors.grey50,
       borderColor: AppColors.grey200,
       child: Column(
@@ -493,18 +494,16 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
         children: [
           Text(
             '$expertise in ${locations.join(', ')}',
-            style: const TextStyle(
-              fontSize: 10,
+            style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w500,
             ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
-          const SizedBox(height: 1),
+          SizedBox(height: spacing.xxs / 2),
           Text(
             'Hosted $hostedEventsCount events at $differentSpotsCount spots',
-            style: const TextStyle(
-              fontSize: 9,
+            style: textTheme.labelSmall?.copyWith(
               color: AppColors.grey600,
             ),
             overflow: TextOverflow.ellipsis,
@@ -516,6 +515,9 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   }
 
   void _showListDetails(Map<String, dynamic> list) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     // Mock spots data for the list
     List<Map<String, dynamic>> spots =
         _getMockSpotsForList(list['name'] as String);
@@ -524,108 +526,109 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.grey300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor:
-                        AppTheme.primaryColor.withValues(alpha: 0.1),
-                    child: Icon(
-                      _getCategoryIcon(list['category'] as String),
-                      color: AppTheme.primaryColor,
-                      size: 20,
-                    ),
+      builder: (context) => PortalSurface(
+        radius: context.radius.lg,
+        color: AppColors.white,
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Column(
+            children: [
+              // Handle bar
+              Padding(
+                padding: EdgeInsets.only(top: spacing.xs),
+                child: SizedBox(
+                  width: spacing.xl + spacing.sm,
+                  height: spacing.xxs,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(spacing.xxs / 2),
+                    child: const ColoredBox(color: AppColors.grey300),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          list['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                ),
+              ),
+              // Header
+              Padding(
+                padding: EdgeInsets.all(spacing.md + spacing.xs),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor:
+                          AppTheme.primaryColor.withValues(alpha: 0.1),
+                      child: Icon(
+                        _getCategoryIcon(list['category'] as String),
+                        color: AppTheme.primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                    SizedBox(width: spacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            list['name'] as String,
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'by ${list['creator']} • ${list['spots']} spots • ${list['respects']} respects',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.grey600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Spots list
+              Expanded(
+                child: ListView.builder(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: spacing.md + spacing.xs),
+                  itemCount: spots.length,
+                  itemBuilder: (context, index) {
+                    final spot = spots[index];
+                    return PortalSurface(
+                      margin: EdgeInsets.only(bottom: spacing.xs),
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              AppTheme.primaryColor.withValues(alpha: 0.1),
+                          child: Icon(
+                            _getSpotIcon(spot['category'] as String),
+                            color: AppTheme.primaryColor,
+                            size: 16,
                           ),
                         ),
-                        Text(
-                          'by ${list['creator']} • ${list['spots']} spots • ${list['respects']} respects',
-                          style: const TextStyle(
-                            fontSize: 14,
+                        title: Text(
+                          spot['name'] as String,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          spot['description'] as String,
+                          style: textTheme.bodySmall?.copyWith(
                             color: AppColors.grey600,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Spots list
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: spots.length,
-                itemBuilder: (context, index) {
-                  final spot = spots[index];
-                  return PortalSurface(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: EdgeInsets.zero,
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor:
-                            AppTheme.primaryColor.withValues(alpha: 0.1),
-                        child: Icon(
-                          _getSpotIcon(spot['category'] as String),
-                          color: AppTheme.primaryColor,
+                        trailing: const Icon(
+                          Icons.location_on_outlined,
+                          color: AppColors.grey400,
                           size: 16,
                         ),
                       ),
-                      title: Text(
-                        spot['name'] as String,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        spot['description'] as String,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey600,
-                        ),
-                      ),
-                      trailing: const Icon(
-                        Icons.location_on_outlined,
-                        color: AppColors.grey400,
-                        size: 16,
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

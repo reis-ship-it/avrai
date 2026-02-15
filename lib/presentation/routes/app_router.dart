@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/presentation/pages/auth/auth_wrapper.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
 import 'package:avrai/presentation/pages/auth/signup_page.dart';
@@ -59,8 +60,7 @@ import 'package:avrai/presentation/pages/settings/ai2ai_learning_methods_page.da
 import 'package:avrai/presentation/pages/settings/continuous_learning_page.dart';
 // Phase 4.5: Partnerships Page
 import 'package:avrai/presentation/pages/profile/partnerships_page.dart';
-import 'package:avrai/presentation/pages/debug/geo_area_evolution_debug_page.dart';
-import 'package:avrai/presentation/pages/debug/proof_run_page.dart';
+import 'package:avrai/presentation/routes/modules/design_debug_routes.dart';
 import 'package:avrai/presentation/pages/receipts/receipt_detail_page.dart';
 import 'package:avrai/presentation/pages/receipts/receipts_page.dart';
 // Phase 10: Social Media Integration - Friend Discovery
@@ -105,6 +105,7 @@ class AppRouter {
   // Phase 19.18: Quantum Group Matching System
   static const String groupFormation = '/group/formation';
   static const String groupResults = '/group/results';
+  static const String designPlayground = '/design/playground';
 
   static GoRouter build({required AuthBloc authBloc}) {
     const bool goToSupabaseTest = bool.fromEnvironment('GO_TO_SUPABASE_TEST');
@@ -681,22 +682,7 @@ class AppRouter {
               path: 'on-device-ai',
               builder: (c, s) => const OnDeviceAiSettingsPage(),
             ),
-            GoRoute(
-              path: 'proof-run',
-              redirect: (context, state) {
-                if (kDebugMode || enableProofRun) return null;
-                return '/home';
-              },
-              builder: (c, s) => const ProofRunPage(),
-            ),
-            GoRoute(
-              path: 'geo-area-debug',
-              redirect: (context, state) {
-                if (kDebugMode) return null;
-                return '/home';
-              },
-              builder: (c, s) => const GeoAreaEvolutionDebugPage(),
-            ),
+            ...buildDesignDebugRoutes(enableProofRun: enableProofRun),
             // Phase 7, Week 37: AI Self-Improvement Visibility
             GoRoute(
               path: 'ai-improvement',
@@ -732,9 +718,7 @@ class AppRouter {
                         'Location permission required to use the map.',
                       _ => 'Additional permissions are required.'
                     };
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(text)),
-                    );
+                    context.showWarning(text);
                   });
                 }
                 return const OnboardingPage();

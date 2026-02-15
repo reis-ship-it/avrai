@@ -6,6 +6,7 @@
 // Main settings page for businesses to configure their reservation system
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/business/reservations/availability_settings_widget.dart';
@@ -18,6 +19,8 @@ import 'package:avrai/presentation/widgets/business/reservations/seating_chart_s
 import 'package:avrai/presentation/widgets/business/reservations/notification_preferences_widget.dart';
 import 'package:avrai/presentation/widgets/business/reservations/notification_history_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Settings Page
 ///
@@ -52,7 +55,7 @@ class _ReservationSettingsPageState extends State<ReservationSettingsPage> {
     return AdaptivePlatformPageScaffold(
       title: 'Reservation Settings',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,58 +66,49 @@ class _ReservationSettingsPageState extends State<ReservationSettingsPage> {
               icon: Icons.business_center,
             ),
             const SizedBox(height: 12),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.verified,
-                          color: AppTheme.primaryColor,
-                          size: 20,
+            PortalSurface(
+              padding: const EdgeInsets.all(kSpaceMd),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.verified,
+                        color: AppTheme.primaryColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Reservations Enabled',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Reservations Enabled',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
+                      ),
+                      Switch(
+                        value: true, // TODO: Get from business settings
+                        onChanged: (value) {
+                          // TODO: Save business reservation capability
+                          context.showSuccess(
+                            value
+                                ? 'Reservations enabled'
+                                : 'Reservations disabled',
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Allow customers to make reservations at your business',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
                         ),
-                        Switch(
-                          value: true, // TODO: Get from business settings
-                          onChanged: (value) {
-                            // TODO: Save business reservation capability
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  value
-                                      ? 'Reservations enabled'
-                                      : 'Reservations disabled',
-                                ),
-                                backgroundColor: AppColors.success,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Allow customers to make reservations at your business',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),

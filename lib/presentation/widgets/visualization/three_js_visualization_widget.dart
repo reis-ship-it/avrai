@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -155,8 +156,8 @@ class _ThreeJsVisualizationWidgetState
     });
   }
 
-  void _onLoadError(InAppWebViewController controller, WebResourceRequest request,
-      WebResourceError error) {
+  void _onLoadError(InAppWebViewController controller,
+      WebResourceRequest request, WebResourceError error) {
     developer.log('WebView error: ${error.description}', name: _logName);
     if (mounted) {
       setState(() {
@@ -175,13 +176,13 @@ class _ThreeJsVisualizationWidgetState
   void dispose() {
     _objectTappedSub?.cancel();
     _renderCompleteSub?.cancel();
-    
+
     // Only dispose bridge if we created it (not prewarmed)
     if (_bridge != null && _controller != null) {
       _bridge!.cleanup();
       _bridge!.dispose();
     }
-    
+
     super.dispose();
   }
 
@@ -283,10 +284,9 @@ class _ThreeJsVisualizationWidgetState
             const SizedBox(height: 8),
             Text(
               'Visualization failed',
-              style: TextStyle(
-                color: AppColors.error,
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.error,
+                  ),
             ),
           ],
         ),
@@ -323,7 +323,7 @@ class _ThreeJsVisualizationWidgetState
         onTap: onPressed,
         borderRadius: BorderRadius.circular(4),
         child: Padding(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(kSpaceXxs),
           child: Icon(
             icon,
             size: 16,

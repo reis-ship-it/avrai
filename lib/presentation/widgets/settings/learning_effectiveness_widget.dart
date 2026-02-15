@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
@@ -57,16 +58,16 @@ class _LearningEffectivenessWidgetState
     final textTheme = Theme.of(context).textTheme;
 
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(kSpaceMd),
           child: CircularProgressIndicator(),
         ),
       );
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: isDark ? AppColors.grey800 : AppColors.white,
         borderRadius: BorderRadius.circular(16),
@@ -112,10 +113,9 @@ class _LearningEffectivenessWidgetState
 
   Widget _buildOverallStats(bool isDark, TextTheme textTheme) {
     final totalInsights = _history?.totalInsights ?? 0;
-    final activeSources = _history?.sourceStats.values
-            .where((s) => s.insightCount > 0)
-            .length ??
-        0;
+    final activeSources =
+        _history?.sourceStats.values.where((s) => s.insightCount > 0).length ??
+            0;
     final lastLearning = _history?.lastLearningAt;
 
     return Row(
@@ -149,9 +149,8 @@ class _LearningEffectivenessWidgetState
           child: _buildStatCard(
             icon: Icons.schedule,
             label: 'Last Learning',
-            value: lastLearning != null
-                ? _formatTimeAgo(lastLearning)
-                : 'Never',
+            value:
+                lastLearning != null ? _formatTimeAgo(lastLearning) : 'Never',
             color: AppColors.success,
             isDark: isDark,
             textTheme: textTheme,
@@ -170,7 +169,7 @@ class _LearningEffectivenessWidgetState
     required TextTheme textTheme,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: isDark ? 0.15 : 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -192,7 +191,6 @@ class _LearningEffectivenessWidgetState
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(
               color: isDark ? Colors.white54 : Colors.black54,
-              fontSize: 10,
             ),
           ),
         ],
@@ -231,11 +229,11 @@ class _LearningEffectivenessWidgetState
     final progress = (stats.insightCount / maxInsights).clamp(0.0, 1.0);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: kSpaceSm),
       child: Row(
         children: [
           // Source icon
-          Text(source.icon, style: const TextStyle(fontSize: 18)),
+          Text(source.icon, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(width: 12),
           // Source name and progress
           Expanded(
@@ -256,7 +254,6 @@ class _LearningEffectivenessWidgetState
                       '${stats.insightCount} insights',
                       style: textTheme.bodySmall?.copyWith(
                         color: isDark ? Colors.white54 : Colors.black45,
-                        fontSize: 11,
                       ),
                     ),
                   ],

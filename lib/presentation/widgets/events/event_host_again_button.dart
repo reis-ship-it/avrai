@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// OUR_GUTS.md: "Make hosting incredibly easy"
 /// Easy Event Hosting - Phase 3: Copy & Repeat
@@ -10,56 +12,58 @@ import 'package:get_it/get_it.dart';
 class EventHostAgainButton extends StatelessWidget {
   final ExpertiseEvent originalEvent;
   final VoidCallback? onSuccess;
-  
+
   const EventHostAgainButton({
     super.key,
     required this.originalEvent,
     this.onSuccess,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: () => _hostAgain(context),
       icon: const Icon(Icons.replay),
-      label: const Text('Host Again'),
+      label: Text('Host Again'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+            horizontal: kSpaceMdWide, vertical: kSpaceSm),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
   }
-  
+
   Future<void> _hostAgain(BuildContext context) async {
     try {
       // Show loading
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
+        builder: (context) => Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
-      
+
       // Duplicate the event
       final eventService = GetIt.I<ExpertiseEventService>();
       final newEvent = await eventService.duplicateEvent(
         originalEvent: originalEvent,
       );
       if (!context.mounted) return;
-      
+
       // Close loading
       Navigator.pop(context);
       if (!context.mounted) return;
-      
+
       // Show success
-      ScaffoldMessenger.of(context).showSnackBar(
+      context.showCustomSnackBar(
         SnackBar(
-          content: Text('Event "${newEvent.title}" created for next weekend! 🎉'),
+          content:
+              Text('Event "${newEvent.title}" created for next weekend! 🎉'),
           backgroundColor: AppColors.primary,
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
@@ -73,7 +77,7 @@ class EventHostAgainButton extends StatelessWidget {
           ),
         ),
       );
-      
+
       onSuccess?.call();
     } catch (e) {
       if (!context.mounted) return;
@@ -82,14 +86,9 @@ class EventHostAgainButton extends StatelessWidget {
         Navigator.pop(context);
       }
       if (!context.mounted) return;
-      
+
       // Show error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to duplicate event: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Failed to duplicate event: $e');
     }
   }
 }
@@ -98,13 +97,13 @@ class EventHostAgainButton extends StatelessWidget {
 class EventHostAgainIconButton extends StatelessWidget {
   final ExpertiseEvent originalEvent;
   final VoidCallback? onSuccess;
-  
+
   const EventHostAgainIconButton({
     super.key,
     required this.originalEvent,
     this.onSuccess,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return IconButton(
@@ -113,7 +112,7 @@ class EventHostAgainIconButton extends StatelessWidget {
       onPressed: () => _hostAgain(context),
     );
   }
-  
+
   Future<void> _hostAgain(BuildContext context) async {
     // Same logic as button version
     final button = EventHostAgainButton(
@@ -123,4 +122,3 @@ class EventHostAgainIconButton extends StatelessWidget {
     await button._hostAgain(context);
   }
 }
-

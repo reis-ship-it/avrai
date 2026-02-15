@@ -11,6 +11,6 @@ flutter test "$@" \
   test/unit/services/neighborhood_boundary_service_test.dart \
   test/unit/services/location_obfuscation_service_test.dart \
   test/widget/pages/map/ \
-  test/integration/locality_value_integration_test.dart \
-  test/integration/connectivity_integration_test.dart
+  test/integration/geographic/locality_value_integration_test.dart \
+  test/integration/infrastructure/connectivity_integration_test.dart
 

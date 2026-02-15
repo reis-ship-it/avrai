@@ -7,11 +7,13 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_recurrence_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Recurring Reservation Widget
 ///
@@ -151,13 +153,8 @@ class _RecurringReservationWidgetState
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Recurring reservation series created! ${result.createdReservationIds?.length ?? 0} reservations created.',
-              ),
-              backgroundColor: AppTheme.successColor,
-            ),
+          context.showSuccess(
+            'Recurring reservation series created! ${result.createdReservationIds?.length ?? 0} reservations created.',
           );
 
           // Notify parent
@@ -167,13 +164,8 @@ class _RecurringReservationWidgetState
             _error = result.error ?? 'Failed to create recurring series';
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text(result.error ?? 'Failed to create recurring series'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context
+              .showError(result.error ?? 'Failed to create recurring series');
         }
       }
     } catch (e, stackTrace) {
@@ -189,12 +181,7 @@ class _RecurringReservationWidgetState
           _error = 'Failed to create series: ${e.toString()}';
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create series: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to create series: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -238,7 +225,7 @@ class _RecurringReservationWidgetState
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -251,13 +238,12 @@ class _RecurringReservationWidgetState
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Create Recurring Reservation',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
               ),
             ],
           ),
@@ -265,34 +251,33 @@ class _RecurringReservationWidgetState
           const SizedBox(height: 24),
 
           // Pattern Type Selection
-          const Text(
+          Text(
             'Recurrence Pattern',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           SegmentedButton<RecurrencePatternType>(
             segments: [
               ButtonSegment(
                 value: RecurrencePatternType.daily,
-                label: const Text('Daily'),
+                label: Text('Daily'),
                 icon: const Icon(Icons.today),
               ),
               ButtonSegment(
                 value: RecurrencePatternType.weekly,
-                label: const Text('Weekly'),
+                label: Text('Weekly'),
                 icon: const Icon(Icons.date_range),
               ),
               ButtonSegment(
                 value: RecurrencePatternType.monthly,
-                label: const Text('Monthly'),
+                label: Text('Monthly'),
                 icon: const Icon(Icons.calendar_month),
               ),
               ButtonSegment(
                 value: RecurrencePatternType.custom,
-                label: const Text('Custom'),
+                label: Text('Custom'),
                 icon: const Icon(Icons.settings),
               ),
             ],
@@ -310,9 +295,9 @@ class _RecurringReservationWidgetState
           // Interval Selection
           Row(
             children: [
-              const Text(
+              Text(
                 'Repeat every',
-                style: TextStyle(fontSize: 16),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -343,7 +328,7 @@ class _RecurringReservationWidgetState
                         : _patternType == RecurrencePatternType.monthly
                             ? 'month(s)'
                             : 'day(s)',
-                style: const TextStyle(fontSize: 16),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
           ),
@@ -351,12 +336,11 @@ class _RecurringReservationWidgetState
           const SizedBox(height: 24),
 
           // End Condition Selection
-          const Text(
+          Text(
             'End Condition',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           RadioGroup<bool>(
@@ -370,7 +354,7 @@ class _RecurringReservationWidgetState
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Maximum Occurrences'),
+                    title: Text('Maximum Occurrences'),
                     content: TextField(
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
@@ -391,13 +375,13 @@ class _RecurringReservationWidgetState
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                        child: Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
                           // Will be handled by onSubmitted
                         },
-                        child: const Text('OK'),
+                        child: Text('OK'),
                       ),
                     ],
                   ),
@@ -408,13 +392,13 @@ class _RecurringReservationWidgetState
               children: [
                 Expanded(
                   child: RadioListTile<bool>(
-                    title: const Text('End Date'),
+                    title: Text('End Date'),
                     value: true,
                   ),
                 ),
                 Expanded(
                   child: RadioListTile<bool>(
-                    title: const Text('Max Occurrences'),
+                    title: Text('Max Occurrences'),
                     value: false,
                   ),
                 ),
@@ -435,7 +419,10 @@ class _RecurringReservationWidgetState
                 ),
                 child: Text(
                   _endDate!.toLocal().toString().split(' ')[0],
-                  style: const TextStyle(color: AppColors.black),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.black),
                 ),
               ),
             ),
@@ -467,16 +454,15 @@ class _RecurringReservationWidgetState
 
           // Preview Section
           if (_previewInstances.isNotEmpty) ...[
-            const Text(
+            Text(
               'Preview',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -487,28 +473,26 @@ class _RecurringReservationWidgetState
                 children: [
                   Text(
                     '${_previewInstances.length} reservation${_previewInstances.length == 1 ? '' : 's'} will be created:',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   ...(_previewInstances.take(5).map((instance) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.only(bottom: kSpaceXxs),
                       child: Text(
                         instance.toLocal().toString().split('.')[0],
-                        style: const TextStyle(fontSize: 12),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     );
                   })),
                   if (_previewInstances.length > 5)
                     Text(
                       '... and ${_previewInstances.length - 5} more',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                 ],
               ),
@@ -519,7 +503,7 @@ class _RecurringReservationWidgetState
           if (_error != null) ...[
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -536,10 +520,9 @@ class _RecurringReservationWidgetState
                   Expanded(
                     child: Text(
                       _error!,
-                      style: const TextStyle(
-                        color: AppTheme.errorColor,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.errorColor,
+                          ),
                     ),
                   ),
                 ],
@@ -559,12 +542,12 @@ class _RecurringReservationWidgetState
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryColor,
                       side: const BorderSide(color: AppTheme.primaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -575,7 +558,7 @@ class _RecurringReservationWidgetState
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -590,7 +573,7 @@ class _RecurringReservationWidgetState
                                 AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Create Recurring Series'),
+                      : Text('Create Recurring Series'),
                 ),
               ),
             ],

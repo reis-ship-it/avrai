@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 import 'package:avrai/core/models/quantum/recommendation_attribution.dart';
 
@@ -42,11 +43,16 @@ class RecommendationAttributionChip extends StatelessWidget {
   }
 
   Widget _buildCompactChip(BuildContext context, bool isDark) {
+    final spacing = context.spacing;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        constraints: maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        constraints:
+            maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.sm,
+          vertical: spacing.xxs,
+        ),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.primary.withValues(alpha: 0.15)
@@ -62,14 +68,16 @@ class RecommendationAttributionChip extends StatelessWidget {
           children: [
             // Cross-app source indicators
             if (attribution.hasCrossAppInfluence) ...[
-              ...attribution.crossAppInfluence!.sourceIcons.map((icon) => Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(icon, style: const TextStyle(fontSize: 12)),
-                  )),
+              ...attribution.crossAppInfluence!.sourceIcons
+                  .map((icon) => Padding(
+                        padding: EdgeInsets.only(right: spacing.xxs),
+                        child: Text(icon,
+                            style: Theme.of(context).textTheme.bodySmall),
+                      )),
               Container(
                 width: 1,
                 height: 12,
-                margin: const EdgeInsets.only(right: 6),
+                margin: EdgeInsets.only(right: spacing.xxs),
                 color: AppColors.primary.withValues(alpha: 0.3),
               ),
             ],
@@ -78,11 +86,10 @@ class RecommendationAttributionChip extends StatelessWidget {
             Flexible(
               child: Text(
                 attribution.shortSummary,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? Colors.white70 : AppColors.primary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? Colors.white70 : AppColors.primary,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -94,7 +101,9 @@ class RecommendationAttributionChip extends StatelessWidget {
               Icon(
                 Icons.expand_more,
                 size: 14,
-                color: isDark ? Colors.white54 : AppColors.primary.withValues(alpha: 0.7),
+                color: isDark
+                    ? Colors.white54
+                    : AppColors.primary.withValues(alpha: 0.7),
               ),
             ],
           ],
@@ -104,10 +113,11 @@ class RecommendationAttributionChip extends StatelessWidget {
   }
 
   Widget _buildExpandedView(BuildContext context, bool isDark) {
+    final spacing = context.spacing;
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: isDark ? AppColors.grey800 : AppColors.white,
         borderRadius: BorderRadius.circular(12),
@@ -136,7 +146,7 @@ class RecommendationAttributionChip extends StatelessWidget {
                 size: 16,
                 color: AppColors.primary,
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: spacing.xxs),
               Text(
                 'Why This Spot?',
                 style: textTheme.titleSmall?.copyWith(
@@ -155,8 +165,14 @@ class RecommendationAttributionChip extends StatelessWidget {
           ],
 
           // Factors
-          ...attribution.getTopFactors(3).map((factor) =>
-              _buildFactorRow(factor, isDark, textTheme)),
+          ...attribution.getTopFactors(3).map(
+                (factor) => _buildFactorRow(
+                  context,
+                  factor,
+                  isDark,
+                  textTheme,
+                ),
+              ),
         ],
       ),
     );
@@ -167,10 +183,11 @@ class RecommendationAttributionChip extends StatelessWidget {
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
     final influence = attribution.crossAppInfluence!;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.primary.withValues(alpha: 0.1)
@@ -181,8 +198,9 @@ class RecommendationAttributionChip extends StatelessWidget {
         children: [
           // Source icons
           ...influence.sourceIcons.map((icon) => Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: Text(icon, style: const TextStyle(fontSize: 16)),
+                padding: EdgeInsets.only(right: spacing.xxs),
+                child:
+                    Text(icon, style: Theme.of(context).textTheme.bodyMedium),
               )),
           const SizedBox(width: 4),
           // Summary
@@ -201,12 +219,14 @@ class RecommendationAttributionChip extends StatelessWidget {
   }
 
   Widget _buildFactorRow(
+    BuildContext context,
     AttributionFactor factor,
     bool isDark,
     TextTheme textTheme,
   ) {
+    final spacing = context.spacing;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: spacing.xs),
       child: Row(
         children: [
           // Icon
@@ -237,15 +257,17 @@ class RecommendationAttributionChip extends StatelessWidget {
           ),
           // Weight indicator
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.xs,
+              vertical: spacing.xxs,
+            ),
             decoration: BoxDecoration(
               color: _getWeightColor(factor.weight).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               '${factor.percentageContribution}%',
-              style: TextStyle(
-                fontSize: 11,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: _getWeightColor(factor.weight),
               ),
@@ -279,12 +301,14 @@ class CrossAppLearningBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: influence.sourceIcons
           .map((icon) => Padding(
-                padding: const EdgeInsets.only(right: 2),
-                child: Text(icon, style: TextStyle(fontSize: size * 0.8)),
+                padding: EdgeInsets.only(right: spacing.xxs),
+                child:
+                    Text(icon, style: Theme.of(context).textTheme.bodyMedium),
               ))
           .toList(),
     );

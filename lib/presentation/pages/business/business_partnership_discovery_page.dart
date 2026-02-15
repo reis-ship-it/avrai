@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_business_outreach_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Partnership Discovery Page
 ///
@@ -82,10 +85,10 @@ class _BusinessPartnershipDiscoveryPageState
                     const SizedBox(width: 4),
                     Text(
                       'Compatibility: ${(business.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        color: AppColors.success,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -116,7 +119,7 @@ class _BusinessPartnershipDiscoveryPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -124,7 +127,7 @@ class _BusinessPartnershipDiscoveryPageState
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Send Proposal'),
+            child: Text('Send Proposal'),
           ),
         ],
       ),
@@ -141,21 +144,19 @@ class _BusinessPartnershipDiscoveryPageState
       );
 
       if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Partnership proposal sent successfully!'),
-            backgroundColor: AppColors.success,
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Partnership proposal sent successfully!',
+          kind: FeedbackKind.success,
         );
 
         // Refresh the list
         _loadRecommendedBusinesses();
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error sending partnership proposal'),
-            backgroundColor: AppColors.error,
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Error sending partnership proposal',
+          kind: FeedbackKind.error,
         );
       }
     }
@@ -172,20 +173,20 @@ class _BusinessPartnershipDiscoveryPageState
           icon: const Icon(Icons.filter_list),
           onPressed: () {
             // TODO: Show filter dialog
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Filter options coming soon'),
-              ),
+            FeedbackPresenter.showSnack(
+              context,
+              message: 'Filter options coming soon',
+              kind: FeedbackKind.info,
             );
           },
         ),
       ],
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(kSpaceLg),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -194,13 +195,16 @@ class _BusinessPartnershipDiscoveryPageState
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          style: const TextStyle(color: AppColors.error),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.error),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: _loadRecommendedBusinesses,
-                          child: const Text('Retry'),
+                          child: Text('Retry'),
                         ),
                       ],
                     ),
@@ -214,20 +218,24 @@ class _BusinessPartnershipDiscoveryPageState
                           const Icon(Icons.business_center,
                               size: 64, color: AppColors.textSecondary),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'No businesses found',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Try adjusting your compatibility threshold',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                           const SizedBox(height: 24),
                           ElevatedButton(
@@ -237,7 +245,7 @@ class _BusinessPartnershipDiscoveryPageState
                               });
                               _loadRecommendedBusinesses();
                             },
-                            child: const Text('Lower Threshold'),
+                            child: Text('Lower Threshold'),
                           ),
                         ],
                       ),
@@ -245,7 +253,7 @@ class _BusinessPartnershipDiscoveryPageState
                   : RefreshIndicator(
                       onRefresh: _loadRecommendedBusinesses,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(kSpaceMd),
                         itemCount: _recommendedBusinesses.length,
                         itemBuilder: (context, index) {
                           final business = _recommendedBusinesses[index];
@@ -257,13 +265,14 @@ class _BusinessPartnershipDiscoveryPageState
   }
 
   Widget _buildBusinessCard(BusinessMatch business) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return PortalSurface(
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _sendPartnershipOutreach(business),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -285,43 +294,41 @@ class _BusinessPartnershipDiscoveryPageState
                       children: [
                         Text(
                           business.businessName ?? 'Business',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         if (business.metadata?['business_type'] != null)
                           Text(
                             business.metadata!['business_type'] as String,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         if (business.metadata?['location'] != null)
                           Text(
                             business.metadata!['location'] as String,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                       ],
                     ),
                   ),
                   if (business.compatibilityScore != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            _getCompatibilityColor(business.compatibilityScore!)
-                                .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
+                    Chip(
+                      side: BorderSide.none,
+                      backgroundColor:
+                          _getCompatibilityColor(business.compatibilityScore!)
+                              .withValues(alpha: 0.1),
+                      label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -333,12 +340,14 @@ class _BusinessPartnershipDiscoveryPageState
                           const SizedBox(width: 4),
                           Text(
                             '${(business.compatibilityScore! * 100).toStringAsFixed(0)}%',
-                            style: TextStyle(
-                              color: _getCompatibilityColor(
-                                  business.compatibilityScore!),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: _getCompatibilityColor(
+                                      business.compatibilityScore!),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -349,10 +358,9 @@ class _BusinessPartnershipDiscoveryPageState
                 const SizedBox(height: 12),
                 Text(
                   business.metadata!['description'] as String,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -364,7 +372,7 @@ class _BusinessPartnershipDiscoveryPageState
                   OutlinedButton.icon(
                     onPressed: () => _sendPartnershipOutreach(business),
                     icon: const Icon(Icons.handshake, size: 16),
-                    label: const Text('Propose Partnership'),
+                    label: Text('Propose Partnership'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryColor,
                     ),

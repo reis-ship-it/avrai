@@ -7,8 +7,10 @@ import 'package:avrai/core/models/payment/refund_status.dart';
 import 'package:avrai/core/controllers/event_cancellation_controller.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Cancellation Flow Page
 ///
@@ -204,11 +206,12 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   Step _buildReasonStep() {
     final reasons = widget.isHost ? _hostReasons : _attendeeReasons;
+    final textTheme = Theme.of(context).textTheme;
 
     return Step(
-      title: const Text(
+      title: Text(
         'Reason for Cancellation',
-        style: TextStyle(color: AppColors.textPrimary),
+        style: textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
       ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,12 +220,10 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             widget.isHost
                 ? 'Please select a reason for cancelling this event:'
                 : 'Please select a reason for cancelling your ticket:',
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style:
+                textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           RadioGroup<String>(
             groupValue: _selectedReason,
             onChanged: (val) {
@@ -235,7 +236,8 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                 return RadioListTile<String>(
                   title: Text(
                     reason,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: textTheme.bodyLarge
+                        ?.copyWith(color: AppColors.textPrimary),
                   ),
                   value: reason,
                   activeColor: AppTheme.primaryColor,
@@ -253,29 +255,28 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Step _buildRefundPreviewStep() {
+    final textTheme = Theme.of(context).textTheme;
     return Step(
-      title: const Text(
+      title: Text(
         'Refund Preview',
-        style: TextStyle(color: AppColors.textPrimary),
+        style: textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
       ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.isHost) ...[
-            const Text(
+            Text(
               'As the event host, cancelling this event will:',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style:
+                  textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             _buildInfoCard(
               icon: Icons.money_off,
               title: 'Full Refunds',
               description: 'All attendees will receive full refunds',
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
             _buildInfoCard(
               icon: Icons.warning,
               title: 'Host Penalty',
@@ -287,14 +288,12 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                   : 'No penalty (cancelled more than 48 hours before event)',
             ),
           ] else ...[
-            const Text(
+            Text(
               'Refund Information:',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style:
+                  textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             if (_refundAmount != null && _refundAmount! > 0) ...[
               _buildInfoCard(
                 icon: Icons.check_circle,
@@ -328,54 +327,52 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Step _buildPolicyStep() {
+    final textTheme = Theme.of(context).textTheme;
     return Step(
-      title: const Text(
+      title: Text(
         'Refund Policy',
-        style: TextStyle(color: AppColors.textPrimary),
+        style: textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
       ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Standard Refund Policy:',
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildPolicyItem(
             'More than 48 hours before event',
             'Full refund (minus 10% platform fee)',
             Icons.check_circle,
             AppColors.electricGreen,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildPolicyItem(
             '24-48 hours before event',
             '50% refund (minus 10% platform fee)',
             Icons.info,
             AppTheme.warningColor,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           _buildPolicyItem(
             'Less than 24 hours before event',
             'No refund available',
             Icons.cancel,
             AppColors.error,
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.grey100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Text(
+          SizedBox(height: context.spacing.md),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            color: AppColors.grey100,
+            borderColor: AppColors.grey300,
+            radius: context.radius.sm,
+            child: Text(
               'Note: Force majeure events (weather, emergencies) always receive full refunds.',
-              style: TextStyle(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 fontStyle: FontStyle.italic,
               ),
@@ -389,61 +386,56 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Step _buildConfirmationStep() {
+    final textTheme = Theme.of(context).textTheme;
     return Step(
-      title: const Text(
+      title: Text(
         'Confirm Cancellation',
-        style: TextStyle(color: AppColors.textPrimary),
+        style: textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
       ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.md),
+            color: AppColors.error.withValues(alpha: 0.1),
+            borderColor: AppColors.error.withValues(alpha: 0.3),
+            radius: context.radius.sm,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.warning, color: AppColors.error),
-                    SizedBox(width: 8),
+                    const Icon(Icons.warning, color: AppColors.error),
+                    SizedBox(width: context.spacing.xs),
                     Text(
                       'Are you sure?',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.error,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing.sm),
                 Text(
                   widget.isHost
                       ? 'Cancelling this event will notify all attendees and process refunds. This action cannot be undone.'
                       : 'Cancelling your ticket will process your refund (if applicable). This action cannot be undone.',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: context.spacing.md),
+          Text(
             'Summary:',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           _buildSummaryItem('Event', widget.event.title),
           _buildSummaryItem('Reason', _selectedReason ?? 'Not selected'),
           if (!widget.isHost && _refundAmount != null)
@@ -461,42 +453,35 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Widget _buildProcessingStep() {
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const CircularProgressIndicator(),
-          const SizedBox(height: 24),
-          const Text(
+          SizedBox(height: context.spacing.xl),
+          Text(
             'Processing cancellation...',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.textPrimary,
-            ),
+            style:
+                textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: context.spacing.xs),
+          Text(
             'Please wait while we process your refund.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style:
+                textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
           if (_error != null) ...[
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
+            SizedBox(height: context.spacing.xl),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.md),
+              margin: EdgeInsets.symmetric(horizontal: context.spacing.xl),
+              color: AppColors.error.withValues(alpha: 0.1),
+              borderColor: AppColors.error.withValues(alpha: 0.3),
+              radius: context.radius.sm,
               child: Text(
                 _error!,
-                style: const TextStyle(
-                  color: AppColors.error,
-                  fontSize: 14,
-                ),
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.error),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -507,13 +492,14 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Widget _buildSuccessStep() {
+    final textTheme = Theme.of(context).textTheme;
     final refundStatus = _cancellation!.refundStatus;
     final hasRefund =
         _cancellation!.refundAmount != null && _cancellation!.refundAmount! > 0;
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(context.spacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -526,67 +512,58 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
                   ? AppColors.electricGreen
                   : AppTheme.warningColor,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
             Text(
               widget.isHost ? 'Event Cancelled' : 'Ticket Cancelled',
-              style: const TextStyle(
-                fontSize: 24,
+              style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               widget.isHost
                   ? 'All attendees have been notified and refunds are being processed.'
                   : 'Your cancellation has been processed.',
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style:
+                  textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             if (hasRefund) ...[
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              SizedBox(height: context.spacing.xl),
+              PortalSurface(
+                padding: EdgeInsets.all(context.spacing.md),
+                color: AppColors.electricGreen.withValues(alpha: 0.1),
+                borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+                radius: context.radius.sm,
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Refund Amount',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       '\$${_cancellation!.refundAmount!.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 28,
+                      style: textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.electricGreen,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.spacing.xs),
                     Text(
                       refundStatus == RefundStatus.completed
                           ? 'Refund processed successfully'
                           : 'Refund is being processed',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: textTheme.bodySmall
+                          ?.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
             ],
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing.xl),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
@@ -594,8 +571,10 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: AppColors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.spacing.xxl,
+                  vertical: context.spacing.md,
+                ),
               ),
               child: const Text('Done'),
             ),
@@ -611,36 +590,31 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
     required String description,
     Color? color,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: (color ?? AppTheme.primaryColor).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: (color ?? AppTheme.primaryColor).withValues(alpha: 0.3),
-        ),
-      ),
+    final textTheme = Theme.of(context).textTheme;
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.md),
+      color: (color ?? AppTheme.primaryColor).withValues(alpha: 0.1),
+      borderColor: (color ?? AppTheme.primaryColor).withValues(alpha: 0.3),
+      radius: context.radius.sm,
       child: Row(
         children: [
           Icon(icon, color: color ?? AppTheme.primaryColor),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -654,28 +628,26 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   Widget _buildPolicyItem(
       String time, String refund, IconData icon, Color color) {
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
-        const SizedBox(width: 12),
+        SizedBox(width: context.spacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 time,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
               Text(
                 refund,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: textTheme.bodySmall
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -685,8 +657,9 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
   }
 
   Widget _buildSummaryItem(String label, String value) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -694,8 +667,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
             width: 80,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -703,8 +675,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),

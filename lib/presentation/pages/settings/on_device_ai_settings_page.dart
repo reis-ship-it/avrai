@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart'
         defaultTargetPlatform,
         TargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/models/misc/local_llm_bootstrap_state.dart';
 import 'package:avrai/core/services/recommendations/agent_happiness_service.dart';
@@ -28,6 +29,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:avrai/core/ml/model_version_registry.dart';
 import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -176,13 +178,15 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     return AdaptivePlatformPageScaffold(
       title: 'On-Device AI',
       constrainBody: false,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               children: [
                 if (_error != null)
                   _buildInfoCard(
@@ -192,13 +196,13 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                     iconColor: AppColors.error,
                   ),
                 _buildHappinessCard(),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 _buildCapabilityCard(),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 _buildModelSafetyCard(),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 _buildTogglesCard(),
-                const SizedBox(height: 12),
+                SizedBox(height: spacing.sm),
                 _buildNotesCard(),
               ],
             ),
@@ -267,29 +271,30 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
   }
 
   Widget _buildTogglesCard() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     final gate = _gateResult;
     final eligible = gate?.eligible ?? false;
     final allowLora = gate?.allowOnDeviceLoraTraining ?? false;
 
     return PortalSurface(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Offline mode',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           _buildLocalModelPackRow(eligible: eligible),
           if ((_packStatus?.isInstalled ?? false) &&
               _pendingRefinementPrompts.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: spacing.xs),
               child: _buildRefinementPicksCard(),
             ),
           SwitchListTile(
@@ -328,29 +333,32 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
   }
 
   Widget _buildRefinementPicksCard() {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return PortalSurface(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Refine offline AI (30 seconds)',
-            style: TextStyle(
+            style: textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: spacing.xxs),
           Text(
             'These quick picks make local suggestions sharper.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: spacing.sm - (spacing.xxs / 2)),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: spacing.xs,
+            runSpacing: spacing.xs,
             children: _pendingRefinementPrompts
                 .take(3)
                 .map((p) => Chip(
@@ -363,7 +371,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                     ))
                 .toList(),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -407,12 +415,14 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
               children: [
                 Text(
                   prompt.description,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: this.context.spacing.sm),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: this.context.spacing.xs,
+                  runSpacing: this.context.spacing.xs,
                   children: prompt.options
                       .map((o) => FilterChip(
                             label: Text(o.label),
@@ -487,27 +497,18 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Offline AI refined'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      context.showSuccess('Offline AI refined');
     } catch (e, st) {
       developer.log('Failed to apply refinement picks: $e',
           name: _logName, error: e, stackTrace: st);
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Refinement failed: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Refinement failed: $e');
     }
   }
 
   Widget _buildLocalModelPackRow({required bool eligible}) {
+    final spacing = context.spacing;
     final status = _packStatus;
     final installed = status?.isInstalled == true;
     final subtitle = installed
@@ -523,7 +524,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       title: const Text('Local model pack'),
       subtitle: Text(subtitle),
       trailing: Wrap(
-        spacing: 8,
+        spacing: spacing.xs,
         children: [
           if (kDebugMode && !kIsWeb)
             OutlinedButton(
@@ -599,12 +600,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       }
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Offline model downloaded and activated'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      context.showSuccess('Offline model downloaded and activated');
     } catch (e) {
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_failed',
@@ -619,12 +615,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       );
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Install failed: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Install failed: $e');
     }
   }
 
@@ -685,12 +676,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('GGUF imported and activated (dev)'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      context.showSuccess('GGUF imported and activated (dev)');
     } catch (e) {
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_failed',
@@ -706,12 +692,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       );
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Import failed: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Import failed: $e');
     }
   }
 
@@ -726,11 +707,13 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Paste the model pack manifest URL (JSON).',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: this.context.spacing.sm),
             TextField(
               controller: controller,
               decoration: const InputDecoration(
@@ -795,12 +778,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Offline model downloaded and activated'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      context.showSuccess('Offline model downloaded and activated');
     } catch (e) {
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_failed',
@@ -815,12 +793,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       );
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Download failed: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showError('Download failed: $e');
     }
   }
 
@@ -872,33 +845,34 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
     required IconData icon,
     required Color iconColor,
   }) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return PortalSurface(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 2),
+            padding: EdgeInsets.only(top: spacing.xxs),
             child: Icon(icon, color: iconColor),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: spacing.xxs),
                 Text(
                   body,
-                  style: const TextStyle(
-                    fontSize: 13,
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.35,
                   ),

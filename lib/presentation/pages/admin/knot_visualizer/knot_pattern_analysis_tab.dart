@@ -1,22 +1,23 @@
 // Knot Pattern Analysis Tab
-// 
+//
 // Admin tab for analyzing knot patterns
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 9: Admin Knot Visualizer
 
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/knot_admin_service.dart';
 import 'package:avrai_knot/models/knot/knot_pattern_analysis.dart';
 import 'package:avrai/presentation/widgets/admin/knot_pattern_heatmap.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Tab for analyzing knot patterns
 class KnotPatternAnalysisTab extends StatefulWidget {
   const KnotPatternAnalysisTab({super.key});
 
   @override
-  State<KnotPatternAnalysisTab> createState() =>
-      _KnotPatternAnalysisTabState();
+  State<KnotPatternAnalysisTab> createState() => _KnotPatternAnalysisTabState();
 }
 
 class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
@@ -61,7 +62,7 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
       children: [
         // Analysis Type Selector
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: DropdownButtonFormField<AnalysisType>(
             initialValue: _selectedAnalysisType,
             decoration: const InputDecoration(
@@ -88,11 +89,11 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
         // Content
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : _errorMessage != null
                   ? Center(child: Text('Error: $_errorMessage'))
                   : _patternAnalysis == null
-                      ? const Center(child: Text('No pattern analysis available'))
+                      ? Center(child: Text('No pattern analysis available'))
                       : _buildPatternAnalysisContent(),
         ),
       ],
@@ -103,12 +104,12 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
     final analysis = _patternAnalysis!;
 
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(kSpaceMd),
       children: [
         // Statistics
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -137,9 +138,9 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
 
         // Pattern Heatmap
         if (analysis.patterns.isNotEmpty)
-          Card(
+          PortalSurface(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: KnotPatternHeatmap(
                 patterns: analysis.patterns,
                 cellSize: 40.0,
@@ -150,9 +151,9 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
         const SizedBox(height: 16),
 
         // Patterns
-        Card(
+        PortalSurface(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -162,23 +163,27 @@ class _KnotPatternAnalysisTabState extends State<KnotPatternAnalysisTab> {
                 ),
                 const SizedBox(height: 8),
                 if (analysis.patterns.isEmpty)
-                  const Text('No patterns found')
+                  Text('No patterns found')
                 else
                   ...analysis.patterns.map((pattern) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(vertical: kSpaceXs),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               pattern.description,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Strength: ${pattern.strength.toStringAsFixed(2)}',
                             ),
                             if (pattern.metrics.isNotEmpty)
                               ...pattern.metrics.entries.map((entry) => Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
+                                    padding:
+                                        const EdgeInsets.only(left: kSpaceMd),
                                     child: Text('${entry.key}: ${entry.value}'),
                                   )),
                           ],

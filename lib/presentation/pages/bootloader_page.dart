@@ -130,12 +130,11 @@ class _BootloaderPageState extends State<BootloaderPage>
                       const SizedBox(height: 24),
                       Text(
                         'AVRAI',
-                        style: TextStyle(
-                          color: AppColors.white.withValues(alpha: 0.8),
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 4,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 4,
+                            ),
                       ),
                     ],
                   ),

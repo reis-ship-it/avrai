@@ -3,12 +3,13 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Geographic Scope Indicator Widget
 /// Agent 2: Phase 6, Week 24 - Geographic Scope UI
-/// 
+///
 /// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-/// 
+///
 /// Features:
 /// - Show what areas user can host events in
 /// - Display scope based on expertise level (Local, City, State, National, etc.)
@@ -134,7 +135,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
     final detailedMessage = _getDetailedMessage();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: scopeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -150,7 +151,7 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(kSpaceXs),
                 decoration: BoxDecoration(
                   color: scopeColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
@@ -166,22 +167,20 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Hosting Scope',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       scopeDescription,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: scopeColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: scopeColor,
+                          ),
                     ),
                   ],
                 ),
@@ -200,15 +199,13 @@ class GeographicScopeIndicatorWidget extends StatelessWidget {
           // Detailed message
           Text(
             detailedMessage,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textPrimary,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  height: 1.4,
+                ),
           ),
         ],
       ),
     );
   }
 }
-

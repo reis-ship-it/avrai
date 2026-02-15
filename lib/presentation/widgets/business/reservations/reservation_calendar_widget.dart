@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Reservation Calendar Widget
 ///
@@ -30,7 +31,8 @@ class ReservationCalendarWidget extends StatefulWidget {
   });
 
   @override
-  State<ReservationCalendarWidget> createState() => _ReservationCalendarWidgetState();
+  State<ReservationCalendarWidget> createState() =>
+      _ReservationCalendarWidgetState();
 }
 
 class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
@@ -114,7 +116,8 @@ class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
       children: [
         // Month Header
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceMd, vertical: kSpaceXs),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -139,17 +142,18 @@ class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
 
         // Day Headers
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
           child: Row(
             children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                 .map((day) => Expanded(
                       child: Center(
                         child: Text(
                           day,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textSecondary,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ),
                     ))
@@ -161,7 +165,7 @@ class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
 
         // Calendar Grid
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -201,16 +205,19 @@ class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
                     children: [
                       Text(
                         '${date.day}',
-                        style: TextStyle(
-                          color: isCurrentMonth
-                              ? (isToday ? AppTheme.primaryColor : AppColors.textPrimary)
-                              : AppColors.textSecondary,
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isCurrentMonth
+                                  ? (isToday
+                                      ? AppTheme.primaryColor
+                                      : AppColors.textPrimary)
+                                  : AppColors.textSecondary,
+                              fontWeight:
+                                  isToday ? FontWeight.bold : FontWeight.normal,
+                            ),
                       ),
                       if (hasReservations)
                         Container(
-                          margin: const EdgeInsets.only(top: 2),
+                          margin: const EdgeInsets.only(top: kSpaceNano),
                           width: 6,
                           height: 6,
                           decoration: BoxDecoration(
@@ -221,11 +228,11 @@ class _ReservationCalendarWidgetState extends State<ReservationCalendarWidget> {
                       if (hasReservations)
                         Text(
                           '${dayReservations.length}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppTheme.primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                     ],
                   ),

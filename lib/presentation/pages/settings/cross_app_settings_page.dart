@@ -1,7 +1,9 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai/core/services/cross_app/cross_app_learning_insight_service.dart';
@@ -65,35 +67,36 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final spacing = context.spacing;
 
     return AdaptivePlatformPageScaffold(
       title: 'AI Learning Sources',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(spacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header explanation
                   _buildHeader(isDark),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
 
                   // Data source toggles
                   _buildDataSourceSection(isDark),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
 
                   // Learning insights display
                   const CrossAppLearningInsightsWidget(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
 
                   // Privacy note
                   _buildPrivacyNote(isDark),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
 
                   // Quick actions
                   _buildQuickActions(isDark),
-                  const SizedBox(height: 24),
+                  SizedBox(height: spacing.lg),
 
                   // Data management
                   _buildDataManagementSection(isDark),
@@ -105,6 +108,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildDataManagementSection(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,11 +120,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: spacing.sm),
 
         // Pause/Resume Learning Toggle
         PortalSurface(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: spacing.sm),
           padding: EdgeInsets.zero,
           radius: 12,
           color: isDark
@@ -130,17 +134,13 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               ? AppColors.white.withValues(alpha: 0.12)
               : AppColors.black.withValues(alpha: 0.08),
           child: ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: _isLearningPaused
-                    ? AppColors.warning.withValues(alpha: 0.1)
-                    : AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: spacing.md, vertical: spacing.xs),
+            leading: CircleAvatar(
+              radius: 22,
+              backgroundColor: _isLearningPaused
+                  ? AppColors.warning.withValues(alpha: 0.1)
+                  : AppColors.primary.withValues(alpha: 0.1),
               child: Icon(
                 _isLearningPaused ? Icons.pause_circle : Icons.play_circle,
                 color:
@@ -186,7 +186,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
         // Clear Learning Data Button
         PortalSurface(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: spacing.sm),
           padding: EdgeInsets.zero,
           radius: 12,
           color: isDark
@@ -194,15 +194,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               : AppColors.black.withValues(alpha: 0.04),
           borderColor: AppColors.error.withValues(alpha: 0.2),
           child: ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: spacing.md, vertical: spacing.xs),
+            leading: CircleAvatar(
+              radius: 22,
+              backgroundColor: AppColors.error.withValues(alpha: 0.1),
               child: const Icon(
                 Icons.delete_outline,
                 color: AppColors.error,
@@ -231,7 +227,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
         // Clear Before Date Button
         PortalSurface(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: spacing.sm),
           padding: EdgeInsets.zero,
           radius: 12,
           color: isDark
@@ -239,15 +235,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               : AppColors.black.withValues(alpha: 0.04),
           borderColor: AppColors.warning.withValues(alpha: 0.2),
           child: ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: spacing.md, vertical: spacing.xs),
+            leading: CircleAvatar(
+              radius: 22,
+              backgroundColor: AppColors.warning.withValues(alpha: 0.1),
               child: const Icon(
                 Icons.date_range,
                 color: AppColors.warning,
@@ -278,20 +270,22 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
   }
 
   Future<void> _showClearDataDialog(bool isDark) async {
+    final textTheme = Theme.of(context).textTheme;
+
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: isDark ? AppColors.grey800 : AppColors.white,
         title: Text(
           'Clear Learning Data?',
-          style: TextStyle(
+          style: textTheme.titleMedium?.copyWith(
             color: isDark ? AppColors.white : AppColors.textPrimary,
           ),
         ),
         content: Text(
           'This will delete all insights your AI has learned from calendar, health, music, and app usage data.\n\n'
           'Your spot recommendations may be less personalized until the AI learns your preferences again.',
-          style: TextStyle(
+          style: textTheme.bodyMedium?.copyWith(
             color: isDark
                 ? AppColors.white.withValues(alpha: 0.7)
                 : AppColors.textSecondary,
@@ -302,7 +296,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               'Cancel',
-              style: TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 color: isDark
                     ? AppColors.white.withValues(alpha: 0.6)
                     : AppColors.textSecondary,
@@ -321,18 +315,14 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
     if (result == true && mounted) {
       await _insightService?.clearAllInsights();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Learning data cleared'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        context.showSuccess('Learning data cleared');
       }
     }
   }
 
   Future<void> _showClearBeforeDateDialog(bool isDark) async {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
     DateTime selectedDate = DateTime.now().subtract(const Duration(days: 30));
     int previewCount =
         _insightService?.getInsightCountBeforeDate(selectedDate) ?? 0;
@@ -345,7 +335,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             backgroundColor: isDark ? AppColors.grey800 : AppColors.white,
             title: Text(
               'Clear Data Before Date',
-              style: TextStyle(
+              style: textTheme.titleMedium?.copyWith(
                 color: isDark ? AppColors.white : AppColors.textPrimary,
               ),
             ),
@@ -355,13 +345,13 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               children: [
                 Text(
                   'Delete all insights learned before the selected date. Insights on or after this date will be kept.',
-                  style: TextStyle(
+                  style: textTheme.bodyMedium?.copyWith(
                     color: isDark
                         ? AppColors.white.withValues(alpha: 0.7)
                         : AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: spacing.md + spacing.xs),
                 // Date selector
                 InkWell(
                   onTap: () async {
@@ -396,25 +386,21 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                       });
                     }
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.white.withValues(alpha: 0.1)
-                          : AppColors.black.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                      ),
-                    ),
+                  child: PortalSurface(
+                    padding: EdgeInsets.all(spacing.md),
+                    color: isDark
+                        ? AppColors.white.withValues(alpha: 0.1)
+                        : AppColors.black.withValues(alpha: 0.05),
+                    borderColor: AppColors.primary.withValues(alpha: 0.3),
+                    radius: context.radius.sm,
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.calendar_today,
                           color: AppColors.primary,
                           size: 20,
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: spacing.sm),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -449,16 +435,17 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: spacing.md),
                 // Preview count
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: previewCount > 0
-                        ? AppColors.warning.withValues(alpha: 0.1)
-                        : AppColors.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                PortalSurface(
+                  padding: EdgeInsets.all(spacing.sm),
+                  color: previewCount > 0
+                      ? AppColors.warning.withValues(alpha: 0.1)
+                      : AppColors.success.withValues(alpha: 0.1),
+                  borderColor: previewCount > 0
+                      ? AppColors.warning.withValues(alpha: 0.3)
+                      : AppColors.success.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       Icon(
@@ -470,7 +457,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                             : AppColors.success,
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Expanded(
                         child: Text(
                           previewCount > 0
@@ -494,7 +481,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                 onPressed: () => Navigator.of(context).pop(null),
                 child: Text(
                   'Cancel',
-                  style: TextStyle(
+                  style: textTheme.bodyMedium?.copyWith(
                     color: isDark
                         ? AppColors.white.withValues(alpha: 0.6)
                         : AppColors.textSecondary,
@@ -518,12 +505,8 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
       final clearedCount =
           await _insightService?.clearInsightsBeforeDate(result) ?? 0;
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'Cleared $clearedCount insight${clearedCount == 1 ? '' : 's'}'),
-            behavior: SnackBarBehavior.floating,
-          ),
+        context.showInfo(
+          'Cleared $clearedCount insight${clearedCount == 1 ? '' : 's'}',
         );
       }
     }
@@ -549,10 +532,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildHeader(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
 
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 12,
+      padding: EdgeInsets.all(spacing.md),
+      radius: context.radius.md,
       color: isDark
           ? AppColors.white.withValues(alpha: 0.08)
           : AppColors.black.withValues(alpha: 0.04),
@@ -569,7 +553,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                 color: AppColors.primary,
                 size: 28,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: spacing.sm),
               Text(
                 'Help Your AI Learn',
                 style: textTheme.titleMedium?.copyWith(
@@ -579,7 +563,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: spacing.sm),
           Text(
             'Your AI can learn from your daily activities to give you better spot suggestions. All data is processed locally on your device.',
             style: textTheme.bodyMedium?.copyWith(
@@ -595,6 +579,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildDataSourceSection(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -606,7 +591,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: spacing.sm),
         ...CrossAppDataSource.values.map((source) {
           // Skip app usage on iOS
           if (source == CrossAppDataSource.appUsage && !Platform.isAndroid) {
@@ -620,12 +605,13 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildDataSourceTile(CrossAppDataSource source, bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
     final isEnabled = _consents[source] ?? true;
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       padding: EdgeInsets.zero,
-      radius: 12,
+      radius: context.radius.md,
       color: isDark
           ? AppColors.white.withValues(alpha: 0.08)
           : AppColors.black.withValues(alpha: 0.04),
@@ -635,20 +621,17 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
               ? AppColors.white.withValues(alpha: 0.12)
               : AppColors.black.withValues(alpha: 0.08)),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: isEnabled
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : (isDark ? AppColors.grey800 : AppColors.grey200),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        contentPadding:
+            EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.xs),
+        leading: CircleAvatar(
+          radius: 22,
+          backgroundColor: isEnabled
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : (isDark ? AppColors.grey800 : AppColors.grey200),
           child: Center(
             child: Text(
               source.icon,
-              style: const TextStyle(fontSize: 24),
+              style: textTheme.titleLarge,
             ),
           ),
         ),
@@ -678,10 +661,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildPrivacyNote(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
 
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 12,
+      padding: EdgeInsets.all(spacing.md),
+      radius: context.radius.md,
       color: isDark
           ? AppColors.electricBlue.withValues(alpha: 0.1)
           : AppColors.electricBlue.withValues(alpha: 0.05),
@@ -694,7 +678,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             color: AppColors.electricBlue,
             size: 24,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -706,7 +690,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: spacing.xxs),
                 Text(
                   'All data is processed locally on your device. We never send your calendar, health, music, or app usage data to our servers.',
                   style: textTheme.bodySmall?.copyWith(
@@ -725,6 +709,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   Widget _buildQuickActions(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
+    final spacing = context.spacing;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -736,7 +721,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: spacing.sm),
         Row(
           children: [
             Expanded(
@@ -750,11 +735,11 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: const BorderSide(color: AppColors.primary),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: spacing.sm),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: spacing.sm),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () async {
@@ -772,7 +757,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                         ? AppColors.white.withValues(alpha: 0.3)
                         : AppColors.grey400,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: spacing.sm),
                 ),
               ),
             ),

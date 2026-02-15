@@ -8,6 +8,7 @@ import 'package:avrai/core/models/sponsorship/sponsorship.dart';
 import 'package:avrai/core/models/payment/revenue_split.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart'
     show AuthBloc, Authenticated;
 import 'package:avrai/presentation/widgets/payment/payment_form_widget.dart';
@@ -130,52 +131,55 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Event Details Card
-            Container(
-              padding: const EdgeInsets.all(20),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.lg),
               color: AppColors.surface,
+              radius: 0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CircleAvatar(
+                        radius: context.radius.xl,
+                        backgroundColor:
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
                         child: Text(
                           widget.event.getEventTypeEmoji(),
-                          style: const TextStyle(fontSize: 32),
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: context.spacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.event.title,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: context.spacing.xxs),
                             Text(
                               widget.event.getEventTypeDisplayName(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing.md),
                   _buildDetailRow(Icons.calendar_today,
                       _formatDateTime(widget.event.startTime)),
                   if (widget.event.location != null)
@@ -186,39 +190,38 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Contribution Type Selection
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
               child: PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Contribution Type',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing.md),
                     _buildContributionTypeOption(
                       SponsorshipType.financial,
                       'Financial',
                       'Cash contribution',
                       Icons.account_balance_wallet,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     _buildContributionTypeOption(
                       SponsorshipType.product,
                       'Product',
                       'Product/in-kind contribution',
                       Icons.inventory_2,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     _buildContributionTypeOption(
                       SponsorshipType.hybrid,
                       'Hybrid',
@@ -230,27 +233,26 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: context.spacing.lg),
 
             // Financial Contribution Section
             if (_contributionType == SponsorshipType.financial ||
                 _contributionType == SponsorshipType.hybrid) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: PortalSurface(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(context.spacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Financial Contribution',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Amount',
@@ -276,14 +278,14 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Product Contribution Section
             if (_contributionType == SponsorshipType.product ||
                 _contributionType == SponsorshipType.hybrid) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: ProductContributionWidget(
                   productName: _productName,
                   productQuantity: _productQuantity,
@@ -305,65 +307,68 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Revenue Split Display (if contribution set)
             if (totalContribution > 0 && _revenueSplit != null) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: SponsorshipRevenueSplitDisplay(
                   split: _revenueSplit!,
                   sponsorshipContribution: totalContribution,
                   showDetails: true,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Contribution Summary
             if (totalContribution > 0) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: PortalSurface(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(context.spacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Contribution Summary',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       if (_cashAmount != null && _cashAmount! > 0)
                         _buildSummaryRow('Cash Contribution', _cashAmount!),
                       if (_productValue != null && _productValue! > 0)
                         _buildSummaryRow('Product Value', _productValue!),
-                      const SizedBox(height: 12),
+                      SizedBox(height: context.spacing.sm),
                       const Divider(color: AppColors.grey300),
-                      const SizedBox(height: 12),
+                      SizedBox(height: context.spacing.sm),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Total Contribution',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                           Text(
                             '\$${totalContribution.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryColor,
+                                ),
                           ),
                         ],
                       ),
@@ -371,7 +376,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Payment Form (only for financial contributions)
@@ -380,7 +385,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                 _cashAmount != null &&
                 _cashAmount! > 0) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: PaymentFormWidget(
                   amount: _cashAmount!,
                   quantity: 1,
@@ -393,7 +398,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             // Submit Button (for product-only or after payment)
@@ -402,7 +407,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                     _cashAmount! > 0 &&
                     !_isProcessing))) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -412,53 +417,49 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding:
+                          EdgeInsets.symmetric(vertical: context.spacing.md),
                     ),
                     child: Text(
                       widget.sponsorship != null
                           ? 'Update Sponsorship'
                           : 'Submit Sponsorship Proposal',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
 
             if (_error != null) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.error.withValues(alpha: 0.3),
-                    ),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: context.spacing.lg),
+                child: PortalSurface(
+                  padding: EdgeInsets.all(context.spacing.sm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error.withValues(alpha: 0.3),
+                  radius: context.radius.sm,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.error,
+                                  ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
             ],
           ],
         ),
@@ -482,18 +483,13 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
         });
       },
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryColor.withValues(alpha: 0.1)
-              : AppColors.grey100,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryColor : AppColors.grey300,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
+      child: PortalSurface(
+        padding: EdgeInsets.all(context.spacing.sm),
+        color: isSelected
+            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+            : AppColors.grey100,
+        borderColor: isSelected ? AppTheme.primaryColor : AppColors.grey300,
+        radius: context.radius.md,
         child: Row(
           children: [
             Icon(
@@ -501,26 +497,24 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
               color:
                   isSelected ? AppTheme.primaryColor : AppColors.textSecondary,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: context.spacing.xxs),
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -538,18 +532,17 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
 
   Widget _buildDetailRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 8),
+          SizedBox(width: context.spacing.xs),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],
@@ -559,24 +552,22 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
 
   Widget _buildSummaryRow(String label, double amount) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
           Text(
             '\$${amount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       ),

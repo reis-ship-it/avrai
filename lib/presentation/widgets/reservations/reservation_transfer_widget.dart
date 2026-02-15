@@ -7,10 +7,12 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_sharing_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/injection_container.dart' as di;
 
 /// Reservation Transfer Widget
@@ -112,54 +114,56 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Transfer Reservation'),
+        title: Text('Transfer Reservation'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Are you sure you want to transfer this reservation?',
             ),
             const SizedBox(height: 8),
             Text(
               'Transferring to: $_selectedUserName',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (_predictedCompatibility != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Predicted Compatibility: ${(_predictedCompatibility! * 100).toStringAsFixed(0)}%',
-                style: TextStyle(
-                  color: _predictedCompatibility! > 0.7
-                      ? AppTheme.successColor
-                      : _predictedCompatibility! > 0.5
-                          ? AppTheme.warningColor
-                          : AppTheme.errorColor,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _predictedCompatibility! > 0.7
+                          ? AppTheme.successColor
+                          : _predictedCompatibility! > 0.5
+                              ? AppTheme.warningColor
+                              : AppTheme.errorColor,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'This action cannot be undone. The reservation will be transferred to the new owner.',
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Transfer'),
+            child: Text('Transfer'),
           ),
         ],
       ),
@@ -186,13 +190,8 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Reservation transferred to $_selectedUserName successfully',
-              ),
-              backgroundColor: AppTheme.successColor,
-            ),
+          context.showSuccess(
+            'Reservation transferred to $_selectedUserName successfully',
           );
 
           // Notify parent
@@ -202,12 +201,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
             _error = result.error ?? 'Failed to transfer reservation';
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to transfer reservation'),
-              backgroundColor: AppTheme.errorColor,
-            ),
-          );
+          context.showError(result.error ?? 'Failed to transfer reservation');
         }
       }
     } catch (e, stackTrace) {
@@ -223,12 +217,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
           _error = 'Failed to transfer: ${e.toString()}';
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to transfer: ${e.toString()}'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Failed to transfer: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -246,7 +235,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select User'),
+        title: Text('Select User'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -266,26 +255,25 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
               },
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Note: Full user search coming soon',
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               // Will be handled by onSubmitted
             },
-            child: const Text('Select'),
+            child: Text('Select'),
           ),
         ],
       ),
@@ -313,8 +301,9 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -327,13 +316,12 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Transfer Reservation',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
               ),
             ],
           ),
@@ -342,7 +330,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
 
           // Reservation Info
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(spacing.md),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -351,25 +339,24 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Reservation Details',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Type: ${widget.reservation.type.name}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
                   'Time: ${widget.reservation.reservationTime.toLocal().toString().split('.')[0]}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
                   'Party Size: ${widget.reservation.partySize}',
-                  style: const TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -378,12 +365,11 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
           const SizedBox(height: 24),
 
           // User Selection
-          const Text(
+          Text(
             'Transfer To',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           InkWell(
@@ -397,11 +383,11 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
               ),
               child: Text(
                 _selectedUserName ?? 'Tap to search for user',
-                style: TextStyle(
-                  color: _selectedUserName != null
-                      ? AppColors.black
-                      : AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _selectedUserName != null
+                          ? AppColors.black
+                          : AppColors.textSecondary,
+                    ),
               ),
             ),
           ),
@@ -410,15 +396,15 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
           if (_selectedUserId != null) ...[
             const SizedBox(height: 16),
             if (_isPredictingCompatibility)
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(spacing.md),
                   child: CircularProgressIndicator(),
                 ),
               )
             else if (_predictedCompatibility != null) ...[
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(spacing.md),
                 decoration: BoxDecoration(
                   color: _getCompatibilityColor(_predictedCompatibility!)
                       .withValues(alpha: 0.1),
@@ -442,23 +428,23 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                               _getCompatibilityColor(_predictedCompatibility!),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Predicted Compatibility',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${(_predictedCompatibility! * 100).toStringAsFixed(0)}%',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: _getCompatibilityColor(_predictedCompatibility!),
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: _getCompatibilityColor(
+                                _predictedCompatibility!),
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -467,10 +453,10 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                           : _predictedCompatibility! > 0.5
                               ? 'Moderate compatibility - Transfer may work'
                               : 'Low compatibility - Transfer not recommended',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _getCompatibilityColor(_predictedCompatibility!),
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: _getCompatibilityColor(
+                                _predictedCompatibility!),
+                          ),
                     ),
                   ],
                 ),
@@ -481,7 +467,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
           // Warning
           const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(spacing.sm),
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -498,10 +484,9 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                 Expanded(
                   child: Text(
                     'Transferring a reservation will permanently change ownership. This action cannot be undone.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.warningColor,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.warningColor,
+                        ),
                   ),
                 ),
               ],
@@ -512,7 +497,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
           if (_error != null) ...[
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -529,10 +514,9 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                   Expanded(
                     child: Text(
                       _error!,
-                      style: const TextStyle(
-                        color: AppTheme.errorColor,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.errorColor,
+                          ),
                     ),
                   ),
                 ],
@@ -552,12 +536,12 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryColor,
                       side: const BorderSide(color: AppTheme.primaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: spacing.md),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -568,7 +552,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.errorColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: spacing.md),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -583,7 +567,7 @@ class _ReservationTransferWidgetState extends State<ReservationTransferWidget> {
                                 AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
-                      : const Text('Transfer Reservation'),
+                      : Text('Transfer Reservation'),
                 ),
               ),
             ],

@@ -24,6 +24,7 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Page displaying device discovery status and discovered devices
 class DeviceDiscoveryPage extends StatefulWidget {
@@ -150,21 +151,18 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
 
   Widget _buildDiscoveryStatusCard() {
     return PortalSurface(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(kSpaceMd),
       radius: 12,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _isScanning
-                      ? AppColors.electricGreen.withValues(alpha: 0.1)
-                      : AppColors.grey200,
-                  shape: BoxShape.circle,
-                ),
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: _isScanning
+                    ? AppColors.electricGreen.withValues(alpha: 0.1)
+                    : AppColors.grey200,
                 child: Icon(
                   _isScanning ? Icons.radar : Icons.radar_outlined,
                   color: _isScanning
@@ -180,21 +178,19 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                   children: [
                     Text(
                       _isScanning ? 'Discovery Active' : 'Discovery Inactive',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _isScanning
                           ? 'Scanning for nearby avrai devices...'
                           : 'Tap to start discovering nearby devices',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -212,7 +208,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                 backgroundColor:
                     _isScanning ? AppColors.error : AppColors.electricGreen,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -231,10 +227,9 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                 const SizedBox(width: 8),
                 Text(
                   '${_discoveredDevices.length} device${_discoveredDevices.length == 1 ? '' : 's'} found',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -246,8 +241,8 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
 
   Widget _buildDevicesList() {
     if (!_isScanning) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
+      return Padding(
+        padding: EdgeInsets.all(kSpaceMd),
         child: Center(
           child: Column(
             children: [
@@ -259,10 +254,9 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               SizedBox(height: 16),
               Text(
                 'Start discovery to find nearby devices',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -271,8 +265,8 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     }
 
     if (_discoveredDevices.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
+      return Padding(
+        padding: EdgeInsets.all(kSpaceMd),
         child: Center(
           child: Column(
             children: [
@@ -280,10 +274,9 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               SizedBox(height: 16),
               Text(
                 'Searching for nearby avrai devices...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -294,21 +287,21 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
           child: Text(
             'Discovered Devices',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: kSpaceMd),
           itemCount: _discoveredDevices.length,
           itemBuilder: (context, index) {
             return _buildDeviceCard(_discoveredDevices[index]);
@@ -324,17 +317,14 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     final proximityLabel = _getProximityLabel(proximityScore);
 
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: kSpaceSm),
       radius: 8,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: proximityColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: proximityColor.withValues(alpha: 0.1),
             child: Icon(
               _getDeviceIcon(device.type),
               color: proximityColor,
@@ -348,11 +338,10 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               children: [
                 Text(
                   device.deviceName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -365,11 +354,10 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                     const SizedBox(width: 4),
                     Text(
                       proximityLabel,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: proximityColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: proximityColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     const SizedBox(width: 12),
                     if (device.signalStrength != null) ...[
@@ -381,10 +369,9 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                       const SizedBox(width: 4),
                       Text(
                         '${device.signalStrength} dBm',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ],
@@ -393,13 +380,12 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
             ),
           ),
           if (device.personalityData != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.electricGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Row(
+            Chip(
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              side: BorderSide.none,
+              backgroundColor: Color.fromRGBO(0, 255, 102, 0.1),
+              label: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -410,11 +396,10 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                   SizedBox(width: 4),
                   Text(
                     'AI',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.electricGreen,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.electricGreen,
+                        ),
                   ),
                 ],
               ),
@@ -455,15 +440,18 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Device Discovery'),
-        content: const SingleChildScrollView(
+        title: Text('About Device Discovery'),
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Device Discovery finds nearby avrai-enabled devices using:',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 12),
               Text('• WiFi Direct (Android)'),
@@ -473,7 +461,10 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               SizedBox(height: 12),
               Text(
                 'Privacy:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Text('✓ Only anonymized personality data is shared'),
@@ -483,10 +474,9 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               SizedBox(height: 12),
               Text(
                 'Note: Discovery uses device radios and may affect battery life.',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontStyle: FontStyle.italic,
+                    ),
               ),
             ],
           ),
@@ -494,7 +484,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+            child: Text('Got it'),
           ),
         ],
       ),

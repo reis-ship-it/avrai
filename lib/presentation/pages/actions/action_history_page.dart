@@ -15,12 +15,15 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/ai/action_history_entry.dart' as entry;
 import 'package:avrai/core/ai/action_models.dart';
 import 'package:avrai/core/services/misc/action_history_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/actions/action_history_item_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Page that displays action execution history
 ///
@@ -124,23 +127,29 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.undo, color: AppColors.electricGreen),
             SizedBox(width: 8),
             Text('Undo Action'),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to undo this action? This cannot be reversed.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -149,7 +158,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               backgroundColor: AppColors.electricGreen,
               foregroundColor: AppColors.black,
             ),
-            child: const Text('Undo'),
+            child: Text('Undo'),
           ),
         ],
       ),
@@ -160,19 +169,9 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
 
       if (mounted) {
         if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.message),
-              backgroundColor: AppColors.electricGreen,
-            ),
-          );
+          context.showSuccess(result.message);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError(result.message);
         }
         _loadHistory(); // Refresh list
       }
@@ -194,7 +193,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
         ),
       ],
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                 color: AppColors.electricGreen,
               ),
@@ -213,17 +212,11 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
   }
 
   Widget _buildFilters() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.grey200,
-            width: 1,
-          ),
-        ),
-      ),
+    return PortalSurface(
+      padding: const EdgeInsets.all(kSpaceMd),
+      color: AppColors.surface,
+      borderColor: AppColors.grey200,
+      radius: 0,
       child: Column(
         children: [
           // Search bar
@@ -332,20 +325,19 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Filter by Action Type',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             ListTile(
-              title: const Text('All Types'),
+              title: Text('All Types'),
               onTap: () {
                 setState(() {
                   _selectedActionType = null;
@@ -355,7 +347,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               },
             ),
             ListTile(
-              title: const Text('Create Spot'),
+              title: Text('Create Spot'),
               onTap: () {
                 setState(() {
                   _selectedActionType = 'create_spot';
@@ -365,7 +357,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               },
             ),
             ListTile(
-              title: const Text('Create List'),
+              title: Text('Create List'),
               onTap: () {
                 setState(() {
                   _selectedActionType = 'create_list';
@@ -375,7 +367,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
               },
             ),
             ListTile(
-              title: const Text('Add Spot to List'),
+              title: Text('Add Spot to List'),
               onTap: () {
                 setState(() {
                   _selectedActionType = 'add_spot_to_list';
@@ -415,7 +407,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -427,19 +419,17 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
           SizedBox(height: 16),
           Text(
             'No action history',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Actions executed by AI will appear here',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textHint,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textHint,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -449,7 +439,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
 
   Widget _buildHistoryList() {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       itemCount: _filteredHistory.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {

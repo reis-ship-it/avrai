@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Party Size Picker Widget
 ///
@@ -104,8 +105,8 @@ class PartySizePickerWidget extends StatelessWidget {
             ),
             if (showLargeGroupWarning && partySize > 20)
               Container(
-                margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(top: kSpaceXs),
+                padding: const EdgeInsets.all(kSpaceSm),
                 decoration: BoxDecoration(
                   color: AppTheme.warningColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -119,10 +120,9 @@ class PartySizePickerWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Large groups may require special arrangements. Please contact the business directly.',
-                        style: const TextStyle(
-                          color: AppTheme.warningColor,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.warningColor,
+                            ),
                       ),
                     ),
                   ],

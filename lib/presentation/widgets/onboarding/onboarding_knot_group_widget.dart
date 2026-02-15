@@ -1,5 +1,5 @@
 // Onboarding Knot Group Widget
-// 
+//
 // Widget for displaying onboarding groups with knots
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 3: Onboarding Integration
@@ -8,12 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/knot/personality_knot_widget.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Widget for displaying onboarding groups with knots
-/// 
+///
 /// Shows knots of group members and a combined group visualization
 class OnboardingKnotGroupWidget extends StatefulWidget {
   final List<PersonalityProfile> groupMembers;
@@ -30,8 +31,7 @@ class OnboardingKnotGroupWidget extends StatefulWidget {
       _OnboardingKnotGroupWidgetState();
 }
 
-class _OnboardingKnotGroupWidgetState
-    extends State<OnboardingKnotGroupWidget> {
+class _OnboardingKnotGroupWidgetState extends State<OnboardingKnotGroupWidget> {
   final KnotStorageService _knotStorageService =
       GetIt.instance<KnotStorageService>();
   Map<String, PersonalityKnot?> _memberKnots = {};
@@ -66,12 +66,13 @@ class _OnboardingKnotGroupWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -95,9 +96,9 @@ class _OnboardingKnotGroupWidgetState
 
         // Loading state
         if (_isLoading)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(32.0),
+              padding: EdgeInsets.all(spacing.xl),
               child: CircularProgressIndicator(),
             ),
           )
@@ -117,7 +118,7 @@ class _OnboardingKnotGroupWidgetState
   Widget _buildMembersKnots(BuildContext context) {
     if (widget.groupMembers.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(context.spacing.xl),
         child: Center(
           child: Text(
             'No group members yet',
@@ -130,7 +131,10 @@ class _OnboardingKnotGroupWidgetState
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.md,
+        vertical: context.spacing.xs,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -169,13 +173,13 @@ class _OnboardingKnotGroupWidgetState
 
     return Container(
       width: 140,
-      margin: const EdgeInsets.only(right: 12.0),
+      margin: EdgeInsets.only(right: context.spacing.sm),
       child: Card(
         color: isCurrentUser
             ? AppColors.primary.withValues(alpha: 0.1)
             : AppColors.surface,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: EdgeInsets.all(context.spacing.sm),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -203,7 +207,7 @@ class _OnboardingKnotGroupWidgetState
                   ),
                 ),
               const SizedBox(height: 8),
-              
+
               // Member label
               Text(
                 isCurrentUser ? 'You' : 'Member ${index + 1}',
@@ -211,7 +215,8 @@ class _OnboardingKnotGroupWidgetState
                       color: isCurrentUser
                           ? AppColors.primary
                           : AppColors.textSecondary,
-                      fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isCurrentUser ? FontWeight.bold : FontWeight.normal,
                     ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -225,12 +230,11 @@ class _OnboardingKnotGroupWidgetState
   }
 
   Widget _buildGroupSummary(BuildContext context) {
-    final membersWithKnots = _memberKnots.values
-        .where((knot) => knot != null)
-        .length;
+    final membersWithKnots =
+        _memberKnots.values.where((knot) => knot != null).length;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -279,7 +283,10 @@ class _OnboardingKnotGroupWidgetState
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.sm,
+        vertical: context.spacing.xs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),

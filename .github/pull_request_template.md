@@ -16,6 +16,24 @@ A clear and concise description of what this PR does.
 - Include any files modified
 - Include any files deleted
 
+## 🧭 Master Plan Orchestration (Required for phase build work)
+- [ ] Master Plan phase reference included (e.g., `Phase 10`, `10.10.3`)
+- [ ] Backlog story ID included (e.g., `MPA-P10-E4-S3`)
+- [ ] Checklist gate reference included
+- [ ] Tracker row updated if planning artifacts changed
+- [ ] `docs/plans/master_plan_execution.yaml` updated if execution ordering/contracts changed
+
+## 🎨 Design Contract (Required for UI/UX changes)
+- [ ] `docs/design/DESIGN_REF.md` reviewed and applicable contract items satisfied
+- [ ] UI/UX app scope declared (`consumer_app`, `business_app`, `admin_desktop_app`, `research_portal`, `partner_sdk_examples`)
+- [ ] App design folder referenced: `docs/design/apps/<app_scope>/README.md`
+- [ ] Design architecture source referenced: `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md`
+- [ ] Master Plan section(s) for this UI/UX work linked: `docs/MASTER_PLAN.md`
+- [ ] Canonical status tracker updated if execution/progress changed: `docs/agents/status/status_tracker.md`
+- [ ] Guardrail result included: `dart run tool/design_guardrails.dart`
+- [ ] Analyzer result included: `flutter analyze lib/presentation`
+- [ ] Core state coverage documented where relevant (loading, empty, error, offline, success)
+
 ## 🧪 Testing
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated

@@ -1,6 +1,6 @@
 # START HERE -- New Task Protocol (v2)
 
-**Updated:** February 10, 2026  
+**Updated:** February 15, 2026  
 **Purpose:** Entry point for every new task. Replaces the flat 40-minute protocol with a tiered system that matches context depth to task complexity.
 
 ---
@@ -85,24 +85,31 @@ Every task falls into one of four tiers. Pick the right one and follow ONLY that
    → What are the breaking change risks?
    ```
 
-4. **Read the Master Plan section** for the specific work
+4. **Read coherence gate contract and identify scenario IDs**
+   ```
+   docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md
+   → Which `RCM-*` scenarios apply?
+   → What evidence is required for phase gates?
+   ```
+
+5. **Read the Master Plan section** for the specific work
    ```
    docs/MASTER_PLAN.md → Phase X section
    ```
 
-5. **Check status** to understand what's already done
+6. **Check status** to understand what's already done
    ```
    docs/agents/status/status_tracker.md
    ```
 
-6. **Search for existing implementations** in the codebase
+7. **Search for existing implementations** in the codebase
    ```
    Search for class names, services, models mentioned in the plan tasks
    ```
 
-7. **Create a TODO list** and communicate the plan to the user
+8. **Create a TODO list** and communicate the plan to the user
 
-8. **Get user approval** before starting
+9. **Get user approval** before starting
 
 ---
 
@@ -138,29 +145,36 @@ Every task falls into one of four tiers. Pick the right one and follow ONLY that
    → What is the chain reaction?
    ```
 
-5. **Read the Master Plan** sections for all affected phases
+5. **Read coherence gate contract and map required scenarios**
+   ```
+   docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md
+   → Map scope to required `RCM-*` scenarios and evidence
+   ```
 
-6. **Check the Master Plan Tracker** for related active plans
+6. **Read the Master Plan** sections for all affected phases
+
+7. **Check the Master Plan Tracker** for related active plans
    ```
    docs/MASTER_PLAN_TRACKER.md
    ```
 
-7. **Search for ALL existing implementations** that will be affected
+8. **Search for ALL existing implementations** that will be affected
 
-8. **Read the AVRAI Philosophy** for alignment check
+9. **Read the AVRAI Philosophy** for alignment check
    ```
    docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md
    ```
 
-9. **Create a detailed TODO list** with dependency ordering
+10. **Create a detailed TODO list** with dependency ordering
 
-10. **Communicate plan** including:
+11. **Communicate plan** including:
     - Which phases are affected
     - Which cross-cutting contracts change
+    - Which `RCM-*` scenarios are required
     - Chain reaction analysis
     - Risk assessment
 
-11. **Get user approval** before starting
+12. **Get user approval** before starting
 
 ---
 
@@ -197,6 +211,7 @@ Instead of reading 6+ overlapping documents, use this map to find what you need:
 | "Why is it designed this way?" | `docs/plans/rationale/PHASE_X_RATIONALE.md` |
 | "What decisions apply everywhere?" | `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` |
 | "What flows between phases?" | `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` |
+| "What proves inter-app/coherence behavior is validated?" | `docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md` |
 | "What's the status?" | `docs/agents/status/status_tracker.md` |
 | "Where do all the plans live?" | `docs/MASTER_PLAN_TRACKER.md` |
 | "What's the core philosophy?" | `docs/plans/philosophy_implementation/DOORS.md` |
@@ -211,6 +226,7 @@ Instead of reading 6+ overlapping documents, use this map to find what you need:
 **Stop and ask the user if:**
 - [ ] The task's phase pre-flight checklist has unchecked items (dependencies not met)
 - [ ] The cross-phase connections show this work changes a critical contract
+- [ ] Required `RCM-*` scenario IDs/evidence are not identified for cross-system scope
 - [ ] Multiple plans contradict each other
 - [ ] The task doesn't answer at least one of the four doors questions
 - [ ] You can't find where the code should live

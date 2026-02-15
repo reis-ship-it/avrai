@@ -3,6 +3,7 @@ import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/business/user_business_matching_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// User Business Matching Widget
 /// Shows users businesses that match their profile based on business patron preferences
@@ -22,18 +23,22 @@ class UserBusinessMatchingWidget extends StatelessWidget {
       future: _getMatches(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
           return Center(
             child: Column(
               children: [
-                const Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                const Icon(Icons.error_outline,
+                    size: 64, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text(
                   'Error: ${snapshot.error}',
-                  style: const TextStyle(color: AppColors.error),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.error),
                 ),
               ],
             ),
@@ -41,17 +46,17 @@ class UserBusinessMatchingWidget extends StatelessWidget {
         }
 
         final matches = snapshot.data ?? [];
-        
+
         if (matches.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(context);
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(matches.length),
+            _buildHeader(context, matches.length),
             const SizedBox(height: 8),
-            _buildMatchesList(matches),
+            _buildMatchesList(context, matches),
           ],
         );
       },
@@ -66,55 +71,52 @@ class UserBusinessMatchingWidget extends StatelessWidget {
     return await service.findBusinessesForUser(user);
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildHeader(BuildContext context, int count) {
     return Row(
       children: [
-        const Text(
+        Text(
           'Businesses Looking for You',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceXs, vertical: kSpaceNano),
           decoration: BoxDecoration(
             color: AppColors.grey200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             '$count',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
       child: Column(
         children: [
           Icon(Icons.store_outlined, size: 64, color: AppColors.textSecondary),
           SizedBox(height: 16),
           Text(
             'No matching businesses found',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Complete your profile to find businesses that match your vibe',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -122,27 +124,28 @@ class UserBusinessMatchingWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchesList(List<UserBusinessMatch> matches) {
+  Widget _buildMatchesList(
+      BuildContext context, List<UserBusinessMatch> matches) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: matches.length,
       itemBuilder: (context, index) {
-        return _buildMatchCard(matches[index]);
+        return _buildMatchCard(context, matches[index]);
       },
     );
   }
 
-  Widget _buildMatchCard(UserBusinessMatch match) {
+  Widget _buildMatchCard(BuildContext context, UserBusinessMatch match) {
     final business = match.business;
     final isGoodMatch = match.matchScore >= 0.6;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: InkWell(
         onTap: () => onBusinessSelected?.call(business),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(kSpaceSm),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -177,10 +180,10 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                       children: [
                         Text(
                           business.name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (business.location != null) ...[
                           const SizedBox(height: 4),
@@ -194,10 +197,12 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 business.location!,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                             ],
                           ),
@@ -206,7 +211,8 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kSpaceXs, vertical: kSpaceXxs),
                     decoration: BoxDecoration(
                       color: isGoodMatch
                           ? AppColors.electricGreen.withValues(alpha: 0.1)
@@ -226,13 +232,13 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${(match.matchScore * 100).toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isGoodMatch
-                                ? AppColors.electricGreen
-                                : AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: isGoodMatch
+                                        ? AppColors.electricGreen
+                                        : AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
@@ -242,10 +248,9 @@ class UserBusinessMatchingWidget extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 match.matchReason,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               if (match.matchedCriteria.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -254,7 +259,8 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                   runSpacing: 4,
                   children: match.matchedCriteria.take(3).map((criterion) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kSpaceXs, vertical: kSpaceXxs),
                       decoration: BoxDecoration(
                         color: AppColors.electricGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -270,11 +276,11 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             criterion,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.electricGreen,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.electricGreen,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                           ),
                         ],
                       ),
@@ -282,7 +288,9 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                   }).toList(),
                 ),
               ],
-              if (business.patronPreferences?.preferredVibePreferences?.isNotEmpty == true) ...[
+              if (business.patronPreferences?.preferredVibePreferences
+                      ?.isNotEmpty ==
+                  true) ...[
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -295,11 +303,10 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Vibe: ${business.patronPreferences!.preferredVibePreferences!.take(2).join(', ')}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                   ],
@@ -312,7 +319,7 @@ class UserBusinessMatchingWidget extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () => onBusinessSelected?.call(business),
                     icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View Details'),
+                    label: Text('View Details'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.electricGreen,
                     ),
@@ -326,4 +333,3 @@ class UserBusinessMatchingWidget extends StatelessWidget {
     );
   }
 }
-

@@ -1,13 +1,13 @@
 /// Federated Learning Status Widget
-/// 
+///
 /// Part of Feature Matrix Phase 2: Medium Priority UI/UX
-/// 
+///
 /// Widget showing active learning rounds, participation status, and progress:
 /// - Active learning rounds display
 /// - Participation status (whether user is participating)
 /// - Round progress indicators
 /// - Round status (initializing, training, aggregating, completed, failed)
-/// 
+///
 /// Location: Settings/Account page (within Federated Learning section)
 /// Uses AppColors for consistent styling per design token requirements.
 library;
@@ -18,8 +18,10 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/p2p/federated_learning.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/standard_error_widget.dart';
 import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
@@ -43,17 +45,20 @@ class FederatedLearningStatusWidget extends StatefulWidget {
   });
 
   @override
-  State<FederatedLearningStatusWidget> createState() => _FederatedLearningStatusWidgetState();
+  State<FederatedLearningStatusWidget> createState() =>
+      _FederatedLearningStatusWidgetState();
 }
 
-class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusWidget> {
+class _FederatedLearningStatusWidgetState
+    extends State<FederatedLearningStatusWidget> {
   late final FederatedLearningSystem _federatedLearningSystem;
   List<FederatedLearningRound> _activeRounds = [];
   String? _currentNodeId;
   bool _isLoading = true;
   String? _errorMessage;
   Timer? _refreshTimer;
-  final Map<String, bool> _actionInProgress = {}; // Track join/leave actions per round
+  final Map<String, bool> _actionInProgress =
+      {}; // Track join/leave actions per round
 
   @override
   void initState() {
@@ -108,7 +113,8 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
           _isLoading = false;
           _errorMessage = null;
         });
-      } else if (oldWidget.activeRounds != null && widget.activeRounds == null) {
+      } else if (oldWidget.activeRounds != null &&
+          widget.activeRounds == null) {
         // Transition back to live loading mode.
         _loadActiveRounds();
         _refreshTimer ??= Timer.periodic(const Duration(seconds: 30), (_) {
@@ -142,8 +148,9 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
       }
 
       // Fetch active rounds from backend
-      final activeRounds = await _federatedLearningSystem.getActiveRounds(_currentNodeId);
-      
+      final activeRounds =
+          await _federatedLearningSystem.getActiveRounds(_currentNodeId);
+
       if (mounted) {
         setState(() {
           _activeRounds = activeRounds;
@@ -168,59 +175,58 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: context.spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(context.spacing.md),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.sync,
-                    color: AppColors.electricGreen,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Learning Round Status',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(context.spacing.xs),
+                    decoration: BoxDecoration(
+                      color: AppColors.electricGreen.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.sync,
+                      color: AppColors.electricGreen,
+                      size: 24,
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.info_outline,
-                    color: AppColors.textSecondary,
-                    size: 20,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Learning Round Status',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                    ),
                   ),
-                  onPressed: () => _showLearningRoundInfoDialog(context),
-                  tooltip: 'What is a learning round?',
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_isLoading)
-              _buildLoadingState()
-            else if (_errorMessage != null)
-              _buildErrorState()
-            else if (_activeRounds.isEmpty)
-              _buildNoActiveRoundsMessage()
-            else
-              ..._activeRounds.map((round) => _buildRoundCard(round)),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.info_outline,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
+                    onPressed: () => _showLearningRoundInfoDialog(context),
+                    tooltip: 'What is a learning round?',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (_isLoading)
+                _buildLoadingState()
+              else if (_errorMessage != null)
+                _buildErrorState()
+              else if (_activeRounds.isEmpty)
+                _buildNoActiveRoundsMessage()
+              else
+                ..._activeRounds.map((round) => _buildRoundCard(round)),
             ],
           ),
         ),
@@ -243,12 +249,12 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
 
   Widget _buildNoActiveRoundsMessage() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.info_outline,
@@ -259,10 +265,9 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
           Expanded(
             child: Text(
               'No active learning rounds at the moment. Rounds start when enough participants join.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -278,8 +283,8 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
     final statusText = _getStatusText(round.status);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.sm),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -294,29 +299,30 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.spacing.xs,
+                  vertical: context.spacing.xxs,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   'Round ${round.roundNumber}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: statusColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: statusColor,
+                      ),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   statusText,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ),
               _buildParticipationBadge(isParticipating),
@@ -325,7 +331,7 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
           const SizedBox(height: 8),
           // Learning objective/topic
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(context.spacing.xs),
             decoration: BoxDecoration(
               color: AppColors.electricGreen.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(6),
@@ -348,20 +354,19 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
                     children: [
                       Text(
                         'Learning: ${round.objective.name}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       if (round.objective.description.isNotEmpty) ...[
                         const SizedBox(height: 2),
                         Text(
                           round.objective.description,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -381,18 +386,16 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
                   children: [
                     Text(
                       '${round.participantNodeIds.length} participant${round.participantNodeIds.length != 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${(round.globalModel.accuracy * 100).toStringAsFixed(1)}% accuracy',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -401,13 +404,12 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Progress',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     ClipRRect(
@@ -425,8 +427,8 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
             ],
           ),
           // Join/Leave button
-          if (_currentNodeId != null && 
-              round.status != RoundStatus.completed && 
+          if (_currentNodeId != null &&
+              round.status != RoundStatus.completed &&
               round.status != RoundStatus.failed) ...[
             const SizedBox(height: 12),
             SizedBox(
@@ -439,13 +441,14 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
     );
   }
 
-  Widget _buildJoinLeaveButton(FederatedLearningRound round, bool isParticipating) {
+  Widget _buildJoinLeaveButton(
+      FederatedLearningRound round, bool isParticipating) {
     final isActionInProgress = _actionInProgress[round.roundId] ?? false;
-    final canJoin = !isParticipating && 
-        round.status != RoundStatus.completed && 
+    final canJoin = !isParticipating &&
+        round.status != RoundStatus.completed &&
         round.status != RoundStatus.failed;
-    final canLeave = isParticipating && 
-        round.status != RoundStatus.completed && 
+    final canLeave = isParticipating &&
+        round.status != RoundStatus.completed &&
         round.status != RoundStatus.failed;
 
     if (!canJoin && !canLeave) {
@@ -479,15 +482,18 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         isActionInProgress
             ? (isParticipating ? 'Leaving...' : 'Joining...')
             : (isParticipating ? 'Leave Round' : 'Join Round'),
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isParticipating ? AppColors.error : AppColors.electricGreen,
+        backgroundColor:
+            isParticipating ? AppColors.error : AppColors.electricGreen,
         foregroundColor: AppColors.surface,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.spacing.md,
+          vertical: context.spacing.sm,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -507,22 +513,21 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
 
     try {
       await _federatedLearningSystem.joinRound(round.roundId, _currentNodeId!);
-      
+
       if (mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully joined learning round'),
-            backgroundColor: AppColors.electricGreen,
-            duration: Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Successfully joined learning round',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
-        
+
         // Reload rounds to reflect changes
         await _loadActiveRounds();
       }
     } catch (e) {
-      developer.log('Error joining round: $e', name: 'FederatedLearningStatusWidget');
+      developer.log('Error joining round: $e',
+          name: 'FederatedLearningStatusWidget');
       if (mounted) {
         _showError('Failed to join round: ${e.toString()}');
       }
@@ -549,27 +554,28 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Text(
+        title: Text(
           'Leave Learning Round?',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to leave this learning round? Your contributions will be lost.',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -578,7 +584,7 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.surface,
             ),
-            child: const Text('Leave'),
+            child: Text('Leave'),
           ),
         ],
       ),
@@ -594,22 +600,20 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
 
     try {
       await _federatedLearningSystem.leaveRound(round.roundId, _currentNodeId!);
-      
+
       if (mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Left learning round'),
-            backgroundColor: AppColors.textSecondary,
-            duration: Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Left learning round',
+          duration: const Duration(seconds: 2),
         );
-        
+
         // Reload rounds to reflect changes
         await _loadActiveRounds();
       }
     } catch (e) {
-      developer.log('Error leaving round: $e', name: 'FederatedLearningStatusWidget');
+      developer.log('Error leaving round: $e',
+          name: 'FederatedLearningStatusWidget');
       if (mounted) {
         _showError('Failed to leave round: ${e.toString()}');
       }
@@ -623,18 +627,20 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        duration: const Duration(seconds: 3),
-      ),
+    FeedbackPresenter.showSnack(
+      context,
+      message: message,
+      kind: FeedbackKind.error,
+      duration: const Duration(seconds: 3),
     );
   }
 
   Widget _buildParticipationBadge(bool isParticipating) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing.xs,
+        vertical: context.spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: isParticipating
             ? AppColors.electricGreen.withValues(alpha: 0.1)
@@ -654,13 +660,12 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
           const SizedBox(width: 4),
           Text(
             isParticipating ? 'Participating' : 'Not participating',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: isParticipating
-                  ? AppColors.electricGreen
-                  : AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: isParticipating
+                      ? AppColors.electricGreen
+                      : AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -738,7 +743,7 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.sync,
@@ -747,11 +752,10 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
             SizedBox(width: 8),
             Text(
               'What is a Learning Round?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
@@ -760,37 +764,41 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'A learning round is a cycle in federated learning where the AI improves through collaborative training.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'How it works:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
-              _buildInfoItem('1. Initialization', 'A global AI model is created and distributed to participants'),
-              _buildInfoItem('2. Local Training', 'Each device trains the model on local data (data never leaves your device)'),
-              _buildInfoItem('3. Update Sharing', 'Only model updates (patterns), not raw data, are sent'),
-              _buildInfoItem('4. Aggregation', 'Updates from all participants are combined to improve the global model'),
-              _buildInfoItem('5. Distribution', 'The improved model is sent back to your device'),
-              _buildInfoItem('6. Repeat', 'Process repeats until model converges (stops improving)'),
+              _buildInfoItem('1. Initialization',
+                  'A global AI model is created and distributed to participants'),
+              _buildInfoItem('2. Local Training',
+                  'Each device trains the model on local data (data never leaves your device)'),
+              _buildInfoItem('3. Update Sharing',
+                  'Only model updates (patterns), not raw data, are sent'),
+              _buildInfoItem('4. Aggregation',
+                  'Updates from all participants are combined to improve the global model'),
+              _buildInfoItem('5. Distribution',
+                  'The improved model is sent back to your device'),
+              _buildInfoItem('6. Repeat',
+                  'Process repeats until model converges (stops improving)'),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(context.spacing.sm),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(
                       Icons.lightbulb_outline,
@@ -801,11 +809,10 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
                     Expanded(
                       child: Text(
                         'Think of it like: A group of chefs sharing recipe improvements without sharing their secret ingredients.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                   ],
@@ -817,12 +824,12 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
+            child: Text(
               'Got it',
-              style: TextStyle(
-                color: AppColors.electricGreen,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.electricGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
         ],
@@ -832,17 +839,16 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
 
   Widget _buildInfoItem(String title, String description) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: context.spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '•',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.electricGreen,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.electricGreen,
+                ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -851,19 +857,17 @@ class _FederatedLearningStatusWidgetState extends State<FederatedLearningStatusW
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),

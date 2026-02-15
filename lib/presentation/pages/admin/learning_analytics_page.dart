@@ -8,6 +8,8 @@ import 'package:avrai/core/ai/continuous_learning_system.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Learning Analytics Page
 ///
@@ -127,7 +129,7 @@ class _LearningAnalyticsPageState extends State<LearningAnalyticsPage> {
 
   Widget _buildAnalyticsContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -224,9 +226,9 @@ class _LearningAnalyticsPageState extends State<LearningAnalyticsPage> {
   }
 
   Widget _buildSummaryCard(String title, String value, IconData icon) {
-    return Card(
+    return PortalSurface(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -315,8 +317,8 @@ class _LearningAnalyticsPageState extends State<LearningAnalyticsPage> {
   }
 
   Widget _buildLearningEventCard(LearningEvent event) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    return PortalSurface(
+      margin: const EdgeInsets.only(bottom: kSpaceXs),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: _getImprovementColor(event.improvement),

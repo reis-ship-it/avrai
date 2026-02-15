@@ -1,29 +1,30 @@
 // Fabric Evolution Timeline Widget
-// 
+//
 // Widget for displaying fabric evolution over time
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 5: Knot Fabric for Community Representation
 
 import 'package:flutter/material.dart';
 import 'package:avrai_knot/models/knot/fabric_evolution.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget for visualizing fabric evolution timeline
 class FabricEvolutionTimeline extends StatelessWidget {
   final List<FabricEvolution> evolutionHistory;
-  
+
   const FabricEvolutionTimeline({
     super.key,
     required this.evolutionHistory,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (evolutionHistory.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No evolution history available'),
       );
     }
-    
+
     return ListView.builder(
       itemCount: evolutionHistory.length,
       itemBuilder: (context, index) {
@@ -41,13 +42,13 @@ class FabricEvolutionTimeline extends StatelessWidget {
 class TimelineEvent extends StatelessWidget {
   final FabricEvolution evolution;
   final bool isLast;
-  
+
   const TimelineEvent({
     super.key,
     required this.evolution,
     required this.isLast,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -78,15 +79,15 @@ class TimelineEvent extends StatelessWidget {
         Expanded(
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(kSpaceSm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     _formatTimestamp(evolution.timestamp),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
+                          color: Colors.grey.shade600,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -109,8 +110,9 @@ class TimelineEvent extends StatelessWidget {
                       Text(
                         'Stability: ${(evolution.stabilityChange * 100).toStringAsFixed(1)}%',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _getStabilityColor(evolution.stabilityChange),
-                        ),
+                              color:
+                                  _getStabilityColor(evolution.stabilityChange),
+                            ),
                       ),
                     ],
                   ),
@@ -123,7 +125,7 @@ class TimelineEvent extends StatelessWidget {
                         return Chip(
                           label: Text(
                             change.description,
-                            style: const TextStyle(fontSize: 10),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           padding: EdgeInsets.zero,
                         );
@@ -138,7 +140,7 @@ class TimelineEvent extends StatelessWidget {
       ],
     );
   }
-  
+
   Color _getStabilityColor(double stabilityChange) {
     if (stabilityChange > 0.05) {
       return Colors.green;
@@ -148,9 +150,9 @@ class TimelineEvent extends StatelessWidget {
       return Colors.grey;
     }
   }
-  
+
   String _formatTimestamp(DateTime timestamp) {
     return '${timestamp.month}/${timestamp.day}/${timestamp.year} '
-           '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
+        '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
   }
 }

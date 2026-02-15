@@ -1,0 +1,212 @@
+version: 1
+last_updated: 2026-02-15
+status: active_prep_contract
+master_plan_source: docs/MASTER_PLAN.md
+tracker_source: docs/MASTER_PLAN_TRACKER.md
+backlog_source: docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md
+checklist_source: docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md
+architecture_index: docs/plans/architecture/ARCHITECTURE_INDEX.md
+
+required_global_docs:
+  - path: docs/MASTER_PLAN.md
+    purpose: source_execution_sequence
+  - path: docs/MASTER_PLAN_TRACKER.md
+    purpose: execution_registry
+  - path: docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md
+    purpose: phase_epics_stories_owners
+  - path: docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md
+    purpose: entry_exit_gates
+  - path: docs/plans/architecture/ARCHITECTURE_INDEX.md
+    purpose: architecture_navigation
+  - path: docs/plans/architecture/MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md
+    purpose: multi_app_contract_model
+  - path: docs/plans/architecture/IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md
+    purpose: identity_unlinkability_and_access_governance_contract
+  - path: docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md
+    purpose: phase_by_phase_reality_coherence_gates
+  - path: docs/plans/architecture/TEST_SUITE_PATH_NORMALIZATION_MAP_PHASE10.md
+    purpose: grouped_suite_path_contract
+  - path: docs/plans/architecture/FILE_FOLDER_RENAME_MANIFEST_PHASE10.md
+    purpose: rename_and_path_governance
+  - path: docs/design/DESIGN_REF.md
+    purpose: canonical_ui_ux_entrypoint
+  - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+    purpose: ui_ux_design_contract
+  - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+    purpose: design_to_phase_story_mapping
+  - path: docs/design/DESIGN_COVERAGE_MATRIX.md
+    purpose: design_domain_readiness_matrix
+  - path: docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md
+    purpose: accessibility_design_requirements
+  - path: docs/design/SENSORY_FEEDBACK_GUIDELINES.md
+    purpose: motion_haptic_audio_design_requirements
+  - path: docs/design/README.md
+    purpose: design_principles_reference_index
+  - path: docs/design/apps/README.md
+    purpose: app_scoped_design_registry
+  - path: docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md
+    purpose: execution_methodology_source
+  - path: docs/plans/methodology/SESSION_START_CHECKLIST.md
+    purpose: session_execution_checklist
+  - path: docs/plans/methodology/START_HERE_NEW_TASK.md
+    purpose: task_start_protocol
+  - path: docs/plans/methodology/PHASE_SECTION_SUBSECTION_FORMAT.md
+    purpose: master_plan_notation_contract
+
+design_contracts:
+  source_of_truth:
+    - path: docs/design/DESIGN_REF.md
+      scope: required_ui_ux_entrypoint_and_contracts
+    - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+      scope: global_design_tokens_components_patterns
+    - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+      scope: phase_and_story_traceability_for_design_work
+    - path: docs/design/DESIGN_COVERAGE_MATRIX.md
+      scope: design_coverage_and_readiness_tracking
+    - path: docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md
+      scope: accessibility_design_principles
+    - path: docs/design/SENSORY_FEEDBACK_GUIDELINES.md
+      scope: sensory_design_principles_motion_haptics_audio
+  app_types:
+    - app_type: consumer_app
+      app_design_ref: docs/design/apps/consumer_app/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/consumer_app/FEATURE_DESIGN_PACK.md
+        - path: docs/design/apps/consumer_app/KNOT_JOURNEY_DESIGN_SPEC.md
+        - path: docs/design/apps/consumer_app/WORLD_PLANES_DESIGN_SPEC.md
+    - app_type: business_app
+      app_design_ref: docs/design/apps/business_app/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/business_app/FEATURE_DESIGN_PACK.md
+    - app_type: admin_desktop_app
+      app_design_ref: docs/design/apps/admin_desktop_app/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/admin_desktop_app/FEATURE_DESIGN_PACK.md
+    - app_type: research_portal
+      app_design_ref: docs/design/apps/research_portal/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/research_portal/FEATURE_DESIGN_PACK.md
+    - app_type: partner_sdk_examples
+      app_design_ref: docs/design/apps/partner_sdk_examples/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/partner_sdk_examples/FEATURE_DESIGN_PACK.md
+    - app_type: api_caller_surface
+      app_design_ref: docs/design/apps/partner_sdk_examples/README.md
+      required_docs:
+        - path: docs/design/DESIGN_REF.md
+        - path: docs/design/DESIGN_SYSTEM_ARCHITECTURE.md
+        - path: docs/design/MASTER_PLAN_DESIGN_LINKAGE.md
+        - path: docs/design/apps/partner_sdk_examples/FEATURE_DESIGN_PACK.md
+
+phase_build_contracts:
+  - id: 1
+    depends_on: []
+    master_plan_ref: "Phase 1"
+    backlog_scope: "MPA-P1-*"
+    checklist_gate: "Phase 1 Gate"
+  - id: 2
+    depends_on: [1]
+    master_plan_ref: "Phase 2"
+    backlog_scope: "MPA-P2-*"
+    checklist_gate: "Phase 2 Gate"
+  - id: 3
+    depends_on: [1, 2]
+    master_plan_ref: "Phase 3"
+    backlog_scope: "MPA-P3-*"
+    checklist_gate: "Phase 3 Gate"
+  - id: 4
+    depends_on: [3]
+    master_plan_ref: "Phase 4"
+    backlog_scope: "MPA-P4-*"
+    checklist_gate: "Phase 4 Gate"
+  - id: 5
+    depends_on: [4]
+    master_plan_ref: "Phase 5"
+    backlog_scope: "MPA-P5-*"
+    checklist_gate: "Phase 5 Gate"
+  - id: 6
+    depends_on: [5]
+    master_plan_ref: "Phase 6"
+    backlog_scope: "MPA-P6-*"
+    checklist_gate: "Phase 6 Gate"
+  - id: 7
+    depends_on: [6]
+    master_plan_ref: "Phase 7"
+    backlog_scope: "MPA-P7-*"
+    checklist_gate: "Phase 7 Gate"
+  - id: 8
+    depends_on: [7]
+    master_plan_ref: "Phase 8"
+    backlog_scope: "MPA-P8-*"
+    checklist_gate: "Phase 8 Gate"
+  - id: 9
+    depends_on: [1, 2]
+    master_plan_ref: "Phase 9"
+    backlog_scope: "MPA-P9-*"
+    checklist_gate: "Phase 9 Gate"
+  - id: 10
+    depends_on: [1, 2]
+    master_plan_ref: "Phase 10"
+    backlog_scope: "MPA-P10-*"
+    checklist_gate: "Phase 10 Gate"
+  - id: 11
+    depends_on: [8, 9, 10]
+    master_plan_ref: "Phase 11"
+    backlog_scope: "MPA-P11-*"
+    checklist_gate: "Phase 11 Gate"
+  - id: 12
+    depends_on: [11]
+    master_plan_ref: "Phase 12"
+    backlog_scope: "MPA-P12-*"
+    checklist_gate: "Phase 12 Gate"
+  - id: 13
+    depends_on: [11, 12]
+    master_plan_ref: "Phase 13"
+    backlog_scope: "MPA-P13-*"
+    checklist_gate: "Phase 13 Gate"
+  - id: 14
+    depends_on: [13]
+    master_plan_ref: "Phase 14"
+    backlog_scope: "MPA-P14-*"
+    checklist_gate: "Phase 14 Gate"
+  - id: 15
+    depends_on: [2, 7, 12, 14]
+    master_plan_ref: "Phase 15"
+    backlog_scope: "MPA-P15-*"
+    checklist_gate: "Phase 15 Gate"
+
+orchestration_policies:
+  branch_strategy:
+    protected_branches:
+      - main
+    phase_branch_pattern: "phase/<id>"
+    story_branch_pattern: "story/MPA-P<phase>-E<epic>-S<story>"
+    auto_delete_story_branches: true
+  merge_policy:
+    story_pr_auto_merge: true
+    required_checks:
+      - master-plan-orchestration-validate
+      - quick-tests
+    disallow_auto_merge_labels:
+      - security
+      - migration
+  failure_policy:
+    transient_retry_attempts: 2
+    stop_on_gate_failure: true
+    create_failure_issue: true
+    checkpoint_tag_pattern: "phase-<id>-checkpoint-<n>"

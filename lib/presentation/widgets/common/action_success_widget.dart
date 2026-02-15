@@ -1,15 +1,15 @@
 /// Action Success Widget
-/// 
+///
 /// Part of Feature Matrix Phase 1.3: LLM Full Integration
 /// Provides rich visual feedback after successful action execution.
-/// 
+///
 /// Features:
 /// - Success animations (confetti, checkmarks)
 /// - Action result preview
 /// - Undo button with timeout
 /// - Quick actions (view result, share, etc.)
 /// - Auto-dismiss option
-/// 
+///
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Widget that displays success feedback after action execution
 class ActionSuccessWidget extends StatefulWidget {
@@ -26,7 +27,7 @@ class ActionSuccessWidget extends StatefulWidget {
   final Duration undoTimeout;
   final bool autoDismiss;
   final Duration autoDismissDelay;
-  
+
   const ActionSuccessWidget({
     super.key,
     required this.result,
@@ -36,21 +37,22 @@ class ActionSuccessWidget extends StatefulWidget {
     this.autoDismiss = false,
     this.autoDismissDelay = const Duration(seconds: 3),
   });
-  
+
   @override
   State<ActionSuccessWidget> createState() => _ActionSuccessWidgetState();
 }
 
-class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTickerProviderStateMixin {
+class _ActionSuccessWidgetState extends State<ActionSuccessWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
-  
+
   Timer? _undoTimer;
   Timer? _dismissTimer;
   bool _undoAvailable = true;
   int _undoSecondsRemaining = 5;
-  
+
   @override
   void initState() {
     super.initState();
@@ -60,13 +62,13 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       _startDismissTimer();
     }
   }
-  
+
   void _initAnimations() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
@@ -74,7 +76,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       parent: _animationController,
       curve: Curves.elasticOut,
     ));
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -82,13 +84,13 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       parent: _animationController,
       curve: Curves.easeIn,
     ));
-    
+
     _animationController.forward();
   }
-  
+
   void _startUndoTimer() {
     if (widget.onUndo == null) return;
-    
+
     _undoSecondsRemaining = widget.undoTimeout.inSeconds;
     _undoTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
@@ -102,7 +104,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       }
     });
   }
-  
+
   void _startDismissTimer() {
     _dismissTimer = Timer(widget.autoDismissDelay, () {
       if (mounted) {
@@ -110,7 +112,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       }
     });
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -118,9 +120,10 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
     _dismissTimer?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Dialog(
       backgroundColor: AppColors.black.withValues(alpha: 0),
       elevation: 0,
@@ -129,7 +132,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(spacing.lg),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20),
@@ -162,7 +165,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       ),
     );
   }
-  
+
   Widget _buildSuccessIcon() {
     return Container(
       width: 80,
@@ -190,24 +193,24 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       ),
     );
   }
-  
+
   Widget _buildSuccessTitle() {
     final title = _getSuccessTitle();
-    
+
     return Text(
       title,
       textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
     );
   }
-  
+
   Widget _buildResultPreview() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.electricGreen.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
@@ -219,30 +222,30 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       child: Column(
         children: [
           _buildPreviewContent(),
-          if ((widget.result.successMessage ?? widget.result.errorMessage ?? '').isNotEmpty) ...[
+          if ((widget.result.successMessage ?? widget.result.errorMessage ?? '')
+              .isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
               widget.result.successMessage ?? widget.result.errorMessage ?? '',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ],
       ),
     );
   }
-  
+
   Widget _buildPreviewContent() {
     final intent = widget.result.intent;
-    
+
     if (intent is CreateListIntent) {
       return Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(context.spacing.sm),
             decoration: BoxDecoration(
               color: AppColors.electricGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -260,19 +263,17 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               children: [
                 Text(
                   intent.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 if (intent.description.isNotEmpty)
                   Text(
                     intent.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -285,7 +286,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       return Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(context.spacing.sm),
             decoration: BoxDecoration(
               color: AppColors.electricGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -303,18 +304,16 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               children: [
                 Text(
                   intent.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 Text(
                   intent.category,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -324,7 +323,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
     } else if (intent is AddSpotToListIntent) {
       final spotName = intent.metadata['spotName'] as String? ?? 'Spot';
       final listName = intent.metadata['listName'] as String? ?? 'List';
-      
+
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -332,11 +331,10 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
           const SizedBox(width: 8),
           Text(
             spotName,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(width: 12),
           const Icon(
@@ -349,28 +347,27 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
           const SizedBox(width: 8),
           Text(
             listName,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ],
       );
     }
-    
-    return const Text(
+
+    return Text(
       'Action completed successfully',
-      style: TextStyle(
-        fontSize: 14,
-        color: AppColors.textSecondary,
-      ),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
     );
   }
-  
+
   Widget _buildMiniIcon(IconData icon, Color color) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: EdgeInsets.all(spacing.xxs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
@@ -382,8 +379,9 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
       ),
     );
   }
-  
+
   Widget _buildActionButtons() {
+    final spacing = context.spacing;
     return Row(
       children: [
         if (widget.onViewResult != null)
@@ -394,11 +392,11 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
                 Navigator.of(context).pop();
               },
               icon: const Icon(Icons.visibility),
-              label: const Text('View'),
+              label: Text('View'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.electricGreen,
                 side: const BorderSide(color: AppColors.electricGreen),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: EdgeInsets.symmetric(vertical: spacing.sm),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -414,24 +412,31 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.electricGreen,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: spacing.sm),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Done',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildUndoCountdown() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.md,
+        vertical: spacing.sm - spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: AppColors.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -449,10 +454,9 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
               const SizedBox(width: 8),
               Text(
                 'Can undo in ${_undoSecondsRemaining}s',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -465,20 +469,21 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
                 : null,
             child: Text(
               'Undo',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: _undoAvailable ? AppColors.warning : AppColors.grey300,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color:
+                        _undoAvailable ? AppColors.warning : AppColors.grey300,
+                  ),
             ),
           ),
         ],
       ),
     );
   }
-  
+
   String _getSuccessTitle() {
     final intent = widget.result.intent;
-    
+
     if (intent is CreateListIntent) {
       return '🎉 List Created!';
     } else if (intent is CreateSpotIntent) {
@@ -486,7 +491,7 @@ class _ActionSuccessWidgetState extends State<ActionSuccessWidget> with SingleTi
     } else if (intent is AddSpotToListIntent) {
       return '✨ Added to List!';
     }
-    
+
     return '✅ Success!';
   }
 }
@@ -496,19 +501,23 @@ class ActionSuccessToast extends StatelessWidget {
   final String message;
   final IconData icon;
   final Color color;
-  
+
   const ActionSuccessToast({
     super.key,
     required this.message,
     this.icon = Icons.check_circle,
     this.color = AppColors.electricGreen,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      margin: EdgeInsets.all(spacing.md),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.md + spacing.xxs,
+        vertical: spacing.md,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -537,20 +546,21 @@ class ActionSuccessToast extends StatelessWidget {
           Flexible(
             child: Text(
               message,
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
         ],
       ),
     );
   }
-  
+
   /// Show toast at the top of the screen
-  static void show(BuildContext context, String message, {
+  static void show(
+    BuildContext context,
+    String message, {
     IconData icon = Icons.check_circle,
     Color color = AppColors.electricGreen,
   }) {
@@ -567,12 +577,11 @@ class ActionSuccessToast extends StatelessWidget {
         ),
       ),
     );
-    
+
     overlay.insert(overlayEntry);
-    
+
     Future.delayed(const Duration(seconds: 2), () {
       overlayEntry.remove();
     });
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying personality evolution timeline
 class EvolutionTimelineWidget extends StatelessWidget {
@@ -13,9 +14,13 @@ class EvolutionTimelineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final milestones = profile.learningHistory['evolution_milestones'] as List<DateTime>? ?? [];
-    final totalInteractions = profile.learningHistory['total_interactions'] as int? ?? 0;
-    final successfulConnections = profile.learningHistory['successful_ai2ai_connections'] as int? ?? 0;
+    final milestones =
+        profile.learningHistory['evolution_milestones'] as List<DateTime>? ??
+            [];
+    final totalInteractions =
+        profile.learningHistory['total_interactions'] as int? ?? 0;
+    final successfulConnections =
+        profile.learningHistory['successful_ai2ai_connections'] as int? ?? 0;
 
     return Card(
       elevation: 2,
@@ -23,104 +28,115 @@ class EvolutionTimelineWidget extends StatelessWidget {
         builder: (context, constraints) {
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-            Text(
-              'Evolution Timeline',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    'Evolution Timeline',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-            ),
-            const SizedBox(height: 16),
-            // Statistics
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatItem(
-                  context,
-                  'Generation',
-                  '${profile.evolutionGeneration}',
-                ),
-                _buildStatItem(
-                  context,
-                  'Interactions',
-                  '$totalInteractions',
-                ),
-                _buildStatItem(
-                  context,
-                  'Connections',
-                  '$successfulConnections',
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Timeline
-            if (milestones.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Column(
+                  const SizedBox(height: 16),
+                  // Statistics
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      const Icon(
-                        Icons.timeline,
-                        size: 48,
-                        color: AppColors.textSecondary,
+                      _buildStatItem(
+                        context,
+                        'Generation',
+                        '${profile.evolutionGeneration}',
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'No evolution milestones yet',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                      _buildStatItem(
+                        context,
+                        'Interactions',
+                        '$totalInteractions',
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Milestones will appear as your personality evolves',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textHint,
-                            ),
-                        textAlign: TextAlign.center,
+                      _buildStatItem(
+                        context,
+                        'Connections',
+                        '$successfulConnections',
                       ),
                     ],
                   ),
-                ),
-              )
-            else
-              ...milestones.reversed.take(10).map((milestone) => _buildTimelineItem(
-                context,
-                milestone,
-                milestones.indexOf(milestone) == milestones.length - 1,
-              )),
-            // Created date
-            const Divider(),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
-                const SizedBox(width: 8),
-                Text(
-                  'Created: ${_formatDate(profile.createdAt)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                  const SizedBox(height: 24),
+                  // Timeline
+                  if (milestones.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(kSpaceLg),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.timeline,
+                              size: 48,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'No evolution milestones yet',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Milestones will appear as your personality evolves',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.textHint,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const Icon(Icons.update, size: 16, color: AppColors.textSecondary),
-                const SizedBox(width: 8),
-                Text(
-                  'Last Updated: ${_formatDate(profile.lastUpdated)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                    )
+                  else
+                    ...milestones.reversed
+                        .take(10)
+                        .map((milestone) => _buildTimelineItem(
+                              context,
+                              milestone,
+                              milestones.indexOf(milestone) ==
+                                  milestones.length - 1,
+                            )),
+                  // Created date
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          size: 16, color: AppColors.textSecondary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Created: ${_formatDate(profile.createdAt)}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
-                ),
-              ],
-            ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.update,
+                          size: 16, color: AppColors.textSecondary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Last Updated: ${_formatDate(profile.lastUpdated)}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -149,9 +165,10 @@ class EvolutionTimelineWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineItem(BuildContext context, DateTime milestone, bool isLatest) {
+  Widget _buildTimelineItem(
+      BuildContext context, DateTime milestone, bool isLatest) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: kSpaceMd),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -218,4 +235,3 @@ class EvolutionTimelineWidget extends StatelessWidget {
     }
   }
 }
-

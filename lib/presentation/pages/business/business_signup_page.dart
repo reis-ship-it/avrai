@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -8,6 +10,8 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/presentation/pages/business/business_onboarding_page.dart';
 import 'package:uuid/uuid.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Signup Page
 ///
@@ -111,40 +115,34 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
       if (!_supabaseService.isAvailable) {
         // If Supabase not available, show message about manual setup
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
+          FeedbackPresenter.showSnack(
+            context,
+            message:
                 'Business account created! Please contact support to set up login credentials.',
-              ),
-              duration: Duration(seconds: 5),
-              backgroundColor: AppColors.warning,
-            ),
+            kind: FeedbackKind.warning,
+            duration: const Duration(seconds: 5),
           );
         }
       } else {
         // TODO: Automatically create credentials via Edge Function
         // For now, show message
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
+          FeedbackPresenter.showSnack(
+            context,
+            message:
                 'Business account created! Please set up login credentials using the admin tool.',
-              ),
-              duration: Duration(seconds: 5),
-              backgroundColor: AppColors.warning,
-            ),
+            kind: FeedbackKind.warning,
+            duration: const Duration(seconds: 5),
           );
         }
       }
 
       // Step 3: Navigate to onboarding
       if (mounted) {
-        Navigator.pushReplacement(
+        AppNavigator.replaceBuilder(
           context,
-          MaterialPageRoute(
-            builder: (context) => BusinessOnboardingPage(
-              businessAccount: businessAccount,
-            ),
+          builder: (context) => BusinessOnboardingPage(
+            businessAccount: businessAccount,
           ),
         );
       }
@@ -163,7 +161,7 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(kSpaceLg),
         child: Form(
           key: _formKey,
           child: Column(
@@ -360,13 +358,11 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
 
               // Error message
               if (_errorMessage != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
+                PortalSurface(
+                  padding: const EdgeInsets.all(kSpaceSm),
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderColor: AppColors.error,
+                  radius: 8,
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.error),
@@ -374,7 +370,10 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(color: AppColors.error),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -388,7 +387,7 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -403,12 +402,11 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
                               AlwaysStoppedAnimation<Color>(AppColors.white),
                         ),
                       )
-                    : const Text(
+                    : Text(
                         'Create Business Account',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
               ),
               const SizedBox(height: 16),
@@ -417,15 +415,18 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Already have an account? ',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Log In'),
+                    child: Text('Log In'),
                   ),
                 ],
               ),

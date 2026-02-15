@@ -49,25 +49,25 @@ class _MetallicTextState extends State<MetallicText> {
       // Gravity z ~ 9.8 when flat. x/y vary with tilt.
       _accelSubscription = accelerometerEventStream().listen((event) {
         if (!mounted) return;
-        
+
         // Normalize x/y to -1..1 range roughly (gravity is ~10)
         // Invert X because tilting left (positive X? No, Android X is right)
         // Actually, let's just do a simple mapping.
-        
+
         // Tilt X (Left/Right) -> Shift Horizontal Alignment
         // Tilt Y (Up/Down) -> Shift Vertical Alignment
-        
+
         // Sensitivity factor
         const double sensitivity = 0.1;
-        
+
         // Base alignment is (-1, -1) to (1, 1)
         // We add the tilt offset
-        
+
         setState(() {
           // X: -10 (Left) to 10 (Right) -> Map to -1..1
           double dx = -event.x * sensitivity;
           double dy = event.y * sensitivity; // Y is Up on Android?
-          
+
           // Clamp
           dx = dx.clamp(-0.5, 0.5);
           dy = dy.clamp(-0.5, 0.5);
@@ -112,7 +112,7 @@ class _MetallicTextState extends State<MetallicText> {
       child: Text(
         widget.text,
         textAlign: widget.textAlign,
-        style: (widget.style ?? const TextStyle()).copyWith(
+        style: (widget.style ?? DefaultTextStyle.of(context).style).copyWith(
           color: AppColors.white, // Required for shader mask to work
           shadows: [
             Shadow(

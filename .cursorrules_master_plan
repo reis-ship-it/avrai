@@ -183,6 +183,23 @@ Anytime user requests:
 
 3. **Notify user** of integration and position in Master Plan
 
+### ⚠️ MANDATORY: Master Plan Tracker Sync Rule
+
+**This rule applies to ALL Master Plan modifications, not just the "add feature" workflow above.**
+
+**Trigger:** ANY edit to `docs/MASTER_PLAN.md` that adds, removes, or substantially changes a phase, section, or subsection.
+
+**Action:** Before the task is considered complete, `docs/MASTER_PLAN_TRACKER.md` MUST be updated to reflect the change. This includes:
+- Adding new entries for any new phases/sections/subsections
+- Updating existing entries if scope, task count, dependencies, or status changed
+- Updating the Feature Cross-Reference Matrix if cross-phase relationships changed
+- Updating statistics (total plans, total tasks) if counts changed
+- Updating the "Last Updated" timestamp
+
+**Why:** The Tracker is the registry of everything in the Master Plan. If the Master Plan changes but the Tracker doesn't, agents searching the Tracker for related work will miss the new entries and risk duplicating effort or creating conflicts.
+
+**Enforcement:** If you edited `docs/MASTER_PLAN.md` and did NOT update `docs/MASTER_PLAN_TRACKER.md`, you are NOT done. Go back and update it.
+
 ### **Step 6: Update Rationale / "Why" Documents (MANDATORY)**
 
 **⚠️ CRITICAL: Every Master Plan change MUST be reflected in the rationale documents.**
@@ -396,3 +413,78 @@ Every AI assistant working on SPOTS must:
 
 **Remember: Master Plan is THE execution plan. All other plans are reference guides. Keep Master Plan current. Reference it always.**
 
+---
+
+## 🧩 MANDATORY RULE: Architecture Backlog + Checklist Enforcement (Master Plan Phases 1-14)
+
+**Trigger:** Any request to plan, sequence, assign, or execute architecture work tied to Master Plan phases.
+
+**Required Files:**
+- `docs/plans/architecture/MASTER_PLAN_MULTI_APP_ARCHITECTURE_BLUEPRINT.md`
+- `docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_EXECUTION_BACKLOG.md`
+- `docs/plans/architecture/MASTER_PLAN_ARCHITECTURE_IMPLEMENTATION_CHECKLIST.md`
+- `docs/plans/architecture/FILE_FOLDER_RENAME_MANIFEST_PHASE10.md` (for Phase 10.10 file/folder canonicalization planning)
+- `docs/plans/architecture/MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md` (phase trigger governance)
+- `docs/plans/master_plan_execution.yaml` (machine-readable phase dependency/order contract)
+- `docs/design/DESIGN_REF.md` (required UI/UX entrypoint)
+- `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md` (required when UI/UX scope is touched)
+- `docs/design/MASTER_PLAN_DESIGN_LINKAGE.md` (required design-to-phase/story mapping)
+- `docs/design/DESIGN_COVERAGE_MATRIX.md` (design readiness matrix)
+- `docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md` (accessibility requirements)
+- `docs/design/SENSORY_FEEDBACK_GUIDELINES.md` (motion/haptics/audio requirements)
+- `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md` (working methodology source)
+- `docs/plans/methodology/SESSION_START_CHECKLIST.md` (session execution checklist)
+- `docs/plans/methodology/START_HERE_NEW_TASK.md` (task start protocol)
+- `docs/plans/methodology/PHASE_SECTION_SUBSECTION_FORMAT.md` (notation contract)
+- `docs/MASTER_PLAN.md`
+- `docs/MASTER_PLAN_TRACKER.md`
+
+### Required Actions
+
+1. **Map work to exact phase/section first**  
+   - Every architecture item MUST reference `Phase.Section` in `docs/MASTER_PLAN.md`.
+   - If phase mapping is missing, the item is not executable.
+
+2. **Use backlog IDs for architecture items**  
+   - Epic format: `MPA-P{phase}-E{n}`
+   - Story format: `MPA-P{phase}-E{n}-S{n}`
+   - No ad-hoc story names without IDs.
+
+3. **Keep orchestration contract synchronized**  
+   - If phase sequencing/dependencies/gates change, update `docs/plans/master_plan_execution.yaml`.
+   - Validate orchestration refs before completing task (`scripts/validate_master_plan_execution_refs.sh`).
+   - Ensure tracker rows reference orchestration artifacts when updated.
+
+4. **Enforce design references for UI/UX work**  
+   - Any UI/UX-impacting phase story must reference `docs/design/DESIGN_REF.md`, `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md`, and `docs/design/MASTER_PLAN_DESIGN_LINKAGE.md`.
+   - Enforce design-principles docs: `docs/design/DESIGN_COVERAGE_MATRIX.md`, `docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md`, `docs/design/SENSORY_FEEDBACK_GUIDELINES.md`.
+   - Use app-scoped design docs under `docs/design/apps/<app_scope>/README.md` where applicable.
+   - Confirm grouped design guardrails/goldens are addressed (`tool/design_guardrails.dart`, `test/widget/design/`).
+
+5. **Enforce methodology references for orchestration updates**
+   - Any orchestration or phase sequencing change must reference methodology docs:
+     - `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
+     - `docs/plans/methodology/SESSION_START_CHECKLIST.md`
+     - `docs/plans/methodology/START_HERE_NEW_TASK.md`
+     - `docs/plans/methodology/PHASE_SECTION_SUBSECTION_FORMAT.md`
+   - Missing methodology references make orchestration updates incomplete.
+
+6. **Assign owner boundary before execution**  
+   - Owner MUST be one of: `ARC`, `AIC`, `MLP`, `DPL`, `APP`, `ADM`, `BIZ`, `SEC`, `NET`, `QAE`, `PMO`.
+   - Ownerless architecture work is blocked.
+
+7. **Enforce phase gate checklist**  
+   - Before marking any architecture story ready/in progress, relevant phase gate in checklist must be satisfied.
+   - Exit gates must be captured before moving to next phase.
+
+8. **No architecture drift from prep docs**  
+   - If execution deviates from backlog/checklist, update those docs first, then proceed.
+
+### Prohibited
+
+- ❌ Executing architecture stories not present in the backlog
+- ❌ Changing owner boundaries implicitly
+- ❌ Skipping checklist phase gates
+- ❌ Creating phase work that is not linked to `docs/MASTER_PLAN.md`
+
+**Enforcement:** If any condition above is unmet, stop and bring backlog/checklist into compliance before continuing.

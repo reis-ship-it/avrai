@@ -11,11 +11,11 @@ flutter test "$@" \
   test/unit/services/event_template_service_test.dart \
   test/unit/services/event_safety_service_test.dart \
   test/unit/services/event_success_analysis_service_test.dart \
-  test/integration/event_discovery_integration_test.dart \
-  test/integration/event_hosting_integration_test.dart \
-  test/integration/event_matching_integration_test.dart \
-  test/integration/event_recommendation_integration_test.dart \
-  test/integration/event_template_integration_test.dart \
+  test/integration/events/event_discovery_integration_test.dart \
+  test/integration/events/event_hosting_integration_test.dart \
+  test/integration/events/event_matching_integration_test.dart \
+  test/integration/events/event_recommendation_integration_test.dart \
+  test/integration/events/event_template_integration_test.dart \
   test/integration/controllers/event_creation_controller_integration_test.dart \
   test/integration/controllers/event_cancellation_controller_integration_test.dart \
   test/integration/controllers/event_attendance_controller_integration_test.dart

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
@@ -29,51 +31,57 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Notifications',
       scrollable: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Privacy Note
-            const PortalSurface(
+            PortalSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.privacy_tip, color: AppTheme.primaryColor),
-                      SizedBox(width: 8),
+                      const Icon(Icons.privacy_tip,
+                          color: AppTheme.primaryColor),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Privacy First',
-                        style: TextStyle(
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryColor,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'Per OUR_GUTS.md: "Privacy and Control Are Non-Negotiable". You control all notification settings and data usage.',
-                    style: TextStyle(color: AppTheme.primaryColor),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.primaryColor,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Main Notification Types
             Text(
               'Notification Types',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildNotificationTile(
               'Spot Recommendations',
@@ -123,16 +131,16 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
               Icons.email,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Delivery Methods
             Text(
               'Delivery Methods',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildNotificationTile(
               'Push Notifications',
@@ -150,16 +158,16 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
               Icons.email_outlined,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Quiet Hours
             Text(
               'Quiet Hours',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               child: Column(
@@ -199,7 +207,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Test Notification
             PortalSurface(
@@ -208,16 +216,16 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                 children: [
                   Text(
                     'Test Notifications',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'Send a test notification to verify your settings',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                   ElevatedButton.icon(
                     onPressed: _sendTestNotification,
                     icon: const Icon(Icons.send),
@@ -240,8 +248,10 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
+    final spacing = context.spacing;
+
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: spacing.xs),
       child: SwitchListTile(
         title: Text(title),
         subtitle: Text(subtitle),
@@ -270,14 +280,9 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   }
 
   void _sendTestNotification() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Test notification sent! Check your notification panel.'),
-        backgroundColor: AppTheme.successColor,
-      ),
-    );
+    context
+        .showSuccess('Test notification sent! Check your notification panel.');
 
-    // In a real app, this would trigger an actual test notification
-    // For now, we'll just show the snackbar
+    // In a real app, this would trigger an actual test notification.
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Loading Overlay Widget
 /// Agent 2: Event Discovery & Hosting UI (Week 4, Task 2.12)
-/// 
+///
 /// Provides a consistent loading overlay with animation
 class LoadingOverlay extends StatelessWidget {
   final String? message;
@@ -24,7 +25,7 @@ class LoadingOverlay extends StatelessWidget {
       color: AppColors.black.withValues(alpha: 0.5),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(kSpaceLg),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
@@ -53,10 +54,9 @@ class LoadingOverlay extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   message!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -81,4 +81,3 @@ class LoadingOverlay extends StatelessWidget {
     Navigator.of(context).pop();
   }
 }
-

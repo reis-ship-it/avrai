@@ -118,6 +118,14 @@ Then synthesize comprehensive answer.
 - **Quick Reference:** `docs/plans/methodology/SESSION_START_CHECKLIST.md`
 - **Master Plan:** `docs/MASTER_PLAN.md` (THE execution plan -- WHAT to build)
 - **Master Plan Tracker:** `docs/MASTER_PLAN_TRACKER.md` (registry of all plans)
+- **Phase Orchestration Contract:** `docs/plans/master_plan_execution.yaml` (machine-readable phase dependency/order + required docs)
+- **Phase Orchestration Guide:** `docs/plans/architecture/MASTER_PLAN_PHASE_EXECUTION_ORCHESTRATION.md` (GitHub + Cursor trigger model)
+- **Design Reference (Required):** `docs/design/DESIGN_REF.md` (UI/UX entrypoint + contracts)
+- **Design System Architecture:** `docs/design/DESIGN_SYSTEM_ARCHITECTURE.md`
+- **Design Linkage Map:** `docs/design/MASTER_PLAN_DESIGN_LINKAGE.md` (design -> phase/story contract)
+- **Design Coverage Matrix:** `docs/design/DESIGN_COVERAGE_MATRIX.md`
+- **Accessibility Design Contract:** `docs/design/ACCESSIBILITY_DESIGN_CONTRACT.md`
+- **Sensory Feedback Guidelines:** `docs/design/SENSORY_FEEDBACK_GUIDELINES.md`
 - **Status Tracker:** `docs/agents/status/status_tracker.md` (canonical execution status)
 
 ### Philosophy & Architecture
@@ -156,6 +164,9 @@ Then synthesize comprehensive answer.
 - `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` — add references if feature exemplifies existing decisions
 
 **A Master Plan change without a rationale update is INCOMPLETE.**
+
+**⚠️ CRITICAL: Master Plan Tracker Auto-Sync Rule**
+**ANY edit to `docs/MASTER_PLAN.md` that adds, removes, or changes a phase/section/subsection MUST also update `docs/MASTER_PLAN_TRACKER.md`.** This applies to ALL Master Plan modifications, not just the "add feature" workflow. New entries, updated task counts, dependency changes, and cross-reference matrix updates are all required. If you edited the Master Plan and did NOT update the Tracker, you are NOT done.
 
 **See:** `.cursorrules_master_plan` for complete automated workflow
 
@@ -276,7 +287,7 @@ Then synthesize comprehensive answer.
 - **Intelligence-first:** learned functions > hardcoded formulas. Energy functions > classifiers. Predictions > static scores.
 - **World-model-driven:** all decisions flow through LeCun's framework (perception → world model → cost → actor → guardrails)
 
-### World Model Standards (MANDATORY for Phases 1-8)
+### World Model Standards (MANDATORY for Phases 1-14)
 - ✅ **NEVER create new hardcoded scoring formulas** -- new scoring must use the energy function (Phase 4) or be flagged for future replacement
 - ✅ **ALWAYS capture outcomes** -- any new user action must write an episodic tuple `(state, action, next_state, outcome)` via `UnifiedOutcomeCollector`
 - ✅ **ALWAYS use `AtomicClockService` timestamps** for any time-sensitive data (episodic memory, state snapshots, feature freshness)
@@ -285,9 +296,14 @@ Then synthesize comprehensive answer.
 - ✅ **ALWAYS respect latency budgets** -- feature extraction < 50ms, state encoder < 20ms, energy function < 10ms, full scoring < 200ms for 50 candidates
 - ✅ **ALWAYS include feature freshness weights** -- stale features must decay in influence (via `FeatureFreshnessTracker`)
 - ✅ **ALWAYS use feature flags** for formula replacement -- parallel-run both formula and energy function, flip via `FeatureFlagService`
+- ✅ **ALWAYS publish health diagnostics to the observation bus** -- every new service/component must implement the `ComponentHealthReporter` protocol and publish `ObservationSignal` to the observation bus (Phase 7.12). This is how the system sees itself and enables universal self-healing
+- ✅ **ALWAYS ground SLM outputs** -- every SLM-generated sentence must cite a Semantic Bridge Schema field (Phase 6.7C). Ungrounded text is blocked and falls back to template. The SLM is the mouth, not the brain
+- ✅ **ALWAYS treat non-participation as valid signal** -- when a user ignores a recommendation, that is equally valuable learning data as acceptance. Over-suggestion triggers recommendation reduction, not persuasion escalation (User Agency Doctrine)
+- ✅ **ALWAYS treat both prediction outcomes as learning signals** -- successful and unsuccessful predictions are equally valuable. Prediction accuracy is a success metric, not an agent happiness baseline (Agent Happiness Philosophy)
 - ❌ **NEVER access message content** from chat services for ML features -- only metadata (counts, timestamps, participation rates)
 - ❌ **NEVER share raw personality data** over mesh -- only anonymized gradients (DP-protected)
 - ❌ **NEVER train on-device when battery < 50%** unless charging (via `BatteryAdaptiveTrainingScheduler`)
+- ❌ **NEVER let SLM access raw model weights or parameters** -- the SLM sees only the Semantic Bridge Schema output, never internal model state. Brain/mouth separation is architectural, not a guideline
 - **LeCun Framework Reference:**
   - Perception Module → `WorldModelFeatureExtractor` (Phase 3.1)
   - World Model → `TransitionPredictor` (Phase 5.1)
@@ -295,6 +311,13 @@ Then synthesize comprehensive answer.
   - Actor → `MPCPlanner` (Phase 6.1)
   - Guardrails → Diversity, safety, doors, notification constraints (Phase 6.2)
   - Short-Term Memory → `EpisodicMemoryStore` (Phase 1.1)
+  - Observation & Introspection → Observation Bus, Self-Model Service, Attribution Tracing, Anomaly/Opportunity Detector (Phase 7.12)
+  - Input Normalization → Input Normalization Pipeline: SLM intent, passive signals, diagnostics, federation (Phases 3.1, 6.7B, 7.10A, 8.1)
+  - Output Delivery → Output Delivery Pipeline with grounding enforcement, SLM text gen, template fallbacks (Phases 6.7, 6.7C)
+  - Sensor Abstraction → GPS, WiFi, BLE, temporal, social, behavioral, physiological, environmental (Phases 3.1, 7.5, 11.4)
+  - Reality-to-Language Translation → Semantic Bridge Schema, Output Format Registry, self-healing format/vocabulary (Phase 6.7C)
+  - Hardware Abstraction → `HardwareComputeRouter`: Classical CPU → NPU → Quantum (Phase 11.4C)
+  - Emotional Experience → Full emotional spectrum as episodic context, wisdom layer uses emotional context (Phase 1.1D.7, 4.5B)
 - **Master Plan Source of Truth:** `docs/MASTER_PLAN.md` (Intelligence-First Architecture)
 - **ML Roadmap Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`
 
@@ -961,4 +984,3 @@ When creating or updating experiments:
 
 **Last Updated:** December 30, 2025  
 **Status:** Active - Mandatory for all AI assistants working on AVRAI
-

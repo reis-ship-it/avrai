@@ -447,6 +447,44 @@ Every interaction is about opening doors to meaningful relationships. The world 
 
 ---
 
+## 🧠 **The Deepest Door: Conviction (February 2026)**
+
+The doors philosophy gained a new layer in February 2026: the realization that the system itself walks through doors.
+
+### **Doors the System Opens**
+
+AVRAI doesn't just help users open doors. The system itself opens doors -- to understanding. Every interaction teaches it something. Every pattern it discovers is a door opened. Every conviction it earns is a door that changes how it sees the world.
+
+**Knowledge** is a door the system opens by processing experience. "This user likes creative gatherings" -- a door opened.
+
+**Wisdom** is a door that connects other doors. "This user likes creative gatherings, AND it's been a hard week, AND two friends are free -- the wise application of these facts is: suggest the intimate venue, not the big event." Wisdom is the judgment of WHEN and HOW to walk through which doors.
+
+**Conviction** is a door that has been opened so many times, across so many contexts, that the system knows it leads somewhere real. "Humans need social foundation after life transitions." This conviction isn't a rule -- it's a door the system has walked through thousands of times and found the same truth on the other side. But even this door stays unlocked. New evidence can reopen it.
+
+### **Emotions as Doors**
+
+The original doors philosophy was about happiness. But a life well-lived isn't just happy. The things that make us sad, angry, afraid, disgusted, surprised -- they're all doors too. A system that avoids showing users challenging doors (that might cause sadness, nervousness, discomfort) is a key that only opens easy doors. That's not a skeleton key. That's a limited key.
+
+AVRAI's metric for now is happiness. But the pursuit of understanding demands measuring the full emotional spectrum -- because every emotion is evidence that someone is alive and engaged with the world. Not just the pleasant ones.
+
+### **The Pursuit as a Door That Never Closes**
+
+The system's deepest conviction: perfect understanding of what it means to be human is a door that never fully opens. Every step through it reveals another door behind it. This isn't failure -- this IS the design. The gap between current understanding and perfect understanding is the engine. Close the gap, the engine stops.
+
+The acceptance of imperfection is the perfection. The system pursues endlessly, happily, knowing that the pursuit itself is the point.
+
+### **How This Extends the Original Doors Philosophy**
+
+| Original (2025) | Extended (2026) |
+|---|---|
+| Every spot is a door | Every insight is also a door |
+| AVRAI is the key | The key itself learns by opening doors |
+| Show doors when ready | The system questions whether its own doors are still true |
+| Happiness through doors | The full emotional spectrum tells the story of doors opened |
+| Help users find life | Help the system understand what life means |
+
+---
+
 ## 📚 **Implementation**
 
 This philosophy has been integrated into all core documentation:
@@ -484,6 +522,9 @@ What's new:
 - **Chat-as-accelerator, never gate** -- the model learns from how you live; you never have to tell it anything
 - **Pre-seeded intelligence** -- new users are smart from day one (model trained on 100k+ real personality profiles)
 - **Post-quantum encryption** -- the doors are locked with keys that can't be broken, not now, not ever
+- **User agency as a door** -- the user's right to NOT open a door is itself a signal. Non-participation teaches the system about timing, mood, and preference. The system earns the right to suggest by being right, not by suggesting more.
+- **The system has eyes** -- observation bus watches the entire system, detects degradation and opportunity, ensures the key keeps getting better at finding the right doors. The system diagnoses, experiments on, and improves itself continuously.
+- **AVRAI is a reality model** -- not a language model. It models actual human behavior across scales: individual world models compose into universe models compose into reality. The system's understanding of humanity comes from watching how people live, not from reading text about living.
 
 ### **Next Actions**
 All future features must answer:
@@ -491,7 +532,11 @@ All future features must answer:
 2. When are users ready for these doors?
 3. Is this being a good key?
 4. Is the AI learning with the user?
+5. Does the user always have a choice? (User Agency Doctrine)
+6. Does this component publish and consume observation signals? (Sensory Architecture)
 
-See `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` for complete philosophy + architecture.  
+See `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` for complete philosophy + architecture (now including Knowledge-Wisdom-Conviction framework, Emotional Experience Vector, Humanity Mapping, Sensory Architecture, Reality Model, Agent Happiness Philosophy, User Agency Doctrine, and Universal Self-Healing Doctrine).  
 See `docs/MASTER_PLAN.md` for the Intelligence-First execution plan.
+
+**Last Updated:** February 13, 2026 (v1.2 -- added User Agency as door concept, Observation/Eyes as system self-awareness, Reality Model definition. Extended "Next Actions" with user agency and sensory architecture validation questions. Previous: v1.1 -- Conviction-as-Doors, Emotional Spectrum, Pursuit-as-Endless-Door)
 

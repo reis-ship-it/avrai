@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying performance issues and optimization recommendations
 class PerformanceIssuesList extends StatelessWidget {
@@ -40,7 +41,7 @@ class PerformanceIssuesList extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -53,7 +54,7 @@ class PerformanceIssuesList extends StatelessWidget {
             const SizedBox(height: 16),
             if (issues.isEmpty && recommendations.isEmpty)
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: Center(
                   child: Text(
                     'No issues detected. Network operating optimally.',
@@ -83,7 +84,8 @@ class PerformanceIssuesList extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 8),
-                ...recommendations.map((rec) => _buildRecommendationTile(context, rec)),
+                ...recommendations
+                    .map((rec) => _buildRecommendationTile(context, rec)),
               ],
             ],
           ],
@@ -97,7 +99,7 @@ class PerformanceIssuesList extends StatelessWidget {
     final icon = _getSeverityIcon(issue.severity.name);
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       leading: Icon(icon, color: color, size: 20),
       title: Text(
         issue.description,
@@ -106,14 +108,13 @@ class PerformanceIssuesList extends StatelessWidget {
       trailing: Chip(
         label: Text(
           issue.severity.name,
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         backgroundColor: color.withValues(alpha: 0.2),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
       ),
     );
   }
@@ -123,8 +124,9 @@ class PerformanceIssuesList extends StatelessWidget {
     OptimizationRecommendation recommendation,
   ) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
-      leading: const Icon(Icons.lightbulb_outline, color: AppColors.success, size: 20),
+      contentPadding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
+      leading: const Icon(Icons.lightbulb_outline,
+          color: AppColors.success, size: 20),
       title: Text(
         recommendation.recommendation,
         style: Theme.of(context).textTheme.bodyMedium,
@@ -138,4 +140,3 @@ class PerformanceIssuesList extends StatelessWidget {
     );
   }
 }
-

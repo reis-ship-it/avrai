@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:get_it/get_it.dart';
 
@@ -48,7 +49,7 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
       title: 'Enter Pairing Code',
       constrainBody: false,
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(kSpaceLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -58,9 +59,9 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
               color: AppColors.primary,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Enter the 9-digit code from your other device',
-              style: TextStyle(fontSize: 18),
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -69,7 +70,10 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
               const SizedBox(height: 16),
               Text(
                 _error!,
-                style: const TextStyle(color: AppColors.error),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.error),
               ),
             ],
             const SizedBox(height: 32),
@@ -87,13 +91,13 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
                           color: AppColors.white,
                         ),
                       )
-                    : const Text('Verify Code'),
+                    : Text('Verify Code'),
               ),
             ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: _pasteCode,
-              child: const Text('Paste from Clipboard'),
+              child: Text('Paste from Clipboard'),
             ),
           ],
         ),
@@ -108,13 +112,12 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
         for (int i = 0; i < 9; i++) ...[
           if (i == 3 || i == 6)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: kSpaceXs),
               child: Text(
                 '-',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ),
           SizedBox(
@@ -128,15 +131,14 @@ class _DeviceLinkEnterCodePageState extends State<DeviceLinkEnterCodePage> {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 counterText: '',
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(vertical: kSpaceSm),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
               onChanged: (value) {
                 if (value.isNotEmpty && i < 8) {
                   _focusNodes[i + 1].requestFocus();

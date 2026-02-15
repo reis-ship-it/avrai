@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/payment/tax_document.dart';
 import 'package:avrai/core/models/payment/tax_profile.dart';
 import 'package:avrai/core/services/payment/tax_compliance_service.dart';
@@ -9,8 +10,10 @@ import 'package:avrai/core/services/payment/tax_document_storage_service.dart';
 import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Tax Documents Page
 ///
@@ -96,12 +99,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
 
   Future<void> _downloadDocument(TaxDocument document) async {
     if (document.documentUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Document not yet available'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
+      context.showWarning('Document not yet available');
       return;
     }
 
@@ -113,12 +111,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error opening document: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error opening document: $e');
       }
     }
   }
@@ -141,33 +134,36 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                     children: [
                       const Icon(Icons.error_outline,
                           size: 64, color: AppColors.error),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       Text(
                         _error!,
-                        style: const TextStyle(color: AppColors.error),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.error),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       ElevatedButton(
                         onPressed: _loadData,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(context.spacing.lg),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Earnings Summary
                         _buildEarningsSummary(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Tax Year Selector
                         _buildYearSelector(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Documents List
                         _buildDocumentsList(),
@@ -181,60 +177,53 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
   Widget _buildEarningsSummary() {
     final needsDocs = _currentYearEarnings >= 600.0;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '$_selectedYear Earnings Summary',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Total Earnings',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       '\$${_currentYearEarnings.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: needsDocs
-                      ? AppTheme.primaryColor.withValues(alpha: 0.1)
-                      : AppColors.electricGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
+              Chip(
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                side: BorderSide.none,
+                backgroundColor: needsDocs
+                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                    : AppColors.electricGreen.withValues(alpha: 0.1),
+                label: Row(
                   children: [
                     Icon(
                       needsDocs ? Icons.info : Icons.check_circle,
@@ -243,16 +232,15 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                           ? AppTheme.primaryColor
                           : AppColors.electricGreen,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: context.spacing.xxs),
                     Text(
                       needsDocs ? 'Tax Docs Required' : 'Below Threshold',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: needsDocs
-                            ? AppTheme.primaryColor
-                            : AppColors.electricGreen,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: needsDocs
+                                ? AppTheme.primaryColor
+                                : AppColors.electricGreen,
+                          ),
                     ),
                   ],
                 ),
@@ -260,24 +248,22 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
             ],
           ),
           if (needsDocs && !(_taxProfile?.w9Submitted ?? false)) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.warningColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
+            SizedBox(height: context.spacing.md),
+            PortalSurface(
+              padding: EdgeInsets.all(context.spacing.sm),
+              color: AppTheme.warningColor.withValues(alpha: 0.1),
+              borderColor: AppTheme.warningColor.withValues(alpha: 0.3),
+              radius: context.radius.sm,
+              child: Row(
                 children: [
                   Icon(Icons.warning, color: AppTheme.warningColor, size: 20),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'W-9 form required to generate tax documents',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -293,22 +279,19 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Tax Year',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.grey300),
-          ),
+        SizedBox(height: context.spacing.sm),
+        PortalSurface(
+          padding: EdgeInsets.symmetric(horizontal: context.spacing.md),
+          color: AppColors.surface,
+          borderColor: AppColors.grey300,
+          radius: context.radius.sm,
           child: DropdownButton<int>(
             value: _selectedYear,
             isExpanded: true,
@@ -319,7 +302,10 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 value: year,
                 child: Text(
                   year.toString(),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
               );
             }),
@@ -340,29 +326,27 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
   Widget _buildDocumentsList() {
     if (_documents.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(context.spacing.xxl),
         child: Column(
           children: [
             const Icon(Icons.description,
                 size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               'No tax documents for $_selectedYear',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Text(
               _currentYearEarnings < 600.0
                   ? 'Earnings are below the \$600 threshold. No tax documents required.'
                   : 'Tax documents will be generated after W-9 submission.',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -373,15 +357,14 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Tax Documents',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing.sm),
         ..._documents.map((document) {
           return _buildDocumentCard(document);
         }),
@@ -390,14 +373,12 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
   }
 
   Widget _buildDocumentCard(TaxDocument document) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      margin: EdgeInsets.only(bottom: context.spacing.sm),
+      padding: EdgeInsets.all(context.spacing.md),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -408,25 +389,23 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 color: AppTheme.primaryColor,
                 size: 24,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _getFormTypeDisplayName(document.formType),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     Text(
                       'Tax Year ${document.taxYear}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
@@ -434,27 +413,25 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
               _buildStatusBadge(document.status),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Earnings',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     Text(
                       '\$${document.totalEarnings.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
@@ -463,7 +440,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
                 OutlinedButton.icon(
                   onPressed: () => _downloadDocument(document),
                   icon: const Icon(Icons.download),
-                  label: const Text('Download'),
+                  label: Text('Download'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.primaryColor,
                     side: const BorderSide(color: AppTheme.primaryColor),
@@ -503,19 +480,17 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      side: BorderSide.none,
+      backgroundColor: badgeColor.withValues(alpha: 0.1),
+      label: Text(
         badgeText,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: badgeColor,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: badgeColor,
+            ),
       ),
     );
   }

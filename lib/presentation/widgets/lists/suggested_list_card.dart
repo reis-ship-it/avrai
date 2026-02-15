@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/ai/perpetual_list/models/models.dart';
 
@@ -16,17 +17,17 @@ import 'package:avrai/core/ai/perpetual_list/models/models.dart';
 class SuggestedListCard extends StatelessWidget {
   /// Quality score threshold for high quality (green indicator)
   static const double highQualityThreshold = 0.7;
-  
+
   /// Quality score threshold for medium quality (orange indicator)
   static const double mediumQualityThreshold = 0.5;
-  
+
   final SuggestedList suggestedList;
   final VoidCallback? onTap;
   final VoidCallback? onDismiss;
   final VoidCallback? onSave;
   final VoidCallback? onWhyThisList;
   final VoidCallback? onPin;
-  
+
   /// Whether to show confirmation dialog before dismissing
   final bool confirmDismiss;
 
@@ -76,7 +77,7 @@ class SuggestedListCard extends StatelessWidget {
         alignment: Alignment.centerRight,
       ),
       child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: kSpaceSm),
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -85,7 +86,7 @@ class SuggestedListCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(kSpaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -152,8 +153,8 @@ class SuggestedListCard extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: kSpaceXs,
+                        vertical: kSpaceXxs,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.primaryContainer,
@@ -186,9 +187,10 @@ class SuggestedListCard extends StatelessWidget {
                       TextButton.icon(
                         onPressed: onWhyThisList,
                         icon: const Icon(Icons.info_outline, size: 16),
-                        label: const Text('Why?'),
+                        label: Text('Why?'),
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: kSpaceXs),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -207,7 +209,8 @@ class SuggestedListCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+          horizontal: kSpaceXsTight, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: colorScheme.tertiaryContainer,
         borderRadius: BorderRadius.circular(8),
@@ -237,7 +240,8 @@ class SuggestedListCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceXs, vertical: kSpaceXxs),
       decoration: BoxDecoration(
         color: colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(8),
@@ -295,29 +299,30 @@ class SuggestedListCard extends StatelessWidget {
       ],
     );
   }
-  
+
   /// Show confirmation dialog before dismissing
   Future<bool> _showDismissConfirmation(BuildContext context) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Dismiss this list?'),
-        content: Text(
-          'Are you sure you want to dismiss "${suggestedList.title}"? '
-          'You can find similar suggestions in your preferences.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Dismiss this list?'),
+            content: Text(
+              'Are you sure you want to dismiss "${suggestedList.title}"? '
+              'You can find similar suggestions in your preferences.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Dismiss'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Dismiss'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   Widget _buildDismissBackground(
@@ -328,7 +333,7 @@ class SuggestedListCard extends StatelessWidget {
   }) {
     return Container(
       alignment: alignment,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: kSpaceMdWide),
       color: color.withValues(alpha: 0.1),
       child: Icon(icon, color: color),
     );

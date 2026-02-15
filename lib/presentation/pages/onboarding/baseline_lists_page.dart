@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:avrai/core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai/core/services/onboarding/onboarding_suggestion_event_store.dart';
@@ -165,8 +166,11 @@ class _BaselineListsPageState extends State<BaselineListsPage>
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -181,14 +185,10 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                     AnimatedBuilder(
                       animation: _loadingAnimation,
                       builder: (context, child) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          child: const Icon(
+                        return CircleAvatar(
+                          radius: 40,
+                          backgroundColor: AppTheme.primaryColor,
+                          child: Icon(
                             Icons.psychology,
                             color: AppColors.white,
                             size: 40,
@@ -196,45 +196,43 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                         );
                       },
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: spacing.xl),
                     Text(
                       'Creating your personalized lists...',
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
-                              ),
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryColor,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: spacing.md),
                     Text(
                       'We\'re setting up smart lists based on your preferences. The background AI will continue optimizing these for you.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.grey600,
-                          ),
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: AppColors.grey600,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: spacing.xs),
                     Text(
                       'You can start exploring immediately!',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.grey500,
-                            fontStyle: FontStyle.italic,
-                          ),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.grey500,
+                        fontStyle: FontStyle.italic,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: spacing.lg),
                     // Progress dots
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(3, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            shape: BoxShape.circle,
+                        return Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: spacing.xxs),
+                          child: CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppTheme.primaryColor,
                           ),
                         );
                       }),
@@ -247,19 +245,19 @@ class _BaselineListsPageState extends State<BaselineListsPage>
             // Results state
             Text(
               'Your Smart Lists',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryColor,
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: spacing.xs),
             Text(
               'We\'ve created these lists based on your preferences. The background AI will continue optimizing them for you.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+              style: textTheme.bodyLarge?.copyWith(
+                color: AppColors.grey600,
+              ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Lists intro
             PortalSurface(
@@ -272,26 +270,24 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                     color: AppTheme.primaryColor,
                     size: 24,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: spacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Welcome to Lists!',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.primaryColor,
-                                  ),
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryColor,
+                          ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: spacing.xxs),
                         Text(
                           'Lists help you organize and discover amazing spots. The background AI will continuously improve your suggestions.',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AppColors.grey700,
-                                  ),
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.grey700,
+                          ),
                         ),
                       ],
                     ),
@@ -299,7 +295,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Generated lists
             Expanded(
@@ -309,7 +305,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                   final listName = _generatedLists[index];
                   final isSelected = _selectedLists.contains(listName);
                   return PortalSurface(
-                    margin: const EdgeInsets.only(bottom: 12),
+                    margin: EdgeInsets.only(bottom: spacing.sm),
                     padding: EdgeInsets.zero,
                     child: ListTile(
                       onTap: () => _toggleSelected(listName),
@@ -324,12 +320,13 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                       ),
                       title: Text(
                         listName,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       subtitle: Text(
                         _getListDescription(listName),
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: textTheme.bodySmall?.copyWith(
                           color: AppColors.grey600,
                         ),
                       ),

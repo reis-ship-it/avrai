@@ -1,11 +1,11 @@
 /// Standard Error Widget
-/// 
+///
 /// Phase 7, Section 42 (7.4.4): UI Integration Improvements
 /// Agent 2: Frontend & UX Specialist
-/// 
+///
 /// Provides a consistent error display widget across all UI components.
 /// Standardizes error message format, error state displays, and retry mechanisms.
-/// 
+///
 /// Uses AppColors and AppTheme for 100% design token compliance.
 library;
 
@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Standardized error widget for consistent error display across the app
 class StandardErrorWidget extends StatelessWidget {
@@ -21,18 +22,19 @@ class StandardErrorWidget extends StatelessWidget {
     defaultTag: 'SPOTS',
     minimumLevel: LogLevel.info,
   );
+
   /// The error message to display (user-friendly)
   final String message;
-  
+
   /// Optional retry callback - if provided, shows retry button
   final VoidCallback? onRetry;
-  
+
   /// Optional retry label (defaults to "Retry")
   final String? retryLabel;
-  
+
   /// Whether to show the error icon (defaults to true)
   final bool showIcon;
-  
+
   /// Compact mode - smaller padding and text (defaults to false)
   final bool compact;
 
@@ -47,14 +49,15 @@ class StandardErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     // Log error display for monitoring and debugging
     _logger.error(
       'Error displayed: ${message.length > 100 ? "${message.substring(0, 100)}..." : message}',
       tag: _logName,
     );
-    
+
     return Container(
-      padding: EdgeInsets.all(compact ? 12 : 16),
+      padding: EdgeInsets.all(compact ? kSpaceSm : kSpaceMd),
       decoration: BoxDecoration(
         color: AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -81,8 +84,7 @@ class StandardErrorWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   message,
-                  style: TextStyle(
-                    fontSize: compact ? 12 : 14,
+                  style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.error,
                     height: 1.4,
                   ),
@@ -102,8 +104,8 @@ class StandardErrorWidget extends StatelessWidget {
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: AppColors.black,
                   padding: EdgeInsets.symmetric(
-                    horizontal: compact ? 16 : 20,
-                    vertical: compact ? 8 : 12,
+                    horizontal: compact ? kSpaceMd : kSpaceMdWide,
+                    vertical: compact ? kSpaceXs : kSpaceSm,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -122,33 +124,37 @@ class StandardErrorWidget extends StatelessWidget {
     required String message,
     bool showIcon = true,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          if (showIcon) ...[
-            const Icon(
-              Icons.error_outline,
-              size: 16,
-              color: AppColors.error,
-            ),
-            const SizedBox(width: 8),
-          ],
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.error,
-              ),
-            ),
+    return Builder(
+      builder: (context) {
+        final textTheme = Theme.of(context).textTheme;
+        return Container(
+          padding: const EdgeInsets.all(kSpaceSm),
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
-        ],
-      ),
+          child: Row(
+            children: [
+              if (showIcon) ...[
+                const Icon(
+                  Icons.error_outline,
+                  size: 16,
+                  color: AppColors.error,
+                ),
+                const SizedBox(width: 8),
+              ],
+              Expanded(
+                child: Text(
+                  message,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -160,7 +166,7 @@ class StandardErrorWidget extends StatelessWidget {
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(kSpaceLg),
         child: StandardErrorWidget(
           message: message,
           onRetry: onRetry,
@@ -170,4 +176,3 @@ class StandardErrorWidget extends StatelessWidget {
     );
   }
 }
-

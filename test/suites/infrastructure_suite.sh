@@ -11,7 +11,7 @@ flutter test "$@" \
   test/unit/services/supabase_service_test.dart \
   test/unit/services/enhanced_connectivity_service_test.dart \
   test/unit/services/dynamic_threshold_service_test.dart \
-  test/integration/cloud_infrastructure_integration_test.dart \
-  test/integration/supabase_service_integration_test.dart \
-  test/integration/connectivity_integration_test.dart
+  test/integration/infrastructure/cloud_infrastructure_integration_test.dart \
+  test/integration/infrastructure/supabase_service_integration_test.dart \
+  test/integration/infrastructure/connectivity_integration_test.dart
 

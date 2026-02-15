@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/models/user/user.dart' show UserRole;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// God-Mode Admin Login Page
 /// Secure login for admin access with god-mode privileges
@@ -47,12 +51,11 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
       if (authState is Authenticated) {
         if (authState.user.role != UserRole.admin) {
           // User is not an admin - show error and navigate back
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Access denied: Admin privileges required'),
-              backgroundColor: AppColors.error,
-              duration: Duration(seconds: 3),
-            ),
+          FeedbackPresenter.showSnack(
+            context,
+            message: 'Access denied: Admin privileges required',
+            kind: FeedbackKind.error,
+            duration: const Duration(seconds: 3),
           );
           Navigator.of(context).pop();
         }
@@ -136,10 +139,9 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
   }
 
   void _navigateToDashboard() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const GodModeDashboardPage(),
-      ),
+    AppNavigator.replaceBuilder(
+      context,
+      builder: (context) => const GodModeDashboardPage(),
     );
   }
 
@@ -174,7 +176,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
             body: SafeArea(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(kSpaceLg),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -206,7 +208,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                       const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Go Back'),
+                        child: Text('Go Back'),
                       ),
                     ],
                   ),
@@ -232,7 +234,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(kSpaceLg),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
                   child: Form(
@@ -343,13 +345,11 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
 
                         // Error message
                         if (_errorMessage != null) ...[
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.error),
-                            ),
+                          PortalSurface(
+                            padding: const EdgeInsets.all(kSpaceSm),
+                            color: AppColors.error.withValues(alpha: 0.1),
+                            borderColor: AppColors.error,
+                            radius: 8,
                             child: Row(
                               children: [
                                 const Icon(Icons.error_outline,
@@ -358,8 +358,10 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                                 Expanded(
                                   child: Text(
                                     _errorMessage!,
-                                    style:
-                                        const TextStyle(color: AppColors.error),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: AppColors.error),
                                   ),
                                 ),
                               ],
@@ -370,16 +372,14 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
 
                         // Lockout message
                         if (_lockoutRemaining != null) ...[
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.warning.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.warning),
-                            ),
+                          PortalSurface(
+                            padding: const EdgeInsets.all(kSpaceSm),
+                            color: AppColors.warning.withValues(alpha: 0.1),
+                            borderColor: AppColors.warning,
+                            radius: 8,
                             child: Column(
                               children: [
-                                const Row(
+                                Row(
                                   children: [
                                     Icon(Icons.lock_clock,
                                         color: AppColors.warning),
@@ -387,10 +387,13 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                                     Expanded(
                                       child: Text(
                                         'Account locked',
-                                        style: TextStyle(
-                                          color: AppColors.warning,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.warning,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -398,8 +401,10 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                                 const SizedBox(height: 4),
                                 Text(
                                   'Try again in ${_lockoutRemaining!.inMinutes} minutes',
-                                  style:
-                                      const TextStyle(color: AppColors.warning),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: AppColors.warning),
                                 ),
                               ],
                             ),
@@ -412,10 +417,12 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                             _remainingAttempts! > 0) ...[
                           Text(
                             '$_remainingAttempts attempt${_remainingAttempts! > 1 ? 's' : ''} remaining',
-                            style: const TextStyle(
-                              color: AppColors.warning,
-                              fontSize: 12,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.warning,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
@@ -429,7 +436,8 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryColor,
                             foregroundColor: AppColors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: kSpaceMd),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -444,12 +452,14 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
                                         AppColors.white),
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   'Login',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                         ),
                         const SizedBox(height: 24),

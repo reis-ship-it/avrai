@@ -14,5 +14,5 @@ flutter test "$@" \
   test/unit/services/legal_document_service_test.dart \
   test/security/ \
   test/compliance/ \
-  test/integration/security_integration_test.dart
+  test/integration/security/security_integration_test.dart
 

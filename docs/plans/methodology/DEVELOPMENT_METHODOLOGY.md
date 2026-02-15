@@ -121,6 +121,13 @@ grep("${Topic}", path: "docs/", output_mode: "files_with_matches")
    # What's already in progress?
    ```
 
+5. **Coherence Gate Contract (for cross-system scope)**
+   ```bash
+   read_file('docs/plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md')
+   # Which RCM scenario IDs apply?
+   # What evidence/no-go gates apply?
+   ```
+
 **See detailed instructions in: [Cross-Referencing & Context Gathering](#cross-referencing--context-gathering)**
 
 #### Step 4: Search for Existing Work (5 minutes)
@@ -2140,4 +2147,3 @@ Follow this methodology, and you'll consistently deliver high-quality features o
 **Last Updated:** November 21, 2025  
 **Based On:** SPOTS Feature Matrix Implementation  
 **Status:** Living Document (update as methodology evolves)
-

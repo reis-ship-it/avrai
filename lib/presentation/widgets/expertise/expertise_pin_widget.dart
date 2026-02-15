@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/expertise/expertise_pin.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Expertise Pin Widget
 /// Displays a visual pin representing user expertise
@@ -19,13 +20,17 @@ class ExpertisePinWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     final pinColor = pin.getPinColor();
     final pinIcon = pin.getPinIcon();
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.sm,
+          vertical: spacing.xs,
+        ),
         decoration: BoxDecoration(
           color: pinColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
@@ -39,7 +44,7 @@ class ExpertisePinWidget extends StatelessWidget {
           children: [
             // Pin Icon
             Container(
-              padding: const EdgeInsets.all(6),
+              padding: EdgeInsets.all(spacing.xxs),
               decoration: BoxDecoration(
                 color: pinColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
@@ -58,11 +63,10 @@ class ExpertisePinWidget extends StatelessWidget {
               children: [
                 Text(
                   pin.category,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 if (showDetails) ...[
                   const SizedBox(height: 2),
@@ -71,24 +75,23 @@ class ExpertisePinWidget extends StatelessWidget {
                     children: [
                       Text(
                         pin.level.emoji,
-                        style: const TextStyle(fontSize: 10),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${pin.level.displayName} Level',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                       if (pin.location != null) ...[
                         const SizedBox(width: 4),
                         Text(
                           '• ${pin.location}',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ],
@@ -133,14 +136,18 @@ class ExpertisePinGallery extends StatelessWidget {
       children: [
         ...displayPins.map((pin) => ExpertisePinWidget(pin: pin)),
         if (expandable && pins.length > maxDisplay)
-          _buildMorePinsChip(pins.length - maxDisplay),
+          _buildMorePinsChip(context, pins.length - maxDisplay),
       ],
     );
   }
 
-  Widget _buildMorePinsChip(int count) {
+  Widget _buildMorePinsChip(BuildContext context, int count) {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.sm,
+        vertical: spacing.xs,
+      ),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(20),
@@ -148,10 +155,9 @@ class ExpertisePinGallery extends StatelessWidget {
       ),
       child: Text(
         '+$count more',
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
       ),
     );
   }
@@ -169,13 +175,14 @@ class ExpertisePinDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     final pinColor = pin.getPinColor();
     final pinIcon = pin.getPinIcon();
 
     return Card(
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -183,7 +190,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(spacing.sm),
                   decoration: BoxDecoration(
                     color: pinColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
@@ -201,18 +208,16 @@ class ExpertisePinDetailCard extends StatelessWidget {
                     children: [
                       Text(
                         pin.category,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         pin.getFullDescription(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -221,19 +226,20 @@ class ExpertisePinDetailCard extends StatelessWidget {
             ),
             const Divider(height: 32),
             // Details
-            _buildDetailRow('Earned', pin.earnedAt.toString().split(' ')[0]),
-            _buildDetailRow('Reason', pin.earnedReason),
+            _buildDetailRow(
+                context, 'Earned', pin.earnedAt.toString().split(' ')[0]),
+            _buildDetailRow(context, 'Reason', pin.earnedReason),
             if (pin.contributionCount > 0)
-              _buildDetailRow('Contributions', '${pin.contributionCount}'),
+              _buildDetailRow(
+                  context, 'Contributions', '${pin.contributionCount}'),
             if (pin.unlockedFeatures.isNotEmpty) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Unlocked Features:',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
               ),
               const SizedBox(height: 4),
               Wrap(
@@ -243,7 +249,7 @@ class ExpertisePinDetailCard extends StatelessWidget {
                   return Chip(
                     label: Text(
                       feature.replaceAll('_', ' ').toUpperCase(),
-                      style: const TextStyle(fontSize: 10),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     backgroundColor: AppColors.grey100,
                     side: const BorderSide(color: AppColors.grey300),
@@ -257,9 +263,9 @@ class ExpertisePinDetailCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: context.spacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -267,19 +273,17 @@ class ExpertisePinDetailCard extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
         ],
@@ -287,4 +291,3 @@ class ExpertisePinDetailCard extends StatelessWidget {
     );
   }
 }
-

@@ -10,12 +10,14 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Page for configuring device discovery settings
 class DiscoverySettingsPage extends StatefulWidget {
@@ -88,23 +90,17 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings saved successfully'),
-            backgroundColor: AppColors.electricGreen,
-            duration: Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Settings saved successfully',
+          kind: FeedbackKind.success,
+          duration: const Duration(seconds: 2),
         );
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving settings: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error saving settings: $e');
       }
     }
   }
@@ -153,48 +149,44 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Device Discovery Configuration',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Configure how often avrai scans for nearby devices and how long to keep discovered devices in the list.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               const SizedBox(height: 24),
               PortalSurface(
                 radius: 12,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Scan Interval',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'How often to scan for nearby devices (in seconds)',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -212,13 +204,12 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                       validator: _validateScanInterval,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Recommended: 5-10 seconds for active discovery',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textHint,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textHint,
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                   ],
                 ),
@@ -226,25 +217,23 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               const SizedBox(height: 16),
               PortalSurface(
                 radius: 12,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Device Timeout',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'How long to keep discovered devices before removing them (in minutes)',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -262,13 +251,12 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                       validator: _validateDeviceTimeout,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Recommended: 2-5 minutes to balance freshness and stability',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textHint,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textHint,
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                   ],
                 ),
@@ -281,17 +269,16 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.electricGreen,
                     foregroundColor: AppColors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Save',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
               ),

@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/ai_infrastructure/ai2ai_learning_service.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget displaying AI2AI learning recommendations
 class AI2AILearningRecommendationsWidget extends StatefulWidget {
@@ -79,10 +81,10 @@ class _AI2AILearningRecommendationsWidgetState
     if (_isLoading) {
       return Semantics(
         label: 'Loading learning recommendations',
-        child: const Card(
-          margin: EdgeInsets.only(bottom: 16),
+        child: Card(
+          margin: EdgeInsets.only(bottom: context.spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(context.spacing.xl),
             child: Center(
               child: CircularProgressIndicator(),
             ),
@@ -95,29 +97,28 @@ class _AI2AILearningRecommendationsWidgetState
       return Semantics(
         label: 'Error loading recommendations',
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: context.spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(context.spacing.md),
             child: Column(
               children: [
-                const Icon(
+                Icon(
                   Icons.error_outline,
                   color: AppColors.error,
                   size: 32,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextButton(
                   onPressed: _loadRecommendations,
-                  child: const Text('Retry'),
+                  child: Text('Retry'),
                 ),
               ],
             ),
@@ -127,7 +128,7 @@ class _AI2AILearningRecommendationsWidgetState
     }
 
     if (_recommendations == null) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Semantics(
@@ -137,80 +138,78 @@ class _AI2AILearningRecommendationsWidgetState
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: context.spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(context.spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(context.spacing.xs),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.recommend,
                       color: AppColors.primary,
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Text(
                       'Learning Recommendations',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ),
                   if (_recommendations!.confidenceScore > 0)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: kSpaceXs, vertical: kSpaceXxs),
                       decoration: BoxDecoration(
                         color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${(_recommendations!.confidenceScore * 100).toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.success,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.success,
+                            ),
                       ),
                     ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Optimal Partners
               if (_recommendations!.optimalPartners.isNotEmpty) ...[
                 _buildSectionTitle('Optimal Learning Partners'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ..._recommendations!.optimalPartners
                     .map((partner) => _buildPartnerCard(partner)),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
 
               // Learning Topics
               if (_recommendations!.learningTopics.isNotEmpty) ...[
                 _buildSectionTitle('Learning Topics'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ..._recommendations!.learningTopics
                     .map((topic) => _buildTopicCard(topic)),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
 
               // Development Areas
               if (_recommendations!.developmentAreas.isNotEmpty) ...[
                 _buildSectionTitle('Development Areas'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ..._recommendations!.developmentAreas
                     .map((area) => _buildDevelopmentAreaCard(area)),
               ],
@@ -230,18 +229,17 @@ class _AI2AILearningRecommendationsWidgetState
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
-      ),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
     );
   }
 
   Widget _buildPartnerCard(OptimalPartner partner) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -253,49 +251,46 @@ class _AI2AILearningRecommendationsWidgetState
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(context.spacing.xs),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.person_outline,
               color: AppColors.primary,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   partner.archetype,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 LinearProgressIndicator(
                   value: partner.compatibility,
                   backgroundColor: AppColors.grey200,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                   minHeight: 4,
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
             '${(partner.compatibility * 100).toStringAsFixed(0)}%',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
           ),
         ],
       ),
@@ -304,8 +299,8 @@ class _AI2AILearningRecommendationsWidgetState
 
   Widget _buildTopicCard(LearningTopic topic) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -317,49 +312,46 @@ class _AI2AILearningRecommendationsWidgetState
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(context.spacing.xs),
             decoration: BoxDecoration(
               color: AppColors.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.topic,
               color: AppColors.success,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   topic.topic,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 LinearProgressIndicator(
                   value: topic.potential,
                   backgroundColor: AppColors.grey200,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.success),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
                   minHeight: 4,
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
             '${(topic.potential * 100).toStringAsFixed(0)}%',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.success,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.success,
+                ),
           ),
         ],
       ),
@@ -368,8 +360,8 @@ class _AI2AILearningRecommendationsWidgetState
 
   Widget _buildDevelopmentAreaCard(DevelopmentArea area) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: context.spacing.xs),
+      padding: EdgeInsets.all(context.spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(8),
@@ -381,49 +373,46 @@ class _AI2AILearningRecommendationsWidgetState
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(context.spacing.xs),
             decoration: BoxDecoration(
               color: AppColors.warning.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.trending_up,
               color: AppColors.warning,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   area.area,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 LinearProgressIndicator(
                   value: area.priority,
                   backgroundColor: AppColors.grey200,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.warning),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.warning),
                   minHeight: 4,
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
             '${(area.priority * 100).toStringAsFixed(0)}%',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.warning,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.warning,
+                ),
           ),
         ],
       ),
@@ -431,8 +420,8 @@ class _AI2AILearningRecommendationsWidgetState
   }
 
   Widget _buildEmptyState() {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
+    return Padding(
+      padding: EdgeInsets.all(context.spacing.md),
       child: Center(
         child: Column(
           children: [
@@ -444,18 +433,16 @@ class _AI2AILearningRecommendationsWidgetState
             SizedBox(height: 8),
             Text(
               'No recommendations yet',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             SizedBox(height: 4),
             Text(
               'Start AI2AI connections to get personalized recommendations',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textHint,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textHint,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],

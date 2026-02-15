@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
 import 'package:avrai/core/models/business/brand_discovery.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart'
     show AuthBloc, Authenticated;
 import 'package:avrai/presentation/widgets/brand/sponsorable_event_card.dart';
@@ -112,12 +115,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading events: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading events: $e');
       }
     }
   }
@@ -152,12 +150,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error searching events: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error searching events: $e');
       }
     }
   }
@@ -206,7 +199,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
       appBarElevation: 0,
       constrainBody: false,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +228,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       color: AppColors.surface,
       child: TextField(
         controller: _searchController,
@@ -265,7 +258,8 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
 
   Widget _buildFilters() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+          horizontal: kSpaceMdWide, vertical: kSpaceSm),
       color: AppColors.surface,
       child: Row(
         children: [
@@ -274,9 +268,12 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               onPressed: () => _showFilterDialog(),
               icon: const Icon(Icons.filter_list,
                   size: 18, color: AppColors.textSecondary),
-              label: const Text(
+              label: Text(
                 'Filters',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.grey300),
@@ -290,7 +287,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Search'),
+            child: Text('Search'),
           ),
         ],
       ),
@@ -302,41 +299,42 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(kSpaceMdWide),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   '🌟 Recommended for ${_currentBrand?.name ?? "Your Brand"}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+              Chip(
+                side: BorderSide.none,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: const VisualDensity(
+                  horizontal: -4,
+                  vertical: -4,
                 ),
-                child: Text(
+                backgroundColor: AppColors.electricGreen.withValues(alpha: 0.1),
+                label: Text(
                   '${_recommendedMatches.length} matches',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.electricGreen,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.electricGreen,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             ],
           ),
         ),
         ..._recommendedMatches.map((match) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceMdWide, vertical: kSpaceXs),
               child: SponsorableEventCard(
                 brandMatch: match,
                 onTap: () => _viewEventDetails(match),
@@ -351,19 +349,19 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(20),
+        Padding(
+          padding: EdgeInsets.all(kSpaceMdWide),
           child: Text(
             'Search Results',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
         ),
         ..._searchMatches.map((match) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceMdWide, vertical: kSpaceXs),
               child: SponsorableEventCard(
                 brandMatch: match,
                 onTap: () => _viewEventDetails(match),
@@ -376,7 +374,7 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
 
   Widget _buildEmptyState() {
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(kSpaceXl),
       child: Center(
         child: Column(
           children: [
@@ -386,21 +384,19 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No events found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Try adjusting your search or filters',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -428,12 +424,10 @@ class _BrandDiscoveryPageState extends State<BrandDiscoveryPage> {
       // Load event and navigate to sponsorship checkout
       _eventService.getEventById(eventId).then((event) {
         if (event != null && mounted) {
-          Navigator.push(
+          AppNavigator.pushBuilder(
             context,
-            MaterialPageRoute(
-              builder: (context) => SponsorshipCheckoutPage(
-                event: event,
-              ),
+            builder: (context) => SponsorshipCheckoutPage(
+              event: event,
             ),
           );
         }

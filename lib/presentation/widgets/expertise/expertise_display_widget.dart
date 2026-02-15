@@ -6,13 +6,14 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/expertise/locality_threshold_widget.dart';
 import 'package:go_router/go_router.dart';
 
 /// Expertise Display Widget
 /// Displays user's expertise levels and category expertise
 /// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
-/// 
+///
 /// **Usage Example:**
 /// ```dart
 /// ExpertiseDisplayWidget(
@@ -76,10 +77,11 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
@@ -89,7 +91,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.stars,
@@ -99,16 +101,15 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
                 SizedBox(width: 8),
                 Text(
                   'Your Expertise',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Content
             if (_isLoading)
               _buildLoadingState()
@@ -123,22 +124,24 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    final spacing = context.spacing;
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(spacing.lg),
         child: CircularProgressIndicator(),
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final spacing = context.spacing;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(spacing.md),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.info_outline,
@@ -149,10 +152,9 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           Expanded(
             child: Text(
               'Start contributing to earn expertise pins!',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -183,16 +185,16 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         // Expertise Levels Summary
         _buildLevelsSummary(levelGroups, displayLevels),
         const SizedBox(height: 16),
-        
+
         // Category Expertise
         _buildCategoryExpertise(),
-        
+
         // Locality Threshold Indicators (Week 25)
         _buildLocalityThresholdIndicators(),
-        
+
         // Partnership Boost Indicator (Phase 4.5)
         _buildPartnershipBoostIndicator(),
-        
+
         // Progress Indicators (if enabled)
         if (widget.showProgress) ...[
           const SizedBox(height: 16),
@@ -209,13 +211,12 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Expertise Levels',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -231,10 +232,14 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
   }
 
   Widget _buildLevelBadge(ExpertiseLevel level, int count) {
+    final spacing = context.spacing;
     final hasLevel = count > 0;
-    
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.sm,
+        vertical: spacing.xs,
+      ),
       decoration: BoxDecoration(
         color: hasLevel
             ? AppTheme.primaryColor.withValues(alpha: 0.1)
@@ -252,32 +257,35 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         children: [
           Text(
             level.emoji,
-            style: const TextStyle(fontSize: 14),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(width: 6),
           Text(
             level.displayName,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: hasLevel ? FontWeight.w600 : FontWeight.w400,
-              color: hasLevel ? AppColors.textPrimary : AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: hasLevel ? FontWeight.w600 : FontWeight.w400,
+                  color: hasLevel
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
+                ),
           ),
           if (hasLevel && count > 0) ...[
             const SizedBox(width: 4),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: EdgeInsets.symmetric(
+                horizontal: spacing.xs,
+                vertical: spacing.xxs,
+              ),
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 '$count',
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    ),
               ),
             ),
           ],
@@ -298,17 +306,16 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Category Expertise',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 8),
         ...sortedPins.map((pin) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: context.spacing.xs),
               child: _buildCategoryPin(pin),
             )),
       ],
@@ -316,10 +323,11 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
   }
 
   Widget _buildCategoryPin(ExpertisePin pin) {
+    final spacing = context.spacing;
     final pinColor = pin.getPinColor();
-    
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing.sm),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -329,7 +337,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         children: [
           // Pin Icon
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(spacing.xs),
             decoration: BoxDecoration(
               color: pinColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -348,35 +356,32 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               children: [
                 Text(
                   pin.category,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
                       pin.level.emoji,
-                      style: const TextStyle(fontSize: 12),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${pin.level.displayName} Level',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                     if (pin.location != null) ...[
                       const SizedBox(width: 8),
                       Text(
                         '• ${pin.location}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ],
@@ -386,7 +391,10 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           ),
           // Level Badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.sm,
+              vertical: spacing.xs,
+            ),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -396,11 +404,10 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
             ),
             child: Text(
               pin.level.displayName,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.primaryColor,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryColor,
+                  ),
             ),
           ),
         ],
@@ -414,10 +421,12 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     }
 
     // Show locality thresholds for Local level expertise (or below)
-    final localPins = _pins!.where((pin) => 
-      pin.level == ExpertiseLevel.local || 
-      (pin.location != null && pin.level.index < ExpertiseLevel.city.index)
-    ).toList();
+    final localPins = _pins!
+        .where((pin) =>
+            pin.level == ExpertiseLevel.local ||
+            (pin.location != null &&
+                pin.level.index < ExpertiseLevel.city.index))
+        .toList();
 
     if (localPins.isEmpty) {
       return const SizedBox.shrink();
@@ -473,19 +482,18 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Progress to Next Level',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
         const SizedBox(height: 8),
         ..._pins!.take(3).map((pin) {
           // Calculate progress (simplified - in real implementation, get from service)
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: context.spacing.xs),
             child: _buildProgressBar(pin),
           );
         }),
@@ -507,28 +515,25 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
           children: [
             Text(
               pin.category,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             if (nextLevel != null)
               Text(
                 '→ ${nextLevel.displayName}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               )
             else
-              const Text(
+              Text(
                 'Max Level',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
           ],
         ),
@@ -539,16 +544,16 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
             value: progressPercentage / 100.0,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor:
+                const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
           ),
         ),
         const SizedBox(height: 2),
         Text(
           '${progressPercentage.toStringAsFixed(0)}%',
-          style: const TextStyle(
-            fontSize: 10,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -567,15 +572,18 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         final data = snapshot.data ?? {};
         final totalBoost = (data['totalBoost'] as num?)?.toDouble() ?? 0.0;
         final activePartnerships = (data['activePartnerships'] as int?) ?? 0;
-        final completedPartnerships = (data['completedPartnerships'] as int?) ?? 0;
+        final completedPartnerships =
+            (data['completedPartnerships'] as int?) ?? 0;
 
-        if (totalBoost <= 0 && activePartnerships == 0 && completedPartnerships == 0) {
+        if (totalBoost <= 0 &&
+            activePartnerships == 0 &&
+            completedPartnerships == 0) {
           return const SizedBox.shrink();
         }
 
         return Container(
-          margin: const EdgeInsets.only(top: 16),
-          padding: const EdgeInsets.all(12),
+          margin: EdgeInsets.only(top: context.spacing.md),
+          padding: EdgeInsets.all(context.spacing.sm),
           decoration: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -594,11 +602,10 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               Expanded(
                 child: Text(
                   '+${(totalBoost * 100).toStringAsFixed(1)}% from partnerships',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
               TextButton(
@@ -606,16 +613,18 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
                   context.go('/profile/partnerships');
                 },
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.spacing.xs,
+                    vertical: context.spacing.xxs,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text(
+                child: Text(
                   'View',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
             ],
@@ -641,7 +650,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
     //   'activePartnerships': partnerships.where((p) => p.isActive).length,
     //   'completedPartnerships': partnerships.where((p) => p.isCompleted).length,
     // };
-    
+
     // For now, return empty data
     return {
       'totalBoost': 0.0,

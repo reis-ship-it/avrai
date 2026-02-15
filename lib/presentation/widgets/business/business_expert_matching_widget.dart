@@ -5,6 +5,7 @@ import 'package:avrai/core/services/business/business_expert_matching_service.da
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Expert Matching Widget
 /// Displays expert matches for a business account
@@ -26,18 +27,22 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
       future: _getMatches(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
           return Center(
             child: Column(
               children: [
-                const Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                const Icon(Icons.error_outline,
+                    size: 64, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text(
                   'Error: ${snapshot.error}',
-                  style: const TextStyle(color: AppColors.error),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.error),
                 ),
               ],
             ),
@@ -45,17 +50,17 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
         }
 
         final matches = snapshot.data ?? [];
-        
+
         if (matches.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(context);
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(matches.length),
+            _buildHeader(context, matches.length),
             const SizedBox(height: 8),
-            _buildMatchesList(matches),
+            _buildMatchesList(context, matches),
           ],
         );
       },
@@ -78,55 +83,52 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
     return await service.findExpertsForBusiness(business);
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildHeader(BuildContext context, int count) {
     return Row(
       children: [
-        const Text(
+        Text(
           'Expert Matches',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceXs, vertical: kSpaceNano),
           decoration: BoxDecoration(
             color: AppColors.grey200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             '$count',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
       child: Column(
         children: [
           Icon(Icons.people_outline, size: 64, color: AppColors.textSecondary),
           SizedBox(height: 16),
           Text(
             'No expert matches found',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Try updating your required expertise or preferred communities',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -134,31 +136,32 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchesList(List<BusinessExpertMatch> matches) {
+  Widget _buildMatchesList(
+      BuildContext context, List<BusinessExpertMatch> matches) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: matches.length,
       itemBuilder: (context, index) {
-        return _buildMatchCard(matches[index]);
+        return _buildMatchCard(context, matches[index]);
       },
     );
   }
 
-  Widget _buildMatchCard(BusinessExpertMatch match) {
+  Widget _buildMatchCard(BuildContext context, BusinessExpertMatch match) {
     final expert = match.expert;
     final matchTypeIcon = _getMatchTypeIcon(match.matchType);
     final matchTypeColor = _getMatchTypeColor(match.matchType);
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: InkWell(
         onTap: () {
           onExpertSelected?.call(expert);
           onMatchSelected?.call(match);
         },
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(kSpaceSm),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -177,11 +180,15 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                             ),
                           )
                         : Text(
-                            (expert.displayName ?? expert.email)[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            (expert.displayName ?? expert.email)[0]
+                                .toUpperCase(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                   ),
                   const SizedBox(width: 12),
@@ -191,10 +198,10 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                       children: [
                         Text(
                           expert.displayName ?? expert.email,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (expert.location != null) ...[
                           const SizedBox(height: 4),
@@ -208,10 +215,12 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 expert.location!,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                             ],
                           ),
@@ -220,7 +229,8 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kSpaceXs, vertical: kSpaceXxs),
                     decoration: BoxDecoration(
                       color: matchTypeColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -232,11 +242,11 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${(match.matchScore * 100).toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: matchTypeColor,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: matchTypeColor,
+                                  ),
                         ),
                       ],
                     ),
@@ -246,10 +256,9 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 match.matchReason,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
               if (match.matchedCategories.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -258,18 +267,18 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                   runSpacing: 4,
                   children: match.matchedCategories.map((category) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kSpaceXs, vertical: kSpaceXxs),
                       decoration: BoxDecoration(
                         color: AppColors.electricGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         category,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.electricGreen,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.electricGreen,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     );
                   }).toList(),
@@ -288,11 +297,10 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${match.matchedCommunities.length} community match${match.matchedCommunities.length > 1 ? 'es' : ''}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                   ],
@@ -308,7 +316,7 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                       onMatchSelected?.call(match);
                     },
                     icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View Profile'),
+                    label: Text('View Profile'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.electricGreen,
                     ),
@@ -320,7 +328,7 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
                       _requestConnection(match);
                     },
                     icon: const Icon(Icons.person_add, size: 16),
-                    label: const Text('Connect'),
+                    label: Text('Connect'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.electricGreen,
                       foregroundColor: AppColors.white,
@@ -362,4 +370,3 @@ class BusinessExpertMatchingWidget extends StatelessWidget {
     // to request a connection with the expert
   }
 }
-

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
 import 'package:avrai/core/models/sponsorship/sponsorship.dart';
 import 'package:avrai/core/models/payment/product_tracking.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart'
     show AuthBloc, Authenticated;
 import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
@@ -138,12 +141,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading sponsorships: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading sponsorships: $e');
       }
     }
   }
@@ -186,7 +184,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : TabBarView(
               controller: _tabController,
               children: [
@@ -200,7 +198,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: AppColors.white,
         icon: const Icon(Icons.add),
-        label: const Text('New Sponsorship'),
+        label: Text('New Sponsorship'),
       ),
     );
   }
@@ -211,14 +209,14 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(kSpaceMdWide),
       itemCount: sponsorships.length,
       itemBuilder: (context, index) {
         final sponsorship = sponsorships[index];
         final productTracking = _productTrackingMap[sponsorship.id];
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: kSpaceSm),
           child: SponsorshipCard(
             sponsorship: sponsorship,
             productTracking: productTracking,
@@ -241,21 +239,19 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
             color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No sponsorships',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Start sponsoring events to see them here',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -265,7 +261,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Discover Events'),
+            child: Text('Discover Events'),
           ),
         ],
       ),
@@ -273,11 +269,9 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
   }
 
   void _createNewSponsorship() {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => const BrandDiscoveryPage(),
-      ),
+      builder: (context) => const BrandDiscoveryPage(),
     );
   }
 

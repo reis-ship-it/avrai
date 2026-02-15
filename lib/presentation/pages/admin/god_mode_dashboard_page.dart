@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
@@ -16,6 +18,8 @@ import 'package:avrai/presentation/pages/admin/ai_live_map_page.dart';
 import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
 import 'package:avrai/presentation/widgets/admin/admin_federated_rounds_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// God-Mode Admin Dashboard
 /// Comprehensive real-time monitoring and data access
@@ -97,10 +101,9 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
   }
 
   void _navigateToLogin() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const GodModeLoginPage(),
-      ),
+    AppNavigator.replaceBuilder(
+      context,
+      builder: (context) => const GodModeLoginPage(),
     );
   }
 
@@ -108,17 +111,17 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text('Logout'),
+        content: Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Logout'),
+            child: Text('Logout'),
           ),
         ],
       ),
@@ -170,12 +173,11 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('God-Mode Admin'),
+              Text('God-Mode Admin'),
               Text(
                 'Privacy: IDs Only',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withValues(alpha: 0.7),
-                      fontSize: 10,
                     ),
               ),
             ],
@@ -221,12 +223,11 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
             ),
             onPressed: () {
               // Show tooltip with status information
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(_getWarningStatusMessage()),
-                  backgroundColor: _getWarningIconColor(),
-                  duration: const Duration(seconds: 3),
-                ),
+              FeedbackPresenter.showSnack(
+                context,
+                message: _getWarningStatusMessage(),
+                kind: FeedbackKind.warning,
+                duration: const Duration(seconds: 3),
               );
             },
             tooltip: _getWarningTooltip(),
@@ -262,21 +263,21 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
 
   Widget _buildDashboardTab() {
     if (_dashboardData == null) {
-      return const Center(child: Text('No data available'));
+      return Center(child: Text('No data available'));
     }
 
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // System Health Card
-            Card(
+            PortalSurface(
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -370,10 +371,10 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
 
             // Aggregate Privacy Metrics Card
             ...[
-              Card(
+              PortalSurface(
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(kSpaceMd),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -414,14 +415,14 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
                       const SizedBox(height: 8),
                       Text(
                         _dashboardData!.aggregatePrivacyMetrics.scoreLabel,
-                        style: TextStyle(
-                          color: _dashboardData!.aggregatePrivacyMetrics
-                                      .meanOverallPrivacyScore >=
-                                  0.9
-                              ? AppColors.success
-                              : AppColors.warning,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: _dashboardData!.aggregatePrivacyMetrics
+                                          .meanOverallPrivacyScore >=
+                                      0.9
+                                  ? AppColors.success
+                                  : AppColors.warning,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -438,10 +439,10 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
             ],
 
             // Fraud Review Section
-            Card(
+            PortalSurface(
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -462,35 +463,25 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
                     ListTile(
                       leading:
                           const Icon(Icons.event, color: AppTheme.primaryColor),
-                      title: const Text('Event Fraud Review'),
-                      subtitle: const Text('Review flagged events for fraud'),
+                      title: Text('Event Fraud Review'),
+                      subtitle: Text('Review flagged events for fraud'),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () {
                         // Navigate to fraud review list (would need to create)
                         // For now, show a placeholder
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Fraud review list coming soon'),
-                            backgroundColor: AppTheme.warningColor,
-                          ),
-                        );
+                        context.showWarning('Fraud review list coming soon');
                       },
                     ),
                     ListTile(
                       leading: const Icon(Icons.reviews,
                           color: AppTheme.primaryColor),
-                      title: const Text('Review Fraud Review'),
-                      subtitle: const Text('Review flagged feedback for fraud'),
+                      title: Text('Review Fraud Review'),
+                      subtitle: Text('Review flagged feedback for fraud'),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () {
                         // Navigate to review fraud review list (would need to create)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('Review fraud review list coming soon'),
-                            backgroundColor: AppTheme.warningColor,
-                          ),
-                        );
+                        context.showWarning(
+                            'Review fraud review list coming soon');
                       },
                     ),
                   ],
@@ -505,11 +496,11 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
 
   Widget _buildFederatedLearningTab() {
     if (_godModeService == null) {
-      return const Center(child: Text('Service not initialized'));
+      return Center(child: Text('Service not initialized'));
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: AdminFederatedRoundsWidget(
         godModeService: _godModeService!,
       ),
@@ -518,10 +509,10 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
 
   Widget _buildMetricCard(
       String label, String value, IconData icon, Color color) {
-    return Card(
+    return PortalSurface(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

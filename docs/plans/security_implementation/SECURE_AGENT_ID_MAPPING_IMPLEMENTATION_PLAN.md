@@ -929,7 +929,7 @@ class CachedAgentId {
 **Location:** `scripts/migrate_agent_id_mappings.dart`
 
 **Key Design Decisions:**
-- ✅ Phased migration (dual-write during transition)
+- ✅ Phased migration aligned to canonical contract (`docs/plans/architecture/IDENTITY_UNLINKABILITY_AND_ACCESS_GOVERNANCE_CONTRACT.md`): bounded dual-read/dual-write window, parity checks, strict cutoff (no silent fallback)
 - ✅ Verification after migration
 - ✅ Rollback capability
 - ✅ Progress tracking

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,11 +11,14 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'About avrai',
       scrollable: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,138 +26,136 @@ class AboutPage extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundColor: AppTheme.primaryColor,
+                    child: Icon(
                       Icons.place,
                       size: 60,
                       color: AppColors.white,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                   Text(
                     'avrai',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor,
-                        ),
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'know you belong.',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.grey600,
-                          fontStyle: FontStyle.italic,
-                        ),
+                    style: textTheme.titleMedium?.copyWith(
+                      color: AppColors.grey600,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: spacing.xl),
 
             // OUR_GUTS.md Mission
-            const PortalSurface(
+            PortalSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(Icons.favorite, color: AppTheme.primaryColor),
-                      SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Our Mission',
-                        style: TextStyle(
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
-                          fontSize: 18,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   Text(
                     'avrai exists to help people find places, experiences, and communities where they truly feel at home—wherever they are. We believe everyone deserves to know they belong.',
-                    style: TextStyle(
+                    style: textTheme.bodyLarge?.copyWith(
                       color: AppColors.textSecondary,
-                      fontSize: 16,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Core Values
             Text(
               'Our Values',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             _buildValueCard(
+              context,
               'Belonging Comes First',
               'We help you find places where you truly feel at home.',
               Icons.home,
               AppColors.warning,
             ),
             _buildValueCard(
+              context,
               'Privacy & Control',
               'Your data is yours. You control your experience.',
               Icons.privacy_tip,
               AppTheme.successColor,
             ),
             _buildValueCard(
+              context,
               'Authenticity Over Algorithms',
               'Real preferences, not advertising dollars.',
               Icons.psychology,
               AppColors.grey600,
             ),
             _buildValueCard(
+              context,
               'Effortless Discovery',
               'No check-ins, no hassle. Just enjoy the moment.',
               Icons.auto_awesome,
               AppColors.grey600,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // App Information
             Text(
               'App Information',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               child: Column(
                 children: [
-                  _buildInfoRow('Version', '1.0.0'),
-                  _buildInfoRow('Build', '100'),
-                  _buildInfoRow('Release Date', 'August 2025'),
-                  _buildInfoRow('Platform', 'Flutter'),
-                  _buildInfoRow('Architecture', 'AI2AI Learning'),
+                  _buildInfoRow(context, 'Version', '1.0.0'),
+                  _buildInfoRow(context, 'Build', '100'),
+                  _buildInfoRow(context, 'Release Date', 'August 2025'),
+                  _buildInfoRow(context, 'Platform', 'Flutter'),
+                  _buildInfoRow(context, 'Architecture', 'AI2AI Learning'),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Features
             Text(
               'Key Features',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -191,16 +193,16 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Links & Contact
             Text(
               'Connect With Us',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               padding: EdgeInsets.zero,
@@ -243,16 +245,16 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Legal
             Text(
               'Legal',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: spacing.md),
 
             PortalSurface(
               child: Column(
@@ -262,21 +264,21 @@ class AboutPage extends StatelessWidget {
                     '© 2025 avrai Technologies, Inc.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   Text(
                     'All rights reserved. avrai and "know you belong" are trademarks of avrai Technologies, Inc.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                   Text(
                     'Third-Party Licenses',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing.xs),
                   TextButton(
                     onPressed: () => _showLicenses(context),
                     child: const Text('View Open Source Licenses'),
@@ -284,38 +286,37 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing.lg),
 
             // Credits
-            const PortalSurface(
+            PortalSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(Icons.favorite, color: AppTheme.primaryColor),
-                      SizedBox(width: 8),
+                      SizedBox(width: spacing.xs),
                       Text(
                         'Made with ❤️',
-                        style: TextStyle(
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
-                          fontSize: 18,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   Text(
                     'avrai is built with care by a team that believes technology should help people feel more connected to the places and communities around them.',
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   Text(
                     'Thank you for being part of our community! 🌟',
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -329,36 +330,35 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildValueCard(
-      String title, String description, IconData icon, Color color) {
+  Widget _buildValueCard(BuildContext context, String title, String description,
+      IconData icon, Color color) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return PortalSurface(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: spacing.sm),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.grey100,
-              borderRadius: BorderRadius.circular(12),
-            ),
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.grey100,
             child: Icon(icon, color: AppTheme.primaryColor, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: spacing.xxs),
                 Text(
                   description,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -368,14 +368,23 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: spacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(value, style: const TextStyle(color: AppColors.textSecondary)),
+          Text(
+            label,
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+          ),
+          Text(
+            value,
+            style:
+                textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
         ],
       ),
     );
@@ -405,14 +414,10 @@ class AboutPage extends StatelessWidget {
       context: context,
       applicationName: 'avrai',
       applicationVersion: '1.0.0',
-      applicationIcon: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppTheme.primaryColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(
+      applicationIcon: const CircleAvatar(
+        radius: 24,
+        backgroundColor: AppTheme.primaryColor,
+        child: Icon(
           Icons.place,
           color: AppColors.white,
           size: 32,

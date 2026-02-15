@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Pricing Display Widget
 ///
@@ -50,22 +51,22 @@ class PricingDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     if (isFree && depositAmount == null) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         decoration: BoxDecoration(
           color: AppTheme.successColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppTheme.successColor),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(Icons.check_circle, color: AppTheme.successColor),
             SizedBox(width: 8),
             Text(
               'Free Reservation',
-              style: TextStyle(
-                fontSize: 16,
+              style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppTheme.successColor,
               ),
@@ -76,7 +77,7 @@ class PricingDisplayWidget extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: AppColors.grey50,
         borderRadius: BorderRadius.circular(8),
@@ -85,10 +86,9 @@ class PricingDisplayWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Pricing Breakdown',
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -96,11 +96,13 @@ class PricingDisplayWidget extends StatelessWidget {
           const SizedBox(height: 12),
           if (ticketPrice != null) ...[
             _buildPriceRow(
+              context,
               'Ticket Price (x$ticketCount)',
               '\$${(ticketPrice! * ticketCount).toStringAsFixed(2)}',
             ),
             const SizedBox(height: 8),
             _buildPriceRow(
+              context,
               'avrai Fee (10%)',
               '\$${spotsFee!.toStringAsFixed(2)}',
               isFee: true,
@@ -109,6 +111,7 @@ class PricingDisplayWidget extends StatelessWidget {
           if (depositAmount != null) ...[
             if (ticketPrice != null) const SizedBox(height: 8),
             _buildPriceRow(
+              context,
               'Deposit',
               '\$${depositAmount!.toStringAsFixed(2)}',
             ),
@@ -116,6 +119,7 @@ class PricingDisplayWidget extends StatelessWidget {
           if (totalCost != null) ...[
             const Divider(height: 24),
             _buildPriceRow(
+              context,
               'Total',
               '\$${totalCost!.toStringAsFixed(2)}',
               isTotal: true,
@@ -127,26 +131,26 @@ class PricingDisplayWidget extends StatelessWidget {
   }
 
   Widget _buildPriceRow(
+    BuildContext context,
     String label,
     String amount, {
     bool isFee = false,
     bool isTotal = false,
   }) {
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: isTotal ? 18 : 14,
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             color: isFee ? AppColors.textSecondary : AppColors.textPrimary,
           ),
         ),
         Text(
           amount,
-          style: TextStyle(
-            fontSize: isTotal ? 18 : 14,
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             color: AppColors.textPrimary,
           ),

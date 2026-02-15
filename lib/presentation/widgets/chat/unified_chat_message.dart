@@ -1,10 +1,10 @@
 /// Unified Chat Message Widget
-/// 
+///
 /// Displays messages for all chat types:
 /// - Agent chat messages
 /// - Friend chat messages
 /// - Community/group chat messages
-/// 
+///
 /// Phase 3: Unified Chat UI Implementation
 /// Date: December 2025
 library;
@@ -12,6 +12,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 enum ChatType {
   agent,
@@ -40,7 +41,8 @@ class UnifiedChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: Row(
         mainAxisAlignment:
             isFromUser ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -52,7 +54,8 @@ class UnifiedChatMessage extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceMd, vertical: kSpaceSm),
               decoration: BoxDecoration(
                 color: isFromUser
                     ? AppTheme.primaryColor
@@ -65,34 +68,33 @@ class UnifiedChatMessage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Sender name for group chats
-                  if (!isFromUser && chatType == ChatType.community && senderName != null)
+                  if (!isFromUser &&
+                      chatType == ChatType.community &&
+                      senderName != null)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.only(bottom: kSpaceXxs),
                       child: Text(
                         senderName!,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
                   Text(
                     message,
-                    style: TextStyle(
-                      color: isFromUser ? AppColors.white : null,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isFromUser ? AppColors.white : null,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formatTimestamp(timestamp),
-                    style: TextStyle(
-                      color: isFromUser
-                          ? AppColors.white.withValues(alpha: 0.7)
-                          : AppColors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isFromUser
+                              ? AppColors.white.withValues(alpha: 0.7)
+                              : AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -123,9 +125,8 @@ class UnifiedChatMessage extends StatelessWidget {
         return CircleAvatar(
           radius: 16,
           backgroundColor: AppColors.grey300,
-          backgroundImage: senderPhotoUrl != null
-              ? NetworkImage(senderPhotoUrl!)
-              : null,
+          backgroundImage:
+              senderPhotoUrl != null ? NetworkImage(senderPhotoUrl!) : null,
           child: senderPhotoUrl == null
               ? const Icon(
                   Icons.person,
@@ -138,9 +139,8 @@ class UnifiedChatMessage extends StatelessWidget {
         return CircleAvatar(
           radius: 16,
           backgroundColor: AppColors.grey300,
-          backgroundImage: senderPhotoUrl != null
-              ? NetworkImage(senderPhotoUrl!)
-              : null,
+          backgroundImage:
+              senderPhotoUrl != null ? NetworkImage(senderPhotoUrl!) : null,
           child: senderPhotoUrl == null
               ? const Icon(
                   Icons.group,
@@ -181,4 +181,3 @@ class UnifiedChatMessage extends StatelessWidget {
     }
   }
 }
-

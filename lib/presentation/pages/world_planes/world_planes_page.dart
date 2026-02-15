@@ -119,11 +119,11 @@ class _WorldPlanesPageState extends State<WorldPlanesPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.public_off, color: AppColors.textSecondary),
-              SizedBox(width: 8),
-              Text('Ambient mode active'),
+              const Icon(Icons.public_off, color: AppColors.textSecondary),
+              SizedBox(width: spacing.xs),
+              const Text('Ambient mode active'),
             ],
           ),
           SizedBox(height: spacing.sm),
@@ -157,15 +157,16 @@ class _WorldPlanesPageState extends State<WorldPlanesPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (state.isStale)
-          Container(
+          SizedBox(
             width: double.infinity,
-            padding: EdgeInsets.all(spacing.sm),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(context.radius.md),
+            child: PortalSurface(
+              padding: EdgeInsets.all(spacing.sm),
+              radius: context.radius.md,
               color: AppColors.warning.withValues(alpha: 0.15),
-            ),
-            child: const Text(
-              'Showing earlier cached evolution. Data will refresh as new signals arrive.',
+              borderColor: AppColors.warning.withValues(alpha: 0.35),
+              child: const Text(
+                'Showing earlier cached evolution. Data will refresh as new signals arrive.',
+              ),
             ),
           ),
         SizedBox(height: spacing.md),

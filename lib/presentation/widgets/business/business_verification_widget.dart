@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/business/business_verification.dart';
 import 'package:avrai/core/services/business/business_verification_service.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Verification Widget
 /// Allows businesses to submit verification documents and track verification status
@@ -17,23 +19,25 @@ class BusinessVerificationWidget extends StatefulWidget {
   });
 
   @override
-  State<BusinessVerificationWidget> createState() => _BusinessVerificationWidgetState();
+  State<BusinessVerificationWidget> createState() =>
+      _BusinessVerificationWidgetState();
 }
 
-class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget> {
+class _BusinessVerificationWidgetState
+    extends State<BusinessVerificationWidget> {
   final _service = BusinessVerificationService();
   final _formKey = GlobalKey<FormState>();
-  
+
   final _legalNameController = TextEditingController();
   final _taxIdController = TextEditingController();
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
   final _websiteController = TextEditingController();
-  
+
   String? _businessLicenseUrl;
   String? _taxIdDocumentUrl;
   final String? _proofOfAddressUrl = null;
-  
+
   bool _isLoading = false;
   bool _isSubmitting = false;
 
@@ -85,33 +89,33 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
       final verification = await _service.submitVerification(
         business: widget.business,
         legalBusinessName: _legalNameController.text.trim(),
-        taxId: _taxIdController.text.trim().isEmpty ? null : _taxIdController.text.trim(),
-        businessAddress: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-        phoneNumber: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        websiteUrl: _websiteController.text.trim().isEmpty ? null : _websiteController.text.trim(),
+        taxId: _taxIdController.text.trim().isEmpty
+            ? null
+            : _taxIdController.text.trim(),
+        businessAddress: _addressController.text.trim().isEmpty
+            ? null
+            : _addressController.text.trim(),
+        phoneNumber: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        websiteUrl: _websiteController.text.trim().isEmpty
+            ? null
+            : _websiteController.text.trim(),
         businessLicenseUrl: _businessLicenseUrl,
         taxIdDocumentUrl: _taxIdDocumentUrl,
         proofOfAddressUrl: _proofOfAddressUrl,
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification submitted successfully! We\'ll review your submission.'),
-            backgroundColor: AppColors.electricGreen,
-          ),
+        context.showSuccess(
+          'Verification submitted successfully! We\'ll review your submission.',
         );
-        
+
         widget.onVerificationSubmitted?.call(verification);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error submitting verification: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error submitting verification: $e');
       }
     } finally {
       if (mounted) {
@@ -129,25 +133,15 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
 
     try {
       final verification = await _service.verifyAutomatically(widget.business);
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Business verified automatically!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
-        
+        context.showSuccess('Business verified automatically!');
+
         widget.onVerificationSubmitted?.call(verification);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Automatic verification failed: $e'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
+        context.showWarning('Automatic verification failed: $e');
       }
     } finally {
       if (mounted) {
@@ -198,7 +192,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
     return Card(
       color: statusColor.withValues(alpha: 0.1),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Row(
           children: [
             Icon(statusIcon, color: statusColor, size: 32),
@@ -209,11 +203,10 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                 children: [
                   Text(
                     'Verification Status: ${status.displayName}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
                   ),
                   if (verification != null) ...[
                     const SizedBox(height: 4),
@@ -223,10 +216,9 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                           : verification.status == VerificationStatus.pending
                               ? 'Your submission is under review'
                               : 'Please resubmit with additional information',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ],
@@ -241,21 +233,20 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
   Widget _buildVerifiedContent(BusinessVerification verification) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.verified, color: AppColors.electricGreen, size: 24),
                 SizedBox(width: 8),
                 Text(
                   'Verified Business',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.electricGreen,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.electricGreen,
+                      ),
                 ),
               ],
             ),
@@ -263,16 +254,15 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
             if (verification.verifiedAt != null) ...[
               Text(
                 'Verified on: ${_formatDate(verification.verifiedAt!)}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ],
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Your business has been verified. Users can trust that you are a legitimate business.',
-              style: TextStyle(fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
         ),
@@ -283,49 +273,47 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
   Widget _buildPendingContent(BusinessVerification verification) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.hourglass_empty, color: AppColors.warning, size: 24),
                 SizedBox(width: 8),
                 Text(
                   'Verification Pending',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
               'Submitted on: ${_formatDate(verification.submittedAt)}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Your verification request is being reviewed. We\'ll notify you once the review is complete.',
-              style: TextStyle(fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: verification.progress,
               backgroundColor: AppColors.grey200,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
             ),
             const SizedBox(height: 8),
             Text(
               'Progress: ${(verification.progress * 100).toStringAsFixed(0)}%',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -337,21 +325,20 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
     return Card(
       color: AppColors.error.withValues(alpha: 0.1),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.cancel, color: AppColors.error, size: 24),
                 SizedBox(width: 8),
                 Text(
                   'Verification Rejected',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.error,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.error,
+                      ),
                 ),
               ],
             ),
@@ -359,16 +346,15 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
             if (verification.rejectionReason != null) ...[
               Text(
                 'Reason: ${verification.rejectionReason}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
             ],
-            const Text(
+            Text(
               'Please review the requirements and resubmit your verification with the necessary documents.',
-              style: TextStyle(fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
         ),
@@ -382,42 +368,40 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Verify Your Business',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Help us verify that you are a legitimate business. This builds trust with users and experts.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 24),
 
           // Try Automatic Verification First
-          if (widget.business.website != null && widget.business.website!.isNotEmpty) ...[
+          if (widget.business.website != null &&
+              widget.business.website!.isNotEmpty) ...[
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(kSpaceMd),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Quick Verification',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'We can verify your business automatically using your website.',
-                      style: TextStyle(fontSize: 14),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
@@ -429,7 +413,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.auto_awesome),
-                      label: const Text('Try Automatic Verification'),
+                      label: Text('Try Automatic Verification'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.electricGreen,
                         foregroundColor: AppColors.white,
@@ -445,12 +429,11 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
           ],
 
           // Manual Verification Form
-          const Text(
+          Text(
             'Manual Verification',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
 
@@ -535,20 +518,18 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
           const SizedBox(height: 24),
 
           // Document Upload Section
-          const Text(
+          Text(
             'Verification Documents',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Upload at least one document to verify your business',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 16),
 
@@ -582,7 +563,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.electricGreen,
               foregroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -593,15 +574,15 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                     width: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.white),
                     ),
                   )
-                : const Text(
+                : Text(
                     'Submit for Verification',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
           ),
         ],
@@ -616,7 +597,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
   }) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(kSpaceSm),
         child: Row(
           children: [
             const Icon(Icons.description, color: AppColors.textSecondary),
@@ -627,19 +608,17 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   if (currentUrl != null) ...[
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Document uploaded',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.electricGreen,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.electricGreen,
+                          ),
                     ),
                   ],
                 ],
@@ -650,12 +629,7 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
                 // In production, would open file picker and upload
                 // For now, simulate upload
                 onUploaded('https://example.com/documents/$label');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$label uploaded (simulated)'),
-                    backgroundColor: AppColors.electricGreen,
-                  ),
-                );
+                context.showSuccess('$label uploaded (simulated)');
               },
               icon: const Icon(Icons.upload_file, size: 18),
               label: Text(currentUrl != null ? 'Replace' : 'Upload'),
@@ -701,4 +675,3 @@ class _BusinessVerificationWidgetState extends State<BusinessVerificationWidget>
     return '${date.month}/${date.day}/${date.year}';
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/business/business_expert_preferences.dart';
 import 'package:avrai/core/models/business/business_patron_preferences.dart';
@@ -8,6 +9,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/business/business_expert_preferences_widget.dart';
 import 'package:avrai/presentation/widgets/business/business_patron_preferences_widget.dart';
 import 'package:avrai/presentation/widgets/business/business_verification_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Account Form Widget
 /// Allows businesses to create accounts
@@ -22,34 +24,35 @@ class BusinessAccountFormWidget extends StatefulWidget {
   });
 
   @override
-  State<BusinessAccountFormWidget> createState() => _BusinessAccountFormWidgetState();
+  State<BusinessAccountFormWidget> createState() =>
+      _BusinessAccountFormWidgetState();
 }
 
 class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
   final _formKey = GlobalKey<FormState>();
   final _service = BusinessAccountService();
-  
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _websiteController = TextEditingController();
   final _locationController = TextEditingController();
   final _phoneController = TextEditingController();
-  
+
   String _selectedBusinessType = 'Restaurant';
   final List<String> _selectedCategories = [];
   final List<String> _selectedExpertise = [];
   final List<String> _selectedCommunities = [];
-  
+
   String? _preferredLocation;
   int? _minExpertLevel;
   BusinessExpertPreferences? _expertPreferences;
   BusinessPatronPreferences? _patronPreferences;
-  
+
   bool _isLoading = false;
   bool _showExpertPreferences = false;
   bool _showPatronPreferences = false;
-  
+
   static const List<String> _businessTypes = [
     'Restaurant',
     'Retail',
@@ -59,7 +62,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
     'Entertainment',
     'Other',
   ];
-  
+
   static const List<String> _commonCategories = [
     'Coffee',
     'Food',
@@ -70,7 +73,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
     'Entertainment',
     'Nightlife',
   ];
-  
+
   static const List<String> _expertiseCategories = [
     'Coffee',
     'Restaurants',
@@ -110,17 +113,17 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         businessType: _selectedBusinessType,
-        description: _descriptionController.text.trim().isEmpty 
-            ? null 
+        description: _descriptionController.text.trim().isEmpty
+            ? null
             : _descriptionController.text.trim(),
-        website: _websiteController.text.trim().isEmpty 
-            ? null 
+        website: _websiteController.text.trim().isEmpty
+            ? null
             : _websiteController.text.trim(),
-        location: _locationController.text.trim().isEmpty 
-            ? null 
+        location: _locationController.text.trim().isEmpty
+            ? null
             : _locationController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty 
-            ? null 
+        phone: _phoneController.text.trim().isEmpty
+            ? null
             : _phoneController.text.trim(),
         categories: _selectedCategories,
         requiredExpertise: _selectedExpertise,
@@ -132,15 +135,10 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Business account created successfully!'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
-        
+        context.showSuccess('Business account created successfully!');
+
         widget.onAccountCreated?.call(account);
-        
+
         // Reset form
         _formKey.currentState!.reset();
         _nameController.clear();
@@ -161,12 +159,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating account: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error creating account: $e');
       }
     } finally {
       if (mounted) {
@@ -180,29 +173,27 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Create Business Account',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Connect with experts based on community, expertise, and AI suggestions',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 24),
-            
+
             // Business Name
             TextFormField(
               controller: _nameController,
@@ -219,7 +210,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Email
             TextFormField(
               controller: _emailController,
@@ -240,7 +231,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Business Type
             DropdownButtonFormField<String>(
               initialValue: _selectedBusinessType,
@@ -262,7 +253,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Description
             TextFormField(
               controller: _descriptionController,
@@ -274,7 +265,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            
+
             // Location
             TextFormField(
               controller: _locationController,
@@ -285,7 +276,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Website
             TextFormField(
               controller: _websiteController,
@@ -297,7 +288,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 16),
-            
+
             // Phone
             TextFormField(
               controller: _phoneController,
@@ -309,7 +300,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
-            
+
             // Categories
             _buildSectionTitle('Business Categories'),
             Wrap(
@@ -333,15 +324,14 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-            
+
             // Required Expertise
             _buildSectionTitle('Required Expertise'),
-            const Text(
+            Text(
               'Select expertise categories you need from experts',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -365,12 +355,13 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-            
+
             // Preferred Location for Experts
             TextFormField(
               onChanged: (value) {
                 setState(() {
-                  _preferredLocation = value.trim().isEmpty ? null : value.trim();
+                  _preferredLocation =
+                      value.trim().isEmpty ? null : value.trim();
                 });
               },
               decoration: const InputDecoration(
@@ -381,19 +372,22 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Expert Preferences Section
             Card(
               child: ExpansionTile(
-                title: const Text(
+                title: Text(
                   'Advanced Expert Matching Preferences',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
                   _expertPreferences == null
                       ? 'Set detailed preferences for AI/ML matching'
                       : _expertPreferences!.getSummary(),
-                  style: const TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 leading: const Icon(Icons.tune),
                 initiallyExpanded: _showExpertPreferences,
@@ -404,7 +398,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                 },
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: BusinessExpertPreferencesWidget(
                       initialPreferences: _expertPreferences,
                       onPreferencesChanged: (preferences) {
@@ -418,19 +412,22 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Patron Preferences Section
             Card(
               child: ExpansionTile(
-                title: const Text(
+                title: Text(
                   'Patron Preferences',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
                   _patronPreferences == null
                       ? 'Set preferences for the types of patrons you want to attract'
                       : _patronPreferences!.getSummary(),
-                  style: const TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 leading: const Icon(Icons.people),
                 initiallyExpanded: _showPatronPreferences,
@@ -441,7 +438,7 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                 },
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: BusinessPatronPreferencesWidget(
                       initialPreferences: _patronPreferences,
                       onPreferencesChanged: (preferences) {
@@ -455,38 +452,41 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Verification Section
             Card(
               child: ExpansionTile(
-                title: const Text(
+                title: Text(
                   'Business Verification',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   'Verify your business to build trust with users and experts',
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 leading: const Icon(Icons.verified_user),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(kSpaceMd),
                     child: BusinessVerificationWidget(
                       business: BusinessAccount(
                         id: 'temp',
-                        name: _nameController.text.trim().isEmpty 
-                            ? 'Your Business' 
+                        name: _nameController.text.trim().isEmpty
+                            ? 'Your Business'
                             : _nameController.text.trim(),
                         email: _emailController.text.trim(),
                         businessType: _selectedBusinessType,
-                        location: _locationController.text.trim().isEmpty 
-                            ? null 
+                        location: _locationController.text.trim().isEmpty
+                            ? null
                             : _locationController.text.trim(),
-                        phone: _phoneController.text.trim().isEmpty 
-                            ? null 
+                        phone: _phoneController.text.trim().isEmpty
+                            ? null
                             : _phoneController.text.trim(),
-                        website: _websiteController.text.trim().isEmpty 
-                            ? null 
+                        website: _websiteController.text.trim().isEmpty
+                            ? null
                             : _websiteController.text.trim(),
                         createdAt: DateTime.now(),
                         updatedAt: DateTime.now(),
@@ -494,11 +494,8 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                       ),
                       onVerificationSubmitted: (verification) {
                         // Verification can be submitted after account creation
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Verification submitted! You can complete verification after creating your account.'),
-                            backgroundColor: AppColors.electricGreen,
-                          ),
+                        context.showSuccess(
+                          'Verification submitted! You can complete verification after creating your account.',
                         );
                       },
                     ),
@@ -507,12 +504,12 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Info Card
-            const Card(
+            Card(
               color: AppColors.grey100,
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(kSpaceMd),
                 child: Row(
                   children: [
                     Icon(Icons.info_outline, color: AppColors.textSecondary),
@@ -523,10 +520,12 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                         children: [
                           Text(
                             'How Business Accounts Work',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 4),
                           Text(
@@ -534,10 +533,12 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                             '2. Set preferences for experts and patrons\n'
                             '3. Verify your business (optional but recommended)\n'
                             '4. Connect with experts and attract matching patrons',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
@@ -547,14 +548,14 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Submit Button
             ElevatedButton(
               onPressed: _isLoading ? null : _submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.electricGreen,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -565,15 +566,15 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
                       width: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.white),
                       ),
                     )
-                  : const Text(
+                  : Text(
                       'Create Business Account',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
             ),
           ],
@@ -584,15 +585,13 @@ class _BusinessAccountFormWidgetState extends State<BusinessAccountFormWidget> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
 }
-

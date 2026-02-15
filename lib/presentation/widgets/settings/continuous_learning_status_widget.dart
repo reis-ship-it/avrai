@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'dart:async';
 
 /// Continuous Learning Status Widget
-/// 
+///
 /// Phase 7, Section 39 (7.4.1): Continuous Learning UI - Integration & Polish
-/// 
+///
 /// Displays current learning status including:
 /// - Active/paused/stopped status
 /// - Active learning processes list
@@ -14,28 +15,30 @@ import 'dart:async';
 class ContinuousLearningStatusWidget extends StatefulWidget {
   final String userId;
   final ContinuousLearningSystem learningSystem;
-  
+
   const ContinuousLearningStatusWidget({
     super.key,
     required this.userId,
     required this.learningSystem,
   });
-  
+
   @override
-  State<ContinuousLearningStatusWidget> createState() => _ContinuousLearningStatusWidgetState();
+  State<ContinuousLearningStatusWidget> createState() =>
+      _ContinuousLearningStatusWidgetState();
 }
 
-class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatusWidget> {
+class _ContinuousLearningStatusWidgetState
+    extends State<ContinuousLearningStatusWidget> {
   ContinuousLearningStatus? _status;
   bool _isLoading = true;
   String? _errorMessage;
   Timer? _refreshTimer;
-  
+
   @override
   void initState() {
     super.initState();
     _loadStatus();
-    
+
     // Refresh status periodically
     _refreshTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) _loadStatus();
@@ -47,16 +50,16 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   Future<void> _loadStatus() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final status = await widget.learningSystem.getLearningStatus();
-      
+
       if (mounted) {
         setState(() {
           _status = status;
@@ -72,20 +75,22 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
     if (_isLoading) {
       return Semantics(
         label: 'Loading continuous learning status',
-        child: const Card(
+        child: Card(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
-          margin: EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(spacing.lg),
             child: Center(
               child: CircularProgressIndicator(
                 color: AppColors.primary,
@@ -95,7 +100,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
         ),
       );
     }
-    
+
     if (_errorMessage != null) {
       return Semantics(
         label: 'Error loading continuous learning status',
@@ -104,9 +109,9 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Column(
               children: [
                 const Icon(
@@ -117,10 +122,9 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(
-                    color: AppColors.error,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -129,7 +133,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                   button: true,
                   child: TextButton(
                     onPressed: _loadStatus,
-                    child: const Text('Retry'),
+                    child: Text('Retry'),
                   ),
                 ),
               ],
@@ -138,42 +142,42 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
         ),
       );
     }
-    
+
     if (_status == null) {
       return Semantics(
         label: 'No learning status available',
-        child: const Card(
+        child: Card(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
-          margin: EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(bottom: spacing.md),
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(spacing.md),
             child: Center(
               child: Text(
                 'No learning status available',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
               ),
             ),
           ),
         ),
       );
     }
-    
+
     return Semantics(
-      label: 'Continuous learning status: ${_status!.isActive ? 'Active' : 'Inactive'}',
+      label:
+          'Continuous learning status: ${_status!.isActive ? 'Active' : 'Inactive'}',
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: spacing.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -181,7 +185,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(spacing.xs),
                     decoration: BoxDecoration(
                       color: _status!.isActive
                           ? AppColors.success.withValues(alpha: 0.1)
@@ -189,8 +193,12 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      _status!.isActive ? Icons.check_circle : Icons.pause_circle,
-                      color: _status!.isActive ? AppColors.success : AppColors.grey600,
+                      _status!.isActive
+                          ? Icons.check_circle
+                          : Icons.pause_circle,
+                      color: _status!.isActive
+                          ? AppColors.success
+                          : AppColors.grey600,
                       size: 24,
                     ),
                   ),
@@ -201,21 +209,21 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                       children: [
                         Text(
                           _status!.isActive ? 'Active' : 'Inactive',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           _status!.isActive
                               ? 'Learning is in progress'
                               : 'Learning is paused',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
@@ -223,7 +231,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // System Metrics
               Semantics(
                 label: 'Uptime: ${_formatDuration(_status!.uptime)}',
@@ -244,14 +252,15 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
               ),
               const SizedBox(height: 12),
               Semantics(
-                label: 'Learning time: ${_formatDuration(_status!.learningTime)}',
+                label:
+                    'Learning time: ${_formatDuration(_status!.learningTime)}',
                 child: _buildMetricRow(
                   'Learning Time',
                   _formatDuration(_status!.learningTime),
                   Icons.school,
                 ),
               ),
-              
+
               // Active Processes
               if (_status!.activeProcesses.isNotEmpty) ...[
                 const SizedBox(height: 24),
@@ -259,41 +268,45 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
                 const SizedBox(height: 16),
                 Text(
                   'Active Learning Processes (${_status!.activeProcesses.length})',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 12),
                 Semantics(
                   label: 'Active learning processes list',
                   child: Column(
-                    children: _status!.activeProcesses.map((process) => Semantics(
-                      label: 'Active process: ${_formatDimensionName(process)}',
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.play_circle_outline,
-                              size: 16,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _formatDimensionName(process),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary,
+                    children: _status!.activeProcesses
+                        .map((process) => Semantics(
+                              label:
+                                  'Active process: ${_formatDimensionName(process)}',
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: spacing.xs),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.play_circle_outline,
+                                      size: 16,
+                                      color: AppColors.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        _formatDimensionName(process),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.textPrimary,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )).toList(),
+                            ))
+                        .toList(),
                   ),
                 ),
               ],
@@ -303,7 +316,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
       ),
     );
   }
-  
+
   Widget _buildMetricRow(String label, String value, IconData icon) {
     return Row(
       children: [
@@ -316,29 +329,27 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
       ],
     );
   }
-  
+
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m ${seconds}s';
     } else if (minutes > 0) {
@@ -347,7 +358,7 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
       return '${seconds}s';
     }
   }
-  
+
   String _formatDimensionName(String dimension) {
     return dimension
         .split('_')
@@ -355,4 +366,3 @@ class _ContinuousLearningStatusWidgetState extends State<ContinuousLearningStatu
         .join(' ');
   }
 }
-

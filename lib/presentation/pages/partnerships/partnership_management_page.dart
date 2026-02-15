@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
+import 'package:avrai/core/navigation/app_navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/events/event_partnership.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
@@ -7,6 +9,7 @@ import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/partnership_card.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
@@ -95,12 +98,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading partnerships: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading partnerships: $e');
       }
     }
   }
@@ -179,11 +177,9 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
   }
 
   void _viewPartnershipDetails(EventPartnership partnership) {
-    Navigator.push(
+    AppNavigator.pushBuilder(
       context,
-      MaterialPageRoute(
-        builder: (context) => PartnershipDetailsPage(partnership: partnership),
-      ),
+      builder: (context) => PartnershipDetailsPage(partnership: partnership),
     );
   }
 
@@ -208,11 +204,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
   void _createNewPartnership() {
     // Navigate to event selection or directly to proposal page
     // For now, show a message - in production, would navigate to event selection
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Select an event first, then propose a partnership'),
-      ),
-    );
+    context.showInfo('Select an event first, then propose a partnership');
   }
 
   @override
@@ -236,7 +228,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : TabBarView(
               controller: _tabController,
               children: [
@@ -251,7 +243,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: AppColors.white,
         icon: const Icon(Icons.add),
-        label: const Text('New Partnership'),
+        label: Text('New Partnership'),
       ),
     );
   }
@@ -268,22 +260,20 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
               size: 64,
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               'No $statusLabel.toLowerCase() partnerships',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: context.spacing.xs),
+            Text(
               'Create a partnership to get started',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ],
         ),
@@ -291,14 +281,14 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.spacing.lg),
       itemCount: partnerships.length,
       itemBuilder: (context, index) {
         final partnership = partnerships[index];
         final event = _events[partnership.eventId];
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(bottom: context.spacing.sm),
           child: PartnershipCard(
             partnership: partnership,
             event: event,
@@ -334,51 +324,52 @@ class PartnershipDetailsPage extends StatelessWidget {
       constrainBody: false,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(context.spacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Business Info
               PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Row(
                   children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: ColoredBox(
                         color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: partnership.business?.logoUrl != null
+                              ? Image.network(
+                                  partnership.business!.logoUrl!,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(
+                                  Icons.business,
+                                  color: AppTheme.primaryColor,
+                                  size: 32,
+                                ),
+                        ),
                       ),
-                      child: partnership.business?.logoUrl != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                partnership.business!.logoUrl!,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.business,
-                              color: AppTheme.primaryColor,
-                              size: 32,
-                            ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: context.spacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             partnership.business?.name ?? 'Business',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                           if (partnership.vibeCompatibilityScore != null) ...[
-                            const SizedBox(height: 8),
+                            SizedBox(height: context.spacing.xs),
                             CompatibilityBadge(
                               compatibility:
                                   partnership.vibeCompatibilityScore!,
@@ -391,89 +382,89 @@ class PartnershipDetailsPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
 
               // Status
               PortalSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(context.spacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Partnership Status',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing.sm),
                     Text(
                       partnership.status.displayName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: context.spacing.lg),
 
               // Agreement Terms
               if (partnership.agreement != null) ...[
                 PortalSurface(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(context.spacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Partnership Terms',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: context.spacing.sm),
                       if (partnership.agreement!.terms['revenueSplit'] !=
                           null) ...[
                         Text(
                           'Revenue Split: ${partnership.agreement!.terms['revenueSplit']['userPercentage'].toStringAsFixed(0)}% / ${partnership.agreement!.terms['revenueSplit']['businessPercentage'].toStringAsFixed(0)}%',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: context.spacing.xs),
                       ],
                       if (partnership.sharedResponsibilities.isNotEmpty) ...[
-                        const Text(
+                        Text(
                           'Responsibilities:',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: context.spacing.xxs),
                         ...partnership.sharedResponsibilities
                             .map((resp) => Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, bottom: 4),
+                                  padding: EdgeInsets.only(
+                                      left: context.spacing.xs,
+                                      bottom: context.spacing.xxs),
                                   child: Row(
                                     children: [
                                       const Icon(Icons.check,
                                           size: 16,
                                           color: AppColors.electricGreen),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: context.spacing.xs),
                                       Text(
                                         resp,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.textPrimary,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.textPrimary,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -482,7 +473,7 @@ class PartnershipDetailsPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: context.spacing.lg),
               ],
 
               // Actions
@@ -495,12 +486,12 @@ class PartnershipDetailsPage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: context.spacing.md),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Back'),
+                  child: Text('Back'),
                 ),
               ),
             ],
@@ -529,23 +520,22 @@ class PartnershipManagementSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.spacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Manage Partnership',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: context.spacing.lg),
           ListTile(
             leading: const Icon(Icons.edit, color: AppTheme.primaryColor),
-            title: const Text('Update Agreement'),
+            title: Text('Update Agreement'),
             onTap: () {
               Navigator.pop(context);
               // TODO: Navigate to update agreement page
@@ -553,25 +543,25 @@ class PartnershipManagementSheet extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.cancel, color: AppColors.error),
-            title: const Text('Cancel Partnership'),
+            title: Text('Cancel Partnership'),
             onTap: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Cancel Partnership?'),
-                  content: const Text(
-                      'Are you sure you want to cancel this partnership?'),
+                  title: Text('Cancel Partnership?'),
+                  content:
+                      Text('Are you sure you want to cancel this partnership?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text('No'),
+                      child: Text('No'),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.error,
                       ),
-                      child: const Text('Yes, Cancel'),
+                      child: Text('Yes, Cancel'),
                     ),
                   ],
                 ),
@@ -582,7 +572,7 @@ class PartnershipManagementSheet extends StatelessWidget {
               }
             },
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: context.spacing.lg),
         ],
       ),
     );

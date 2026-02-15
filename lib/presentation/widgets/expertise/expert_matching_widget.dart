@@ -3,6 +3,7 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/expertise/expertise_matching_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_pin_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expert Matching Widget
 /// Displays expert matches and connection suggestions
@@ -26,7 +27,7 @@ class ExpertMatchingWidget extends StatelessWidget {
       future: _getMatches(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -36,17 +37,17 @@ class ExpertMatchingWidget extends StatelessWidget {
         }
 
         final matches = snapshot.data ?? [];
-        
+
         if (matches.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(context);
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(matches.length),
+            _buildHeader(context, matches.length),
             const SizedBox(height: 8),
-            _buildMatchesList(matches),
+            _buildMatchesList(context, matches),
           ],
         );
       },
@@ -58,7 +59,7 @@ class ExpertMatchingWidget extends StatelessWidget {
     // for at least one frame (keeps UI/tests deterministic).
     await Future<void>.delayed(Duration.zero);
     final service = ExpertiseMatchingService();
-    
+
     switch (matchingType) {
       case MatchingType.similar:
         if (category != null) {
@@ -80,7 +81,7 @@ class ExpertMatchingWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildHeader(BuildContext context, int count) {
     String title;
     switch (matchingType) {
       case MatchingType.similar:
@@ -101,31 +102,30 @@ class ExpertMatchingWidget extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(
+              horizontal: kSpaceXs, vertical: kSpaceNano),
           decoration: BoxDecoration(
             color: AppColors.grey200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             '$count',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     String message;
     switch (matchingType) {
       case MatchingType.similar:
@@ -145,47 +145,52 @@ class ExpertMatchingWidget extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          const Icon(Icons.people_outline, size: 64, color: AppColors.textSecondary),
+          const Icon(Icons.people_outline,
+              size: 64, color: AppColors.textSecondary),
           const SizedBox(height: 16),
           Text(
             message,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMatchesList(List<ExpertMatch> matches) {
+  Widget _buildMatchesList(BuildContext context, List<ExpertMatch> matches) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: matches.length,
       itemBuilder: (context, index) {
-        return _buildMatchCard(matches[index]);
+        return _buildMatchCard(context, matches[index]);
       },
     );
   }
 
-  Widget _buildMatchCard(ExpertMatch match) {
+  Widget _buildMatchCard(BuildContext context, ExpertMatch match) {
     final matchedUser = match.user;
-    final pins = matchedUser.getExpertisePins()
+    final pins = matchedUser
+        .getExpertisePins()
         .where((pin) => match.commonExpertise.contains(pin.category))
         .toList();
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: kSpaceXxs),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.grey200,
           child: matchedUser.photoUrl != null
               ? Image.network(matchedUser.photoUrl!)
               : Text(
-                  (matchedUser.displayName ?? matchedUser.email)[0].toUpperCase(),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  (matchedUser.displayName ?? matchedUser.email)[0]
+                      .toUpperCase(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textPrimary),
                 ),
         ),
         title: Text(matchedUser.displayName ?? matchedUser.email),
@@ -195,31 +200,31 @@ class ExpertMatchingWidget extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               match.matchReason,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             if (pins.isNotEmpty) ...[
               const SizedBox(height: 8),
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
-                children: pins.map((pin) => ExpertisePinWidget(
-                  pin: pin,
-                  showDetails: false,
-                )).toList(),
+                children: pins
+                    .map((pin) => ExpertisePinWidget(
+                          pin: pin,
+                          showDetails: false,
+                        ))
+                    .toList(),
               ),
             ],
             if (match.complementaryExpertise.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
                 'Also: ${match.complementaryExpertise.join(', ')}',
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.electricGreen,
-                  fontStyle: FontStyle.italic,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.electricGreen,
+                      fontStyle: FontStyle.italic,
+                    ),
               ),
             ],
           ],
@@ -228,18 +233,18 @@ class ExpertMatchingWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kSpaceXs, vertical: kSpaceXxs),
               decoration: BoxDecoration(
                 color: AppColors.electricGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${(match.matchScore * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.electricGreen,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.electricGreen,
+                    ),
               ),
             ),
           ],
@@ -257,4 +262,3 @@ enum MatchingType {
   mentors,
   mentees,
 }
-

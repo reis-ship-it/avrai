@@ -1,107 +1,120 @@
 # AVRAI
 
-**Authentic Value Recognition Application**
+**know you belong.**
 
-A production-ready AI2AI network platform with Signal Protocol encryption, topological knot theory personality modeling, and privacy-first mesh networking. AVRAI enables devices to discover compatible connections offline using quantum-inspired matching algorithms.
+A privacy-first, offline-capable AI platform that helps people find the places, communities, and people where they truly belong. Powered by AI2AI mesh networking, quantum-inspired matching, and Signal Protocol encryption — all running on-device.
 
 [![GitHub](https://img.shields.io/badge/GitHub-AVRA--CADAVRA-blue)](https://github.com/AVRA-CADAVRA/avrai)
-[![Flutter](https://img.shields.io/badge/Flutter-3.8+-blue)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.24+-blue)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.3+-blue)](https://dart.dev)
 [![Signal](https://img.shields.io/badge/Signal-Protocol-enabled-green)](https://signal.org/)
 
 ---
 
-## 🚪 Philosophy: "Doors, Not Badges"
+## Philosophy: "Doors, Not Badges"
 
 > **"There is no secret to life. Just doors that haven't been opened yet."**
 
-Every spot is a door. AVRAI provides the key through AI2AI mesh networking that works offline, encrypted with Signal Protocol, powered by quantum matching algorithms.
+Every spot is a door. Every person is a door. Every community is a door. Every event is a door. AVRAI is the key — you open the doors, you find your life.
+
+We don't show recommendations. We show doors.
+We don't match you with people. We connect you with people who open similar doors.
+We don't measure engagement. We measure doors opened.
+
+**The Journey:**
+Find YOUR spots &rarr; Those spots have communities &rarr; Those communities have events &rarr; You find YOUR people &rarr; You find YOUR life.
 
 ---
 
-## ✨ Core Technology
+## Core Technology
 
-### 🔐 Signal Protocol Security (Phase 14 - Production Ready)
-- **End-to-End Encryption:** Signal Protocol with X3DH key exchange
-- **Double Ratchet:** Forward secrecy and post-compromise security
-- **Hybrid Encryption:** Graceful fallback to AES-256-GCM when needed
-- **Session Management:** Secure device-to-device communication channels
+### Intelligence-First Architecture (LeCun World Model)
 
-### 🌐 AI2AI Mesh Network (95% Complete)
+AVRAI's brain is built on LeCun's autonomous machine intelligence framework. Every hardcoded formula is systematically replaced by learned energy functions trained on real outcome data:
+
+| Component | Role | Implementation |
+|-----------|------|----------------|
+| **Perception** | Observes the world, extracts features | `WorldModelFeatureExtractor` (145-155D from 19+ services) |
+| **World Model** | Predicts next state given current state + action | `TransitionPredictor` (ONNX MLP) |
+| **Cost / Critic** | Evaluates quality of state-action pairs as energy | `EnergyFunctionService` (ONNX critic) |
+| **Actor** | Proposes action sequences to minimize cost | `MPCPlanner` (N-step future simulation) |
+| **Guardrails** | Hard constraints the actor cannot violate | Diversity, safety, doors, notification constraints |
+| **Memory** | Episodic, semantic, and procedural memory layers | `EpisodicMemoryStore` + vector embeddings |
+
+### Signal Protocol Security
+- **End-to-End Encryption:** X3DH key exchange + Double Ratchet
+- **Forward Secrecy:** Post-compromise security with automatic key rotation
+- **Hybrid Fallback:** Graceful degradation to AES-256-GCM when needed
+- **On-Device Only:** All personal data stays on your device
+
+### AI2AI Mesh Network
 - **Offline-First:** Bluetooth Low Energy + WiFi Direct mesh networking
-- **Topological Knot Theory:** Patent #31 personality modeling with string evolution
+- **Topological Knot Theory:** Personality modeling with string evolution
 - **4D Quantum Worldmapping:** Temporal personality state tracking
 - **Battery-Adaptive Scheduling:** Intelligent connection orchestration
 
-### 🧠 Quantum Matching Algorithms
+### Quantum Matching
 - **12-Dimensional Personality Vectors:** Quantum state compatibility calculation
-- **Multi-Entity Entanglement:** Group compatibility matching (Phase 19 - Complete)
-- **Neural Network Integration:** Hybrid quantum-classical models (Phase 12)
-- **Continuous Learning:** Self-improving AI that adapts every second
-
-### 📍 Discovery & Recommendation
-- **Real-Time Walk-By Detection:** BLE optimization for instant connections (Phase 23)
-- **Quantum Vibe Engine:** Location-aware compatibility matching
-- **Offline Spot Discovery:** Works without internet, syncs when connected
-- **Reservation System:** Production-ready table bookings (Phase 15 - Complete)
+- **Multi-Entity Entanglement:** Group compatibility matching
+- **Energy Functions:** Learned scoring replaces hardcoded formulas
+- **Continuous Learning:** Self-improving AI that adapts from real outcomes
 
 ---
 
-## 👥 User Features
+## What It Does
 
-**Discover meaningful connections:**
-- Personalized spot recommendations powered by AI that learns your preferences
-- Instant compatibility matching with people nearby, even offline
-- Build expertise through authentic contributions—curated lists, trusted reviews
+**For people looking for their places:**
+- Personalized spot recommendations powered by AI that learns your vibe
+- Instant compatibility matching with people nearby — even offline
+- Build expertise through authentic contributions: curated lists, trusted reviews
 - Host events once recognized as a local expert in your community
-- Join communities and events matched to your unique vibe
+- Communities and events matched to who you actually are
 
-**Privacy-first experience:**
-- All personal data stays on-device—no surveillance, no data harvesting
-- AI2AI learning happens locally—only anonymized compatibility signals shared
-- Offline functionality means discovery works without internet connectivity
+**Privacy is architecture, not policy:**
+- All personal data stays on-device — no surveillance, no data harvesting
+- AI learning happens locally — only anonymized, DP-protected signals are ever shared
+- Offline discovery works without internet connectivity
+- Post-quantum encryption protects everything in transit
 
 ---
 
-## 💼 Enterprise Capabilities
+## Business Capabilities
 
-**Business & Revenue Tools:**
-- Complete event hosting and ticketing system with Stripe integration
+**Revenue & Partnerships:**
+- Event hosting and ticketing with Stripe integration
 - Multi-path expertise partnerships with automated revenue distribution
-- Business account management for venues, brands, and partnerships
-- Reservation management with recurring bookings and timezone-aware scheduling
+- Business account management for venues, brands, and partners
+- Reservation system with recurring bookings and timezone-aware scheduling
+- Privacy-preserving analytics for businesses (differential privacy exports)
 
-**Platform Infrastructure:**
-- White-label deployment options for enterprise clients (Phase 18)
-- AI2AI network monitoring and admin tools (Phase 20)
-- Privacy-preserving analytics and insights for businesses (Phase 22)
-- Web sync hub and desktop platform support (Phases 24-25)
-
-**Enterprise Integrations:**
+**Enterprise Infrastructure:**
+- White-label deployment options
+- AI2AI network monitoring and admin tools
+- Web sync hub and desktop platform support
 - Restaurant technology integrations (Toast, POS systems)
-- Hospitality industry partnerships and booking systems
-- Government and finance industry compliance-ready architecture
-- Services marketplace and API infrastructure
+- Hospitality, government, and finance industry compliance-ready architecture
 
 ---
 
-## 🏆 Innovation Portfolio
+## Innovation Portfolio
 
 **31 Patentable Innovations** including:
 - Signal Protocol mesh networking architecture
-- Topological knot theory personality modeling (Patent #31)
-- Quantum atomic clock synchronization (Patent #30)
+- Topological knot theory personality modeling
+- Quantum atomic clock synchronization
 - Battery-adaptive AI2AI scheduling
 - Multi-entity quantum entanglement matching
+- Intelligence-first energy function architecture
 
 **Status:** 6 Tier 1 patents ready for filing. See [`docs/patents/`](docs/patents/) for complete documentation.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- Flutter SDK (3.8+), Dart SDK (3.6+)
-- iOS/Android development environment
+- Flutter SDK (3.24+), Dart SDK (3.3+)
+- iOS / Android development environment
 - Signal Protocol FFI bindings (macOS complete, other platforms pending)
 
 ### Installation
@@ -121,42 +134,50 @@ flutter run
 
 ---
 
-## 📊 Production Status
+## Project Stats
 
-- **Codebase:** 185,162+ lines across 549+ files
-- **Test Coverage:** 49 components with comprehensive test suites (Phase 9 - Complete)
-- **Platforms:** iOS, Android (macOS, Web, Desktop in progress)
-- **Security:** Signal Protocol production-ready, hybrid encryption fallback
-- **Network:** AI2AI mesh 95% complete, BLE optimization in progress
-- **Master Plan:** 31 phases tracked, 11 complete, active development on 20+
+| Metric | Count |
+|--------|-------|
+| **Lib source lines** | 414,000+ |
+| **Test source lines** | 264,000+ |
+| **Lib files** | 1,200+ |
+| **Test files** | 940+ |
+| **Services** | 378+ |
+| **Models** | 149+ |
+| **Controllers** | 21 |
+| **Packages** | 9 (`avrai_core`, `avrai_ai`, `avrai_app`, `avrai_data`, `avrai_knot`, `avrai_ml`, `avrai_network`, `avrai_quantum`, `spots_knot`) |
+| **Platforms** | iOS, Android (macOS, Web, Desktop in progress) |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-**Clean Architecture** with Signal Protocol integration:
-- **Core:** AI2AI protocol, quantum algorithms, Signal encryption
-- **Data:** Offline-first Sembast, Supabase sync
-- **Presentation:** Flutter/BLoC UI with privacy controls
+**Clean Architecture** with intelligence-first AI and Signal Protocol integration:
+
+- **Core:** AI2AI protocol, quantum algorithms, Signal encryption, world model
+- **Data:** Offline-first Sembast, Supabase sync, episodic memory
+- **Domain:** Use cases, repository interfaces, energy functions
+- **Presentation:** Flutter / BLoC UI with privacy controls
 - **Network:** AI2AI mesh with battery-adaptive orchestration
+- **ML:** ONNX Runtime models for on-device inference
 
-**Key Technologies:** Flutter/Dart, BLoC, Sembast, Supabase, Firebase, Stripe, ONNX Runtime, Signal Protocol FFI
+**Key Technologies:** Flutter, Dart, BLoC, Sembast, Supabase, Firebase, Stripe, ONNX Runtime, Signal Protocol FFI
 
 ---
 
-## 📚 Documentation
+## Documentation
 
-- **Master Plan:** [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) - 31 phases tracked
+- **Master Plan:** [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) — Intelligence-first execution plan
+- **Philosophy:** [`docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md`](docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md)
+- **ML Roadmap:** [`docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`](docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md)
 - **Signal Protocol:** [`docs/plans/security_implementation/`](docs/plans/security_implementation/)
 - **AI2AI Network:** [`docs/plans/ai2ai_system/`](docs/plans/ai2ai_system/)
-- **Philosophy:** [`docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md`](docs/plans/philosophy_implementation/SPOTS_PHILOSOPHY_AND_ARCHITECTURE.md)
-- **Business Overview:** [`docs/SPOTS_COMPREHENSIVE_OVERVIEW.md`](docs/SPOTS_COMPREHENSIVE_OVERVIEW.md)
+- **Business Overview:** [`docs/business/SPOTS_COMPREHENSIVE_OVERVIEW.md`](docs/business/SPOTS_COMPREHENSIVE_OVERVIEW.md)
+- **Development Guide:** [`README_DEVELOPMENT.md`](README_DEVELOPMENT.md)
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
+## Contributing
 
 1. **Read the philosophy:** Understand "Doors, Not Badges" before contributing
 2. **Follow the methodology:** See [`docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`](docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md)
@@ -168,4 +189,4 @@ We welcome contributions! Please follow these guidelines:
 
 **"There is no secret to life. Just doors that haven't been opened yet."**
 
-*AVRAI builds the secure, offline-first network that helps you find the keys.*
+*AVRAI is the key. You open the doors. You find your life.*

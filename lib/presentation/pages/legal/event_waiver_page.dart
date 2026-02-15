@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/legal/event_waiver.dart';
 import 'package:avrai/core/services/misc/legal_document_service.dart';
@@ -8,6 +9,8 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Event Waiver Page
 ///
@@ -74,12 +77,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
 
   Future<void> _acceptWaiver() async {
     if (!_acknowledgeRisks || !_acknowledgeRelease || !_acknowledgeAge) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please acknowledge all statements'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
+      context.showWarning('Please acknowledge all statements');
       return;
     }
 
@@ -107,12 +105,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Event waiver accepted'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Event waiver accepted');
         if (widget.requireAcceptance) {
           Navigator.pop(context, true);
         }
@@ -139,9 +132,10 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
       body: Column(
         children: [
           // Event Info Header
-          Container(
-            padding: const EdgeInsets.all(20),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMdWide),
             color: AppColors.surface,
+            radius: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,42 +149,46 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                         children: [
                           Text(
                             widget.event.title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                           Text(
                             '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ),
                     ),
                     if (_hasAccepted)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
+                      Chip(
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        side: BorderSide.none,
+                        backgroundColor: Color.fromRGBO(0, 255, 102, 0.1),
+                        label: Row(
                           children: [
                             Icon(Icons.check_circle,
                                 size: 16, color: AppColors.electricGreen),
                             SizedBox(width: 4),
                             Text(
                               'Accepted',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.electricGreen,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ],
                         ),
@@ -204,17 +202,16 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
           // Waiver Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(kSpaceMdWide),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     waiverText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                      height: 1.6,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                          height: 1.6,
+                        ),
                   ),
                   const SizedBox(height: 24),
 
@@ -222,19 +219,21 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                   if (requiresFull && !_hasAccepted) ...[
                     const Divider(color: AppColors.grey300),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Acknowledgment',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
-                      title: const Text(
+                      title: Text(
                         'I understand and acknowledge the risks of participation',
-                        style: TextStyle(color: AppColors.textPrimary),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
                       value: _acknowledgeRisks,
                       onChanged: (value) {
@@ -246,9 +245,12 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     CheckboxListTile(
-                      title: const Text(
+                      title: Text(
                         'I release avrai and all parties from liability',
-                        style: TextStyle(color: AppColors.textPrimary),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
                       value: _acknowledgeRelease,
                       onChanged: (value) {
@@ -260,9 +262,12 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     CheckboxListTile(
-                      title: const Text(
+                      title: Text(
                         'I am of legal age to enter into this agreement (or have guardian consent)',
-                        style: TextStyle(color: AppColors.textPrimary),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
                       value: _acknowledgeAge,
                       onChanged: (value) {
@@ -281,24 +286,20 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
 
           // Accept Button
           if (widget.requireAcceptance && !_hasAccepted) ...[
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.grey300)),
-              ),
+            PortalSurface(
+              padding: const EdgeInsets.all(kSpaceMdWide),
+              color: AppColors.surface,
+              borderColor: AppColors.grey300,
+              radius: 0,
               child: Column(
                 children: [
                   if (_error != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3)),
-                      ),
+                    PortalSurface(
+                      padding: const EdgeInsets.all(kSpaceSm),
+                      margin: const EdgeInsets.only(bottom: kSpaceMd),
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderColor: AppColors.error.withValues(alpha: 0.3),
+                      radius: 8,
                       child: Row(
                         children: [
                           const Icon(Icons.error_outline,
@@ -307,8 +308,10 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                           Expanded(
                             child: Text(
                               _error!,
-                              style: const TextStyle(
-                                  color: AppColors.error, fontSize: 12),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AppColors.error),
                             ),
                           ),
                         ],
@@ -332,7 +335,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
                                   AppColors.white),
                             ),
                           )
-                        : const Text('I Agree'),
+                        : Text('I Agree'),
                   ),
                 ],
               ),

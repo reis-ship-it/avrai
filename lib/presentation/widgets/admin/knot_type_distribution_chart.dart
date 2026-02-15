@@ -1,5 +1,5 @@
 // Knot Type Distribution Chart
-// 
+//
 // Interactive pie chart for knot type distribution
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Optional Enhancement: Interactive Charts
@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Pie chart widget for knot type distribution
 class KnotTypeDistributionChart extends StatelessWidget {
@@ -52,11 +53,10 @@ class KnotTypeDistributionChart extends StatelessWidget {
         title: '${percentage.toStringAsFixed(1)}%',
         color: color,
         radius: 60,
-        titleStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: AppColors.white,
-        ),
+        titleStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.white,
+            ),
       );
     }).toList();
 
@@ -80,14 +80,15 @@ class KnotTypeDistributionChart extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: distribution.entries.toList().asMap().entries.map((entry) {
+              children:
+                  distribution.entries.toList().asMap().entries.map((entry) {
                 final index = entry.key;
                 final mapEntry = entry.value;
                 final color = colors[index % colors.length];
                 final percentage = (mapEntry.value / total) * 100;
 
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(vertical: kSpaceXxs),
                   child: Row(
                     children: [
                       Container(
@@ -102,15 +103,14 @@ class KnotTypeDistributionChart extends StatelessWidget {
                       Expanded(
                         child: Text(
                           mapEntry.key,
-                          style: const TextStyle(fontSize: 12),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
                       Text(
                         '${mapEntry.value} (${percentage.toStringAsFixed(1)}%)',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ],
                   ),

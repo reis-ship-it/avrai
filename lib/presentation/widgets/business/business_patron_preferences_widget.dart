@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/business/business_patron_preferences.dart';
 import 'package:avrai/core/models/business/business_expert_preferences.dart';
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Business Patron Preferences Widget
 /// Allows businesses to set preferences for the types of patrons they want to attract
@@ -16,10 +17,12 @@ class BusinessPatronPreferencesWidget extends StatefulWidget {
   });
 
   @override
-  State<BusinessPatronPreferencesWidget> createState() => _BusinessPatronPreferencesWidgetState();
+  State<BusinessPatronPreferencesWidget> createState() =>
+      _BusinessPatronPreferencesWidgetState();
 }
 
-class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferencesWidget> {
+class _BusinessPatronPreferencesWidgetState
+    extends State<BusinessPatronPreferencesWidget> {
   late BusinessPatronPreferences _preferences;
 
   // Demographics
@@ -75,134 +78,200 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
   final List<String> _excludedLocations = [];
 
   static const List<String> _interestOptions = [
-    'Food', 'Coffee', 'Art', 'Music', 'Outdoor', 'Fitness',
-    'Travel', 'Technology', 'Fashion', 'Books', 'Gaming', 'Wellness',
+    'Food',
+    'Coffee',
+    'Art',
+    'Music',
+    'Outdoor',
+    'Fitness',
+    'Travel',
+    'Technology',
+    'Fashion',
+    'Books',
+    'Gaming',
+    'Wellness',
   ];
 
   static const List<String> _lifestyleTraits = [
-    'Health-conscious', 'Eco-friendly', 'Social', 'Minimalist',
-    'Luxury-oriented', 'Budget-conscious', 'Adventurous', 'Family-oriented',
+    'Health-conscious',
+    'Eco-friendly',
+    'Social',
+    'Minimalist',
+    'Luxury-oriented',
+    'Budget-conscious',
+    'Adventurous',
+    'Family-oriented',
   ];
 
   static const List<String> _activityOptions = [
-    'Dining', 'Socializing', 'Working', 'Studying', 'Networking',
-    'Entertainment', 'Relaxation', 'Exercise', 'Shopping',
+    'Dining',
+    'Socializing',
+    'Working',
+    'Studying',
+    'Networking',
+    'Entertainment',
+    'Relaxation',
+    'Exercise',
+    'Shopping',
   ];
 
   static const List<String> _personalityTraits = [
-    'Outgoing', 'Quiet', 'Adventurous', 'Conservative',
-    'Creative', 'Analytical', 'Social', 'Introverted',
+    'Outgoing',
+    'Quiet',
+    'Adventurous',
+    'Conservative',
+    'Creative',
+    'Analytical',
+    'Social',
+    'Introverted',
   ];
 
   static const List<String> _socialStyles = [
-    'Group-oriented', 'Solo', 'Family-friendly', 'Couples',
-    'Business', 'Casual', 'Formal', 'Mixed',
+    'Group-oriented',
+    'Solo',
+    'Family-friendly',
+    'Couples',
+    'Business',
+    'Casual',
+    'Formal',
+    'Mixed',
   ];
 
   static const List<String> _vibePreferences = [
-    'Casual', 'Upscale', 'Trendy', 'Cozy', 'Lively',
-    'Quiet', 'Romantic', 'Professional', 'Artistic',
+    'Casual',
+    'Upscale',
+    'Trendy',
+    'Cozy',
+    'Lively',
+    'Quiet',
+    'Romantic',
+    'Professional',
+    'Artistic',
   ];
 
   static const List<String> _visitFrequencyOptions = [
-    'Regular', 'Occasional', 'One-time', 'Weekly', 'Monthly',
+    'Regular',
+    'Occasional',
+    'One-time',
+    'Weekly',
+    'Monthly',
   ];
 
   // ignore: unused_field
   static const List<String> _expertiseLevels = [
-    'Novice', 'Intermediate', 'Expert', 'Enthusiast',
+    'Novice',
+    'Intermediate',
+    'Expert',
+    'Enthusiast',
   ];
 
   static const List<String> _visitTimeOptions = [
-    'Morning', 'Lunch', 'Afternoon', 'Evening', 'Late Night',
+    'Morning',
+    'Lunch',
+    'Afternoon',
+    'Evening',
+    'Late Night',
   ];
 
   static const List<String> _daysOfWeekOptions = [
-    'Weekdays', 'Weekends', 'Monday', 'Tuesday', 'Wednesday',
-    'Thursday', 'Friday', 'Saturday', 'Sunday',
+    'Weekdays',
+    'Weekends',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   @override
   void initState() {
     super.initState();
-    _preferences = widget.initialPreferences ?? const BusinessPatronPreferences();
+    _preferences =
+        widget.initialPreferences ?? const BusinessPatronPreferences();
     _loadPreferences();
   }
 
   void _loadPreferences() {
     _minAge = _preferences.preferredAgeRange?.minAge;
     _maxAge = _preferences.preferredAgeRange?.maxAge;
-    
+
     _preferredLanguages.clear();
     _preferredLanguages.addAll(_preferences.preferredLanguages ?? []);
-    
+
     _preferredLocations.clear();
     _preferredLocations.addAll(_preferences.preferredLocations ?? []);
-    
+
     _preferredInterests.clear();
     _preferredInterests.addAll(_preferences.preferredInterests ?? []);
-    
+
     _preferredLifestyleTraits.clear();
-    _preferredLifestyleTraits.addAll(_preferences.preferredLifestyleTraits ?? []);
-    
+    _preferredLifestyleTraits
+        .addAll(_preferences.preferredLifestyleTraits ?? []);
+
     _preferredActivities.clear();
     _preferredActivities.addAll(_preferences.preferredActivities ?? []);
-    
+
     _preferredPersonalityTraits.clear();
-    _preferredPersonalityTraits.addAll(_preferences.preferredPersonalityTraits ?? []);
-    
+    _preferredPersonalityTraits
+        .addAll(_preferences.preferredPersonalityTraits ?? []);
+
     _preferredSocialStyles.clear();
     _preferredSocialStyles.addAll(_preferences.preferredSocialStyles ?? []);
-    
+
     _preferredVibePreferences.clear();
-    _preferredVibePreferences.addAll(_preferences.preferredVibePreferences ?? []);
-    
+    _preferredVibePreferences
+        .addAll(_preferences.preferredVibePreferences ?? []);
+
     _preferredSpendingLevel = _preferences.preferredSpendingLevel;
-    
+
     _preferredVisitFrequency.clear();
     _preferredVisitFrequency.addAll(_preferences.preferredVisitFrequency ?? []);
-    
+
     _preferLoyalCustomers = _preferences.preferLoyalCustomers;
     _preferNewCustomers = _preferences.preferNewCustomers;
-    
+
     _preferredExpertiseLevels.clear();
-    _preferredExpertiseLevels.addAll(_preferences.preferredExpertiseLevels ?? []);
-    
+    _preferredExpertiseLevels
+        .addAll(_preferences.preferredExpertiseLevels ?? []);
+
     _preferEducatedPatrons = _preferences.preferEducatedPatrons;
-    
+
     _preferredKnowledgeAreas.clear();
     _preferredKnowledgeAreas.addAll(_preferences.preferredKnowledgeAreas ?? []);
-    
+
     _preferCommunityMembers = _preferences.preferCommunityMembers;
     _preferredCommunities.clear();
     _preferredCommunities.addAll(_preferences.preferredCommunities ?? []);
-    
+
     _preferLocalPatrons = _preferences.preferLocalPatrons;
     _preferTourists = _preferences.preferTourists;
-    
+
     _preferredVisitTimes.clear();
     _preferredVisitTimes.addAll(_preferences.preferredVisitTimes ?? []);
-    
+
     _preferredDaysOfWeek.clear();
     _preferredDaysOfWeek.addAll(_preferences.preferredDaysOfWeek ?? []);
-    
+
     _preferAgeVerified = _preferences.preferAgeVerified;
     _preferPetOwners = _preferences.preferPetOwners;
     _preferAccessibilityNeeds = _preferences.preferAccessibilityNeeds;
-    
+
     _preferredSpecialNeeds.clear();
     _preferredSpecialNeeds.addAll(_preferences.preferredSpecialNeeds ?? []);
-    
+
     _aiKeywords.clear();
     _aiKeywords.addAll(_preferences.aiKeywords ?? []);
     _aiMatchingPrompt = _preferences.aiMatchingPrompt;
-    
+
     _excludedInterests.clear();
     _excludedInterests.addAll(_preferences.excludedInterests ?? []);
-    
+
     _excludedPersonalityTraits.clear();
-    _excludedPersonalityTraits.addAll(_preferences.excludedPersonalityTraits ?? []);
-    
+    _excludedPersonalityTraits
+        .addAll(_preferences.excludedPersonalityTraits ?? []);
+
     _excludedLocations.clear();
     _excludedLocations.addAll(_preferences.excludedLocations ?? []);
   }
@@ -213,36 +282,59 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
         preferredAgeRange: (_minAge != null || _maxAge != null)
             ? AgeRange(minAge: _minAge, maxAge: _maxAge)
             : null,
-        preferredLanguages: _preferredLanguages.isEmpty ? null : _preferredLanguages,
-        preferredLocations: _preferredLocations.isEmpty ? null : _preferredLocations,
-        preferredInterests: _preferredInterests.isEmpty ? null : _preferredInterests,
-        preferredLifestyleTraits: _preferredLifestyleTraits.isEmpty ? null : _preferredLifestyleTraits,
-        preferredActivities: _preferredActivities.isEmpty ? null : _preferredActivities,
-        preferredPersonalityTraits: _preferredPersonalityTraits.isEmpty ? null : _preferredPersonalityTraits,
-        preferredSocialStyles: _preferredSocialStyles.isEmpty ? null : _preferredSocialStyles,
-        preferredVibePreferences: _preferredVibePreferences.isEmpty ? null : _preferredVibePreferences,
+        preferredLanguages:
+            _preferredLanguages.isEmpty ? null : _preferredLanguages,
+        preferredLocations:
+            _preferredLocations.isEmpty ? null : _preferredLocations,
+        preferredInterests:
+            _preferredInterests.isEmpty ? null : _preferredInterests,
+        preferredLifestyleTraits: _preferredLifestyleTraits.isEmpty
+            ? null
+            : _preferredLifestyleTraits,
+        preferredActivities:
+            _preferredActivities.isEmpty ? null : _preferredActivities,
+        preferredPersonalityTraits: _preferredPersonalityTraits.isEmpty
+            ? null
+            : _preferredPersonalityTraits,
+        preferredSocialStyles:
+            _preferredSocialStyles.isEmpty ? null : _preferredSocialStyles,
+        preferredVibePreferences: _preferredVibePreferences.isEmpty
+            ? null
+            : _preferredVibePreferences,
         preferredSpendingLevel: _preferredSpendingLevel,
-        preferredVisitFrequency: _preferredVisitFrequency.isEmpty ? null : _preferredVisitFrequency,
+        preferredVisitFrequency:
+            _preferredVisitFrequency.isEmpty ? null : _preferredVisitFrequency,
         preferLoyalCustomers: _preferLoyalCustomers,
         preferNewCustomers: _preferNewCustomers,
-        preferredExpertiseLevels: _preferredExpertiseLevels.isEmpty ? null : _preferredExpertiseLevels,
+        preferredExpertiseLevels: _preferredExpertiseLevels.isEmpty
+            ? null
+            : _preferredExpertiseLevels,
         preferEducatedPatrons: _preferEducatedPatrons,
-        preferredKnowledgeAreas: _preferredKnowledgeAreas.isEmpty ? null : _preferredKnowledgeAreas,
+        preferredKnowledgeAreas:
+            _preferredKnowledgeAreas.isEmpty ? null : _preferredKnowledgeAreas,
         preferCommunityMembers: _preferCommunityMembers,
-        preferredCommunities: _preferredCommunities.isEmpty ? null : _preferredCommunities,
+        preferredCommunities:
+            _preferredCommunities.isEmpty ? null : _preferredCommunities,
         preferLocalPatrons: _preferLocalPatrons,
         preferTourists: _preferTourists,
-        preferredVisitTimes: _preferredVisitTimes.isEmpty ? null : _preferredVisitTimes,
-        preferredDaysOfWeek: _preferredDaysOfWeek.isEmpty ? null : _preferredDaysOfWeek,
+        preferredVisitTimes:
+            _preferredVisitTimes.isEmpty ? null : _preferredVisitTimes,
+        preferredDaysOfWeek:
+            _preferredDaysOfWeek.isEmpty ? null : _preferredDaysOfWeek,
         preferAgeVerified: _preferAgeVerified,
         preferPetOwners: _preferPetOwners,
         preferAccessibilityNeeds: _preferAccessibilityNeeds,
-        preferredSpecialNeeds: _preferredSpecialNeeds.isEmpty ? null : _preferredSpecialNeeds,
+        preferredSpecialNeeds:
+            _preferredSpecialNeeds.isEmpty ? null : _preferredSpecialNeeds,
         aiKeywords: _aiKeywords.isEmpty ? null : _aiKeywords,
         aiMatchingPrompt: _aiMatchingPrompt,
-        excludedInterests: _excludedInterests.isEmpty ? null : _excludedInterests,
-        excludedPersonalityTraits: _excludedPersonalityTraits.isEmpty ? null : _excludedPersonalityTraits,
-        excludedLocations: _excludedLocations.isEmpty ? null : _excludedLocations,
+        excludedInterests:
+            _excludedInterests.isEmpty ? null : _excludedInterests,
+        excludedPersonalityTraits: _excludedPersonalityTraits.isEmpty
+            ? null
+            : _excludedPersonalityTraits,
+        excludedLocations:
+            _excludedLocations.isEmpty ? null : _excludedLocations,
       );
     });
     widget.onPreferencesChanged(_preferences);
@@ -254,20 +346,18 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Patron Preferences',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Tell us about the types of patrons you want to attract. The central AI will use these preferences to recommend your business to appropriate users.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 24),
 
@@ -403,9 +493,9 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
             items: [
               const DropdownMenuItem(value: null, child: Text('Any')),
               ...SpendingLevel.values.map((level) => DropdownMenuItem(
-                value: level,
-                child: Text(level.displayName),
-              )),
+                    value: level,
+                    child: Text(level.displayName),
+                  )),
             ],
             onChanged: (value) {
               setState(() {
@@ -432,7 +522,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
             children: [
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Loyal Customers'),
+                  title: Text('Prefer Loyal Customers'),
                   value: _preferLoyalCustomers,
                   onChanged: (value) {
                     setState(() {
@@ -444,7 +534,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
               ),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer New Customers'),
+                  title: Text('Prefer New Customers'),
                   value: _preferNewCustomers,
                   onChanged: (value) {
                     setState(() {
@@ -464,7 +554,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
             children: [
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Community Members'),
+                  title: Text('Prefer Community Members'),
                   value: _preferCommunityMembers,
                   onChanged: (value) {
                     setState(() {
@@ -476,7 +566,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
               ),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Local Patrons'),
+                  title: Text('Prefer Local Patrons'),
                   value: _preferLocalPatrons,
                   onChanged: (value) {
                     setState(() {
@@ -493,7 +583,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
             children: [
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Tourists'),
+                  title: Text('Prefer Tourists'),
                   value: _preferTourists,
                   onChanged: (value) {
                     setState(() {
@@ -505,7 +595,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
               ),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Educated Patrons'),
+                  title: Text('Prefer Educated Patrons'),
                   value: _preferEducatedPatrons,
                   onChanged: (value) {
                     setState(() {
@@ -554,7 +644,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
             children: [
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Age Verified (18+)'),
+                  title: Text('Prefer Age Verified (18+)'),
                   value: _preferAgeVerified,
                   onChanged: (value) {
                     setState(() {
@@ -566,7 +656,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
               ),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Prefer Pet Owners'),
+                  title: Text('Prefer Pet Owners'),
                   value: _preferPetOwners,
                   onChanged: (value) {
                     setState(() {
@@ -580,7 +670,7 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
           ),
           const SizedBox(height: 16),
           CheckboxListTile(
-            title: const Text('Prefer Accessibility Needs'),
+            title: Text('Prefer Accessibility Needs'),
             value: _preferAccessibilityNeeds,
             onChanged: (value) {
               setState(() {
@@ -593,9 +683,12 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
 
           // AI/ML Keywords
           _buildSectionTitle('AI Matching Keywords'),
-          const Text(
+          Text(
             'Add keywords to help the central AI recommend your business to appropriate users',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           TextFormField(
@@ -608,7 +701,10 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
               _aiKeywords.clear();
               if (value.isNotEmpty) {
                 _aiKeywords.addAll(
-                  value.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty),
+                  value
+                      .split(',')
+                      .map((s) => s.trim())
+                      .where((s) => s.isNotEmpty),
                 );
               }
               _updatePreferences();
@@ -632,9 +728,12 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
 
           // Exclusion Criteria
           _buildSectionTitle('Exclusion Criteria'),
-          const Text(
+          Text(
             'Specify what to avoid (optional)',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           _buildChipSelector(
@@ -656,13 +755,12 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: kSpaceXs),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
@@ -679,7 +777,10 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
         if (label != null) ...[
           Text(
             label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
         ],
@@ -707,4 +808,3 @@ class _BusinessPatronPreferencesWidgetState extends State<BusinessPatronPreferen
     );
   }
 }
-

@@ -1,31 +1,32 @@
 // Fabric Cluster Visualization Widget
-// 
+//
 // Widget for displaying fabric clusters (communities)
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 5: Knot Fabric for Community Representation
 
 import 'package:flutter/material.dart';
 import 'package:avrai_knot/models/knot/fabric_cluster.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Widget for visualizing fabric clusters
 class FabricClusterVisualization extends StatelessWidget {
   final List<FabricCluster> clusters;
   final Function(FabricCluster)? onClusterTap;
-  
+
   const FabricClusterVisualization({
     super.key,
     required this.clusters,
     this.onClusterTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (clusters.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No clusters found'),
       );
     }
-    
+
     return ListView.builder(
       itemCount: clusters.length,
       itemBuilder: (context, index) {
@@ -43,21 +44,22 @@ class FabricClusterVisualization extends StatelessWidget {
 class ClusterCard extends StatelessWidget {
   final FabricCluster cluster;
   final VoidCallback? onTap;
-  
+
   const ClusterCard({
     super.key,
     required this.cluster,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(kSpaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,7 +72,7 @@ class ClusterCard extends StatelessWidget {
                   ),
                   if (cluster.isKnotTribe)
                     Chip(
-                      label: const Text('Knot Tribe'),
+                      label: Text('Knot Tribe'),
                       backgroundColor: Colors.blue.shade100,
                     ),
                 ],

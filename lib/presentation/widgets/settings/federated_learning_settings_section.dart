@@ -13,8 +13,10 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 
 /// Settings section widget for federated learning participation
 class FederatedLearningSettingsSection extends StatefulWidget {
@@ -52,17 +54,13 @@ class _FederatedLearningSettingsSectionState
     try {
       await _storageService.setBool(_participationKey, value);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              value
-                  ? 'Federated learning participation enabled'
-                  : 'Federated learning participation disabled',
-            ),
-            backgroundColor:
-                value ? AppColors.electricGreen : AppColors.warning,
-            duration: const Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: value
+              ? 'Federated learning participation enabled'
+              : 'Federated learning participation disabled',
+          kind: value ? FeedbackKind.success : FeedbackKind.warning,
+          duration: const Duration(seconds: 2),
         );
       }
     } catch (e) {
@@ -71,17 +69,13 @@ class _FederatedLearningSettingsSectionState
         _isParticipating = !value;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving preference: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error saving preference: $e');
       }
     }
   }
 
   void _showInfoDialog() {
+    final spacing = context.spacing;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -89,7 +83,7 @@ class _FederatedLearningSettingsSectionState
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.school,
@@ -98,11 +92,10 @@ class _FederatedLearningSettingsSectionState
             SizedBox(width: 8),
             Text(
               'What is Federated Learning?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ),
@@ -111,21 +104,19 @@ class _FederatedLearningSettingsSectionState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Federated learning is a privacy-preserving way for AI to learn from your data without exposing it.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'How it works:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
               const SizedBox(height: 8),
               _buildInfoItem('1. Local Training',
@@ -138,12 +129,12 @@ class _FederatedLearningSettingsSectionState
                   'The improved model is sent back to your device'),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(spacing.sm),
                 decoration: BoxDecoration(
                   color: AppColors.electricGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(
                       Icons.lock,
@@ -154,10 +145,9 @@ class _FederatedLearningSettingsSectionState
                     Expanded(
                       child: Text(
                         'Your data stays on your device. Only anonymized patterns are shared.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
                   ],
@@ -169,12 +159,12 @@ class _FederatedLearningSettingsSectionState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
+            child: Text(
               'Got it',
-              style: TextStyle(
-                color: AppColors.electricGreen,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.electricGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
         ],
@@ -183,18 +173,18 @@ class _FederatedLearningSettingsSectionState
   }
 
   Widget _buildInfoItem(String title, String description) {
+    final spacing = context.spacing;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: spacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '•',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.electricGreen,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.electricGreen,
+                ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -203,19 +193,17 @@ class _FederatedLearningSettingsSectionState
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -227,21 +215,22 @@ class _FederatedLearningSettingsSectionState
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: spacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(spacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(spacing.xs),
                   decoration: BoxDecoration(
                     color: AppColors.electricGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -253,14 +242,13 @@ class _FederatedLearningSettingsSectionState
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Federated Learning',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                 ),
                 Semantics(
@@ -279,21 +267,20 @@ class _FederatedLearningSettingsSectionState
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Help improve avrai AI while keeping your data private',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -307,10 +294,10 @@ class _FederatedLearningSettingsSectionState
                       Expanded(
                         child: Text(
                           'Privacy-preserving: Your data stays on your device. Only anonymized model updates (not raw data) are shared.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -320,13 +307,12 @@ class _FederatedLearningSettingsSectionState
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Benefits of participating:',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
             const SizedBox(height: 8),
             _buildBenefitItem('More accurate recommendations'),
@@ -334,7 +320,7 @@ class _FederatedLearningSettingsSectionState
             _buildBenefitItem('Better personalized experiences'),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -343,7 +329,7 @@ class _FederatedLearningSettingsSectionState
                   width: 1,
                 ),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -357,11 +343,11 @@ class _FederatedLearningSettingsSectionState
                       Expanded(
                         child: Text(
                           'Not participating may result in:',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ),
                     ],
@@ -369,10 +355,9 @@ class _FederatedLearningSettingsSectionState
                   SizedBox(height: 8),
                   Text(
                     '• Less accurate recommendations\n• Slower AI improvement\n• Less personalized experiences',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -389,22 +374,20 @@ class _FederatedLearningSettingsSectionState
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'Participate in Federated Learning',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                   subtitle: Text(
                     _isParticipating
                         ? 'Your device will contribute to improving avrai AI'
                         : 'Your device will not participate in federated learning',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   value: _isParticipating,
                   onChanged: _toggleParticipation,
@@ -419,8 +402,9 @@ class _FederatedLearningSettingsSectionState
   }
 
   Widget _buildBenefitItem(String benefit) {
+    final spacing = context.spacing;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: spacing.xs),
       child: Row(
         children: [
           const Icon(
@@ -432,10 +416,9 @@ class _FederatedLearningSettingsSectionState
           Expanded(
             child: Text(
               benefit,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],

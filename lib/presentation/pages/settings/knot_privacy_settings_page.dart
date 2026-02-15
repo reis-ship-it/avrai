@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:avrai_knot/services/knot/knot_privacy_service.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 /// Settings page for knot privacy controls
@@ -63,16 +64,21 @@ class _KnotPrivacySettingsPageState extends State<KnotPrivacySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.spacing;
+    final textTheme = Theme.of(context).textTheme;
+
     return AdaptivePlatformPageScaffold(
       title: 'Knot Privacy Settings',
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(spacing.md),
         children: [
-          const Text(
+          Text(
             'Control how your personality knot is shared with others',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: spacing.lg),
           SwitchListTile(
             title: const Text('Show knot publicly'),
             subtitle: const Text('Allow others to see your knot'),
@@ -109,12 +115,14 @@ class _KnotPrivacySettingsPageState extends State<KnotPrivacySettingsPage> {
               onChanged: _updatePublicContext,
             ),
           ),
-          const SizedBox(height: 24),
-          const Text(
+          SizedBox(height: spacing.lg),
+          Text(
             'Privacy Levels:',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: spacing.xs),
           _buildPrivacyLevelInfo(KnotContext.public, 'Full knot visible'),
           _buildPrivacyLevelInfo(
               KnotContext.friends, 'Visible to friends only'),
@@ -129,14 +137,19 @@ class _KnotPrivacySettingsPageState extends State<KnotPrivacySettingsPage> {
   }
 
   Widget _buildPrivacyLevelInfo(KnotContext context, String description) {
+    final spacing = this.context.spacing;
+    final textTheme = Theme.of(this.context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: EdgeInsets.symmetric(vertical: spacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '• ${_getContextLabel(context)}: ',
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Expanded(
             child: Text(description),

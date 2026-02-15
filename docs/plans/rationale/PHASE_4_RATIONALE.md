@@ -91,4 +91,31 @@ Happiness-weighted exploration prevents the model from doubling down on failing 
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 context -- energy function fills a gap that even the latest unified frameworks miss. Previous: 1.0 v12 gap fill)
+---
+
+## Why Multi-Dimensional Self-Calibrating Happiness (4.5B)
+
+**Problem:** A single happiness score (0.0-1.0) hides why a user is happy or unhappy. A socially thriving but professionally miserable user looks the same as the reverse. The system can't diagnose problems or target specific improvement areas.
+
+**Solution (4 parts):**
+1. **Dimension decomposition** (4.5B.1) -- Replace scalar with a vector of 6+ dimensions (discovery, social, routine, professional, growth, trust). Scalar = weighted sum.
+2. **Self-calibrating per-user weights** (4.5B.2) -- Learn which dimensions predict each user's engagement via weekly linear regression. A social person's social weight rises to 0.4; an explorer's discovery weight hits 0.5.
+3. **Self-adjusting dimensions** (4.5B.3) -- Self-optimization engine proposes new dimensions when outcome clusters don't correlate with existing ones. Retires stale dimensions.
+4. **Dynamic locality thresholds** (4.5B.4) -- Replace fixed 60% with locality-relative baselines (1 standard deviation below rolling 90-day average).
+5. **Trajectory prediction** (4.5B.5) -- Forecast 7-day happiness direction. A user at 0.7 trending down is more urgent than 0.5 trending up.
+6. **Professional fulfillment** (4.5B.6) -- Dedicated dimension for earners tracking booking/revenue/satisfaction trends.
+
+**Alternatives considered:**
+- **Keep single score:** Simpler, but hides diagnostic information. The MPC planner can't optimize for specific dimensions.
+- **Fixed dimensions (no self-adjusting):** Easier, but the system can't discover happiness factors we haven't thought of.
+- **Global weights (not per-user):** Less personalized. A single set of weights can't capture that social matters more to some than others.
+
+**Pre-flight checklist:**
+- [ ] `AgentHappinessService` currently produces scalar. Migration path: scalar = weighted sum of vector.
+- [ ] Phase 1.1C consolidation cycle available for weekly weight updates.
+- [ ] Phase 7.9C experiment orchestrator available for dimension proposal canary experiments.
+- [ ] Phase 8.9B locality advisory currently uses fixed threshold. Must update to use dynamic baselines.
+
+---
+
+**Last Updated:** February 12, 2026 -- Version 1.2 (added Multi-Dimensional Self-Calibrating Happiness 4.5B rationale. Previous: 1.1 Zeng et al. 2026 context)

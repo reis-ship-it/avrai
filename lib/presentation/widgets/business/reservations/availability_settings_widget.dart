@@ -7,10 +7,11 @@
 // Widget for configuring business hours and holiday/closure dates
 
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/core/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Availability Settings Widget
 ///
@@ -129,21 +130,11 @@ class _AvailabilitySettingsWidgetState
           '${_storageKeyPrefix}available_${widget.businessId}', _isAvailable);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Availability settings saved'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        context.showSuccess('Availability settings saved');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving settings: $e'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
+        context.showError('Error saving settings: $e');
       }
     }
   }
@@ -234,7 +225,7 @@ class _AvailabilitySettingsWidgetState
     if (_isLoading) {
       return const Card(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(kSpaceLg),
           child: Center(child: CircularProgressIndicator()),
         ),
       );
@@ -242,7 +233,7 @@ class _AvailabilitySettingsWidgetState
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -282,7 +273,7 @@ class _AvailabilitySettingsWidgetState
               final day = entry.key;
               final hours = entry.value;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: kSpaceXs),
                 child: Row(
                   children: [
                     SizedBox(
@@ -302,7 +293,7 @@ class _AvailabilitySettingsWidgetState
                     ),
                     TextButton(
                       onPressed: () => _editHours(day),
-                      child: const Text('Edit'),
+                      child: Text('Edit'),
                     ),
                   ],
                 ),
@@ -323,7 +314,7 @@ class _AvailabilitySettingsWidgetState
                 TextButton.icon(
                   onPressed: _selectHolidayDate,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Holiday'),
+                  label: Text('Add Holiday'),
                 ),
               ],
             ),
@@ -367,7 +358,7 @@ class _AvailabilitySettingsWidgetState
                 TextButton.icon(
                   onPressed: _selectClosureDate,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Closure'),
+                  label: Text('Add Closure'),
                 ),
               ],
             ),

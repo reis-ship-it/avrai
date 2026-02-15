@@ -6,7 +6,9 @@ import 'package:avrai/core/services/fraud/dispute_resolution_service.dart';
 import 'package:avrai/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Dispute Status Page
 ///
@@ -93,15 +95,18 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             Text(
               _error!,
-              style: const TextStyle(color: AppColors.error),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.error),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             ElevatedButton(
               onPressed: _loadDispute,
-              child: const Text('Retry'),
+              child: Text('Retry'),
             ),
           ],
         ),
@@ -116,26 +121,26 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(context.spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status Header
             _buildStatusHeader(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Dispute Details
             _buildDisputeDetails(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Timeline
             _buildTimeline(),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing.xl),
 
             // Messages (if any)
             if (_dispute!.messages.isNotEmpty) ...[
               _buildMessages(),
-              const SizedBox(height: 24),
+              SizedBox(height: context.spacing.xl),
             ],
 
             // Resolution (if resolved)
@@ -176,36 +181,32 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: statusColor.withValues(alpha: 0.1),
+      borderColor: statusColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(statusIcon, color: statusColor, size: 32),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Status: ${status.displayName}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: statusColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: statusColor,
+                      ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing.xxs),
                 Text(
                   _getStatusDescription(status),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -216,58 +217,52 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
   }
 
   Widget _buildDisputeDetails() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Dispute Details',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildDetailRow('Type', _dispute!.type.displayName),
           _buildDetailRow('Event ID', _dispute!.eventId),
           _buildDetailRow('Created', _formatDateTime(_dispute!.createdAt)),
           if (_dispute!.assignedAdminId != null)
             _buildDetailRow('Assigned Admin', _dispute!.assignedAdminId!),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: context.spacing.md),
+          Text(
             'Description',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           Text(
             _dispute!.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
           if (_dispute!.evidenceUrls.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: context.spacing.md),
+            Text(
               'Evidence',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -305,11 +300,14 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                               return Container(
                                 color: AppColors.grey200,
                                 alignment: Alignment.center,
-                                padding: const EdgeInsets.all(16),
-                                child: const Text(
+                                padding: EdgeInsets.all(context.spacing.md),
+                                child: Text(
                                   'Unable to load image',
-                                  style:
-                                      TextStyle(color: AppColors.textSecondary),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: AppColors.textSecondary),
                                 ),
                               );
                             },
@@ -319,35 +317,36 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                     ),
                   );
                 },
-          child: Container(
+          child: SizedBox(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.grey300),
+            child: PortalSurface(
+              padding: EdgeInsets.zero,
               color: AppColors.grey200,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: resolved == null
-                  ? const Center(
-                      child: SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+              borderColor: AppColors.grey300,
+              radius: context.radius.sm,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: resolved == null
+                    ? const Center(
+                        child: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : Image.network(
+                        resolved.toString(),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AppColors.grey200,
+                            child: const Icon(Icons.image,
+                                color: AppColors.textSecondary),
+                          );
+                        },
                       ),
-                    )
-                  : Image.network(
-                      resolved.toString(),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.grey200,
-                          child: const Icon(Icons.image,
-                              color: AppColors.textSecondary),
-                        );
-                      },
-                    ),
+              ),
             ),
           ),
         );
@@ -356,25 +355,22 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
   }
 
   Widget _buildTimeline() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Timeline',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildTimelineItem(
             'Dispute Submitted',
             _formatDateTime(_dispute!.createdAt),
@@ -399,39 +395,34 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
 
   Widget _buildTimelineItem(String title, String date, bool isComplete) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: context.spacing.md),
       child: Row(
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isComplete ? AppColors.electricGreen : AppColors.grey400,
-            ),
+          CircleAvatar(
+            radius: context.radius.md,
+            backgroundColor:
+                isComplete ? AppColors.electricGreen : AppColors.grey400,
             child: isComplete
                 ? const Icon(Icons.check, size: 16, color: AppColors.white)
                 : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
@@ -442,36 +433,32 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
   }
 
   Widget _buildMessages() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Messages',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ..._dispute!.messages.map((message) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: message.isAdminMessage
-                      ? AppTheme.primaryColor.withValues(alpha: 0.1)
-                      : AppColors.background,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              padding: EdgeInsets.only(bottom: context.spacing.sm),
+              child: PortalSurface(
+                padding: EdgeInsets.all(context.spacing.sm),
+                color: message.isAdminMessage
+                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                    : AppColors.background,
+                borderColor: AppColors.grey300.withValues(alpha: 0.6),
+                radius: context.radius.sm,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -480,32 +467,32 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
                         if (message.isAdminMessage)
                           const Icon(Icons.admin_panel_settings,
                               size: 16, color: AppTheme.primaryColor),
-                        if (message.isAdminMessage) const SizedBox(width: 4),
+                        if (message.isAdminMessage)
+                          SizedBox(width: context.spacing.xxs),
                         Text(
                           message.isAdminMessage ? 'Admin' : 'You',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                         const Spacer(),
                         Text(
                           _formatDateTime(message.timestamp),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Text(
                       message.message,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
                     ),
                   ],
                 ),
@@ -518,50 +505,44 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
   }
 
   Widget _buildResolution() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.electricGreen.withValues(alpha: 0.1),
+      borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.check_circle, color: AppColors.electricGreen),
               SizedBox(width: 8),
               Text(
                 'Resolution',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.electricGreen,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.electricGreen,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           if (_dispute!.resolution != null) ...[
             Text(
               _dispute!.resolution!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing.sm),
           ],
           if (_dispute!.refundAmount != null) ...[
             Text(
               'Refund Amount: \$${_dispute!.refundAmount!.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ],
         ],
@@ -571,7 +552,7 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: context.spacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -579,20 +560,18 @@ class _DisputeStatusPageState extends State<DisputeStatusPage> {
             width: 100,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
             ),
           ),
         ],

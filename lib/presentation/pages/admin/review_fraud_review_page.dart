@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/models/events/event_feedback.dart';
 import 'package:avrai/core/models/disputes/review_fraud_score.dart';
 import 'package:avrai/core/models/disputes/fraud_recommendation.dart';
@@ -8,7 +9,9 @@ import 'package:avrai/core/services/events/post_event_feedback_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Review Fraud Review Page (Admin)
 ///
@@ -110,12 +113,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Decision saved: ${decision.toUpperCase()}'),
-            backgroundColor: AppColors.electricGreen,
-          ),
-        );
+        context.showSuccess('Decision saved: ${decision.toUpperCase()}');
         Navigator.pop(context);
       }
     } catch (e) {
@@ -128,6 +126,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return AdaptivePlatformPageScaffold(
       title: 'Review Fraud Review',
       backgroundColor: AppColors.background,
@@ -143,13 +142,14 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                     children: [
                       const Icon(Icons.error_outline,
                           size: 64, color: AppColors.error),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       Text(
                         _error ?? 'Failed to load review fraud data',
-                        style: const TextStyle(color: AppColors.error),
+                        style: textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.error),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing.md),
                       ElevatedButton(
                         onPressed: _loadData,
                         child: const Text('Retry'),
@@ -159,30 +159,30 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(context.spacing.lg),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Risk Score Badge
                         _buildRiskScoreBadge(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Review Summary
                         _buildReviewSummary(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Fraud Signals
                         _buildFraudSignals(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Recommendation
                         _buildRecommendation(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing.xl),
 
                         // Reviews List
                         if (_feedbacks.isNotEmpty) ...[
                           _buildReviewsList(),
-                          const SizedBox(height: 24),
+                          SizedBox(height: context.spacing.xl),
                         ],
 
                         // Admin Actions
@@ -196,6 +196,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildRiskScoreBadge() {
+    final textTheme = Theme.of(context).textTheme;
     final score = _fraudScore!.riskScore;
     Color badgeColor;
     String riskLevel;
@@ -211,35 +212,30 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
       riskLevel = 'Low Risk';
     }
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3), width: 2),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.xl),
+      color: badgeColor.withValues(alpha: 0.1),
+      borderColor: badgeColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(Icons.rate_review, size: 48, color: badgeColor),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   riskLevel,
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: badgeColor,
                   ),
                 ),
                 Text(
                   'Risk Score: ${(score * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: textTheme.bodyLarge
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -250,25 +246,23 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildReviewSummary() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    final textTheme = Theme.of(context).textTheme;
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Review Summary',
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           _buildDetailRow('Total Reviews', '${_feedbacks.length}'),
           if (_feedbacks.isNotEmpty) ...[
             _buildDetailRow(
@@ -286,25 +280,22 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildDetailRow(String label, String value) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: context.spacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -312,23 +303,20 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildFraudSignals() {
+    final textTheme = Theme.of(context).textTheme;
     if (_fraudScore!.signals.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.electricGreen.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border:
-              Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-        ),
-        child: const Row(
+      return PortalSurface(
+        padding: EdgeInsets.all(context.spacing.lg),
+        color: AppColors.electricGreen.withValues(alpha: 0.1),
+        borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+        radius: context.radius.md,
+        child: Row(
           children: [
-            Icon(Icons.check_circle, color: AppColors.electricGreen),
-            SizedBox(width: 12),
+            const Icon(Icons.check_circle, color: AppColors.electricGreen),
+            SizedBox(width: context.spacing.sm),
             Text(
               'No fraud signals detected',
-              style: TextStyle(
-                fontSize: 16,
+              style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.electricGreen,
               ),
@@ -338,28 +326,25 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Fraud Signals (${_fraudScore!.signals.length})',
-            style: const TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ..._fraudScore!.signals.map((signal) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: context.spacing.sm),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -368,26 +353,23 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                     color: AppTheme.warningColor,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: context.spacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           signal.displayName,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: context.spacing.xxs),
                         Text(
                           signal.description,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -402,6 +384,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildRecommendation() {
+    final textTheme = Theme.of(context).textTheme;
     final recommendation = _fraudScore!.recommendation;
     Color recColor;
     IconData recIcon;
@@ -430,32 +413,27 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: recColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: recColor.withValues(alpha: 0.3)),
-      ),
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: recColor.withValues(alpha: 0.1),
+      borderColor: recColor.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           Icon(recIcon, size: 32, color: recColor),
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Recommendation',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
                 Text(
                   recText,
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: recColor,
                   ),
@@ -469,28 +447,26 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildReviewsList() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey300),
-      ),
+    final textTheme = Theme.of(context).textTheme;
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.surface,
+      borderColor: AppColors.grey300,
+      radius: context.radius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Reviews (${_feedbacks.length})',
-            style: const TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
           ..._feedbacks.take(5).map((feedback) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.only(bottom: context.spacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -507,11 +483,10 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                               : AppColors.grey400,
                         );
                       }),
-                      const SizedBox(width: 8),
+                      SizedBox(width: context.spacing.xs),
                       Text(
                         feedback.overallRating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -519,22 +494,18 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                       const Spacer(),
                       Text(
                         _formatDate(feedback.submittedAt),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: textTheme.bodySmall
+                            ?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                   if (feedback.comments != null &&
                       feedback.comments!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.spacing.xs),
                     Text(
                       feedback.comments!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: AppColors.textPrimary),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -546,8 +517,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
           if (_feedbacks.length > 5)
             Text(
               '... and ${_feedbacks.length - 5} more reviews',
-              style: const TextStyle(
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
                 fontStyle: FontStyle.italic,
               ),
@@ -558,37 +528,35 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildAdminActions() {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Admin Decision',
-          style: TextStyle(
-            fontSize: 18,
+          style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: context.spacing.md),
         if (_error != null) ...[
-          Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-            ),
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.sm),
+            margin: EdgeInsets.only(bottom: context.spacing.md),
+            color: AppColors.error.withValues(alpha: 0.1),
+            borderColor: AppColors.error.withValues(alpha: 0.3),
+            radius: context.radius.sm,
             child: Row(
               children: [
                 const Icon(Icons.error_outline,
                     color: AppColors.error, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: context.spacing.xs),
                 Expanded(
                   child: Text(
                     _error!,
                     style:
-                        const TextStyle(color: AppColors.error, fontSize: 12),
+                        textTheme.bodySmall?.copyWith(color: AppColors.error),
                   ),
                 ),
               ],
@@ -611,7 +579,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.spacing.sm),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed:
@@ -632,44 +600,37 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
   }
 
   Widget _buildReviewStatus() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.electricGreen.withValues(alpha: 0.3)),
-      ),
+    final textTheme = Theme.of(context).textTheme;
+    return PortalSurface(
+      padding: EdgeInsets.all(context.spacing.lg),
+      color: AppColors.electricGreen.withValues(alpha: 0.1),
+      borderColor: AppColors.electricGreen.withValues(alpha: 0.3),
+      radius: context.radius.md,
       child: Row(
         children: [
           const Icon(Icons.check_circle, color: AppColors.electricGreen),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Reviewed',
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.electricGreen,
                   ),
                 ),
                 Text(
                   'Decision: ${_fraudScore!.adminDecision?.toUpperCase() ?? 'N/A'}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
                 if (_fraudScore!.reviewedAt != null)
                   Text(
                     'Reviewed on ${_formatDate(_fraudScore!.reviewedAt!)}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
                   ),
               ],
             ),

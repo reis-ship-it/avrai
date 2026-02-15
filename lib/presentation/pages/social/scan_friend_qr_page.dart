@@ -5,6 +5,7 @@
 
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:avrai/core/services/chat/friend_qr_service.dart';
 import 'package:avrai/core/services/social_media/social_media_discovery_service.dart';
@@ -14,6 +15,9 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/gradient_scrim.dart';
+import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Scan Friend QR Page
 ///
@@ -61,12 +65,11 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
     final friendData = FriendQRService.parseFriendQRCodeData(qrData);
     if (friendData == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid QR code. Please scan a friend QR code.'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 2),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message: 'Invalid QR code. Please scan a friend QR code.',
+          kind: FeedbackKind.error,
+          duration: const Duration(seconds: 2),
         );
       }
       return;
@@ -75,13 +78,12 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
     // Check if QR code is expired
     if (friendData.isExpired) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'QR code has expired. Please ask your friend to generate a new one.'),
-            backgroundColor: AppColors.warning,
-            duration: Duration(seconds: 3),
-          ),
+        FeedbackPresenter.showSnack(
+          context,
+          message:
+              'QR code has expired. Please ask your friend to generate a new one.',
+          kind: FeedbackKind.warning,
+          duration: const Duration(seconds: 3),
         );
       }
       return;
@@ -113,12 +115,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
       // Check if trying to add self
       if (agentId == _scannedData!.agentId) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You cannot add yourself as a friend.'),
-              backgroundColor: AppColors.warning,
-            ),
-          );
+          context.showWarning('You cannot add yourself as a friend.');
         }
         return;
       }
@@ -131,12 +128,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
 
       if (mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Friend request sent!'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          context.showSuccess('Friend request sent!');
           // Navigate back after short delay
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) {
@@ -144,12 +136,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
             }
           });
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send friend request. Please try again.'),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          context.showError('Failed to send friend request. Please try again.');
         }
       }
     } catch (e) {
@@ -158,12 +145,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
         name: 'ScanFriendQRPage',
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error: $e');
       }
     } finally {
       if (mounted) {
@@ -217,40 +199,36 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
           top: 0,
           left: 0,
           right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.7),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-            child: const Text(
+          child: GradientScrim(
+            padding: const EdgeInsets.all(kSpaceMd),
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.7),
+              Colors.transparent,
+            ],
+            child: Text(
               'Position the QR code within the frame',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
               textAlign: TextAlign.center,
             ),
           ),
         ),
         // Scanning frame overlay
         Center(
-          child: Container(
+          child: SizedBox(
             width: 250,
             height: 250,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: AppColors.electricGreen,
-                width: 3,
-              ),
-              borderRadius: BorderRadius.circular(12),
+            child: PortalSurface(
+              padding: EdgeInsets.zero,
+              color: Colors.transparent,
+              borderColor: AppColors.electricGreen,
+              radius: 12,
+              elevation: 0,
+              child: const SizedBox.shrink(),
             ),
           ),
         ),
@@ -259,18 +237,14 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.8),
-                  Colors.transparent,
-                ],
-              ),
-            ),
+          child: GradientScrim(
+            padding: const EdgeInsets.all(kSpaceLg),
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.8),
+              Colors.transparent,
+            ],
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -280,21 +254,19 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
                   size: 32,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Scan your friend\'s QR code',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Make sure the QR code is clearly visible',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 13,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
                 ),
               ],
             ),
@@ -306,7 +278,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
 
   Widget _buildFriendPreview() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kSpaceLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -316,51 +288,42 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
             color: AppColors.success,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'QR Code Scanned!',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Agent ID: ${_scannedData!.agentId.length > 20 ? _scannedData!.agentId.substring(0, 20) : _scannedData!.agentId}...',
-            style: const TextStyle(
-              fontSize: 13,
-              fontFamily: 'monospace',
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontFamily: 'monospace',
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.grey100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.grey300,
-                width: 1,
-              ),
-            ),
+          PortalSurface(
+            padding: const EdgeInsets.all(kSpaceMdWide),
+            color: AppColors.grey100,
+            borderColor: AppColors.grey300,
+            radius: 12,
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Send Friend Request?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'This will send a friend request to this user.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -385,7 +348,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: kSpaceMd),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -395,7 +358,7 @@ class _ScanFriendQRPageState extends State<ScanFriendQRPage> {
           const SizedBox(height: 12),
           TextButton(
             onPressed: _resetScan,
-            child: const Text('Scan Another QR Code'),
+            child: Text('Scan Another QR Code'),
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import 'package:avrai/core/services/expertise/expertise_service.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/core/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_display_widget.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_progress_widget.dart';
 import 'package:avrai/presentation/widgets/expertise/partnership_expertise_boost_widget.dart';
@@ -16,6 +17,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Expertise Dashboard Page
 /// Shows user's complete expertise profile with all categories and progress
@@ -25,7 +27,7 @@ import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 /// ```dart
 /// Navigator.push(
 ///   context,
-///   MaterialPageRoute(
+///   AppPageTransitions.material(
 ///     builder: (context) => const ExpertiseDashboardPage(),
 ///   ),
 /// );
@@ -317,9 +319,9 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
   }
 
   Widget _buildNotAuthenticatedState() {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(kSpaceLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -331,10 +333,9 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             SizedBox(height: 16),
             Text(
               'Please sign in to view your expertise',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -345,17 +346,15 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
   Widget _buildEmptyState() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.grey50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.grey200),
-            ),
-            child: const Column(
+          PortalSurface(
+            padding: EdgeInsets.all(context.spacing.xl),
+            color: AppColors.grey50,
+            borderColor: AppColors.grey200,
+            radius: context.radius.md,
+            child: Column(
               children: [
                 Icon(
                   Icons.stars_outlined,
@@ -365,19 +364,17 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                 SizedBox(height: 16),
                 Text(
                   'No Expertise Yet',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 SizedBox(height: 8),
                 Text(
                   'Start contributing to earn expertise pins! Create lists, review spots, and share your knowledge.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -412,7 +409,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
       });
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -421,22 +418,21 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             user: _currentUser!,
             showProgress: false, // We'll show detailed progress below
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Partnership Boost Section (Phase 4.5)
           _buildPartnershipBoostSection(),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
 
           // Category Breakdown
-          const Text(
+          Text(
             'Expertise by Category',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing.md),
 
           // Category Cards
           ...sortedCategories.map((category) {
@@ -447,36 +443,35 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
             final progress = _progressMap?[category];
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.only(bottom: context.spacing.md),
               child: _buildCategoryCard(primaryPin, categoryPins, progress),
             );
           }),
 
           // Progress Section
           if (_progressMap != null && _progressMap!.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            const Text(
+            SizedBox(height: context.spacing.xl),
+            Text(
               'Progress to Next Level',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             ..._progressMap!.values.map((progress) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.only(bottom: context.spacing.md),
                 child: ExpertiseProgressWidget(progress: progress),
               );
             }),
           ],
 
           // Requirements Section
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing.xl),
           _buildRequirementsSection(),
 
-          const SizedBox(height: 32),
+          SizedBox(height: context.spacing.xxl),
         ],
       ),
     );
@@ -490,61 +485,59 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
     final pinColor = primaryPin.getPinColor();
 
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Category Header
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: pinColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              CircleAvatar(
+                radius: context.radius.xl,
+                backgroundColor: pinColor.withValues(alpha: 0.1),
                 child: Icon(
                   primaryPin.getPinIcon(),
                   size: 24,
                   color: pinColor,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       primaryPin.category,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.spacing.xxs),
                     Row(
                       children: [
                         Text(
                           primaryPin.level.emoji,
-                          style: const TextStyle(fontSize: 14),
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: context.spacing.xxs),
                         Text(
                           '${primaryPin.level.displayName} Level',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
                         if (primaryPin.location != null) ...[
-                          const SizedBox(width: 8),
+                          SizedBox(width: context.spacing.xs),
                           Text(
                             '• ${primaryPin.location}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           ),
                         ],
                       ],
@@ -553,23 +546,20 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                 ),
               ),
               // Level Badge
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  ),
+              Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                side: BorderSide(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
                 ),
-                child: Text(
+                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                labelPadding: EdgeInsets.zero,
+                label: Text(
                   primaryPin.level.displayName,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor,
+                      ),
                 ),
               ),
             ],
@@ -577,22 +567,21 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
           // Progress (if available)
           if (progress != null) ...[
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing.md),
             ExpertiseProgressWidget(progress: progress, showDetails: true),
           ],
 
           // Unlocked Features
           if (primaryPin.unlockedFeatures.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: context.spacing.md),
+            Text(
               'Unlocked Features',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing.xs),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -600,7 +589,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                 return Chip(
                   label: Text(
                     feature.replaceAll('_', ' ').toUpperCase(),
-                    style: const TextStyle(fontSize: 10),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                   backgroundColor: AppColors.grey100,
                   side: const BorderSide(color: AppColors.grey300),
@@ -610,13 +599,12 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
           ],
 
           // Earned Date
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing.sm),
           Text(
             'Earned: ${_formatDate(primaryPin.earnedAt)}',
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -686,11 +674,11 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
   Widget _buildRequirementsSection() {
     return PortalSurface(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.spacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -700,23 +688,21 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
               SizedBox(width: 8),
               Text(
                 'How Expertise Works',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text(
+          SizedBox(height: context.spacing.sm),
+          Text(
             'Expertise is earned through authentic contributions:',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.spacing.xs),
           _buildRequirementItem('Create respected lists in categories'),
           _buildRequirementItem('Write thoughtful reviews'),
           _buildRequirementItem('Build community trust'),
@@ -728,26 +714,26 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
   Widget _buildRequirementItem(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.only(bottom: context.spacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 6, right: 8),
-            width: 4,
-            height: 4,
-            decoration: const BoxDecoration(
-              color: AppTheme.primaryColor,
-              shape: BoxShape.circle,
+          Padding(
+            padding: EdgeInsets.only(
+              top: context.spacing.xs - context.spacing.xxs / kSpaceNano,
+              right: context.spacing.xs,
+            ),
+            child: CircleAvatar(
+              radius: context.spacing.xxs / 2,
+              backgroundColor: AppTheme.primaryColor,
             ),
           ),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
             ),
           ),
         ],

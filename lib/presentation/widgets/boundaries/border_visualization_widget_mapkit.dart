@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_macos_maps/flutter_macos_maps.dart' as fmm;
 import 'package:avrai/core/theme/colors.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/services/geographic/geo_hierarchy_service.dart';
@@ -97,8 +98,8 @@ class _BorderVisualizationWidgetMapKitState
         return;
       }
 
-      final displayName = widget.locality ??
-          localityCode.split('-').last.replaceAll('_', ' ');
+      final displayName =
+          widget.locality ?? localityCode.split('-').last.replaceAll('_', ' ');
 
       _items.add(_MapKitBoundaryItem(
         id: 'locality:$localityCode',
@@ -151,7 +152,7 @@ class _BorderVisualizationWidgetMapKitState
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(kSpaceLg),
           child: StandardErrorWidget(
             message: _error ?? 'Error loading boundaries',
             onRetry: _loadBoundaries,
@@ -184,10 +185,9 @@ class _BorderVisualizationWidgetMapKitState
             const SizedBox(height: 16),
             Text(
               message,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -208,13 +208,12 @@ class _BorderVisualizationWidgetMapKitState
           Expanded(
             child: ListView(
               children: [
-                const Text(
+                Text(
                   'Hard Borders',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 ..._items.map((item) => _buildCard(item)),
@@ -228,7 +227,7 @@ class _BorderVisualizationWidgetMapKitState
 
   Widget _buildLegend() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -267,10 +266,9 @@ class _BorderVisualizationWidgetMapKitState
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );
@@ -278,7 +276,7 @@ class _BorderVisualizationWidgetMapKitState
 
   Widget _buildCard(_MapKitBoundaryItem item) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: kSpaceXs),
       child: ListTile(
         leading: Icon(
           Icons.border_clear,
@@ -286,18 +284,16 @@ class _BorderVisualizationWidgetMapKitState
         ),
         title: Text(
           item.name,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
         ),
         subtitle: Text(
           item.subtitle,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
         ),
         onTap: widget.onBorderTapped != null
             ? () => widget.onBorderTapped!(item.name, item.subtitle)

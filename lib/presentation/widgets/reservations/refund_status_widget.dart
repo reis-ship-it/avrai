@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Refund Status Widget
 ///
@@ -36,12 +37,13 @@ class RefundStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     if (reservation.status != ReservationStatus.cancelled) {
       return const SizedBox.shrink();
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(kSpaceMd),
       decoration: BoxDecoration(
         color: refundIssued
             ? AppTheme.successColor.withValues(alpha: 0.1)
@@ -82,8 +84,7 @@ class RefundStatusWidget extends StatelessWidget {
                       : qualifiesForRefund
                           ? 'Refund Pending'
                           : 'No Refund',
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: refundIssued
                         ? AppTheme.successColor
@@ -96,15 +97,16 @@ class RefundStatusWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          if (qualifiesForRefund && refundAmount != null && refundAmount! > 0) ...[
+          if (qualifiesForRefund &&
+              refundAmount != null &&
+              refundAmount! > 0) ...[
             Row(
               children: [
                 const Icon(Icons.attach_money, color: AppTheme.primaryColor),
                 const SizedBox(width: 4),
                 Text(
                   'Refund Amount: \$${refundAmount!.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
                   ),
@@ -113,33 +115,33 @@ class RefundStatusWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
           ],
-          if (!qualifiesForRefund && reservation.disputeStatus == DisputeStatus.none) ...[
-            const Text(
+          if (!qualifiesForRefund &&
+              reservation.disputeStatus == DisputeStatus.none) ...[
+            Text(
               'This reservation does not qualify for a refund based on the cancellation policy.',
-              style: TextStyle(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'If you have extenuating circumstances, you can file a dispute for review.',
-              style: TextStyle(
-                fontSize: 12,
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 fontStyle: FontStyle.italic,
               ),
             ),
           ],
           if (reservation.disputeStatus != DisputeStatus.none) ...[
-            _buildDisputeStatus(reservation),
+            _buildDisputeStatus(context, reservation),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildDisputeStatus(Reservation reservation) {
+  Widget _buildDisputeStatus(BuildContext context, Reservation reservation) {
+    final textTheme = Theme.of(context).textTheme;
     final status = reservation.disputeStatus;
     Color statusColor;
     IconData statusIcon;
@@ -172,8 +174,8 @@ class RefundStatusWidget extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: kSpaceXs),
+      padding: const EdgeInsets.all(kSpaceSm),
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
@@ -186,8 +188,7 @@ class RefundStatusWidget extends StatelessWidget {
           Expanded(
             child: Text(
               statusText,
-              style: TextStyle(
-                fontSize: 14,
+              style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: statusColor,
               ),

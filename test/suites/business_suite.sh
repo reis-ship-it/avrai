@@ -15,14 +15,14 @@ flutter test "$@" \
   test/unit/services/brand_analytics_service_test.dart \
   test/unit/services/brand_discovery_service_test.dart \
   test/widget/pages/business/ \
-  test/integration/business_flow_integration_test.dart \
-  test/integration/business_expert_vibe_matching_integration_test.dart \
+  test/integration/services/business_flow_integration_test.dart \
+  test/integration/services/business_expert_vibe_matching_integration_test.dart \
   test/integration/controllers/business_onboarding_controller_integration_test.dart \
   test/integration/ui/business_ui_integration_test.dart \
-  test/integration/product_tracking_services_integration_test.dart \
-  test/integration/product_tracking_flow_integration_test.dart \
-  test/integration/brand_analytics_integration_test.dart \
-  test/integration/brand_discovery_services_integration_test.dart \
-  test/integration/brand_discovery_flow_integration_test.dart \
+  test/integration/products/product_tracking_services_integration_test.dart \
+  test/integration/products/product_tracking_flow_integration_test.dart \
+  test/integration/brand/brand_analytics_integration_test.dart \
+  test/integration/brand/brand_discovery_services_integration_test.dart \
+  test/integration/brand/brand_discovery_flow_integration_test.dart \
   test/integration/ui/brand_ui_integration_test.dart
 

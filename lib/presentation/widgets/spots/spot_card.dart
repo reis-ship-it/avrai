@@ -4,6 +4,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/category_colors.dart';
 import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 class SpotCard extends StatelessWidget {
   final Spot spot;
@@ -28,7 +29,8 @@ class SpotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin:
+          const EdgeInsets.symmetric(horizontal: kSpaceMd, vertical: kSpaceXs),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: _getCategoryColor(spot.category),
@@ -49,8 +51,8 @@ class SpotCard extends StatelessWidget {
                 Text(' ${spot.rating.toStringAsFixed(1)}'),
                 const SizedBox(width: 16),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kSpaceXs, vertical: kSpaceNano),
                   decoration: BoxDecoration(
                     color:
                         _getCategoryColor(spot.category).withValues(alpha: 0.2),
@@ -58,10 +60,9 @@ class SpotCard extends StatelessWidget {
                   ),
                   child: Text(
                     spot.category,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _getCategoryColor(spot.category),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _getCategoryColor(spot.category),
+                        ),
                   ),
                 ),
               ],
@@ -78,7 +79,7 @@ class SpotCard extends StatelessWidget {
                 ),
                 if (isReservationAvailable != null)
                   Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                    padding: const EdgeInsets.only(left: kSpaceXs),
                     child: SpotReservationBadgeWidget(
                       isAvailable: isReservationAvailable!,
                       hasExistingReservation: hasExistingReservation ?? false,

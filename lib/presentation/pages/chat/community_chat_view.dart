@@ -10,9 +10,11 @@
 library;
 
 import 'dart:async';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/core/design/feedback_presenter.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/services/community/community_chat_service.dart';
@@ -186,12 +188,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading history: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error loading history: $e');
       }
     }
   }
@@ -240,12 +237,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
         setState(() {
           _isSending = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending message: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        context.showError('Error sending message: $e');
       }
     }
   }
@@ -288,17 +280,16 @@ class _CommunityChatViewState extends State<CommunityChatView> {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kSpaceMd),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Members (${_community!.memberCount})',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Flexible(
@@ -319,7 +310,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                           snapshot.data ?? memberId,
                         ),
                         subtitle: memberId == _community!.founderId
-                            ? const Text('Founder')
+                            ? Text('Founder')
                             : null,
                       );
                     },
@@ -385,11 +376,10 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                     onTap: () => _showMemberList(context),
                     child: Text(
                       '${_community!.memberCount} members',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        color: AppTheme.primaryColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: AppTheme.primaryColor,
+                          ),
                     ),
                   ),
               ],
@@ -411,7 +401,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
           // Message list
           Expanded(
             child: _isLoading && _messages.isEmpty
-                ? const Center(
+                ? Center(
                     child: CircularProgressIndicator(),
                   )
                 : _filteredMessages.isEmpty
@@ -431,19 +421,23 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                               _searchQuery.isNotEmpty
                                   ? 'No messages found'
                                   : 'No messages yet',
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                             if (_searchQuery.isEmpty) ...[
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Start the conversation!',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 14,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                               ),
                             ],
                           ],
@@ -451,7 +445,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                       )
                     : ListView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(kSpaceMd),
                         itemCount: _filteredMessages.length,
                         itemBuilder: (context, index) {
                           final message = _filteredMessages[index];
@@ -475,20 +469,12 @@ class _CommunityChatViewState extends State<CommunityChatView> {
           ),
 
           // Input bar
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
+          Material(
+            color: AppColors.white,
+            elevation: 4,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(kSpaceXs),
                 child: Row(
                   children: [
                     Expanded(
@@ -502,8 +488,8 @@ class _CommunityChatViewState extends State<CommunityChatView> {
                                 const BorderSide(color: AppColors.grey300),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: kSpaceMd,
+                            vertical: kSpaceSm,
                           ),
                         ),
                         maxLines: null,

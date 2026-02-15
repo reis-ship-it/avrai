@@ -28,6 +28,14 @@ This folder contains comprehensive design principles, guidelines, and best pract
 ### Reference Materials
 - **[Award-Winning Design Examples](./12_award_winning_examples.md)** - Inspiration from recognized designs
 - **[Design Resources and Tools](./13_design_resources_tools.md)** - Additional resources and references
+- **[Design System Architecture](./DESIGN_SYSTEM_ARCHITECTURE.md)** - Code-level design architecture map
+- **[Design Reference (Required)](./DESIGN_REF.md)** - Canonical UI/UX implementation reference for master-plan work
+- **[App Design Folders](./apps/README.md)** - App-scoped design specs (consumer, business, admin, research, partner)
+- **[Design Coverage Matrix](./DESIGN_COVERAGE_MATRIX.md)** - Current completeness by design domain/scope
+- **[Master Plan Design Linkage](./MASTER_PLAN_DESIGN_LINKAGE.md)** - Required mapping from design specs to Master Plan phases and architecture stories
+- **[Reality Coherence Test Matrix](../plans/architecture/REALITY_COHERENCE_TEST_MATRIX.md)** - Required scenario IDs and evidence contracts for degraded/recovery/inter-app coherence behavior
+- **[Sensory Feedback Guidelines](./SENSORY_FEEDBACK_GUIDELINES.md)** - Motion/haptic/audio contracts
+- **[Accessibility Design Contract](./ACCESSIBILITY_DESIGN_CONTRACT.md)** - Accessibility requirements for UI work
 
 ## 🎯 Quick Reference
 
@@ -76,4 +84,3 @@ All documentation in this folder is based on authoritative sources:
 **Last Updated**: November 2024  
 **Purpose**: Reference documentation for design best practices  
 **Status**: Living documentation - updated as new principles emerge
-

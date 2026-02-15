@@ -10,6 +10,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/services/reservation/reservation_availability_service.dart';
+import 'package:avrai/presentation/presentation_spacing.dart';
 
 /// Time Slot Picker Widget
 ///
@@ -226,11 +227,11 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
               _selectedDate != null
                   ? '${_selectedDate!.month}/${_selectedDate!.day}/${_selectedDate!.year}'
                   : 'Select date',
-              style: TextStyle(
-                color: _selectedDate != null
-                    ? AppColors.black
-                    : AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _selectedDate != null
+                        ? AppColors.black
+                        : AppColors.textSecondary,
+                  ),
             ),
           ),
         ),
@@ -240,15 +241,15 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
         // Time Slots
         if (_selectedDate != null) ...[
           if (_isLoading)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: EdgeInsets.all(kSpaceLg),
                 child: CircularProgressIndicator(),
               ),
             )
           else if (_isClosed)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppTheme.warningColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -261,7 +262,10 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
                   Expanded(
                     child: Text(
                       'Business is closed on this date',
-                      style: const TextStyle(color: AppTheme.warningColor),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppTheme.warningColor),
                     ),
                   ),
                 ],
@@ -269,7 +273,7 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
             )
           else if (_error != null)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppTheme.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -282,7 +286,10 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
                   Expanded(
                     child: Text(
                       _error!,
-                      style: const TextStyle(color: AppTheme.errorColor),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppTheme.errorColor),
                     ),
                   ),
                 ],
@@ -290,28 +297,30 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
             )
           else if (_availableSlots.isEmpty)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(kSpaceMd),
               decoration: BoxDecoration(
                 color: AppColors.grey200,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
+              child: Text(
                 'No available time slots for this date',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary),
               ),
             )
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Available Time Slots',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -333,13 +342,15 @@ class _TimeSlotPickerWidgetState extends State<TimeSlotPickerWidget> {
                       selectedColor:
                           AppTheme.primaryColor.withValues(alpha: 0.3),
                       checkmarkColor: AppTheme.primaryColor,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : AppColors.textPrimary,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
+                      labelStyle:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppColors.textPrimary,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
                     );
                   }).toList(),
                 ),
