@@ -17,7 +17,7 @@ A clear and concise description of what this PR does.
 - Include any files deleted
 
 ## 🧭 PRD Traceability
-- PR title format (required): `M#-P#-# <short summary>`
+- PR title format (required): `PRD-### M#-P#-# <short summary>`
 - Commit subject format (required for every non-merge commit): `M#-P#-# X.Y.Z <type(scope)>: <summary>`
 - PRD Requirement IDs impacted (required): `PRD-###`
 - Execution Board Milestone ID impacted (required, exactly one; place in PR title): `M#-P#-#`

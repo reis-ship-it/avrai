@@ -38,3 +38,4 @@ Before starting work:
 2. Confirm phase ownership in `docs/MASTER_PLAN.md`.
 3. Pick exactly one execution milestone from `docs/EXECUTION_BOARD.csv` for the PR.
 4. Keep file placement compliant with architecture guardrails in `docs/plans/architecture/`.
+5. Use PR title format required by CI traceability guard: `PRD-### M#-P#-# <short summary>`.

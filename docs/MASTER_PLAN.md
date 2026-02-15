@@ -117,7 +117,9 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 
 ---
@@ -234,6 +236,21 @@ Universe models need retrieval that combines explicit search intent, semantic in
 | 1.1D.10 | Add `SearchLearningAdapter`: learns better ranking/query-rewrite parameters from outcomes without changing core production logic directly | New |
 
 > **Training principle:** Knowledge is primarily runtime retrieval from fresh sources (indexes/DB/APIs), not static "beliefs" in model weights. Model weights learn ranking/policy; indexes hold changing facts.
+
+### 1.1E Lightweight Deterministic Memory Core (Fallback + Recovery Journal)
+
+Add a lightweight, grepable memory lane for deterministic recall, auditability, and recovery diagnostics. This layer complements (not replaces) episodic/semantic/procedural memory.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 1.1E.1 | Define `FactsJournal` schema (append-only factual entries with source, confidence, timestamp, provenance id) | New |
+| 1.1E.2 | Define `HistoryJournal` schema (chronological decision/event trace: hypothesis, experiment, rollout, rollback, outcome) | New |
+| 1.1E.3 | Implement deterministic retrieval API (keyword + metadata filters) as a fallback when semantic retrieval confidence is low | Extends 1.1A |
+| 1.1E.4 | Implement memory-window consolidation for journals: summarize older entries, keep critical facts and failure signatures verbatim | Extends 1.1C |
+| 1.1E.5 | Wire autonomous research lane (Phase 7.9) to write every experiment contract and outcome summary into `HistoryJournal` | Feeds 7.9 |
+| 1.1E.6 | Wire model lifecycle (Phase 7.7) to log promotion rationale and rollback triggers in deterministic form | Feeds 7.7 |
+| 1.1E.7 | Add privacy boundaries: journals remain local plaintext only if protected by on-device encryption at rest; federated sync shares DP-safe summaries only (no raw journal text) | Extends Phase 2, 8.1 |
+| 1.1E.8 | Add failure-signature index: known bad patterns from prior rollbacks are tagged and queryable to prevent repeat regressions | Feeds 7.7, 7.9 |
 
 ### 1.2 Outcome Data Collection Pipeline
 
@@ -1127,6 +1144,9 @@ ONNX models ship in the app binary (Phase 1.5D.3) and improve via federated aggr
 | 7.7.6 | **Per-user model rollback.** Phase 4.5.4 rolls back formula-to-energy-function transitions per user. Extend this: if a user's outcomes degrade after ANY model update (not just formula flip), automatically revert that user to the previous model version. Track per-user model version in `AgentHappinessService` metadata | Extends Phase 4.5.4, `AgentHappinessService` |
 | 7.7.7 | **Model version display in settings.** Show current model versions in AI settings page (e.g., "AI Model: v2.3 (updated 3 days ago)"). Non-alarming, informational. Include "Last improved" timestamp so users can see the system is actively learning | Extends `OnDeviceAiSettingsPage` |
 | 7.7.8 | **Model storage budget enforcement.** Keep at most 2 model versions on device (current + previous for rollback). Total ONNX budget: ~2MB (current ~1MB + previous ~1MB). Prune oldest version when a new one downloads. Respect Appendix D storage budget | New |
+| 7.7.9 | **Deterministic rollout ledger.** For each model/policy promotion, persist a journal record with candidate id, expected deltas, guardrails, and rollback conditions for forensic traceability | Extends 1.1E.2 |
+| 7.7.10 | **Rollback diagnosis from lightweight memory core.** `RollbackGuardian` queries failure signatures and recent `HistoryJournal` windows before/after degradation to identify likely cause class (data drift, policy overfit, noise sensitivity, safety regression) | Extends 1.1E.8, 7.9.7 |
+| 7.7.11 | **Known-bad suppression rule.** Block re-deploy of previously failed candidate patterns unless new evidence clears contradiction and coverage gates | Extends 7.7.5, 7.9.8 |
 
 > **Why this matters:** Without model lifecycle management, updated models either ship only via App Store updates (slow, requires user action) or arrive unversioned and unrollbackable (dangerous). The staged rollout + canary + per-user rollback ensures model improvements reach users quickly while protecting against regressions.
 
@@ -1181,6 +1201,9 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.11 | **Self-healing rollback guardian.** Implement `RollbackGuardian` that auto-reverts degradations and suppresses failed paths until new evidence supports retry | Extends 7.7.5 |
 | 7.9.12 | **Retrieval diversity and experiment-yield KPIs.** Track domain breadth, lens novelty, replication lift, unresolved-hypothesis backlog, and recovery time after failed promotions | New |
 | 7.9.13 | **Human approval boundary for hard policy changes.** Autonomous system may tune models/planning parameters, but cannot mutate legal/safety/compliance constraints without explicit approval | Extends Phase 2 |
+| 7.9.14 | **Deterministic experiment journal contract.** Every experiment must record pre-registered success/failure criteria and final verdict in `HistoryJournal` before promotion decision | Extends 1.1E.2 |
+| 7.9.15 | **Fallback memory route for hypothesis evaluation.** When semantic retrieval is uncertain/conflicting, force additional checks against `FactsJournal` and prior failure signatures before proposal approval | Extends 1.1E.3, 1.1E.8 |
+| 7.9.16 | **Cross-reference completeness gate.** No autonomous conviction increase unless external evidence is cross-checked with both internal learned memory and deterministic journals | Extends 7.9.8, 1.1E.1 |
 
 > **Required companion spec:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 >
@@ -1203,6 +1226,9 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 8.1.3 | Implement federated aggregation server (Supabase edge function) | Extends `EdgeFunctionService` |
 | 8.1.4 | Implement gradient verification (detect poisoned gradients) | New |
 | 8.1.5 | Wire into `AI2AIProtocol` for BLE-based gradient sharing | Extends existing |
+| 8.1.6 | Add DP-safe journal summary channel: share only aggregate failure-signature counts, hypothesis-class success rates, and rollback incidence (no raw journal entries) | Extends 1.1E.7 |
+| 8.1.7 | Add federated contradiction feedback: if global updates conflict with local deterministic outcomes, quarantine candidate update for shadow evaluation | Extends 7.9.8, 7.7.4 |
+| 8.1.8 | Add federated self-healing prior sync: distribute known-bad signature hashes and mitigation priors so devices can avoid repeating proven failure patterns | Extends 1.1E.8, 7.7.11 |
 
 ### 8.2 Gradient Bandwidth Budget
 
@@ -2023,6 +2049,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 | Phase A: Outcome Collection & Episodic Memory | 2-3 weeks | Phase 1 (1.1-1.5, expanded: 1.5B skip-onboarding, 1.5C business cold-start, 1.5D pre-seeded model, 1.7 organic spot discovery) |
 | Quick-Win Data/Model Improvements (Tiers 1-3) | 1-2 weeks | Phase 1.6 |
 | Semantic/Procedural Memory + Consolidation | 1-2 weeks | Phase 1.1A-1.1C |
+| Lightweight Deterministic Memory Core (Fallback + Recovery Journal) | 1 week | Phase 1.1E (facts/history journals, deterministic retrieval fallback, failure signature index) |
 | Phase B: State/Action Encoders + List Quantum Entity | 4-5 weeks | Phase 3 (expanded: 3.4 List as Quantum Entity is new) |
 | Phase C: Energy Function (Critic) | 3-4 weeks | Phase 4 (VICReg training) |
 | Phase D: Transition Predictor | 3-4 weeks | Phase 5 (VICReg training, expanded: 5.1.9 taste drift, 5.1.10 temporal patterns, **5.1.11 dormancy prediction**, **5.1.12 wearable conditioning**) |
@@ -2068,7 +2095,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Chat services affected by Signal Protocol flip:** 5 (friend, community, agent, business-expert, business-business)
 - **New state vector dimensions (from all sources):** ~145-155D total (quantum 24D + knot 5-10D + fabric 5-10D + decoherence 5D + worldsheet 5D + locality 12D + temporal 5D + string 5D + entanglement 10D + wearable 3D + cross-app 3D + behavioral 5D + language 4D + trust 3D + chat 3D + list engagement 7D + list composition 12D + **business features 10D** + **brand features 8D**)
 - **Stub ML services to resolve:** 4 (PatternRecognition, PredictiveAnalytics, PreferenceLearningEngine, SocialContextAnalyzer)
-- **Memory types:** 3 (episodic + semantic + procedural) + nightly consolidation cycle
+- **Memory types:** 4 (episodic + semantic + procedural + deterministic journal core) + nightly consolidation cycle
 - **Device capability tiers:** 4 (full, standard, basic, minimal)
 - **Agent triggers:** 9 event types (app open, location change, timer, AI2AI, notification, calendar, overnight, **locality advisory**, **dormancy prediction**)
 - **Quantum entity types:** 7 (expert, business, brand, event, user, sponsor, **list**) -- list is new
@@ -2084,8 +2111,8 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Post-quantum security tasks:** 8 (Phase 2.5.1-2.5.8: session audit, Kyber rotation, prekey exhaustion, BLE mesh PQ, federated gradient PQ, cloud transport PQ, on-device storage audit, PQ dashboard)
 - **Post-quantum transport coverage:** Signal sessions (DONE via PQXDH), BLE discovery (Phase 2.5.4), federated gradients (Phase 2.5.5), cloud TLS (Phase 2.5.6), on-device storage (Phase 2.5.7 -- audit only, likely already safe)
 - **Locality happiness advisory tasks:** 17 (8.9A.1-8.9A.5 happiness aggregation, 8.9B.1-8.9B.6 advisory threshold, 8.9C.1-8.9C.5 cross-region transfer, 8.9D quantum readiness notes)
-- **Model lifecycle management tasks:** 8 (Phase 7.7.1-7.7.8: version schema, OTA delivery, compatibility gate, staged rollout, global rollback, per-user rollback, version display, storage budget)
-- **Autonomous research/experimentation tasks:** 13 (Phase 7.9.1-7.9.13: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, causal attribution, cross-reference scoring, rollback governance)
+- **Model lifecycle management tasks:** 11 (Phase 7.7.1-7.7.11: version schema, OTA delivery, compatibility gate, staged rollout, rollback controls, deterministic rollout ledger, known-bad suppression)
+- **Autonomous research/experimentation tasks:** 16 (Phase 7.9.1-7.9.16: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance)
 - **Multi-device reconciliation tasks:** 6 (Phase 7.8.1-7.8.6: device-linked accounts, episodic merge, personality sync, tier-aware sync, device migration, conflict resolution)
 - **Data transparency tasks:** 4 (Phase 2.1.8-2.1.8C: "What My AI Knows" page, "Why this recommendation?" tap-through, data correction mechanism, admin transparency dashboard)
 - **Third-party data pipeline tasks:** 7 (Phase 9.2.6A-9.2.6G: insight catalog, DP noise injection, generation pipeline, consent gate, access control, buyer onboarding, revenue attribution)
