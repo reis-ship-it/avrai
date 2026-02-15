@@ -2,7 +2,6 @@
 
 ### **Core Documentation**
 - **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and drift-prevention acceptance criteria
-- **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and acceptance criteria
 - **Master Plan:** `MASTER_PLAN.md` - Single source of truth for implementation order
 - **Master Plan Tracker:** `MASTER_PLAN_TRACKER.md` - Master registry of all plans
 - **Execution Board (CSV source):** `EXECUTION_BOARD.csv` - Canonical milestone/phase execution state (Phase 1-N)
