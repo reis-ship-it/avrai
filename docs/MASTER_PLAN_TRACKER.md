@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 15, 2026 (v13: architecture governance refresh. Added full codebase→master-plan file mapping artifacts (2,841 files), architecture docs alignment audit, and research/architecture registry updates for current execution references. Previous: v12 comprehensive gap fill)
+**Last Updated:** February 15, 2026 (v14: build-enforced architecture placement. Added architecture spots registry, file placement policy, CI guard workflow, and expanded file mapping baseline (2,842 files). Previous: v13 architecture governance refresh)
 
 ---
 
@@ -168,7 +168,9 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
-| Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,841 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
+| Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,842 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
+| Architecture Spots Registry (Build-Enforced Placement) | 2026-02-15 | 🟢 Active | **CRITICAL** | Registered architecture spots used by CI placement guard; any new spot must be declared here | [`plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`](./plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv) |
+| File Placement Policy (Build-Enforced) | 2026-02-15 | 🟢 Active | **CRITICAL** | Enforces rule: every file must map to registered architecture spot; new spot required when unmatched | [`plans/architecture/FILE_PLACEMENT_POLICY.md`](./plans/architecture/FILE_PLACEMENT_POLICY.md) |
 | Architecture Docs Alignment Audit | 2026-02-15 | 🟢 Active | HIGH | Current-state alignment report for architecture docs vs master plan + codebase | [`plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md`](./plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md) |
 | External Research Addendum: Remaining Source Batch (world-model/agent/runtime/quantum references) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md) |
 | External Research Addendum: arXiv 2601.19897 (Self-Distillation for Continual Learning) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md) |
@@ -476,7 +478,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 15, 2026 (v13: architecture governance refresh with file-level mapping + alignment audit; previous entries preserved above)
+**Last Updated:** February 15, 2026 (v14: build-enforced architecture placement + spots registry + CI guard; previous entries preserved above)
 
 ---
 

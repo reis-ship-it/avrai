@@ -14,10 +14,10 @@
 
 ## Coverage Summary
 
-- Runtime/source/tooling files mapped: **2,841**
+- Runtime/source/tooling files mapped: **2,842**
 - Mapping disposition summary:
   - `keep_update`: 2,496
-  - `keep_review`: 319
+  - `keep_review`: 320
   - `refactor_planned`: 26
   - `delete_candidate`: 0
 
@@ -27,6 +27,9 @@
 |---|---|---|---|---|
 | `ARCHITECTURE_INDEX.md` | Current | Yes | Global | Updated to reference canonical authorities + mapping artifacts |
 | `CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md` | Current | Yes | Phases 1-11 | File-disposition summary over generated CSV |
+| `ARCHITECTURE_SPOTS_REGISTRY.csv` | Current | Yes | Global | Registered architecture spots for build-time placement enforcement |
+| `FILE_PLACEMENT_POLICY.md` | Current | Yes | Global | Build-enforced rule: every file must map to a registered spot |
+| `.github/workflows/architecture-placement-guard.yml` | Current | Yes | Global | CI guard that fails on unmapped/unregistered file placement |
 | `REPO_HYGIENE_AND_ARCHITECTURE_RULES.md` | Current | Yes | 10.7, methodology | Guardrails for boundaries and generated artifacts |
 | `AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md` | Current | Yes | 7.x, 8, 11.4 | Governance for bounded autonomous improvement |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_*.md` | Current | Yes | 1, 3, 4, 5, 6 | Research-informed planning references |
@@ -51,6 +54,5 @@ For any architecture-driven code change:
 
 ## Open Follow-Ups
 
-1. Add automated CI check to regenerate and diff the mapping CSV on architecture-impacting PRs.
-2. Add a periodic review to upgrade `Reference` docs that become execution-critical.
-3. Track rename plan for `architecture_ai_federated_p2p.md` to eliminate naming ambiguity.
+1. Add a periodic review to upgrade `Reference` docs that become execution-critical.
+2. Track rename plan for `architecture_ai_federated_p2p.md` to eliminate naming ambiguity.

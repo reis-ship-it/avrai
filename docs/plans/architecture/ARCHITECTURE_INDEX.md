@@ -18,8 +18,12 @@
 ## Codebase-to-Plan Mapping (Current)
 
 - **File-level mapping summary:** [`CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md)
-- **Generated full mapping CSV (2,841 files):** [`generated/codebase_master_plan_mapping_2026-02-15.csv`](./generated/codebase_master_plan_mapping_2026-02-15.csv)
+- **Generated full mapping CSV (2,842 files):** [`generated/codebase_master_plan_mapping_2026-02-15.csv`](./generated/codebase_master_plan_mapping_2026-02-15.csv)
+- **Architecture spots registry (build-enforced):** [`ARCHITECTURE_SPOTS_REGISTRY.csv`](./ARCHITECTURE_SPOTS_REGISTRY.csv)
+- **File placement policy (build-enforced):** [`FILE_PLACEMENT_POLICY.md`](./FILE_PLACEMENT_POLICY.md)
 - **Generator script:** [`scripts/generate_master_plan_file_mapping.py`](../../../scripts/generate_master_plan_file_mapping.py)
+- **Spots registry generator:** [`scripts/generate_architecture_spots_registry.py`](../../../scripts/generate_architecture_spots_registry.py)
+- **Placement validator:** [`scripts/validate_architecture_placement.py`](../../../scripts/validate_architecture_placement.py)
 - **Architecture alignment audit:** [`ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md`](./ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md)
 
 Use this set when deciding file disposition (`keep_update`, `refactor_planned`, `delete_candidate`) and phase ownership.

@@ -1,0 +1,35 @@
+name: Architecture Placement Guard
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  architecture-placement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Regenerate architecture mapping artifacts
+        run: |
+          python3 scripts/generate_master_plan_file_mapping.py
+          python3 scripts/generate_architecture_spots_registry.py
+
+      - name: Validate architecture placement rules
+        run: |
+          python3 scripts/validate_architecture_placement.py
+
+      - name: Ensure generated artifacts are committed
+        run: |
+          git diff --exit-code \
+            docs/plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md \
+            docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv \
+            docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv
