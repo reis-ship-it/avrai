@@ -167,6 +167,7 @@ This creates a self-growing research ontology instead of a static topic list.
 | Phase 6 (MPC Planner) | Inject validated policy changes and horizon tuning |
 | Phase 7.9 (Autonomous Research Lane) | Run always-on loop orchestration, rollout gates, rollback |
 | Phase 8 (Federated AI2AI) | Share DP-safe research deltas and validated improvements |
+| Phase 1.1E (Deterministic Memory Core) | Persist facts/history journals for fallback retrieval and forensic recovery |
 | Phase 11.4 (Quantum Readiness) | Keep interfaces backend-agnostic for future acceleration |
 
 ---
@@ -186,6 +187,9 @@ This creates a self-growing research ontology instead of a static topic list.
 11. `ARE-11` Build cross-reference scoring between external claims and internal evidence.
 12. `ARE-12` Build research-definition expander (new tags/lenses discovery + probation/promotion flow).
 13. `ARE-13` Add retrieval diversity KPIs (domain breadth, lens novelty, replication lift).
+14. `ARE-14` Require deterministic experiment journaling (`FactsJournal`/`HistoryJournal`) before promotion decisions.
+15. `ARE-15` Add fallback-memory validation path when semantic retrieval confidence is low/conflicting.
+16. `ARE-16` Add federated DP-safe summary channel + contradiction quarantine for self-healing updates.
 
 ---
 
