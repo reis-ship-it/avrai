@@ -8,6 +8,8 @@ import sys
 PRD_PATTERN = re.compile(r"\bPRD-\d{3}\b")
 MILESTONE_PATTERN = re.compile(r"\bM\d+-P\d+-\d+\b")
 MASTER_PLAN_REF_PATTERN = re.compile(r"\b\d+\.\d+\.\d+\b")
+TITLE_FORMAT_PATTERN = re.compile(r"^M\d+-P\d+-\d+\s+.+$")
+COMMIT_SUBJECT_FORMAT_TEMPLATE = "M#-P#-# X.Y.Z <type(scope)>: <summary>"
 
 
 def fail(msg: str) -> None:
@@ -58,6 +60,7 @@ def validate_commit_boundaries(
 
         non_merge_commits += 1
         message = run_git("log", "--format=%B", "-n", "1", sha)
+        subject = run_git("log", "--format=%s", "-n", "1", sha).strip()
         commit_milestones = sorted(set(MILESTONE_PATTERN.findall(message)))
         commit_refs = sorted(set(MASTER_PLAN_REF_PATTERN.findall(message)))
 
@@ -80,6 +83,26 @@ def validate_commit_boundaries(
             failures.append(
                 f"{sha[:8]} missing Master Plan subsection reference (expected X.Y.Z)."
             )
+
+        # Canonical non-merge commit subject format:
+        # M#-P#-# X.Y.Z <type(scope)>: <summary>
+        if not subject.startswith(required_milestone + " "):
+            failures.append(
+                f"{sha[:8]} subject must start with '{required_milestone} '. "
+                f"Found: '{subject}'."
+            )
+        else:
+            # require an early X.Y.Z token in the subject line
+            subject_tokens = subject.split()
+            has_ref_in_subject = any(
+                re.fullmatch(r"\d+\.\d+\.\d+", token) for token in subject_tokens[1:4]
+            )
+            if not has_ref_in_subject:
+                failures.append(
+                    f"{sha[:8]} subject missing X.Y.Z token near start. "
+                    f"Expected format: '{COMMIT_SUBJECT_FORMAT_TEMPLATE}'. "
+                    f"Found: '{subject}'."
+                )
 
     if non_merge_commits == 0:
         fail("No non-merge commits found in PR range for boundary validation.")
@@ -148,6 +171,13 @@ def main() -> None:
                 "(expected format: Mx-Py-z)."
             )
 
+    if args.require_execution_id and not TITLE_FORMAT_PATTERN.match(title_text):
+        fail(
+            "PR title must start with milestone ID. "
+            "Expected format: 'M#-P#-# <short summary>'. "
+            f"Found: '{title_text}'."
+        )
+
     if args.require_single_milestone and len(milestone_ids_in_title) != 1:
         fail(
             "Expected exactly one execution milestone ID (Mx-Py-z) in PR title, "
@@ -177,6 +207,7 @@ def main() -> None:
         print("Found PR Body Milestone IDs:", ", ".join(milestone_ids_in_body))
     if master_plan_refs:
         print("Found Master Plan Refs:", ", ".join(master_plan_refs))
+    print("Required commit subject format:", COMMIT_SUBJECT_FORMAT_TEMPLATE)
 
 
 if __name__ == "__main__":
