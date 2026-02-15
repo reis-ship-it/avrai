@@ -58,6 +58,24 @@ Shorthand: `X.Y.Z` (e.g., `3.2.1`), `X.Y` (e.g., `3.2`), `X` (e.g., `3`)
 - **Packaging**: build packageable code with clear APIs.
 - **Quantum-ready**: build pure intelligence functions (no side effects) on classical compute with clean abstraction layers. When quantum hardware arrives, the migration is a backend swap, not an architecture rewrite.
 
+### Hardcoded Invariants vs Learned Components (Reality Model Boundaries)
+
+This boundary is mandatory for all self-improvement work: **hardcode the guardrails and learning mechanics, learn the decision policies and rankings**.
+
+| Domain | Hardcoded (must be explicit and non-self-modifying) | Learned (allowed to self-improve within gates) | Plan Anchors |
+|--------|------------------------------------------------------|-------------------------------------------------|--------------|
+| Safety & legal | Age gating, policy-denied actions, consent enforcement, jurisdiction/compliance constraints | Risk scoring under approved policy space | 2.1, 2.2, 6.2, 7.7A.8 |
+| Autonomy control | Shadow-mode requirement, promotion thresholds, rollback triggers, kill switches | Candidate ranker/rewrite parameter updates | 7.7, 7.7A |
+| Search architecture | Retrieval lanes (keyword/semantic/structured), required filters, trace schema | Query rewrite behavior, lane weighting, fusion ranking | 1.1D.1-1.1D.7, 1.1D.10 |
+| Experiment mechanics | A/B assignment method, canary percentages, statistical confidence rules | Treatment-specific ranking strategies | 7.7.4, 7.7A.2-7.7A.4 |
+| Data integrity | Event schemas, deduplication, anti-spam/fraud rules, missing-data defaults | Feature importance and representation learning from valid events | 1.1, 1.2, 3.1 |
+| Drift & health | Drift detection thresholds, freshness SLOs, alert policies | Retraining cadence and adaptation parameters triggered by drift | 1.1C, 7.7A.7 |
+| Resource budgets | CPU/memory/battery/latency caps per device tier, offline fallbacks | Compute-aware model/ranker selection under budget | 3.6, 7.5 |
+| Explainability & audit | Immutable change logs, signed manifests, rollback provenance | Explanatory ranking features and calibration | 7.7.1, 7.7A.5, 7.7A.6 |
+| World-model planning | Non-negotiable hard constraints for MPC (safety/diversity/quiet hours) | Energy function + transition dynamics + policy planning | 4.1, 5.1, 6.1, 6.2 |
+
+**Implementation rule:** Any component that can change production behavior autonomously must declare: (1) immutable constraints, (2) learnable parameters, (3) promotion gates, (4) rollback path.
+
 ### LeCun World Model Framework Mapping
 
 Every component in this plan maps to a specific role in LeCun's autonomous machine intelligence architecture. This mapping is the design authority -- if a proposed change doesn't fit this framework, it doesn't belong.
@@ -97,6 +115,10 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md`
 - `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
 - `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
+- `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 
 ---
 
@@ -120,7 +142,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 | 4 | Energy Function & Formula Replacement (VICReg) | Tier 1 | Phase 1 (outcome data) | 6-8 weeks |
 | 5 | Transition Predictor & On-Device Training (VICReg) | Tier 1 | Phases 1, 3 | 5-6 weeks |
 | 6 | MPC Planner, System 1/2, SLM & Agent | Tier 2 | Phases 4, 5 | 6-8 weeks |
-| 7 | Orchestrators, Triggers, Device Tiers & Integration | Tier 2 | Phase 4 (energy function) | 5-6 weeks |
+| 7 | Orchestrators, Triggers, Device Tiers, Lifecycle & Autonomous Research | Tier 2 | Phase 4 (energy function) | 6-8 weeks |
 | 8 | Ecosystem Intelligence, Group Negotiation & AI2AI | Tier 3 | Phases 5, 6 | 8-10 weeks |
 | 9 | Business Operations & Monetization | Parallel | Phase 2 (compliance) | 6-8 weeks |
 | 10 | Feature Completion, Stub Cleanup, Codebase Reorganization & Polish | Parallel | Varies (10.5 immediate; 10.6 after Phases 4/7) | 4-6 weeks |
@@ -193,6 +215,25 @@ Runs during charging + WiFi + idle via `WorkManager` (Android) / `BGTaskSchedule
 | 1.1C.7 | Wire federated gradient sync (Phase 8.1) into consolidation window: share DP-noised gradients with mesh/cloud after local training | Feeds Phase 8.1 |
 
 > **ML Roadmap Reference:** Section 15.7, Roadmap Item #33. The consolidation cycle is: compress episodes → extract rules → prune old episodes → train world model → sync gradients. All during one overnight window.
+
+### 1.1D Hybrid Retrieval & Search Intelligence (Universe Models)
+
+Universe models need retrieval that combines explicit search intent, semantic intent, and structured constraints (time, place, platform, trust). `grep`-style keyword matching is useful but insufficient by itself.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 1.1D.1 | Define unified retrieval contract for local events/places/platforms: query text, semantic embedding, filters (`time_window`, `geo_radius`, `category`, `platform`, `trust_tier`), and ranking trace fields | New |
+| 1.1D.2 | Implement keyword retrieval lane (BM25/FTS equivalent) for exact intent and hard term matching. Keep as first-class lane, not fallback-only | New |
+| 1.1D.3 | Implement semantic retrieval lane (vector ANN over embeddings) for intent-level matches beyond literal keywords | Extends 1.1A |
+| 1.1D.4 | Implement structured retrieval lane for hard constraints: date/time, geo bounds, open-now, platform availability, age/safety constraints | New |
+| 1.1D.5 | Implement fusion ranker: blend keyword + semantic + structured scores with recency, source trust, and locality relevance | New |
+| 1.1D.6 | Add retrieval observability: log per-lane candidate sets, score contributions, selected top-K, latency budget, and final user action outcome | Extends `AIImprovementTrackingService` |
+| 1.1D.7 | Build query-rewrite stage for low-result or low-quality queries (spelling normalization, synonym expansion, geo disambiguation, temporal normalization) | New |
+| 1.1D.8 | Build retrieval evaluation set for local events/places/platforms (golden queries + expected relevance tiers). Include edge cases: sparse areas, ambiguous places, multilingual names | New |
+| 1.1D.9 | Wire retrieval outcomes into episodic tuples: `(search_state, issued_query, result_set_features, downstream_outcome)` where outcome includes click, save, check-in, bounce, no-action | Extends 1.2 |
+| 1.1D.10 | Add `SearchLearningAdapter`: learns better ranking/query-rewrite parameters from outcomes without changing core production logic directly | New |
+
+> **Training principle:** Knowledge is primarily runtime retrieval from fresh sources (indexes/DB/APIs), not static "beliefs" in model weights. Model weights learn ranking/policy; indexes hold changing facts.
 
 ### 1.2 Outcome Data Collection Pipeline
 
@@ -1089,6 +1130,23 @@ ONNX models ship in the app binary (Phase 1.5D.3) and improve via federated aggr
 
 > **Why this matters:** Without model lifecycle management, updated models either ship only via App Store updates (slow, requires user action) or arrive unversioned and unrollbackable (dangerous). The staged rollout + canary + per-user rollback ensures model improvements reach users quickly while protecting against regressions.
 
+### 7.7A Self-Improving Search Governance (Gated Autonomy)
+
+Search can self-improve, but production behavior changes must be gated by measurable wins and safety checks.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 7.7A.1 | Implement proposal pipeline: `SearchLearningAdapter` can propose ranker/query-rewrite updates as versioned candidates with metric deltas and confidence intervals | Extends 1.1D.10 |
+| 7.7A.2 | Implement shadow mode for every candidate: run candidate ranking in parallel with active ranking, log counterfactual deltas (precision@K, recall@K, nDCG, latency, safety violations) | New |
+| 7.7A.3 | Define promotion gates: candidate can advance only if it beats control on primary metrics and does not regress safety/latency beyond thresholds | New |
+| 7.7A.4 | Implement limited A/B canary rollout after shadow pass; auto-halt if guardrails trip (latency spike, safety regression, trust-source degradation) | Extends 7.7 |
+| 7.7A.5 | Require signed changelog + audit record for every promotion (candidate version, training window, eval set version, gate metrics, approver) | Extends `ModelVersionManager` |
+| 7.7A.6 | Implement one-click rollback for search candidate artifacts (ranker weights, rewrite rules, fusion params, feature flags) with full state restore | Extends 7.7 rollback |
+| 7.7A.7 | Add anti-drift monitor: detect when live query distribution shifts from eval distribution; auto-route to shadow retraining cycle before promoting new candidates | New |
+| 7.7A.8 | Add policy boundary: autonomous system may tune parameters and ranking functions, but may NOT mutate hard safety/compliance rules without explicit human approval | Extends Phase 2 guardrails |
+
+> **Autonomy boundary:** Self-improving search is allowed. Unsupervised self-modifying production logic is not.
+
 ### 7.8 Multi-Device State Reconciliation
 
 Users may have multiple devices (phone + tablet, old phone + new phone). Episodic memory, personality state, and model weights live on-device. Without reconciliation, a user's iPad and iPhone develop divergent personality models.
@@ -1103,6 +1161,30 @@ Users may have multiple devices (phone + tablet, old phone + new phone). Episodi
 | 7.8.6 | **Conflict resolution for simultaneous use.** If user uses both devices in the same day (e.g., phone for commute, tablet at home), both collect episodic data. On next sync: merge by timestamp ordering, deduplicate overlapping actions, re-train from combined dataset. Use last-write-wins for personality state (primary's nightly consolidation is authoritative) | New |
 
 > **Privacy note:** Multi-device sync goes through `BackupSyncCoordinator`, which uses application-layer encryption. Episodic data is encrypted before cloud relay. The cloud never sees plaintext personality data.
+
+### 7.9 Autonomous Research, Experimentation, and Evidence Cross-Reference
+
+This section operationalizes the always-on research/experiment loop so AVRAI can expand its own research definitions, test ideas safely, and integrate validated findings from external and internal evidence.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 7.9.1 | **Hypothesis mining trigger pipeline.** Build `HypothesisMiner` to convert uncertainty spikes, model failures, contradiction signals, and stale assumptions into ranked testable hypotheses | Phase 1.1, Phase 5.1 |
+| 7.9.2 | **Interdisciplinary retrieval policy.** Implement `InterdisciplinaryRetrievalPolicy` with dual-track retrieval (`Analytic Track` + `Creative Track`) and coverage checks for human-centered questions | Phase 7.4, Phase 2 guardrails |
+| 7.9.3 | **Self-expanding research definitions.** Implement `ResearchDefinitionExpander` to discover new research tags/lenses from blind spots and failed experiments; use probation -> promotion flow before permanent policy inclusion | New |
+| 7.9.4 | **Evidence normalization + provenance.** Every external source is normalized into claim/assumption/method/evidence-quality metadata and linked to immutable provenance IDs | Extends Phase 2 compliance logging |
+| 7.9.5 | **Experiment-plan contracts.** Build `ExperimentPlanner` DSL with mandatory pre-registered success criteria, failure criteria, MDE, safety constraints, and affected cohorts | Extends 7.7A governance |
+| 7.9.6 | **Staged experiment execution lane.** `ExperimentOrchestrator` must enforce replay -> shadow -> limited rollout gates; high-impact experiments cannot skip stages | Extends 7.7 rollout gates |
+| 7.9.7 | **Causal attribution reports.** Build `CausalAttributionEngine` output with ablations, counterfactual replay, subgroup deltas, and "worked because / failed because" traces | New |
+| 7.9.8 | **External/internal claim scoring.** Implement `CrossReferenceGraphService` and score each candidate claim with `agreement`, `conflict`, `coverage`, and `novelty` against internal episodic/outcome/planner evidence | Phase 1.1, 1.2, 6.1 |
+| 7.9.9 | **Belief graph updates with conviction bounds.** Update confidence/contradiction state only when evidence thresholds pass; conviction must decrease on failed replication or stronger contradiction | Extends `BeliefGraphService` |
+| 7.9.10 | **Research integrator into model lifecycle.** `ResearchIntegrator` may propose model/policy updates, but promotion requires existing lifecycle gates (canary + rollback + safety checks) | Extends 7.7.4-7.7.6 |
+| 7.9.11 | **Self-healing rollback guardian.** Implement `RollbackGuardian` that auto-reverts degradations and suppresses failed paths until new evidence supports retry | Extends 7.7.5 |
+| 7.9.12 | **Retrieval diversity and experiment-yield KPIs.** Track domain breadth, lens novelty, replication lift, unresolved-hypothesis backlog, and recovery time after failed promotions | New |
+| 7.9.13 | **Human approval boundary for hard policy changes.** Autonomous system may tune models/planning parameters, but cannot mutate legal/safety/compliance constraints without explicit approval | Extends Phase 2 |
+
+> **Required companion spec:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
+>
+> **Non-negotiable constraint:** Interdisciplinary and creative framing is required for human-centered hypotheses, but production promotion remains evidence-gated and falsification-first.
 
 ---
 
@@ -1753,6 +1835,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 | Agent Trigger System | 1-2 days | Phase 7.4 |
 | Device Capability Tiers | 1 day | Phase 7.5 |
 | Model Lifecycle Management | 1-2 weeks | Phase 7.7 (version schema, OTA, staged rollout, rollback) |
+| Autonomous Research + Experimentation Engine | 3-5 weeks | Phase 7.9 (hypothesis mining, interdisciplinary retrieval, staged experiments, external/internal cross-reference, conviction governance) |
 | Multi-Device Reconciliation | 1-2 weeks | Phase 7.8 (episodic merge, personality sync, device migration) |
 | Phase F: Federated + Agent Architecture | 4-6 weeks | Phases 8.1-8.4 |
 | Agent-to-Agent Insight + Group Negotiation | 5-8 days | Phases 8.5-8.6 |
@@ -1805,6 +1888,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Post-quantum transport coverage:** Signal sessions (DONE via PQXDH), BLE discovery (Phase 2.5.4), federated gradients (Phase 2.5.5), cloud TLS (Phase 2.5.6), on-device storage (Phase 2.5.7 -- audit only, likely already safe)
 - **Locality happiness advisory tasks:** 17 (8.9A.1-8.9A.5 happiness aggregation, 8.9B.1-8.9B.6 advisory threshold, 8.9C.1-8.9C.5 cross-region transfer, 8.9D quantum readiness notes)
 - **Model lifecycle management tasks:** 8 (Phase 7.7.1-7.7.8: version schema, OTA delivery, compatibility gate, staged rollout, global rollback, per-user rollback, version display, storage budget)
+- **Autonomous research/experimentation tasks:** 13 (Phase 7.9.1-7.9.13: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, causal attribution, cross-reference scoring, rollback governance)
 - **Multi-device reconciliation tasks:** 6 (Phase 7.8.1-7.8.6: device-linked accounts, episodic merge, personality sync, tier-aware sync, device migration, conflict resolution)
 - **Data transparency tasks:** 4 (Phase 2.1.8-2.1.8C: "What My AI Knows" page, "Why this recommendation?" tap-through, data correction mechanism, admin transparency dashboard)
 - **Third-party data pipeline tasks:** 7 (Phase 9.2.6A-9.2.6G: insight catalog, DP noise injection, generation pipeline, consent gate, access control, buyer onboarding, revenue attribution)
