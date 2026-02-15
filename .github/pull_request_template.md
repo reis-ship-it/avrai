@@ -17,10 +17,12 @@ A clear and concise description of what this PR does.
 - Include any files deleted
 
 ## 🧭 PRD Traceability
-- PRD Requirement IDs impacted (required): `PRD-...`
+- PRD Requirement IDs impacted (required): `PRD-###`
+- Execution Board Milestone IDs impacted (required): `M#-P#-#` (example: `M1-P7-1`; legacy `CARD-<number>` accepted temporarily)
 - Master Plan phase/task references impacted (required): `X.Y.Z`
 - [ ] I confirmed this PR is traceable to `docs/PRD.md` requirement IDs
 - [ ] I confirmed this PR maps to `docs/MASTER_PLAN.md` phase/task ownership
+- [ ] I confirmed this PR maps to `docs/EXECUTION_BOARD.csv` milestone IDs
 
 ## 🧪 Testing
 - [ ] Unit tests added/updated

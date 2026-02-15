@@ -2,9 +2,21 @@
 
 ### **Core Documentation**
 - **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and drift-prevention acceptance criteria
+- **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and acceptance criteria
 - **Master Plan:** `MASTER_PLAN.md` - Single source of truth for implementation order
 - **Master Plan Tracker:** `MASTER_PLAN_TRACKER.md` - Master registry of all plans
+- **Execution Board (CSV source):** `EXECUTION_BOARD.csv` - Canonical milestone/phase execution state (Phase 1-N)
+- **Execution Board (rendered):** `EXECUTION_BOARD.md` - Human-readable board synced from CSV
+- **Weekly Status Log:** `STATUS_WEEKLY.md` - Weekly deltas, blockers, and gate decisions
 - **File Classification:** `file_classification.md` - File classification guide
+
+Execution board commands:
+- Sync board: `dart run tool/update_execution_board.dart`
+- Validate board: `dart run tool/update_execution_board.dart --check`
+
+GitHub automation:
+- Workflow: `.github/workflows/execution-board-guard.yml` (runs board sync/coverage validation on PRs)
+- Workflow: `.github/workflows/prd-traceability-guard.yml` (requires PRD IDs + execution milestone IDs in PR metadata)
 
 ### **Organized Documentation**
 
@@ -43,5 +55,3 @@
 
 ### **Other Documentation**
 - Supabase setup: `SUPABASE_SETUP.md`
-
-

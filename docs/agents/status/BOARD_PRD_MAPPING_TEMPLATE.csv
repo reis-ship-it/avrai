@@ -1,0 +1,2 @@
+card_id,card_title,prd_ids,master_plan_refs,architecture_spot,owner,status,pr_url,notes
+CARD-1001,Example: Hybrid Search Ranker Tune,"PRD-012;PRD-021;PRD-030","1.1D.10;7.7A.2;7.7A.3",lib/core/services/ai_infrastructure,owner_name,planned,,Add shadow-mode metrics before promotion.
