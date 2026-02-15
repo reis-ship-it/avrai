@@ -1,0 +1,401 @@
+import 'dart:io';
+
+/// Synchronizes and validates execution tracking docs.
+///
+/// Usage:
+/// - Write mode (default): `dart run tool/update_execution_board.dart`
+/// - Check mode: `dart run tool/update_execution_board.dart --check`
+///
+/// Invariants enforced:
+/// 1) `docs/EXECUTION_BOARD.csv` is the source of truth for board rows.
+/// 2) `docs/EXECUTION_BOARD.md` generated sections must match CSV.
+/// 3) Phase rows in CSV must cover all `## Phase X:` sections in MASTER_PLAN.
+/// 4) Milestone IDs, statuses, and dependencies are validated.
+void main(List<String> args) {
+  final checkOnly = args.contains('--check');
+  final cwd = Directory.current.path;
+  final csvPath = '$cwd/docs/EXECUTION_BOARD.csv';
+  final mdPath = '$cwd/docs/EXECUTION_BOARD.md';
+  final masterPlanPath = '$cwd/docs/MASTER_PLAN.md';
+
+  final csvFile = File(csvPath);
+  final mdFile = File(mdPath);
+  final masterPlanFile = File(masterPlanPath);
+
+  if (!csvFile.existsSync()) {
+    _fail('Missing CSV: $csvPath');
+  }
+  if (!mdFile.existsSync()) {
+    _fail('Missing Markdown board: $mdPath');
+  }
+  if (!masterPlanFile.existsSync()) {
+    _fail('Missing master plan: $masterPlanPath');
+  }
+
+  final csvText = csvFile.readAsStringSync();
+  final mdText = mdFile.readAsStringSync();
+  final masterPlanText = masterPlanFile.readAsStringSync();
+
+  final rows = _parseCsv(csvText);
+  if (rows.isEmpty) {
+    _fail('CSV has no rows.');
+  }
+
+  final header = rows.first;
+  final requiredHeaders = <String>[
+    'type',
+    'id',
+    'phase',
+    'name_or_scope',
+    'wave',
+    'status',
+    'owner_r',
+    'accountable_a',
+    'consulted_c',
+    'informed_i',
+    'dependencies',
+    'risk_probability',
+    'risk_impact',
+    'risk_score',
+    'priority',
+    'target_window',
+    'exit_criteria',
+    'evidence',
+    'notes',
+  ];
+  for (final h in requiredHeaders) {
+    if (!header.contains(h)) {
+      _fail('CSV missing required header: $h');
+    }
+  }
+
+  final index = <String, int>{};
+  for (var i = 0; i < header.length; i++) {
+    index[header[i]] = i;
+  }
+
+  final data = rows.skip(1).where((r) => r.isNotEmpty).toList(growable: false);
+  final phaseRows = <Map<String, String>>[];
+  final milestoneRows = <Map<String, String>>[];
+  for (final row in data) {
+    if (row.length < header.length) {
+      _fail('CSV row has fewer columns than header: $row');
+    }
+    final map = <String, String>{};
+    for (var i = 0; i < header.length; i++) {
+      map[header[i]] = row[i];
+    }
+    final type = map['type']!.trim();
+    if (type == 'phase') {
+      phaseRows.add(map);
+    } else if (type == 'milestone') {
+      milestoneRows.add(map);
+    } else {
+      _fail('Unknown row type "$type" in row id=${map['id']}');
+    }
+  }
+
+  _validateRows(phaseRows: phaseRows, milestoneRows: milestoneRows, masterPlanText: masterPlanText);
+
+  final generatedPhaseTable = _buildPhaseTable(phaseRows);
+  final generatedMilestoneTable = _buildMilestoneTable(milestoneRows);
+  final generatedKanban = _buildKanbanSection(milestoneRows);
+
+  var nextMd = mdText;
+  nextMd = _replaceSection(
+    nextMd,
+    startMarker: '<!-- EXECUTION_BOARD:PHASE_PORTFOLIO_START -->',
+    endMarker: '<!-- EXECUTION_BOARD:PHASE_PORTFOLIO_END -->',
+    replacement: generatedPhaseTable,
+  );
+  nextMd = _replaceSection(
+    nextMd,
+    startMarker: '<!-- EXECUTION_BOARD:MILESTONE_BOARD_START -->',
+    endMarker: '<!-- EXECUTION_BOARD:MILESTONE_BOARD_END -->',
+    replacement: generatedMilestoneTable,
+  );
+  nextMd = _replaceSection(
+    nextMd,
+    startMarker: '<!-- EXECUTION_BOARD:KANBAN_START -->',
+    endMarker: '<!-- EXECUTION_BOARD:KANBAN_END -->',
+    replacement: generatedKanban,
+  );
+  nextMd = _replaceLine(
+    nextMd,
+    prefix: 'Last updated:',
+    next: 'Last updated: ${_todayIso()}',
+  );
+
+  if (checkOnly) {
+    if (nextMd != mdText) {
+      _fail(
+        'Execution board is out of sync. Run: dart run tool/update_execution_board.dart',
+      );
+    }
+    stdout.writeln('OK: execution board is valid and in sync.');
+    return;
+  }
+
+  mdFile.writeAsStringSync(nextMd);
+  stdout.writeln('Updated docs/EXECUTION_BOARD.md from CSV.');
+  stdout.writeln('Validation passed.');
+}
+
+void _validateRows({
+  required List<Map<String, String>> phaseRows,
+  required List<Map<String, String>> milestoneRows,
+  required String masterPlanText,
+}) {
+  final allowedStatus = <String>{'Backlog', 'Ready', 'In Progress', 'Blocked', 'Done'};
+  final milestoneIdPattern = RegExp(r'^M\d+-P\d+-\d+$');
+  final phaseIdPattern = RegExp(r'^P\d+$');
+  final phaseNums = <int>{};
+  final phaseIdSet = <String>{};
+
+  for (final row in phaseRows) {
+    final id = row['id']!.trim();
+    if (!phaseIdPattern.hasMatch(id)) {
+      _fail('Invalid phase id format: $id (expected P<phase>)');
+    }
+    if (!phaseIdSet.add(id)) {
+      _fail('Duplicate phase id: $id');
+    }
+    final phase = int.tryParse(row['phase']!.trim());
+    if (phase == null) {
+      _fail('Invalid phase number for phase row $id: ${row['phase']}');
+    }
+    phaseNums.add(phase);
+    final status = row['status']!.trim();
+    if (!allowedStatus.contains(status)) {
+      _fail('Invalid status "$status" for phase $id');
+    }
+  }
+
+  final milestoneIds = <String>{};
+  for (final row in milestoneRows) {
+    final id = row['id']!.trim();
+    if (!milestoneIdPattern.hasMatch(id)) {
+      _fail('Invalid milestone id format: $id (expected Mx-Py-z)');
+    }
+    if (!milestoneIds.add(id)) {
+      _fail('Duplicate milestone id: $id');
+    }
+    final phase = int.tryParse(row['phase']!.trim());
+    if (phase == null || !phaseNums.contains(phase)) {
+      _fail('Milestone $id references unknown phase: ${row['phase']}');
+    }
+    final status = row['status']!.trim();
+    if (!allowedStatus.contains(status)) {
+      _fail('Invalid status "$status" for milestone $id');
+    }
+    final deps = row['dependencies']!.trim();
+    if (deps.isNotEmpty && deps.toLowerCase() != 'none') {
+      final candidates = deps
+          .split(RegExp(r'[;,]\s*|\s+'))
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty);
+      for (final dep in candidates) {
+        if (dep.startsWith('M') && !milestoneIds.contains(dep)) {
+          _fail('Milestone $id has unknown milestone dependency: $dep');
+        }
+      }
+    }
+  }
+
+  final masterPhaseRegex = RegExp(r'^## Phase (\d+):', multiLine: true);
+  final masterPhases = masterPhaseRegex
+      .allMatches(masterPlanText)
+      .map((m) => int.parse(m.group(1)!))
+      .toSet();
+
+  for (final p in masterPhases) {
+    if (!phaseNums.contains(p)) {
+      _fail(
+        'Execution board missing phase row for MASTER_PLAN phase $p. Add it to CSV.',
+      );
+    }
+  }
+}
+
+String _buildPhaseTable(List<Map<String, String>> rows) {
+  final sorted = [...rows]
+    ..sort((a, b) => int.parse(a['phase']!).compareTo(int.parse(b['phase']!)));
+
+  final lines = <String>[
+    '| Phase | Name | Governance Tier | R (Owner) | A (Accountable) | Risk | Priority | Status | Gate |',
+    '|------|------|------------------|-----------|------------------|------|----------|--------|------|',
+  ];
+  for (final r in sorted) {
+    final phase = r['phase']!;
+    final name = r['name_or_scope']!;
+    final tier = r['wave']!.isEmpty ? _guessTierFromPriority(r['priority']!) : r['wave']!;
+    final owner = _fmt(r['owner_r']!);
+    final acc = _fmt(r['accountable_a']!);
+    final risk = r['risk_score']!;
+    final priority = r['priority']!;
+    final status = r['status']!;
+    final gate = r['exit_criteria']!;
+    lines.add(
+      '| $phase | $name | $tier | $owner | $acc | $risk | $priority | $status | $gate |',
+    );
+  }
+  return lines.join('\n');
+}
+
+String _buildMilestoneTable(List<Map<String, String>> rows) {
+  final sorted = [...rows]..sort((a, b) => a['id']!.compareTo(b['id']!));
+  final lines = <String>[
+    '| Milestone | Phase | Wave | Scope | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |',
+    '|----------|-------|------|-------|---|---|--------------|------|----------|---------------|--------|----------|',
+  ];
+  for (final r in sorted) {
+    lines.add(
+      '| ${r['id']} | ${r['phase']} | ${r['wave']} | ${r['name_or_scope']} | ${_fmt(r['owner_r']!)} | ${_fmt(r['accountable_a']!)} | ${_fmtOr(r['dependencies']!, 'none')} | ${r['risk_score']} | ${r['priority']} | ${r['target_window']} | ${r['status']} | ${_fmtOr(r['evidence']!, '-')} |',
+    );
+  }
+  return lines.join('\n');
+}
+
+String _buildKanbanSection(List<Map<String, String>> rows) {
+  String listFor(String status) {
+    final ids = rows
+        .where((r) => r['status'] == status)
+        .map((r) => r['id']!)
+        .toList()
+      ..sort();
+    if (ids.isEmpty) return 'None';
+    return ids.map((e) => '`$e`').join(', ');
+  }
+
+  return [
+    '### Backlog',
+    '',
+    listFor('Backlog'),
+    '',
+    '### Ready',
+    '',
+    listFor('Ready'),
+    '',
+    '### In Progress',
+    '',
+    listFor('In Progress'),
+    '',
+    '### Blocked',
+    '',
+    listFor('Blocked'),
+    '',
+    '### Done',
+    '',
+    listFor('Done'),
+  ].join('\n');
+}
+
+String _guessTierFromPriority(String priority) {
+  switch (priority) {
+    case 'Critical':
+      return 'Full';
+    case 'High':
+      return 'Hybrid';
+    default:
+      return 'Hybrid';
+  }
+}
+
+String _fmt(String v) => v.replaceAll(';', ', ');
+
+String _fmtOr(String v, String fallback) => v.trim().isEmpty ? fallback : _fmt(v);
+
+String _replaceSection(
+  String source, {
+  required String startMarker,
+  required String endMarker,
+  required String replacement,
+}) {
+  final start = source.indexOf(startMarker);
+  final end = source.indexOf(endMarker);
+  if (start == -1 || end == -1 || end < start) {
+    _fail('Missing or invalid markers: $startMarker ... $endMarker');
+  }
+  final before = source.substring(0, start + startMarker.length);
+  final after = source.substring(end);
+  return '$before\n$replacement\n$after';
+}
+
+String _replaceLine(String source, {required String prefix, required String next}) {
+  final lines = source.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].startsWith(prefix)) {
+      lines[i] = next;
+      return lines.join('\n');
+    }
+  }
+  return source;
+}
+
+String _todayIso() {
+  final now = DateTime.now().toUtc();
+  final y = now.year.toString().padLeft(4, '0');
+  final m = now.month.toString().padLeft(2, '0');
+  final d = now.day.toString().padLeft(2, '0');
+  return '$y-$m-$d';
+}
+
+List<List<String>> _parseCsv(String content) {
+  final rows = <List<String>>[];
+  var row = <String>[];
+  final field = StringBuffer();
+  var inQuotes = false;
+
+  void endField() {
+    row.add(field.toString());
+    field.clear();
+  }
+
+  void endRow() {
+    if (row.isNotEmpty || field.isNotEmpty) {
+      endField();
+      rows.add(row);
+      row = <String>[];
+    }
+  }
+
+  for (var i = 0; i < content.length; i++) {
+    final c = content[i];
+    if (inQuotes) {
+      if (c == '"') {
+        if (i + 1 < content.length && content[i + 1] == '"') {
+          field.write('"');
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field.write(c);
+      }
+    } else {
+      if (c == '"') {
+        inQuotes = true;
+      } else if (c == ',') {
+        endField();
+      } else if (c == '\n') {
+        endRow();
+      } else if (c == '\r') {
+        // Skip CR in CRLF.
+      } else {
+        field.write(c);
+      }
+    }
+  }
+  if (inQuotes) {
+    _fail('CSV parse error: unclosed quote.');
+  }
+  if (field.isNotEmpty || row.isNotEmpty) {
+    endRow();
+  }
+  return rows;
+}
+
+Never _fail(String message) {
+  stderr.writeln('ERROR: $message');
+  exit(1);
+}

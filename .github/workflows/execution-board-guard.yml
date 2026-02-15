@@ -1,0 +1,20 @@
+name: Execution Board Guard
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  execution-board-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Validate execution board sync and phase coverage
+        run: |
+          dart --version
+          dart run tool/update_execution_board.dart --check

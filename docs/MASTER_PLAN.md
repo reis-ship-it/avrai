@@ -1638,6 +1638,202 @@ These reorganization tasks depend on active intelligence work settling first. Do
 
 > **Injection container note:** The 11 injection container files (`injection_container.dart` at 2,157 lines, `injection_container_ai.dart` at 1,096 lines, etc.) are a symptom of the flat services directory, not a separate problem. As services move into domain subdirectories (10.7.1-10.7.2), the DI registrations should follow: each domain subdirectory gets its own registration file (e.g., `services/business/business_di.dart`), called from the main `injection_container.dart`. This happens naturally during 10.7 execution -- no separate phase needed.
 
+### 10.9 Reality Model Robustness Hardening (Self-Learning + Self-Healing)
+
+These tasks convert the self-learning/self-healing architecture from "planned behavior" into enforceable reliability guarantees. This section is a release gate for autonomous adaptation features.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 10.9.1 | **Production readiness gate for adaptive paths.** Add `ProductionReadinessGate` checks that block enabling autonomous learning/healing when critical code paths contain TODO/log-only placeholders. Required checks: (a) persistence implemented for orchestration/learning state, (b) fail-closed behavior on persistence failure, (c) no placeholder methods in recommendation/training/rollback critical paths | Phases 7.1, 10.2.12, 10.2.13 |
+| 10.9.2 | **Trigger reliability specification.** Define idempotency keys, dedupe window, ordering rules, and replay on restart for `AgentTriggerService`. Add trigger fuzz tests and reliability SLOs: dropped-trigger rate, duplicate-trigger rate, trigger-to-action latency | Phase 7.4 |
+| 10.9.3 | **Signal quality governance for rollback decisions.** Require minimum sample sizes and confidence bounds before self-healing actions. Rollback decisions need at least two corroborating signals (e.g., happiness drop + recommendation outcome degradation). Add anti-flap hysteresis and cooldown windows | Phase 7.7A, 8.8 |
+| 10.9.4 | **Atomic rollback bundles.** Rollback unit becomes `(model version + feature flags + orchestrator policy + schema compatibility target)`, not model weight alone. Implement soft rollback (weights only) and hard rollback (full bundle) with provenance logs and rollback drills | Phase 7.7 |
+| 10.9.5 | **Federated robustness cohorts.** Federated aggregation must evaluate per-cohort (device tier, locality type, language, recency bucket), not global mean only. Add bounded update magnitude, canary rounds, and shadow evaluation before promoting global weights | Phase 8.1, 7.5 |
+| 10.9.6 | **Advisory quarantine and credibility controls.** Locality advisory strategies enter shadow/quarantine mode before broad rollout. Add advisor credibility scores with decay, anomaly detection, and fast advisory rollback independent of model rollback | Phase 8.9 |
+| 10.9.7 | **Schema/model compatibility matrix testing.** Add CI matrix tests across current + previous N model versions against episodic memory schema versions. Block deployment if forward/backward compatibility fails | Phase 7.7.1, 1.1 |
+| 10.9.8 | **Tier parity and fairness guardrails.** Define expected behavior envelopes across capability tiers for core outcomes. Add tier-specific regression checks and alerting to prevent lower-tier silent degradation | Phase 7.5 |
+| 10.9.9 | **Causal observability baseline.** Every adaptive decision logs model version, feature flags, trigger source, confidence, and rollback provenance with trace IDs. Add mandatory dashboards for drift, failed-heal cycles, rollback outcomes, and unexplained outcome drops | Phase 7.3.4, 8.8 |
+| 10.9.10 | **Adversarial hardening for learning channels.** Add poisoning/outlier detection, signed federated/advisory updates, participant reputation weighting, and emergency kill switches to disable specific learning pathways without shutting down the whole agent | Phase 2.5, 8.1, 8.9 |
+| 10.9.11 | **Autonomous change control policy.** Any self-updating component must declare immutable policy space, promotion gates, rollback path, and human override controls. Autonomous updates are staged (shadow → canary → partial → full) by policy, not per-feature discretion | Hardcoded Invariants section, 7.7A |
+
+> **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
+
+#### 10.9A Execution Mapping (Owner + Acceptance + Duration)
+
+| Task | Owner Team | Key Dependencies | Est. Duration | Acceptance Criteria |
+|------|------------|------------------|---------------|---------------------|
+| 10.9.1 | AI Platform + Reliability Engineering | 7.1, 10.2.12, 10.2.13 | 4-6 days | `ProductionReadinessGate` exists in CI; critical adaptive paths fail build if placeholder/TODO/log-only methods are detected; persistence failures are fail-closed with tests proving no unsafe fallback |
+| 10.9.2 | Mobile Platform + AI Runtime | 7.4 | 5-7 days | `AgentTriggerService` supports idempotency keying, dedupe, replay-on-restart; trigger fuzz suite added; SLO dashboards show dropped triggers < 0.1%, duplicate trigger handling verified, p95 trigger-to-action latency within target |
+| 10.9.3 | Recommender/ML + Experimentation | 7.7A, 8.8 | 4-6 days | Rollback decision engine enforces minimum sample thresholds + confidence bounds; dual-signal confirmation required; anti-flap hysteresis/cooldown tested with synthetic sparse/noisy signal scenarios |
+| 10.9.4 | AI Infrastructure + Release Engineering | 7.7 | 5-8 days | Rollback artifacts are bundle-based (`model + flags + orchestrator policy + schema target`); soft/hard rollback both implemented; rollback provenance logged; quarterly rollback drill script passes in staging |
+| 10.9.5 | Federated Learning + Data Science | 8.1, 7.5 | 1-2 weeks | Aggregation reports per cohort (tier/locality/language/recency); bounded update magnitude enforced; canary + shadow promotion pipeline implemented; no-regression gates required per cohort before promotion |
+| 10.9.6 | Locality Intelligence + Safety Engineering | 8.9 | 1-2 weeks | Advisory strategies support quarantine/shadow phase; advisor credibility + decay model implemented; anomaly detector can disable advisory source; advisory rollback can execute independently of model rollback |
+| 10.9.7 | Data Platform + QA Automation | 7.7.1, 1.1 | 4-6 days | CI compatibility matrix runs current + previous N model versions against episodic schema versions; deployment blocked on any forward/backward incompatibility failure; migration test fixtures include historical snapshots |
+| 10.9.8 | Mobile Platform + Applied ML | 7.5 | 4-6 days | Tier parity envelopes defined for core outcomes; tier-specific regression tests added to CI; alerting for lower-tier degradation live in monitoring; fallback chain correctness tested on all tiers |
+| 10.9.9 | Observability + AI Platform | 7.3.4, 8.8 | 5-7 days | Adaptive decision log schema includes trace ID, trigger, model version, flags, confidence, rollback provenance; required dashboards live (drift, failed-heal cycles, rollback outcomes, unexplained drop detector) |
+| 10.9.10 | Security Engineering + Federated Learning | 2.5, 8.1, 8.9 | 1-2 weeks | Signed update attestation path implemented; poisoning/outlier detection enforced at aggregation and advisory ingest; reputation-weighted participation active; scoped kill-switches can disable individual learning channels |
+| 10.9.11 | Architecture Council + Release Governance | Hardcoded Invariants section, 7.7A | 3-5 days | Autonomous change-control policy codified in docs + CI checks; every self-updating component declares immutable policy space, promotion gates, rollback path, human override; staged rollout lifecycle enforced by tooling |
+
+> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.11 in parallel where dependencies allow.
+
+#### 10.9B Milestone Rollout Plan (Expanded Across Existing Phases)
+
+This milestone plan expands robustness hardening into the already-defined phase structure so work lands where ownership and dependencies already exist.
+
+| Milestone | Scope | Phase Anchors | Est. Window | Exit / Go-NoGo Criteria |
+|-----------|-------|---------------|-------------|--------------------------|
+| M1: Adaptive Foundation Gate | Implement hard gate prerequisites and unblock safe autonomy rollout | 10.9.1-10.9.4, 7.1, 7.7, 10.2.12, 10.2.13 | Week 1-2 | `ProductionReadinessGate` enforced in CI; trigger reliability baseline live; rollback bundle path proven in staging drill; no critical placeholder methods in adaptive critical path |
+| M2: Observability + Signal Integrity | Ensure adaptation decisions are measurable and evidence quality is sufficient | 10.9.3, 10.9.9, 7.3.4, 7.7A, 8.8 | Week 2-3 | Required dashboards live; dual-signal rollback gating active; confidence thresholds enforced; unexplained-outcome-drop detector alerting |
+| M3: Federated + Advisory Safety | Harden cross-device and cross-locality propagation paths | 10.9.5, 10.9.6, 8.1, 8.9 | Week 3-5 | Cohort-wise no-regression checks passing; advisory quarantine enabled; credibility scoring + anomaly disable path operational; canary/shadow promotion policy enforced |
+| M4: Tier + Compatibility + Security Closure | Close resilience gaps across device tiers, schemas, and adversarial vectors | 10.9.7, 10.9.8, 10.9.10, 2.5, 7.5, 7.7.1 | Week 5-7 | Compatibility matrix blocks bad deploys; tier parity checks active; poisoning/outlier detection + signed update attestation enabled; scoped kill switches validated |
+| M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
+
+#### 10.9C Cross-Phase Expansion Map (What to Update in Each Existing Phase)
+
+| Existing Phase | Required Robustness Expansion | Related 10.9 Tasks |
+|----------------|-------------------------------|--------------------|
+| 2.5 Post-Quantum Cryptography Hardening | Add signed update attestation for federated/advisory payload authenticity and scoped emergency kill switches for compromised channels | 10.9.10 |
+| 7.4 Agent Trigger System | Add idempotency keys, dedupe/replay semantics, trigger fuzz testing, and trigger SLOs | 10.9.2 |
+| 7.5 Device Capability Tiers | Add tier parity envelopes, tier-specific regression gating, lower-tier degradation alerting | 10.9.8 |
+| 7.7 Model Lifecycle Management | Expand rollback unit to atomic bundles and require periodic rollback drills | 10.9.4 |
+| 7.7A Self-Improving Search Governance | Add signal-confidence policy, dual-signal rollback requirement, anti-flap cooldown governance | 10.9.3, 10.9.11 |
+| 7.3 Sync & Monitoring | Add causal observability schema with trace IDs and rollback provenance dashboards | 10.9.9 |
+| 8.1 Federated World Model Learning | Add cohort-gated promotion, bounded update magnitude, canary + shadow federated promotion flow | 10.9.5 |
+| 8.8 Network Monitoring | Add failed-heal cycle monitoring, unexplained drift alarms, and cohort-level convergence/regression views | 10.9.3, 10.9.9 |
+| 8.9 Locality Happiness Advisory | Add advisory quarantine, advisor credibility decay, anomaly-based advisory source disable, advisory rollback independence | 10.9.6 |
+| 10.2 Stub/TODO Cleanup | Enforce adaptive critical-path placeholder elimination as release blocker | 10.9.1 |
+
+#### 10.9D Program-Level Checkpoints (Portfolio View)
+
+| Checkpoint | Trigger | Required Evidence | Decision |
+|------------|---------|-------------------|----------|
+| C1: Autonomy Enablement | Before enabling any autonomous adaptation in prod | M1 complete + CI gate green + rollback drill pass | Enable canary autonomy only |
+| C2: Federated Promotion | Before promoting any global federated update outside canary | M2 + M3 complete; cohort no-regression pass | Promote to staged rollout |
+| C3: Broad Rollout | Before full-population adaptive rollout | M4 complete + adversarial controls active + compatibility matrix pass | Full rollout allowed |
+| C4: Continuous Operation | Quarterly | M5 policy audit + rollback drill + incident postmortem review | Continue / tighten policy |
+
+#### 10.9E Governance RACI + Risk Scoring
+
+Risk scoring uses `P x I` where:
+- `P` (Probability): 1-5 likelihood of failure/regression if not addressed
+- `I` (Impact): 1-5 user/system/business impact if failure occurs
+- `Score`: `P x I` (max 25)
+- Priority bands: `20-25 Critical`, `12-19 High`, `6-11 Medium`, `1-5 Low`
+
+Role abbreviations:
+- `AP` = AI Platform
+- `MOB` = Mobile Platform
+- `REL` = Reliability Engineering
+- `MLE` = Recommender/ML
+- `FED` = Federated Learning
+- `LOC` = Locality Intelligence
+- `OBS` = Observability
+- `SEC` = Security Engineering
+- `QA` = QA Automation
+- `RE` = Release Engineering
+- `ARCH` = Architecture Council
+- `GOV` = Release Governance
+
+| Task | R | A | C | I | P | I(Impact) | Score | Priority |
+|------|---|---|---|---|---|-----------|-------|----------|
+| 10.9.1 | AP, REL | GOV | QA, RE | ARCH | 5 | 5 | 25 | Critical |
+| 10.9.2 | MOB, AP | REL | QA, OBS | GOV | 4 | 4 | 16 | High |
+| 10.9.3 | MLE | AP | OBS, QA | GOV | 4 | 5 | 20 | Critical |
+| 10.9.4 | AP, RE | GOV | REL, QA | ARCH | 4 | 5 | 20 | Critical |
+| 10.9.5 | FED, MLE | AP | OBS, QA, MOB | GOV | 4 | 4 | 16 | High |
+| 10.9.6 | LOC | AP | FED, SEC, QA | GOV | 3 | 4 | 12 | High |
+| 10.9.7 | QA, Data Platform | GOV | AP, RE | ARCH | 3 | 5 | 15 | High |
+| 10.9.8 | MOB, MLE | AP | QA, OBS | GOV | 3 | 4 | 12 | High |
+| 10.9.9 | OBS, AP | REL | QA, MLE | GOV | 3 | 5 | 15 | High |
+| 10.9.10 | SEC, FED | GOV | AP, REL, QA | ARCH | 4 | 5 | 20 | Critical |
+| 10.9.11 | ARCH, GOV | GOV | AP, RE, REL | All teams | 3 | 5 | 15 | High |
+
+> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`) must have active owners and weekly status review before any autonomous scope expansion.
+
+#### 10.9F Reusable Governance Template (Apply to All Phases)
+
+Use this template whenever adding or updating any phase workstream:
+
+| Field | Required Content |
+|------|------------------|
+| Milestone ID | `Mx-Py-z` (example: `M2-P7-1`) |
+| Scope | Concrete deliverable, not activity wording |
+| Owner Team (R) | Team(s) implementing work |
+| Accountable (A) | Single accountable role/team |
+| Consulted (C) | Cross-functional reviewers |
+| Informed (I) | Stakeholders receiving updates |
+| Dependencies | Prior tasks/phases required to start |
+| Duration | Estimated window in days/weeks |
+| Risk Score | `P x I` with band (Critical/High/Medium/Low) |
+| Exit Criteria | Objective go/no-go criteria (tests/metrics/drills) |
+
+> **Template rule:** Every phase milestone must declare all fields above; no phase can enter implementation without risk score + exit criteria.
+
+#### 10.9F.1 Execution Board Enforcement (Phase 1-N)
+
+`docs/EXECUTION_BOARD.csv` is the canonical execution state for all phase work derived from this plan.
+
+Mandatory enforcement rules:
+1. Every plan-derived implementation item must map to a milestone ID (`Mx-Py-z`) in `docs/EXECUTION_BOARD.csv`.
+2. Any PR/commit that changes plan-scoped code/docs must reference at least one milestone ID.
+3. Milestones cannot move to `Done` without evidence links (tests, dashboards, reports, or docs).
+4. Phase progression cannot skip failed gates from prerequisite waves.
+5. Board sync/validation must pass before merge:
+`dart run tool/update_execution_board.dart --check`
+
+Authoring workflow:
+1. Edit `docs/EXECUTION_BOARD.csv`.
+2. Run `dart run tool/update_execution_board.dart` to regenerate board sections.
+3. Update `docs/STATUS_WEEKLY.md`.
+4. Commit CSV + generated board changes together.
+
+#### 10.9G Governance Rollout Order (All Phases, Suggested Execution Order)
+
+| Wave | Phase Set | Governance Depth | Primary Objective |
+|------|-----------|------------------|-------------------|
+| Wave 0 (active foundation) | Phase 2 + Phase 10 | Full | Security, compliance, and production-readiness gates that all other phases depend on |
+| Wave 1 | Phase 7 + Phase 8 | Full | Stabilize orchestration, rollout controls, federated/advisory safety before expanding adaptive scope |
+| Wave 2 | Phase 1 + Phase 3 + Phase 4 + Phase 5 + Phase 6 | Full for 4-6, Hybrid for 1/3 | Harden core learning/planning pipeline end-to-end |
+| Wave 3 | Phase 9 + Phase 11 | Hybrid | Apply governance to business/integration expansion and research tracks |
+
+> **Ordering rule:** Start work in the listed wave order. A later wave cannot promote to production if earlier-wave go/no-go gates are red.
+
+#### 10.9H Phase Governance Matrix (Portfolio-Level)
+
+| Phase | Governance Tier | R | A | C | I | Portfolio Risk (P x I) | Priority | Phase Gate |
+|------|------------------|---|---|---|---|------------------------|----------|------------|
+| Phase 1 (Outcome + Memory) | Hybrid | AP, MLE | AP | QA, OBS | GOV | 3 x 4 = 12 | High | Data integrity + schema/backfill validation green |
+| Phase 2 (Privacy/Compliance) | Full | SEC | GOV | AP, REL, QA | ARCH | 4 x 5 = 20 | Critical | Security controls + compliance tests + key-rotation drill pass |
+| Phase 3 (State/Encoders) | Hybrid | AP, MLE | AP | QA, REL | GOV | 3 x 4 = 12 | High | Feature freshness + consistency checks pass |
+| Phase 4 (Energy Function) | Full | MLE | AP | QA, OBS, REL | GOV | 4 x 5 = 20 | Critical | Asymmetric-loss regression and safety guardrails pass |
+| Phase 5 (Transition Predictor) | Full | MLE | AP | QA, OBS | GOV | 4 x 5 = 20 | Critical | Drift/error bounds + uncertainty calibration pass |
+| Phase 6 (MPC Planner) | Full | AP, MLE | AP | REL, QA, OBS | GOV | 4 x 5 = 20 | Critical | Guardrail constraints + planner rollback drills pass |
+| Phase 7 (Orchestrators/Integration) | Full | AP, MOB | REL | QA, OBS, RE | GOV | 5 x 5 = 25 | Critical | Trigger reliability + orchestration persistence gates pass |
+| Phase 8 (Ecosystem Intelligence) | Full | FED, LOC | AP | SEC, QA, OBS | GOV | 4 x 5 = 20 | Critical | Federated cohort no-regression + advisory quarantine pass |
+| Phase 9 (Business/Monetization) | Hybrid | Business Platform, AP | GOV | SEC, QA | ARCH | 3 x 4 = 12 | High | Data-sharing consent + revenue attribution integrity pass |
+| Phase 10 (Feature Completion/Reorg) | Full | AP, REL | GOV | QA, RE | ARCH | 4 x 4 = 16 | High | Placeholder elimination + reorg import/CI stability pass |
+| Phase 11 (Integrations/Expansion) | Hybrid | Integrations Platform | GOV | SEC, AP, QA | ARCH | 3 x 5 = 15 | High | Integration contract/security conformance pass |
+
+#### 10.9I Phase Milestone Tracks (Detailed, In Rollout Order)
+
+| Milestone ID | Phase | Scope | R | A | Dependencies | Duration | Risk | Exit Criteria |
+|-------------|-------|-------|---|---|--------------|----------|------|---------------|
+| M1-P7-1 | 7 | Trigger + orchestration persistence hardening | AP, MOB | REL | 10.9.1-10.9.4 | 1-2 weeks | 25 Critical | Trigger SLOs green, no placeholder critical-path methods, state persistence verified |
+| M1-P7-2 | 7 | Controller/orchestrator integration reliability | AP | REL | M1-P7-1 | 1 week | 20 Critical | No orchestration dead paths; canary error budget within target |
+| M1-P8-1 | 8 | Federated cohort gating + canary/shadow pipeline | FED, MLE | AP | M1-P7-1 | 1-2 weeks | 20 Critical | Cohort no-regression checks pass; promotion policy enforced |
+| M1-P8-2 | 8 | Advisory quarantine + rollback independence | LOC | AP | M1-P8-1 | 1 week | 16 High | Advisory source quarantine and disable path validated |
+| M2-P1-1 | 1 | Episodic/semantic/procedural memory reliability gates | AP, MLE | AP | M1-P7-1 | 1 week | 12 High | Schema consistency, dedupe, and replay tests pass |
+| M2-P3-1 | 3 | State encoder consistency/freshness controls | AP, MLE | AP | M2-P1-1 | 1 week | 12 High | Feature freshness tracker SLO + atomic snapshot checks pass |
+| M2-P4-1 | 4 | Energy function safety and regression governance | MLE | AP | M2-P3-1 | 1-2 weeks | 20 Critical | Safety bounds + asymmetric-loss regression suite pass |
+| M2-P5-1 | 5 | Transition predictor drift/calibration controls | MLE | AP | M2-P4-1 | 1-2 weeks | 20 Critical | Error/drift thresholds green; uncertainty calibration validated |
+| M2-P6-1 | 6 | Planner guardrail and rollback-hardening | AP, MLE | AP | M2-P5-1 | 1-2 weeks | 20 Critical | Planner respects hard constraints; rollback drill pass |
+| M3-P9-1 | 9 | Business data/consent governance hardening | Business Platform, AP | GOV | M2-P6-1 | 1 week | 12 High | Consent and DP checks enforced; audit logs complete |
+| M3-P11-1 | 11 | Integration governance + contract security gates | Integrations Platform | GOV | M3-P9-1 | 1-2 weeks | 15 High | Integration contract tests + security conformance pass |
+| M0-P2-1 | 2 | Security + cryptographic assurance baseline | SEC | GOV | none | parallel baseline | 20 Critical | PQ hardening tasks + attestation and kill-switch validation pass |
+| M0-P10-1 | 10 | Production readiness + cleanup enforcement | AP, REL | GOV | none | parallel baseline | 16 High | Adaptive-path placeholder gate and CI stability pass |
+
+> **Program management rule:** `M0-P2-1` and `M0-P10-1` run continuously as cross-cutting controls while Waves 1-3 execute in sequence.
+
 ---
 
 ## Phase 11: Industry Integrations & Platform Expansion
@@ -1912,5 +2108,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** February 10, 2026 (v12 -- Comprehensive Gap Fill: 12 structural gaps addressed. NEW SECTIONS: Phase 7.7 Model Lifecycle Management (8 tasks: OTA, versioning, staged rollout, rollback), Phase 7.8 Multi-Device State Reconciliation (6 tasks: episodic merge, personality sync, device migration), Phase 10.3 Internationalization (7 tasks: ARB, RTL, locale detection), Phase 10.4 Accessibility (8 tasks: a11y, screen reader, contrast, reduce motion), Phase 9.2.6 Third-Party Data Pipeline (7 tasks: insight catalog, DP noise, consent gate, access control). EXTENDED SECTIONS: Phase 1.4 +3 tasks (negative outcome amplification, confidence decay, bad day detection), Phase 1.7 +2 tasks (locality agent bidirectional feed, organic→community pipeline), Phase 2.1 +3 tasks (data transparency UI, "why this" explanations, data correction), Phase 4.1 +2 tasks (asymmetric loss, self-monitoring), Phase 4.5 +2 tasks (agent happiness→energy function feedback, happiness-weighted exploration), Phase 5.1 +2 tasks (dormancy prediction, wearable temporal conditioning), Phase 6.1 +3 tasks (creator intelligence, event optimization, creator feedback loop), Phase 6.2 +4 tasks (re-engagement guardrails). Phase 10 renumbered (old 10.3→10.5, 10.4→10.6, 10.5→10.7, 10.6→10.8). Phase 7 duration 4-5w→6-8w, Phase 10 duration 4-6w→8-12w. ~57 new tasks total. Previous: v11 locality happiness)  
+**Last Updated:** February 15, 2026 (v13 -- Robustness Hardening Update. NEW SECTION: Phase 10.9 Reality Model Robustness Hardening (11 tasks: production readiness gate, trigger reliability spec, signal quality governance, atomic rollback bundles, federated cohort robustness, advisory quarantine, schema/model compatibility matrix, tier parity guardrails, causal observability baseline, adversarial hardening, autonomous change control policy). Added explicit release policy blocking production autonomous adaptation until 10.9.1-10.9.4 are complete and CI-validated. Previous: v12 comprehensive gap fill)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

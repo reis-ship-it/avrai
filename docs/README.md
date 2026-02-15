@@ -8,6 +8,7 @@
 - **Execution Board (CSV source):** `EXECUTION_BOARD.csv` - Canonical milestone/phase execution state (Phase 1-N)
 - **Execution Board (rendered):** `EXECUTION_BOARD.md` - Human-readable board synced from CSV
 - **Weekly Status Log:** `STATUS_WEEKLY.md` - Weekly deltas, blockers, and gate decisions
+- **GitHub Enforcement Setup:** `GITHUB_ENFORCEMENT_SETUP.md` - Branch protection + required checks configuration
 - **File Classification:** `file_classification.md` - File classification guide
 
 Execution board commands:

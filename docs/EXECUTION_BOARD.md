@@ -1,0 +1,126 @@
+# Execution Board (Phase 1-N)
+
+Purpose: lightweight execution tracking without Jira/Linear, stored in git.
+
+Scope: tracks all current Master Plan phases (`1-11`) and is forward-compatible with future phases (`N+1`, `N+2`, ...).
+
+Source references:
+- `docs/MASTER_PLAN.md` (Phase definitions)
+- `docs/MASTER_PLAN.md` section `10.9A-10.9I` (governance, milestones, risk)
+
+Last updated: 2026-02-15
+
+## Usage
+
+1. Edit `docs/EXECUTION_BOARD.csv` as the source of truth.
+2. Run `dart run tool/update_execution_board.dart` to sync this board.
+3. Keep evidence links (PRs, test reports, docs) in CSV `evidence`.
+4. Copy weekly summary into `docs/STATUS_WEEKLY.md`.
+5. Use `dart run tool/update_execution_board.dart --check` before merge.
+
+## Mandatory Rules (Wired To Master Plan Work)
+
+1. All implementation work from `docs/MASTER_PLAN.md` must map to a milestone ID in `docs/EXECUTION_BOARD.csv`.
+2. Any PR/commit touching plan-scoped code/docs must reference at least one milestone ID (e.g., `M1-P7-1`) in the commit message or PR description.
+3. No milestone can move to `Done` without evidence links (tests, analysis, or docs).
+4. A phase cannot be marked `Done` while any dependency milestone for that phase is `Blocked`.
+5. Master Plan phase additions require same-turn board expansion:
+phase row + milestone row(s) + risk + gate criteria.
+6. The checker command must pass before merge:
+`dart run tool/update_execution_board.dart --check`
+
+## Status Legend
+
+- `Backlog`: Defined but not ready to start.
+- `Ready`: Dependencies satisfied; can start.
+- `In Progress`: Actively being worked.
+- `Blocked`: Waiting on dependency/decision/fix.
+- `Done`: Exit criteria met.
+
+## Priority Legend
+
+- `Critical`: 20-25 risk score
+- `High`: 12-19 risk score
+- `Medium`: 6-11 risk score
+- `Low`: 1-5 risk score
+
+## Phase Portfolio
+
+<!-- EXECUTION_BOARD:PHASE_PORTFOLIO_START -->
+| Phase | Name | Governance Tier | R (Owner) | A (Accountable) | Risk | Priority | Status | Gate |
+|------|------|------------------|-----------|------------------|------|----------|--------|------|
+| 1 | Outcome Data & Episodic Memory Infrastructure | Hybrid | AP, MLE | AP | 12 | High | Ready | Data integrity + schema/backfill validation green |
+| 2 | Privacy Compliance & Legal Infrastructure | Full | SEC | GOV | 20 | Critical | Ready | Security controls + compliance tests + key-rotation drill pass |
+| 3 | World Model State & Action Encoders + List Quantum Entity | Hybrid | AP, MLE | AP | 12 | High | Ready | Feature freshness + consistency checks pass |
+| 4 | Energy Function & Formula Replacement | Full | MLE | AP | 20 | Critical | Ready | Asymmetric-loss regression and safety guardrails pass |
+| 5 | Transition Predictor & On-Device Training | Full | MLE | AP | 20 | Critical | Ready | Drift/error bounds + uncertainty calibration pass |
+| 6 | MPC Planner & Autonomous Agent | Full | AP, MLE | AP | 20 | Critical | Ready | Guardrail constraints + planner rollback drills pass |
+| 7 | Orchestrator Restructuring & System Integration | Full | AP, MOB | REL | 25 | Critical | Ready | Trigger reliability + orchestration persistence gates pass |
+| 8 | Ecosystem Intelligence AI2AI World Model | Full | FED, LOC | AP | 20 | Critical | Ready | Federated cohort no-regression + advisory quarantine pass |
+| 9 | Business Operations & Monetization | Hybrid | Business Platform, AP | GOV | 12 | High | Backlog | Data-sharing consent + revenue attribution integrity pass |
+| 10 | Feature Completion Codebase Reorganization & Polish | Hybrid | AP, REL | GOV | 16 | High | Ready | Placeholder elimination + reorg import/CI stability pass |
+| 11 | Industry Integrations & Platform Expansion | Hybrid | Integrations Platform | GOV | 15 | High | Backlog | Integration contract/security conformance pass |
+<!-- EXECUTION_BOARD:PHASE_PORTFOLIO_END -->
+
+## Milestone Board
+
+<!-- EXECUTION_BOARD:MILESTONE_BOARD_START -->
+| Milestone | Phase | Wave | Scope | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |
+|----------|-------|------|-------|---|---|--------------|------|----------|---------------|--------|----------|
+| M0-P10-1 | 10 | 0 | Production readiness + cleanup enforcement | AP, REL | GOV | none | 16 | High | parallel baseline | Ready | - |
+| M0-P2-1 | 2 | 0 | Security + cryptographic assurance baseline | SEC | GOV | none | 20 | Critical | parallel baseline | Ready | - |
+| M1-P7-1 | 7 | 1 | Trigger + orchestration persistence hardening | AP, MOB | REL | 10.9.1-10.9.4 | 25 | Critical | Week 1-2 | Ready | - |
+| M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
+| M1-P8-1 | 8 | 1 | Federated cohort gating + canary/shadow pipeline | FED, MLE | AP | M1-P7-1 | 20 | Critical | Week 3-4 | Backlog | - |
+| M1-P8-2 | 8 | 1 | Advisory quarantine + rollback independence | LOC | AP | M1-P8-1 | 16 | High | Week 4-5 | Backlog | - |
+| M2-P1-1 | 1 | 2 | Memory reliability gates | AP, MLE | AP | M1-P7-1 | 12 | High | Week 5-6 | Backlog | - |
+| M2-P3-1 | 3 | 2 | State encoder consistency/freshness controls | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Backlog | - |
+| M2-P4-1 | 4 | 2 | Energy function safety and regression governance | MLE | AP | M2-P3-1 | 20 | Critical | Week 7-8 | Backlog | - |
+| M2-P5-1 | 5 | 2 | Transition predictor drift/calibration controls | MLE | AP | M2-P4-1 | 20 | Critical | Week 8-9 | Backlog | - |
+| M2-P6-1 | 6 | 2 | Planner guardrail and rollback-hardening | AP, MLE | AP | M2-P5-1 | 20 | Critical | Week 9-10 | Backlog | - |
+| M3-P11-1 | 11 | 3 | Integration governance + contract security gates | Integrations Platform | GOV | M3-P9-1 | 15 | High | Week 11-12 | Backlog | - |
+| M3-P9-1 | 9 | 3 | Business data/consent governance hardening | Business Platform, AP | GOV | M2-P6-1 | 12 | High | Week 10-11 | Backlog | - |
+<!-- EXECUTION_BOARD:MILESTONE_BOARD_END -->
+
+## Kanban Snapshot
+
+<!-- EXECUTION_BOARD:KANBAN_START -->
+### Backlog
+
+`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
+
+### Ready
+
+`M0-P10-1`, `M0-P2-1`, `M1-P7-1`
+
+### In Progress
+
+None
+
+### Blocked
+
+None
+
+### Done
+
+None
+<!-- EXECUTION_BOARD:KANBAN_END -->
+
+## Exit Criteria Checklist (Per Milestone)
+
+- [ ] Scope implemented
+- [ ] Tests green
+- [ ] Monitoring/alerting updated (if applicable)
+- [ ] Security/privacy checks complete (if applicable)
+- [ ] Runbook/rollback path validated
+- [ ] Evidence link added in board row
+
+## Phase N+ Extension Rules
+
+When new phases are added:
+
+1. Add phase row to `Phase Portfolio`.
+2. Add milestone IDs using `Mx-P<phase>-<seq>`.
+3. Assign R/A and risk score.
+4. Add gate criteria and dependencies.
+5. Update CSV row set to match.
