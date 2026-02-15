@@ -127,46 +127,54 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    text = (args.title + "\n" + args.body).strip()
+    title_text = args.title.strip()
+    body_text = args.body.strip()
+    text = (title_text + "\n" + body_text).strip()
     if not text:
         fail("No PR title/body provided.")
 
     prd_ids = sorted(set(PRD_PATTERN.findall(text)))
-    milestone_ids = sorted(set(MILESTONE_PATTERN.findall(text)))
+    milestone_ids_in_title = sorted(set(MILESTONE_PATTERN.findall(title_text)))
+    milestone_ids_in_body = sorted(set(MILESTONE_PATTERN.findall(body_text)))
     master_plan_refs = sorted(set(MASTER_PLAN_REF_PATTERN.findall(text)))
 
     if not prd_ids:
         fail("Missing PRD requirement ID (expected format: PRD-###).")
 
     if args.require_execution_id:
-        if not milestone_ids:
-            fail("Missing execution milestone ID (expected format: Mx-Py-z).")
+        if not milestone_ids_in_title:
+            fail(
+                "Missing execution milestone ID in PR title "
+                "(expected format: Mx-Py-z)."
+            )
 
-    if args.require_single_milestone and len(milestone_ids) != 1:
+    if args.require_single_milestone and len(milestone_ids_in_title) != 1:
         fail(
-            "Expected exactly one execution milestone ID (Mx-Py-z) in PR title/body, "
-            f"found {len(milestone_ids)}."
+            "Expected exactly one execution milestone ID (Mx-Py-z) in PR title, "
+            f"found {len(milestone_ids_in_title)}."
         )
 
     if args.require_master_plan_ref and not master_plan_refs:
         fail("Missing Master Plan subsection reference (expected format: X.Y.Z).")
 
     if args.validate_commit_boundaries:
-        if len(milestone_ids) != 1:
+        if len(milestone_ids_in_title) != 1:
             fail(
                 "Commit boundary validation requires exactly one PR milestone ID "
-                "(Mx-Py-z) in title/body."
+                "(Mx-Py-z) in PR title."
             )
         validate_commit_boundaries(
             base_sha=args.base_sha.strip(),
             head_sha=args.head_sha.strip(),
-            required_milestone=milestone_ids[0],
+            required_milestone=milestone_ids_in_title[0],
         )
 
     print("Traceability check passed.")
     print("Found PRD IDs:", ", ".join(prd_ids))
-    if milestone_ids:
-        print("Found Milestone IDs:", ", ".join(milestone_ids))
+    if milestone_ids_in_title:
+        print("Found PR Title Milestone IDs:", ", ".join(milestone_ids_in_title))
+    if milestone_ids_in_body:
+        print("Found PR Body Milestone IDs:", ", ".join(milestone_ids_in_body))
     if master_plan_refs:
         print("Found Master Plan Refs:", ", ".join(master_plan_refs))
 

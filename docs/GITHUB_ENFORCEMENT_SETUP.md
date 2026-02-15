@@ -26,7 +26,7 @@ Ensure these workflows exist and are green on pull requests:
    - Check name: `PRD Traceability Guard / traceability`
    - Enforces PR metadata includes:
      - `PRD-###`
-     - exactly one execution milestone ID format `M#-P#-#`
+     - exactly one execution milestone ID format `M#-P#-#` in the PR title
      - at least one master plan subsection reference `X.Y.Z`
      - every non-merge PR commit includes the same milestone ID + at least one `X.Y.Z` reference
 
@@ -83,7 +83,7 @@ Notes:
 
 Every PR touching plan-derived work must:
 1. Reference PRD IDs (`PRD-###`)
-2. Reference exactly one execution milestone ID (`M#-P#-#`)
+2. Reference exactly one execution milestone ID (`M#-P#-#`) in the PR title
 3. Reference master plan subsection IDs (`X.Y.Z`)
 4. Ensure every non-merge commit message includes the same milestone ID + at least one `X.Y.Z` reference
 5. Update evidence links for milestones moved to `Done`

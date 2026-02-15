@@ -1775,7 +1775,7 @@ Use this template whenever adding or updating any phase workstream:
 
 Mandatory enforcement rules:
 1. Every plan-derived implementation item must map to a milestone ID (`Mx-Py-z`) in `docs/EXECUTION_BOARD.csv`.
-2. Every PR that changes plan-scoped code/docs must reference exactly one milestone ID (`Mx-Py-z`) in PR title/body.
+2. Every PR that changes plan-scoped code/docs must reference exactly one milestone ID (`Mx-Py-z`) in PR title.
 3. Every non-merge commit in that PR must include the same milestone ID and at least one master plan subsection reference (`X.Y.Z`).
 4. Milestones cannot move to `Done` without evidence links (tests, dashboards, reports, or docs).
 5. Phase progression cannot skip failed gates from prerequisite waves.

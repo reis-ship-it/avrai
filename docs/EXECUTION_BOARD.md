@@ -31,14 +31,14 @@ Last updated: 2026-02-15
    - at least one subsection reference (`X.Y.Z`)
 6. Open PR with:
    - `PRD-###`
-   - exactly one milestone ID (`M#-P#-#`)
+   - exactly one milestone ID (`M#-P#-#`) in PR title
    - subsection references (`X.Y.Z`)
 7. Move milestone status only after exit criteria and evidence are satisfied.
 
 ## Mandatory Rules (Wired To Master Plan Work)
 
 1. All implementation work from `docs/MASTER_PLAN.md` must map to a milestone ID in `docs/EXECUTION_BOARD.csv`.
-2. Every PR touching plan-scoped code/docs must reference exactly one milestone ID (e.g., `M1-P7-1`) in PR title/body.
+2. Every PR touching plan-scoped code/docs must reference exactly one milestone ID (e.g., `M1-P7-1`) in PR title.
 3. Every non-merge commit in that PR must include the same milestone ID and at least one master plan subsection reference (`X.Y.Z`).
 4. No milestone can move to `Done` without evidence links (tests, analysis, or docs).
 5. A phase cannot be marked `Done` while any dependency milestone for that phase is `Blocked`.
