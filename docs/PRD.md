@@ -11,7 +11,9 @@ Define stable, testable product requirements that prevent execution drift across
 
 This PRD is the intent layer. It is implemented through:
 - `docs/MASTER_PLAN.md` (phase execution plan)
-- `docs/agents/status/status_tracker.md` (execution status)
+- `docs/EXECUTION_BOARD.csv` (canonical milestone/phase execution state)
+- `docs/STATUS_WEEKLY.md` (operational weekly deltas + gate decisions)
+- `docs/agents/status/status_tracker.md` (broader program status companion)
 - architecture placement/mapping guardrails in `docs/plans/architecture/`
 
 ## 2. Product Outcome
@@ -41,7 +43,7 @@ Out of scope:
 ### 4.2 Architecture Requirements
 
 - **PRD-010**: `docs/MASTER_PLAN.md` is the execution authority for sequencing and dependencies.
-- **PRD-011**: `docs/agents/status/status_tracker.md` is the canonical execution status source.
+- **PRD-011**: `docs/EXECUTION_BOARD.csv` is the canonical execution status source for phase/milestone progress; `docs/STATUS_WEEKLY.md` and `docs/agents/status/status_tracker.md` are companion reporting layers.
 - **PRD-012**: Every tracked code/infrastructure file must map to a Master Plan-aligned architecture classification.
 - **PRD-013**: Every tracked file must belong to a registered architecture spot.
 - **PRD-014**: If no existing architecture spot fits a new file, a new spot must be explicitly created before merge.
@@ -74,7 +76,7 @@ A change is PRD-compliant only if:
 | PRD ID | Implemented/Enforced By | Primary Artifact |
 |---|---|---|
 | PRD-010 | Planning authority | `docs/MASTER_PLAN.md` |
-| PRD-011 | Status authority | `docs/agents/status/status_tracker.md` |
+| PRD-011 | Execution status authority | `docs/EXECUTION_BOARD.csv`, `docs/STATUS_WEEKLY.md`, `docs/agents/status/status_tracker.md` |
 | PRD-012 | File-level architecture mapping | `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv` |
 | PRD-013 | Spot registry | `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv` |
 | PRD-014 | Placement policy | `docs/plans/architecture/FILE_PLACEMENT_POLICY.md` |
@@ -82,7 +84,7 @@ A change is PRD-compliant only if:
 | PRD-021 | Gated autonomy | `docs/MASTER_PLAN.md` (7.7A), model lifecycle sections |
 | PRD-022 | Audit + rollback | `docs/MASTER_PLAN.md` (7.7, 7.7A), architecture governance docs |
 | PRD-030/31/32 | Build enforcement | `.github/workflows/architecture-placement-guard.yml`, `scripts/validate_architecture_placement.py` |
-| PRD-033 | PR traceability discipline | `.github/pull_request_template.md` |
+| PRD-033 | PR traceability discipline | `.github/pull_request_template.md`, `.github/workflows/prd-traceability-guard.yml`, `scripts/validate_pr_traceability.py` |
 
 ## 7. Change Management
 
@@ -96,6 +98,9 @@ PRD changes require:
 ## 8. Operational References
 
 - `docs/MASTER_PLAN.md`
+- `docs/EXECUTION_BOARD.csv`
+- `docs/EXECUTION_BOARD.md`
+- `docs/STATUS_WEEKLY.md`
 - `docs/MASTER_PLAN_TRACKER.md`
 - `docs/agents/status/status_tracker.md`
 - `docs/plans/architecture/ARCHITECTURE_INDEX.md`
