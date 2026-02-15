@@ -25,6 +25,11 @@ Validation commands:
 - `In Progress -> Done`:
 - `Any -> Blocked`:
 
+### 1B) Reopen-By-New-Milestone Events
+
+| New Milestone | Reopens Milestone | Reason | Evidence |
+|---------------|-------------------|--------|----------|
+
 ### 2) Current In Progress
 
 | Milestone | Owner | ETA | Risk | Notes |
@@ -72,6 +77,10 @@ Validation commands:
 - `Ready -> In Progress`:
 - `In Progress -> Done`:
 - `Any -> Blocked`:
+
+### 1B) Reopen-By-New-Milestone Events
+| New Milestone | Reopens Milestone | Reason | Evidence |
+|---------------|-------------------|--------|----------|
 
 ### 2) Current In Progress
 | Milestone | Owner | ETA | Risk | Notes |

@@ -10,17 +10,23 @@ import 'dart:io';
 /// 1) `docs/EXECUTION_BOARD.csv` is the source of truth for board rows.
 /// 2) `docs/EXECUTION_BOARD.md` generated sections must match CSV.
 /// 3) Phase rows in CSV must cover all `## Phase X:` sections in MASTER_PLAN.
-/// 4) Milestone IDs, statuses, and dependencies are validated.
+/// 4) Milestone IDs, statuses, dependencies, and traceability metadata are validated.
+/// 5) A phase marked `Ready` must have at least one active milestone
+///    (`Ready`/`In Progress`/`Done`) in that same phase.
+/// 6) Reopen-by-new-milestone events must declare reopening metadata and be
+///    recorded in `docs/STATUS_WEEKLY.md`.
 void main(List<String> args) {
   final checkOnly = args.contains('--check');
   final cwd = Directory.current.path;
   final csvPath = '$cwd/docs/EXECUTION_BOARD.csv';
   final mdPath = '$cwd/docs/EXECUTION_BOARD.md';
   final masterPlanPath = '$cwd/docs/MASTER_PLAN.md';
+  final statusWeeklyPath = '$cwd/docs/STATUS_WEEKLY.md';
 
   final csvFile = File(csvPath);
   final mdFile = File(mdPath);
   final masterPlanFile = File(masterPlanPath);
+  final statusWeeklyFile = File(statusWeeklyPath);
 
   if (!csvFile.existsSync()) {
     _fail('Missing CSV: $csvPath');
@@ -31,10 +37,14 @@ void main(List<String> args) {
   if (!masterPlanFile.existsSync()) {
     _fail('Missing master plan: $masterPlanPath');
   }
+  if (!statusWeeklyFile.existsSync()) {
+    _fail('Missing weekly status log: $statusWeeklyPath');
+  }
 
   final csvText = csvFile.readAsStringSync();
   final mdText = mdFile.readAsStringSync();
   final masterPlanText = masterPlanFile.readAsStringSync();
+  final statusWeeklyText = statusWeeklyFile.readAsStringSync();
 
   final rows = _parseCsv(csvText);
   if (rows.isEmpty) {
@@ -54,6 +64,11 @@ void main(List<String> args) {
     'consulted_c',
     'informed_i',
     'dependencies',
+    'prd_ids',
+    'master_plan_refs',
+    'architecture_spot',
+    'change_type',
+    'reopens_milestone',
     'risk_probability',
     'risk_impact',
     'risk_score',
@@ -95,7 +110,11 @@ void main(List<String> args) {
     }
   }
 
-  _validateRows(phaseRows: phaseRows, milestoneRows: milestoneRows, masterPlanText: masterPlanText);
+  _validateRows(
+      phaseRows: phaseRows,
+      milestoneRows: milestoneRows,
+      masterPlanText: masterPlanText,
+      statusWeeklyText: statusWeeklyText);
 
   final generatedPhaseTable = _buildPhaseTable(phaseRows);
   final generatedMilestoneTable = _buildMilestoneTable(milestoneRows);
@@ -145,12 +164,24 @@ void _validateRows({
   required List<Map<String, String>> phaseRows,
   required List<Map<String, String>> milestoneRows,
   required String masterPlanText,
+  required String statusWeeklyText,
 }) {
-  final allowedStatus = <String>{'Backlog', 'Ready', 'In Progress', 'Blocked', 'Done'};
+  final allowedStatus = <String>{
+    'Backlog',
+    'Ready',
+    'In Progress',
+    'Blocked',
+    'Done'
+  };
+  final activeMilestoneStatus = <String>{'Ready', 'In Progress', 'Done'};
   final milestoneIdPattern = RegExp(r'^M\d+-P\d+-\d+$');
   final phaseIdPattern = RegExp(r'^P\d+$');
+  final prdPattern = RegExp(r'^PRD-\d{3}$');
+  final masterRefPattern = RegExp(r'^\d+\.\d+\.\d+$');
+  final allowedChangeTypes = <String>{'baseline', 'reopen'};
   final phaseNums = <int>{};
   final phaseIdSet = <String>{};
+  final phaseStatusByNum = <int, String>{};
 
   for (final row in phaseRows) {
     final id = row['id']!.trim();
@@ -169,25 +200,115 @@ void _validateRows({
     if (!allowedStatus.contains(status)) {
       _fail('Invalid status "$status" for phase $id');
     }
+    phaseStatusByNum[phase] = status;
   }
 
-  final milestoneIds = <String>{};
+  final milestoneRowsById = <String, Map<String, String>>{};
   for (final row in milestoneRows) {
     final id = row['id']!.trim();
     if (!milestoneIdPattern.hasMatch(id)) {
       _fail('Invalid milestone id format: $id (expected Mx-Py-z)');
     }
-    if (!milestoneIds.add(id)) {
+    if (milestoneRowsById.containsKey(id)) {
       _fail('Duplicate milestone id: $id');
     }
+    milestoneRowsById[id] = row;
+  }
+
+  final milestoneRowsByPhase = <int, List<Map<String, String>>>{};
+  final reopenMilestones = <Map<String, String>>[];
+  for (final row in milestoneRows) {
+    final id = row['id']!.trim();
     final phase = int.tryParse(row['phase']!.trim());
     if (phase == null || !phaseNums.contains(phase)) {
       _fail('Milestone $id references unknown phase: ${row['phase']}');
     }
+    milestoneRowsByPhase
+        .putIfAbsent(phase, () => <Map<String, String>>[])
+        .add(row);
     final status = row['status']!.trim();
     if (!allowedStatus.contains(status)) {
       _fail('Invalid status "$status" for milestone $id');
     }
+    final prdIds = row['prd_ids']!.trim();
+    if (prdIds.isEmpty || prdIds.toLowerCase() == 'none') {
+      _fail('Milestone $id missing PRD IDs (expected one or more PRD-###).');
+    }
+    final prdCandidates = prdIds
+        .split(RegExp(r'[;,]\s*|\s+'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty);
+    for (final prd in prdCandidates) {
+      if (!prdPattern.hasMatch(prd)) {
+        _fail(
+            'Milestone $id has invalid PRD ID format: $prd (expected PRD-###).');
+      }
+    }
+
+    final masterRefs = row['master_plan_refs']!.trim();
+    if (masterRefs.isEmpty || masterRefs.toLowerCase() == 'none') {
+      _fail(
+          'Milestone $id missing master plan refs (expected one or more X.Y.Z).');
+    }
+    final refCandidates = masterRefs
+        .split(RegExp(r'[;,]\s*|\s+'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty);
+    for (final ref in refCandidates) {
+      if (!masterRefPattern.hasMatch(ref)) {
+        _fail(
+            'Milestone $id has invalid master plan ref: $ref (expected X.Y.Z).');
+      }
+    }
+
+    final spot = row['architecture_spot']!.trim();
+    if (spot.isEmpty || spot.toLowerCase() == 'none') {
+      _fail('Milestone $id missing architecture_spot.');
+    }
+
+    final changeType = row['change_type']!.trim().toLowerCase();
+    if (!allowedChangeTypes.contains(changeType)) {
+      _fail(
+        'Milestone $id has invalid change_type "${row['change_type']}". '
+        'Expected one of: baseline, reopen.',
+      );
+    }
+    final reopensMilestone = row['reopens_milestone']!.trim();
+    if (changeType == 'baseline') {
+      if (reopensMilestone.isNotEmpty &&
+          reopensMilestone.toLowerCase() != 'none') {
+        _fail(
+          'Milestone $id is baseline but reopens_milestone is set to '
+          '"$reopensMilestone". Use "none".',
+        );
+      }
+    } else {
+      if (!milestoneIdPattern.hasMatch(reopensMilestone)) {
+        _fail(
+          'Milestone $id has change_type=reopen but reopens_milestone is invalid: '
+          '$reopensMilestone (expected Mx-Py-z).',
+        );
+      }
+      if (reopensMilestone == id) {
+        _fail('Milestone $id cannot reopen itself.');
+      }
+      final reopened = milestoneRowsById[reopensMilestone];
+      if (reopened == null) {
+        _fail(
+          'Milestone $id reopens unknown milestone: $reopensMilestone.',
+        );
+      }
+      if (reopened!['status']!.trim() != 'Done') {
+        _fail(
+          'Milestone $id reopens $reopensMilestone, but that milestone is not Done.',
+        );
+      }
+      if (row['notes']!.trim().isEmpty) {
+        _fail('Milestone $id change_type=reopen requires rationale in notes.');
+      }
+      reopenMilestones.add(row);
+    }
+
     final deps = row['dependencies']!.trim();
     if (deps.isNotEmpty && deps.toLowerCase() != 'none') {
       final candidates = deps
@@ -195,10 +316,36 @@ void _validateRows({
           .map((e) => e.trim())
           .where((e) => e.isNotEmpty);
       for (final dep in candidates) {
-        if (dep.startsWith('M') && !milestoneIds.contains(dep)) {
+        if (!milestoneIdPattern.hasMatch(dep)) {
+          _fail(
+            'Milestone $id has invalid dependency "$dep". '
+            'Dependencies must be milestone IDs (Mx-Py-z) or "none".',
+          );
+        }
+        if (dep == id) {
+          _fail('Milestone $id cannot depend on itself.');
+        }
+        if (!milestoneRowsById.containsKey(dep)) {
           _fail('Milestone $id has unknown milestone dependency: $dep');
         }
       }
+    }
+  }
+
+  for (final phase in phaseNums) {
+    if (phaseStatusByNum[phase] != 'Ready') {
+      continue;
+    }
+    final phaseMilestones =
+        milestoneRowsByPhase[phase] ?? const <Map<String, String>>[];
+    final hasActiveMilestone = phaseMilestones.any(
+      (row) => activeMilestoneStatus.contains(row['status']!.trim()),
+    );
+    if (!hasActiveMilestone) {
+      _fail(
+        'Phase P$phase is marked Ready but has no active milestone '
+        '(Ready/In Progress/Done).',
+      );
     }
   }
 
@@ -215,6 +362,18 @@ void _validateRows({
       );
     }
   }
+
+  for (final row in reopenMilestones) {
+    final id = row['id']!.trim();
+    final reopened = row['reopens_milestone']!.trim();
+    if (!statusWeeklyText.contains(id) ||
+        !statusWeeklyText.contains(reopened)) {
+      _fail(
+        'Reopen milestone $id must be recorded in docs/STATUS_WEEKLY.md '
+        'alongside reopened milestone $reopened.',
+      );
+    }
+  }
 }
 
 String _buildPhaseTable(List<Map<String, String>> rows) {
@@ -228,7 +387,9 @@ String _buildPhaseTable(List<Map<String, String>> rows) {
   for (final r in sorted) {
     final phase = r['phase']!;
     final name = r['name_or_scope']!;
-    final tier = r['wave']!.isEmpty ? _guessTierFromPriority(r['priority']!) : r['wave']!;
+    final tier = r['wave']!.isEmpty
+        ? _guessTierFromPriority(r['priority']!)
+        : r['wave']!;
     final owner = _fmt(r['owner_r']!);
     final acc = _fmt(r['accountable_a']!);
     final risk = r['risk_score']!;
@@ -245,12 +406,12 @@ String _buildPhaseTable(List<Map<String, String>> rows) {
 String _buildMilestoneTable(List<Map<String, String>> rows) {
   final sorted = [...rows]..sort((a, b) => a['id']!.compareTo(b['id']!));
   final lines = <String>[
-    '| Milestone | Phase | Wave | Scope | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |',
-    '|----------|-------|------|-------|---|---|--------------|------|----------|---------------|--------|----------|',
+    '| Milestone | Phase | Wave | Scope | Change Type | Reopens | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |',
+    '|----------|-------|------|-------|------------|---------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|',
   ];
   for (final r in sorted) {
     lines.add(
-      '| ${r['id']} | ${r['phase']} | ${r['wave']} | ${r['name_or_scope']} | ${_fmt(r['owner_r']!)} | ${_fmt(r['accountable_a']!)} | ${_fmtOr(r['dependencies']!, 'none')} | ${r['risk_score']} | ${r['priority']} | ${r['target_window']} | ${r['status']} | ${_fmtOr(r['evidence']!, '-')} |',
+      '| ${r['id']} | ${r['phase']} | ${r['wave']} | ${r['name_or_scope']} | ${_fmtOr(r['change_type']!, '-')} | ${_fmtOr(r['reopens_milestone']!, 'none')} | ${_fmtOr(r['prd_ids']!, '-')} | ${_fmtOr(r['master_plan_refs']!, '-')} | ${_fmtOr(r['architecture_spot']!, '-')} | ${_fmt(r['owner_r']!)} | ${_fmt(r['accountable_a']!)} | ${_fmtOr(r['dependencies']!, 'none')} | ${r['risk_score']} | ${r['priority']} | ${r['target_window']} | ${r['status']} | ${_fmtOr(r['evidence']!, '-')} |',
     );
   }
   return lines.join('\n');
@@ -303,7 +464,8 @@ String _guessTierFromPriority(String priority) {
 
 String _fmt(String v) => v.replaceAll(';', ', ');
 
-String _fmtOr(String v, String fallback) => v.trim().isEmpty ? fallback : _fmt(v);
+String _fmtOr(String v, String fallback) =>
+    v.trim().isEmpty ? fallback : _fmt(v);
 
 String _replaceSection(
   String source, {
@@ -321,7 +483,8 @@ String _replaceSection(
   return '$before\n$replacement\n$after';
 }
 
-String _replaceLine(String source, {required String prefix, required String next}) {
+String _replaceLine(String source,
+    {required String prefix, required String next}) {
   final lines = source.split('\n');
   for (var i = 0; i < lines.length; i++) {
     if (lines[i].startsWith(prefix)) {

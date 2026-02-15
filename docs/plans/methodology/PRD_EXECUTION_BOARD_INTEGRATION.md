@@ -8,8 +8,17 @@
 - `prd_ids`: one or more `PRD-###`
 - `master_plan_refs`: one or more `X.Y.Z`
 - `architecture_spot`: from `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`
+- `change_type`: `baseline` or `reopen`
+- `reopens_milestone`: `none` for baseline; required `M#-P#-#` for reopen
 
-Use template: `docs/agents/status/BOARD_PRD_MAPPING_TEMPLATE.csv`
+Store this metadata directly in `docs/EXECUTION_BOARD.csv` milestone rows (`prd_ids`, `master_plan_refs`, `architecture_spot`).
+Use `docs/agents/status/BOARD_PRD_MAPPING_TEMPLATE.csv` only as an optional working scratchpad.
+
+Reopen-by-new-milestone protocol:
+- Never mutate a `Done` milestone back to active.
+- Create a new milestone row with `change_type=reopen` and `reopens_milestone=<done milestone id>`.
+- Log the event in `docs/STATUS_WEEKLY.md` under `1B) Reopen-By-New-Milestone Events`.
+- Add program-level context in `docs/agents/status/status_tracker.md`.
 
 ## Required Metadata per Pull Request
 

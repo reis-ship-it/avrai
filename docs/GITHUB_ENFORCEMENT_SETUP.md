@@ -30,6 +30,17 @@ Ensure these workflows exist and are green on pull requests:
      - at least one master plan subsection reference `X.Y.Z`
      - every non-merge PR commit includes the same milestone ID + at least one `X.Y.Z` reference
 
+Execution board schema expectations (enforced by `tool/update_execution_board.dart`):
+- Milestone rows must include:
+  - `prd_ids` (one or more `PRD-###`)
+  - `master_plan_refs` (one or more `X.Y.Z`)
+  - `architecture_spot` (registered spot key)
+  - `change_type` (`baseline` or `reopen`)
+  - `reopens_milestone` (`none` for baseline; required milestone ID for reopen)
+- Milestone dependencies must be milestone IDs (`M#-P#-#`) or `none`
+- A phase marked `Ready` must have at least one active milestone (`Ready`/`In Progress`/`Done`)
+- Reopen milestones must reference a prior `Done` milestone and be recorded in `docs/STATUS_WEEKLY.md`
+
 Optional PR quality workflow:
 3. `Quick Tests`
    - File: `.github/workflows/quick-tests.yml`
@@ -128,7 +139,13 @@ python3 scripts/validate_pr_traceability.py \
 3. No plan-derived work merges without exactly one milestone mapping per PR.
 4. Every non-merge commit must include milestone ID + `X.Y.Z` subsection reference.
 5. No milestone transitions to `Done` without evidence.
-6. New plan phases require same-PR board expansion:
+6. Milestone metadata columns are mandatory: `prd_ids`, `master_plan_refs`, `architecture_spot`.
+7. Reopen tracking columns are mandatory: `change_type`, `reopens_milestone`.
+8. Reopen events must create a new milestone (`change_type=reopen`) and reference a prior `Done` milestone.
+9. Reopen events must be logged in `docs/STATUS_WEEKLY.md` (`1B) Reopen-By-New-Milestone Events`) and reflected in `docs/agents/status/status_tracker.md`.
+10. Milestone dependencies must be milestone IDs (`M#-P#-#`) or `none`.
+11. A phase marked `Ready` must have at least one active milestone (`Ready`/`In Progress`/`Done`).
+12. New plan phases require same-PR board expansion:
 phase row + milestone row(s) + risk + gate criteria.
 
 ## 6) Troubleshooting
@@ -146,3 +163,11 @@ phase row + milestone row(s) + risk + gate criteria.
    - Add at least one `X.Y.Z` reference to PR title/body
    - Ensure each non-merge commit message contains the same milestone + an `X.Y.Z` reference
    - Keep formatting exact
+
+4. Local `dart run tool/update_execution_board.dart --check` fails in sandboxed environments:
+   - Symptom: permission error writing Flutter/Dart cache files (for example `engine.stamp`).
+   - Why: some local sandbox/runner setups block writes outside the repo.
+   - Impact: local-only environment issue; CI on GitHub Actions is unaffected.
+   - Workaround:
+     - Run the same command with sufficient local permissions.
+     - If your environment enforces sandboxing, allow this command prefix in your runner policy.

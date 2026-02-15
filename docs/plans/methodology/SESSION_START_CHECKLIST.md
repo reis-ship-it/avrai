@@ -44,7 +44,8 @@
 - [ ] Read Phase Rationale (`docs/plans/rationale/PHASE_X_RATIONALE.md`) -- full document
 - [ ] Read Cross-Phase Connections (`docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`) -- this phase's section
 - [ ] Read Master Plan section (`docs/MASTER_PLAN.md` → Phase X)
-- [ ] Check status (`docs/agents/status/status_tracker.md`)
+- [ ] Check status (`docs/EXECUTION_BOARD.csv` + `docs/STATUS_WEEKLY.md`; optional context in `docs/agents/status/status_tracker.md`)
+- [ ] If targeting a completed section, plan a reopen milestone (`change_type=reopen`, `reopens_milestone=<done id>`) and add a weekly log entry
 - [ ] Search for existing implementations
 - [ ] Create TODO list
 - [ ] Communicate plan to user
@@ -73,7 +74,7 @@
 When user asks "where are we with X":
 - [ ] Search for ALL related docs (plan + complete + progress + status)
 - [ ] Read ALL found documents (never just one)
-- [ ] Check `docs/agents/status/status_tracker.md`
+- [ ] Check `docs/EXECUTION_BOARD.csv` + `docs/STATUS_WEEKLY.md`
 - [ ] Synthesize comprehensive answer
 
 ---
@@ -86,7 +87,7 @@ When user asks "where are we with X":
 | Why it's designed this way | `docs/plans/rationale/PHASE_X_RATIONALE.md` |
 | Decisions that apply everywhere | `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` |
 | What flows between phases | `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` |
-| Current status | `docs/agents/status/status_tracker.md` |
+| Current status | `docs/EXECUTION_BOARD.csv` + `docs/STATUS_WEEKLY.md` |
 | Where plans live | `docs/MASTER_PLAN_TRACKER.md` |
 | Core philosophy | `docs/plans/philosophy_implementation/DOORS.md` |
 | Code standards | `.cursorrules` |
