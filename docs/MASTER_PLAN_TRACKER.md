@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 15, 2026 (v14: build-enforced architecture placement. Added architecture spots registry, file placement policy, CI guard workflow, and expanded file mapping baseline (2,842 files). Previous: v13 architecture governance refresh)
+**Last Updated:** February 15, 2026 (v15: canonical PRD introduced. Added `docs/PRD.md`, PR traceability template hooks, and tracker registration for requirement-ID governance. Previous: v14 build-enforced architecture placement)
 
 ---
 
@@ -54,6 +54,7 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| **Product Requirements Document (PRD)** | 2026-02-15 | 🟢 **Active** | **CRITICAL** | Ongoing authority for requirement IDs + drift prevention acceptance criteria | [`PRD.md`](./PRD.md) |
 | **Master Plan - Intelligence-First Architecture** | 2026-02-08 | 🟢 **Active** | **CRITICAL** | Ongoing (11 phases, 4 tiers) | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
 | ↳ ML System Deep Analysis & Improvement Roadmap (Source of Truth) | 2026-02-08 | 📋 **Source of Truth** | - | - | [`agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`](./agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md) |
 | ↳ Master Plan - Legacy (Phases 1-31) | 2026-01-01 | ❌ **Defunct** | - | Superseded 2026-02-08 | [`MASTER_PLAN_LEGACY.md`](./MASTER_PLAN_LEGACY.md) |
@@ -168,7 +169,7 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
-| Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,842 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
+| Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,844 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
 | Architecture Spots Registry (Build-Enforced Placement) | 2026-02-15 | 🟢 Active | **CRITICAL** | Registered architecture spots used by CI placement guard; any new spot must be declared here | [`plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`](./plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv) |
 | File Placement Policy (Build-Enforced) | 2026-02-15 | 🟢 Active | **CRITICAL** | Enforces rule: every file must map to registered architecture spot; new spot required when unmatched | [`plans/architecture/FILE_PLACEMENT_POLICY.md`](./plans/architecture/FILE_PLACEMENT_POLICY.md) |
 | Architecture Docs Alignment Audit | 2026-02-15 | 🟢 Active | HIGH | Current-state alignment report for architecture docs vs master plan + codebase | [`plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md`](./plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md) |
@@ -478,7 +479,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 15, 2026 (v14: build-enforced architecture placement + spots registry + CI guard; previous entries preserved above)
+**Last Updated:** February 15, 2026 (v15: canonical PRD + traceability governance; previous entries preserved above)
 
 ---
 

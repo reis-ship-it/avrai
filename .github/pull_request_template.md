@@ -16,6 +16,12 @@ A clear and concise description of what this PR does.
 - Include any files modified
 - Include any files deleted
 
+## 🧭 PRD Traceability
+- PRD Requirement IDs impacted (required): `PRD-...`
+- Master Plan phase/task references impacted (required): `X.Y.Z`
+- [ ] I confirmed this PR is traceable to `docs/PRD.md` requirement IDs
+- [ ] I confirmed this PR maps to `docs/MASTER_PLAN.md` phase/task ownership
+
 ## 🧪 Testing
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
@@ -48,6 +54,7 @@ A clear and concise description of what this PR does.
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] If files were added/moved, architecture placement mapping/registry artifacts were regenerated and committed
 
 ## 🚨 Breaking Changes
 If this PR includes breaking changes, please describe:

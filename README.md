@@ -146,6 +146,7 @@ flutter run
 
 ## 📚 Documentation
 
+- **Product Requirements (PRD):** [`docs/PRD.md`](docs/PRD.md) - Canonical requirements + traceability IDs
 - **Master Plan:** [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) - 31 phases tracked
 - **Signal Protocol:** [`docs/plans/security_implementation/`](docs/plans/security_implementation/)
 - **AI2AI Network:** [`docs/plans/ai2ai_system/`](docs/plans/ai2ai_system/)

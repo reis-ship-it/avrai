@@ -8,6 +8,7 @@
 
 ## Canonical Sources (Read First)
 
+- **Product requirements authority:** [`docs/PRD.md`](../../PRD.md)
 - **Execution plan:** [`docs/MASTER_PLAN.md`](../../MASTER_PLAN.md)
 - **Execution status (canonical):** [`docs/agents/status/status_tracker.md`](../../agents/status/status_tracker.md)
 - **Plan registry (catalog, not live status):** [`docs/MASTER_PLAN_TRACKER.md`](../../MASTER_PLAN_TRACKER.md)
@@ -18,7 +19,7 @@
 ## Codebase-to-Plan Mapping (Current)
 
 - **File-level mapping summary:** [`CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md)
-- **Generated full mapping CSV (2,842 files):** [`generated/codebase_master_plan_mapping_2026-02-15.csv`](./generated/codebase_master_plan_mapping_2026-02-15.csv)
+- **Generated full mapping CSV (2,844 files):** [`generated/codebase_master_plan_mapping_2026-02-15.csv`](./generated/codebase_master_plan_mapping_2026-02-15.csv)
 - **Architecture spots registry (build-enforced):** [`ARCHITECTURE_SPOTS_REGISTRY.csv`](./ARCHITECTURE_SPOTS_REGISTRY.csv)
 - **File placement policy (build-enforced):** [`FILE_PLACEMENT_POLICY.md`](./FILE_PLACEMENT_POLICY.md)
 - **Generator script:** [`scripts/generate_master_plan_file_mapping.py`](../../../scripts/generate_master_plan_file_mapping.py)

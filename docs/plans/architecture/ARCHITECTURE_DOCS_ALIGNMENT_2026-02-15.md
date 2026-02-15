@@ -14,10 +14,10 @@
 
 ## Coverage Summary
 
-- Runtime/source/tooling files mapped: **2,842**
+- Runtime/source/tooling files mapped: **2,844**
 - Mapping disposition summary:
   - `keep_update`: 2,496
-  - `keep_review`: 320
+  - `keep_review`: 322
   - `refactor_planned`: 26
   - `delete_candidate`: 0
 

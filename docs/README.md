@@ -1,6 +1,7 @@
 ## Documentation Index
 
 ### **Core Documentation**
+- **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and drift-prevention acceptance criteria
 - **Master Plan:** `MASTER_PLAN.md` - Single source of truth for implementation order
 - **Master Plan Tracker:** `MASTER_PLAN_TRACKER.md` - Master registry of all plans
 - **File Classification:** `file_classification.md` - File classification guide
