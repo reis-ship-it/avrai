@@ -15,8 +15,8 @@ Execution board commands:
 - Validate board: `dart run tool/update_execution_board.dart --check`
 
 GitHub automation:
-- Workflow: `.github/workflows/execution-board-guard.yml` (runs board sync/coverage validation on PRs)
-- Workflow: `.github/workflows/prd-traceability-guard.yml` (requires PRD IDs + execution milestone IDs in PR metadata)
+- Workflow: `.github/workflows/execution-board-guard.yml` (runs board sync/coverage + architecture placement validation on PRs)
+- Workflow: `.github/workflows/prd-traceability-guard.yml` (requires PRD IDs + exactly one execution milestone ID + `X.Y.Z` refs, and validates commit boundary metadata)
 
 ### **Organized Documentation**
 

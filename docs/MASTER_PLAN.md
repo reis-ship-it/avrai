@@ -1775,10 +1775,11 @@ Use this template whenever adding or updating any phase workstream:
 
 Mandatory enforcement rules:
 1. Every plan-derived implementation item must map to a milestone ID (`Mx-Py-z`) in `docs/EXECUTION_BOARD.csv`.
-2. Any PR/commit that changes plan-scoped code/docs must reference at least one milestone ID.
-3. Milestones cannot move to `Done` without evidence links (tests, dashboards, reports, or docs).
-4. Phase progression cannot skip failed gates from prerequisite waves.
-5. Board sync/validation must pass before merge:
+2. Every PR that changes plan-scoped code/docs must reference exactly one milestone ID (`Mx-Py-z`) in PR title.
+3. Every non-merge commit in that PR must include the same milestone ID and at least one master plan subsection reference (`X.Y.Z`).
+4. Milestones cannot move to `Done` without evidence links (tests, dashboards, reports, or docs).
+5. Phase progression cannot skip failed gates from prerequisite waves.
+6. Board sync/validation must pass before merge:
 `dart run tool/update_execution_board.dart --check`
 
 Authoring workflow:
@@ -2108,5 +2109,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** February 15, 2026 (v13 -- Robustness Hardening Update. NEW SECTION: Phase 10.9 Reality Model Robustness Hardening (11 tasks: production readiness gate, trigger reliability spec, signal quality governance, atomic rollback bundles, federated cohort robustness, advisory quarantine, schema/model compatibility matrix, tier parity guardrails, causal observability baseline, adversarial hardening, autonomous change control policy). Added explicit release policy blocking production autonomous adaptation until 10.9.1-10.9.4 are complete and CI-validated. Previous: v12 comprehensive gap fill)  
+**Last Updated:** February 15, 2026 (v14 -- Execution Boundary Hardening Update. Tightened 10.9F.1 enforcement to require exactly one milestone ID per PR (`Mx-Py-z`) and mandatory `X.Y.Z` subsection references in every non-merge commit. This aligns CI traceability enforcement with phase-by-phase anti-drift execution governance. Previous: v13 robustness hardening update)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

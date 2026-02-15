@@ -105,7 +105,7 @@ packages/avrai_ml,1,package-modules,"packaging,10.7,10.8",active,architecture sp
 packages/avrai_network,72,package-modules,"packaging,10.7,10.8",active,architecture spot for file placement
 packages/avrai_quantum,7,quantum-package,"10.8.2,11.4",active,architecture spot for file placement
 packages/spots_knot,4,package-modules,"packaging,10.7,10.8",active,architecture spot for file placement
-scripts/_root,133,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/_root,134,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/ci,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/data_collection,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/deploy,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -202,6 +202,7 @@ test/widget/visualization,1,testing-quality,"10.6,methodology",active,architectu
 test/widget/widgets,101,testing-quality,"10.6,methodology",active,architecture spot for file placement
 tool/ledger_smoke.dart,1,tooling-dev,methodology,active,architecture spot for file placement
 tool/squarespace-mcp,1,tooling-dev,methodology,active,architecture spot for file placement
+tool/update_execution_board.dart,1,tooling-dev,methodology,active,architecture spot for file placement
 web/favicon.png,1,platform-runtime,"7.5,11.2",active,architecture spot for file placement
 web/icons,4,platform-runtime,"7.5,11.2",active,architecture spot for file placement
 web/index.html,1,platform-runtime,"7.5,11.2",active,architecture spot for file placement

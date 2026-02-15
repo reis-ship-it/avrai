@@ -3,6 +3,19 @@ name: Test Coverage Report
 on:
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'analysis_options.yaml'
+      - 'lib/**'
+      - 'test/**'
+      - 'integration_test/**'
+      - 'scripts/**'
+      - 'packages/**'
+      - 'native/**'
+      - 'supabase/**'
+      - 'tool/**'
+      - '.github/workflows/test-coverage.yml'
   workflow_dispatch:
 
 jobs:

@@ -1827,6 +1827,7 @@ scripts/update_package_imports.py,scripts/update_package_imports.py,tooling-ops,
 scripts/upload_coreml_to_supabase.sh,scripts/upload_coreml_to_supabase.sh,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
 scripts/validate_architecture_placement.py,scripts/validate_architecture_placement.py,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
 scripts/validate_experiment_vs_production.py,scripts/validate_experiment_vs_production.py,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
+scripts/validate_pr_traceability.py,scripts/validate_pr_traceability.py,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
 scripts/verify_and_fix_signal_paths.sh,scripts/verify_and_fix_signal_paths.sh,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
 scripts/verify_api_key_function.sh,scripts/verify_api_key_function.sh,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
 scripts/verify_security_deployment.sh,scripts/verify_security_deployment.sh,tooling-ops,keep_review,"10.2,methodology",keep+review,medium,Scripts aid migration/validation; review stale one-offs before long-term retention.
@@ -2836,6 +2837,7 @@ test/widget/widgets/spots/spot_card_test.dart,test/widget/widgets,testing-qualit
 test/widget/widgets/validation/community_validation_widget_test.dart,test/widget/widgets,testing-quality,keep_update,"10.6,methodology",keep+update,high,Regression and coverage gates required for refactor and rollout safety.
 tool/ledger_smoke.dart,tool/ledger_smoke.dart,tooling-dev,keep_review,methodology,keep+review,medium,Developer tooling retained unless superseded by unified pipelines.
 tool/squarespace-mcp/README.md,tool/squarespace-mcp,tooling-dev,keep_review,methodology,keep+review,medium,Developer tooling retained unless superseded by unified pipelines.
+tool/update_execution_board.dart,tool/update_execution_board.dart,tooling-dev,keep_review,methodology,keep+review,medium,Developer tooling retained unless superseded by unified pipelines.
 web/favicon.png,web/favicon.png,platform-runtime,keep_update,"7.5,11.2",keep+update,medium,Platform targets remain active with tiered capability and expansion plans.
 web/icons/Icon-192.png,web/icons,platform-runtime,keep_update,"7.5,11.2",keep+update,medium,Platform targets remain active with tiered capability and expansion plans.
 web/icons/Icon-512.png,web/icons,platform-runtime,keep_update,"7.5,11.2",keep+update,medium,Platform targets remain active with tiered capability and expansion plans.

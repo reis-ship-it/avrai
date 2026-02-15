@@ -194,7 +194,7 @@ dev_dependencies:
   # Performance Testing Dependencies - Phase 9
   mockito: ^5.6.3
   # golden_toolkit: ^0.15.0  # DISCONTINUED - consider using flutter_test's built-in golden testing
-  vm_service: ^15.0.2  # For memory profiling (pinned by integration_test)
+  vm_service: 15.0.0  # Must match Flutter integration_test SDK pin on CI
   # patrol: ^3.6.1  # For advanced widget testing (temporarily disabled due to Kotlin 2.0 metadata mismatch)
   
   # Test data generation and utilities

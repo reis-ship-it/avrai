@@ -1,6 +1,6 @@
 # AVRAI Product Requirements Document (PRD)
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** February 15, 2026  
 **Status:** Active (Canonical Product Requirements Layer)  
 **Owner:** Product + Architecture + Core Engineering
@@ -60,6 +60,7 @@ Out of scope:
 - **PRD-031**: CI must fail if a tracked file maps to an unregistered architecture spot.
 - **PRD-032**: CI must fail if mapping/registry generated artifacts are stale relative to repo state.
 - **PRD-033**: PRs must declare impacted requirement IDs for traceability.
+- **PRD-034**: Each plan-scoped PR must reference exactly one execution milestone ID (`M#-P#-#`), include `X.Y.Z` subsection references, and enforce the same boundary metadata in all non-merge commits.
 
 ## 5. Acceptance Criteria
 
@@ -68,8 +69,9 @@ A change is PRD-compliant only if:
 1. It maps to one or more requirement IDs in this PRD.
 2. It maps to `MASTER_PLAN` phase/task ownership.
 3. It passes architecture placement guard CI.
-4. It preserves safety/compliance invariants.
-5. It includes tests/validation appropriate to change risk.
+4. It includes exactly one execution milestone ID and subsection refs (`X.Y.Z`) in PR metadata.
+5. It preserves safety/compliance invariants.
+6. It includes tests/validation appropriate to change risk.
 
 ## 6. Traceability Matrix
 
@@ -85,6 +87,7 @@ A change is PRD-compliant only if:
 | PRD-022 | Audit + rollback | `docs/MASTER_PLAN.md` (7.7, 7.7A), architecture governance docs |
 | PRD-030/31/32 | Build enforcement | `.github/workflows/architecture-placement-guard.yml`, `scripts/validate_architecture_placement.py` |
 | PRD-033 | PR traceability discipline | `.github/pull_request_template.md`, `.github/workflows/prd-traceability-guard.yml`, `scripts/validate_pr_traceability.py` |
+| PRD-034 | Single-milestone + subsection commit boundary discipline | `.github/workflows/prd-traceability-guard.yml`, `scripts/validate_pr_traceability.py`, `docs/EXECUTION_BOARD.md` |
 
 ## 7. Change Management
 
