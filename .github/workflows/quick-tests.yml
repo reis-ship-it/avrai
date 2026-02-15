@@ -3,6 +3,19 @@ name: Quick Tests
 on:
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'analysis_options.yaml'
+      - 'lib/**'
+      - 'test/**'
+      - 'integration_test/**'
+      - 'scripts/**'
+      - 'packages/**'
+      - 'native/**'
+      - 'supabase/**'
+      - 'tool/**'
+      - '.github/workflows/quick-tests.yml'
   workflow_dispatch:
 
 jobs:

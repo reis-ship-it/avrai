@@ -52,8 +52,8 @@ PR-triggered workflows (automatic):
 - `Execution Board Guard`
 - `PRD Traceability Guard`
 - `Architecture Placement Guard`
-- `Quick Tests`
-- `Test Coverage Report` (PR + manual)
+- `Quick Tests` (PR path-filtered + manual)
+- `Test Coverage Report` (PR path-filtered + manual)
 - `Test Quality Check` (PR path-filtered + manual)
 
 ## 2) Branch Protection (GitHub UI)
