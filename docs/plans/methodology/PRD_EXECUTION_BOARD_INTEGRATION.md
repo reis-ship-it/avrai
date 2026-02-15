@@ -2,11 +2,11 @@
 
 **Purpose:** Keep board execution synchronized with PRD requirements and eliminate drift.
 
-## Required Metadata per Board Card
+## Required Metadata per Execution Milestone
 
-- `card_id`: `CARD-<number>`
+- `milestone_id`: `M#-P#-#`
 - `prd_ids`: one or more `PRD-###`
-- `master_plan_refs`: one or more `X.Y` or `X.Y.Z`
+- `master_plan_refs`: one or more `X.Y.Z`
 - `architecture_spot`: from `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`
 
 Use template: `docs/agents/status/BOARD_PRD_MAPPING_TEMPLATE.csv`
@@ -16,7 +16,8 @@ Use template: `docs/agents/status/BOARD_PRD_MAPPING_TEMPLATE.csv`
 Every PR must include in title/body:
 
 - At least one `PRD-###`
-- At least one `CARD-<number>`
+- Exactly one `M#-P#-#`
+- At least one `X.Y.Z`
 
 CI enforcement:
 
@@ -25,10 +26,10 @@ CI enforcement:
 
 ## Workflow
 
-1. Create/update board card with `CARD-` ID and PRD IDs.
+1. Create/update execution-board milestone row with `M#-P#-#` ID and PRD IDs.
 2. Implement code with Master Plan phase ownership.
-3. Open PR containing `CARD-` + `PRD-` tags.
+3. Open PR containing `PRD-###` + one `M#-P#-#` + `X.Y.Z` tags.
 4. Pass CI guards:
-   - Architecture Placement Guard
+   - Execution Board Guard
    - PRD Traceability Guard
-5. Move card to done only when PR merged and acceptance criteria met.
+5. Move milestone to `Done` only when PR merged and acceptance criteria are met with evidence links.

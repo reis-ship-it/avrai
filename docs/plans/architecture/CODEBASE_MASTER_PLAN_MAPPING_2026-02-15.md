@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2844
+**Total mapped files:** 2846
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values.
 
@@ -11,7 +11,7 @@
 | Disposition | File Count |
 |---|---:|
 | keep_update | 2496 |
-| keep_review | 322 |
+| keep_review | 324 |
 | refactor_planned | 26 |
 
 ## Domain Summary
@@ -21,7 +21,7 @@
 | testing-quality | 873 |
 | presentation | 381 |
 | core-services-general | 366 |
-| tooling-ops | 275 |
+| tooling-ops | 276 |
 | package-modules | 207 |
 | core-models | 141 |
 | supabase-infra | 124 |
@@ -46,12 +46,12 @@
 | crypto-core | 3 |
 | legal-domain | 3 |
 | search-retrieval | 3 |
+| tooling-dev | 3 |
 | core-utils | 2 |
 | deployment-sync | 2 |
 | legacy-advanced-services | 2 |
 | legacy-p2p | 2 |
 | supabase-integration-entrypoints | 2 |
-| tooling-dev | 2 |
 | places-location-intelligence | 1 |
 
 ## Highest-Volume Buckets (Top 40)

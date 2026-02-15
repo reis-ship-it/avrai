@@ -18,15 +18,33 @@ Last updated: 2026-02-15
 4. Copy weekly summary into `docs/STATUS_WEEKLY.md`.
 5. Use `dart run tool/update_execution_board.dart --check` before merge.
 
+## AI Execution Loop (Required)
+
+1. Select exactly one `Ready` milestone ID from this board.
+2. Select the next subsection(s) (`X.Y.Z`) from `docs/MASTER_PLAN.md` that implement that milestone scope.
+3. Implement only that scoped unit; do not start a second milestone in the same PR.
+4. Run local guards before each commit and before PR update:
+   - `dart run tool/update_execution_board.dart --check`
+   - `python3 scripts/validate_architecture_placement.py`
+5. Commit in small checkpoints where each non-merge commit message includes:
+   - the same milestone ID (`M#-P#-#`)
+   - at least one subsection reference (`X.Y.Z`)
+6. Open PR with:
+   - `PRD-###`
+   - exactly one milestone ID (`M#-P#-#`)
+   - subsection references (`X.Y.Z`)
+7. Move milestone status only after exit criteria and evidence are satisfied.
+
 ## Mandatory Rules (Wired To Master Plan Work)
 
 1. All implementation work from `docs/MASTER_PLAN.md` must map to a milestone ID in `docs/EXECUTION_BOARD.csv`.
-2. Any PR/commit touching plan-scoped code/docs must reference at least one milestone ID (e.g., `M1-P7-1`) in the commit message or PR description.
-3. No milestone can move to `Done` without evidence links (tests, analysis, or docs).
-4. A phase cannot be marked `Done` while any dependency milestone for that phase is `Blocked`.
-5. Master Plan phase additions require same-turn board expansion:
+2. Every PR touching plan-scoped code/docs must reference exactly one milestone ID (e.g., `M1-P7-1`) in PR title/body.
+3. Every non-merge commit in that PR must include the same milestone ID and at least one master plan subsection reference (`X.Y.Z`).
+4. No milestone can move to `Done` without evidence links (tests, analysis, or docs).
+5. A phase cannot be marked `Done` while any dependency milestone for that phase is `Blocked`.
+6. Master Plan phase additions require same-turn board expansion:
 phase row + milestone row(s) + risk + gate criteria.
-6. The checker command must pass before merge:
+7. The checker command must pass before merge:
 `dart run tool/update_execution_board.dart --check`
 
 ## Status Legend
