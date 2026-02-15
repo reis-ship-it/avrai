@@ -8,7 +8,7 @@ import sys
 PRD_PATTERN = re.compile(r"\bPRD-\d{3}\b")
 MILESTONE_PATTERN = re.compile(r"\bM\d+-P\d+-\d+\b")
 MASTER_PLAN_REF_PATTERN = re.compile(r"\b\d+\.\d+\.\d+\b")
-TITLE_FORMAT_PATTERN = re.compile(r"^M\d+-P\d+-\d+\s+.+$")
+TITLE_FORMAT_PATTERN = re.compile(r"^PRD-\d{3}\s+M\d+-P\d+-\d+\s+.+$")
 COMMIT_SUBJECT_FORMAT_TEMPLATE = "M#-P#-# X.Y.Z <type(scope)>: <summary>"
 
 
@@ -173,8 +173,8 @@ def main() -> None:
 
     if args.require_execution_id and not TITLE_FORMAT_PATTERN.match(title_text):
         fail(
-            "PR title must start with milestone ID. "
-            "Expected format: 'M#-P#-# <short summary>'. "
+            "PR title must include PRD ID then milestone ID. "
+            "Expected format: 'PRD-### M#-P#-# <short summary>'. "
             f"Found: '{title_text}'."
         )
 

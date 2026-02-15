@@ -92,8 +92,14 @@ Every task falls into one of four tiers. Pick the right one and follow ONLY that
 
 5. **Check status** to understand what's already done
    ```
-   docs/agents/status/status_tracker.md
+   docs/EXECUTION_BOARD.csv (canonical phase/milestone state)
+   docs/STATUS_WEEKLY.md (current-week deltas + gate decisions)
+   docs/agents/status/status_tracker.md (program-level companion context)
    ```
+
+   If the best work target is a previously completed section, use reopen-by-new-milestone:
+   create a new milestone row (`change_type=reopen`) in `docs/EXECUTION_BOARD.csv`,
+   reference the completed milestone in `reopens_milestone`, and log it in `docs/STATUS_WEEKLY.md`.
 
 6. **Search for existing implementations** in the codebase
    ```
@@ -172,7 +178,9 @@ When the user asks about status ("where are we with X", "what's complete in Phas
    - Plan documents: `glob('**/*[topic]*plan*.md')`
    - Completion documents: `glob('**/*[topic]*complete*.md')`
    - Progress documents: `glob('**/*[topic]*progress*.md')`
-   - Status tracker: `docs/agents/status/status_tracker.md`
+   - Execution board: `docs/EXECUTION_BOARD.csv`
+   - Weekly status: `docs/STATUS_WEEKLY.md`
+   - Program companion tracker: `docs/agents/status/status_tracker.md`
    - Master Plan Tracker: `docs/MASTER_PLAN_TRACKER.md`
 
 2. **Read ALL found documents** (never answer from just one)
@@ -197,7 +205,7 @@ Instead of reading 6+ overlapping documents, use this map to find what you need:
 | "Why is it designed this way?" | `docs/plans/rationale/PHASE_X_RATIONALE.md` |
 | "What decisions apply everywhere?" | `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` |
 | "What flows between phases?" | `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` |
-| "What's the status?" | `docs/agents/status/status_tracker.md` |
+| "What's the status?" | `docs/EXECUTION_BOARD.csv` + `docs/STATUS_WEEKLY.md` (canonical) |
 | "Where do all the plans live?" | `docs/MASTER_PLAN_TRACKER.md` |
 | "What's the core philosophy?" | `docs/plans/philosophy_implementation/DOORS.md` |
 | "How does the architecture work?" | `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` |

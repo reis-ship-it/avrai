@@ -5,7 +5,8 @@
 **Purpose:** Single source of truth for implementation order -- intelligence-first, business-ready  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`  
 **Legacy Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)  
-**Canonical status/progress:** `docs/agents/status/status_tracker.md`  
+**Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
+**Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
 **Design rationale:** `docs/plans/rationale/` (WHY decisions were made -- read before each phase)  
 **Foundational decisions:** `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md`  
 **Cross-phase connections:** `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`

@@ -16,9 +16,11 @@
 3. Keep in date order (newest first)
 4. Mark status: 🟢 Active | 🟡 In Progress | ✅ Complete | ⏸️ Paused | ❌ Deprecated
 
-**Important: Single canonical status source**
+**Important: canonical status sources**
 - **Do not use this file as a real-time execution status dashboard.**
-- **Canonical status/progress:** `docs/agents/status/status_tracker.md`
+- **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv`
+- **Weekly deltas and gates:** `docs/STATUS_WEEKLY.md`
+- **Program-level companion tracker:** `docs/agents/status/status_tracker.md`
 - **Execution plan/spec:** `docs/MASTER_PLAN.md`
 
 ---
