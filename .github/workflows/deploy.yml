@@ -1,8 +1,6 @@
 name: Deploy SPOTS
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 # Add repository permissions at the top level

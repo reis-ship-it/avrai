@@ -1,24 +1,7 @@
 name: SPOTS Background Testing (Optimized)
 
 on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'lib/**'
-      - 'test/**'
-      - 'pubspec.yaml'
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'lib/**'
-      - 'test/**'
-      - 'pubspec.yaml'
-  schedule:
-    # Minimal scheduling: 3 health checks per day
-    - cron: '0 9 * * 1-5'   # 9 AM on weekdays
-    - cron: '0 14 * * 1-5'  # 2 PM on weekdays  
-    - cron: '0 9 * * 0'     # 9 AM on Sundays
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch: # Manual only (legacy optimized background workflow)
 
 jobs:
   # Health Check (Pre-flight)
