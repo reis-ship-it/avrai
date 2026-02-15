@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 10, 2026 (v12: Master Plan v12 comprehensive gap fill. 12 gaps addressed: NEW sections Phase 7.7 Model Lifecycle (8 tasks), 7.8 Multi-Device (6), 10.3 i18n (7), 10.4 a11y (8), 9.2.6 Third-Party Data Pipeline (7). EXTENDED: Phase 1.4 +3, 1.7 +2, 2.1 +3, 4.1 +2, 4.5 +2, 5.1 +2, 6.1 +3, 6.2 +4. ~57 new tasks. Phase 10 renumbered: 10.3→10.5, 10.4→10.6, 10.5→10.7, 10.6→10.8. Phase 7 duration 4-5w→6-8w, Phase 10 duration 4-6w→8-12w. All rationale docs updated. Previous: v11 locality happiness)
+**Last Updated:** February 15, 2026 (v13: architecture governance refresh. Added full codebase→master-plan file mapping artifacts (2,841 files), architecture docs alignment audit, and research/architecture registry updates for current execution references. Previous: v12 comprehensive gap fill)
 
 ---
 
@@ -168,6 +168,8 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
+| Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,841 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
+| Architecture Docs Alignment Audit | 2026-02-15 | 🟢 Active | HIGH | Current-state alignment report for architecture docs vs master plan + codebase | [`plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md`](./plans/architecture/ARCHITECTURE_DOCS_ALIGNMENT_2026-02-15.md) |
 | External Research Addendum: Remaining Source Batch (world-model/agent/runtime/quantum references) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md) |
 | External Research Addendum: arXiv 2601.19897 (Self-Distillation for Continual Learning) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md) |
 | External Research Addendum: arXiv 2602.09000v1 (Distal Objective Learning) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md) |
@@ -474,7 +476,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 10, 2026 (v11: Phase 8.9 Locality Happiness Advisory System added to Master Plan — 17 tasks across 4 subsections. Previous: Phase 10.5 codebase reorganization complete)
+**Last Updated:** February 15, 2026 (v13: architecture governance refresh with file-level mapping + alignment audit; previous entries preserved above)
 
 ---
 
