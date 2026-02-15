@@ -1,10 +1,7 @@
 name: Auto-Apply Background Agent Fixes
 
 on:
-  workflow_dispatch: # Manual trigger
-  schedule:
-    # Run daily at 2 AM to apply fixes
-    - cron: '0 2 * * *'
+  workflow_dispatch: # Manual trigger only
 
 jobs:
   auto-apply-fixes:

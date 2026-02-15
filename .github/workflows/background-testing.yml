@@ -1,18 +1,7 @@
 name: SPOTS Background Testing
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # Run every 30 minutes for critical tests
-    - cron: '*/30 * * * *'
-    # Run every 6 hours for performance tests
-    - cron: '0 */6 * * *'
-    # Run every 2 hours for integration tests
-    - cron: '0 */2 * * *'
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch: # Manual only (legacy background workflow)
 
 jobs:
   # Project Structure Auto-Fix

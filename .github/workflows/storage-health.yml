@@ -1,11 +1,7 @@
 name: Storage health
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * *'
 
 jobs:
   storage-health:
@@ -58,4 +54,3 @@ jobs:
           CANARY_PATH: health/_canary.txt
           CANARY_BUCKETS: spot-images,list-images
         run: dart run scripts/supabase/verify_supabase_setup.dart
-

@@ -23,8 +23,34 @@ Ensure these workflows exist and are green on pull requests:
    - File: `.github/workflows/prd-traceability-guard.yml`
    - Check name: `PRD Traceability Guard / traceability`
    - Enforces PR metadata includes:
-     - `PRD-###`
-     - execution milestone ID format `M#-P#-#` (legacy `CARD-<number>` temporarily allowed)
+    - `PRD-###`
+    - execution milestone ID format `M#-P#-#` (legacy `CARD-<number>` temporarily allowed)
+
+Optional PR quality workflow:
+3. `Quick Tests`
+   - File: `.github/workflows/quick-tests.yml`
+   - Use as required check only if you want stricter merge quality gates.
+
+## 1.1 Noise-Controlled Workflow Policy (Recommended)
+
+To avoid CI email spam and non-actionable failures, this repo is configured with:
+- PR-focused automatic workflows for governance and quality.
+- Manual-only (`workflow_dispatch`) for heavy/legacy/operational workflows.
+
+Manual-only workflows (intentionally not automatic):
+- `SPOTS Background Testing`
+- `SPOTS Background Testing (Optimized)`
+- `Auto-Apply Background Agent Fixes`
+- `Storage health`
+- `Deploy SPOTS`
+
+PR-triggered workflows (automatic):
+- `Execution Board Guard`
+- `PRD Traceability Guard`
+- `Architecture Placement Guard`
+- `Quick Tests`
+- `Test Coverage Report` (PR + manual)
+- `Test Quality Check` (PR path-filtered + manual)
 
 ## 2) Branch Protection (GitHub UI)
 
@@ -38,6 +64,8 @@ Repository settings:
 4. In required checks, add:
    - `Execution Board Guard / execution-board-check`
    - `PRD Traceability Guard / traceability`
+5. Optional required checks:
+   - `Quick Tests / quick-unit-tests`
 5. Optional but recommended:
    - `Require conversation resolution before merging`
    - `Include administrators`

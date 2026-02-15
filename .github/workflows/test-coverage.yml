@@ -1,13 +1,8 @@
 name: Test Coverage Report
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-  schedule:
-    # Run weekly on Mondays
-    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 jobs:
@@ -87,4 +82,3 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MINIMUM_GREEN: 75
         MINIMUM_ORANGE: 60
-
