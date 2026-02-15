@@ -69,7 +69,7 @@
 | 4 | Energy Function & Formula Replacement (VICReg) | Tier 1 | 📋 Ready | HIGH | 6-8 weeks |
 | 5 | Transition Predictor & On-Device Training (VICReg) | Tier 1 | 📋 Ready | HIGH | 5-6 weeks |
 | 6 | MPC Planner, System 1/2, SLM & Agent | Tier 2 | 📋 Ready | HIGH | 6-8 weeks |
-| 7 | Orchestrators, Triggers, Device Tiers, Model Lifecycle & Multi-Device | Tier 2 | 📋 Ready | HIGH | 6-8 weeks |
+| 7 | Orchestrators, Triggers, Device Tiers, Model Lifecycle, Autonomous Research & Multi-Device | Tier 2 | 📋 Ready | HIGH | 6-8 weeks |
 | 8 | Ecosystem Intelligence, Group Negotiation, AI2AI & Locality Happiness | Tier 3 | 📋 Ready | MEDIUM | 8-10 weeks |
 | 9 | Business Operations, Monetization & Third-Party Data Pipeline | Parallel | 🟢 Active | P1 Revenue | 6-8 weeks |
 | 10 | Feature Completion, i18n, a11y, Stub Cleanup, Codebase Reorg & Polish | Parallel | 🟡 In Progress | MEDIUM | 8-12 weeks (10.7 complete, 10.8 deferred) |
@@ -167,6 +167,10 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
+| External Research Addendum: Remaining Source Batch (world-model/agent/runtime/quantum references) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md) |
+| External Research Addendum: arXiv 2601.19897 (Self-Distillation for Continual Learning) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md) |
+| External Research Addendum: arXiv 2602.09000v1 (Distal Objective Learning) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md) |
 | Quantum Computing Research & Integration Tracker | 2025-12-11 | 📊 Monitoring | MEDIUM | Ongoing | [`plans/quantum_computing/QUANTUM_COMPUTING_RESEARCH_AND_INTEGRATION_TRACKER.md`](./plans/quantum_computing/QUANTUM_COMPUTING_RESEARCH_AND_INTEGRATION_TRACKER.md) |
 
 ---
@@ -475,4 +479,3 @@ New Idea
 ---
 
 **This tracker is the single source of truth for all implementation plans. Keep it current. Reference it always.**
-

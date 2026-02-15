@@ -29,6 +29,44 @@
 
 ---
 
+### **Research Addenda (External Literature -> AVRAI Mapping)**
+
+**File:** [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md)
+**File:** [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md)
+**File:** [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md)
+
+**What it covers:**
+- ✅ Distal-objective reinforcement learning implications for AVRAI planning
+- ✅ Continual learning and anti-forgetting distillation implications for AVRAI model lifecycle
+- ✅ Additional external research batch (agent safety/runtime, local-first AI, world-model coherence, quantum-readiness references)
+- ✅ Concrete mappings to Master Plan phases (1, 3, 4, 5, 6)
+- ✅ Self-healing / self-learning / self-questioning / self-improving alignment
+- ✅ Quantum-ready compatibility constraints (backend-swap model)
+
+**Use this when:**
+- Refining long-horizon objective design for recommendations and action planning
+- Adding delayed credit assignment to episodic memory and training loops
+- Reviewing research-derived planning changes before implementation
+
+---
+
+### **Autonomous Research + Experimentation Engine**
+
+**File:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
+
+**What it covers:**
+- ✅ Always-on but bounded research and experimentation loop
+- ✅ Self-questioning -> external evidence -> experiment -> causal explanation -> rollout/rollback
+- ✅ Evidence-bound conviction updates and contradiction handling
+- ✅ Integration map to Master Plan phases 1, 2, 4, 5, 6, 7.9, 8, 11.4
+
+**Use this when:**
+- Implementing autonomous learning from research with safety gates
+- Designing self-healing/self-improving governance for model updates
+- Mapping experiment infrastructure into existing world-model lifecycle
+
+---
+
 ### **0. Expertise Ledger + Capabilities (Strict Append-Only)**
 
 **File:** [`EXPERTISE_LEDGER_AND_CAPABILITIES_V1.md`](./EXPERTISE_LEDGER_AND_CAPABILITIES_V1.md)
@@ -307,4 +345,3 @@ ONLINE_OFFLINE_STRATEGY.md (WHAT & WHY)
 
 **Last Updated:** November 25, 2025  
 **Status:** Active Reference - Use this index to navigate architecture documentation
-
