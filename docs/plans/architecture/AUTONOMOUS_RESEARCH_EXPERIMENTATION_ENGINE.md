@@ -200,6 +200,11 @@ This creates a self-growing research ontology instead of a static topic list.
 24. `ARE-24` Add `DelegationContract` engine: every delegated subtask must define acceptance tests, required evidence, and fallback route before execution.
 25. `ARE-25` Add `DelegationTrustLedger`: calibrate delegation trust by observed outcomes/contradictions per task family and cohort, with automatic lane demotion on trust collapse.
 26. `ARE-26` Add `AuthorityScopeToken` + `HumanOverrideRoute`: bound delegated permissions (time/budget/data/action scope) and escalate on scope breach.
+27. `ARE-27` Add `AdaptiveDepthPolicy`: allocate recurrent reasoning depth only when uncertainty/impact thresholds justify extra compute.
+28. `ARE-28` Add `PonderBudgetController` with dynamic halting and tier-aware latency/battery budgets.
+29. `ARE-29` Add `CapabilityBoundaryGate`: require boundary evaluations to prevent promotion of overfit/overclaim candidates.
+30. `ARE-30` Add `ComputeOptimalTrainingPlanner`: enforce scaling-law-informed model/data/compute allocation and stopping rules.
+31. `ARE-31` Add `SyntheticLawStressSuite` + data-tier governance for controlled compositional/adversarial stress before production promotion.
 
 ---
 
