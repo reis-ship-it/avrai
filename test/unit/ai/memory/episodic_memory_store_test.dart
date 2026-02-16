@@ -365,5 +365,15 @@ void main() {
       expect(signal.value, 0.78);
       expect(signal.metadata['scale_max'], 1.0);
     });
+
+    test('classifies chat action metadata events as binary positive', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'message_community',
+        parameters: const {'community_id': 'community-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
   });
 }

@@ -642,6 +642,9 @@ Future<void> registerAIServices(GetIt sl) async {
         agentIdService: sl<AgentIdService>(),
         personalityLearning: sl<PersonalityLearning>(),
         searchRepository: sl<HybridSearchRepository>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
   // DM blob store (payloadless realtime)
   if (!sl.isRegistered<DmMessageStore>()) {
@@ -666,6 +669,9 @@ Future<void> registerAIServices(GetIt sl) async {
             sl.isRegistered<RealtimeBackend>() ? sl<RealtimeBackend>() : null,
         atomicClock: sl<AtomicClockService>(),
         dmStore: sl<DmMessageStore>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
   sl.registerLazySingleton(() => CommunityChatService(
         encryptionService: sl<MessageEncryptionService>(),
@@ -676,6 +682,9 @@ Future<void> registerAIServices(GetIt sl) async {
         dmStore: sl<DmMessageStore>(),
         senderKeyService: sl<CommunitySenderKeyService>(),
         communityMessageStore: sl<CommunityMessageStore>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Community Service (for community chat member lists)
