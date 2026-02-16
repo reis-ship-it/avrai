@@ -119,6 +119,7 @@ data_start = row
 row = write_row(ws1, row, ["Supabase Pro", 25, 300, "8GB database, 100GB storage, 250GB bandwidth, 2M edge function invocations/mo. 15+ edge functions deployed. Overage: $2/1M additional invocations."], money_cols={2, 3})
 row = write_row(ws1, row, ["Cursor Ultra", 200, 2400, "AI-assisted development. 20x usage vs Pro. Unlimited model access."], money_cols={2, 3})
 row = write_row(ws1, row, ["Cursor Extra Usage Credits", 3500, 42000, "Additional API usage beyond Ultra plan. Enables unrestricted model access (Opus, GPT-4, etc.)."], money_cols={2, 3})
+row = write_row(ws1, row, ["Cursor Bugbot (GitHub code checking)", 40, 480, "Automated PR/code checking integration through Cursor on GitHub."], money_cols={2, 3})
 row = write_row(ws1, row, ["GitHub Pro", 4, 48, "Private repos + GitHub Actions CI/CD"], money_cols={2, 3})
 row = write_row(ws1, row, ["Apple Developer Account", 8.25, 99, "iOS distribution + TestFlight. $99/yr billed annually."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
 data_end = row - 1
@@ -170,6 +171,21 @@ row = write_row(ws1, row, ["Google Cloud Storage", 0, "File/media storage beyond
 row = write_row(ws1, row, ["Supabase Storage (model distribution)", 0, "On-device ONNX models (~1MB) + optional SLM (700MB-2GB) downloaded by users", "Included in Pro plan. Bandwidth = $0.09/GB egress. Migrate to Cloudflare R2 (free egress) before costs grow."], money_cols={2})
 row = write_row(ws1, row, ["Cloudflare R2 (future CDN)", 0, "Model delivery with free egress", "Not yet set up. $0.015/GB/mo storage. Use when model downloads create real bandwidth cost."], money_cols={2})
 row = write_row(ws1, row, ["ML Training Compute (Cloud GPU)", 0, "Pre-training energy function, transition predictor, batch retraining", "Google Colab free tier for now. RunPod/Lambda $10-$50/run when needed."], money_cols={2})
+
+row += 1
+
+# ── Planned Resilience/Governance Reserve ────────────────────────
+style_section_row(ws1, row, 4, "PLANNED RESILIENCE/GOVERNANCE RESERVE (Master Plan 10.9.x + ML Governance)")
+row += 1
+row = write_headers(ws1, row, ["Item", "Monthly (Low)", "Monthly (High)", "Why It Exists"])
+data_start = row
+row = write_row(ws1, row, ["Observability + reliability tooling reserve", 50, 300, "Dashboards/alerts and operational visibility for break-to-learning metrics (TTD, TTH, recurrence, impact radius)."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws1, row, ["GitHub CI/check overage reserve", 20, 150, "Additional required checks/workflow volume from execution + traceability + architecture + ML governance guards."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws1, row, ["ML retraining/simulation compute reserve", 100, 600, "Non-free burst training/simulation runs and replay cycles as model scope expands."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws1, row, ["Data pipeline/storage/egress reserve", 25, 200, "Training artifacts, experiment logs, recovery queue growth, and transfer overhead."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws1, row, ["Contingency on resilience reserve (10-15%)", 19.5, 187.5, "Buffer for reopen events and unexpected remediation loops."], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+data_end = row - 1
+row = write_total_row(ws1, row, "TOTAL RESILIENCE RESERVE ENVELOPE", 4, sum_cols={2, 3}, data_start=data_start, data_end=data_end, fmt=CURRENCY_FMT_2)
 
 row += 1
 
@@ -321,6 +337,7 @@ data_start = row
 row = write_row(ws3, row, ["Supabase Pro", 25, None, "Database + storage + edge functions"], money_cols={2})
 row = write_row(ws3, row, ["Cursor Ultra", 200, None, "AI-assisted development. 20x usage vs Pro."], money_cols={2})
 row = write_row(ws3, row, ["Cursor Extra Usage Credits", 3500, None, "Unrestricted model access (Opus, GPT-4, etc.)"], money_cols={2})
+row = write_row(ws3, row, ["Cursor Bugbot (GitHub code checking)", 40, None, "Automated PR/code checking integration through Cursor on GitHub"], money_cols={2})
 row = write_row(ws3, row, ["Claude Pro", 20, None, "Admin, research, drafting"], money_cols={2})
 row = write_row(ws3, row, ["GitHub Pro", 4, None, "Private repos + CI/CD"], money_cols={2})
 row = write_row(ws3, row, ["Google Workspace", 7, None, "@avrai.org email ($3.50/mo promo through May '26)"], money_cols={2})
@@ -339,6 +356,11 @@ ws3.cell(row=row, column=3).number_format = CURRENCY_FMT
 ws3.cell(row=row, column=4).value = "Per year"
 style_total_row(ws3, row, 4)
 row += 1
+
+# Planned reserve envelope (separate from committed burn)
+row = write_row(ws3, row, ["Resilience reserve envelope (low-high)", 214.5, 1437.5, "Master-plan 10.9.x + ML governance reserve"], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws3, row, ["Total monthly burn with reserve", 4018.75, 5241.75, "Committed burn + resilience reserve envelope"], money_cols={2, 3}, fmt=CURRENCY_FMT_2)
+row = write_row(ws3, row, ["Total annual burn with reserve", 48225, 62901, "Annualized from monthly reserve-inclusive range"], money_cols={2, 3})
 
 row += 1
 
@@ -363,13 +385,13 @@ row += 1
 row = write_headers(ws3, row, ["Scenario", "One-Time", "Year 1 Burn", "Year 1 Total"])
 
     # Minimum: burn + 2 LLC filings + EINs + 1 cheap phone
-row = write_row(ws3, row, ["Minimum viable (burn + LLCs + 1 phone)", 2564, 45171, 47735], money_cols={2, 3, 4})
+row = write_row(ws3, row, ["Minimum viable (burn + LLCs + 1 phone)", 2564, 45651, 48215], money_cols={2, 3, 4})
 # Comfortable: above + designer low + 3 phones + legal docs
-row = write_row(ws3, row, ["Comfortable to beta (+ designer + phones + legal docs)", 10860, 45171, 56031], money_cols={2, 3, 4})
+row = write_row(ws3, row, ["Comfortable to beta (+ designer + phones + legal docs)", 10860, 45651, 56511], money_cols={2, 3, 4})
 # Full pre-seed: above + patents
-row = write_row(ws3, row, ["Full pre-seed (+ patents)", 22860, 45171, 68031], money_cols={2, 3, 4})
+row = write_row(ws3, row, ["Full pre-seed (+ patents)", 22860, 45651, 68511], money_cols={2, 3, 4})
 # Everything: above + security audit + all hardware
-row = write_row(ws3, row, ["Everything (+ security audit + all hardware)", 69306, 45171, 114477], money_cols={2, 3, 4})
+row = write_row(ws3, row, ["Everything (+ security audit + all hardware)", 69306, 45651, 114957], money_cols={2, 3, 4})
 
 
 # ── Save ─────────────────────────────────────────────────────────

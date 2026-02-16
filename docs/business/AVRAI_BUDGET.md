@@ -20,9 +20,10 @@
 | Supabase Pro | $25 | $300 | 8GB database, 100GB storage, 250GB bandwidth, 2M edge function invocations/mo. 15+ edge functions deployed. Overage: $2/1M additional invocations. |
 | Cursor Ultra | $200 | $2,400 | AI-assisted development. 20x usage vs Pro. Unlimited model access. |
 | Cursor Extra Usage Credits | $3,500 | $42,000 | Additional API usage beyond Ultra plan. Enables unrestricted model access (Opus, GPT-4, etc.). |
+| Cursor Bugbot (GitHub code checking) | $40 | $480 | Automated PR/code checking integration through Cursor on GitHub. |
 | GitHub Pro | $4 | $48 | Private repos + GitHub Actions CI/CD |
 | Apple Developer Account | $8.25 | $99 | iOS distribution + TestFlight. $99/yr billed annually. |
-| **TOTAL** | **$3,737.25** | **$44,847** | |
+| **TOTAL** | **$3,777.25** | **$45,327** | |
 
 ## Fixed Costs — One-Time Fees
 
@@ -65,6 +66,21 @@
 | Cloudflare R2 (future CDN) | $0 | Model delivery with free egress | Not yet set up. $0.015/GB/mo storage. Use when model downloads create real bandwidth cost. |
 | ML Training Compute (Cloud GPU) | $0 | Pre-training energy function, transition predictor, batch retraining | Google Colab free tier for now. RunPod/Lambda $10–$50/run when needed. |
 | **TOTAL** | **$0** | | All free tiers during solo development. |
+
+---
+
+## Planned Resilience/Governance Reserve (Master Plan 10.9.x + Training Governance)
+
+These are planning reserves tied to newly required universal self-healing, observability, CI governance, and automated remediation workflows.
+
+| Item | Monthly (Low) | Monthly (High) | Why It Exists |
+|------|---------------|----------------|---------------|
+| Observability + reliability tooling reserve | $50 | $300 | Dashboards/alerts and operational visibility for break-to-learning metrics (`TTD`, `TTH`, recurrence, impact radius). |
+| GitHub CI/check overage reserve | $20 | $150 | Additional required checks/workflow volume from execution + traceability + architecture + ML governance guards. |
+| ML retraining/simulation compute reserve | $100 | $600 | Non-free burst training/simulation runs and replay cycles as model scope expands. |
+| Data pipeline/storage/egress reserve | $25 | $200 | Training artifacts, experiment logs, recovery queue growth, and transfer overhead. |
+| Contingency on resilience reserve (10-15%) | $19.50 | $187.50 | Buffer for reopen events and unexpected remediation loops. |
+| **TOTAL RESILIENCE RESERVE ENVELOPE** | **$214.50** | **$1,437.50** | Planning reserve; activates as workload grows. |
 
 ---
 
@@ -177,12 +193,14 @@
 | Supabase Pro | $25 |
 | Cursor Ultra | $200 |
 | Cursor Extra Usage Credits | $3,500 |
+| Cursor Bugbot (GitHub code checking) | $40 |
 | Claude Pro | $20 |
 | GitHub Pro | $4 |
 | Google Workspace | $7 |
 | Apple Developer (amortized) | $8.25 |
 | All APIs & Cloud Services | $0 |
-| **TOTAL MONTHLY BURN** | **$3,764.25/mo (~$45,171/yr)** |
+| **TOTAL MONTHLY BURN (Committed Current)** | **$3,804.25/mo (~$45,651/yr)** |
+| **TOTAL MONTHLY BURN (With Resilience Reserve Envelope)** | **$4,018.75 - $5,241.75/mo (~$48,225 - $62,901/yr)** |
 
 ---
 
@@ -204,12 +222,16 @@
 
 | Scenario | One-Time | Year 1 Burn | Year 1 Total |
 |----------|----------|-------------|--------------|
-| Minimum viable (burn + LLCs + 1 phone) | $2,564 | $45,171 | ~$47,735 |
-| Comfortable to beta (+ designer + phones + legal docs) | $10,860 | $45,171 | ~$56,031 |
-| Full pre-seed (+ patents) | $22,860 | $45,171 | ~$68,031 |
-| Everything (+ security audit + all hardware) | $69,306 | $45,171 | ~$114,477 |
+| Minimum viable (burn + LLCs + 1 phone) | $2,564 | $45,651 | ~$48,215 |
+| Comfortable to beta (+ designer + phones + legal docs) | $10,860 | $45,651 | ~$56,511 |
+| Full pre-seed (+ patents) | $22,860 | $45,651 | ~$68,511 |
+| Everything (+ security audit + all hardware) | $69,306 | $45,651 | ~$114,957 |
+| Minimum viable + resilience reserve envelope | $2,564 | $48,225 - $62,901 | ~$50,789 - $65,465 |
+| Comfortable to beta + resilience reserve envelope | $10,860 | $48,225 - $62,901 | ~$59,085 - $73,761 |
+| Full pre-seed + resilience reserve envelope | $22,860 | $48,225 - $62,901 | ~$71,085 - $85,761 |
+| Everything + resilience reserve envelope | $69,306 | $48,225 - $62,901 | ~$117,531 - $132,207 |
 
 ---
 
-**Last Updated:** February 10, 2026  
+**Last Updated:** February 16, 2026  
 **Next Review:** Before investor presentation
