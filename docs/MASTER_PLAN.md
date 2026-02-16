@@ -1879,14 +1879,14 @@ run `python3 scripts/suggest_rename_candidates_inventory.py`, update `docs/archi
 Preferred one-command flow:
 `scripts/run_phase_rename_closeout.sh P#`
 9. Phase branch workflow is mandatory:
-each phase uses a stable branch name `phase#_work`; section/subsection branches are created as children of the current phase branch path (`.../sX_Y_Z`) and merged back by PR into the immediate parent branch.
+each phase uses a stable branch name `phase#_work`; section/subsection branches are created as `phase#_work__sX_Y_Z` and nested children append additional `__s...` segments, then merge by PR into the immediate parent branch.
 Preferred local automation:
 `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
 `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
 GitHub auto-PR workflow:
 `.github/workflows/phase-subsection-autopr.yml`
 10. Naming verification gate is mandatory before subsection auto-PR creation:
-`scripts/verify_phase_naming.sh --phase P# --branch <phase-branch-or-child>`
+`scripts/verify_phase_naming.sh --phase P# --branch <phase#_work-or-child>`
 
 Authoring workflow:
 1. Edit `docs/EXECUTION_BOARD.csv`.

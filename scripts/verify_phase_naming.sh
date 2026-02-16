@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  scripts/verify_phase_naming.sh --phase P1 [--branch phase1_work/s1_2_8]
+  scripts/verify_phase_naming.sh --phase P1 [--branch phase1_work__s1_2_8]
 
 Checks:
   1) Branch naming/layout follows phase hierarchy.
@@ -57,20 +57,10 @@ if [[ -z "$branch" ]]; then
   branch="$(git rev-parse --abbrev-ref HEAD)"
 fi
 
-if ! [[ "$branch" =~ ^${phase_branch}(/.*)?$ ]]; then
-  echo "Branch naming check failed: '$branch' is not within '$phase_branch'." >&2
+valid_pattern="^${phase_branch}(__s[a-z0-9_]+(_r[0-9]+)?)*$"
+if ! [[ "$branch" =~ $valid_pattern ]]; then
+  echo "Branch naming check failed: '$branch' is not a valid child of '$phase_branch'." >&2
   exit 1
-fi
-
-IFS='/' read -r -a branch_parts <<<"$branch"
-if [[ ${#branch_parts[@]} -gt 1 ]]; then
-  for ((i=1; i<${#branch_parts[@]}; i++)); do
-    part="${branch_parts[$i]}"
-    if ! [[ "$part" =~ ^s[a-z0-9_]+(_r[0-9]+)?$ ]]; then
-      echo "Branch naming check failed: segment '$part' must match '^s[a-z0-9_]+(_r[0-9]+)?$'." >&2
-      exit 1
-    fi
-  done
 fi
 
 echo "Branch naming check passed: $branch"
