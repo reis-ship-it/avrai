@@ -67,6 +67,17 @@ All entity models must follow the same training tuple contract:
 - required event scale descriptors (capacity, attendance, volume bands)
 - required outcome labels (conversion, retention, risk)
 
+## AVRAI-Native Continual-Learning Terms
+
+Use AVRAI-native terms in plans/checklists and experiment metadata:
+- `AnchorMind`: stable baseline checkpoint for continuity protection.
+- `ExplorationMind`: adaptive model lane learning from recent trajectories.
+- `ContinuityAlignment`: constraint/objective that keeps new learning compatible with validated prior behavior.
+- `LiveTrajectoryLearning`: on-policy updates from AVRAI's own action/outcome streams.
+- `DoorLossDrift`: catastrophic forgetting signal (legacy capability regression).
+- `DoorContinuityGate`: mandatory no-regression promotion gate.
+- `DoorLadderExpansion`: sequential capability-slice training protocol with per-slice gates.
+
 Entity-specific required fields and minimum training gates are defined in:
 - `configs/ml/feature_label_contracts.json`
 
