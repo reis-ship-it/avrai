@@ -785,6 +785,12 @@ class ContinuousLearningSystem {
         context: context,
         source: source,
       );
+      await _recordRecommendationBiasTupleIfApplicable(
+        episodicStore: episodicStore,
+        tuple: tuple,
+        parameters: parameters,
+        source: source,
+      );
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
@@ -1096,6 +1102,85 @@ class ContinuousLearningSystem {
     if (plannerRecommendation is Map) {
       final source = plannerRecommendation['planner']?.toString().trim() ?? '';
       if (source.isNotEmpty) return source;
+    }
+    return 'unknown';
+  }
+
+  Future<void> _recordRecommendationBiasTupleIfApplicable({
+    required EpisodicMemoryStore episodicStore,
+    required EpisodicTuple tuple,
+    required Map<String, dynamic> parameters,
+    required String source,
+  }) async {
+    try {
+      if (tuple.actionType != 'recommendation_rejected') return;
+
+      final systematicBias = parameters['systematic_bias_detected'] == true;
+      if (!systematicBias) return;
+
+      final recommendedEntityType =
+          parameters['entity_type']?.toString().trim() ?? 'unknown';
+      final preferredEntityType = _extractPreferredEntityType(parameters);
+      final rejectionRate =
+          (parameters['recommendation_rejection_rate'] as num?)?.toDouble() ??
+              0.0;
+      final totalCount =
+          (parameters['recommendation_total_count'] as num?)?.toInt() ?? 0;
+      final rejectedCount =
+          (parameters['recommendation_rejected_count'] as num?)?.toInt() ?? 0;
+
+      final biasTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.2.17',
+          'bias_signal': {
+            'recommended_entity_type': recommendedEntityType,
+            'preferred_entity_type': preferredEntityType,
+          },
+        },
+        actionType: 'recommendation_bias_correction_signal',
+        actionPayload: {
+          'recommended_entity_type': recommendedEntityType,
+          'preferred_entity_type': preferredEntityType,
+          'recommendation_rejection_rate': rejectionRate,
+          'recommendation_total_count': totalCount,
+          'recommendation_rejected_count': rejectedCount,
+        },
+        nextState: {
+          'systematic_bias_detected': true,
+          'bias_pair': '${recommendedEntityType}_to_$preferredEntityType',
+          'correction_priority': rejectionRate >= 0.85 ? 'high' : 'medium',
+        },
+        outcome: tuple.outcome,
+        recordedAt: tuple.recordedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.2.17',
+          'bias_signal': true,
+          'source': source,
+        },
+      );
+
+      await episodicStore.writeTuple(biasTuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record recommendation bias tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String _extractPreferredEntityType(Map<String, dynamic> parameters) {
+    const preferredKeys = <String>[
+      'preferred_entity_type',
+      'actual_entity_type',
+      'chosen_entity_type',
+      'selected_entity_type',
+      'actual_target_type',
+    ];
+    for (final key in preferredKeys) {
+      final value = parameters[key]?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
     }
     return 'unknown';
   }
