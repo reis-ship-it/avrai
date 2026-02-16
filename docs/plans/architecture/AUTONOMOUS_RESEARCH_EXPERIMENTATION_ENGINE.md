@@ -190,6 +190,10 @@ This creates a self-growing research ontology instead of a static topic list.
 14. `ARE-14` Require deterministic experiment journaling (`FactsJournal`/`HistoryJournal`) before promotion decisions.
 15. `ARE-15` Add fallback-memory validation path when semantic retrieval confidence is low/conflicting.
 16. `ARE-16` Add federated DP-safe summary channel + contradiction quarantine for self-healing updates.
+17. `ARE-17` Add profile-gated systems-optimization policy: no custom hash-table internals without proven benchmark wins on AVRAI workloads.
+18. `ARE-18` Add memory-bounded simulation/replay algorithms: checkpoint-rematerialization + tree-reduction evaluation for long-horizon experiments under tight RAM budgets.
+19. `ARE-19` Add tier-aware dual-model runtime (`full_state_model` vs `compressed_state_model`) with online agreement checks and deterministic fallback gates.
+20. `ARE-20` Add atomic-time checkpoint lineage and replay IDs so rollback/self-healing decisions are fully reconstructable and safe for federated mitigation transfer.
 
 ---
 
