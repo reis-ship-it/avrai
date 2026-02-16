@@ -351,6 +351,16 @@ void main() {
           tuples.first.actionPayload['list_composition_features']['item_count'],
           2,
         );
+        expect(
+          tuples.first.actionPayload['list_composition_features']
+              ['composition_data_quality'],
+          'id_only',
+        );
+        expect(
+          tuples.first.actionPayload['list_composition_features']
+              ['category_distribution'],
+          {'Nightlife': 1.0},
+        );
       });
     });
 
