@@ -8,6 +8,7 @@ android/gradlew,1,platform-runtime,"7.5,11.2",active,architecture spot for file 
 android/gradlew.bat,1,platform-runtime,"7.5,11.2",active,architecture spot for file placement
 android/settings.gradle,1,platform-runtime,"7.5,11.2",active,architecture spot for file placement
 assets/brand_book,4,assets,"10.1,10.7",active,architecture spot for file placement
+assets/fonts,1,assets,"10.1,10.7",active,architecture spot for file placement
 assets/geo,1,assets,"10.1,10.7",active,architecture spot for file placement
 assets/map_styles,2,assets,"10.1,10.7",active,architecture spot for file placement
 assets/three_js,17,assets,"10.1,10.7",active,architecture spot for file placement
