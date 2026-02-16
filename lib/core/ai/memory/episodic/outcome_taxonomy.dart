@@ -102,10 +102,13 @@ class OutcomeTaxonomy {
       case 'event_outcome':
       case 'business_partnership_outcome':
       case 'engagement_outcome':
+      case 'ai2ai_connection_outcome':
         return OutcomeSignal(
           type: eventType,
           category: OutcomeCategory.quality,
-          value: (parameters['overall_rating'] as num?)?.toDouble() ??
+          value: (parameters['connection_quality'] as num?)?.toDouble() ??
+              (parameters['learning_value'] as num?)?.toDouble() ??
+              (parameters['overall_rating'] as num?)?.toDouble() ??
               (parameters['mutual_satisfaction_rating'] as num?)?.toDouble() ??
               (parameters['rating'] as num?)?.toDouble() ??
               0.0,

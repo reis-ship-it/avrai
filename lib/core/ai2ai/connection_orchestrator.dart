@@ -21,6 +21,7 @@ import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/privacy_protection.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
@@ -49,7 +50,8 @@ import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:avrai/core/models/business/business_expert_message.dart' as chat_models;
+import 'package:avrai/core/models/business/business_expert_message.dart'
+    as chat_models;
 import 'package:avrai/core/models/business/business_business_message.dart'
     as chat_models;
 import 'package:get_storage/get_storage.dart';
@@ -436,6 +438,7 @@ class VibeConnectionOrchestrator {
     UserAnonymizationService? anonymizationService,
     SignalKeyManager? signalKeyManager,
     required SharedPreferencesCompat prefs,
+    EpisodicMemoryStore? episodicMemoryStore,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
@@ -458,6 +461,7 @@ class VibeConnectionOrchestrator {
           personalityLearning:
               personalityLearning, // NEW: Pass to ConnectionManager
           ai2aiProtocol: protocol, // NEW: Pass to ConnectionManager
+          episodicMemoryStore: episodicMemoryStore,
         ),
         _realtimeCoordinator = realtimeService != null
             ? RealtimeCoordinator(realtimeService)
@@ -3349,14 +3353,15 @@ class VibeConnectionOrchestrator {
 
       // Phase 3.2: Enhanced offline-first prekey bundle exchange
       // Check if bundle needs refresh (automatic refresh logic)
-      final needsRefresh = signalKeyManager.getRecipientsNeedingRefresh().contains(recipientId);
-      
+      final needsRefresh =
+          signalKeyManager.getRecipientsNeedingRefresh().contains(recipientId);
+
       if (needsRefresh) {
         _logger.debug(
           'Prekey bundle for $recipientId needs refresh - attempting background refresh',
           tag: _logName,
         );
-        
+
         // Background refresh (non-blocking) - try to fetch fresh bundle from Supabase
         unawaited(
           signalKeyManager.fetchPreKeyBundle(recipientId).then((freshBundle) {
@@ -3389,7 +3394,8 @@ class VibeConnectionOrchestrator {
 
       // Phase 3.2: Mesh forwarding integration
       // Forward prekey bundle through mesh network if mesh service is available
-      if (_adaptiveMeshService != null && _isFederatedLearningParticipationEnabled()) {
+      if (_adaptiveMeshService != null &&
+          _isFederatedLearningParticipationEnabled()) {
         await _forwardPreKeyBundleThroughMesh(
           bundle: bundle,
           recipientId: recipientId,
@@ -3475,7 +3481,9 @@ class VibeConnectionOrchestrator {
     required String recipientId,
     required DiscoveredDevice device,
   }) async {
-    if (!_allowBleSideEffects || _deviceDiscovery == null || _protocol == null) {
+    if (!_allowBleSideEffects ||
+        _deviceDiscovery == null ||
+        _protocol == null) {
       return;
     }
 
@@ -3524,11 +3532,13 @@ class VibeConnectionOrchestrator {
           continue;
         }
 
-        final peerRecipientId = _peerNodeIdByDeviceId[peerDevice.deviceId] ?? peerDevice.deviceId;
+        final peerRecipientId =
+            _peerNodeIdByDeviceId[peerDevice.deviceId] ?? peerDevice.deviceId;
 
         try {
           final packetBytes = await _protocol.encodePacketBytes(
-            type: MessageType.learningInsight, // Reuse learning insight type for prekey forwarding
+            type: MessageType
+                .learningInsight, // Reuse learning insight type for prekey forwarding
             payload: forwardPayload,
             senderNodeId: _localBleNodeId,
             recipientNodeId: peerRecipientId,
@@ -4135,10 +4145,8 @@ class VibeConnectionOrchestrator {
     if (discovery == null) return;
 
     // Choose up to 2 nearby devices to share with
-    final candidates = _discoveredNodes.values
-        .map((n) => n.nodeId)
-        .take(2)
-        .toList();
+    final candidates =
+        _discoveredNodes.values.map((n) => n.nodeId).take(2).toList();
 
     if (candidates.isEmpty) return;
 
