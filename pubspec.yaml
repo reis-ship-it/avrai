@@ -84,7 +84,7 @@ dependencies:
   
   # Phase 26: Multi-Device Storage Migration
   drift: ^2.14.0  # SQLite wrapper for relational data (messages, spots, lists)
-  sqlite3_flutter_libs: ^0.5.18  # SQLite native libraries
+  sqlite3_flutter_libs: ^0.6.0+eol  # SQLite native libraries
   objectbox: ^4.0.0  # High-performance object storage (quantum states, RAG embeddings)
   objectbox_flutter_libs: ^4.0.0  # ObjectBox native libraries
   
