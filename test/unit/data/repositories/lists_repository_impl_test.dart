@@ -245,6 +245,59 @@ void main() {
           'After',
         );
       });
+
+      test('records share_list tuple when collaborators are added', () async {
+        final before = SpotList(
+          id: 'list-collab',
+          title: 'Team List',
+          description: 'Before collaborators',
+          spots: const [],
+          spotIds: const ['spot-1'],
+          collaborators: const ['user-a'],
+          curatorId: 'user-123',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+          updatedAt: DateTime.now().subtract(const Duration(hours: 1)),
+        );
+        final after = SpotList(
+          id: before.id,
+          title: before.title,
+          description: 'After collaborators',
+          spots: before.spots,
+          spotIds: before.spotIds,
+          collaborators: const ['user-a', 'user-b'],
+          curatorId: before.curatorId,
+          createdAt: before.createdAt,
+          updatedAt: DateTime.utc(2026, 2, 16, 17, 30, 0),
+        );
+
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => [before]);
+        when(mockLocalDataSource.saveList(after))
+            .thenAnswer((_) async => after);
+        when(mockRemoteDataSource.updateList(after))
+            .thenAnswer((_) async => after);
+
+        await repository.updateList(after);
+
+        final tuples = await episodicMemoryStore.replay(agentId: 'agent_repo');
+        expect(tuples.length, 2);
+        final shareTuple =
+            tuples.firstWhere((t) => t.actionType == 'share_list');
+        expect(
+          shareTuple.actionPayload['recipient_features']
+              ['added_collaborator_ids'],
+          ['user-b'],
+        );
+        expect(
+          shareTuple.actionPayload['list_features']['collaborator_count_after'],
+          2,
+        );
+        expect(
+          shareTuple.metadata['phase_ref'],
+          '1.2.10',
+        );
+      });
     });
 
     group('deleteList', () {
