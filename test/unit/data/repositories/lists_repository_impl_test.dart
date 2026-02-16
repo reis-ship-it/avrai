@@ -232,6 +232,18 @@ void main() {
               ['removed_spot_ids'],
           ['spot-1'],
         );
+        expect(
+          tuples.first.actionPayload['list_state_before']['spot_count'],
+          2,
+        );
+        expect(
+          tuples.first.actionPayload['list_state_after']['spot_count'],
+          2,
+        );
+        expect(
+          tuples.first.actionPayload['list_state_after']['description'],
+          'After',
+        );
       });
     });
 
