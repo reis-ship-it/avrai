@@ -19,21 +19,31 @@ This paper proposes Self-Distillation Fine-Tuning (SDFT), an on-policy distillat
 |---|---|---|
 | Continual learning without catastrophic forgetting | Ongoing world-model updates without degrading existing recommendation quality | `docs/MASTER_PLAN.md` Phase 5.2, Phase 7.7 |
 | On-policy learning from demonstrations/signals | Learning from AVRAI episodic trajectories and action/outcome tuples | `docs/MASTER_PLAN.md` Phase 1.1, Phase 1.2, Phase 1.4 |
-| Self-distillation teacher/student loop | Stable teacher checkpoint guiding iterative on-device or server-assisted updates | `docs/MASTER_PLAN.md` Phase 5.2, Phase 8.1 |
+| Self-distillation teacher/student loop | `AnchorMind` (stable baseline) + `ExplorationMind` (adaptive learner) with `ContinuityAlignment` constraints | `docs/MASTER_PLAN.md` Phase 5.2, Phase 8.1 |
+
+### AVRAI-Native Terminology (Canonical)
+
+- `Teacher` -> `AnchorMind`
+- `Student` -> `ExplorationMind`
+- `Distillation objective` -> `ContinuityAlignment`
+- `On-policy fine-tuning` -> `LiveTrajectoryLearning`
+- `Catastrophic forgetting` -> `DoorLossDrift`
+- `No-regression gate` -> `DoorContinuityGate`
+- `Sequential skill accumulation` -> `DoorLadderExpansion`
 
 ---
 
 ## Recommended Additions
 
-1. Add a **teacher-student continual update loop**:
-   - Keep a stable teacher model snapshot.
-   - Distill updated student behavior against both new data and teacher consistency constraints.
+1. Add an **AnchorMind-ExplorationMind continual update loop**:
+   - Keep a stable `AnchorMind` model snapshot.
+   - Train `ExplorationMind` on fresh trajectories with `ContinuityAlignment` constraints against anchor behavior.
 
-2. Add **catastrophic forgetting guard metrics**:
+2. Add **DoorLossDrift guard metrics**:
    - Track regression on prior behavior cohorts before any rollout.
-   - Block deployment if legacy capability deltas exceed thresholds.
+   - Block deployment when `DoorContinuityGate` thresholds are breached.
 
-3. Add **sequential-skill accumulation protocol**:
+3. Add **DoorLadderExpansion protocol**:
    - Stage training by capability slices (recommendation, scheduling, community matching, business matching).
    - Require no-regression checks after each slice.
 
