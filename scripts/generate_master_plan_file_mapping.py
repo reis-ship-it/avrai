@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import json
 import re
 import subprocess
 from pathlib import Path
@@ -390,6 +391,196 @@ def classify(path: str) -> dict:
     return fallback
 
 
+def _read_text(path: str) -> str:
+    full = ROOT / path
+    if not full.exists() or full.suffix != ".dart":
+        return ""
+    try:
+        return full.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return ""
+
+
+def _uses_getit(path: str) -> bool:
+    content = _read_text(path)
+    if not content:
+        return False
+    patterns = (
+        "GetIt.instance",
+        "GetIt.I<",
+        "GetIt.I.",
+        "import 'package:get_it/get_it.dart'",
+        'import "package:get_it/get_it.dart"',
+    )
+    return any(p in content for p in patterns)
+
+
+def _is_di_provider(path: str) -> bool:
+    return path.startswith("lib/injection_container") and path.endswith(".dart")
+
+
+def _injection_contract(path: str, meta: dict) -> dict:
+    spot = derive_spot(path)
+    provider = _is_di_provider(path)
+    consumer = _uses_getit(path) or (
+        path.startswith(("lib/core/services/", "lib/core/ai/", "lib/presentation/"))
+        and path.endswith(".dart")
+    )
+    if meta.get("disposition") == "refactor_planned" and path.startswith("lib/") and path.endswith(".dart"):
+        consumer = True
+
+    if provider:
+        mode = "provider"
+        provides = [f"di:provider:{path}", f"di:spot:{spot}"]
+        consumes = []
+    elif consumer:
+        mode = "consumer"
+        provides = []
+        consumes = [f"di:spot:{spot}", "di:bootstrap:lib/injection_container.dart"]
+    else:
+        mode = "none"
+        provides = []
+        consumes = []
+
+    return {
+        "mode": mode,
+        "roots": [
+            "lib/injection_container.dart",
+            "lib/injection_container_core.dart",
+            "lib/injection_container_ai.dart",
+            "lib/injection_container_device_sync.dart",
+        ],
+        "provides": provides,
+        "consumes": consumes,
+        "required_validation": [
+            "flutter analyze",
+            "Architecture Placement Guard / architecture-placement",
+        ] if mode != "none" else [],
+        "notes": f"deterministic injection contract for {meta['domain']}",
+    }
+
+
+def derive_spot(path: str) -> str:
+    p = path.split("/")
+    if path.startswith("lib/core/services/") and len(p) >= 5:
+        return f"lib/core/services/{p[3]}"
+    if path.startswith("lib/core/") and len(p) >= 4:
+        return f"lib/core/{p[2]}"
+    if path.startswith("lib/presentation/") and len(p) >= 4:
+        return f"lib/presentation/{p[2]}"
+    if path.startswith("lib/data/") and len(p) >= 4:
+        return f"lib/data/{p[2]}"
+    if path.startswith("lib/domain/") and len(p) >= 4:
+        return f"lib/domain/{p[2]}"
+    if path.startswith("lib/"):
+        if len(p) >= 2 and p[1].endswith(".dart"):
+            return "lib/_root"
+        if len(p) >= 2:
+            return f"lib/{p[1]}"
+    if path.startswith("packages/") and len(p) >= 2:
+        return f"packages/{p[1]}"
+    if path.startswith("native/") and len(p) >= 2:
+        return f"native/{p[1]}"
+    if path.startswith("test/") and len(p) >= 4:
+        return f"test/{p[1]}/{p[2]}"
+    if path.startswith("test/"):
+        return "test/_root"
+    if path.startswith("scripts/") and len(p) >= 3:
+        return f"scripts/{p[1]}"
+    if path.startswith("scripts/"):
+        return "scripts/_root"
+    if path.startswith("supabase/") and len(p) >= 2:
+        return f"supabase/{p[1]}"
+    if path.startswith("tool/") and len(p) >= 2:
+        return f"tool/{p[1]}"
+    if path.startswith("assets/") and len(p) >= 2:
+        return f"assets/{p[1]}"
+    if p and p[0] in {"android", "ios", "macos", "linux", "windows", "web"}:
+        return f"{p[0]}/{p[1]}" if len(p) >= 2 else f"{p[0]}/_root"
+    return "unknown/_root"
+
+
+REFACTOR_DEPENDENCY_POLICY = {
+    "recommendation-transition": {
+        "order": 20,
+        "depends_on": [
+            "spot:lib/core/ai",
+            "spot:lib/core/models",
+            "spot:lib/core/services/analytics",
+            "spot:test/unit/services",
+        ],
+    },
+    "legacy-advanced-services": {
+        "order": 30,
+        "depends_on": [
+            "spot:lib/core/services/recommendations",
+            "spot:lib/core/ai",
+            "spot:test/unit/services",
+        ],
+    },
+    "ml-legacy-and-transition": {
+        "order": 40,
+        "depends_on": [
+            "spot:lib/core/ai",
+            "spot:lib/core/models",
+            "spot:lib/core/services/recommendations",
+            "spot:test/unit/ml",
+            "spot:test/integration/ai",
+        ],
+    },
+    "legacy-p2p": {
+        "order": 50,
+        "depends_on": [
+            "spot:lib/core/ai2ai",
+            "spot:lib/core/crypto",
+            "spot:lib/core/services/security",
+            "spot:test/unit/ai2ai",
+        ],
+    },
+}
+
+
+def strict_dependency_graph(path: str, meta: dict) -> str:
+    domain = meta["domain"]
+    disposition = meta["disposition"]
+    phase_refs = [ref.strip() for ref in meta["phase_refs"].split(",") if ref.strip()]
+    is_refactor = disposition == "refactor_planned" or "refactor" in meta["action"]
+    policy = REFACTOR_DEPENDENCY_POLICY.get(domain, None)
+
+    if is_refactor:
+        if policy:
+            order = policy["order"]
+            depends_on = policy["depends_on"]
+        else:
+            order = 60
+            depends_on = ["spot:test/_root"]
+        lane = f"refactor:{domain}"
+    else:
+        order = 0
+        depends_on = []
+        lane = f"steady:{domain}"
+
+    graph = {
+        "graph_version": "v1",
+        "node_id": f"file:{path}",
+        "change_class": disposition,
+        "change_line": "refactor" if is_refactor else "steady",
+        "lane": lane,
+        "order": order,
+        "depends_on": depends_on,
+        "spot": f"spot:{derive_spot(path)}",
+        "phase_refs": phase_refs,
+        "required_checks": [
+            "Execution Board Guard / execution-board-check",
+            "Architecture Placement Guard / architecture-placement",
+            "PRD Traceability Guard / traceability",
+        ],
+        "injections": _injection_contract(path, meta),
+        "notes": "strict dependency graph for deterministic move/refactor sequencing",
+    }
+    return json.dumps(graph, sort_keys=True, separators=(",", ":"))
+
+
 def rel_bucket(path: str) -> str:
     parts = path.split("/")
     if len(parts) >= 3 and parts[0] in {"lib", "packages", "test", "scripts", "native", "supabase", "assets"}:
@@ -416,6 +607,7 @@ def main() -> None:
             "action": meta["action"],
             "confidence": meta["confidence"],
             "rationale": meta["rationale"],
+            "dependency_graph": strict_dependency_graph(f, meta),
         })
 
     rows.sort(key=lambda r: r["file"])
@@ -423,7 +615,17 @@ def main() -> None:
     with CSV_PATH.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["file", "bucket", "domain", "disposition", "phase_refs", "action", "confidence", "rationale"],
+            fieldnames=[
+                "file",
+                "bucket",
+                "domain",
+                "disposition",
+                "phase_refs",
+                "action",
+                "confidence",
+                "rationale",
+                "dependency_graph",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows)
@@ -441,7 +643,7 @@ def main() -> None:
         f.write("**Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).\n")
         f.write(f"**Total mapped files:** {len(rows)}\n")
         f.write(f"**Generated artifact:** `{CSV_PATH.relative_to(ROOT)}`\n")
-        f.write("**Method:** Deterministic path-to-phase rules with explicit confidence values.\n\n")
+        f.write("**Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).\n\n")
 
         f.write("## Disposition Summary\n\n")
         f.write("| Disposition | File Count |\n|---|---:|\n")

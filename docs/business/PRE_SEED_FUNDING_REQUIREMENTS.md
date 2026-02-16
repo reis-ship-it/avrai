@@ -12,8 +12,8 @@
 This document provides a comprehensive breakdown of all costs required to bring AVRAI to a testable state for pre-seed investors. Costs are organized by category with minimum and maximum estimates to provide a realistic funding range.
 
 **Total Funding Range:**
-- **Minimum:** $68,200
-- **Maximum:** $195,700
+- **Minimum:** $43,459
+- **Maximum:** $131,627
 
 ---
 
@@ -145,10 +145,11 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | Item | Description | Minimum | Maximum | Notes |
 |------|-------------|---------|---------|-------|
 | **GitHub Pro** | Private repositories, CI/CD | $4/month | $4/month | $48/year |
+| **Cursor Bugbot (GitHub code checking)** | Automated PR/code checking integration through Cursor | $40/month | $40/month | $480/year |
 | **JetBrains IDE** | IntelliJ IDEA / Android Studio (if used) | $0 | $149/year | Free community or paid |
 | **VS Code Extensions** | Premium extensions (optional) | $0 | $100/year | Mostly free |
 | **Design Tools** | Figma Pro, Adobe Creative Suite | $0 | $600/year | Free tier or full suite |
-| **TOTAL (Development Tools)** | | **$48** | **$897** | Annual |
+| **TOTAL (Development Tools)** | | **$528** | **$1,377** | Annual |
 
 ### Project Management & Collaboration
 
@@ -159,7 +160,7 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | **Linear/Asana** | Issue tracking (if not using GitHub) | $0 | $120/year | Free tier or paid |
 | **TOTAL (PM & Collaboration)** | | **$96** | **$1,143** | Annual |
 
-**TOTAL SOFTWARE SUBSCRIPTIONS:** $144 - $2,040 (Annual)
+**TOTAL SOFTWARE SUBSCRIPTIONS:** $624 - $2,520 (Annual)
 
 ---
 
@@ -191,12 +192,22 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | **Stripe** | Payment processing | 2.9% + $0.30 | 2.9% + $0.30 | Per transaction (no monthly fee) |
 | **TOTAL (Other APIs)** | | **$0** | **$480** | Annual |
 
-**TOTAL CLOUD & APIs:** $0 - $6,480 (Annual)
+### Resilience / Governance Reserve (Master Plan 10.9.x + ML Governance)
+
+| Item | Description | Minimum | Maximum | Notes |
+|------|-------------|---------|---------|-------|
+| **Observability + reliability tooling reserve** | Dashboards, alerting, and recovery metrics visibility | $600 | $3,600 | $50-$300/month |
+| **GitHub CI/check overage reserve** | Required workflow/check volume growth | $240 | $1,800 | $20-$150/month |
+| **ML retraining/simulation compute reserve** | Replay/simulation/retraining bursts | $1,200 | $7,200 | $100-$600/month |
+| **Data pipeline/storage/egress reserve** | Training artifacts and telemetry transfer growth | $300 | $2,400 | $25-$200/month |
+| **TOTAL (Resilience Reserve)** | | **$2,340** | **$15,000** | Annual |
+
+**TOTAL CLOUD & APIs:** $2,340 - $21,480 (Annual)
 
 **Notes:**
 - Most services offer generous free tiers for development/testing
 - Costs scale with usage (users, API calls, storage)
-- Estimate based on moderate testing usage (not production scale)
+- Estimate now includes resilience/governance reserve for universal self-healing and expanded CI enforcement workload
 
 ---
 
@@ -319,15 +330,15 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | **1. Legal & Incorporation** | $1,200 | $3,900 | Business formation |
 | **2. Intellectual Property** | $13,000 | $33,000 | Provisional patents (5) |
 | **3. Hardware & Equipment** | $6,220 | $10,939 | Mac, phones, accessories |
-| **4. Software Subscriptions** | $144 | $2,040 | Annual subscriptions |
-| **5. Cloud Infrastructure & APIs** | $0 | $6,480 | Annual (mostly free tier) |
+| **4. Software Subscriptions** | $624 | $2,520 | Annual subscriptions (includes Cursor Bugbot) |
+| **5. Cloud Infrastructure & APIs** | $2,340 | $21,480 | Annual (includes resilience/governance reserve) |
 | **6. Developer Accounts** | $124 | $124 | Apple + Google Play |
 | **7. Security & Compliance** | $16,000 | $37,000 | Security audit + legal docs |
 | **8. Testing & QA** | $0 | $1,498 | Additional devices/services |
 | **9. Professional Services** | $0 | $8,200 | Legal, accounting, design |
-| **SUBTOTAL** | **$36,688** | **$104,181** | |
-| **10. Contingency (10%)** | $3,669 | $10,418 | 10% buffer |
-| **TOTAL FUNDING NEEDED** | **$40,357** | **$114,599** | |
+| **SUBTOTAL** | **$39,508** | **$119,661** | |
+| **10. Contingency (10%)** | $3,951 | $11,966 | 10% buffer |
+| **TOTAL FUNDING NEEDED** | **$43,459** | **$131,627** | |
 
 ### Alternative Scenarios
 
@@ -345,12 +356,12 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | Legal & Incorporation | $1,200 |
 | Intellectual Property (2 patents) | $5,200 |
 | Hardware (phones only, assume Mac exists) | $3,095 |
-| Software Subscriptions | $144 |
+| Software Subscriptions | $624 |
 | Developer Accounts | $124 |
 | Privacy Policy & ToS (DIY templates) | $200 |
-| **SUBTOTAL** | **$9,763** |
-| **Contingency (10%)** | **$976** |
-| **TOTAL** | **$10,739** |
+| **SUBTOTAL** | **$10,243** |
+| **Contingency (10%)** | **$1,024** |
+| **TOTAL** | **$11,267** |
 
 #### Scenario B: Comprehensive Pre-Seed (Recommended)
 
@@ -366,16 +377,16 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | Legal & Incorporation | $2,500 |
 | Intellectual Property (5 provisional) | $25,000 |
 | Hardware & Equipment | $8,500 |
-| Software Subscriptions | $1,000 |
-| Cloud Infrastructure & APIs | $2,000 |
+| Software Subscriptions | $1,480 |
+| Cloud Infrastructure & APIs | $4,340 |
 | Developer Accounts | $124 |
 | Security Review (basic, not full audit) | $5,000 |
 | Compliance (Privacy Policy + ToS) | $1,500 |
 | Testing & QA | $500 |
 | Professional Services | $2,000 |
-| **SUBTOTAL** | **$48,124** |
-| **Contingency (10%)** | **$4,812** |
-| **TOTAL** | **$52,936** |
+| **SUBTOTAL** | **$50,944** |
+| **Contingency (10%)** | **$5,094** |
+| **TOTAL** | **$56,038** |
 
 #### Scenario C: Full Production Ready (Maximum)
 
@@ -391,26 +402,26 @@ This document provides a comprehensive breakdown of all costs required to bring 
 | Legal & Incorporation | $3,900 |
 | Intellectual Property (5 non-provisional) | $115,400 |
 | Hardware & Equipment | $10,939 |
-| Software Subscriptions | $2,040 |
-| Cloud Infrastructure & APIs | $6,480 |
+| Software Subscriptions | $2,520 |
+| Cloud Infrastructure & APIs | $21,480 |
 | Developer Accounts | $124 |
 | Security Audit (full) | $30,000 |
 | Compliance | $7,000 |
 | Testing & QA | $1,498 |
 | Professional Services | $8,200 |
-| **SUBTOTAL** | **$185,521** |
-| **Contingency (10%)** | **$18,552** |
-| **TOTAL** | **$204,073** |
+| **SUBTOTAL** | **$201,001** |
+| **Contingency (10%)** | **$20,100** |
+| **TOTAL** | **$221,101** |
 
 ---
 
 ## Funding Recommendations
 
-### Recommended Pre-Seed Ask: **$50,000 - $75,000**
+### Recommended Pre-Seed Ask: **$60,000 - $90,000**
 
 **Rationale:**
-1. **Covers Scenario B (Comprehensive Pre-Seed):** $52,936
-2. **Provides buffer for unexpected costs:** Additional $17,064 - $22,064
+1. **Covers Scenario B (Comprehensive Pre-Seed):** $56,038
+2. **Provides buffer for unexpected costs:** Additional $3,962 - $33,962
 3. **Allows for 6-12 months of operations** while building MVP
 4. **Demonstrates realistic planning** to investors
 
@@ -425,7 +436,7 @@ This document provides a comprehensive breakdown of all costs required to bring 
    - Basic compliance: $1,000
    - Contingency: $2,500
 2. **Requires existing Mac** (saves $2,000 - $3,500)
-3. **Uses free tiers** for cloud services initially
+3. **Uses free tiers where possible, with explicit resilience/governance reserve as limits are reached**
 4. **Defer security audit** to post-seed
 
 ### Maximum Pre-Seed (If Seeking Full IP Protection): **$150,000**
@@ -435,7 +446,7 @@ This document provides a comprehensive breakdown of all costs required to bring 
    - Full non-provisional patents: $115,400
    - Complete hardware: $10,939
    - Full security audit: $30,000
-   - All other categories: $39,182
+   - All other categories: $44,662
 2. **Establishes strong IP position** before seed round
 3. **Production-ready security** from day one
 4. **Demonstrates serious commitment** to investors
@@ -468,9 +479,9 @@ This document provides a comprehensive breakdown of all costs required to bring 
 |------|--------|----------|
 | Security Audit | $15,000 - $30,000 | Medium (can defer) |
 | Additional Hardware | $178 - $648 | Low |
-| Software Subscriptions | $144 - $2,040 | Low |
-| Cloud Services (if needed) | $0 - $6,480 | Low (free tier initially) |
-| **TOTAL Months 4-6** | **$15,322 - $39,168** | |
+| Software Subscriptions | $624 - $2,520 | Low |
+| Cloud Services (if needed) | $2,340 - $21,480 | Low (reserve-driven) |
+| **TOTAL Months 4-6** | **$18,142 - $54,648** | |
 
 ---
 
@@ -563,6 +574,6 @@ This document provides a comprehensive breakdown of all costs required to bring 
 
 ---
 
-**Last Updated:** January 26, 2026  
+**Last Updated:** February 16, 2026  
 **Next Review:** Before investor presentation  
 **Status:** Ready for Review

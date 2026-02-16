@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -65,6 +66,92 @@ def fail(msg: str) -> None:
     sys.exit(1)
 
 
+def validate_dependency_graph(path: str, row: dict) -> str | None:
+    raw = row.get("dependency_graph", "").strip()
+    if not raw:
+        return "missing dependency_graph payload"
+
+    try:
+        graph = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return f"invalid dependency_graph JSON ({exc})"
+
+    required_keys = {
+        "graph_version",
+        "node_id",
+        "change_class",
+        "change_line",
+        "lane",
+        "order",
+        "depends_on",
+        "spot",
+        "phase_refs",
+        "required_checks",
+        "injections",
+        "notes",
+    }
+    missing_keys = sorted(required_keys - set(graph.keys()))
+    if missing_keys:
+        return f"dependency_graph missing keys: {', '.join(missing_keys)}"
+
+    if graph["graph_version"] != "v1":
+        return f"unsupported dependency_graph version: {graph['graph_version']}"
+
+    expected_node_id = f"file:{path}"
+    if graph["node_id"] != expected_node_id:
+        return f"node_id mismatch: expected {expected_node_id}, found {graph['node_id']}"
+
+    if graph["change_class"] != row.get("disposition"):
+        return "change_class must exactly match disposition"
+
+    if not isinstance(graph["order"], int) or graph["order"] < 0:
+        return "order must be a non-negative integer"
+
+    if not isinstance(graph["depends_on"], list):
+        return "depends_on must be a list"
+    if any(not isinstance(item, str) for item in graph["depends_on"]):
+        return "depends_on entries must be strings"
+
+    if not isinstance(graph["required_checks"], list) or not graph["required_checks"]:
+        return "required_checks must be a non-empty list"
+
+    if not isinstance(graph["phase_refs"], list):
+        return "phase_refs must be a list"
+
+    injections = graph["injections"]
+    if not isinstance(injections, dict):
+        return "injections must be an object"
+    required_injection_keys = {"mode", "roots", "provides", "consumes", "required_validation", "notes"}
+    missing_injection_keys = sorted(required_injection_keys - set(injections.keys()))
+    if missing_injection_keys:
+        return f"injections missing keys: {', '.join(missing_injection_keys)}"
+    if injections["mode"] not in {"provider", "consumer", "none"}:
+        return "injections.mode must be provider|consumer|none"
+    for key in ("roots", "provides", "consumes", "required_validation"):
+        if not isinstance(injections[key], list):
+            return f"injections.{key} must be a list"
+        if any(not isinstance(item, str) for item in injections[key]):
+            return f"injections.{key} entries must be strings"
+
+    is_refactor = row.get("disposition") == "refactor_planned" or "refactor" in (row.get("action") or "")
+    if is_refactor:
+        if graph["order"] <= 0:
+            return "refactor entries must have order > 0"
+        if len(graph["depends_on"]) == 0:
+            return "refactor entries must declare at least one dependency"
+        if graph["change_line"] != "refactor":
+            return "refactor entries must have change_line=refactor"
+        if injections["mode"] == "none":
+            return "refactor entries must declare injections mode provider|consumer"
+    else:
+        if graph["order"] != 0:
+            return "non-refactor entries must have order=0"
+        if graph["change_line"] != "steady":
+            return "non-refactor entries must have change_line=steady"
+
+    return None
+
+
 def main() -> None:
     if not MAPPING_CSV.exists():
         fail(f"Missing mapping CSV: {MAPPING_CSV}")
@@ -94,6 +181,20 @@ def main() -> None:
         fail(
             "Files have non-actionable dispositions (review_required/delete_candidate). "
             "Resolve mapping rules or file placement first.\n"
+            f"Sample:\n{sample}"
+        )
+
+    graph_errors = []
+    for f in tracked:
+        err = validate_dependency_graph(f, mapping_rows[f])
+        if err:
+            graph_errors.append((f, err))
+
+    if graph_errors:
+        sample = "\n".join([f"{f} -> {e}" for f, e in graph_errors[:20]])
+        fail(
+            "Strict dependency graph validation failed for mapping rows. "
+            "Regenerate mapping and resolve malformed/missing per-file dependency graph metadata.\n"
             f"Sample:\n{sample}"
         )
 
