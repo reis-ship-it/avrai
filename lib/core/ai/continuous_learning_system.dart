@@ -8,6 +8,9 @@ import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/interaction_events.dart';
 import 'package:avrai/core/ai/structured_facts_extractor.dart';
 import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
@@ -70,15 +73,20 @@ class ContinuousLearningSystem {
   ContinuousLearningOrchestrator? _orchestrator;
   bool _orchestratorInitialized = false;
   final AgentIdService _agentIdService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
   SupabaseClient? _supabase;
-  
+
   // AI2AI Learning Safeguards (Phase 11 Enhancement)
   // Track last AI2AI learning per peer to enforce 20-minute interval
   // Phase 11.8.6: Use atomic time for quantum formula compatibility
   final Map<String, AtomicTimestamp> _lastAi2AiLearningAtByPeerId = {};
-  
+
   // Optional rate limiter for AI2AI learning (integrated from connection_orchestrator)
   RateLimiter? _rateLimiter;
+  final Map<String, _RecommendationDecisionStats>
+      _recommendationDecisionStatsByEntityType = {};
+  final Map<String, Map<String, DateTime>> _spotLastVisitByAgentAndSpot = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -98,13 +106,36 @@ class ContinuousLearningSystem {
     return AgentIdService();
   }
 
+  static EpisodicMemoryStore? _resolveEpisodicMemoryStore(
+    EpisodicMemoryStore? episodicMemoryStore,
+  ) {
+    if (episodicMemoryStore != null) {
+      return episodicMemoryStore;
+    }
+    try {
+      if (di.sl.isRegistered<EpisodicMemoryStore>()) {
+        return di.sl<EpisodicMemoryStore>();
+      }
+    } catch (e) {
+      developer.log(
+        'EpisodicMemoryStore not available in DI; episodic writes disabled',
+        name: _logName,
+        error: e,
+      );
+    }
+    return null;
+  }
+
   // Constructor
   ContinuousLearningSystem({
     SupabaseClient? supabase,
     AgentIdService? agentIdService,
+    EpisodicMemoryStore? episodicMemoryStore,
     ContinuousLearningOrchestrator? orchestrator,
     RateLimiter? rateLimiter,
   })  : _agentIdService = _resolveAgentIdService(agentIdService),
+        _episodicMemoryStore = _resolveEpisodicMemoryStore(episodicMemoryStore),
+        _outcomeTaxonomy = const OutcomeTaxonomy(),
         _supabase = supabase,
         _orchestrator = orchestrator,
         _rateLimiter = rateLimiter {
@@ -118,7 +149,7 @@ class ContinuousLearningSystem {
             name: _logName);
       }
     }
-    
+
     // Try to get RateLimiter from DI if not provided
     if (_rateLimiter == null) {
       try {
@@ -126,8 +157,7 @@ class ContinuousLearningSystem {
           _rateLimiter = GetIt.instance<RateLimiter>();
         }
       } catch (e) {
-        developer.log(
-            'RateLimiter not available in DI, rate limiting disabled',
+        developer.log('RateLimiter not available in DI, rate limiting disabled',
             name: _logName);
       }
     }
@@ -170,9 +200,24 @@ class ContinuousLearningSystem {
   }) async {
     try {
       final eventType = payload['event_type'] as String? ?? '';
-      final parameters = payload['parameters'] as Map<String, dynamic>? ?? {};
-      final context = payload['context'] as Map<String, dynamic>? ?? {};
-      
+      final parameters = Map<String, dynamic>.from(
+          payload['parameters'] as Map? ?? const <String, dynamic>{});
+      final context = Map<String, dynamic>.from(
+          payload['context'] as Map? ?? const <String, dynamic>{});
+      final recommendationStats =
+          _trackRecommendationDecision(eventType, parameters);
+      if (recommendationStats != null) {
+        parameters['entity_type'] = recommendationStats.entityType;
+        parameters['recommendation_total_count'] = recommendationStats.total;
+        parameters['recommendation_rejected_count'] =
+            recommendationStats.rejected;
+        parameters['recommendation_rejection_rate'] =
+            recommendationStats.rejectionRate;
+        parameters['systematic_bias_detected'] =
+            recommendationStats.total >= 5 &&
+                recommendationStats.rejectionRate >= 0.7;
+      }
+
       // ========================================
       // AI2AI LEARNING SAFEGUARDS (Phase 11 Enhancement)
       // ========================================
@@ -180,7 +225,7 @@ class ContinuousLearningSystem {
       final source = payload['source'] as String?;
       if (source == 'ai2ai') {
         final peerId = payload['peer_id'] as String?;
-        
+
         // SAFEGUARD 1: Check 20-minute interval per peer
         // Phase 11.8.6: Use atomic time for quantum formula compatibility
         if (peerId != null) {
@@ -201,7 +246,8 @@ class ContinuousLearningSystem {
                 }
               } else {
                 // Fallback to DateTime if AtomicClockService not available
-                final timeSinceLastLearning = DateTime.now().difference(last.deviceTime);
+                final timeSinceLastLearning =
+                    DateTime.now().difference(last.deviceTime);
                 if (timeSinceLastLearning < const Duration(minutes: 20)) {
                   developer.log(
                     'AI2AI learning throttled: 20-min interval not met for peer $peerId',
@@ -216,14 +262,15 @@ class ContinuousLearningSystem {
                 name: _logName,
               );
               // Fallback to DateTime check
-              final timeSinceLastLearning = DateTime.now().difference(last.deviceTime);
+              final timeSinceLastLearning =
+                  DateTime.now().difference(last.deviceTime);
               if (timeSinceLastLearning < const Duration(minutes: 20)) {
                 return;
               }
             }
           }
         }
-        
+
         // SAFEGUARD 2: Check learning quality threshold (65% minimum)
         final learningQuality = payload['learning_quality'] as double? ?? 0.0;
         if (learningQuality < 0.65) {
@@ -234,7 +281,7 @@ class ContinuousLearningSystem {
           );
           return; // Skip learning (low quality)
         }
-        
+
         // SAFEGUARD 3: Check rate limit (if rate limiter available)
         if (peerId != null && _rateLimiter != null) {
           final allowed = await _rateLimiter!.checkRateLimit(
@@ -242,7 +289,7 @@ class ContinuousLearningSystem {
             limitType: RateLimitType.message,
             messageType: MessageType.learningInsight,
           );
-          
+
           if (!allowed) {
             developer.log(
               'AI2AI learning rate limited for peer: $peerId',
@@ -252,7 +299,7 @@ class ContinuousLearningSystem {
           }
         }
       }
-      
+
       // Map event to learning dimensions
       final dimensionUpdates = <String, double>{};
 
@@ -295,10 +342,16 @@ class ContinuousLearningSystem {
           break;
 
         case 'spot_visited':
+        case 'visit_spot':
         case 'spot_tap':
           // Visiting a spot indicates recommendation success
           dimensionUpdates['recommendation_accuracy'] = 0.05;
           dimensionUpdates['location_intelligence'] = 0.03;
+          break;
+
+        case 'spot_dismissed':
+        case 'dismiss_spot':
+          dimensionUpdates['recommendation_accuracy'] = -0.04;
           break;
 
         case 'dwell_time':
@@ -320,9 +373,25 @@ class ContinuousLearningSystem {
           break;
 
         case 'event_attended':
+        case 'event_attend':
+        case 'community_join':
           // Attending events indicates community engagement
           dimensionUpdates['community_evolution'] = 0.08;
           dimensionUpdates['social_dynamics'] = 0.05;
+          break;
+
+        case 'recommendation_rejected':
+          // Rejections indicate mismatch between model ranking and user preference.
+          final rejectionRate = recommendationStats?.rejectionRate ?? 0.0;
+          dimensionUpdates['recommendation_accuracy'] =
+              rejectionRate >= 0.6 ? -0.06 : -0.03;
+          if (rejectionRate >= 0.6) {
+            dimensionUpdates['user_preference_understanding'] = 0.04;
+          }
+          break;
+
+        case 'recommendation_accepted':
+          dimensionUpdates['recommendation_accuracy'] = 0.04;
           break;
       }
 
@@ -360,7 +429,7 @@ class ContinuousLearningSystem {
       // For AI2AI learning, only apply updates if delta >= 22%
       if (source == 'ai2ai') {
         dimensionUpdates.removeWhere((key, value) => value.abs() < 0.22);
-        
+
         if (dimensionUpdates.isEmpty) {
           developer.log(
             'AI2AI learning rejected: no dimension deltas >= 22% threshold',
@@ -368,27 +437,38 @@ class ContinuousLearningSystem {
           );
           return; // Skip learning (no significant changes)
         }
-        
+
         developer.log(
           'AI2AI learning passed delta threshold: ${dimensionUpdates.length} dimensions',
           name: _logName,
         );
       }
-      
+
       // Update dimension weights in learning state via orchestrator
+      final adjustedUpdates = <String, double>{};
+      for (final entry in dimensionUpdates.entries) {
+        final learningRate = _learningRates[entry.key] ?? 0.1;
+        adjustedUpdates[entry.key] = entry.value * learningRate;
+      }
       await _ensureOrchestrator();
       if (_orchestrator != null) {
-        // Apply learning rates to dimension updates before passing to orchestrator
-        final adjustedUpdates = <String, double>{};
-        for (final entry in dimensionUpdates.entries) {
-          final learningRate = _learningRates[entry.key] ?? 0.1;
-          adjustedUpdates[entry.key] = entry.value * learningRate;
-        }
         _orchestrator!.processInteractionDimensionUpdates(
           adjustedUpdates,
           LearningData.empty(), // Will be enriched in next cycle
         );
       }
+
+      final sourceType = source ?? 'user';
+      final now = DateTime.now().toUtc();
+      await _recordEpisodicTuple(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
+        adjustedDimensionUpdates: adjustedUpdates,
+        observedAt: now,
+      );
 
       // Phase 11 Enhancement: Real-time ONNX updates from user interactions
       // Only for direct user interactions (not AI2AI - those use separate path)
@@ -398,7 +478,7 @@ class ContinuousLearningSystem {
           context: context,
         ));
       }
-      
+
       // ========================================
       // Record AI2AI learning time (after successful processing)
       // ========================================
@@ -409,7 +489,8 @@ class ContinuousLearningSystem {
           try {
             if (GetIt.instance.isRegistered<AtomicClockService>()) {
               final atomicClock = GetIt.instance<AtomicClockService>();
-              _lastAi2AiLearningAtByPeerId[peerId] = await atomicClock.getAtomicTimestamp();
+              _lastAi2AiLearningAtByPeerId[peerId] =
+                  await atomicClock.getAtomicTimestamp();
             } else {
               // Fallback: create AtomicTimestamp from DateTime.now()
               final now = DateTime.now();
@@ -538,6 +619,54 @@ class ContinuousLearningSystem {
     }
   }
 
+  /// Returns running recommendation rejection metrics keyed by entity type.
+  Map<String, Map<String, dynamic>> getRecommendationRejectionRates() {
+    return {
+      for (final entry in _recommendationDecisionStatsByEntityType.entries)
+        entry.key: <String, dynamic>{
+          'total': entry.value.total,
+          'rejected': entry.value.rejected,
+          'accepted': entry.value.accepted,
+          'rejection_rate': entry.value.rejectionRate,
+        },
+    };
+  }
+
+  _RecommendationDecisionStats? _trackRecommendationDecision(
+    String eventType,
+    Map<String, dynamic> parameters,
+  ) {
+    if (eventType != 'recommendation_shown' &&
+        eventType != 'recommendation_rejected' &&
+        eventType != 'recommendation_accepted') {
+      return null;
+    }
+
+    final entityType =
+        (parameters['entity_type'] ?? parameters['target_type'] ?? 'unknown')
+            .toString()
+            .trim()
+            .toLowerCase();
+    final stats = _recommendationDecisionStatsByEntityType.putIfAbsent(
+      entityType,
+      () => const _RecommendationDecisionStats(),
+    );
+    final updated = switch (eventType) {
+      'recommendation_shown' => stats.copyWith(total: stats.total + 1),
+      'recommendation_rejected' => stats.copyWith(
+          total: stats.total + 1,
+          rejected: stats.rejected + 1,
+        ),
+      'recommendation_accepted' => stats.copyWith(
+          total: stats.total + 1,
+          accepted: stats.accepted + 1,
+        ),
+      _ => stats,
+    };
+    _recommendationDecisionStatsByEntityType[entityType] = updated;
+    return updated.copyWith(entityType: entityType);
+  }
+
   /// Extract structured facts from event and index them (non-blocking)
   /// Phase 11 Section 5: Retrieval + LLM Fusion
   void _extractAndIndexFacts(String userId, InteractionEvent event) {
@@ -574,6 +703,226 @@ class ContinuousLearningSystem {
     }
   }
 
+  Future<void> _recordEpisodicTuple({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required Map<String, double> adjustedDimensionUpdates,
+    required DateTime observedAt,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final agentId = await _agentIdService.getUserAgentId(userId);
+      final resolvedSpotOutcome = _resolveSpotOutcome(
+        agentId: agentId,
+        eventType: eventType,
+        parameters: parameters,
+        source: source,
+        observedAt: observedAt,
+      );
+      final effectiveActionType = resolvedSpotOutcome?.actionType ?? eventType;
+      final effectiveActionPayload = {
+        ...parameters,
+        ...?resolvedSpotOutcome?.payloadAdditions,
+      };
+      final effectiveOutcomeSignal = resolvedSpotOutcome?.outcome ??
+          _outcomeTaxonomy.classify(
+            eventType: eventType,
+            parameters: {
+              ...parameters,
+              'source': source,
+            },
+          );
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: _buildStateSnapshot(
+          userId: userId,
+          source: source,
+          eventType: eventType,
+          context: context,
+          observedAt: observedAt,
+        ),
+        actionType: effectiveActionType.isEmpty
+            ? 'unknown_action'
+            : effectiveActionType,
+        actionPayload: effectiveActionPayload,
+        nextState: _buildNextStateSnapshot(
+          userId: userId,
+          source: source,
+          eventType: eventType,
+          context: context,
+          adjustedDimensionUpdates: adjustedDimensionUpdates,
+          observedAt: observedAt,
+        ),
+        outcome: effectiveOutcomeSignal,
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'has_dimension_updates': adjustedDimensionUpdates.isNotEmpty,
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to write episodic tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  _ResolvedSpotOutcome? _resolveSpotOutcome({
+    required String agentId,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required String source,
+    required DateTime observedAt,
+  }) {
+    final spotIdRaw = parameters['spot_id'];
+    final spotId = spotIdRaw == null ? '' : spotIdRaw.toString();
+
+    if (eventType == 'spot_dismissed' ||
+        eventType == 'dismiss_spot' ||
+        eventType == 'organic_spot_dismissed') {
+      return _ResolvedSpotOutcome(
+        actionType: 'dismiss_spot',
+        payloadAdditions: {
+          'dismiss_from_future_suggestions': true,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'recommendation_rejected',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'dismiss_from_future_suggestions': true,
+          },
+        ),
+      );
+    }
+
+    if (eventType != 'spot_visited' && eventType != 'visit_spot') {
+      return null;
+    }
+
+    if (spotId.isEmpty) {
+      return _ResolvedSpotOutcome(
+        actionType: 'visit_spot',
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'single_visit_only',
+          parameters: {
+            ...parameters,
+            'source': source,
+          },
+        ),
+      );
+    }
+
+    final perAgent = _spotLastVisitByAgentAndSpot.putIfAbsent(
+      agentId,
+      () => <String, DateTime>{},
+    );
+    final previousVisit = perAgent[spotId];
+    perAgent[spotId] = observedAt;
+
+    if (previousVisit == null) {
+      return _ResolvedSpotOutcome(
+        actionType: 'visit_spot',
+        payloadAdditions: {
+          'spot_id': spotId,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'single_visit_only',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'spot_id': spotId,
+            'window_days': 30,
+          },
+        ),
+      );
+    }
+
+    final daysSinceLastVisit = observedAt.difference(previousVisit).inDays;
+    if (daysSinceLastVisit <= 30) {
+      return _ResolvedSpotOutcome(
+        actionType: 'visit_spot',
+        payloadAdditions: {
+          'spot_id': spotId,
+          'days_since_last_visit': daysSinceLastVisit,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'return_visit_within_days',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'spot_id': spotId,
+            'days': daysSinceLastVisit,
+            'window_days': 30,
+          },
+        ),
+      );
+    }
+
+    return _ResolvedSpotOutcome(
+      actionType: 'visit_spot',
+      payloadAdditions: {
+        'spot_id': spotId,
+        'days_since_last_visit': daysSinceLastVisit,
+      },
+      outcome: _outcomeTaxonomy.classify(
+        eventType: 'single_visit_only',
+        parameters: {
+          ...parameters,
+          'source': source,
+          'spot_id': spotId,
+          'days': daysSinceLastVisit,
+          'window_days': 30,
+        },
+      ),
+    );
+  }
+
+  Map<String, dynamic> _buildStateSnapshot({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) {
+    return {
+      'user_id': userId,
+      'source': source,
+      'event_type': eventType,
+      'observed_at': observedAt.toIso8601String(),
+      'context': context,
+    };
+  }
+
+  Map<String, dynamic> _buildNextStateSnapshot({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> context,
+    required Map<String, double> adjustedDimensionUpdates,
+    required DateTime observedAt,
+  }) {
+    return {
+      ..._buildStateSnapshot(
+        userId: userId,
+        source: source,
+        eventType: eventType,
+        context: context,
+        observedAt: observedAt,
+      ),
+      'adjusted_dimension_updates': adjustedDimensionUpdates,
+    };
+  }
+
   /// Convert interaction event to UserAction for PersonalityLearning
   UserAction _convertEventToUserAction(
     String eventType,
@@ -585,8 +934,13 @@ class ContinuousLearningSystem {
 
     switch (eventType) {
       case 'spot_visited':
+      case 'visit_spot':
       case 'spot_tap':
         actionType = UserActionType.spotVisit;
+        break;
+      case 'spot_dismissed':
+      case 'dismiss_spot':
+        actionType = UserActionType.authenticPreference;
         break;
       case 'respect_tap':
         final targetType = parameters['target_type'] as String?;
@@ -600,6 +954,8 @@ class ContinuousLearningSystem {
         actionType = UserActionType.spontaneousActivity;
         break;
       case 'event_attended':
+      case 'event_attend':
+      case 'community_join':
         actionType = UserActionType.socialInteraction;
         break;
       default:
@@ -731,6 +1087,7 @@ class ContinuousLearningSystem {
         }
         break;
       case 'spot_visited':
+      case 'visit_spot':
       case 'spot_tap':
         dimensionUpdates['recommendation_accuracy'] = 0.05;
         dimensionUpdates['location_intelligence'] = 0.03;
@@ -744,6 +1101,8 @@ class ContinuousLearningSystem {
         }
         break;
       case 'event_attended':
+      case 'event_attend':
+      case 'community_join':
         dimensionUpdates['community_evolution'] = 0.08;
         dimensionUpdates['social_dynamics'] = 0.05;
         break;
@@ -766,6 +1125,8 @@ class ContinuousLearningSystem {
         dimensionUpdates['personalization_depth'] = 0.05;
         break;
       case 'organic_spot_dismissed':
+      case 'spot_dismissed':
+      case 'dismiss_spot':
         // User rejected a discovered location suggestion. We learn that
         // this type of unmatched visit pattern isn't meaningful to them.
         // Small negative signal for recommendation accuracy.
@@ -804,7 +1165,7 @@ class ContinuousLearningSystem {
       final personalityLearning = GetIt.instance<PersonalityLearning>();
       final currentProfile =
           await personalityLearning.getCurrentPersonality(currentUser.id);
-      
+
       // ========================================
       // DRIFT PREVENTION SAFEGUARD (Phase 11 Enhancement)
       // ========================================
@@ -814,41 +1175,41 @@ class ContinuousLearningSystem {
         // Maximum drift: 30% from original personality (contextual layer)
         // Core personality should be completely stable
         final maxDrift = 0.30;
-        
+
         // Get original profile for drift checking
         // Note: We check evolution timeline first entry as "original"
         final originalDimensions = currentProfile.evolutionTimeline.isNotEmpty
             ? currentProfile.evolutionTimeline.first.corePersonality
             : currentProfile.dimensions;
-        
+
         // Check each dimension update against drift limit
-        final dimensionUpdates = payload['dimension_updates'] 
-            as Map<String, double>? ?? {};
-        
+        final dimensionUpdates =
+            payload['dimension_updates'] as Map<String, double>? ?? {};
+
         for (final entry in dimensionUpdates.entries) {
           final dimension = entry.key;
           final proposedChange = entry.value;
           final currentValue = currentProfile.dimensions[dimension] ?? 0.5;
           final originalValue = originalDimensions[dimension] ?? currentValue;
           final proposedValue = currentValue + proposedChange;
-          
+
           // Calculate drift from original
           final drift = (proposedValue - originalValue).abs();
-          
+
           if (drift > maxDrift) {
             developer.log(
               'Drift limit exceeded for $dimension: drift ${(drift * 100).toStringAsFixed(1)}% '
               'exceeds max ${(maxDrift * 100).toStringAsFixed(1)}% - clamping to max drift',
               name: _logName,
             );
-            
+
             // Clamp to max drift
-            final clampedValue = originalValue + 
+            final clampedValue = originalValue +
                 (proposedValue > originalValue ? maxDrift : -maxDrift);
             dimensionUpdates[dimension] = clampedValue - currentValue;
           }
         }
-        
+
         // Update payload with clamped values
         if (dimensionUpdates.isNotEmpty) {
           payload = Map<String, dynamic>.from(payload);
@@ -1269,10 +1630,10 @@ class ContinuousLearningSystem {
   }
 
   /// Process AI2AI mesh learning insights
-  /// 
+  ///
   /// Converts AI2AI learning insights into interaction events for processing
   /// through the continuous learning pipeline.
-  /// 
+  ///
   /// Phase 11 Enhancement: AI2AI Mesh Integration
   Future<void> processAI2AILearningInsight({
     required String userId,
@@ -1284,7 +1645,7 @@ class ContinuousLearningSystem {
         'Processing AI2AI mesh learning insight from peer: $peerId',
         name: _logName,
       );
-      
+
       // Convert AI2AI learning insight to interaction event payload
       final payload = {
         'event_type': 'ai2ai_learning_insight',
@@ -1301,13 +1662,13 @@ class ContinuousLearningSystem {
           'learning_quality': insight.learningQuality,
         },
       };
-      
+
       // Process through existing learning pipeline (includes safeguards)
       await processUserInteraction(
         userId: userId,
         payload: payload,
       );
-      
+
       // Also update ONNX biases directly from mesh insights (real-time)
       await _updateOnnxFromMeshInsight(insight);
     } catch (e, stackTrace) {
@@ -1322,7 +1683,7 @@ class ContinuousLearningSystem {
   }
 
   /// Update ONNX biases from AI2AI mesh learning insight (real-time)
-  /// 
+  ///
   /// Phase 11 Enhancement: Real-time ONNX Updates from Mesh
   Future<void> _updateOnnxFromMeshInsight(AI2AILearningInsight insight) async {
     try {
@@ -1341,12 +1702,12 @@ class ContinuousLearningSystem {
           },
         );
       }).toList();
-      
+
       // Update ONNX scorer directly (non-blocking)
       if (GetIt.instance.isRegistered<OnnxDimensionScorer>()) {
         final onnxScorer = GetIt.instance<OnnxDimensionScorer>();
         await onnxScorer.updateWithDeltas(deltas);
-        
+
         developer.log(
           'Updated ONNX biases from mesh insight: ${deltas.length} dimensions',
           name: _logName,
@@ -1362,7 +1723,7 @@ class ContinuousLearningSystem {
   }
 
   /// Update ONNX biases directly from user interaction events
-  /// 
+  ///
   /// Phase 11 Enhancement: Real-time ONNX Updates from Interactions
   Future<void> _updateOnnxBiasesFromInteraction({
     required Map<String, double> dimensionUpdates,
@@ -1376,7 +1737,8 @@ class ContinuousLearningSystem {
         if (GetIt.instance.isRegistered<AtomicClockService>()) {
           final atomicClock = GetIt.instance<AtomicClockService>();
           final atomicTime = await atomicClock.getAtomicTimestamp();
-          timestamp = atomicTime.deviceTime; // Use atomic time for quantum compatibility
+          timestamp = atomicTime
+              .deviceTime; // Use atomic time for quantum compatibility
         } else {
           timestamp = DateTime.now(); // Fallback
         }
@@ -1398,12 +1760,12 @@ class ContinuousLearningSystem {
           },
         );
       }).toList();
-      
+
       // Update ONNX scorer with deltas
       if (GetIt.instance.isRegistered<OnnxDimensionScorer>()) {
         final onnxScorer = GetIt.instance<OnnxDimensionScorer>();
         await onnxScorer.updateWithDeltas(deltas);
-        
+
         developer.log(
           'Updated ONNX biases from ${deltas.length} interaction dimensions',
           name: _logName,
@@ -1419,10 +1781,10 @@ class ContinuousLearningSystem {
   }
 
   /// Process AI2AI chat conversation for continuous learning
-  /// 
+  ///
   /// Converts AI2AI chat analysis results into interaction events for processing
   /// through the continuous learning pipeline.
-  /// 
+  ///
   /// Phase 11 Enhancement: Conversation-Based Learning
   Future<void> processAI2AIChatConversation({
     required String userId,
@@ -1437,22 +1799,22 @@ class ContinuousLearningSystem {
         );
         return;
       }
-      
+
       // Extract dimension insights from conversation analysis
       // Calculate proposed change from direction and magnitude
       final dimensionInsights = <String, double>{};
       for (final rec in chatAnalysis.evolutionRecommendations) {
-        final change = rec.direction == 'increase' 
-            ? rec.magnitude 
-            : -rec.magnitude;
+        final change =
+            rec.direction == 'increase' ? rec.magnitude : -rec.magnitude;
         dimensionInsights[rec.dimension] = change;
       }
-      
+
       if (dimensionInsights.isEmpty) {
-        developer.log('No dimension insights from chat conversation', name: _logName);
+        developer.log('No dimension insights from chat conversation',
+            name: _logName);
         return;
       }
-      
+
       // Convert to interaction event format
       final payload = {
         'event_type': 'ai2ai_chat_conversation',
@@ -1461,15 +1823,20 @@ class ContinuousLearningSystem {
           'chat_type': chatAnalysis.chatEvent.messageType.toString(),
           'analysis_confidence': chatAnalysis.analysisConfidence,
           'shared_insights_count': chatAnalysis.sharedInsights.length,
-          'learning_opportunities_count': chatAnalysis.learningOpportunities.length,
+          'learning_opportunities_count':
+              chatAnalysis.learningOpportunities.length,
         },
         'context': {
           'source': 'ai2ai_chat',
           'conversation_patterns': {
-            'exchange_frequency': chatAnalysis.conversationPatterns.exchangeFrequency,
-            'response_latency': chatAnalysis.conversationPatterns.responseLatency,
-            'conversation_depth': chatAnalysis.conversationPatterns.conversationDepth,
-            'topic_consistency': chatAnalysis.conversationPatterns.topicConsistency,
+            'exchange_frequency':
+                chatAnalysis.conversationPatterns.exchangeFrequency,
+            'response_latency':
+                chatAnalysis.conversationPatterns.responseLatency,
+            'conversation_depth':
+                chatAnalysis.conversationPatterns.conversationDepth,
+            'topic_consistency':
+                chatAnalysis.conversationPatterns.topicConsistency,
           },
           'trust_metrics': {
             'trust_building': chatAnalysis.trustMetrics.trustBuilding,
@@ -1479,13 +1846,13 @@ class ContinuousLearningSystem {
         },
         'dimension_updates': dimensionInsights,
       };
-      
+
       // Process through learning pipeline
       await processUserInteraction(
         userId: userId,
         payload: payload,
       );
-      
+
       developer.log(
         'Processed AI2AI chat conversation: ${dimensionInsights.length} dimensions updated',
         name: _logName,
@@ -1501,7 +1868,7 @@ class ContinuousLearningSystem {
   }
 
   /// Propagate learning insights to AI2AI mesh for collective learning
-  /// 
+  ///
   /// Phase 11 Enhancement: Complete Learning Pipeline
   /// Sends significant dimension updates to mesh for propagation to nearby devices
   Future<void> _propagateLearningToMesh({
@@ -1517,7 +1884,7 @@ class ContinuousLearningSystem {
           significantUpdates[entry.key] = entry.value;
         }
       }
-      
+
       if (significantUpdates.isEmpty) {
         developer.log(
           'No significant dimension updates to propagate to mesh',
@@ -1525,7 +1892,7 @@ class ContinuousLearningSystem {
         );
         return;
       }
-      
+
       // Phase 11.8.6: Use atomic time for quantum formula compatibility
       DateTime timestamp;
       try {
@@ -1550,7 +1917,7 @@ class ContinuousLearningSystem {
         learningQuality: 0.8, // High quality for direct user interactions
         timestamp: timestamp,
       );
-      
+
       // Propagate through mesh (via ConnectionOrchestrator)
       // Note: ConnectionOrchestrator has _sendLearningInsightToPeer() method
       // but it's private. For now, we'll log that propagation is prepared.
@@ -1691,4 +2058,46 @@ class DataSourceStatus {
     required this.eventCount,
     required this.healthStatus,
   });
+}
+
+class _ResolvedSpotOutcome {
+  final String actionType;
+  final Map<String, dynamic>? payloadAdditions;
+  final OutcomeSignal outcome;
+
+  const _ResolvedSpotOutcome({
+    required this.actionType,
+    required this.outcome,
+    this.payloadAdditions,
+  });
+}
+
+class _RecommendationDecisionStats {
+  final String entityType;
+  final int total;
+  final int rejected;
+  final int accepted;
+
+  const _RecommendationDecisionStats({
+    this.entityType = 'unknown',
+    this.total = 0,
+    this.rejected = 0,
+    this.accepted = 0,
+  });
+
+  double get rejectionRate => total == 0 ? 0.0 : rejected / total;
+
+  _RecommendationDecisionStats copyWith({
+    String? entityType,
+    int? total,
+    int? rejected,
+    int? accepted,
+  }) {
+    return _RecommendationDecisionStats(
+      entityType: entityType ?? this.entityType,
+      total: total ?? this.total,
+      rejected: rejected ?? this.rejected,
+      accepted: accepted ?? this.accepted,
+    );
+  }
 }

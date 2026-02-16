@@ -2,11 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/controllers/list_creation_controller.dart';
 import 'package:avrai/domain/repositories/lists_repository.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 
 import 'list_creation_controller_test.mocks.dart';
@@ -20,16 +22,20 @@ void main() {
     late ListCreationController controller;
     late MockListsRepository mockListsRepository;
     late MockAtomicClockService mockAtomicClock;
+    late EpisodicMemoryStore episodicMemoryStore;
     late UnifiedUser testUser;
     final DateTime now = DateTime.now();
 
     setUp(() {
       mockListsRepository = MockListsRepository();
       mockAtomicClock = MockAtomicClockService();
+      episodicMemoryStore = EpisodicMemoryStore();
 
       controller = ListCreationController(
         listsRepository: mockListsRepository,
         atomicClock: mockAtomicClock,
+        episodicMemoryStore: episodicMemoryStore,
+        agentIdService: _TestAgentIdService(),
       );
 
       testUser = UnifiedUser(
@@ -204,7 +210,8 @@ void main() {
         ))).called(1);
       });
 
-      test('should return failure when user does not have permission', () async {
+      test('should return failure when user does not have permission',
+          () async {
         // Arrange
         when(mockListsRepository.canUserCreateList(testUser.id))
             .thenAnswer((_) async => false);
@@ -296,6 +303,55 @@ void main() {
               list.updatedAt == atomicTimestamp.serverTime),
         ))).called(1);
       });
+
+      test('records episodic tuple with list composition features', () async {
+        final atomicTimestamp = AtomicTimestamp.now(
+          precision: TimePrecision.millisecond,
+          serverTime: DateTime(2026, 2, 16, 15, 0, 0),
+        );
+        final createdList = SpotList(
+          id: 'list_episodic',
+          title: 'Jazz Night Ideas',
+          description: 'Late night list',
+          category: 'Nightlife',
+          isPublic: true,
+          spots: const [],
+          spotIds: const ['spot-a', 'spot-b'],
+          curatorId: testUser.id,
+          tags: const ['jazz', 'late-night'],
+          createdAt: atomicTimestamp.serverTime,
+          updatedAt: atomicTimestamp.serverTime,
+        );
+
+        when(mockAtomicClock.getAtomicTimestamp())
+            .thenAnswer((_) async => atomicTimestamp);
+        when(mockListsRepository.canUserCreateList(testUser.id))
+            .thenAnswer((_) async => true);
+        when(mockListsRepository.createList(any))
+            .thenAnswer((_) async => createdList);
+
+        final result = await controller.createList(
+          data: ListFormData(
+            title: 'Jazz Night Ideas',
+            description: 'Late night list',
+            category: 'Nightlife',
+            tags: const ['jazz', 'late-night'],
+            curator: testUser,
+          ),
+          curator: testUser,
+          initialSpotIds: const ['spot-a', 'spot-b'],
+        );
+
+        expect(result.success, isTrue);
+        final tuples = await episodicMemoryStore.replay(agentId: 'agent_test');
+        expect(tuples, hasLength(1));
+        expect(tuples.first.actionType, 'create_list');
+        expect(tuples.first.outcome.category.name, 'binary');
+        expect(
+          tuples.first.actionPayload['list_composition_features']['item_count'],
+          2,
+        );
+      });
     });
 
     group('execute (WorkflowController interface)', () {
@@ -376,7 +432,8 @@ void main() {
         verify(mockListsRepository.deleteList('list_123')).called(1);
       });
 
-      test('should not throw when rollback is called with failure result', () async {
+      test('should not throw when rollback is called with failure result',
+          () async {
         // Arrange
         final result = ListCreationResult.failure(
           error: 'Failed',
@@ -392,3 +449,7 @@ void main() {
   });
 }
 
+class _TestAgentIdService extends AgentIdService {
+  @override
+  Future<String> getUserAgentId(String userId) async => 'agent_test';
+}

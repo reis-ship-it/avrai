@@ -6,6 +6,8 @@ import 'package:avrai/data/repositories/lists_repository_impl.dart';
 import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
 import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:avrai/core/models/misc/list.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
 
 import 'lists_repository_impl_test.mocks.dart';
 
@@ -16,16 +18,20 @@ void main() {
     late MockListsLocalDataSource mockLocalDataSource;
     late MockListsRemoteDataSource mockRemoteDataSource;
     late MockConnectivity mockConnectivity;
+    late EpisodicMemoryStore episodicMemoryStore;
 
     setUp(() {
       mockLocalDataSource = MockListsLocalDataSource();
       mockRemoteDataSource = MockListsRemoteDataSource();
       mockConnectivity = MockConnectivity();
-      
+      episodicMemoryStore = EpisodicMemoryStore();
+
       repository = ListsRepositoryImpl(
         localDataSource: mockLocalDataSource,
         remoteDataSource: mockRemoteDataSource,
         connectivity: mockConnectivity,
+        episodicMemoryStore: episodicMemoryStore,
+        agentIdService: _TestAgentIdService(),
       );
     });
 
@@ -53,11 +59,11 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         // Offline-first repositories always perform the local read first.
-        when(mockLocalDataSource.getLists()).thenAnswer((_) async => <SpotList>[]);
-        when(mockRemoteDataSource.getLists())
-            .thenAnswer((_) async => lists);
-        when(mockLocalDataSource.saveList(any))
-            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
+        when(mockLocalDataSource.getLists())
+            .thenAnswer((_) async => <SpotList>[]);
+        when(mockRemoteDataSource.getLists()).thenAnswer((_) async => lists);
+        when(mockLocalDataSource.saveList(any)).thenAnswer(
+            (inv) async => inv.positionalArguments.first as SpotList);
 
         final result = await repository.getLists();
 
@@ -81,8 +87,7 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
-        when(mockLocalDataSource.getLists())
-            .thenAnswer((_) async => lists);
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => lists);
 
         final result = await repository.getLists();
 
@@ -93,7 +98,8 @@ void main() {
     });
 
     group('createList', () {
-      test('should create list locally and sync to remote when online', () async {
+      test('should create list locally and sync to remote when online',
+          () async {
         final list = SpotList(
           id: 'new-list',
           title: 'New List',
@@ -105,8 +111,7 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockLocalDataSource.saveList(list))
-            .thenAnswer((_) async => list);
+        when(mockLocalDataSource.saveList(list)).thenAnswer((_) async => list);
         when(mockRemoteDataSource.createList(list))
             .thenAnswer((_) async => list);
 
@@ -129,8 +134,7 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
-        when(mockLocalDataSource.saveList(list))
-            .thenAnswer((_) async => list);
+        when(mockLocalDataSource.saveList(list)).thenAnswer((_) async => list);
 
         final result = await repository.createList(list);
 
@@ -153,10 +157,10 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => [list]);
         when(mockRemoteDataSource.updateList(list))
             .thenAnswer((_) async => list);
-        when(mockLocalDataSource.saveList(list))
-            .thenAnswer((_) async => list);
+        when(mockLocalDataSource.saveList(list)).thenAnswer((_) async => list);
 
         final result = await repository.updateList(list);
 
@@ -176,15 +180,58 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => [list]);
         when(mockRemoteDataSource.updateList(list))
             .thenThrow(Exception('Network error'));
-        when(mockLocalDataSource.saveList(list))
-            .thenAnswer((_) async => list);
+        when(mockLocalDataSource.saveList(list)).thenAnswer((_) async => list);
 
         final result = await repository.updateList(list);
 
         expect(result, isNotNull);
         verify(mockLocalDataSource.saveList(list)).called(1);
+      });
+
+      test('records list modification tuple with add/remove deltas', () async {
+        final before = SpotList(
+          id: 'list-1',
+          title: 'List',
+          description: 'Before',
+          spots: const [],
+          spotIds: const ['spot-1', 'spot-2'],
+          curatorId: 'user-123',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+          updatedAt: DateTime.now().subtract(const Duration(hours: 1)),
+        );
+        final after = before.copyWith(
+          description: 'After',
+          spotIds: const ['spot-2', 'spot-3'],
+          updatedAt: DateTime.utc(2026, 2, 16, 16, 0, 0),
+        );
+
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.wifi]);
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => [before]);
+        when(mockLocalDataSource.saveList(after))
+            .thenAnswer((_) async => after);
+        when(mockRemoteDataSource.updateList(after))
+            .thenAnswer((_) async => after);
+
+        final result = await repository.updateList(after);
+        expect(result.id, 'list-1');
+
+        final tuples = await episodicMemoryStore.replay(agentId: 'agent_repo');
+        expect(tuples, hasLength(1));
+        expect(tuples.first.actionType, 'modify_list');
+        expect(
+          tuples.first.actionPayload['item_added_or_removed_features']
+              ['added_spot_ids'],
+          ['spot-3'],
+        );
+        expect(
+          tuples.first.actionPayload['item_added_or_removed_features']
+              ['removed_spot_ids'],
+          ['spot-1'],
+        );
       });
     });
 
@@ -194,10 +241,8 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
-        when(mockRemoteDataSource.deleteList(listId))
-            .thenAnswer((_) async {});
-        when(mockLocalDataSource.deleteList(listId))
-            .thenAnswer((_) async {});
+        when(mockRemoteDataSource.deleteList(listId)).thenAnswer((_) async {});
+        when(mockLocalDataSource.deleteList(listId)).thenAnswer((_) async {});
 
         await repository.deleteList(listId);
 
@@ -210,8 +255,7 @@ void main() {
 
         when(mockRemoteDataSource.deleteList(listId))
             .thenThrow(Exception('Network error'));
-        when(mockLocalDataSource.deleteList(listId))
-            .thenAnswer((_) async {});
+        when(mockLocalDataSource.deleteList(listId)).thenAnswer((_) async {});
 
         await repository.deleteList(listId);
 
@@ -236,11 +280,12 @@ void main() {
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
         // Offline-first repositories always perform the local read first.
-        when(mockLocalDataSource.getLists()).thenAnswer((_) async => <SpotList>[]);
+        when(mockLocalDataSource.getLists())
+            .thenAnswer((_) async => <SpotList>[]);
         when(mockRemoteDataSource.getPublicLists(limit: 50))
             .thenAnswer((_) async => publicLists);
-        when(mockLocalDataSource.saveList(any))
-            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
+        when(mockLocalDataSource.saveList(any)).thenAnswer(
+            (inv) async => inv.positionalArguments.first as SpotList);
 
         final result = await repository.getPublicLists();
 
@@ -272,8 +317,7 @@ void main() {
 
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
-        when(mockLocalDataSource.getLists())
-            .thenAnswer((_) async => allLists);
+        when(mockLocalDataSource.getLists()).thenAnswer((_) async => allLists);
 
         final result = await repository.getPublicLists();
 
@@ -286,8 +330,8 @@ void main() {
       test('should create starter lists for user', () async {
         const userId = 'user-123';
 
-        when(mockLocalDataSource.saveList(any))
-            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
+        when(mockLocalDataSource.saveList(any)).thenAnswer(
+            (inv) async => inv.positionalArguments.first as SpotList);
 
         await repository.createStarterListsForUser(userId: userId);
 
@@ -302,8 +346,8 @@ void main() {
           'interests': ['coffee', 'parks'],
         };
 
-        when(mockLocalDataSource.saveList(any))
-            .thenAnswer((inv) async => inv.positionalArguments.first as SpotList);
+        when(mockLocalDataSource.saveList(any)).thenAnswer(
+            (inv) async => inv.positionalArguments.first as SpotList);
 
         await repository.createPersonalizedListsForUser(
           userId: userId,
@@ -316,3 +360,7 @@ void main() {
   });
 }
 
+class _TestAgentIdService extends AgentIdService {
+  @override
+  Future<String> getUserAgentId(String userId) async => 'agent_repo';
+}

@@ -1,5 +1,9 @@
 import 'dart:developer' as developer;
 import 'package:avrai/core/models/misc/list.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/data/datasources/local/lists_local_datasource.dart';
 import 'package:avrai/data/datasources/remote/lists_remote_datasource.dart';
 import 'package:avrai/domain/repositories/lists_repository.dart';
@@ -12,12 +16,19 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
     implements ListsRepository {
   final ListsLocalDataSource? localDataSource;
   final ListsRemoteDataSource? remoteDataSource;
+  final AgentIdService? _agentIdService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   ListsRepositoryImpl({
     super.connectivity,
     this.localDataSource,
     this.remoteDataSource,
-  });
+    AgentIdService? agentIdService,
+    EpisodicMemoryStore? episodicMemoryStore,
+  })  : _agentIdService = agentIdService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = const OutcomeTaxonomy();
 
   @override
   Future<List<SpotList>> getLists() async {
@@ -51,7 +62,8 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
 
   @override
   Future<SpotList> updateList(SpotList list) async {
-    return executeOfflineFirst<SpotList>(
+    final before = await _findLocalListById(list.id);
+    final updatedList = await executeOfflineFirst<SpotList>(
       localOperation: () async => await localDataSource?.saveList(list) ?? list,
       remoteOperation: remoteDataSource != null
           ? () async => await remoteDataSource!.updateList(list)
@@ -60,6 +72,11 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
         await localDataSource?.saveList(remoteList);
       },
     );
+    await _recordListModificationEpisode(
+      before: before,
+      after: updatedList,
+    );
+    return updatedList;
   }
 
   @override
@@ -202,5 +219,105 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
         }
       },
     );
+  }
+
+  Future<SpotList?> _findLocalListById(String listId) async {
+    final dataSource = localDataSource;
+    if (dataSource == null || listId.isEmpty) return null;
+    try {
+      final lists = await dataSource.getLists();
+      for (final list in lists) {
+        if (list.id == listId) return list;
+      }
+    } catch (e) {
+      developer.log(
+        'Error loading list snapshot before update: $e',
+        name: 'ListsRepository',
+      );
+    }
+    return null;
+  }
+
+  Future<void> _recordListModificationEpisode({
+    required SpotList? before,
+    required SpotList after,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    final curatorId = after.curatorId ?? before?.curatorId;
+    if (curatorId == null || curatorId.isEmpty) return;
+
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService == null
+          ? curatorId
+          : await agentIdService.getUserAgentId(curatorId);
+
+      final beforeSpotIds = before?.spotIds ?? const <String>[];
+      final afterSpotIds = after.spotIds;
+
+      final beforeSet = beforeSpotIds.toSet();
+      final afterSet = afterSpotIds.toSet();
+      final addedSpotIds = afterSet.difference(beforeSet).toList()..sort();
+      final removedSpotIds = beforeSet.difference(afterSet).toList()..sort();
+
+      final changeKind = addedSpotIds.isNotEmpty && removedSpotIds.isNotEmpty
+          ? 'mixed'
+          : addedSpotIds.isNotEmpty
+              ? 'add'
+              : removedSpotIds.isNotEmpty
+                  ? 'remove'
+                  : 'metadata';
+
+      final actionPayload = {
+        'list_id': after.id,
+        'change_kind': changeKind,
+        'item_added_or_removed_features': {
+          'added_spot_ids': addedSpotIds,
+          'removed_spot_ids': removedSpotIds,
+          'before_count': beforeSpotIds.length,
+          'after_count': afterSpotIds.length,
+          'delta_count': afterSpotIds.length - beforeSpotIds.length,
+        },
+      };
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'list_id': before?.id ?? after.id,
+          'spot_ids': beforeSpotIds,
+          'spot_count': beforeSpotIds.length,
+          'tags': before?.tags ?? const <String>[],
+        },
+        actionType: 'modify_list',
+        actionPayload: actionPayload,
+        nextState: {
+          'list_id': after.id,
+          'spot_ids': afterSpotIds,
+          'spot_count': afterSpotIds.length,
+          'tags': after.tags,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'modify_list',
+          parameters: {
+            'change_kind': changeKind,
+            'delta_count': afterSpotIds.length - beforeSpotIds.length,
+          },
+        ),
+        recordedAt: after.updatedAt.toUtc(),
+        metadata: const {
+          'pipeline': 'lists_repository_impl',
+          'phase_ref': '1.2.9',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Error recording list modification episodic tuple: $e',
+        name: 'ListsRepository',
+      );
+    }
   }
 }

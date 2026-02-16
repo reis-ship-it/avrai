@@ -94,6 +94,7 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/network/enhanced_connectivity_service.dart';
 // Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
@@ -138,6 +139,7 @@ import 'package:avrai/core/services/fraud/dispute_resolution_service.dart';
 import 'package:avrai/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:avrai/core/controllers/sync_controller.dart';
 import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/data/database/app_database.dart';
 
 // Phase 19: Multi-Entity Quantum Entanglement Matching System
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
@@ -274,10 +276,8 @@ Future<void> init() async {
 
   // Data Sources - Local (Offline-First)
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthDriftDataSource());
-  sl.registerLazySingleton<SpotsLocalDataSource>(
-      () => SpotsDriftDataSource());
-  sl.registerLazySingleton<ListsLocalDataSource>(
-      () => ListsDriftDataSource());
+  sl.registerLazySingleton<SpotsLocalDataSource>(() => SpotsDriftDataSource());
+  sl.registerLazySingleton<ListsLocalDataSource>(() => ListsDriftDataSource());
 
   // Data Sources - Remote (Optional, for online features)
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -1191,6 +1191,13 @@ Future<void> init() async {
             ));
         logger.debug('✅ [DI] FactsIndex registered');
 
+        // Register EpisodicMemoryStore (Phase 1.1.1, M2-P1-1)
+        sl.registerLazySingleton(() => EpisodicMemoryStore(
+              database:
+                  sl.isRegistered<AppDatabase>() ? sl<AppDatabase>() : null,
+            ));
+        logger.debug('✅ [DI] EpisodicMemoryStore registered');
+
         // Register Calling Score Data Collector (Phase 12 Section 1: Foundation & Data Collection)
         // Note: Register BehaviorAssessmentService first (if not already registered)
         if (!sl.isRegistered<BehaviorAssessmentService>()) {
@@ -1229,8 +1236,10 @@ Future<void> init() async {
         sl.registerLazySingleton(() => OnlineLearningService(
               supabase: supabaseClient,
               dataCollector: sl<CallingScoreDataCollector>(),
+              trainingDataPreparer: sl<CallingScoreTrainingDataPreparer>(),
               versionManager: sl<ModelVersionManager>(),
               retrainingService: sl<ModelRetrainingService>(),
+              agentIdService: sl<AgentIdService>(),
             ));
         logger.debug('✅ [DI] OnlineLearningService registered');
 
@@ -1242,6 +1251,9 @@ Future<void> init() async {
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
               neuralModel: sl<CallingScoreNeuralModel>(),
+              episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+                  ? sl<EpisodicMemoryStore>()
+                  : null,
             ));
         logger.debug('✅ [DI] CallingScoreTrainingDataPreparer registered');
 

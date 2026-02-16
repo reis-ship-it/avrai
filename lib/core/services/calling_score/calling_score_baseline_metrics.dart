@@ -4,12 +4,13 @@
 
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:avrai/core/services/calling_score/baseline_metrics_service.dart';
 
 /// Calling Score Baseline Metrics
-/// 
+///
 /// Measures current formula-based calling score performance and establishes
 /// baseline metrics for comparison with neural network models.
-/// 
+///
 /// Phase 12 Section 1.2: Baseline Metrics
 /// - Calculates accuracy of current formula-based system
 /// - Measures outcome prediction accuracy
@@ -17,20 +18,27 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// - Sets success criteria for neural network improvements
 class CallingScoreBaselineMetrics {
   static const String _logName = 'CallingScoreBaselineMetrics';
-  
+
   final SupabaseClient _supabase;
-  
+  final BaselineMetricsService _baselineMetricsService;
+
   // Success criteria (from plan)
-  static const double targetCallingScoreImprovement = 0.15; // 15% improvement (10-20% range)
-  static const double targetOutcomePredictionImprovement = 0.20; // 20% improvement (15-25% range)
-  static const int minimumDataRequirement = 10000; // 10,000 interactions minimum
-  
+  static const double targetCallingScoreImprovement =
+      0.15; // 15% improvement (10-20% range)
+  static const double targetOutcomePredictionImprovement =
+      0.20; // 20% improvement (15-25% range)
+  static const int minimumDataRequirement =
+      10000; // 10,000 interactions minimum
+
   CallingScoreBaselineMetrics({
     required SupabaseClient supabase,
-  }) : _supabase = supabase;
-  
+    BaselineMetricsService? baselineMetricsService,
+  })  : _supabase = supabase,
+        _baselineMetricsService =
+            baselineMetricsService ?? const BaselineMetricsService();
+
   /// Calculate baseline metrics for current formula-based system
-  /// 
+  ///
   /// Returns baseline metrics including:
   /// - Calling score accuracy (how well formula predicts outcomes)
   /// - Outcome prediction accuracy (how well formula predicts positive outcomes)
@@ -39,16 +47,18 @@ class CallingScoreBaselineMetrics {
   /// - Precision, recall, F1 score
   Future<BaselineMetrics> calculateBaselineMetrics() async {
     try {
-      developer.log('Calculating baseline metrics for formula-based calling score system', name: _logName);
-      
+      developer.log(
+          'Calculating baseline metrics for formula-based calling score system',
+          name: _logName);
+
       // Get all training data with outcomes
       final trainingData = await _supabase
           .from('calling_score_training_data')
           .select('*')
           .not('outcome_type', 'is', null);
-      
+
       final records = List<Map<String, dynamic>>.from(trainingData);
-      
+
       if (records.isEmpty) {
         developer.log(
           'No training data with outcomes found. Need ${minimumDataRequirement - records.length} more interactions.',
@@ -56,92 +66,51 @@ class CallingScoreBaselineMetrics {
         );
         return BaselineMetrics.empty();
       }
-      
-      // Calculate metrics
-      int truePositives = 0; // Called (score >= 0.70) and positive outcome
-      int trueNegatives = 0; // Not called (score < 0.70) and negative/neutral outcome
-      int falsePositives = 0; // Called but negative outcome
-      int falseNegatives = 0; // Not called but positive outcome
-      
-      double totalScoreError = 0.0; // Sum of absolute differences between score and outcome
-      int scoreErrorCount = 0;
-      
+
+      final evaluationRecords = <BaselineEvaluationRecord>[];
       for (final record in records) {
-        final formulaScore = (record['formula_calling_score'] as num).toDouble();
+        final formulaScore =
+            (record['formula_calling_score'] as num).toDouble();
         final isCalled = record['formula_is_called'] as bool;
         final outcomeType = record['outcome_type'] as String?;
         final outcomeScore = record['outcome_score'] as num?;
-        
+
         if (outcomeType == null || outcomeScore == null) continue;
-        
+
         final isPositiveOutcome = outcomeType == 'positive';
-        final outcomeScoreValue = outcomeScore.toDouble();
-        
-        // Calculate score error (how far off was the formula score from actual outcome)
-        final scoreError = (formulaScore - outcomeScoreValue).abs();
-        totalScoreError += scoreError;
-        scoreErrorCount++;
-        
-        // Classify prediction vs outcome
-        if (isCalled && isPositiveOutcome) {
-          truePositives++;
-        } else if (!isCalled && !isPositiveOutcome) {
-          trueNegatives++;
-        } else if (isCalled && !isPositiveOutcome) {
-          falsePositives++;
-        } else if (!isCalled && isPositiveOutcome) {
-          falseNegatives++;
-        }
+        evaluationRecords.add(BaselineEvaluationRecord(
+          predictedPositive: isCalled,
+          actualPositive: isPositiveOutcome,
+          predictedScore: formulaScore,
+          actualScore: outcomeScore.toDouble(),
+        ));
       }
-      
-      // Calculate accuracy metrics
-      final total = records.length;
-      final accuracy = total > 0 ? (truePositives + trueNegatives) / total : 0.0;
-      final meanScoreError = scoreErrorCount > 0 ? totalScoreError / scoreErrorCount : 0.0;
-      
-      // Calculate precision (of all called, how many were positive)
-      final precision = (truePositives + falsePositives) > 0
-          ? truePositives / (truePositives + falsePositives)
-          : 0.0;
-      
-      // Calculate recall (of all positive outcomes, how many were called)
-      final recall = (truePositives + falseNegatives) > 0
-          ? truePositives / (truePositives + falseNegatives)
-          : 0.0;
-      
-      // Calculate F1 score (harmonic mean of precision and recall)
-      final f1Score = (precision + recall) > 0
-          ? 2 * (precision * recall) / (precision + recall)
-          : 0.0;
-      
-      // Calculate outcome prediction accuracy
-      // How well does the formula score predict the actual outcome score?
-      final outcomePredictionAccuracy = 1.0 - meanScoreError.clamp(0.0, 1.0);
-      
+      final metricsResult = _baselineMetricsService.evaluate(evaluationRecords);
+
       final metrics = BaselineMetrics(
-        totalRecords: total,
-        truePositives: truePositives,
-        trueNegatives: trueNegatives,
-        falsePositives: falsePositives,
-        falseNegatives: falseNegatives,
-        accuracy: accuracy,
-        precision: precision,
-        recall: recall,
-        f1Score: f1Score,
-        meanScoreError: meanScoreError,
-        outcomePredictionAccuracy: outcomePredictionAccuracy,
+        totalRecords: metricsResult.totalRecords,
+        truePositives: metricsResult.truePositives,
+        trueNegatives: metricsResult.trueNegatives,
+        falsePositives: metricsResult.falsePositives,
+        falseNegatives: metricsResult.falseNegatives,
+        accuracy: metricsResult.accuracy,
+        precision: metricsResult.precision,
+        recall: metricsResult.recall,
+        f1Score: metricsResult.f1Score,
+        meanScoreError: metricsResult.meanScoreError,
+        outcomePredictionAccuracy: metricsResult.outcomePredictionAccuracy,
         calculatedAt: DateTime.now(),
       );
-      
+
       developer.log(
-        '✅ Baseline metrics calculated: accuracy=${(accuracy * 100).toStringAsFixed(1)}%, '
-        'precision=${(precision * 100).toStringAsFixed(1)}%, '
-        'recall=${(recall * 100).toStringAsFixed(1)}%, '
-        'F1=${(f1Score * 100).toStringAsFixed(1)}%, '
-        'outcome_prediction=${(outcomePredictionAccuracy * 100).toStringAsFixed(1)}%',
+        '✅ Baseline metrics calculated: accuracy=${(metrics.accuracy * 100).toStringAsFixed(1)}%, '
+        'precision=${(metrics.precision * 100).toStringAsFixed(1)}%, '
+        'recall=${(metrics.recall * 100).toStringAsFixed(1)}%, '
+        'F1=${(metrics.f1Score * 100).toStringAsFixed(1)}%, '
+        'outcome_prediction=${(metrics.outcomePredictionAccuracy * 100).toStringAsFixed(1)}%',
         name: _logName,
       );
-      
+
       return metrics;
     } catch (e, stackTrace) {
       developer.log(
@@ -153,9 +122,9 @@ class CallingScoreBaselineMetrics {
       return BaselineMetrics.empty();
     }
   }
-  
+
   /// Check if we have enough data to train neural network models
-  /// 
+  ///
   /// Returns true if we have at least minimumDataRequirement (10,000) interactions
   Future<bool> hasEnoughData() async {
     try {
@@ -166,9 +135,9 @@ class CallingScoreBaselineMetrics {
       return false;
     }
   }
-  
+
   /// Get data sufficiency status
-  /// 
+  ///
   /// Returns information about current data collection status
   Future<DataSufficiencyStatus> getDataSufficiencyStatus() async {
     try {
@@ -176,10 +145,11 @@ class CallingScoreBaselineMetrics {
       final totalRecords = stats['total_records'] as int;
       final recordsWithOutcomes = stats['records_with_outcomes'] as int;
       final coverageRate = stats['coverage_rate'] as double;
-      
+
       final hasEnough = totalRecords >= minimumDataRequirement;
-      final hasEnoughWithOutcomes = recordsWithOutcomes >= (minimumDataRequirement * 0.5); // At least 50% with outcomes
-      
+      final hasEnoughWithOutcomes = recordsWithOutcomes >=
+          (minimumDataRequirement * 0.5); // At least 50% with outcomes
+
       return DataSufficiencyStatus(
         totalRecords: totalRecords,
         recordsWithOutcomes: recordsWithOutcomes,
@@ -187,29 +157,39 @@ class CallingScoreBaselineMetrics {
         minimumRequired: minimumDataRequirement,
         hasEnoughData: hasEnough,
         hasEnoughWithOutcomes: hasEnoughWithOutcomes,
-        recordsNeeded: (minimumDataRequirement - totalRecords).clamp(0, minimumDataRequirement),
-        outcomesNeeded: ((minimumDataRequirement * 0.5).round() - recordsWithOutcomes).clamp(0, minimumDataRequirement),
+        recordsNeeded: (minimumDataRequirement - totalRecords)
+            .clamp(0, minimumDataRequirement),
+        outcomesNeeded:
+            ((minimumDataRequirement * 0.5).round() - recordsWithOutcomes)
+                .clamp(0, minimumDataRequirement),
       );
     } catch (e) {
-      developer.log('Error getting data sufficiency status: $e', name: _logName);
+      developer.log('Error getting data sufficiency status: $e',
+          name: _logName);
       return DataSufficiencyStatus.empty();
     }
   }
-  
+
   /// Get success criteria for neural network improvements
-  /// 
+  ///
   /// Returns target improvements based on baseline metrics
   Future<SuccessCriteria> getSuccessCriteria(BaselineMetrics baseline) async {
     return SuccessCriteria(
-      targetCallingScoreAccuracy: (baseline.accuracy + targetCallingScoreImprovement).clamp(0.0, 1.0),
-      targetOutcomePredictionAccuracy: (baseline.outcomePredictionAccuracy + targetOutcomePredictionImprovement).clamp(0.0, 1.0),
-      targetPrecision: (baseline.precision + targetCallingScoreImprovement).clamp(0.0, 1.0),
-      targetRecall: (baseline.recall + targetCallingScoreImprovement).clamp(0.0, 1.0),
-      targetF1Score: (baseline.f1Score + targetCallingScoreImprovement).clamp(0.0, 1.0),
+      targetCallingScoreAccuracy:
+          (baseline.accuracy + targetCallingScoreImprovement).clamp(0.0, 1.0),
+      targetOutcomePredictionAccuracy: (baseline.outcomePredictionAccuracy +
+              targetOutcomePredictionImprovement)
+          .clamp(0.0, 1.0),
+      targetPrecision:
+          (baseline.precision + targetCallingScoreImprovement).clamp(0.0, 1.0),
+      targetRecall:
+          (baseline.recall + targetCallingScoreImprovement).clamp(0.0, 1.0),
+      targetF1Score:
+          (baseline.f1Score + targetCallingScoreImprovement).clamp(0.0, 1.0),
       baselineMetrics: baseline,
     );
   }
-  
+
   /// Get training data stats (internal helper)
   Future<Map<String, dynamic>> _getTrainingDataStats() async {
     try {
@@ -217,18 +197,18 @@ class CallingScoreBaselineMetrics {
       final allRecords = await _supabase
           .from('calling_score_training_data')
           .select('id, outcome_type');
-      
+
       final records = List<Map<String, dynamic>>.from(allRecords);
       final totalRecords = records.length;
-      
+
       // Count records with outcomes
-      final recordsWithOutcomesList = records
-          .where((r) => r['outcome_type'] != null)
-          .toList();
+      final recordsWithOutcomesList =
+          records.where((r) => r['outcome_type'] != null).toList();
       final recordsWithOutcomes = recordsWithOutcomesList.length;
-      
-      final coverageRate = totalRecords > 0 ? recordsWithOutcomes / totalRecords : 0.0;
-      
+
+      final coverageRate =
+          totalRecords > 0 ? recordsWithOutcomes / totalRecords : 0.0;
+
       return {
         'total_records': totalRecords,
         'records_with_outcomes': recordsWithOutcomes,
@@ -246,7 +226,7 @@ class CallingScoreBaselineMetrics {
 }
 
 /// Baseline Metrics
-/// 
+///
 /// Performance metrics for the current formula-based calling score system
 class BaselineMetrics {
   final int totalRecords;
@@ -255,13 +235,15 @@ class BaselineMetrics {
   final int falsePositives;
   final int falseNegatives;
   final double accuracy; // Overall accuracy (TP + TN) / Total
-  final double precision; // TP / (TP + FP) - Of all called, how many were positive
+  final double
+      precision; // TP / (TP + FP) - Of all called, how many were positive
   final double recall; // TP / (TP + FN) - Of all positive, how many were called
   final double f1Score; // Harmonic mean of precision and recall
-  final double meanScoreError; // Average absolute difference between score and outcome
+  final double
+      meanScoreError; // Average absolute difference between score and outcome
   final double outcomePredictionAccuracy; // 1.0 - meanScoreError (clamped)
   final DateTime calculatedAt;
-  
+
   BaselineMetrics({
     required this.totalRecords,
     required this.truePositives,
@@ -276,7 +258,7 @@ class BaselineMetrics {
     required this.outcomePredictionAccuracy,
     required this.calculatedAt,
   });
-  
+
   factory BaselineMetrics.empty() {
     return BaselineMetrics(
       totalRecords: 0,
@@ -293,7 +275,7 @@ class BaselineMetrics {
       calculatedAt: DateTime.now(),
     );
   }
-  
+
   /// Convert to JSON for storage/display
   Map<String, dynamic> toJson() {
     return {
@@ -314,7 +296,7 @@ class BaselineMetrics {
 }
 
 /// Success Criteria
-/// 
+///
 /// Target metrics for neural network improvements
 class SuccessCriteria {
   final double targetCallingScoreAccuracy;
@@ -323,7 +305,7 @@ class SuccessCriteria {
   final double targetRecall;
   final double targetF1Score;
   final BaselineMetrics baselineMetrics;
-  
+
   SuccessCriteria({
     required this.targetCallingScoreAccuracy,
     required this.targetOutcomePredictionAccuracy,
@@ -332,16 +314,17 @@ class SuccessCriteria {
     required this.targetF1Score,
     required this.baselineMetrics,
   });
-  
+
   /// Check if neural network model meets success criteria
   bool meetsCriteria(BaselineMetrics modelMetrics) {
     return modelMetrics.accuracy >= targetCallingScoreAccuracy &&
-           modelMetrics.outcomePredictionAccuracy >= targetOutcomePredictionAccuracy &&
-           modelMetrics.precision >= targetPrecision &&
-           modelMetrics.recall >= targetRecall &&
-           modelMetrics.f1Score >= targetF1Score;
+        modelMetrics.outcomePredictionAccuracy >=
+            targetOutcomePredictionAccuracy &&
+        modelMetrics.precision >= targetPrecision &&
+        modelMetrics.recall >= targetRecall &&
+        modelMetrics.f1Score >= targetF1Score;
   }
-  
+
   /// Convert to JSON for storage/display
   Map<String, dynamic> toJson() {
     return {
@@ -356,7 +339,7 @@ class SuccessCriteria {
 }
 
 /// Data Sufficiency Status
-/// 
+///
 /// Information about whether we have enough data to train neural network models
 class DataSufficiencyStatus {
   final int totalRecords;
@@ -367,7 +350,7 @@ class DataSufficiencyStatus {
   final bool hasEnoughWithOutcomes;
   final int recordsNeeded;
   final int outcomesNeeded;
-  
+
   DataSufficiencyStatus({
     required this.totalRecords,
     required this.recordsWithOutcomes,
@@ -378,7 +361,7 @@ class DataSufficiencyStatus {
     required this.recordsNeeded,
     required this.outcomesNeeded,
   });
-  
+
   factory DataSufficiencyStatus.empty() {
     return DataSufficiencyStatus(
       totalRecords: 0,
@@ -391,12 +374,12 @@ class DataSufficiencyStatus {
       outcomesNeeded: CallingScoreBaselineMetrics.minimumDataRequirement ~/ 2,
     );
   }
-  
+
   /// Get progress percentage (0.0 to 1.0)
   double get progressPercentage {
     return (totalRecords / minimumRequired).clamp(0.0, 1.0);
   }
-  
+
   /// Convert to JSON for storage/display
   Map<String, dynamic> toJson() {
     return {

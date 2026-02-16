@@ -34,6 +34,7 @@ import 'package:avrai/core/ai/unified_evolution_orchestrator.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai/core/ai/event_queue.dart';
 import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/structured_facts_extractor.dart';
 import 'package:avrai/core/p2p/node_manager.dart';
 import 'package:avrai/core/services/infrastructure/config_service.dart';
@@ -365,7 +366,12 @@ Future<void> registerAIServices(GetIt sl) async {
   // Action History Service
   sl.registerLazySingleton(() {
     final storageService = sl<StorageService>();
-    return ActionHistoryService(storage: storageService.defaultStorage);
+    return ActionHistoryService(
+      storage: storageService.defaultStorage,
+      episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+          ? sl<EpisodicMemoryStore>()
+          : null,
+    );
   });
 
   // Contextual Personality Service
@@ -398,6 +404,9 @@ Future<void> registerAIServices(GetIt sl) async {
     );
     return ContinuousLearningSystem(
       agentIdService: agentIdService,
+      episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+          ? sl<EpisodicMemoryStore>()
+          : null,
       orchestrator: orchestrator,
     );
   });

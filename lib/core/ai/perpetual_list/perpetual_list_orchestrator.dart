@@ -1,5 +1,10 @@
 import 'dart:developer' as developer;
 
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
+
 import 'models/models.dart';
 import 'engines/trigger_engine.dart';
 import 'engines/context_engine.dart';
@@ -46,6 +51,9 @@ class PerpetualListOrchestrator {
 
   // Integration
   final AI2AIListLearningIntegration _ai2aiIntegration;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final AgentIdService? _agentIdService;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   // State tracking
   final Map<String, List<SuggestedList>> _recentSuggestions = {};
@@ -59,13 +67,18 @@ class PerpetualListOrchestrator {
     required StringTheoryPossibilityEngine possibilityEngine,
     required AgeAwareListFilter ageFilter,
     required AI2AIListLearningIntegration ai2aiIntegration,
+    EpisodicMemoryStore? episodicMemoryStore,
+    AgentIdService? agentIdService,
   })  : _triggerEngine = triggerEngine,
         _contextEngine = contextEngine,
         _generationEngine = generationEngine,
         _locationAnalyzer = locationAnalyzer,
         _possibilityEngine = possibilityEngine,
         _ageFilter = ageFilter,
-        _ai2aiIntegration = ai2aiIntegration;
+        _ai2aiIntegration = ai2aiIntegration,
+        _episodicMemoryStore = episodicMemoryStore,
+        _agentIdService = agentIdService,
+        _outcomeTaxonomy = const OutcomeTaxonomy();
 
   /// Generate lists if appropriate based on current context
   ///
@@ -229,6 +242,12 @@ class PerpetualListOrchestrator {
       userAge: userAge,
       interaction: interaction,
     );
+
+    await _recordListInteractionEpisode(
+      userId: userId,
+      userAge: userAge,
+      interaction: interaction,
+    );
   }
 
   /// Get recent suggestions for a user
@@ -255,7 +274,8 @@ class PerpetualListOrchestrator {
   }) async {
     // Get recent engagement metrics
     final recentSuggestions = _recentSuggestions[userId] ?? [];
-    final recentInteractions = <ListInteraction>[]; // Would be populated from storage
+    final recentInteractions =
+        <ListInteraction>[]; // Would be populated from storage
 
     final engagement = ListHistory(
       recentSuggestions: recentSuggestions,
@@ -268,11 +288,13 @@ class PerpetualListOrchestrator {
       userAge: 18, // Minimum age assumption
     );
 
-    final insightSummaries = insights.map((i) => AI2AIInsightSummary(
-      quality: i.learningQuality,
-      type: i.type.name,
-      receivedAt: i.timestamp,
-    )).toList();
+    final insightSummaries = insights
+        .map((i) => AI2AIInsightSummary(
+              quality: i.learningQuality,
+              type: i.type.name,
+              receivedAt: i.timestamp,
+            ))
+        .toList();
 
     // Calculate time since last generation
     Duration? timeSinceLastGeneration;
@@ -314,5 +336,83 @@ class PerpetualListOrchestrator {
     _lastGenerationTime.remove(userId);
     _triggerEngine.clearUserState(userId);
     _ai2aiIntegration.clearPossibilities(userId);
+  }
+
+  Future<void> _recordListInteractionEpisode({
+    required String userId,
+    required int userAge,
+    required ListInteraction interaction,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final agentResolution = await _resolveAgentId(userId);
+      final agentId = agentResolution.agentId;
+      final interactionPayload = interaction.toJson();
+      final outcomeSignal = _outcomeTaxonomy.classify(
+        eventType: 'list_${interaction.type.name}',
+        parameters: {
+          ...interactionPayload,
+          'is_positive': interaction.isPositive,
+          'is_negative': interaction.isNegative,
+        },
+      );
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'user_id': userId,
+          'agent_id': agentId,
+          'user_age': userAge,
+          'list_id': interaction.listId,
+          'interaction_type': interaction.type.name,
+        },
+        actionType: 'list_${interaction.type.name}',
+        actionPayload: interactionPayload,
+        nextState: {
+          'user_id': userId,
+          'agent_id': agentId,
+          'user_age': userAge,
+          'list_id': interaction.listId,
+          'interaction_type': interaction.type.name,
+          'is_positive': interaction.isPositive,
+          'is_negative': interaction.isNegative,
+          'involved_place_count': interaction.involvedPlaces.length,
+        },
+        outcome: outcomeSignal,
+        recordedAt: interaction.timestamp.toUtc(),
+        metadata: {
+          'pipeline': 'perpetual_list_orchestrator',
+          'phase_ref': '1.2.7',
+          'agent_id_source': agentResolution.source,
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to persist list interaction episodic tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Future<({String agentId, String source})> _resolveAgentId(
+      String userId) async {
+    final agentIdService = _agentIdService;
+    if (agentIdService == null) {
+      return (agentId: userId, source: 'user_id_fallback');
+    }
+
+    try {
+      final agentId = await agentIdService.getUserAgentId(userId);
+      return (agentId: agentId, source: 'agent_id_service');
+    } catch (e) {
+      developer.log(
+        'AgentIdService failed for user $userId, falling back to userId: $e',
+        name: _logName,
+      );
+      return (agentId: userId, source: 'user_id_fallback');
+    }
   }
 }

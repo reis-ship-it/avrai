@@ -26,6 +26,11 @@ jobs:
           dart --version
           dart run tool/update_execution_board.dart --check
 
+      - name: Validate deferred rename governance
+        run: |
+          python3 scripts/validate_rename_candidates.py
+          python3 scripts/suggest_rename_candidates_inventory.py --fail-on-untracked
+
       - name: Validate architecture placement mapping and spot registry
         run: |
           python3 scripts/generate_master_plan_file_mapping.py

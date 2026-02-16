@@ -620,6 +620,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         listName: widget.list.title,
         listDescription: widget.list.description,
         spotCount: widget.list.spotIds.length,
+        isPublic: widget.list.isPublic,
+        tags: widget.list.tags,
         platforms: [platform],
       );
 

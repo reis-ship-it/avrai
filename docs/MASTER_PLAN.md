@@ -1857,6 +1857,12 @@ Mandatory enforcement rules:
 5. Phase progression cannot skip failed gates from prerequisite waves.
 6. Board sync/validation must pass before merge:
 `dart run tool/update_execution_board.dart --check`
+7. Deferred rename governance must pass before merge:
+`python3 scripts/validate_rename_candidates.py` and `python3 scripts/suggest_rename_candidates_inventory.py --fail-on-untracked` (all `status=ready` entries in `docs/architecture/RENAME_CANDIDATES.md` must include a valid target milestone `Mx-Py-z`, and no untracked `*Service`/`*Orchestrator` names may remain).
+8. End-of-phase rename closeout is mandatory before setting any phase to `Done`:
+run `python3 scripts/suggest_rename_candidates_inventory.py`, update `docs/architecture/RENAME_CANDIDATES.md` with new candidates/categories/phase targets, execute approved renames, then re-run `python3 scripts/validate_rename_candidates.py`.
+Preferred one-command flow:
+`scripts/run_phase_rename_closeout.sh P#`
 
 Authoring workflow:
 1. Edit `docs/EXECUTION_BOARD.csv`.

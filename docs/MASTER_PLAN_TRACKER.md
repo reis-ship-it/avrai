@@ -20,8 +20,13 @@
 - **Do not use this file as a real-time execution status dashboard.**
 - **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv`
 - **Weekly deltas and gates:** `docs/STATUS_WEEKLY.md`
+- **Deferred rename planning register:** `docs/architecture/RENAME_CANDIDATES.md`
 - **Program-level companion tracker:** `docs/agents/status/status_tracker.md`
 - **Execution plan/spec:** `docs/MASTER_PLAN.md`
+- **Rename governance guard:** `python3 scripts/validate_rename_candidates.py` + `python3 scripts/suggest_rename_candidates_inventory.py --fail-on-untracked` (enforces category + phase target + architecture anchor + ready milestone validity + phase-close completion + zero untracked service/orchestrator names)
+- **Rename inventory helper:** `python3 scripts/suggest_rename_candidates_inventory.py` (finds untracked `*Service` / `*Orchestrator` names for fast logging)
+- **Rename closeout command:** `scripts/run_phase_rename_closeout.sh P#` (autofill + validate in one step per phase)
+- **End-of-phase rename mandate:** before any phase is marked `Done`, run inventory, update register, execute approved renames, and pass `python3 scripts/validate_rename_candidates.py`
 
 ---
 
@@ -31,6 +36,7 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| **Rename Candidates Register (deferred naming governance)** | 2026-02-16 | 🟢 Active | HIGH | Continuous; enforce categorized, architecture-anchored, phase-close rename governance via checker | [`architecture/RENAME_CANDIDATES.md`](./architecture/RENAME_CANDIDATES.md) |
 | **Services Marketplace Implementation** | 2026-01-06 | 🟢 Active | P1 Revenue | 6-8 weeks | [`plans/services_marketplace/SERVICES_MARKETPLACE_IMPLEMENTATION_PLAN.md`](./plans/services_marketplace/SERVICES_MARKETPLACE_IMPLEMENTATION_PLAN.md) |
 | **Comprehensive Patent Integration Plan** | 2026-01-03 | 🟢 Active | **CRITICAL** | ~18 days (parallel execution) | [`plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md`](./plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md) |
 | ↳ Patent Integration Quick Start | 2026-01-03 | 📋 Reference | - | Day 1 checklist | [`plans/patent_integration/PATENT_INTEGRATION_QUICK_START.md`](./plans/patent_integration/PATENT_INTEGRATION_QUICK_START.md) |
