@@ -1,12 +1,12 @@
 # Experiment Registry
 
 Generated file. Do not edit manually.
-Generated Source Digest: `727c87a3e21641b9`
+Generated Source Digest: `93e8bc09ec8e02ed`
 
 ## Purpose
 Canonical registry for experiment scripts, deterministic naming, and future architecture placement.
 
-Total tracked experiments/scripts: **88**
+Total tracked experiments/scripts: **89**
 
 ## experiments/ecommerce
 
@@ -24,6 +24,7 @@ Total tracked experiments/scripts: **88**
 
 | Experiment ID | Legacy Path | Canonical Name | Owner Model | Stage Contract | Status |
 |---|---|---|---|---|---|
+| scripts_ml_auto_recover_learning_cycles | `scripts/ml/auto_recover_learning_cycles.py` | `exp_auto_recover_learning_cycles_v1.py` | `none` | `sim-standard-v1` | planned |
 | scripts_ml_build_training_dataset | `scripts/ml/build_training_dataset.py` | `exp_build_training_dataset_v1.py` | `none` | `sim-standard-v1` | planned |
 | scripts_ml_collect_quantum_optimization_data | `scripts/ml/collect_quantum_optimization_data.py` | `exp_collect_quantum_optimization_data_v1.py` | `mdl-quantum-optimization-v1` | `sim-standard-v1` | planned |
 | scripts_ml_dataset_base | `scripts/ml/dataset_base.py` | `exp_dataset_base_v1.py` | `none` | `sim-standard-v1` | planned |
@@ -191,6 +192,7 @@ Total tracked experiments/scripts: **88**
 - `scripts/ecommerce_experiments/test_data_quality.py`
 - `scripts/ecommerce_experiments/test_endpoint_functionality.py`
 - `scripts/ecommerce_experiments/test_performance.py`
+- `scripts/ml/auto_recover_learning_cycles.py`
 - `scripts/ml/build_training_dataset.py`
 - `scripts/ml/collect_quantum_optimization_data.py`
 - `scripts/ml/dataset_base.py`

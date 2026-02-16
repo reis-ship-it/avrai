@@ -73,11 +73,45 @@ This boundary is mandatory for all self-improvement work: **hardcode the guardra
 | Experiment mechanics | A/B assignment method, canary percentages, statistical confidence rules | Treatment-specific ranking strategies | 7.7.4, 7.7A.2-7.7A.4 |
 | Data integrity | Event schemas, deduplication, anti-spam/fraud rules, missing-data defaults | Feature importance and representation learning from valid events | 1.1, 1.2, 3.1 |
 | Drift & health | Drift detection thresholds, freshness SLOs, alert policies | Retraining cadence and adaptation parameters triggered by drift | 1.1C, 7.7A.7 |
+| Federated cognition + self-healing | Failure signatures, healing state machine, safe-mode fallbacks, retry budgets, circuit breakers, and channel-level kill switches | Recovery-policy prioritization, break-pattern prediction, and adaptive remediation sequencing | 7.3.4, 7.7, 8.1, 8.8, 10.9.9-10.9.12 |
 | Resource budgets | CPU/memory/battery/latency caps per device tier, offline fallbacks | Compute-aware model/ranker selection under budget | 3.6, 7.5 |
 | Explainability & audit | Immutable change logs, signed manifests, rollback provenance | Explanatory ranking features and calibration | 7.7.1, 7.7A.5, 7.7A.6 |
 | World-model planning | Non-negotiable hard constraints for MPC (safety/diversity/quiet hours) | Energy function + transition dynamics + policy planning | 4.1, 5.1, 6.1, 6.2 |
 
 **Implementation rule:** Any component that can change production behavior autonomously must declare: (1) immutable constraints, (2) learnable parameters, (3) promotion gates, (4) rollback path.
+
+### Universal Self-Healing Contract (All Reality/Universe Models)
+
+Every subsystem must be self-healable and treat break events as training signals.
+This applies to all implemented systems now and all future systems added later. No subsystem is exempt.
+
+Scope coverage (non-exhaustive, always-expanding):
+- perception/sensing, ingestion, memory, reasoning, planning, action execution
+- AI2AI/federated learning, locality advisory, orchestration, rollout/lifecycle, schema/versioning
+- storage/sync, security/privacy/compliance, networking/transport, device-tier adaptations
+- UI/agent interaction pathways, experimentation pipelines, recovery tooling, and governance/CI controls
+
+For any new subsystem introduced in the future:
+- it must register break classes, safe-mode behavior, and recovery actions before production enablement
+- it inherits this contract automatically and must emit compatible healing telemetry
+
+- **Eyes (perception):** sensor/feature freshness failures, missing inputs, and modality drift must trigger perception-safe fallback + drift event logging.
+- **Ears (ingest/listen):** trigger loss, duplicate events, or federated update corruption must trigger dedupe/replay + channel quarantine.
+- **Mouth (actions/output):** invalid recommendations, policy-unsafe actions, or rollout regressions must trigger immediate rollback/circuit break + bounded retry.
+- **Brain (reasoning/learning/knowledge/convictions):** planner contradiction, model instability, memory inconsistency, or belief divergence across federated peers must trigger recovery state transitions (`open -> scheduled -> recovering -> resolved`) and provenance logging.
+- **Hands (execution/orchestration):** failed workflow steps must auto-schedule remediation jobs, not leave dead states.
+
+Required behavior for any break, regardless of domain:
+1. Detect deterministically and classify break type/severity.
+2. Fail closed to a safe mode with bounded blast radius.
+3. Capture canonical incident context: `what`, `where`, `when`, `who/which entity`, `how`, `why` (best-known cause).
+4. Auto-schedule a recovery action and track it through healing states (`open -> scheduled -> recovering -> resolved`).
+5. Run automated verification of the fix path before re-entry to autonomous mode.
+6. Record break + healing as learning metrics (frequency, time-to-detect, time-to-heal, recurrence risk, impact radius).
+7. Feed root-cause and recovery outcome back into memory/reliability stores as reusable failure signatures.
+8. Update prevention policy (guardrails, retries, thresholds, or routing) to reduce repeat probability.
+9. Re-test adjacent systems for correlated failure modes.
+10. Keep the loop perpetual: each break must improve future detection, diagnosis, and self-repair quality.
 
 ### LeCun World Model Framework Mapping
 
@@ -1694,6 +1728,7 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.9 | **Causal observability baseline.** Every adaptive decision logs model version, feature flags, trigger source, confidence, and rollback provenance with trace IDs. Add mandatory dashboards for drift, failed-heal cycles, rollback outcomes, and unexplained outcome drops | Phase 7.3.4, 8.8 |
 | 10.9.10 | **Adversarial hardening for learning channels.** Add poisoning/outlier detection, signed federated/advisory updates, participant reputation weighting, and emergency kill switches to disable specific learning pathways without shutting down the whole agent | Phase 2.5, 8.1, 8.9 |
 | 10.9.11 | **Autonomous change control policy.** Any self-updating component must declare immutable policy space, promotion gates, rollback path, and human override controls. Autonomous updates are staged (shadow → canary → partial → full) by policy, not per-feature discretion | Hardcoded Invariants section, 7.7A |
+| 10.9.12 | **Universal break-to-learning healing loop.** Any subsystem break (perception, ingest, reasoning, memory, planner, federated sync, advisory, rollout, communication) must auto-create a healing cycle entry, auto-schedule remediation, and feed break telemetry back into learning quality metrics (time-to-detect, time-to-heal, recurrence, impact radius). | 1.1E.8, 7.3.4, 7.4, 7.7, 8.1, 8.8 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -1712,8 +1747,9 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.9 | Observability + AI Platform | 7.3.4, 8.8 | 5-7 days | Adaptive decision log schema includes trace ID, trigger, model version, flags, confidence, rollback provenance; required dashboards live (drift, failed-heal cycles, rollback outcomes, unexplained drop detector) |
 | 10.9.10 | Security Engineering + Federated Learning | 2.5, 8.1, 8.9 | 1-2 weeks | Signed update attestation path implemented; poisoning/outlier detection enforced at aggregation and advisory ingest; reputation-weighted participation active; scoped kill-switches can disable individual learning channels |
 | 10.9.11 | Architecture Council + Release Governance | Hardcoded Invariants section, 7.7A | 3-5 days | Autonomous change-control policy codified in docs + CI checks; every self-updating component declares immutable policy space, promotion gates, rollback path, human override; staged rollout lifecycle enforced by tooling |
+| 10.9.12 | AI Platform + Reliability + Federated Ops | 1.1E.8, 7.3.4, 7.4, 7.7, 8.1, 8.8 | 1-2 weeks | Universal healing queue exists for all break classes; automatic remediation scheduling works across entities; recovery SLOs tracked (`TTD`, `TTH`, recurrence); healed incidents are fed back into learning metrics and model governance reviews |
 
-> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.11 in parallel where dependencies allow.
+> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.12 in parallel where dependencies allow.
 
 #### 10.9B Milestone Rollout Plan (Expanded Across Existing Phases)
 
@@ -1722,7 +1758,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | Milestone | Scope | Phase Anchors | Est. Window | Exit / Go-NoGo Criteria |
 |-----------|-------|---------------|-------------|--------------------------|
 | M1: Adaptive Foundation Gate | Implement hard gate prerequisites and unblock safe autonomy rollout | 10.9.1-10.9.4, 7.1, 7.7, 10.2.12, 10.2.13 | Week 1-2 | `ProductionReadinessGate` enforced in CI; trigger reliability baseline live; rollback bundle path proven in staging drill; no critical placeholder methods in adaptive critical path |
-| M2: Observability + Signal Integrity | Ensure adaptation decisions are measurable and evidence quality is sufficient | 10.9.3, 10.9.9, 7.3.4, 7.7A, 8.8 | Week 2-3 | Required dashboards live; dual-signal rollback gating active; confidence thresholds enforced; unexplained-outcome-drop detector alerting |
+| M2: Observability + Signal Integrity | Ensure adaptation decisions are measurable and evidence quality is sufficient | 10.9.3, 10.9.9, 10.9.12, 7.3.4, 7.7A, 8.8 | Week 2-3 | Required dashboards live; dual-signal rollback gating active; confidence thresholds enforced; unexplained-outcome-drop detector alerting; universal break-to-heal metrics active |
 | M3: Federated + Advisory Safety | Harden cross-device and cross-locality propagation paths | 10.9.5, 10.9.6, 8.1, 8.9 | Week 3-5 | Cohort-wise no-regression checks passing; advisory quarantine enabled; credibility scoring + anomaly disable path operational; canary/shadow promotion policy enforced |
 | M4: Tier + Compatibility + Security Closure | Close resilience gaps across device tiers, schemas, and adversarial vectors | 10.9.7, 10.9.8, 10.9.10, 2.5, 7.5, 7.7.1 | Week 5-7 | Compatibility matrix blocks bad deploys; tier parity checks active; poisoning/outlier detection + signed update attestation enabled; scoped kill switches validated |
 | M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
@@ -1740,6 +1776,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | 8.1 Federated World Model Learning | Add cohort-gated promotion, bounded update magnitude, canary + shadow federated promotion flow | 10.9.5 |
 | 8.8 Network Monitoring | Add failed-heal cycle monitoring, unexplained drift alarms, and cohort-level convergence/regression views | 10.9.3, 10.9.9 |
 | 8.9 Locality Happiness Advisory | Add advisory quarantine, advisor credibility decay, anomaly-based advisory source disable, advisory rollback independence | 10.9.6 |
+| 1.1E Lightweight Deterministic Memory Core | Add cross-subsystem failure-signature indexing and replayable healing provenance for all break classes | 10.9.12 |
 | 10.2 Stub/TODO Cleanup | Enforce adaptive critical-path placeholder elimination as release blocker | 10.9.1 |
 
 #### 10.9D Program-Level Checkpoints (Portfolio View)

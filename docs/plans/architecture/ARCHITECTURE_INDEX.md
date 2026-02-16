@@ -34,6 +34,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 ## Core Architecture Guardrails
 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
+- **Universal self-healing contract (all subsystems):** [`docs/MASTER_PLAN.md` section `Universal Self-Healing Contract` + task `10.9.12`](../../MASTER_PLAN.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
 - **Canonical experiment registry (build-enforced):** [`docs/EXPERIMENT_REGISTRY.md`](../../EXPERIMENT_REGISTRY.md)
 - **Experiment registry source CSV:** [`configs/experiments/EXPERIMENT_REGISTRY.csv`](../../../configs/experiments/EXPERIMENT_REGISTRY.csv)

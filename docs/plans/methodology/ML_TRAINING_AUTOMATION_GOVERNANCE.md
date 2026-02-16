@@ -7,12 +7,17 @@ Define one uniform workflow for all entity models (business, community, spot/pla
 - failed simulations auto-create improvement follow-up work,
 - generated checklist docs stay synchronized for humans and AI agents.
 
+Master authority alignment:
+- `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` and task `10.9.12` define mandatory break-to-learning behavior for any subsystem failure (not limited to ML).
+- This governance doc implements the ML/training/simulation slice of that universal contract.
+
 ## Canonical Sources
 - `configs/ml/model_training_registry.csv`
 - `configs/ml/feature_label_contracts.json`
 - `configs/ml/avrai_native_type_contracts.json`
 - `configs/ml/simulation_experiment_contracts.json`
 - `configs/ml/simulation_experiment_runs.csv`
+- `configs/ml/learning_cycle_recovery_queue.csv`
 
 ## Generated Artifacts
 - `docs/ML_MODEL_TRAINING_CHECKLIST.md`
@@ -30,6 +35,8 @@ Use this table as the canonical end-to-end wiring contract.
 | Build AVRAI-native dataset snapshot | Raw/curated input snapshot file | `python3 scripts/ml/build_training_dataset.py ...` | `data/training/<model_id>/<snapshot_id>/avrai_native_dataset.jsonl`, `manifest.json` | Required by governance policy for training snapshot PRs |
 | Record simulation stage result | `configs/ml/simulation_experiment_runs.csv` | `python3 scripts/ml/record_simulation_run.py ...` | Updated simulation registry + regenerated logs | `ML Training Governance Guard / ml-training-governance` |
 | Record training completion | `configs/ml/model_training_registry.csv` | `python3 scripts/ml/record_training_run.py ...` | Updated model registry + regenerated checklist/log | `ML Training Governance Guard / ml-training-governance` |
+| Detect broken cycles + sync recovery queue | `configs/ml/learning_cycle_recovery_queue.csv` | `python3 scripts/ml/auto_recover_learning_cycles.py` | Open/resolve recovery items across all models/entities | `ML Training Governance Guard / ml-training-governance` |
+| Auto-schedule fixes for broken cycles | `configs/ml/learning_cycle_recovery_queue.csv` + `configs/ml/simulation_experiment_runs.csv` | `python3 scripts/ml/auto_recover_learning_cycles.py --apply-fixes` | Schedules pending recovery runs + marks registry `recovering` | operational runbook |
 | Regenerate/check canonical docs | ML registry/contract files | `python3 scripts/generate_ml_training_checklist.py` and `--check` | `docs/ML_MODEL_TRAINING_CHECKLIST.md`, `docs/ML_SIMULATION_EXPERIMENT_LOG.md` | `ML Training Governance Guard / ml-training-governance` |
 
 ## Operator Runbook (Single Follow Path)
@@ -107,6 +114,36 @@ Every model uses `sim-standard-v1` staged simulation policy:
 Each stage has explicit metrics, threshold direction, and gate values in:
 - `configs/ml/simulation_experiment_contracts.json`
 
+## Universal Break + Auto-Fix Logic
+Learning cycles are expected to be interruptible (for any entity, model, or purpose) without manual workflow breakage.
+
+Break detection is universal across all models in `configs/ml/model_training_registry.csv`:
+- latest stage failure (`stage_fail`)
+- registry degraded state (`needs_improvement`, `failed`, `broken`)
+- active model missing required stage evidence (`missing_stage`)
+
+Break telemetry expectations (must be inferable from run records + recovery queue):
+- `what_broke`: stage, metric, threshold, and status transition
+- `where_broke`: model id, entity type, stage lane
+- `when_broke`: deterministic timestamp/run lineage
+- `how_broke`: failure mode (`stage_fail`, `missing_stage`, degraded state)
+- `why_broke`: notes + metric deltas + contract threshold mismatch
+
+Recovery operations:
+- detect/sync queue: `python3 scripts/ml/auto_recover_learning_cycles.py`
+- schedule fixes automatically: `python3 scripts/ml/auto_recover_learning_cycles.py --apply-fixes`
+
+Automatic hooks (default behavior):
+- `scripts/ml/record_simulation_run.py` runs auto-recovery with `--apply-fixes` after each simulation update.
+- `scripts/ml/record_training_run.py` runs auto-recovery sync after each training update.
+- Use `--skip-auto-recovery` only for controlled/manual maintenance.
+
+Auto-fix scheduling behavior:
+- creates/updates deterministic recovery rows in `configs/ml/learning_cycle_recovery_queue.csv`
+- appends pending simulation runs for affected stages in `configs/ml/simulation_experiment_runs.csv`
+- marks affected model status as `recovering` in `configs/ml/model_training_registry.csv`
+- auto-resolves queue rows when break conditions clear
+
 ## Auto-Recorded Operations
 Record a completed training run:
 
@@ -142,8 +179,10 @@ If `--status fail`, the recorder will:
 Recommended end-to-end sequence:
 1. Build AVRAI-native dataset with `scripts/ml/build_training_dataset.py`.
 2. Record simulation stage(s) with `scripts/ml/record_simulation_run.py`.
-3. Record training completion with `scripts/ml/record_training_run.py`.
-4. Regenerate/check docs with `scripts/generate_ml_training_checklist.py --check`.
+3. Detect/sync recovery queue with `scripts/ml/auto_recover_learning_cycles.py`.
+4. If broken cycles exist, schedule fixes with `scripts/ml/auto_recover_learning_cycles.py --apply-fixes`.
+5. Record training completion with `scripts/ml/record_training_run.py`.
+6. Regenerate/check docs with `scripts/generate_ml_training_checklist.py --check`.
 
 ## Writing Pattern Standard
 All stage decisions must use this exact line format for consistency:

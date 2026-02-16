@@ -40,6 +40,10 @@ CI enforcement:
 - `.github/workflows/ml-training-governance-guard.yml`
 - `scripts/generate_ml_training_checklist.py --check`
 
+Universal self-healing authority:
+- `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` and task `10.9.12`.
+- PRs that modify adaptive/federated/reasoning/training/simulation behavior must preserve break-to-learning coverage (`what`, `where`, `when`, `how`, `why`) and auto-remediation traceability.
+
 ## Workflow
 
 1. Create/update execution-board milestone row with `M#-P#-#` ID and PRD IDs.
@@ -59,3 +63,4 @@ CI enforcement:
 3. Every model training run must be appended to `configs/ml/model_training_registry.csv` and surfaced through `docs/ML_MODEL_TRAINING_CHECKLIST.md`.
 4. Every simulation run must be appended to `configs/ml/simulation_experiment_runs.csv` and surfaced through `docs/ML_SIMULATION_EXPERIMENT_LOG.md`.
 5. Training datasets for all entities must be converted to AVRAI-native type envelopes via `scripts/ml/build_training_dataset.py`, using `configs/ml/avrai_native_type_contracts.json` and `configs/ml/feature_label_contracts.json` as authority.
+6. Break/reopen remediation milestones must remain traceable through execution-board metadata and weekly status logs; if a completed milestone is reopened by new research, use `change_type=reopen` + `reopens_milestone=<done milestone>` and link the healing/remediation evidence path.
