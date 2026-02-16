@@ -27,6 +27,7 @@ Last updated: 2026-02-16
 4. Run local guards before each commit and before PR update:
    - `dart run tool/update_execution_board.dart --check`
    - `python3 scripts/validate_architecture_placement.py`
+   - `python3 scripts/validate_rename_candidates.py`
    - `python3 scripts/validate_pr_traceability.py --title "PRD-123 M1-P7-1 <summary>" --body "Refs: 7.4.2" --require-execution-id --require-single-milestone --require-master-plan-ref`
 5. Commit in small checkpoints where each non-merge commit message includes:
    - the same milestone ID (`M#-P#-#`)
@@ -35,7 +36,13 @@ Last updated: 2026-02-16
    - `PRD-###`
    - exactly one milestone ID (`M#-P#-#`) in PR title
    - subsection references (`X.Y.Z`)
-7. Move milestone status only after exit criteria and evidence are satisfied.
+7. For phase work, use section automation + completion flow:
+   - sync phase root with main: `scripts/phase_root_sync.sh --phase P# --push`
+   - start section branch: `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
+   - complete subsection work: `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
+   - each completion opens PR back to the immediate parent branch (nested branches supported).
+   - naming verification gate is required before auto-PR (`scripts/verify_phase_naming.sh`).
+8. Move milestone status only after exit criteria and evidence are satisfied.
 
 ## Mandatory Rules (Wired To Master Plan Work)
 
@@ -101,7 +108,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.4.4, 10.9.4 | lib/core/controllers | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
 | M1-P8-1 | 8 | 1 | Federated cohort gating + canary/shadow pipeline | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.1.3, 8.1.4, 8.1.5 | lib/core/ai2ai | FED, MLE | AP | M1-P7-1 | 20 | Critical | Week 3-4 | Backlog | - |
 | M1-P8-2 | 8 | 1 | Advisory quarantine + rollback independence | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.9.2, 8.9.4, 8.9.5 | lib/core/services/locality_agents | LOC | AP | M1-P8-1 | 16 | High | Week 4-5 | Backlog | - |
-| M2-P1-1 | 1 | 2 | Memory reliability gates | baseline | none | PRD-001, PRD-002, PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.2.12, 1.3.1 | lib/core/ai | AP, MLE | AP | none | 12 | High | Week 5-6 | Ready | - |
+| M2-P1-1 | 1 | 2 | Memory reliability gates | baseline | none | PRD-001, PRD-002, PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.2.12, 1.3.1 | lib/core/ai | AP, MLE | AP | none | 12 | High | Week 5-6 | In Progress | - |
 | M2-P3-1 | 3 | 2 | State encoder consistency/freshness controls | baseline | none | PRD-010, PRD-011, PRD-033, PRD-034 | 3.1.1, 3.1.4, 3.2.1 | lib/core/models | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Backlog | - |
 | M2-P4-1 | 4 | 2 | Energy function safety and regression governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 4.1.3, 4.1.7, 4.5.7 | lib/core/ml | MLE | AP | M2-P3-1 | 20 | Critical | Week 7-8 | Backlog | - |
 | M2-P5-1 | 5 | 2 | Transition predictor drift/calibration controls | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 5.1.3, 5.1.9, 5.2.1 | lib/core/ml | MLE | AP | M2-P4-1 | 20 | Critical | Week 8-9 | Backlog | - |
@@ -119,11 +126,11 @@ phase row + milestone row(s) + risk + gate criteria.
 
 ### Ready
 
-`M0-P10-1`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`
+`M0-P10-1`, `M0-P2-1`, `M1-P7-1`
 
 ### In Progress
 
-None
+`M2-P1-1`
 
 ### Blocked
 
