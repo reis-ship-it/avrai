@@ -142,6 +142,42 @@ void main() {
         verify(mockLocalDataSource.saveList(list)).called(1);
         verifyNever(mockRemoteDataSource.createList(any));
       });
+
+      test('records create_list tuple with composition and metadata', () async {
+        final now = DateTime.utc(2026, 2, 16, 19, 0, 0);
+        final list = SpotList(
+          id: 'new-list',
+          title: 'Weekend Food',
+          description: 'Food spots for this weekend',
+          spots: const [],
+          spotIds: const ['spot-1', 'spot-2'],
+          tags: const ['weekend', 'food'],
+          curatorId: 'user-123',
+          isPublic: true,
+          createdAt: now,
+          updatedAt: now,
+        );
+
+        when(mockConnectivity.checkConnectivity())
+            .thenAnswer((_) async => [ConnectivityResult.none]);
+        when(mockLocalDataSource.saveList(list)).thenAnswer((_) async => list);
+
+        await repository.createList(list);
+
+        final tuples = await episodicMemoryStore.replay(agentId: 'agent_repo');
+        expect(tuples, hasLength(1));
+        final tuple = tuples.first;
+        expect(tuple.actionType, 'create_list');
+        expect(
+          tuple.actionPayload['list_composition_features']['item_count'],
+          2,
+        );
+        expect(
+          tuple.actionPayload['list_metadata']['tags'],
+          ['weekend', 'food'],
+        );
+        expect(tuple.metadata['phase_ref'], '1.2.8');
+      });
     });
 
     group('updateList', () {

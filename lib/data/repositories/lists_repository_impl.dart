@@ -51,13 +51,15 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
 
   @override
   Future<SpotList> createList(SpotList list) async {
-    return executeOfflineFirst<SpotList>(
+    final createdList = await executeOfflineFirst<SpotList>(
       localOperation: () async => await localDataSource?.saveList(list) ?? list,
       remoteOperation: remoteDataSource != null
           ? () async => await remoteDataSource!.createList(list)
           : null,
       syncToLocal: null, // Already saved locally first
     );
+    await _recordListCreationEpisode(createdList);
+    return createdList;
   }
 
   @override
@@ -337,6 +339,120 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
     } catch (e) {
       developer.log(
         'Error recording list modification episodic tuple: $e',
+        name: 'ListsRepository',
+      );
+    }
+  }
+
+  Future<void> _recordListCreationEpisode(SpotList list) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    final curatorId = list.curatorId;
+    if (curatorId == null || curatorId.isEmpty) return;
+
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService == null
+          ? curatorId
+          : await agentIdService.getUserAgentId(curatorId);
+
+      final itemCount = list.spotIds.length;
+      final spotCategories = <String, int>{};
+      final spotTags = <String>{...list.tags};
+      double minLat = 0;
+      double maxLat = 0;
+      double minLng = 0;
+      double maxLng = 0;
+      var hasCoordinates = false;
+      for (final spot in list.spots) {
+        if (spot.category.isNotEmpty) {
+          spotCategories.update(spot.category, (value) => value + 1,
+              ifAbsent: () => 1);
+        }
+        if (spot.tags.isNotEmpty) {
+          spotTags.addAll(spot.tags.where((tag) => tag.isNotEmpty));
+        }
+        if (!hasCoordinates) {
+          minLat = maxLat = spot.latitude;
+          minLng = maxLng = spot.longitude;
+          hasCoordinates = true;
+        } else {
+          if (spot.latitude < minLat) minLat = spot.latitude;
+          if (spot.latitude > maxLat) maxLat = spot.latitude;
+          if (spot.longitude < minLng) minLng = spot.longitude;
+          if (spot.longitude > maxLng) maxLng = spot.longitude;
+        }
+      }
+
+      final listCompositionFeatures = {
+        'item_count': itemCount,
+        'spot_count': list.spots.length,
+        'spot_id_count': itemCount,
+        'category_distribution': spotCategories,
+        'category_count': spotCategories.length,
+        'geographic_spread': {
+          'has_coordinates': hasCoordinates,
+          'min_latitude': hasCoordinates ? minLat : null,
+          'max_latitude': hasCoordinates ? maxLat : null,
+          'min_longitude': hasCoordinates ? minLng : null,
+          'max_longitude': hasCoordinates ? maxLng : null,
+        },
+        'price_range': {
+          'min_tier': null,
+          'max_tier': null,
+          'mean_tier': null,
+        },
+      };
+
+      final listMetadata = {
+        'list_id': list.id,
+        'title': list.title,
+        'description': list.description,
+        'description_length': list.description.length,
+        'is_public': list.isPublic,
+        'category': list.category,
+        'tags': list.tags,
+        'purpose_tags': spotTags.toList()..sort(),
+        'curator_id': curatorId,
+      };
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'user_id': curatorId,
+          'existing_list_id': list.id,
+        },
+        actionType: 'create_list',
+        actionPayload: {
+          'list_composition_features': listCompositionFeatures,
+          'list_metadata': listMetadata,
+        },
+        nextState: {
+          'list_created': true,
+          'list_id': list.id,
+          'item_count': itemCount,
+          'is_public': list.isPublic,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'create_list',
+          parameters: {
+            'item_count': itemCount,
+            'category_count': spotCategories.length,
+            'is_public': list.isPublic,
+          },
+        ),
+        recordedAt: list.createdAt.toUtc(),
+        metadata: const {
+          'pipeline': 'lists_repository_impl',
+          'phase_ref': '1.2.8',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Error recording list creation episodic tuple: $e',
         name: 'ListsRepository',
       );
     }
