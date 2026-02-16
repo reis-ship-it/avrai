@@ -1,0 +1,14 @@
+run_id,model_id,stage,started_at_utc,completed_at_utc,status,metric_name,metric_value,threshold,direction,regression_delta,auto_created_followup_id,followup_status,notes
+seed-mdl-business-energy-v1,mdl-business-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-community-energy-v1,mdl-community-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-spot-energy-v1,mdl-spot-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-event-energy-v1,mdl-event-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-locality-advisory-v1,mdl-locality-advisory-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-brand-sponsor-energy-v1,mdl-brand-sponsor-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-list-curation-energy-v1,mdl-list-curation-energy-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-quantum-entanglement-v1,mdl-quantum-entanglement-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-quantum-optimization-v1,mdl-quantum-optimization-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-knot-string-worldsheet-v1,mdl-knot-string-worldsheet-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+seed-mdl-atomic-temporal-sync-v1,mdl-atomic-temporal-sync-v1,offline_replay,,,,pending,,,,,,none,Awaiting first simulation run
+sim-mdl-business-energy-v1-offline_replay-20260216020518,mdl-business-energy-v1,offline_replay,2026-02-16T02:05:18Z,2026-02-16T02:05:18Z,pass,auc,0.79,0.72,gte,0.07,,none,seeded dry run: offline replay pass
+sim-mdl-quantum-entanglement-v1-offline_replay-20260216020643,mdl-quantum-entanglement-v1,offline_replay,2026-02-16T02:06:43Z,2026-02-16T02:06:43Z,pass,auc,0.76,0.72,gte,0.04,,none,seeded dry run: quantum entanglement offline replay pass

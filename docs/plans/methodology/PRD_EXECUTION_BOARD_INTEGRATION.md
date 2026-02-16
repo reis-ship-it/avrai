@@ -2,6 +2,9 @@
 
 **Purpose:** Keep board execution synchronized with PRD requirements and eliminate drift.
 
+Primary workflow runbook for experiment/training operations:
+- `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md` (`Wiring Map` + `Operator Runbook`)
+
 ## Required Metadata per Execution Milestone
 
 - `milestone_id`: `M#-P#-#`
@@ -32,6 +35,10 @@ CI enforcement:
 
 - `.github/workflows/prd-traceability-guard.yml`
 - `scripts/validate_pr_traceability.py`
+- `.github/workflows/experiment-registry-guard.yml`
+- `scripts/validate_experiment_registry.py`
+- `.github/workflows/ml-training-governance-guard.yml`
+- `scripts/generate_ml_training_checklist.py --check`
 
 ## Workflow
 
@@ -41,4 +48,14 @@ CI enforcement:
 4. Pass CI guards:
    - Execution Board Guard
    - PRD Traceability Guard
+   - Experiment Registry Guard (when experiment files/docs are touched)
+   - ML Training Governance Guard (when model-training or simulation files/docs are touched)
 5. Move milestone to `Done` only when PR merged and acceptance criteria are met with evidence links.
+
+## Experiment + Training Linkage Rules
+
+1. Every experiment script must be tracked in `configs/experiments/EXPERIMENT_REGISTRY.csv` and rendered in `docs/EXPERIMENT_REGISTRY.md`.
+2. Renames must preserve lineage by keeping `legacy_path` and moving users to canonical execution through `scripts/experiments/run_experiment.py`.
+3. Every model training run must be appended to `configs/ml/model_training_registry.csv` and surfaced through `docs/ML_MODEL_TRAINING_CHECKLIST.md`.
+4. Every simulation run must be appended to `configs/ml/simulation_experiment_runs.csv` and surfaced through `docs/ML_SIMULATION_EXPERIMENT_LOG.md`.
+5. Training datasets for all entities must be converted to AVRAI-native type envelopes via `scripts/ml/build_training_dataset.py`, using `configs/ml/avrai_native_type_contracts.json` and `configs/ml/feature_label_contracts.json` as authority.

@@ -7,6 +7,8 @@
 **Legacy Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)  
 **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
+**Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
+**Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
 **Design rationale:** `docs/plans/rationale/` (WHY decisions were made -- read before each phase)  
 **Foundational decisions:** `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md`  
 **Cross-phase connections:** `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`
@@ -122,6 +124,10 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
+- `docs/EXPERIMENT_REGISTRY.md`
+- `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
+- `docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`
+- `docs/GITHUB_ENFORCEMENT_SETUP.md`
 
 ---
 

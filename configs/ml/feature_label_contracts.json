@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0.0",
+  "global": {
+    "required_common_fields": [
+      "event_id",
+      "agent_id",
+      "entity_type",
+      "entity_id",
+      "action_type",
+      "state_before",
+      "next_state",
+      "outcome",
+      "timestamp_utc",
+      "consent_scope",
+      "feature_spec_version",
+      "label_spec_version"
+    ],
+    "required_location_fields": [
+      "geohash",
+      "locality_code",
+      "city_code",
+      "timezone"
+    ],
+    "uniform_training_stages": [
+      "offline_replay",
+      "shadow",
+      "limited_rollout"
+    ],
+    "uniform_writing_pattern": {
+      "decision_log_template": "<model_id> <stage> <pass_or_fail> <metric>=<value> threshold=<threshold> action=<next_action>",
+      "summary_style": "Short declarative lines, explicit units, no ambiguous language.",
+      "required_sections": [
+        "Scope",
+        "Dataset",
+        "Metrics",
+        "Decision",
+        "Follow-up"
+      ]
+    }
+  },
+  "entities": {
+    "business": {
+      "feature_spec_id": "business-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "business_hours",
+          "foot_traffic_band"
+        ],
+        "type": [
+          "business_category",
+          "price_tier",
+          "verification_status",
+          "service_modality"
+        ],
+        "event_scale": [
+          "hosted_event_count_30d",
+          "avg_event_capacity",
+          "avg_event_attendance",
+          "no_show_rate"
+        ],
+        "outcomes": [
+          "reservation_conversion_rate",
+          "repeat_patron_rate_30d",
+          "partnership_longevity_90d",
+          "refund_or_dispute_rate"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 5000,
+        "min_positive_outcomes": 500,
+        "max_null_rate": 0.05,
+        "freshness_hours": 72
+      }
+    },
+    "community": {
+      "feature_spec_id": "community-v1",
+      "required_feature_groups": {
+        "location": [
+          "primary_geohash",
+          "locality_code",
+          "activity_timeband_histogram"
+        ],
+        "type": [
+          "community_type",
+          "topic_tags",
+          "moderation_tier",
+          "privacy_mode"
+        ],
+        "event_scale": [
+          "active_member_count",
+          "event_count_30d",
+          "avg_event_attendance",
+          "attendance_fill_rate"
+        ],
+        "outcomes": [
+          "join_to_retained_30d",
+          "member_churn_30d",
+          "event_repeat_attendance",
+          "moderation_incident_rate"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 4000,
+        "min_positive_outcomes": 400,
+        "max_null_rate": 0.05,
+        "freshness_hours": 72
+      }
+    },
+    "spot": {
+      "feature_spec_id": "spot-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "open_hours_reliability"
+        ],
+        "type": [
+          "spot_category",
+          "venue_type",
+          "price_tier",
+          "safety_tier"
+        ],
+        "event_scale": [
+          "peak_occupancy_band",
+          "checkin_volume_30d"
+        ],
+        "outcomes": [
+          "visit_conversion_rate",
+          "return_visit_30d",
+          "dismiss_rate",
+          "explicit_rating_mean"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 8000,
+        "min_positive_outcomes": 800,
+        "max_null_rate": 0.05,
+        "freshness_hours": 48
+      }
+    },
+    "event": {
+      "feature_spec_id": "event-v1",
+      "required_feature_groups": {
+        "location": [
+          "venue_geohash",
+          "locality_code",
+          "timeband"
+        ],
+        "type": [
+          "event_type",
+          "host_type",
+          "ticketing_type",
+          "age_gate"
+        ],
+        "event_scale": [
+          "planned_capacity",
+          "actual_attendance",
+          "waitlist_count",
+          "no_show_rate"
+        ],
+        "outcomes": [
+          "attendance_conversion_rate",
+          "post_event_quality_score",
+          "repeat_attendance_60d",
+          "sponsor_fit_score"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 6000,
+        "min_positive_outcomes": 600,
+        "max_null_rate": 0.05,
+        "freshness_hours": 72
+      }
+    },
+    "locality": {
+      "feature_spec_id": "locality-v1",
+      "required_feature_groups": {
+        "location": [
+          "locality_code",
+          "city_code",
+          "geohash_clusters"
+        ],
+        "type": [
+          "locality_type",
+          "mobility_profile",
+          "language_cluster"
+        ],
+        "event_scale": [
+          "events_per_7d",
+          "avg_attendance",
+          "category_supply_gap_index"
+        ],
+        "outcomes": [
+          "locality_happiness_score",
+          "trend_shift_14d",
+          "advisory_success_rate"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 3000,
+        "min_positive_outcomes": 300,
+        "max_null_rate": 0.05,
+        "freshness_hours": 96
+      }
+    },
+    "brand": {
+      "feature_spec_id": "brand-v1",
+      "required_feature_groups": {
+        "location": [
+          "target_locality_codes",
+          "campaign_geohash_coverage"
+        ],
+        "type": [
+          "brand_category",
+          "values_vector",
+          "reach_tier"
+        ],
+        "event_scale": [
+          "sponsored_event_count_30d",
+          "avg_sponsorship_amount",
+          "audience_reach"
+        ],
+        "outcomes": [
+          "engagement_lift",
+          "renewal_rate_90d",
+          "brand_event_fit_score",
+          "roi_index"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 2500,
+        "min_positive_outcomes": 250,
+        "max_null_rate": 0.05,
+        "freshness_hours": 96
+      }
+    },
+    "list": {
+      "feature_spec_id": "list-v1",
+      "required_feature_groups": {
+        "location": [
+          "geographic_spread",
+          "dominant_locality_code"
+        ],
+        "type": [
+          "list_type",
+          "collaboration_mode",
+          "curation_tags"
+        ],
+        "event_scale": [
+          "item_count",
+          "follower_count",
+          "collaborator_count"
+        ],
+        "outcomes": [
+          "save_to_action_rate",
+          "follow_through_rate",
+          "retention_30d",
+          "composition_stability"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 3500,
+        "min_positive_outcomes": 350,
+        "max_null_rate": 0.05,
+        "freshness_hours": 72
+      }
+    },
+    "quantum_entanglement": {
+      "feature_spec_id": "quantum-entanglement-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "city_code",
+          "timezone"
+        ],
+        "type": [
+          "dimension_pair_id",
+          "correlation_family",
+          "state_topology_type"
+        ],
+        "event_scale": [
+          "pair_observation_count_30d",
+          "cross_domain_signal_count_30d",
+          "mesh_exchange_count_30d"
+        ],
+        "outcomes": [
+          "correlation_prediction_error",
+          "entanglement_stability_score",
+          "compatibility_lift_vs_baseline"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 4000,
+        "min_positive_outcomes": 400,
+        "max_null_rate": 0.05,
+        "freshness_hours": 96
+      }
+    },
+    "quantum_optimization": {
+      "feature_spec_id": "quantum-optimization-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "city_code",
+          "timezone"
+        ],
+        "type": [
+          "optimization_use_case",
+          "measurement_basis_type",
+          "weight_policy_version"
+        ],
+        "event_scale": [
+          "optimization_trials_7d",
+          "candidate_policy_count",
+          "eval_window_size"
+        ],
+        "outcomes": [
+          "policy_lift",
+          "calibration_error",
+          "constraint_violation_rate"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 3000,
+        "min_positive_outcomes": 300,
+        "max_null_rate": 0.05,
+        "freshness_hours": 96
+      }
+    },
+    "knot_string_worldsheet": {
+      "feature_spec_id": "knot-string-worldsheet-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "city_code",
+          "timezone"
+        ],
+        "type": [
+          "knot_type",
+          "string_evolution_mode",
+          "worldsheet_slice_type"
+        ],
+        "event_scale": [
+          "crossing_number",
+          "worldsheet_snapshot_count",
+          "evolution_window_hours"
+        ],
+        "outcomes": [
+          "knot_stability_score",
+          "string_interpolation_error",
+          "worldsheet_prediction_error"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 2500,
+        "min_positive_outcomes": 250,
+        "max_null_rate": 0.05,
+        "freshness_hours": 120
+      }
+    },
+    "atomic_temporal": {
+      "feature_spec_id": "atomic-temporal-v1",
+      "required_feature_groups": {
+        "location": [
+          "geohash",
+          "locality_code",
+          "city_code",
+          "timezone"
+        ],
+        "type": [
+          "clock_source",
+          "sync_mode",
+          "temporal_state_family"
+        ],
+        "event_scale": [
+          "sync_events_24h",
+          "cross_device_sync_count",
+          "entanglement_sync_samples"
+        ],
+        "outcomes": [
+          "timestamp_drift_ms",
+          "entanglement_sync_accuracy",
+          "timezone_operation_accuracy"
+        ]
+      },
+      "minimum_data_requirements": {
+        "min_episodes": 2500,
+        "min_positive_outcomes": 250,
+        "max_null_rate": 0.03,
+        "freshness_hours": 24
+      }
+    }
+  }
+}

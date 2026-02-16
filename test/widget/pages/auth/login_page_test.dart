@@ -163,7 +163,7 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       await tester.tap(find.text('🧪 Demo Login'));
       await tester.pump();
-      expect(find.text('demo@spots.com'), findsOneWidget);
+      expect(find.text('demo@avrai.app'), findsOneWidget);
       expect(find.text('password123'), findsOneWidget);
     });
 

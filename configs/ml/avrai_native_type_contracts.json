@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0.0",
+  "default_native_type_id": "avrai.entity.frame.v1",
+  "entities": {
+    "business": {
+      "native_type_id": "avrai.entity.business.frame.v1",
+      "native_blocks": {
+        "business_context": [
+          "business_category",
+          "price_tier",
+          "verification_status",
+          "service_modality"
+        ]
+      }
+    },
+    "community": {
+      "native_type_id": "avrai.entity.community.frame.v1",
+      "native_blocks": {
+        "community_context": [
+          "community_type",
+          "topic_tags",
+          "moderation_tier",
+          "privacy_mode"
+        ]
+      }
+    },
+    "spot": {
+      "native_type_id": "avrai.entity.spot.frame.v1",
+      "native_blocks": {
+        "spot_context": [
+          "spot_category",
+          "venue_type",
+          "price_tier",
+          "safety_tier"
+        ]
+      }
+    },
+    "event": {
+      "native_type_id": "avrai.entity.event.frame.v1",
+      "native_blocks": {
+        "event_context": [
+          "event_type",
+          "host_type",
+          "ticketing_type",
+          "age_gate"
+        ]
+      }
+    },
+    "locality": {
+      "native_type_id": "avrai.entity.locality.frame.v1",
+      "native_blocks": {
+        "locality_context": [
+          "locality_type",
+          "mobility_profile",
+          "language_cluster"
+        ]
+      }
+    },
+    "brand": {
+      "native_type_id": "avrai.entity.brand.frame.v1",
+      "native_blocks": {
+        "brand_context": [
+          "brand_category",
+          "values_vector",
+          "reach_tier"
+        ]
+      }
+    },
+    "list": {
+      "native_type_id": "avrai.entity.list.frame.v1",
+      "native_blocks": {
+        "list_context": [
+          "list_type",
+          "collaboration_mode",
+          "curation_tags"
+        ]
+      }
+    },
+    "quantum_entanglement": {
+      "native_type_id": "avrai.quantum.entanglement.frame.v1",
+      "native_blocks": {
+        "quantum_state": [
+          "dimension_pair_id",
+          "correlation_family",
+          "state_topology_type"
+        ],
+        "quantum_outcomes": [
+          "correlation_prediction_error",
+          "entanglement_stability_score",
+          "compatibility_lift_vs_baseline"
+        ]
+      }
+    },
+    "quantum_optimization": {
+      "native_type_id": "avrai.quantum.optimization.frame.v1",
+      "native_blocks": {
+        "quantum_optimization_state": [
+          "optimization_use_case",
+          "measurement_basis_type",
+          "weight_policy_version"
+        ],
+        "quantum_optimization_outcomes": [
+          "policy_lift",
+          "calibration_error",
+          "constraint_violation_rate"
+        ]
+      }
+    },
+    "knot_string_worldsheet": {
+      "native_type_id": "avrai.knot.worldsheet.frame.v1",
+      "native_blocks": {
+        "knot_state": [
+          "knot_type",
+          "string_evolution_mode",
+          "worldsheet_slice_type"
+        ],
+        "knot_outcomes": [
+          "knot_stability_score",
+          "string_interpolation_error",
+          "worldsheet_prediction_error"
+        ]
+      }
+    },
+    "atomic_temporal": {
+      "native_type_id": "avrai.quantum.atomic_temporal.frame.v1",
+      "native_blocks": {
+        "atomic_temporal_state": [
+          "clock_source",
+          "sync_mode",
+          "temporal_state_family"
+        ],
+        "atomic_temporal_outcomes": [
+          "timestamp_drift_ms",
+          "entanglement_sync_accuracy",
+          "timezone_operation_accuracy"
+        ]
+      }
+    }
+  }
+}

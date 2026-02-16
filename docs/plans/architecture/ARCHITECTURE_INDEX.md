@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** February 15, 2026  
+**Last Updated:** February 16, 2026  
 **Status:** Active Reference (Current Architecture)  
 **Purpose:** Canonical navigation for architecture documents aligned to the current codebase and `docs/MASTER_PLAN.md`.
 
@@ -35,6 +35,15 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
+- **Canonical experiment registry (build-enforced):** [`docs/EXPERIMENT_REGISTRY.md`](../../EXPERIMENT_REGISTRY.md)
+- **Experiment registry source CSV:** [`configs/experiments/EXPERIMENT_REGISTRY.csv`](../../../configs/experiments/EXPERIMENT_REGISTRY.csv)
+- **Experiment registry generator:** [`scripts/generate_experiment_registry.py`](../../../scripts/generate_experiment_registry.py)
+- **Experiment registry validator:** [`scripts/validate_experiment_registry.py`](../../../scripts/validate_experiment_registry.py)
+- **ML training governance authority:** [`docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](../methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md)
+- **Execution/PR traceability integration:** [`docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`](../methodology/PRD_EXECUTION_BOARD_INTEGRATION.md)
+- **Build enforcement setup:** [`docs/GITHUB_ENFORCEMENT_SETUP.md`](../../GITHUB_ENFORCEMENT_SETUP.md)
+- **AVRAI native type contracts:** [`configs/ml/avrai_native_type_contracts.json`](../../../configs/ml/avrai_native_type_contracts.json)
+- **AVRAI dataset builder:** [`scripts/ml/build_training_dataset.py`](../../../scripts/ml/build_training_dataset.py)
 
 ---
 
