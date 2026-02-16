@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
@@ -408,13 +409,21 @@ class ListCreationController
       final agentId = agentIdService == null
           ? curator.id
           : await agentIdService.getUserAgentId(curator.id);
+      final computedCompositionFeatures = _buildListCompositionFeatures(
+        createdList: createdList,
+        initialSpotIds: initialSpotIds,
+        purposeTags: formData.tags ?? const <String>[],
+      );
+      final listMetadata = <String, dynamic>{
+        'description_length': formData.description.length,
+        'tags': formData.tags ?? const <String>[],
+        'is_public': createdList.isPublic,
+        'category': createdList.category,
+        'respect_count': createdList.respectCount,
+      };
+
       final compositionFeatures = <String, dynamic>{
-        'avg_spot_vibe': null,
-        'category_distribution': const <String, dynamic>{},
-        'geographic_spread_km': null,
-        'price_range': null,
-        'item_count': initialSpotIds.length,
-        'purpose_tags': formData.tags ?? const <String>[],
+        ...computedCompositionFeatures,
       };
 
       final actionPayload = <String, dynamic>{
@@ -423,10 +432,7 @@ class ListCreationController
         'category': createdList.category,
         'is_public': createdList.isPublic,
         'spot_ids': initialSpotIds,
-        'list_metadata': {
-          'description_length': formData.description.length,
-          'tags': formData.tags ?? const <String>[],
-        },
+        'list_metadata': listMetadata,
         'list_composition_features': compositionFeatures,
       };
 
@@ -442,6 +448,7 @@ class ListCreationController
         agentId: agentId,
         stateBefore: {
           'user_id': curator.id,
+          'user_tags': curator.tags,
           'list_count_delta': 0,
           'action_context': 'list_creation_controller',
         },
@@ -452,6 +459,7 @@ class ListCreationController
           'created_list_id': createdList.id,
           'list_count_delta': 1,
           'created_item_count': initialSpotIds.length,
+          'composition_feature_keys': compositionFeatures.keys.toList(),
         },
         outcome: outcome,
         metadata: const {
@@ -467,6 +475,98 @@ class ListCreationController
         name: _logName,
       );
     }
+  }
+
+  Map<String, dynamic> _buildListCompositionFeatures({
+    required SpotList createdList,
+    required List<String> initialSpotIds,
+    required List<String> purposeTags,
+  }) {
+    final spots = createdList.spots;
+    final itemCount = initialSpotIds.length;
+
+    final categoryCounts = <String, int>{};
+    final spotPrices = <double>[];
+    final vibeScores = <double>[];
+    final latitudes = <double>[];
+    final longitudes = <double>[];
+
+    for (final spot in spots) {
+      if (spot.category.isNotEmpty) {
+        categoryCounts.update(spot.category, (count) => count + 1,
+            ifAbsent: () => 1);
+      }
+
+      final rawPrice = spot.metadata['price_level'];
+      if (rawPrice is num) {
+        spotPrices.add(rawPrice.toDouble());
+      }
+
+      final rawVibe = spot.metadata['vibe_score'];
+      if (rawVibe is num) {
+        vibeScores.add(rawVibe.toDouble());
+      }
+
+      latitudes.add(spot.latitude);
+      longitudes.add(spot.longitude);
+    }
+
+    final categoryDistribution = <String, double>{};
+    if (spots.isNotEmpty) {
+      for (final entry in categoryCounts.entries) {
+        categoryDistribution[entry.key] = entry.value / spots.length;
+      }
+    } else if (createdList.category != null &&
+        createdList.category!.isNotEmpty) {
+      // Fallback when only list-level category is known at creation time.
+      categoryDistribution[createdList.category!] = 1.0;
+    }
+
+    final geographicSpreadKm = _estimateGeographicSpreadKm(
+      latitudes: latitudes,
+      longitudes: longitudes,
+    );
+
+    final minPrice =
+        spotPrices.isEmpty ? null : spotPrices.reduce((a, b) => a < b ? a : b);
+    final maxPrice =
+        spotPrices.isEmpty ? null : spotPrices.reduce((a, b) => a > b ? a : b);
+    final avgVibe = vibeScores.isEmpty
+        ? null
+        : vibeScores.reduce((a, b) => a + b) / vibeScores.length;
+
+    return <String, dynamic>{
+      'avg_spot_vibe': avgVibe,
+      'category_distribution': categoryDistribution,
+      'geographic_spread_km': geographicSpreadKm,
+      'price_range': {
+        'min': minPrice,
+        'max': maxPrice,
+      },
+      'item_count': itemCount,
+      'purpose_tags': purposeTags,
+      'composition_data_quality':
+          spots.isNotEmpty ? 'spot_enriched' : 'id_only',
+      'spot_enriched_count': spots.length,
+    };
+  }
+
+  double? _estimateGeographicSpreadKm({
+    required List<double> latitudes,
+    required List<double> longitudes,
+  }) {
+    if (latitudes.length < 2 || longitudes.length < 2) {
+      return null;
+    }
+    final minLat = latitudes.reduce((a, b) => a < b ? a : b);
+    final maxLat = latitudes.reduce((a, b) => a > b ? a : b);
+    final minLng = longitudes.reduce((a, b) => a < b ? a : b);
+    final maxLng = longitudes.reduce((a, b) => a > b ? a : b);
+
+    // Approximate map-box diagonal in km.
+    final latKm = (maxLat - minLat).abs() * 111.0;
+    final lngKm = (maxLng - minLng).abs() * 111.0;
+    return math.sqrt((latKm * latKm) + (lngKm * lngKm));
   }
 }
 
