@@ -38,6 +38,7 @@ class PersonalityAgentChatService {
   final HybridSearchRepository? _searchRepository;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
 
   PersonalityAgentChatService({
     AgentIdService? agentIdService,
@@ -48,6 +49,7 @@ class PersonalityAgentChatService {
     HybridSearchRepository? searchRepository,
     EpisodicMemoryStore? episodicMemoryStore,
     OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
   })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _languageLearningService =
@@ -56,7 +58,10 @@ class PersonalityAgentChatService {
         _personalityLearning = personalityLearning ?? pl.PersonalityLearning(),
         _searchRepository = searchRepository,
         _episodicMemoryStore = episodicMemoryStore,
-        _outcomeTaxonomy = outcomeTaxonomy;
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
 
   /// Main chat method - handles user message and returns agent response
   ///
@@ -318,7 +323,7 @@ class PersonalityAgentChatService {
   ) async {
     try {
       final chatId = '$_chatIdPrefix$agentId}_$userId';
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final List<dynamic> raw =
           box.read<List<dynamic>>('personality_chat_$chatId') ?? [];
 
@@ -365,7 +370,7 @@ class PersonalityAgentChatService {
       );
 
       // Store in GetStorage
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'personality_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(chatMessage.toJson());

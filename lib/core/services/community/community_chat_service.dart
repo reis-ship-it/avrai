@@ -44,6 +44,7 @@ class CommunityChatService {
   final CommunityMessageStore? _communityMessageStore;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
 
   CommunityChatService({
     MessageEncryptionService? encryptionService,
@@ -55,6 +56,7 @@ class CommunityChatService {
     CommunityMessageStore? communityMessageStore,
     EpisodicMemoryStore? episodicMemoryStore,
     OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
   })  : _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _agentIdService = agentIdService,
         _realtimeBackend = realtimeBackend,
@@ -63,7 +65,10 @@ class CommunityChatService {
         _senderKeyService = senderKeyService,
         _communityMessageStore = communityMessageStore,
         _episodicMemoryStore = episodicMemoryStore,
-        _outcomeTaxonomy = outcomeTaxonomy;
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
 
   /// Send an encrypted group message
   ///
@@ -359,7 +364,7 @@ class CommunityChatService {
       String communityId) async {
     try {
       final chatId = _generateChatId(communityId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final List<dynamic> raw =
           box.read<List<dynamic>>('community_chat_$chatId') ?? [];
 
@@ -604,7 +609,7 @@ class CommunityChatService {
   /// Save message to storage
   Future<void> _saveMessage(CommunityChatMessage message) async {
     try {
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'community_chat_${message.chatId}';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(message.toJson());
@@ -700,7 +705,7 @@ class CommunityChatService {
   }) async {
     try {
       final chatId = _generateChatId(communityId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'community_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
 
