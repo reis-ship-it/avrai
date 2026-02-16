@@ -194,6 +194,9 @@ This creates a self-growing research ontology instead of a static topic list.
 18. `ARE-18` Add memory-bounded simulation/replay algorithms: checkpoint-rematerialization + tree-reduction evaluation for long-horizon experiments under tight RAM budgets.
 19. `ARE-19` Add tier-aware dual-model runtime (`full_state_model` vs `compressed_state_model`) with online agreement checks and deterministic fallback gates.
 20. `ARE-20` Add atomic-time checkpoint lineage and replay IDs so rollback/self-healing decisions are fully reconstructable and safe for federated mitigation transfer.
+21. `ARE-21` Add `IntegrityArbiter` invariant-split pipeline: convert hard guardrails into machine-checkable clauses for promotion-time verification.
+22. `ARE-22` Add `ProofBackedGate` for critical rollout lanes: metric pass is insufficient without formal guardrail proof pass.
+23. `ARE-23` Add `ConvictionIntegrityBreach` challenge lane: adversarially test rationale/proof consistency and quarantine candidates on contradiction.
 
 ---
 

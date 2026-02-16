@@ -157,6 +157,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2501_02305.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2502_17779.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
@@ -1256,6 +1257,9 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.18 | **Memory-bounded temporal simulation algorithms.** Add bounded-space replay policy for long-horizon experiment/planner simulation using checkpoint-and-recompute (rematerialization) and tree-reduction evaluation when memory caps are tight | Extends 6.1, 7.7, 7.9.6 |
 | 7.9.19 | **Tier-aware model family for bounded memory.** Maintain dual model lanes (`full_state_model`, `compressed_state_model`) with online agreement checks and deterministic fallback routing by `AgentCapabilityTier` | Extends 7.5, 5.1, 6.5 |
 | 7.9.20 | **Atomic-time replay lineage for self-healing.** Stamp every checkpoint, replay segment, and rollback decision with `AtomicTimestamp` lineage IDs so failures can be reconstructed exactly and mitigation policies can be transferred safely across devices | Extends 1.1.3, 7.7.11, 8.1 |
+| 7.9.21 | **InvariantSplit formalization for hard guardrails.** Build `IntegrityArbiter` to decompose non-negotiable policy constraints (safety/compliance/consent/quiet-hours) into machine-checkable invariant clauses before promotion decisions | Extends 7.9.5, 7.9.13, 7.7A.8 |
+| 7.9.22 | **ProofBackedGate for critical promotions.** Require `GuardrailProof` pass on hard-constraint lanes in addition to metric gates; proof failure blocks rollout even if aggregate outcomes look positive | Extends 7.7.4, 7.7A.3, 10.9.11 |
+| 7.9.23 | **ConvictionIntegrityBreach challenge lane.** Add adversarial contradiction checks between model rationales and formal constraint results; quarantine candidate updates when rationale and proof outputs diverge | Extends 7.9.7, 7.9.8, 7.9.11 |
 
 > **Required companion spec:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 >
@@ -2167,7 +2171,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Post-quantum transport coverage:** Signal sessions (DONE via PQXDH), BLE discovery (Phase 2.5.4), federated gradients (Phase 2.5.5), cloud TLS (Phase 2.5.6), on-device storage (Phase 2.5.7 -- audit only, likely already safe)
 - **Locality happiness advisory tasks:** 17 (8.9A.1-8.9A.5 happiness aggregation, 8.9B.1-8.9B.6 advisory threshold, 8.9C.1-8.9C.5 cross-region transfer, 8.9D quantum readiness notes)
 - **Model lifecycle management tasks:** 13 (Phase 7.7.1-7.7.13: version schema, OTA delivery, compatibility gate, staged rollout, rollback controls, deterministic rollout ledger, known-bad suppression, continuity/forgetting-risk governance)
-- **Autonomous research/experimentation tasks:** 20 (Phase 7.9.1-7.9.20: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance, profile-gated systems optimization, bounded-space simulation/model policies)
+- **Autonomous research/experimentation tasks:** 23 (Phase 7.9.1-7.9.23: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance, profile-gated systems optimization, bounded-space simulation/model policies, formal invariant oversight)
 - **Multi-device reconciliation tasks:** 6 (Phase 7.8.1-7.8.6: device-linked accounts, episodic merge, personality sync, tier-aware sync, device migration, conflict resolution)
 - **Data transparency tasks:** 4 (Phase 2.1.8-2.1.8C: "What My AI Knows" page, "Why this recommendation?" tap-through, data correction mechanism, admin transparency dashboard)
 - **Third-party data pipeline tasks:** 7 (Phase 9.2.6A-9.2.6G: insight catalog, DP noise injection, generation pipeline, consent gate, access control, buyer onboarding, revenue attribution)
