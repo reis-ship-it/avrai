@@ -270,9 +270,30 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
                   ? 'remove'
                   : 'metadata';
 
+      final listStateBefore = {
+        'list_id': before?.id ?? after.id,
+        'title': before?.title ?? after.title,
+        'description': before?.description ?? after.description,
+        'category': before?.category ?? after.category,
+        'tags': before?.tags ?? const <String>[],
+        'spot_ids': beforeSpotIds,
+        'spot_count': beforeSpotIds.length,
+      };
+      final listStateAfter = {
+        'list_id': after.id,
+        'title': after.title,
+        'description': after.description,
+        'category': after.category,
+        'tags': after.tags,
+        'spot_ids': afterSpotIds,
+        'spot_count': afterSpotIds.length,
+      };
+
       final actionPayload = {
         'list_id': after.id,
         'change_kind': changeKind,
+        'list_state_before': listStateBefore,
+        'list_state_after': listStateAfter,
         'item_added_or_removed_features': {
           'added_spot_ids': addedSpotIds,
           'removed_spot_ids': removedSpotIds,
@@ -285,23 +306,19 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
       final tuple = EpisodicTuple(
         agentId: agentId,
         stateBefore: {
-          'list_id': before?.id ?? after.id,
-          'spot_ids': beforeSpotIds,
-          'spot_count': beforeSpotIds.length,
-          'tags': before?.tags ?? const <String>[],
+          ...listStateBefore,
         },
         actionType: 'modify_list',
         actionPayload: actionPayload,
         nextState: {
-          'list_id': after.id,
-          'spot_ids': afterSpotIds,
-          'spot_count': afterSpotIds.length,
-          'tags': after.tags,
+          ...listStateAfter,
         },
         outcome: _outcomeTaxonomy.classify(
           eventType: 'modify_list',
           parameters: {
             'change_kind': changeKind,
+            'before_count': beforeSpotIds.length,
+            'after_count': afterSpotIds.length,
             'delta_count': afterSpotIds.length - beforeSpotIds.length,
           },
         ),
