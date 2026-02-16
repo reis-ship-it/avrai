@@ -81,6 +81,9 @@ class OutcomeTaxonomy {
       case 'form_partnership':
       case 'chat_started':
       case 'partnership_formed':
+      case 'message_friend':
+      case 'message_community':
+      case 'ask_agent':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,
