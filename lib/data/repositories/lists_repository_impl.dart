@@ -76,6 +76,10 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
       before: before,
       after: updatedList,
     );
+    await _recordListShareEpisode(
+      before: before,
+      after: updatedList,
+    );
     return updatedList;
   }
 
@@ -333,6 +337,96 @@ class ListsRepositoryImpl extends SimplifiedRepositoryBase
     } catch (e) {
       developer.log(
         'Error recording list modification episodic tuple: $e',
+        name: 'ListsRepository',
+      );
+    }
+  }
+
+  Future<void> _recordListShareEpisode({
+    required SpotList? before,
+    required SpotList after,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    final curatorId = after.curatorId ?? before?.curatorId;
+    if (curatorId == null || curatorId.isEmpty) return;
+
+    final beforeCollaborators = before?.collaborators ?? const <String>[];
+    final afterCollaborators = after.collaborators;
+    final beforeSet = beforeCollaborators.toSet();
+    final afterSet = afterCollaborators.toSet();
+
+    final addedCollaborators = afterSet.difference(beforeSet).toList()..sort();
+    final removedCollaborators = beforeSet.difference(afterSet).toList()
+      ..sort();
+    if (addedCollaborators.isEmpty && removedCollaborators.isEmpty) return;
+
+    final collaborationAction =
+        addedCollaborators.isNotEmpty && removedCollaborators.isNotEmpty
+            ? 'update'
+            : addedCollaborators.isNotEmpty
+                ? 'add_collaborator'
+                : 'remove_collaborator';
+
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService == null
+          ? curatorId
+          : await agentIdService.getUserAgentId(curatorId);
+
+      final listFeatures = {
+        'list_id': after.id,
+        'list_name': after.title,
+        'is_public': after.isPublic,
+        'tag_count': after.tags.length,
+        'tags': after.tags,
+        'spot_count': after.spotIds.length,
+        'collaborator_count_before': beforeCollaborators.length,
+        'collaborator_count_after': afterCollaborators.length,
+      };
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'user_id': curatorId,
+          'list_id': before?.id ?? after.id,
+          'collaborator_count': beforeCollaborators.length,
+        },
+        actionType: 'share_list',
+        actionPayload: {
+          'recipient_features': {
+            'collaboration_action': collaborationAction,
+            'added_collaborator_ids': addedCollaborators,
+            'removed_collaborator_ids': removedCollaborators,
+            'recipient_count': addedCollaborators.length,
+          },
+          'list_features': listFeatures,
+        },
+        nextState: {
+          'list_id': after.id,
+          'collaborator_count': afterCollaborators.length,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'share_list',
+          parameters: {
+            'collaboration_action': collaborationAction,
+            'recipient_count': addedCollaborators.length,
+            'before_collaborator_count': beforeCollaborators.length,
+            'after_collaborator_count': afterCollaborators.length,
+          },
+        ),
+        recordedAt: after.updatedAt.toUtc(),
+        metadata: const {
+          'pipeline': 'lists_repository_impl',
+          'phase_ref': '1.2.10',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Error recording list share/collaboration episodic tuple: $e',
         name: 'ListsRepository',
       );
     }
