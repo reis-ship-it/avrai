@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/services/social_media/social_media_sharing_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/models/spots/spot.dart';
@@ -32,9 +37,11 @@ class ListDetailsPage extends StatefulWidget {
 class _ListDetailsPageState extends State<ListDetailsPage> {
   late EventLogger _eventLogger;
   DateTime? _viewStartTime;
+  String? _currentUserId;
   final ScrollController _scrollController = ScrollController();
   double _maxScrollDepth = 0.0;
   bool _isInitialized = false;
+  bool _hasFollowUpAction = false;
 
   @override
   void initState() {
@@ -49,6 +56,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       _eventLogger = di.sl<EventLogger>();
       final currentUser = Supabase.instance.client.auth.currentUser;
       if (currentUser != null) {
+        _currentUserId = currentUser.id;
         await _eventLogger.initialize(userId: currentUser.id);
         _eventLogger.updateScreen('list_details');
 
@@ -97,9 +105,82 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         listId: widget.list.id,
         durationMs: duration.inMilliseconds,
       );
+      if (!_hasFollowUpAction) {
+        _eventLogger.logBrowseNoAction(
+          entityType: 'list',
+          entityId: widget.list.id,
+          browseDurationMs: duration.inMilliseconds,
+          surface: 'list_details',
+        );
+        unawaited(_recordBrowseNoActionTuple(duration.inMilliseconds));
+      }
     }
 
     super.dispose();
+  }
+
+  Future<void> _recordBrowseNoActionTuple(int durationMs) async {
+    try {
+      if (!di.sl.isRegistered<EpisodicMemoryStore>() ||
+          !di.sl.isRegistered<AgentIdService>()) {
+        return;
+      }
+      final userId = _currentUserId;
+      if (userId == null || userId.isEmpty) return;
+
+      final agentIdService = di.sl<AgentIdService>();
+      final episodicStore = di.sl<EpisodicMemoryStore>();
+      final outcomeTaxonomy = const OutcomeTaxonomy();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.19',
+          'surface': 'list_details',
+          'entity_type': 'list',
+          'entity_id': widget.list.id,
+        },
+        actionType: 'browse_entity',
+        actionPayload: {
+          'entity_type': 'list',
+          'entity_id': widget.list.id,
+          'entity_features': {
+            'list_id': widget.list.id,
+            'category': widget.list.category,
+            'spot_count': widget.list.spotIds.length,
+            'respect_count': widget.list.respectCount,
+            'is_public': widget.list.isPublic,
+          },
+          'no_action': true,
+          'browse_context': {
+            'duration_ms': durationMs,
+            'surface': 'list_details',
+          },
+        },
+        nextState: const {
+          'no_action': true,
+          'browse_session_complete': true,
+        },
+        outcome: outcomeTaxonomy.classify(
+          eventType: 'no_action',
+          parameters: {
+            'entity_type': 'list',
+            'entity_id': widget.list.id,
+            'duration_ms': durationMs,
+            'surface': 'list_details',
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.19',
+          'pipeline': 'list_details_page',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (_) {
+      // Non-critical on teardown.
+    }
   }
 
   @override
@@ -399,6 +480,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             ],
                           ),
                           onTap: () {
+                            _hasFollowUpAction = true;
                             // Log spot tap (navigating to spot details)
                             if (_isInitialized) {
                               _eventLogger.logEvent(
@@ -436,6 +518,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
   }
 
   void _handleMenuAction(BuildContext context, String action) {
+    _hasFollowUpAction = true;
     switch (action) {
       case 'edit':
         _navigateToEdit(context);
@@ -729,6 +812,7 @@ avrai - know you belong.''';
   }
 
   void _showAddSpotsDialog(BuildContext context) async {
+    _hasFollowUpAction = true;
     final selectedSpotIds = await showDialog<List<String>>(
       context: context,
       builder: (context) => SpotPickerDialog(
@@ -762,6 +846,7 @@ avrai - know you belong.''';
   }
 
   void _showRemoveSpotConfirmation(BuildContext context, Spot spot) {
+    _hasFollowUpAction = true;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

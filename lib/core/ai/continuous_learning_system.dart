@@ -768,11 +768,256 @@ class ContinuousLearningSystem {
       );
 
       await episodicStore.writeTuple(tuple);
+      await _recordIntentTransitionTupleIfApplicable(
+        episodicStore: episodicStore,
+        tuple: tuple,
+        source: source,
+      );
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
         name: _logName,
       );
+    }
+  }
+
+  Future<void> _recordIntentTransitionTupleIfApplicable({
+    required EpisodicMemoryStore episodicStore,
+    required EpisodicTuple tuple,
+    required String source,
+  }) async {
+    try {
+      final entityRef = _extractEntityRefForTransition(tuple);
+      if (entityRef == null) return;
+
+      if (_isActiveJourneyAction(tuple.actionType)) {
+        final browseTuple = await _findRecentBrowseNoActionForSpot(
+          episodicStore: episodicStore,
+          agentId: tuple.agentId,
+          entityType: entityRef.type,
+          entityId: entityRef.id,
+          before: tuple.recordedAt,
+        );
+        if (browseTuple == null) return;
+
+        final daysGap =
+            tuple.recordedAt.difference(browseTuple.recordedAt).inDays;
+        final transitionTuple = EpisodicTuple(
+          agentId: tuple.agentId,
+          stateBefore: {
+            'phase_ref': '1.2.19',
+            'transition_type': 'passive_to_active',
+            'entity_type': entityRef.type,
+            'entity_id': entityRef.id,
+            'browse_recorded_at': browseTuple.recordedAt.toIso8601String(),
+          },
+          actionType: 'intent_transition',
+          actionPayload: {
+            'entity_type': entityRef.type,
+            'entity_id': entityRef.id,
+            'from_action': 'browse_entity',
+            'to_action': tuple.actionType,
+            'days_between': daysGap,
+          },
+          nextState: {
+            'transition_applied': true,
+            'journey_state': 'activated_after_browse',
+            'conversion_window_days': 30,
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: 'passive_to_active_conversion',
+            parameters: {
+              'entity_type': entityRef.type,
+              'entity_id': entityRef.id,
+              'source': source,
+              'days_between': daysGap,
+            },
+          ),
+          recordedAt: tuple.recordedAt,
+          metadata: const {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': '1.2.19',
+            'intent_transition': true,
+          },
+        );
+        await episodicStore.writeTuple(transitionTuple);
+        return;
+      }
+
+      if (_isBrowseNoActionTuple(tuple)) {
+        final activeTuple = await _findRecentActiveSpotAction(
+          episodicStore: episodicStore,
+          agentId: tuple.agentId,
+          entityType: entityRef.type,
+          entityId: entityRef.id,
+          before: tuple.recordedAt,
+        );
+        if (activeTuple == null) return;
+
+        final daysGap =
+            tuple.recordedAt.difference(activeTuple.recordedAt).inDays;
+        final transitionTuple = EpisodicTuple(
+          agentId: tuple.agentId,
+          stateBefore: {
+            'phase_ref': '1.2.19',
+            'transition_type': 'active_to_passive',
+            'entity_type': entityRef.type,
+            'entity_id': entityRef.id,
+            'active_recorded_at': activeTuple.recordedAt.toIso8601String(),
+          },
+          actionType: 'intent_transition',
+          actionPayload: {
+            'entity_type': entityRef.type,
+            'entity_id': entityRef.id,
+            'from_action': activeTuple.actionType,
+            'to_action': 'browse_entity',
+            'days_between': daysGap,
+          },
+          nextState: {
+            'transition_applied': true,
+            'journey_state': 'cooled_after_activity',
+            'regression_window_days': 30,
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: 'active_to_passive_regression',
+            parameters: {
+              'entity_type': entityRef.type,
+              'entity_id': entityRef.id,
+              'source': source,
+              'days_between': daysGap,
+            },
+          ),
+          recordedAt: tuple.recordedAt,
+          metadata: const {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': '1.2.19',
+            'intent_transition': true,
+          },
+        );
+        await episodicStore.writeTuple(transitionTuple);
+      }
+    } catch (e) {
+      developer.log(
+        'Failed to record intent transition tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Future<EpisodicTuple?> _findRecentBrowseNoActionForSpot({
+    required EpisodicMemoryStore episodicStore,
+    required String agentId,
+    required String entityType,
+    required String entityId,
+    required DateTime before,
+  }) async {
+    final recent = await episodicStore.getRecent(agentId: agentId, limit: 200);
+    final cutoff = before.subtract(const Duration(days: 30));
+    for (final row in recent) {
+      if (row.recordedAt.isAfter(before) || row.recordedAt.isBefore(cutoff)) {
+        continue;
+      }
+      if (!_isBrowseNoActionTuple(row)) continue;
+      final rowRef = _extractEntityRefForTransition(row);
+      if (rowRef == null) continue;
+      if (rowRef.type != entityType || rowRef.id != entityId) continue;
+      return row;
+    }
+    return null;
+  }
+
+  Future<EpisodicTuple?> _findRecentActiveSpotAction({
+    required EpisodicMemoryStore episodicStore,
+    required String agentId,
+    required String entityType,
+    required String entityId,
+    required DateTime before,
+  }) async {
+    final recent = await episodicStore.getRecent(agentId: agentId, limit: 200);
+    final cutoff = before.subtract(const Duration(days: 30));
+    for (final row in recent) {
+      if (row.recordedAt.isAfter(before) || row.recordedAt.isBefore(cutoff)) {
+        continue;
+      }
+      if (!_isActiveJourneyAction(row.actionType)) continue;
+      final rowRef = _extractEntityRefForTransition(row);
+      if (rowRef == null) continue;
+      if (rowRef.type != entityType || rowRef.id != entityId) continue;
+      return row;
+    }
+    return null;
+  }
+
+  _EntityRef? _extractEntityRefForTransition(EpisodicTuple tuple) {
+    final payload = tuple.actionPayload;
+    if (tuple.actionType == 'browse_entity') {
+      final entityType = payload['entity_type']?.toString();
+      final entityId = payload['entity_id']?.toString();
+      if (entityType != null &&
+          entityType.isNotEmpty &&
+          entityId != null &&
+          entityId.isNotEmpty) {
+        return _EntityRef(type: entityType, id: entityId);
+      }
+
+      final entityFeatures = payload['entity_features'];
+      if (entityFeatures is Map) {
+        final map = Map<String, dynamic>.from(entityFeatures);
+        final spotId = map['spot_id']?.toString();
+        if (spotId != null && spotId.isNotEmpty) {
+          return _EntityRef(type: 'spot', id: spotId);
+        }
+      }
+      return null;
+    }
+
+    const candidateKeys = <String, String>{
+      'spot_id': 'spot',
+      'event_id': 'event',
+      'community_id': 'community',
+      'business_id': 'business',
+      'brand_id': 'brand',
+      'sponsor_id': 'sponsor',
+      'list_id': 'list',
+      'target_id': 'target',
+      'entity_id': 'entity',
+    };
+    for (final entry in candidateKeys.entries) {
+      final value = payload[entry.key]?.toString();
+      if (value != null && value.isNotEmpty) {
+        return _EntityRef(type: entry.value, id: value);
+      }
+    }
+    return null;
+  }
+
+  bool _isBrowseNoActionTuple(EpisodicTuple tuple) {
+    if (tuple.actionType != 'browse_entity') return false;
+    if (tuple.outcome.type == 'no_action') return true;
+    return tuple.actionPayload['no_action'] == true;
+  }
+
+  bool _isActiveJourneyAction(String actionType) {
+    switch (actionType) {
+      case 'visit_spot':
+      case 'spot_visited':
+      case 'attend_event':
+      case 'event_attended':
+      case 'event_attend':
+      case 'join_community':
+      case 'engage_business':
+      case 'create_reservation':
+      case 'save_list':
+      case 'create_list':
+      case 'modify_list':
+      case 'share_list':
+      case 'form_partnership':
+      case 'sponsor_event':
+      case 'propose_sponsorship':
+      case 'initiate_business_outreach':
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -2069,6 +2314,16 @@ class _ResolvedSpotOutcome {
     required this.actionType,
     required this.outcome,
     this.payloadAdditions,
+  });
+}
+
+class _EntityRef {
+  final String type;
+  final String id;
+
+  const _EntityRef({
+    required this.type,
+    required this.id,
   });
 }
 

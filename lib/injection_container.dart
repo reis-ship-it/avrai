@@ -227,9 +227,12 @@ import 'package:avrai/domain/repositories/community_repository.dart';
 // Phase 12: Neural Network Implementation
 import 'package:avrai/core/services/calling_score/calling_score_data_collector.dart';
 import 'package:avrai/core/services/calling_score/calling_score_calculator.dart';
+import 'package:avrai/core/services/calling_score/baseline_metrics_service.dart';
 import 'package:avrai/core/services/calling_score/calling_score_baseline_metrics.dart';
 import 'package:avrai/core/services/calling_score/calling_score_training_data_preparer.dart';
 import 'package:avrai/core/services/calling_score/calling_score_ab_testing_service.dart';
+import 'package:avrai/core/services/calling_score/formula_ab_testing_service.dart';
+import 'package:avrai/core/services/calling_score/training_data_preparation_service.dart';
 import 'package:avrai/core/ml/calling_score_neural_model.dart';
 import 'package:avrai/core/services/behavior/behavior_assessment_service.dart';
 import 'package:avrai/core/ml/outcome_prediction_model.dart';
@@ -584,6 +587,9 @@ Future<void> init() async {
         eventService: sl<ExpertiseEventService>(),
         partnershipService: sl.isRegistered<PartnershipService>()
             ? sl<PartnershipService>()
+            : null,
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
             : null,
       ));
   logger.debug(
@@ -1216,8 +1222,13 @@ Future<void> init() async {
         logger.debug('✅ [DI] CallingScoreDataCollector registered');
 
         // Register Calling Score Baseline Metrics (Phase 12 Section 1.2: Baseline Metrics)
+        if (!sl.isRegistered<BaselineMetricsService>()) {
+          sl.registerLazySingleton(() => const BaselineMetricsService());
+          logger.debug('✅ [DI] BaselineMetricsService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreBaselineMetrics(
               supabase: supabaseClient,
+              baselineMetricsService: sl<BaselineMetricsService>(),
             ));
         logger.debug('✅ [DI] CallingScoreBaselineMetrics registered');
 
@@ -1247,6 +1258,11 @@ Future<void> init() async {
         logger.debug('✅ [DI] CallingScoreNeuralModel registered');
 
         // Register Calling Score Training Data Preparer (Phase 12 Section 2.1)
+        if (!sl.isRegistered<TrainingDataPreparationService>()) {
+          sl.registerLazySingleton(
+              () => const TrainingDataPreparationService());
+          logger.debug('✅ [DI] TrainingDataPreparationService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreTrainingDataPreparer(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
@@ -1254,13 +1270,20 @@ Future<void> init() async {
               episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
                   ? sl<EpisodicMemoryStore>()
                   : null,
+              trainingDataPreparationService:
+                  sl<TrainingDataPreparationService>(),
             ));
         logger.debug('✅ [DI] CallingScoreTrainingDataPreparer registered');
 
         // Register Calling Score A/B Testing Service (Phase 12 Section 2.3: A/B Testing Framework)
+        if (!sl.isRegistered<FormulaABTestingService>()) {
+          sl.registerLazySingleton(() => const FormulaABTestingService());
+          logger.debug('✅ [DI] FormulaABTestingService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreABTestingService(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
+              formulaABTestingService: sl<FormulaABTestingService>(),
             ));
         logger.debug('✅ [DI] CallingScoreABTestingService registered');
 
@@ -1289,6 +1312,7 @@ Future<void> init() async {
                   sl<CallingScoreABTestingService>(), // Optional: A/B testing
               outcomePredictionService: sl<
                   OutcomePredictionService>(), // Optional: Outcome prediction
+              featureFlags: sl<FeatureFlagService>(),
             ));
         logger.debug(
             '✅ [DI] CallingScoreCalculator registered (with neural model, A/B testing, and outcome prediction support)');
@@ -1385,6 +1409,9 @@ Future<void> init() async {
                   : null,
               eventLogger:
                   sl.isRegistered<EventLogger>() ? sl<EventLogger>() : null,
+              episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+                  ? sl<EpisodicMemoryStore>()
+                  : null,
             ));
         logger.debug('✅ [DI] ReservationService registered');
 

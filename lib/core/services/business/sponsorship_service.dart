@@ -1,21 +1,27 @@
 import 'package:avrai/core/models/sponsorship/sponsorship.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
+import 'package:avrai_core/models/quantum_entity_state.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Sponsorship Service
-/// 
+///
 /// Core service for managing brand sponsorships for events.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to brand partnerships
 /// - Enables multi-party event funding
 /// - Supports diverse contribution types
 /// - Creates pathways for brand collaboration
-/// 
+///
 /// **Sponsorship Workflow:**
 /// 1. Discovery - AI suggests compatible brands (70%+ vibe match only)
 /// 2. Proposal - Brand proposes sponsorship with contribution type
@@ -26,30 +32,44 @@ import 'package:uuid/uuid.dart';
 /// 7. Feedback - Performance tracking and analytics
 class SponsorshipService {
   static const String _logName = 'SponsorshipService';
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final Uuid _uuid = const Uuid();
-  
+
   final ExpertiseEventService _eventService;
   final PartnershipService _partnershipService; // Read-only
   final VibeCompatibilityService _vibeCompatibilityService;
-  
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+  final AtomicClockService _atomicClockService;
+
+  static const double _stateUpdateAlpha = 0.30;
+
   // In-memory storage for sponsorships (in production, use database)
   final Map<String, Sponsorship> _sponsorships = {};
-  
+
   // In-memory storage for brand accounts (in production, use database)
   // This would normally come from a BrandService, but for now we'll store here
   final Map<String, BrandAccount> _brandAccounts = {};
-  
+  final Map<String, Map<String, double>> _brandQuantumVibeState = {};
+  final Map<String, Map<String, double>> _sponsorQuantumVibeState = {};
+
   SponsorshipService({
     required ExpertiseEventService eventService,
     required PartnershipService partnershipService,
     required VibeCompatibilityService vibeCompatibilityService,
-  }) : _eventService = eventService,
-       _partnershipService = partnershipService,
-       _vibeCompatibilityService = vibeCompatibilityService;
-  
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    AtomicClockService? atomicClockService,
+  })  : _eventService = eventService,
+        _partnershipService = partnershipService,
+        _vibeCompatibilityService = vibeCompatibilityService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _atomicClockService = atomicClockService ?? AtomicClockService();
+
   /// Create a new sponsorship for an event
-  /// 
+  ///
   /// **Flow:**
   /// 1. Validate event exists
   /// 2. Validate brand account exists and is verified
@@ -57,7 +77,7 @@ class SponsorshipService {
   /// 4. Calculate vibe compatibility (must be 70%+)
   /// 5. Create Sponsorship record
   /// 6. Return sponsorship
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID for the sponsorship
   /// - `brandId`: Brand ID providing sponsorship
@@ -66,10 +86,10 @@ class SponsorshipService {
   /// - `productValue`: Product contribution value (if product/hybrid)
   /// - `agreementTerms`: Agreement terms (optional)
   /// - `vibeCompatibilityScore`: Pre-calculated compatibility (optional)
-  /// 
+  ///
   /// **Returns:**
   /// Sponsorship with status `pending` or `proposed`
-  /// 
+  ///
   /// **Throws:**
   /// - `Exception` if event not found
   /// - `Exception` if brand not found
@@ -86,24 +106,26 @@ class SponsorshipService {
     double? vibeCompatibilityScore,
   }) async {
     try {
-      _logger.info('Creating sponsorship: event=$eventId, brand=$brandId, type=${type.name}', tag: _logName);
-      
+      _logger.info(
+          'Creating sponsorship: event=$eventId, brand=$brandId, type=${type.name}',
+          tag: _logName);
+
       // Step 1: Validate event exists
       final event = await _eventService.getEventById(eventId);
       if (event == null) {
         throw Exception('Event not found: $eventId');
       }
-      
+
       // Step 2: Validate brand account exists and is verified
       final brand = await getBrandById(brandId);
       if (brand == null) {
         throw Exception('Brand account not found: $brandId');
       }
-      
+
       if (!brand.isVerified) {
         throw Exception('Brand account not verified: $brandId');
       }
-      
+
       // Step 3: Validate sponsorship type and values
       if (type == SponsorshipType.financial && contributionAmount == null) {
         throw Exception('Financial sponsorship requires contributionAmount');
@@ -111,10 +133,12 @@ class SponsorshipService {
       if (type == SponsorshipType.product && productValue == null) {
         throw Exception('Product sponsorship requires productValue');
       }
-      if (type == SponsorshipType.hybrid && (contributionAmount == null || productValue == null)) {
-        throw Exception('Hybrid sponsorship requires both contributionAmount and productValue');
+      if (type == SponsorshipType.hybrid &&
+          (contributionAmount == null || productValue == null)) {
+        throw Exception(
+            'Hybrid sponsorship requires both contributionAmount and productValue');
       }
-      
+
       // Step 4: Check sponsorship eligibility
       final isEligible = await checkSponsorshipEligibility(
         eventId: eventId,
@@ -123,7 +147,7 @@ class SponsorshipService {
       if (!isEligible) {
         throw Exception('Sponsorship not eligible');
       }
-      
+
       // Step 5: Calculate vibe compatibility (if not provided)
       double compatibility = vibeCompatibilityScore ?? 0.0;
       if (compatibility == 0.0) {
@@ -132,12 +156,13 @@ class SponsorshipService {
           brandId: brandId,
         );
       }
-      
+
       // Step 6: Validate compatibility threshold (70%+)
       if (compatibility < 0.70) {
-        throw Exception('Compatibility below 70% threshold: ${(compatibility * 100).toStringAsFixed(1)}%');
+        throw Exception(
+            'Compatibility below 70% threshold: ${(compatibility * 100).toStringAsFixed(1)}%');
       }
-      
+
       // Step 7: Create sponsorship
       final sponsorship = Sponsorship(
         id: _generateSponsorshipId(),
@@ -151,10 +176,15 @@ class SponsorshipService {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       // Step 8: Save sponsorship
       await _saveSponsorship(sponsorship);
-      
+      _ensureQuantumStateInitialized(brandId);
+      await _recordSponsorshipTuple(
+        sponsorship: sponsorship,
+        eventCategory: event.category,
+      );
+
       _logger.info('Created sponsorship: ${sponsorship.id}', tag: _logName);
       return sponsorship;
     } catch (e) {
@@ -162,62 +192,60 @@ class SponsorshipService {
       rethrow;
     }
   }
-  
+
   /// Get all sponsorships for an event
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
-  /// 
+  ///
   /// **Returns:**
   /// List of Sponsorship records
   Future<List<Sponsorship>> getSponsorshipsForEvent(String eventId) async {
     try {
       _logger.info('Getting sponsorships for event: $eventId', tag: _logName);
-      
+
       final allSponsorships = await _getAllSponsorships();
-      return allSponsorships
-          .where((s) => s.eventId == eventId)
-          .toList()
+      return allSponsorships.where((s) => s.eventId == eventId).toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
-      _logger.error('Error getting sponsorships for event', error: e, tag: _logName);
+      _logger.error('Error getting sponsorships for event',
+          error: e, tag: _logName);
       return [];
     }
   }
-  
+
   /// Get all sponsorships for a brand
-  /// 
+  ///
   /// **Parameters:**
   /// - `brandId`: Brand ID
-  /// 
+  ///
   /// **Returns:**
   /// List of Sponsorship records for the brand
   Future<List<Sponsorship>> getSponsorshipsForBrand(String brandId) async {
     try {
       _logger.info('Getting sponsorships for brand: $brandId', tag: _logName);
-      
+
       final allSponsorships = await _getAllSponsorships();
-      return allSponsorships
-          .where((s) => s.brandId == brandId)
-          .toList()
+      return allSponsorships.where((s) => s.brandId == brandId).toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
-      _logger.error('Error getting sponsorships for brand', error: e, tag: _logName);
+      _logger.error('Error getting sponsorships for brand',
+          error: e, tag: _logName);
       return [];
     }
   }
-  
+
   /// Get sponsorship by ID
-  /// 
+  ///
   /// **Parameters:**
   /// - `sponsorshipId`: Sponsorship ID
-  /// 
+  ///
   /// **Returns:**
   /// Sponsorship if found, null otherwise
   Future<Sponsorship?> getSponsorshipById(String sponsorshipId) async {
     try {
       _logger.info('Getting sponsorship by ID: $sponsorshipId', tag: _logName);
-      
+
       final allSponsorships = await _getAllSponsorships();
       try {
         return allSponsorships.firstWhere(
@@ -232,23 +260,23 @@ class SponsorshipService {
       return null;
     }
   }
-  
+
   /// Update sponsorship status
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get sponsorship by ID
   /// 2. Validate status transition
   /// 3. Update sponsorship status
   /// 4. If status is `approved`, check if can be locked
   /// 5. Return updated sponsorship
-  /// 
+  ///
   /// **Parameters:**
   /// - `sponsorshipId`: Sponsorship ID
   /// - `status`: New sponsorship status
-  /// 
+  ///
   /// **Returns:**
   /// Updated Sponsorship
-  /// 
+  ///
   /// **Throws:**
   /// - `Exception` if sponsorship not found
   /// - `Exception` if status transition is invalid
@@ -257,31 +285,35 @@ class SponsorshipService {
     required SponsorshipStatus status,
   }) async {
     try {
-      _logger.info('Updating sponsorship status: $sponsorshipId -> ${status.name}', tag: _logName);
-      
+      _logger.info(
+          'Updating sponsorship status: $sponsorshipId -> ${status.name}',
+          tag: _logName);
+
       final sponsorship = await getSponsorshipById(sponsorshipId);
       if (sponsorship == null) {
         throw Exception('Sponsorship not found: $sponsorshipId');
       }
-      
+
       // Validate status transition
       if (!_isValidStatusTransition(sponsorship.status, status)) {
-        throw Exception('Invalid status transition: ${sponsorship.status.name} -> ${status.name}');
+        throw Exception(
+            'Invalid status transition: ${sponsorship.status.name} -> ${status.name}');
       }
-      
+
       // Update sponsorship
       final updated = sponsorship.copyWith(
         status: status,
         updatedAt: DateTime.now(),
       );
-      
+
       // If status is `approved`, check if event is ready to lock
       if (status == SponsorshipStatus.approved) {
         // Check if event and all partnerships/sponsorships are approved
         final canLock = await _canLockEvent(sponsorship.eventId);
         if (canLock) {
           // Lock all sponsorships for this event
-          final allSponsorships = await getSponsorshipsForEvent(sponsorship.eventId);
+          final allSponsorships =
+              await getSponsorshipsForEvent(sponsorship.eventId);
           for (final sp in allSponsorships) {
             if (sp.status == SponsorshipStatus.approved && !sp.isLocked) {
               await _saveSponsorship(sp.copyWith(
@@ -300,27 +332,28 @@ class SponsorshipService {
           return locked;
         }
       }
-      
+
       await _saveSponsorship(updated);
       _logger.info('Updated sponsorship status: $sponsorshipId', tag: _logName);
       return updated;
     } catch (e) {
-      _logger.error('Error updating sponsorship status', error: e, tag: _logName);
+      _logger.error('Error updating sponsorship status',
+          error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
   /// Check sponsorship eligibility
-  /// 
+  ///
   /// **Flow:**
   /// 1. Check event exists and is upcoming
   /// 2. Check brand is verified
   /// 3. Check compatibility (70%+)
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
   /// - `brandId`: Brand ID
-  /// 
+  ///
   /// **Returns:**
   /// true if eligible, false otherwise
   Future<bool> checkSponsorshipEligibility({
@@ -334,56 +367,59 @@ class SponsorshipService {
         _logger.info('Event not found: $eventId', tag: _logName);
         return false;
       }
-      
+
       // Step 2: Check event is upcoming
       if (event.hasStarted) {
         _logger.info('Event has already started: $eventId', tag: _logName);
         return false;
       }
-      
+
       // Step 3: Check brand exists and is verified
       final brand = await getBrandById(brandId);
       if (brand == null) {
         _logger.info('Brand not found: $brandId', tag: _logName);
         return false;
       }
-      
+
       if (!brand.isVerified) {
         _logger.info('Brand not verified: $brandId', tag: _logName);
         return false;
       }
-      
+
       // Step 4: Check compatibility (70%+)
       final compatibility = await calculateCompatibility(
         eventId: eventId,
         brandId: brandId,
       );
       if (compatibility < 0.70) {
-        _logger.info('Compatibility below 70% threshold: ${(compatibility * 100).toStringAsFixed(1)}%', tag: _logName);
+        _logger.info(
+            'Compatibility below 70% threshold: ${(compatibility * 100).toStringAsFixed(1)}%',
+            tag: _logName);
         return false;
       }
-      
+
       return true;
     } catch (e) {
-      _logger.error('Error checking sponsorship eligibility', error: e, tag: _logName);
+      _logger.error('Error checking sponsorship eligibility',
+          error: e, tag: _logName);
       return false;
     }
   }
-  
+
   /// Calculate compatibility between brand and event
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get brand account data
   /// 2. Get event data
   /// 3. Calculate compatibility score (0.0 to 1.0)
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
   /// - `brandId`: Brand ID
-  /// 
+  ///
   /// **Returns:**
   /// Compatibility score (0.0 to 1.0)
-  /// 
+  ///
   /// **Note:**
   /// This is a simplified implementation. In production, this would:
   /// - Use sophisticated matching algorithm
@@ -409,8 +445,9 @@ class SponsorshipService {
     required String brandId,
   }) async {
     try {
-      _logger.info('Calculating compatibility: event=$eventId, brand=$brandId', tag: _logName);
-      
+      _logger.info('Calculating compatibility: event=$eventId, brand=$brandId',
+          tag: _logName);
+
       final event = await _eventService.getEventById(eventId);
       if (event == null) {
         return const VibeScore(
@@ -420,7 +457,7 @@ class SponsorshipService {
           knotWeave: 0.0,
         );
       }
-      
+
       final brand = await getBrandById(brandId);
       if (brand == null) {
         return const VibeScore(
@@ -430,7 +467,7 @@ class SponsorshipService {
           knotWeave: 0.0,
         );
       }
-      
+
       return await _vibeCompatibilityService.calculateEventBrandVibe(
         event: event,
         brand: brand,
@@ -445,9 +482,9 @@ class SponsorshipService {
       );
     }
   }
-  
+
   /// Get brand by ID (helper method)
-  /// 
+  ///
   /// **Note:** In production, this would come from BrandService
   Future<BrandAccount?> getBrandById(String brandId) async {
     try {
@@ -457,9 +494,9 @@ class SponsorshipService {
       return null;
     }
   }
-  
+
   /// Register brand account (helper method for testing)
-  /// 
+  ///
   /// **Note:** In production, this would be handled by BrandService
   Future<void> registerBrand(BrandAccount brand) async {
     try {
@@ -470,34 +507,284 @@ class SponsorshipService {
       rethrow;
     }
   }
-  
+
+  /// Record sponsorship outcome metrics after event completion.
+  ///
+  /// This captures sponsorship lifecycle outcomes for training:
+  /// engagement, awareness lift, revenue, and quality impact.
+  Future<void> recordSponsorshipOutcome({
+    required String sponsorshipId,
+    required int attendeeEngagementCount,
+    required double brandAwarenessLift,
+    required double revenueGenerated,
+    required double eventQualityImpactRating,
+    bool? repeatSponsorshipIntent,
+  }) async {
+    try {
+      final sponsorship = await getSponsorshipById(sponsorshipId);
+      if (sponsorship == null) {
+        throw Exception('Sponsorship not found: $sponsorshipId');
+      }
+      final event = await _eventService.getEventById(sponsorship.eventId);
+      final eventCategory = event?.category ?? 'unknown';
+      await _recordSponsorshipTuple(
+        sponsorship: sponsorship,
+        eventCategory: eventCategory,
+        sponsorshipOutcome: {
+          'attendee_engagement_count': attendeeEngagementCount,
+          'brand_awareness_lift': brandAwarenessLift,
+          'revenue_generated': revenueGenerated,
+          'event_quality_impact_rating': eventQualityImpactRating,
+          if (repeatSponsorshipIntent != null)
+            'repeat_sponsorship_intent': repeatSponsorshipIntent,
+        },
+      );
+      _updateBrandSponsorQuantumStates(
+        brandId: sponsorship.brandId,
+        attendeeEngagementCount: attendeeEngagementCount,
+        brandAwarenessLift: brandAwarenessLift,
+        revenueGenerated: revenueGenerated,
+        contributionAmount: sponsorship.contributionAmount,
+        productValue: sponsorship.productValue,
+        eventQualityImpactRating: eventQualityImpactRating,
+        repeatSponsorshipIntent: repeatSponsorshipIntent,
+      );
+      _logger.info(
+        'Recorded sponsorship outcome: $sponsorshipId',
+        tag: _logName,
+      );
+    } catch (e) {
+      _logger.error('Error recording sponsorship outcome',
+          error: e, tag: _logName);
+      rethrow;
+    }
+  }
+
   // Private helper methods
-  
+
   String _generateSponsorshipId() {
     return 'sponsorship_${_uuid.v4()}';
   }
-  
+
   Future<void> _saveSponsorship(Sponsorship sponsorship) async {
     // In production, save to database
     _sponsorships[sponsorship.id] = sponsorship;
   }
-  
+
+  Future<QuantumEntityState> getBrandQuantumState(String brandId) async {
+    _ensureQuantumStateInitialized(brandId);
+    final tAtomic = await _atomicClockService.getAtomicTimestamp();
+    final vibe = Map<String, double>.from(_brandQuantumVibeState[brandId]!);
+    return QuantumEntityState(
+      entityId: brandId,
+      entityType: QuantumEntityType.brand,
+      personalityState: Map<String, double>.from(vibe),
+      quantumVibeAnalysis: vibe,
+      entityCharacteristics: {
+        'source': 'sponsorship_outcome_learning',
+        'entity_role': 'brand',
+        'brand_id': brandId,
+      },
+      tAtomic: tAtomic,
+    ).normalized();
+  }
+
+  Future<QuantumEntityState> getSponsorQuantumState(String sponsorId) async {
+    _ensureQuantumStateInitialized(sponsorId);
+    final tAtomic = await _atomicClockService.getAtomicTimestamp();
+    final vibe = Map<String, double>.from(_sponsorQuantumVibeState[sponsorId]!);
+    return QuantumEntityState(
+      entityId: sponsorId,
+      entityType: QuantumEntityType.sponsor,
+      personalityState: Map<String, double>.from(vibe),
+      quantumVibeAnalysis: vibe,
+      entityCharacteristics: {
+        'source': 'sponsorship_outcome_learning',
+        'entity_role': 'sponsor',
+        'sponsor_id': sponsorId,
+      },
+      tAtomic: tAtomic,
+    ).normalized();
+  }
+
+  Future<void> _recordSponsorshipTuple({
+    required Sponsorship sponsorship,
+    required String eventCategory,
+    Map<String, dynamic>? sponsorshipOutcome,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final tuple = EpisodicTuple(
+        agentId: sponsorship.brandId,
+        stateBefore: {
+          'phase_ref': '1.2.21',
+          'brand_id': sponsorship.brandId,
+          'event_id': sponsorship.eventId,
+          'sponsorship_id': sponsorship.id,
+          'sponsorship_status': sponsorship.status.name,
+        },
+        actionType: 'sponsor_event',
+        actionPayload: {
+          'event_features': {
+            'event_id': sponsorship.eventId,
+            'category': eventCategory,
+          },
+          'sponsorship_features': {
+            'sponsorship_id': sponsorship.id,
+            'type': sponsorship.type.name,
+            'status': sponsorship.status.name,
+            'contribution_amount': sponsorship.contributionAmount,
+            'product_value': sponsorship.productValue,
+          },
+          if (sponsorshipOutcome != null)
+            'sponsorship_outcome': sponsorshipOutcome,
+        },
+        nextState: {
+          'sponsorship_outcome_recorded': sponsorshipOutcome != null,
+          'recorded_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: sponsorshipOutcome == null
+              ? 'sponsor_event'
+              : 'sponsorship_outcome_recorded',
+          parameters: {
+            'sponsorship_id': sponsorship.id,
+            'status': sponsorship.status.name,
+            if (sponsorshipOutcome != null) ...sponsorshipOutcome,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.21',
+          'pipeline': 'sponsorship_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error('Error writing sponsorship tuple', error: e, tag: _logName);
+    }
+  }
+
+  void _ensureQuantumStateInitialized(String brandId) {
+    _brandQuantumVibeState.putIfAbsent(
+      brandId,
+      () => _defaultQuantumVibeState(QuantumEntityType.brand),
+    );
+    _sponsorQuantumVibeState.putIfAbsent(
+      brandId,
+      () => _defaultQuantumVibeState(QuantumEntityType.sponsor),
+    );
+  }
+
+  Map<String, double> _defaultQuantumVibeState(QuantumEntityType type) {
+    switch (type) {
+      case QuantumEntityType.brand:
+        return {
+          'audience_alignment': 0.5,
+          'event_fit': 0.5,
+          'sponsorship_roi': 0.5,
+          'renewal_trust': 0.5,
+          'collaboration_momentum': 0.5,
+        };
+      case QuantumEntityType.sponsor:
+        return {
+          'engagement_yield': 0.5,
+          'quality_uplift': 0.5,
+          'consistency_score': 0.5,
+          'renewal_likelihood': 0.5,
+          'collaboration_momentum': 0.5,
+        };
+      default:
+        return {
+          'collaboration_momentum': 0.5,
+        };
+    }
+  }
+
+  void _updateBrandSponsorQuantumStates({
+    required String brandId,
+    required int attendeeEngagementCount,
+    required double brandAwarenessLift,
+    required double revenueGenerated,
+    required double? contributionAmount,
+    required double? productValue,
+    required double eventQualityImpactRating,
+    bool? repeatSponsorshipIntent,
+  }) {
+    _ensureQuantumStateInitialized(brandId);
+
+    final engagementSignal = (attendeeEngagementCount / 100.0).clamp(0.0, 1.0);
+    final awarenessSignal = brandAwarenessLift.clamp(0.0, 1.0);
+    final qualitySignal = (eventQualityImpactRating / 5.0).clamp(0.0, 1.0);
+    final totalContribution =
+        (contributionAmount ?? 0.0) + (productValue ?? 0.0);
+    final roiBaseline = totalContribution <= 0.0 ? 1.0 : totalContribution;
+    final roiSignal = (revenueGenerated / roiBaseline).clamp(0.0, 1.0);
+    final renewalSignal = repeatSponsorshipIntent == null
+        ? 0.5
+        : (repeatSponsorshipIntent ? 1.0 : 0.0);
+    final momentumSignal = ((engagementSignal +
+                awarenessSignal +
+                qualitySignal +
+                roiSignal +
+                renewalSignal) /
+            5.0)
+        .clamp(0.0, 1.0);
+
+    _brandQuantumVibeState[brandId] = _blendState(
+      current: _brandQuantumVibeState[brandId]!,
+      target: {
+        'audience_alignment': ((engagementSignal + awarenessSignal) / 2.0),
+        'event_fit': qualitySignal,
+        'sponsorship_roi': roiSignal,
+        'renewal_trust': renewalSignal,
+        'collaboration_momentum': momentumSignal,
+      },
+    );
+
+    _sponsorQuantumVibeState[brandId] = _blendState(
+      current: _sponsorQuantumVibeState[brandId]!,
+      target: {
+        'engagement_yield': engagementSignal,
+        'quality_uplift': qualitySignal,
+        'consistency_score': ((awarenessSignal + qualitySignal) / 2.0),
+        'renewal_likelihood': renewalSignal,
+        'collaboration_momentum': momentumSignal,
+      },
+    );
+  }
+
+  Map<String, double> _blendState({
+    required Map<String, double> current,
+    required Map<String, double> target,
+  }) {
+    final blended = <String, double>{};
+    for (final entry in target.entries) {
+      final prev = current[entry.key] ?? 0.5;
+      blended[entry.key] =
+          ((1 - _stateUpdateAlpha) * prev + _stateUpdateAlpha * entry.value)
+              .clamp(0.0, 1.0);
+    }
+    return blended;
+  }
+
   Future<List<Sponsorship>> _getAllSponsorships() async {
     // In production, query database
     return _sponsorships.values.toList();
   }
-  
+
   /// Check if event can be locked (all partnerships and sponsorships approved)
   Future<bool> _canLockEvent(String eventId) async {
     try {
       // Check all partnerships are approved
-      final partnerships = await _partnershipService.getPartnershipsForEvent(eventId);
+      final partnerships =
+          await _partnershipService.getPartnershipsForEvent(eventId);
       for (final partnership in partnerships) {
         if (!partnership.isApproved && !partnership.isLocked) {
           return false;
         }
       }
-      
+
       // Check all sponsorships are approved
       final sponsorships = await getSponsorshipsForEvent(eventId);
       for (final sponsorship in sponsorships) {
@@ -505,51 +792,52 @@ class SponsorshipService {
           return false;
         }
       }
-      
+
       // Check event hasn't started
       final event = await _eventService.getEventById(eventId);
       if (event == null || event.hasStarted) {
         return false;
       }
-      
+
       return true;
     } catch (e) {
-      _logger.error('Error checking if event can be locked', error: e, tag: _logName);
+      _logger.error('Error checking if event can be locked',
+          error: e, tag: _logName);
       return false;
     }
   }
-  
+
   /// Validate status transition
-  bool _isValidStatusTransition(SponsorshipStatus current, SponsorshipStatus next) {
+  bool _isValidStatusTransition(
+      SponsorshipStatus current, SponsorshipStatus next) {
     // Define valid transitions
     switch (current) {
       case SponsorshipStatus.pending:
-        return next == SponsorshipStatus.proposed || 
-               next == SponsorshipStatus.cancelled;
+        return next == SponsorshipStatus.proposed ||
+            next == SponsorshipStatus.cancelled;
       case SponsorshipStatus.proposed:
         return next == SponsorshipStatus.negotiating ||
-               next == SponsorshipStatus.approved ||
-               next == SponsorshipStatus.cancelled;
+            next == SponsorshipStatus.approved ||
+            next == SponsorshipStatus.cancelled;
       case SponsorshipStatus.negotiating:
         return next == SponsorshipStatus.approved ||
-               next == SponsorshipStatus.cancelled;
+            next == SponsorshipStatus.cancelled;
       case SponsorshipStatus.approved:
         return next == SponsorshipStatus.locked ||
-               next == SponsorshipStatus.cancelled;
+            next == SponsorshipStatus.cancelled;
       case SponsorshipStatus.locked:
         return next == SponsorshipStatus.active ||
-               next == SponsorshipStatus.cancelled;
+            next == SponsorshipStatus.cancelled;
       case SponsorshipStatus.active:
         return next == SponsorshipStatus.completed ||
-               next == SponsorshipStatus.disputed;
+            next == SponsorshipStatus.disputed;
       case SponsorshipStatus.completed:
         return false; // Terminal state
       case SponsorshipStatus.cancelled:
         return false; // Terminal state
       case SponsorshipStatus.disputed:
         return next == SponsorshipStatus.cancelled ||
-               next == SponsorshipStatus.completed;
+            next == SponsorshipStatus.completed;
     }
   }
 }
-

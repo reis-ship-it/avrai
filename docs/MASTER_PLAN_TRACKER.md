@@ -27,6 +27,9 @@
 - **Rename inventory helper:** `python3 scripts/suggest_rename_candidates_inventory.py` (finds untracked `*Service` / `*Orchestrator` names for fast logging)
 - **Rename closeout command:** `scripts/run_phase_rename_closeout.sh P#` (autofill + validate in one step per phase)
 - **End-of-phase rename mandate:** before any phase is marked `Done`, run inventory, update register, execute approved renames, and pass `python3 scripts/validate_rename_candidates.py`
+- **Phase branch baseline:** one stable branch per phase (`phase#_work`)
+- **Subsection auto-PR command:** `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
+- **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work/*` into `phase#_work`)
 
 ---
 

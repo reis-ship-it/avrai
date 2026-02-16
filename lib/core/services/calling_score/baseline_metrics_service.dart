@@ -16,6 +16,15 @@ class BaselineEvaluationRecord {
   });
 }
 
+class FormulaEvaluationRecord extends BaselineEvaluationRecord {
+  const FormulaEvaluationRecord({
+    required super.predictedPositive,
+    required super.actualPositive,
+    required super.predictedScore,
+    super.actualScore,
+  });
+}
+
 class BaselineMetricsResult {
   final int totalRecords;
   final int truePositives;
@@ -46,6 +55,12 @@ class BaselineMetricsResult {
 
 class BaselineMetricsService {
   const BaselineMetricsService();
+
+  BaselineMetricsResult calculateFromRecords(
+    List<FormulaEvaluationRecord> records,
+  ) {
+    return evaluate(records);
+  }
 
   BaselineMetricsResult evaluate(List<BaselineEvaluationRecord> records) {
     if (records.isEmpty) {

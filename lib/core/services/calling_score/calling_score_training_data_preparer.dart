@@ -8,6 +8,7 @@ import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/ml/calling_score_neural_model.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/services/calling_score/training_data_preparation_service.dart';
 
 /// Calling Score Training Data Preparer
 ///
@@ -24,6 +25,7 @@ class CallingScoreTrainingDataPreparer {
   final SupabaseClient _supabase;
   final CallingScoreNeuralModel _neuralModel;
   final EpisodicMemoryStore? _episodicMemoryStore;
+  final TrainingDataPreparationService _trainingDataPreparationService;
 
   CallingScoreTrainingDataPreparer({
     required SupabaseClient supabase,
@@ -31,9 +33,12 @@ class CallingScoreTrainingDataPreparer {
         agentIdService, // Not used currently, but kept for future use
     required CallingScoreNeuralModel neuralModel,
     EpisodicMemoryStore? episodicMemoryStore,
+    TrainingDataPreparationService trainingDataPreparationService =
+        const TrainingDataPreparationService(),
   })  : _supabase = supabase,
         _neuralModel = neuralModel,
-        _episodicMemoryStore = episodicMemoryStore;
+        _episodicMemoryStore = episodicMemoryStore,
+        _trainingDataPreparationService = trainingDataPreparationService;
 
   /// Prepare training data for neural network training
   ///
@@ -55,10 +60,11 @@ class CallingScoreTrainingDataPreparer {
       developer.log('Preparing training data for neural network...',
           name: _logName);
 
-      // Validate splits sum to 1.0
-      if ((trainSplit + valSplit + testSplit - 1.0).abs() > 0.001) {
-        throw ArgumentError('Splits must sum to 1.0');
-      }
+      _trainingDataPreparationService.validateSplits(
+        trainSplit: trainSplit,
+        valSplit: valSplit,
+        testSplit: testSplit,
+      );
 
       // Get all training data with outcomes
       final records = await _supabase
@@ -103,7 +109,6 @@ class CallingScoreTrainingDataPreparer {
             'Error processing record ${record['id']}: $e',
             name: _logName,
           );
-          // Skip this record
           continue;
         }
       }
@@ -112,38 +117,31 @@ class CallingScoreTrainingDataPreparer {
         throw StateError('No valid features extracted from records');
       }
 
-      // Normalize features
-      final normalizedFeatures = _normalizeFeatures(features);
-
-      // Split data
-      final trainSize = (normalizedFeatures.length * trainSplit).round();
-      final valSize = (normalizedFeatures.length * valSplit).round();
-
-      final trainFeatures = normalizedFeatures.sublist(0, trainSize);
-      final trainLabels = labels.sublist(0, trainSize);
-
-      final valFeatures =
-          normalizedFeatures.sublist(trainSize, trainSize + valSize);
-      final valLabels = labels.sublist(trainSize, trainSize + valSize);
-
-      final testFeatures = normalizedFeatures.sublist(trainSize + valSize);
-      final testLabels = labels.sublist(trainSize + valSize);
+      final normalizedFeatures =
+          _trainingDataPreparationService.normalizeFeatures(features);
+      final splits = _trainingDataPreparationService.split(
+        features: normalizedFeatures,
+        labels: labels,
+        trainSplit: trainSplit,
+        valSplit: valSplit,
+        testSplit: testSplit,
+      );
 
       developer.log(
         '✅ Training data prepared: '
-        'train=${trainFeatures.length}, '
-        'val=${valFeatures.length}, '
-        'test=${testFeatures.length}',
+        'train=${splits.trainFeatures.length}, '
+        'val=${splits.valFeatures.length}, '
+        'test=${splits.testFeatures.length}',
         name: _logName,
       );
 
       return TrainingDataSplits(
-        trainFeatures: trainFeatures,
-        trainLabels: trainLabels,
-        valFeatures: valFeatures,
-        valLabels: valLabels,
-        testFeatures: testFeatures,
-        testLabels: testLabels,
+        trainFeatures: splits.trainFeatures,
+        trainLabels: splits.trainLabels,
+        valFeatures: splits.valFeatures,
+        valLabels: splits.valLabels,
+        testFeatures: splits.testFeatures,
+        testLabels: splits.testLabels,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -171,9 +169,11 @@ class CallingScoreTrainingDataPreparer {
       throw StateError('EpisodicMemoryStore not configured');
     }
 
-    if ((trainSplit + valSplit + testSplit - 1.0).abs() > 0.001) {
-      throw ArgumentError('Splits must sum to 1.0');
-    }
+    _trainingDataPreparationService.validateSplits(
+      trainSplit: trainSplit,
+      valSplit: valSplit,
+      testSplit: testSplit,
+    );
 
     final tuples = windowStartInclusive != null && windowEndExclusive != null
         ? await episodicStore.replayWindow(
@@ -202,17 +202,23 @@ class CallingScoreTrainingDataPreparer {
       labels.add(tuple.outcome.value.clamp(0.0, 1.0));
     }
 
-    final normalizedFeatures = _normalizeFeatures(features);
-    final trainSize = (normalizedFeatures.length * trainSplit).round();
-    final valSize = (normalizedFeatures.length * valSplit).round();
+    final normalizedFeatures =
+        _trainingDataPreparationService.normalizeFeatures(features);
+    final splits = _trainingDataPreparationService.split(
+      features: normalizedFeatures,
+      labels: labels,
+      trainSplit: trainSplit,
+      valSplit: valSplit,
+      testSplit: testSplit,
+    );
 
     return TrainingDataSplits(
-      trainFeatures: normalizedFeatures.sublist(0, trainSize),
-      trainLabels: labels.sublist(0, trainSize),
-      valFeatures: normalizedFeatures.sublist(trainSize, trainSize + valSize),
-      valLabels: labels.sublist(trainSize, trainSize + valSize),
-      testFeatures: normalizedFeatures.sublist(trainSize + valSize),
-      testLabels: labels.sublist(trainSize + valSize),
+      trainFeatures: splits.trainFeatures,
+      trainLabels: splits.trainLabels,
+      valFeatures: splits.valFeatures,
+      valLabels: splits.valLabels,
+      testFeatures: splits.testFeatures,
+      testLabels: splits.testLabels,
     );
   }
 
@@ -241,7 +247,7 @@ class CallingScoreTrainingDataPreparer {
           );
 
     return tuples
-        .map((tuple) => _toModelRecord(tuple))
+        .map(_toModelRecord)
         .map((record) => {
               'user_vibe_dimensions': record['user_vibe_dimensions'],
               'spot_vibe_dimensions': record['spot_vibe_dimensions'],
@@ -253,47 +259,6 @@ class CallingScoreTrainingDataPreparer {
               'outcome_score': record['outcome_score'],
             })
         .toList(growable: false);
-  }
-
-  /// Normalize features (min-max scaling to [0, 1])
-  ///
-  /// **Parameters:**
-  /// - `features`: Raw feature vectors
-  ///
-  /// **Returns:**
-  /// Normalized feature vectors
-  List<List<double>> _normalizeFeatures(List<List<double>> features) {
-    if (features.isEmpty) return [];
-
-    final numFeatures = features.first.length;
-    final mins = List<double>.filled(numFeatures, double.infinity);
-    final maxs = List<double>.filled(numFeatures, double.negativeInfinity);
-
-    // Find min and max for each feature
-    for (final featureVector in features) {
-      for (int i = 0; i < numFeatures; i++) {
-        if (featureVector[i] < mins[i]) mins[i] = featureVector[i];
-        if (featureVector[i] > maxs[i]) maxs[i] = featureVector[i];
-      }
-    }
-
-    // Normalize features
-    final normalized = <List<double>>[];
-    for (final featureVector in features) {
-      final normalizedVector = <double>[];
-      for (int i = 0; i < numFeatures; i++) {
-        final range = maxs[i] - mins[i];
-        if (range > 0.001) {
-          normalizedVector.add((featureVector[i] - mins[i]) / range);
-        } else {
-          // If range is too small, keep original value (or set to 0.5)
-          normalizedVector.add(0.5);
-        }
-      }
-      normalized.add(normalizedVector);
-    }
-
-    return normalized;
   }
 
   Map<String, dynamic> _toModelRecord(EpisodicTuple tuple) {

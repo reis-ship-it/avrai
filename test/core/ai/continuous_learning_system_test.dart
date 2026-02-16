@@ -202,6 +202,437 @@ void main() {
       expect(rows.first.outcome.type, 'recommendation_rejected');
       expect(rows.first.outcome.value, 0.0);
     });
+
+    test('records passive-to-active intent transition for spot conversion',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'spot',
+            'entity_id': 'spot-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'spot_visited',
+          'parameters': {'spot_id': 'spot-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      expect(rows.any((r) => r.actionType == 'intent_transition'), isTrue);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_id'], 'spot-transition-1');
+    });
+
+    test('records active-to-passive intent transition for spot regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'spot_visited',
+          'parameters': {'spot_id': 'spot-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'spot',
+            'entity_id': 'spot-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transitions =
+          rows.where((r) => r.actionType == 'intent_transition').toList();
+      expect(transitions, isNotEmpty);
+      expect(transitions.first.outcome.type, 'active_to_passive_regression');
+      expect(transitions.first.actionPayload['entity_id'], 'spot-transition-2');
+    });
+
+    test('records passive-to-active intent transition for business engagement',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'business',
+            'entity_id': 'business-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'engage_business',
+          'parameters': {'business_id': 'business-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'business');
+      expect(transition.actionPayload['entity_id'], 'business-transition-1');
+      expect(transition.actionPayload['to_action'], 'engage_business');
+    });
+
+    test('records passive-to-active intent transition for event attendance',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'event',
+            'entity_id': 'event-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'attend_event',
+          'parameters': {'event_id': 'event-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'event');
+      expect(transition.actionPayload['entity_id'], 'event-transition-1');
+      expect(transition.actionPayload['to_action'], 'attend_event');
+    });
+
+    test('records passive-to-active intent transition for community join',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'community',
+            'entity_id': 'community-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'join_community',
+          'parameters': {'community_id': 'community-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'community');
+      expect(transition.actionPayload['entity_id'], 'community-transition-1');
+      expect(transition.actionPayload['to_action'], 'join_community');
+    });
+
+    test('records passive-to-active intent transition for list save', () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'list',
+            'entity_id': 'list-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'save_list',
+          'parameters': {'list_id': 'list-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'list');
+      expect(transition.actionPayload['entity_id'], 'list-transition-1');
+      expect(transition.actionPayload['to_action'], 'save_list');
+    });
+
+    test('records passive-to-active intent transition for brand sponsorship',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'brand',
+            'entity_id': 'brand-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'sponsor_event',
+          'parameters': {'brand_id': 'brand-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'brand');
+      expect(transition.actionPayload['entity_id'], 'brand-transition-1');
+      expect(transition.actionPayload['to_action'], 'sponsor_event');
+    });
+
+    test('records passive-to-active intent transition for sponsor proposal',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'sponsor',
+            'entity_id': 'sponsor-transition-1',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'propose_sponsorship',
+          'parameters': {'sponsor_id': 'sponsor-transition-1'},
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 3);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'passive_to_active_conversion');
+      expect(transition.actionPayload['entity_type'], 'sponsor');
+      expect(transition.actionPayload['entity_id'], 'sponsor-transition-1');
+      expect(transition.actionPayload['to_action'], 'propose_sponsorship');
+    });
+
+    test('records active-to-passive intent transition for event regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'attend_event',
+          'parameters': {'event_id': 'event-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'event',
+            'entity_id': 'event-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'active_to_passive_regression');
+      expect(transition.actionPayload['entity_type'], 'event');
+      expect(transition.actionPayload['entity_id'], 'event-transition-2');
+      expect(transition.actionPayload['from_action'], 'attend_event');
+      expect(transition.actionPayload['to_action'], 'browse_entity');
+    });
+
+    test('records active-to-passive intent transition for community regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'join_community',
+          'parameters': {'community_id': 'community-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'community',
+            'entity_id': 'community-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'active_to_passive_regression');
+      expect(transition.actionPayload['entity_type'], 'community');
+      expect(transition.actionPayload['entity_id'], 'community-transition-2');
+      expect(transition.actionPayload['from_action'], 'join_community');
+      expect(transition.actionPayload['to_action'], 'browse_entity');
+    });
+
+    test('records active-to-passive intent transition for list regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'save_list',
+          'parameters': {'list_id': 'list-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'list',
+            'entity_id': 'list-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'active_to_passive_regression');
+      expect(transition.actionPayload['entity_type'], 'list');
+      expect(transition.actionPayload['entity_id'], 'list-transition-2');
+      expect(transition.actionPayload['from_action'], 'save_list');
+      expect(transition.actionPayload['to_action'], 'browse_entity');
+    });
+
+    test('records active-to-passive intent transition for brand regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'sponsor_event',
+          'parameters': {'brand_id': 'brand-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'brand',
+            'entity_id': 'brand-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'active_to_passive_regression');
+      expect(transition.actionPayload['entity_type'], 'brand');
+      expect(transition.actionPayload['entity_id'], 'brand-transition-2');
+      expect(transition.actionPayload['from_action'], 'sponsor_event');
+      expect(transition.actionPayload['to_action'], 'browse_entity');
+    });
+
+    test('records active-to-passive intent transition for sponsor regression',
+        () async {
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'propose_sponsorship',
+          'parameters': {'sponsor_id': 'sponsor-transition-2'},
+          'context': {},
+        },
+      );
+
+      await learningSystem.processUserInteraction(
+        userId: 'test-user-id',
+        payload: {
+          'event_type': 'browse_entity',
+          'parameters': {
+            'entity_type': 'sponsor',
+            'entity_id': 'sponsor-transition-2',
+            'no_action': true,
+          },
+          'context': {},
+        },
+      );
+
+      final rows = await episodicMemoryStore.getRecent(limit: 4);
+      final transition =
+          rows.firstWhere((r) => r.actionType == 'intent_transition');
+      expect(transition.outcome.type, 'active_to_passive_regression');
+      expect(transition.actionPayload['entity_type'], 'sponsor');
+      expect(transition.actionPayload['entity_id'], 'sponsor-transition-2');
+      expect(transition.actionPayload['from_action'], 'propose_sponsorship');
+      expect(transition.actionPayload['to_action'], 'browse_entity');
+    });
   });
 
   group('LearningEvent Model', () {

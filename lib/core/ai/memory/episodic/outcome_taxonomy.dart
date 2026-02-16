@@ -67,11 +67,18 @@ class OutcomeTaxonomy {
       case 'event_attended':
       case 'event_attend':
       case 'community_join':
+      case 'engage_business':
+      case 'create_reservation':
+      case 'attend_event':
       case 'create_list':
       case 'modify_list':
       case 'share_list':
       case 'checkin_confirmed':
       case 'actual_action_succeeded':
+      case 'sponsor_event':
+      case 'form_partnership':
+      case 'chat_started':
+      case 'partnership_formed':
         return OutcomeSignal(
           type: eventType,
           category: OutcomeCategory.binary,
@@ -89,10 +96,19 @@ class OutcomeTaxonomy {
         );
       case 'rating_submitted':
       case 'feedback_rating':
+      case 'attend_expert_event_feedback':
+      case 'sponsorship_outcome_recorded':
+      case 'partnership_outcome_recorded':
+      case 'event_outcome':
+      case 'business_partnership_outcome':
+      case 'engagement_outcome':
         return OutcomeSignal(
           type: eventType,
           category: OutcomeCategory.quality,
-          value: (parameters['rating'] as num?)?.toDouble() ?? 0.0,
+          value: (parameters['overall_rating'] as num?)?.toDouble() ??
+              (parameters['mutual_satisfaction_rating'] as num?)?.toDouble() ??
+              (parameters['rating'] as num?)?.toDouble() ??
+              0.0,
           metadata: parameters,
         );
       case 'return_visit_within_days':
@@ -107,6 +123,42 @@ class OutcomeTaxonomy {
           type: eventType,
           category: OutcomeCategory.behavioral,
           value: 0.5,
+          metadata: parameters,
+        );
+      case 'no_action':
+        return OutcomeSignal(
+          type: eventType,
+          category: OutcomeCategory.behavioral,
+          value: 0.0,
+          metadata: parameters,
+        );
+      case 'browse_entity':
+        if (parameters['no_action'] == true) {
+          return OutcomeSignal(
+            type: 'no_action',
+            category: OutcomeCategory.behavioral,
+            value: 0.0,
+            metadata: parameters,
+          );
+        }
+        return OutcomeSignal(
+          type: eventType,
+          category: OutcomeCategory.behavioral,
+          value: (parameters['shift_magnitude'] as num?)?.toDouble() ?? 0.0,
+          metadata: parameters,
+        );
+      case 'passive_to_active_conversion':
+        return OutcomeSignal(
+          type: eventType,
+          category: OutcomeCategory.behavioral,
+          value: 1.0,
+          metadata: parameters,
+        );
+      case 'active_to_passive_regression':
+        return OutcomeSignal(
+          type: eventType,
+          category: OutcomeCategory.behavioral,
+          value: -1.0,
           metadata: parameters,
         );
       default:

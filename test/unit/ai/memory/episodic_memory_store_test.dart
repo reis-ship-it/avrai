@@ -272,5 +272,65 @@ void main() {
       expect(signal.category, OutcomeCategory.behavioral);
       expect(signal.value, 0.5);
     });
+
+    test('classifies no_action as behavioral exploration outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'no_action',
+        parameters: const {'entity_type': 'spot'},
+      );
+      expect(signal.category, OutcomeCategory.behavioral);
+      expect(signal.value, 0.0);
+    });
+
+    test('classifies attend_expert_event_feedback as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'attend_expert_event_feedback',
+        parameters: const {'overall_rating': 4.6},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.6);
+    });
+
+    test('classifies sponsor_event as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'sponsor_event',
+        parameters: const {'sponsorship_id': 'sp-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies sponsorship_outcome_recorded as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'sponsorship_outcome_recorded',
+        parameters: const {'overall_rating': 4.1},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.1);
+    });
+
+    test('classifies form_partnership as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'form_partnership',
+        parameters: const {'partnership_id': 'pt-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies partnership_outcome_recorded as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'partnership_outcome_recorded',
+        parameters: const {'overall_rating': 4.3},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.3);
+    });
   });
 }

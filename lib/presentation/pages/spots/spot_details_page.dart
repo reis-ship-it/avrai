@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/misc/list.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/category_colors.dart';
@@ -38,7 +43,9 @@ class SpotDetailsPage extends StatefulWidget {
 class _SpotDetailsPageState extends State<SpotDetailsPage> {
   late EventLogger _eventLogger;
   DateTime? _viewStartTime;
+  String? _currentUserId;
   bool _isInitialized = false;
+  bool _hasFollowUpAction = false;
 
   // Reservation state
   bool _isCheckingReservation = false;
@@ -59,6 +66,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
       _eventLogger = di.sl<EventLogger>();
       final currentUser = Supabase.instance.client.auth.currentUser;
       if (currentUser != null) {
+        _currentUserId = currentUser.id;
         await _eventLogger.initialize(userId: currentUser.id);
         _eventLogger.updateScreen('spot_details');
 
@@ -146,6 +154,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
   }
 
   void _navigateToCreateReservation() {
+    _hasFollowUpAction = true;
     Navigator.of(context)
         .push(
       MaterialPageRoute(
@@ -172,8 +181,80 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
         durationMs: duration.inMilliseconds,
         interactionType: 'view',
       );
+      if (!_hasFollowUpAction) {
+        _eventLogger.logBrowseNoAction(
+          entityType: 'spot',
+          entityId: widget.spot.id,
+          browseDurationMs: duration.inMilliseconds,
+          surface: 'spot_details',
+        );
+        unawaited(_recordBrowseNoActionTuple(duration.inMilliseconds));
+      }
     }
     super.dispose();
+  }
+
+  Future<void> _recordBrowseNoActionTuple(int durationMs) async {
+    try {
+      if (!di.sl.isRegistered<EpisodicMemoryStore>() ||
+          !di.sl.isRegistered<AgentIdService>()) {
+        return;
+      }
+      final userId = _currentUserId;
+      if (userId == null || userId.isEmpty) return;
+
+      final agentIdService = di.sl<AgentIdService>();
+      final episodicStore = di.sl<EpisodicMemoryStore>();
+      final outcomeTaxonomy = const OutcomeTaxonomy();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.19',
+          'surface': 'spot_details',
+          'entity_type': 'spot',
+          'entity_id': widget.spot.id,
+        },
+        actionType: 'browse_entity',
+        actionPayload: {
+          'entity_type': 'spot',
+          'entity_features': {
+            'spot_id': widget.spot.id,
+            'category': widget.spot.category,
+            'rating': widget.spot.rating,
+            'latitude': widget.spot.latitude,
+            'longitude': widget.spot.longitude,
+            'tags': widget.spot.tags,
+          },
+          'browse_context': {
+            'duration_ms': durationMs,
+            'surface': 'spot_details',
+          },
+        },
+        nextState: const {
+          'no_action': true,
+          'browse_session_complete': true,
+        },
+        outcome: outcomeTaxonomy.classify(
+          eventType: 'no_action',
+          parameters: {
+            'entity_type': 'spot',
+            'entity_id': widget.spot.id,
+            'duration_ms': durationMs,
+            'surface': 'spot_details',
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.19',
+          'pipeline': 'spot_details_page',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (_) {
+      // Non-critical signal capture; UI teardown should remain resilient.
+    }
   }
 
   @override
@@ -454,10 +535,12 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
   }
 
   void _navigateToEdit(BuildContext context) {
+    _hasFollowUpAction = true;
     context.go('/spot/${widget.spot.id}/edit');
   }
 
   void _showShareDialog(BuildContext context) {
+    _hasFollowUpAction = true;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -771,6 +854,7 @@ Shared from avrai''';
   }
 
   void _showAddToListDialog(BuildContext context) {
+    _hasFollowUpAction = true;
     showDialog(
       context: context,
       builder: (context) => BlocBuilder<ListsBloc, ListsState>(

@@ -30,6 +30,7 @@ import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/unified_evolution_orchestrator.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai/core/ai/event_queue.dart';
@@ -740,6 +741,9 @@ Future<void> registerAIServices(GetIt sl) async {
   sl.registerLazySingleton(() => BusinessExpertOutreachService(
         partnershipService: sl<PartnershipService>(),
         chatService: sl<BusinessExpertChatServiceAI2AI>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Business-Business Outreach Service (partnership discovery)
@@ -747,6 +751,9 @@ Future<void> registerAIServices(GetIt sl) async {
         partnershipService: sl<PartnershipService>(),
         businessService: sl<BusinessAccountService>(),
         chatService: sl<BusinessBusinessChatServiceAI2AI>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Business Member Service (multi-user support)

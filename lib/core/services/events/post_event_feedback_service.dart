@@ -1,20 +1,25 @@
-import 'package:avrai/core/models/events/event_feedback.dart' hide PartnerRating;
+import 'package:avrai/core/models/events/event_feedback.dart'
+    hide PartnerRating;
+import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/expertise/partner_rating.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Post-Event Feedback Service
-/// 
+///
 /// Handles feedback collection and partner ratings after events.
-/// 
+///
 /// **Philosophy Alignment:**
 /// - Opens doors to continuous improvement
 /// - Enables learning from experiences
 /// - Supports community growth through feedback
 /// - Feeds into vibe matching algorithm
-/// 
+///
 /// **Responsibilities:**
 /// - Schedule feedback collection (2 hours after event)
 /// - Send feedback requests to attendees
@@ -23,17 +28,17 @@ import 'package:uuid/uuid.dart';
 /// - Submit partner ratings
 /// - Update event aggregate ratings
 /// - Update host/partner reputation
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final feedbackService = PostEventFeedbackService(
 ///   eventService,
 ///   partnershipService,
 /// );
-/// 
+///
 /// // Schedule feedback collection
 /// await feedbackService.scheduleFeedbackCollection('event-123');
-/// 
+///
 /// // Submit feedback
 /// final feedback = await feedbackService.submitFeedback(
 ///   eventId: 'event-123',
@@ -46,84 +51,95 @@ import 'package:uuid/uuid.dart';
 /// ```
 class PostEventFeedbackService {
   static const String _logName = 'PostEventFeedbackService';
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final Uuid _uuid = const Uuid();
-  
+
   final ExpertiseEventService _eventService;
   final PartnershipService? _partnershipService;
-  
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+
   // In-memory storage for feedback (in production, use database)
   final Map<String, EventFeedback> _feedback = {};
   final Map<String, PartnerRating> _partnerRatings = {};
-  
+
   PostEventFeedbackService({
     required ExpertiseEventService eventService,
     PartnershipService? partnershipService,
-  }) : _eventService = eventService,
-       _partnershipService = partnershipService;
-  
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+  })  : _eventService = eventService,
+        _partnershipService = partnershipService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy;
+
   /// Schedule feedback collection after event
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get event details
   /// 2. Calculate feedback time (2 hours after event ends)
   /// 3. Schedule notification/request
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
-  /// 
+  ///
   /// **Returns:**
   /// Scheduled feedback time
   Future<DateTime> scheduleFeedbackCollection(String eventId) async {
     try {
-      _logger.info('Scheduling feedback collection: event=$eventId', tag: _logName);
-      
+      _logger.info('Scheduling feedback collection: event=$eventId',
+          tag: _logName);
+
       final event = await _eventService.getEventById(eventId);
       if (event == null) {
         throw Exception('Event not found: $eventId');
       }
-      
+
       // Schedule for 2 hours after event ends
       final feedbackTime = event.endTime.add(const Duration(hours: 2));
-      
+
       // In production, schedule notification/request
       await _scheduleNotification(
         eventId: eventId,
         scheduledFor: feedbackTime,
         type: NotificationType.feedbackRequest,
       );
-      
-      _logger.info('Feedback collection scheduled: event=$eventId, time=$feedbackTime', tag: _logName);
-      
+
+      _logger.info(
+          'Feedback collection scheduled: event=$eventId, time=$feedbackTime',
+          tag: _logName);
+
       return feedbackTime;
     } catch (e) {
-      _logger.error('Error scheduling feedback collection', error: e, tag: _logName);
+      _logger.error('Error scheduling feedback collection',
+          error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
   /// Send feedback requests to all attendees and partners
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get event and attendees
   /// 2. Get event partners
   /// 3. Send feedback requests to attendees
   /// 4. Send partner mutual rating requests
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
   Future<void> sendFeedbackRequests(String eventId) async {
     try {
       _logger.info('Sending feedback requests: event=$eventId', tag: _logName);
-      
+
       final event = await _eventService.getEventById(eventId);
       if (event == null) {
         throw Exception('Event not found: $eventId');
       }
-      
+
       // Get attendees
       final attendees = event.attendeeIds;
-      
+
       // Request attendee feedback
       for (final attendeeId in attendees) {
         await _sendFeedbackRequest(
@@ -132,11 +148,12 @@ class PostEventFeedbackService {
           type: FeedbackType.attendee,
         );
       }
-      
+
       // Get partners and request mutual ratings
       if (_partnershipService != null) {
-        final partnerships = await _partnershipService.getPartnershipsForEvent(eventId);
-        
+        final partnerships =
+            await _partnershipService.getPartnershipsForEvent(eventId);
+
         for (final partnership in partnerships) {
           // Request rating from user to business
           await _sendPartnerRatingRequest(
@@ -145,7 +162,7 @@ class PostEventFeedbackService {
             otherPartnerId: partnership.businessId,
             partnershipRole: 'business',
           );
-          
+
           // Request rating from business to user
           await _sendPartnerRatingRequest(
             partnerId: partnership.businessId,
@@ -155,22 +172,24 @@ class PostEventFeedbackService {
           );
         }
       }
-      
-      _logger.info('Feedback requests sent: event=$eventId, attendees=${attendees.length}', tag: _logName);
+
+      _logger.info(
+          'Feedback requests sent: event=$eventId, attendees=${attendees.length}',
+          tag: _logName);
     } catch (e) {
       _logger.error('Error sending feedback requests', error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
   /// Submit attendee feedback
-  /// 
+  ///
   /// **Flow:**
   /// 1. Create feedback record
   /// 2. Save feedback
   /// 3. Update event aggregate ratings
   /// 4. Update host reputation
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
   /// - `userId`: User ID submitting feedback
@@ -181,7 +200,10 @@ class PostEventFeedbackService {
   /// - `improvements`: Optional improvements
   /// - `wouldAttendAgain`: Would attend again?
   /// - `wouldRecommend`: Would recommend?
-  /// 
+  /// - `topicRelevanceRating`: Optional topic relevance rating (1-5)
+  /// - `expertiseLevelMatch`: Optional attendee expertise fit
+  ///   (`too_basic`, `just_right`, `too_advanced`)
+  ///
   /// **Returns:**
   /// Created feedback record
   Future<EventFeedback> submitFeedback({
@@ -194,10 +216,13 @@ class PostEventFeedbackService {
     List<String>? improvements,
     required bool wouldAttendAgain,
     required bool wouldRecommend,
+    double? topicRelevanceRating,
+    String? expertiseLevelMatch,
   }) async {
     try {
-      _logger.info('Submitting feedback: event=$eventId, user=$userId', tag: _logName);
-      
+      _logger.info('Submitting feedback: event=$eventId, user=$userId',
+          tag: _logName);
+
       // Step 1: Create feedback record
       final feedback = EventFeedback(
         id: 'feedback_${_uuid.v4()}',
@@ -212,34 +237,132 @@ class PostEventFeedbackService {
         submittedAt: DateTime.now(),
         wouldAttendAgain: wouldAttendAgain,
         wouldRecommend: wouldRecommend,
+        metadata: {
+          if (topicRelevanceRating != null)
+            'topic_relevance_rating': topicRelevanceRating,
+          if (expertiseLevelMatch != null)
+            'expertise_level_match': expertiseLevelMatch,
+        },
       );
-      
+
       // Step 2: Save feedback
       await _saveFeedback(feedback);
-      
+
+      final event = await _eventService.getEventById(eventId);
+      await _recordExpertEventDetailedFeedbackTuple(
+        event: event,
+        feedback: feedback,
+        topicRelevanceRating: topicRelevanceRating,
+        expertiseLevelMatch: expertiseLevelMatch,
+      );
+
       // Step 3: Update event aggregate ratings
       await _updateEventRatings(eventId);
-      
+
       // Step 4: Update host rating
       await _updateHostRating(eventId);
-      
+
       _logger.info('Feedback submitted: ${feedback.id}', tag: _logName);
-      
+
       return feedback;
     } catch (e) {
       _logger.error('Error submitting feedback', error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
+  Future<void> _recordExpertEventDetailedFeedbackTuple({
+    required ExpertiseEvent? event,
+    required EventFeedback feedback,
+    double? topicRelevanceRating,
+    String? expertiseLevelMatch,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null || event == null) return;
+
+    try {
+      final eventType = event.eventType.name;
+      final eventCategory = event.category;
+      final hostExpertiseLevel = event.host.expertiseMap[eventCategory] ??
+          event.host.expertise?.toString() ??
+          'unknown';
+      final inferredTopicRelevance =
+          topicRelevanceRating ?? feedback.categoryRatings['topic_relevance'];
+
+      final priorFeedbackCount = _feedback.values
+          .where((f) =>
+              f.userId == feedback.userId && f.eventId != feedback.eventId)
+          .length;
+
+      final tuple = EpisodicTuple(
+        agentId: feedback.userId,
+        stateBefore: {
+          'phase_ref': '1.2.20',
+          'attendee_id': feedback.userId,
+          'event_id': feedback.eventId,
+          'prior_feedback_count': priorFeedbackCount,
+        },
+        actionType: 'attend_expert_event',
+        actionPayload: {
+          'expert_event_features': {
+            'event_id': feedback.eventId,
+            'event_type': eventType,
+            'category': eventCategory,
+            'host_id': event.host.id,
+            'host_expertise_level': hostExpertiseLevel,
+            'attendee_count': event.attendeeCount,
+            'spot_count': event.spots.length,
+            'is_paid': event.isPaid,
+            'price': event.price,
+          },
+          'detailed_feedback': {
+            'overall_rating': feedback.overallRating,
+            'topic_relevance_rating': inferredTopicRelevance,
+            'would_attend_again': feedback.wouldAttendAgain,
+            'would_recommend': feedback.wouldRecommend,
+            'expertise_level_match': expertiseLevelMatch ??
+                feedback.metadata['expertise_level_match'],
+            'category_ratings': feedback.categoryRatings,
+          },
+        },
+        nextState: {
+          'feedback_submitted': true,
+          'submitted_at': feedback.submittedAt.toIso8601String(),
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'attend_expert_event_feedback',
+          parameters: {
+            'overall_rating': feedback.overallRating,
+            'topic_relevance_rating': inferredTopicRelevance,
+            'would_attend_again': feedback.wouldAttendAgain,
+            'expertise_level_match': expertiseLevelMatch ??
+                feedback.metadata['expertise_level_match'],
+          },
+        ),
+        metadata: {
+          'phase_ref': '1.2.20',
+          'pipeline': 'post_event_feedback_service',
+        },
+      );
+
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error(
+        'Error recording expert event detailed feedback tuple',
+        error: e,
+        tag: _logName,
+      );
+    }
+  }
+
   /// Submit partner rating
-  /// 
+  ///
   /// **Flow:**
   /// 1. Create partner rating record
   /// 2. Save rating
   /// 3. Update partner's overall rating
   /// 4. Feed into vibe matching algorithm
-  /// 
+  ///
   /// **Parameters:**
   /// - `eventId`: Event ID
   /// - `raterId`: User ID rating
@@ -252,7 +375,7 @@ class PostEventFeedbackService {
   /// - `wouldPartnerAgain`: Would partner again? (1-5)
   /// - `positives`: Optional positive feedback
   /// - `improvements`: Optional improvement suggestions
-  /// 
+  ///
   /// **Returns:**
   /// Created partner rating record
   Future<PartnerRating> submitPartnerRating({
@@ -269,14 +392,17 @@ class PostEventFeedbackService {
     String? improvements,
   }) async {
     try {
-      _logger.info('Submitting partner rating: event=$eventId, rater=$raterId, rated=$ratedId', tag: _logName);
-      
+      _logger.info(
+          'Submitting partner rating: event=$eventId, rater=$raterId, rated=$ratedId',
+          tag: _logName);
+
       // Step 1: Create partner rating record
       final now = DateTime.now();
       final rating = PartnerRating(
         id: 'rating_${_uuid.v4()}',
         eventId: eventId,
-        partnershipId: 'partnership_${eventId}_$ratedId', // Generate partnership ID
+        partnershipId:
+            'partnership_${eventId}_$ratedId', // Generate partnership ID
         raterId: raterId,
         ratedId: ratedId,
         partnershipRole: partnershipRole,
@@ -290,141 +416,150 @@ class PostEventFeedbackService {
         submittedAt: now,
         updatedAt: now,
       );
-      
+
       // Step 2: Save rating
       await _savePartnerRating(rating);
-      
+
       // Step 3: Update partner's overall rating
       await _updatePartnerReputation(ratedId);
-      
+
       // Step 4: Feed into vibe matching algorithm
       await _updateVibeCompatibility(raterId, ratedId, rating);
-      
+
       _logger.info('Partner rating submitted: ${rating.id}', tag: _logName);
-      
+
       return rating;
     } catch (e) {
       _logger.error('Error submitting partner rating', error: e, tag: _logName);
       rethrow;
     }
   }
-  
+
   /// Get feedback for an event
   Future<List<EventFeedback>> getFeedbackForEvent(String eventId) async {
     try {
-      return _feedback.values
-          .where((f) => f.eventId == eventId)
-          .toList();
+      return _feedback.values.where((f) => f.eventId == eventId).toList();
     } catch (e) {
-      _logger.error('Error getting feedback for event', error: e, tag: _logName);
+      _logger.error('Error getting feedback for event',
+          error: e, tag: _logName);
       return [];
     }
   }
-  
+
   /// Get feedback for an event (alias for EventSuccessAnalysisService)
   Future<List<EventFeedback>> getEventFeedback(String eventId) async {
     return getFeedbackForEvent(eventId);
   }
-  
+
   /// Get partner ratings for an event
   Future<List<PartnerRating>> getPartnerRatingsForEvent(String eventId) async {
     try {
-      return _partnerRatings.values
-          .where((r) => r.eventId == eventId)
-          .toList();
+      return _partnerRatings.values.where((r) => r.eventId == eventId).toList();
     } catch (e) {
-      _logger.error('Error getting partner ratings for event', error: e, tag: _logName);
+      _logger.error('Error getting partner ratings for event',
+          error: e, tag: _logName);
       return [];
     }
   }
-  
+
   /// Get partner ratings for an event (alias for EventSuccessAnalysisService)
   Future<List<PartnerRating>> getEventPartnerRatings(String eventId) async {
     return getPartnerRatingsForEvent(eventId);
   }
-  
+
   // Private helper methods
-  
+
   Future<void> _saveFeedback(EventFeedback feedback) async {
     // In production, save to database
     _feedback[feedback.id] = feedback;
   }
-  
+
   Future<void> _savePartnerRating(PartnerRating rating) async {
     // In production, save to database
     _partnerRatings[rating.id] = rating;
   }
-  
+
   Future<void> _updateEventRatings(String eventId) async {
     // In production, calculate and update aggregate ratings
     final allFeedback = await getFeedbackForEvent(eventId);
     if (allFeedback.isEmpty) {
       return;
     }
-    
-    final avgRating = allFeedback
-        .map((f) => f.overallRating)
-        .reduce((a, b) => a + b) / allFeedback.length;
-    
-    _logger.info('Updated event ratings: event=$eventId, avgRating=${avgRating.toStringAsFixed(2)}', tag: _logName);
+
+    final avgRating =
+        allFeedback.map((f) => f.overallRating).reduce((a, b) => a + b) /
+            allFeedback.length;
+
+    _logger.info(
+        'Updated event ratings: event=$eventId, avgRating=${avgRating.toStringAsFixed(2)}',
+        tag: _logName);
     // TODO: Update event model with aggregate ratings
   }
-  
+
   Future<void> _updateHostRating(String eventId) async {
     // In production, update host's reputation/rating
     final event = await _eventService.getEventById(eventId);
     if (event == null) {
       return;
     }
-    
-    _logger.info('Updated host rating: host=${event.host.id}, event=$eventId', tag: _logName);
+
+    _logger.info('Updated host rating: host=${event.host.id}, event=$eventId',
+        tag: _logName);
     // TODO: Update host reputation in user model
   }
-  
+
   Future<void> _updatePartnerReputation(String partnerId) async {
     // In production, update partner's overall reputation
-    final ratings = _partnerRatings.values
-        .where((r) => r.ratedId == partnerId)
-        .toList();
-    
+    final ratings =
+        _partnerRatings.values.where((r) => r.ratedId == partnerId).toList();
+
     if (ratings.isEmpty) {
       return;
     }
-    
-    final avgRating = ratings
-        .map((r) => r.overallRating)
-        .reduce((a, b) => a + b) / ratings.length;
-    
-    _logger.info('Updated partner reputation: partner=$partnerId, avgRating=${avgRating.toStringAsFixed(2)}', tag: _logName);
+
+    final avgRating =
+        ratings.map((r) => r.overallRating).reduce((a, b) => a + b) /
+            ratings.length;
+
+    _logger.info(
+        'Updated partner reputation: partner=$partnerId, avgRating=${avgRating.toStringAsFixed(2)}',
+        tag: _logName);
     // TODO: Update partner reputation in business/user model
   }
-  
-  Future<void> _updateVibeCompatibility(String raterId, String ratedId, PartnerRating rating) async {
+
+  Future<void> _updateVibeCompatibility(
+      String raterId, String ratedId, PartnerRating rating) async {
     // In production, feed into vibe matching algorithm
-    _logger.info('Updating vibe compatibility: rater=$raterId, rated=$ratedId, rating=${rating.overallRating}', tag: _logName);
+    _logger.info(
+        'Updating vibe compatibility: rater=$raterId, rated=$ratedId, rating=${rating.overallRating}',
+        tag: _logName);
     // TODO: Integrate with vibe matching algorithm
   }
-  
+
   Future<void> _scheduleNotification({
     required String eventId,
     required DateTime scheduledFor,
     required NotificationType type,
   }) async {
     // In production, schedule notification
-    _logger.info('Scheduled notification: event=$eventId, time=$scheduledFor, type=$type', tag: _logName);
+    _logger.info(
+        'Scheduled notification: event=$eventId, time=$scheduledFor, type=$type',
+        tag: _logName);
     // TODO: Implement notification scheduling
   }
-  
+
   Future<void> _sendFeedbackRequest({
     required String userId,
     required String eventId,
     required FeedbackType type,
   }) async {
     // In production, send notification/request
-    _logger.info('Sending feedback request: user=$userId, event=$eventId, type=$type', tag: _logName);
+    _logger.info(
+        'Sending feedback request: user=$userId, event=$eventId, type=$type',
+        tag: _logName);
     // TODO: Implement notification system
   }
-  
+
   Future<void> _sendPartnerRatingRequest({
     required String partnerId,
     required String eventId,
@@ -432,7 +567,9 @@ class PostEventFeedbackService {
     required String partnershipRole,
   }) async {
     // In production, send notification/request
-    _logger.info('Sending partner rating request: partner=$partnerId, event=$eventId, other=$otherPartnerId', tag: _logName);
+    _logger.info(
+        'Sending partner rating request: partner=$partnerId, event=$eventId, other=$otherPartnerId',
+        tag: _logName);
     // TODO: Implement notification system
   }
 }

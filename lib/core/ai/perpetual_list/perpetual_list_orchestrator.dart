@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
 import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
-import 'package:avrai/core/services/user/agent_id_service.dart';
 
 import 'models/models.dart';
 import 'engines/trigger_engine.dart';
@@ -52,7 +51,6 @@ class PerpetualListOrchestrator {
   // Integration
   final AI2AIListLearningIntegration _ai2aiIntegration;
   final EpisodicMemoryStore? _episodicMemoryStore;
-  final AgentIdService? _agentIdService;
   final OutcomeTaxonomy _outcomeTaxonomy;
 
   // State tracking
@@ -68,7 +66,7 @@ class PerpetualListOrchestrator {
     required AgeAwareListFilter ageFilter,
     required AI2AIListLearningIntegration ai2aiIntegration,
     EpisodicMemoryStore? episodicMemoryStore,
-    AgentIdService? agentIdService,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
   })  : _triggerEngine = triggerEngine,
         _contextEngine = contextEngine,
         _generationEngine = generationEngine,
@@ -77,8 +75,7 @@ class PerpetualListOrchestrator {
         _ageFilter = ageFilter,
         _ai2aiIntegration = ai2aiIntegration,
         _episodicMemoryStore = episodicMemoryStore,
-        _agentIdService = agentIdService,
-        _outcomeTaxonomy = const OutcomeTaxonomy();
+        _outcomeTaxonomy = outcomeTaxonomy;
 
   /// Generate lists if appropriate based on current context
   ///
@@ -242,12 +239,112 @@ class PerpetualListOrchestrator {
       userAge: userAge,
       interaction: interaction,
     );
-
-    await _recordListInteractionEpisode(
+    await _recordListInteractionTuple(
       userId: userId,
-      userAge: userAge,
       interaction: interaction,
     );
+  }
+
+  Future<void> _recordListInteractionTuple({
+    required String userId,
+    required ListInteraction interaction,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final actionType = _mapInteractionToActionType(interaction.type);
+      final outcomeEventType = _mapInteractionToOutcomeEventType(
+        interaction.type,
+      );
+      final involvedPlaceIds =
+          interaction.involvedPlaces.map((p) => p.id).toList();
+      final outcome = _outcomeTaxonomy.classify(
+        eventType: outcomeEventType,
+        parameters: {
+          'entity_type': 'list',
+          'entity_id': interaction.listId,
+          'interaction_type': interaction.type.name,
+          if (interaction.duration != null)
+            'duration_ms': interaction.duration!.inMilliseconds,
+          if (involvedPlaceIds.isNotEmpty)
+            'involved_place_ids': involvedPlaceIds,
+          ...interaction.metadata,
+        },
+      );
+
+      final tuple = EpisodicTuple(
+        agentId: userId,
+        stateBefore: {
+          'phase_ref': '1.2.7',
+          'surface': 'perpetual_list_orchestrator',
+          'list_id': interaction.listId,
+        },
+        actionType: actionType,
+        actionPayload: {
+          'entity_type': 'list',
+          'entity_id': interaction.listId,
+          'interaction_type': interaction.type.name,
+          if (interaction.duration != null)
+            'duration_ms': interaction.duration!.inMilliseconds,
+          if (involvedPlaceIds.isNotEmpty)
+            'involved_place_ids': involvedPlaceIds,
+          ...interaction.metadata,
+        },
+        nextState: {
+          'list_interaction_processed': true,
+          'is_positive': interaction.isPositive,
+          'is_negative': interaction.isNegative,
+          'interaction_type': interaction.type.name,
+        },
+        outcome: outcome,
+        recordedAt: interaction.timestamp,
+        metadata: const {
+          'phase_ref': '1.2.7',
+          'pipeline': 'perpetual_list_orchestrator',
+        },
+      );
+
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record list interaction tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String _mapInteractionToActionType(ListInteractionType type) {
+    switch (type) {
+      case ListInteractionType.viewed:
+        return 'view_list';
+      case ListInteractionType.saved:
+        return 'save_list';
+      case ListInteractionType.dismissed:
+        return 'dismiss_list';
+      case ListInteractionType.placeVisited:
+        return 'visit_spot';
+      case ListInteractionType.shared:
+        return 'share_list';
+      case ListInteractionType.addedToCollection:
+        return 'modify_list';
+    }
+  }
+
+  String _mapInteractionToOutcomeEventType(ListInteractionType type) {
+    switch (type) {
+      case ListInteractionType.viewed:
+        return 'browse_entity';
+      case ListInteractionType.saved:
+        return 'save_list';
+      case ListInteractionType.dismissed:
+        return 'recommendation_rejected';
+      case ListInteractionType.placeVisited:
+        return 'spot_visited';
+      case ListInteractionType.shared:
+        return 'share_list';
+      case ListInteractionType.addedToCollection:
+        return 'modify_list';
+    }
   }
 
   /// Get recent suggestions for a user
@@ -336,83 +433,5 @@ class PerpetualListOrchestrator {
     _lastGenerationTime.remove(userId);
     _triggerEngine.clearUserState(userId);
     _ai2aiIntegration.clearPossibilities(userId);
-  }
-
-  Future<void> _recordListInteractionEpisode({
-    required String userId,
-    required int userAge,
-    required ListInteraction interaction,
-  }) async {
-    final episodicStore = _episodicMemoryStore;
-    if (episodicStore == null) return;
-
-    try {
-      final agentResolution = await _resolveAgentId(userId);
-      final agentId = agentResolution.agentId;
-      final interactionPayload = interaction.toJson();
-      final outcomeSignal = _outcomeTaxonomy.classify(
-        eventType: 'list_${interaction.type.name}',
-        parameters: {
-          ...interactionPayload,
-          'is_positive': interaction.isPositive,
-          'is_negative': interaction.isNegative,
-        },
-      );
-
-      final tuple = EpisodicTuple(
-        agentId: agentId,
-        stateBefore: {
-          'user_id': userId,
-          'agent_id': agentId,
-          'user_age': userAge,
-          'list_id': interaction.listId,
-          'interaction_type': interaction.type.name,
-        },
-        actionType: 'list_${interaction.type.name}',
-        actionPayload: interactionPayload,
-        nextState: {
-          'user_id': userId,
-          'agent_id': agentId,
-          'user_age': userAge,
-          'list_id': interaction.listId,
-          'interaction_type': interaction.type.name,
-          'is_positive': interaction.isPositive,
-          'is_negative': interaction.isNegative,
-          'involved_place_count': interaction.involvedPlaces.length,
-        },
-        outcome: outcomeSignal,
-        recordedAt: interaction.timestamp.toUtc(),
-        metadata: {
-          'pipeline': 'perpetual_list_orchestrator',
-          'phase_ref': '1.2.7',
-          'agent_id_source': agentResolution.source,
-        },
-      );
-      await episodicStore.writeTuple(tuple);
-    } catch (e) {
-      developer.log(
-        'Failed to persist list interaction episodic tuple: $e',
-        name: _logName,
-      );
-    }
-  }
-
-  Future<({String agentId, String source})> _resolveAgentId(
-      String userId) async {
-    final agentIdService = _agentIdService;
-    if (agentIdService == null) {
-      return (agentId: userId, source: 'user_id_fallback');
-    }
-
-    try {
-      final agentId = await agentIdService.getUserAgentId(userId);
-      return (agentId: agentId, source: 'agent_id_service');
-    } catch (e) {
-      developer.log(
-        'AgentIdService failed for user $userId, falling back to userId: $e',
-        name: _logName,
-      );
-      return (agentId: userId, source: 'user_id_fallback');
-    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/core/services/reservation/automatic_check_in_service.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:get_it/get_it.dart';
 import '../../helpers/test_helpers.dart';
 import '../../helpers/platform_channel_helper.dart';
 
@@ -7,17 +9,28 @@ import '../../helpers/platform_channel_helper.dart';
 void main() {
   group('AutomaticCheckInService Tests', () {
     late AutomaticCheckInService service;
-      // ignore: unused_local_variable
-      // ignore: unused_local_variable - May be used in callback or assertion
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable - May be used in callback or assertion
     late DateTime testDate;
 
     setUp(() {
       TestHelpers.setupTestEnvironment();
       testDate = TestHelpers.createTestDateTime();
+      final sl = GetIt.instance;
+      if (sl.isRegistered<EpisodicMemoryStore>()) {
+        sl.unregister<EpisodicMemoryStore>();
+      }
+      final episodicStore = EpisodicMemoryStore();
+      sl.registerSingleton<EpisodicMemoryStore>(episodicStore);
       service = AutomaticCheckInService();
     });
 
-    tearDown(() {
+    tearDown(() async {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<EpisodicMemoryStore>()) {
+        await sl<EpisodicMemoryStore>().clearForTesting();
+        sl.unregister<EpisodicMemoryStore>();
+      }
       TestHelpers.teardownTestEnvironment();
     });
 
@@ -141,6 +154,35 @@ void main() {
           checkOutTime: checkOutTime3,
         );
         expect(checkedOut3.qualityScore, equals(0.0));
+      });
+
+      test('writes engage_business tuple when automatic visit is checked out',
+          () async {
+        final checkIn = await service.handleGeofenceTrigger(
+          userId: 'user-engage-1',
+          locationId: 'business-loc-1',
+          latitude: 40.7128,
+          longitude: -74.0060,
+        );
+
+        final checkOutTime =
+            checkIn.checkInTime.add(const Duration(minutes: 12));
+        await service.checkOut(
+          userId: 'user-engage-1',
+          checkOutTime: checkOutTime,
+        );
+
+        final episodicStore = GetIt.instance<EpisodicMemoryStore>();
+        final tuples = await episodicStore.getRecent(agentId: 'user-engage-1');
+        expect(tuples, isNotEmpty);
+        final engagementTuple =
+            tuples.firstWhere((t) => t.actionType == 'engage_business');
+        expect(engagementTuple.outcome.type, equals('engagement_outcome'));
+        expect(
+          engagementTuple.actionPayload['business_features']
+              ['business_entity_id'],
+          equals('business-loc-1'),
+        );
       });
     });
 

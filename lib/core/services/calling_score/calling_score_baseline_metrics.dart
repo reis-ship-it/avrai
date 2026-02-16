@@ -32,10 +32,10 @@ class CallingScoreBaselineMetrics {
 
   CallingScoreBaselineMetrics({
     required SupabaseClient supabase,
-    BaselineMetricsService? baselineMetricsService,
+    BaselineMetricsService baselineMetricsService =
+        const BaselineMetricsService(),
   })  : _supabase = supabase,
-        _baselineMetricsService =
-            baselineMetricsService ?? const BaselineMetricsService();
+        _baselineMetricsService = baselineMetricsService;
 
   /// Calculate baseline metrics for current formula-based system
   ///
@@ -67,7 +67,7 @@ class CallingScoreBaselineMetrics {
         return BaselineMetrics.empty();
       }
 
-      final evaluationRecords = <BaselineEvaluationRecord>[];
+      final evalRecords = <FormulaEvaluationRecord>[];
       for (final record in records) {
         final formulaScore =
             (record['formula_calling_score'] as num).toDouble();
@@ -77,37 +77,39 @@ class CallingScoreBaselineMetrics {
 
         if (outcomeType == null || outcomeScore == null) continue;
 
-        final isPositiveOutcome = outcomeType == 'positive';
-        evaluationRecords.add(BaselineEvaluationRecord(
-          predictedPositive: isCalled,
-          actualPositive: isPositiveOutcome,
-          predictedScore: formulaScore,
-          actualScore: outcomeScore.toDouble(),
-        ));
+        evalRecords.add(
+          FormulaEvaluationRecord(
+            predictedPositive: isCalled,
+            actualPositive: outcomeType == 'positive',
+            predictedScore: formulaScore,
+            actualScore: outcomeScore.toDouble(),
+          ),
+        );
       }
-      final metricsResult = _baselineMetricsService.evaluate(evaluationRecords);
+      final genericMetrics =
+          _baselineMetricsService.calculateFromRecords(evalRecords);
 
       final metrics = BaselineMetrics(
-        totalRecords: metricsResult.totalRecords,
-        truePositives: metricsResult.truePositives,
-        trueNegatives: metricsResult.trueNegatives,
-        falsePositives: metricsResult.falsePositives,
-        falseNegatives: metricsResult.falseNegatives,
-        accuracy: metricsResult.accuracy,
-        precision: metricsResult.precision,
-        recall: metricsResult.recall,
-        f1Score: metricsResult.f1Score,
-        meanScoreError: metricsResult.meanScoreError,
-        outcomePredictionAccuracy: metricsResult.outcomePredictionAccuracy,
+        totalRecords: genericMetrics.totalRecords,
+        truePositives: genericMetrics.truePositives,
+        trueNegatives: genericMetrics.trueNegatives,
+        falsePositives: genericMetrics.falsePositives,
+        falseNegatives: genericMetrics.falseNegatives,
+        accuracy: genericMetrics.accuracy,
+        precision: genericMetrics.precision,
+        recall: genericMetrics.recall,
+        f1Score: genericMetrics.f1Score,
+        meanScoreError: genericMetrics.meanScoreError,
+        outcomePredictionAccuracy: genericMetrics.outcomePredictionAccuracy,
         calculatedAt: DateTime.now(),
       );
 
       developer.log(
-        '✅ Baseline metrics calculated: accuracy=${(metrics.accuracy * 100).toStringAsFixed(1)}%, '
-        'precision=${(metrics.precision * 100).toStringAsFixed(1)}%, '
-        'recall=${(metrics.recall * 100).toStringAsFixed(1)}%, '
-        'F1=${(metrics.f1Score * 100).toStringAsFixed(1)}%, '
-        'outcome_prediction=${(metrics.outcomePredictionAccuracy * 100).toStringAsFixed(1)}%',
+        '✅ Baseline metrics calculated: accuracy=${(genericMetrics.accuracy * 100).toStringAsFixed(1)}%, '
+        'precision=${(genericMetrics.precision * 100).toStringAsFixed(1)}%, '
+        'recall=${(genericMetrics.recall * 100).toStringAsFixed(1)}%, '
+        'F1=${(genericMetrics.f1Score * 100).toStringAsFixed(1)}%, '
+        'outcome_prediction=${(genericMetrics.outcomePredictionAccuracy * 100).toStringAsFixed(1)}%',
         name: _logName,
       );
 

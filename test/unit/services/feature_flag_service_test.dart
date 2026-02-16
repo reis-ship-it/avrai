@@ -12,7 +12,7 @@ void main() {
       // Initialize storage for testing
       await setupTestStorage();
       storage = StorageService.instance;
-      
+
       featureFlags = FeatureFlagService(storage: storage);
     });
 
@@ -132,7 +132,7 @@ void main() {
 
       // Same user should get same assignment (deterministic)
       expect(user1Enabled, equals(user1EnabledAgain));
-      
+
       // Different users may get different assignments (based on hash)
       // But we can't predict which ones, so just verify they're booleans
       expect(user1Enabled, isA<bool>());
@@ -191,9 +191,53 @@ void main() {
         userId: 'user_1',
       );
 
-      expect(enabledFeatures, contains(QuantumFeatureFlags.locationEntanglement));
+      expect(
+          enabledFeatures, contains(QuantumFeatureFlags.locationEntanglement));
       // decoherenceTracking may or may not be enabled (50% rollout)
-      expect(enabledFeatures, isNot(contains(QuantumFeatureFlags.quantumPredictionFeatures)));
+      expect(enabledFeatures,
+          isNot(contains(QuantumFeatureFlags.quantumPredictionFeatures)));
+    });
+
+    test('should optionally include formula replacement flags', () async {
+      await featureFlags.updateRemoteConfig({
+        FormulaReplacementFeatureFlags.callingScore: FeatureFlagConfig(
+          enabled: true,
+          rolloutPercentage: 100.0,
+        ),
+      });
+
+      final quantumOnly = await featureFlags.getEnabledFeatures(
+        userId: 'user_1',
+      );
+      final withFormula = await featureFlags.getEnabledFeatures(
+        userId: 'user_1',
+        includeFormulaReplacementFlags: true,
+      );
+
+      expect(
+        quantumOnly,
+        isNot(contains(FormulaReplacementFeatureFlags.callingScore)),
+      );
+      expect(
+        withFormula,
+        contains(FormulaReplacementFeatureFlags.callingScore),
+      );
+    });
+
+    test('should evaluate formula replacement helper', () async {
+      await featureFlags.updateRemoteConfig({
+        FormulaReplacementFeatureFlags.callingScore: FeatureFlagConfig(
+          enabled: true,
+          rolloutPercentage: 100.0,
+        ),
+      });
+
+      final enabled = await featureFlags.isFormulaReplacementEnabled(
+        FormulaReplacementFeatureFlags.callingScore,
+        userId: 'user_1',
+      );
+
+      expect(enabled, isTrue);
     });
 
     test('should handle errors gracefully and return default', () async {
@@ -304,14 +348,37 @@ void main() {
         equals(0.0),
       );
       expect(
-        configs[QuantumFeatureFlags.quantumPredictionFeatures]?.rolloutPercentage,
+        configs[QuantumFeatureFlags.quantumPredictionFeatures]
+            ?.rolloutPercentage,
         equals(0.0),
       );
       expect(
-        configs[QuantumFeatureFlags.quantumSatisfactionEnhancement]?.rolloutPercentage,
+        configs[QuantumFeatureFlags.quantumSatisfactionEnhancement]
+            ?.rolloutPercentage,
+        equals(0.0),
+      );
+    });
+  });
+
+  group('FormulaReplacementFeatureFlags', () {
+    test('should include calling score replacement flag', () {
+      expect(
+        FormulaReplacementFeatureFlags.allFlags,
+        contains(FormulaReplacementFeatureFlags.callingScore),
+      );
+    });
+
+    test('should return default configs with 0% rollout', () {
+      final configs = FormulaReplacementFeatureFlags.getDefaultConfigs();
+
+      expect(
+        configs[FormulaReplacementFeatureFlags.callingScore]?.enabled,
+        equals(true),
+      );
+      expect(
+        configs[FormulaReplacementFeatureFlags.callingScore]?.rolloutPercentage,
         equals(0.0),
       );
     });
   });
 }
-

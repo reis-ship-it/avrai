@@ -2,6 +2,9 @@ import 'package:avrai/core/models/spots/visit.dart';
 import 'package:avrai/core/models/misc/automatic_check_in.dart';
 import 'package:avrai/core/services/locality_agents/locality_agent_ingestion_service_v1.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:convert';
@@ -31,10 +34,12 @@ class AutomaticCheckInService {
   );
 
   static int _idCounter = 0;
-  
+
   /// AtomicClockService for precise timing (Patent #30)
   AtomicClockService? _atomicClock;
-  
+  EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy = const OutcomeTaxonomy();
+
   /// Get AtomicClockService (lazy initialization)
   AtomicClockService get atomicClock {
     if (_atomicClock == null) {
@@ -48,7 +53,7 @@ class AutomaticCheckInService {
     }
     return _atomicClock!;
   }
-  
+
   /// Get current atomic time (with fallback to DateTime.now())
   Future<DateTime> _getAtomicNow() async {
     try {
@@ -62,10 +67,24 @@ class AutomaticCheckInService {
     }
   }
 
+  EpisodicMemoryStore? get _episodicStore {
+    if (_episodicMemoryStore != null) return _episodicMemoryStore;
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<EpisodicMemoryStore>()) {
+        _episodicMemoryStore = sl<EpisodicMemoryStore>();
+      }
+    } catch (_) {}
+    return _episodicMemoryStore;
+  }
+
   // #region agent log
-  static const String _agentDebugLogPath = '/Users/reisgordon/SPOTS/.cursor/debug.log';
-  final String _agentRunId = 'auto_check_in_${DateTime.now().microsecondsSinceEpoch}';
-  void _agentLog(String hypothesisId, String location, String message, Map<String, Object?> data) {
+  static const String _agentDebugLogPath =
+      '/Users/reisgordon/SPOTS/.cursor/debug.log';
+  final String _agentRunId =
+      'auto_check_in_${DateTime.now().microsecondsSinceEpoch}';
+  void _agentLog(String hypothesisId, String location, String message,
+      Map<String, Object?> data) {
     try {
       final payload = <String, Object?>{
         'sessionId': 'debug-session',
@@ -76,7 +95,8 @@ class AutomaticCheckInService {
         'data': data,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       };
-      File(_agentDebugLogPath).writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append, flush: true);
+      File(_agentDebugLogPath).writeAsStringSync('${jsonEncode(payload)}\n',
+          mode: FileMode.append, flush: true);
     } catch (_) {
       // ignore: avoid_catches_without_on_clauses
     }
@@ -140,7 +160,10 @@ class AutomaticCheckInService {
           'B',
           'automatic_check_in_service.dart:handleGeofenceTrigger:early_return_active',
           'Active check-in exists; returning existing',
-          {'userId': userId, 'existingVisitId': _activeCheckIns[userId]?.visitId},
+          {
+            'userId': userId,
+            'existingVisitId': _activeCheckIns[userId]?.visitId
+          },
         );
         // #endregion
         _logger.warning(
@@ -152,7 +175,7 @@ class AutomaticCheckInService {
 
       // Patent #30: Use atomic time for precise timing
       final now = await _getAtomicNow();
-      
+
       // Create geofence trigger
       final geofenceTrigger = GeofenceTrigger(
         locationId: locationId,
@@ -184,7 +207,11 @@ class AutomaticCheckInService {
         'A',
         'automatic_check_in_service.dart:handleGeofenceTrigger:visit_created',
         'Created visit prior to save',
-        {'userId': userId, 'visitId': visit.id, 'visitIdAlreadyExists': _visits.containsKey(visit.id)},
+        {
+          'userId': userId,
+          'visitId': visit.id,
+          'visitIdAlreadyExists': _visits.containsKey(visit.id)
+        },
       );
       // #endregion
 
@@ -380,10 +407,12 @@ class AutomaticCheckInService {
               CheckInTriggerType.unknown => 'unknown',
             };
             // ignore: unawaited_futures
-            ingestion.ingestVisit(userId: userId, visit: updatedVisit, source: source);
+            ingestion.ingestVisit(
+                userId: userId, visit: updatedVisit, source: source);
           }
         } catch (e) {
-          _logger.warning('Locality agent ingestion skipped: $e', tag: _logName);
+          _logger.warning('Locality agent ingestion skipped: $e',
+              tag: _logName);
         }
 
         // Update check-in (this calculates quality score internally)
@@ -400,13 +429,23 @@ class AutomaticCheckInService {
           'B',
           'automatic_check_in_service.dart:checkOut:removed_active',
           'Removed active check-in after checkout',
-          {'userId': userId, 'visitId': activeCheckIn.visitId, 'activeAfter': _activeCheckIns.containsKey(userId)},
+          {
+            'userId': userId,
+            'visitId': activeCheckIn.visitId,
+            'activeAfter': _activeCheckIns.containsKey(userId)
+          },
         );
         // #endregion
 
         _logger.info(
           'Checked out: dwell=${dwellTime.inMinutes}min, quality=${updatedCheckIn.qualityScore}',
           tag: _logName,
+        );
+        await _recordBusinessVisitTuple(
+          userId: userId,
+          visit: updatedVisit,
+          qualityScore: updatedCheckIn.qualityScore,
+          triggerType: activeCheckIn.triggerType.name,
         );
 
         return updatedCheckIn;
@@ -421,7 +460,11 @@ class AutomaticCheckInService {
           'B',
           'automatic_check_in_service.dart:checkOut:removed_active_no_visit',
           'Removed active check-in after checkout (no visit found)',
-          {'userId': userId, 'visitId': activeCheckIn.visitId, 'activeAfter': _activeCheckIns.containsKey(userId)},
+          {
+            'userId': userId,
+            'visitId': activeCheckIn.visitId,
+            'activeAfter': _activeCheckIns.containsKey(userId)
+          },
         );
         // #endregion
 
@@ -450,7 +493,11 @@ class AutomaticCheckInService {
       'C',
       'automatic_check_in_service.dart:getUserVisits',
       'Computing user visits',
-      {'userId': userId, 'visitsSize': _visits.length, 'active': _activeCheckIns.containsKey(userId)},
+      {
+        'userId': userId,
+        'visitsSize': _visits.length,
+        'active': _activeCheckIns.containsKey(userId)
+      },
     );
     // #endregion
     return _visits.values.where((v) => v.userId == userId).toList()
@@ -482,7 +529,13 @@ class AutomaticCheckInService {
       'A',
       'automatic_check_in_service.dart:_saveVisit',
       'Saved visit',
-      {'visitId': visit.id, 'userId': visit.userId, 'hadExisting': hadExisting, 'beforeSize': beforeSize, 'afterSize': _visits.length},
+      {
+        'visitId': visit.id,
+        'userId': visit.userId,
+        'hadExisting': hadExisting,
+        'beforeSize': beforeSize,
+        'afterSize': _visits.length
+      },
     );
     // #endregion
   }
@@ -497,5 +550,65 @@ class AutomaticCheckInService {
     final us = DateTime.now().microsecondsSinceEpoch;
     _idCounter = (_idCounter + 1) & 0x7fffffff;
     return 'visit-${us}_$_idCounter';
+  }
+
+  Future<void> _recordBusinessVisitTuple({
+    required String userId,
+    required Visit visit,
+    required double qualityScore,
+    required String triggerType,
+  }) async {
+    final store = _episodicStore;
+    if (store == null) return;
+    try {
+      final normalizedScore = qualityScore.clamp(0.0, 1.0);
+      final tuple = EpisodicTuple(
+        agentId: userId,
+        stateBefore: {
+          'phase_ref': '1.2.26',
+          'user_state': {
+            'user_id': userId,
+            'automatic_checkin': true,
+          },
+        },
+        actionType: 'engage_business',
+        actionPayload: {
+          'business_features': {
+            'business_entity_id': visit.locationId,
+            'source': 'automatic_check_in',
+          },
+          'engagement_context': {
+            'engagement_type': 'visit',
+            'trigger_type': triggerType,
+            'visit_id': visit.id,
+          },
+        },
+        nextState: {
+          'engagement_outcome': {
+            'label': 'automatic_visit',
+            'overall_rating': normalizedScore,
+            'checked_out': true,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'engagement_outcome',
+          parameters: {
+            'overall_rating': normalizedScore,
+            'label': 'automatic_visit',
+            'visit_id': visit.id,
+            'business_entity_id': visit.locationId,
+            'trigger_type': triggerType,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.26',
+          'pipeline': 'automatic_check_in_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.warning('Failed to write automatic visit tuple: $e',
+          tag: _logName);
+    }
   }
 }

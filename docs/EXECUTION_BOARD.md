@@ -36,7 +36,10 @@ Last updated: 2026-02-16
    - `PRD-###`
    - exactly one milestone ID (`M#-P#-#`) in PR title
    - subsection references (`X.Y.Z`)
-7. Move milestone status only after exit criteria and evidence are satisfied.
+7. For phase work, use the subsection automation flow:
+   - `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
+   - this creates `phase#_work/sX_Y_Z`, commits, pushes, and opens a PR back to `phase#_work`.
+8. Move milestone status only after exit criteria and evidence are satisfied.
 
 ## Mandatory Rules (Wired To Master Plan Work)
 
