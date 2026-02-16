@@ -1,6 +1,6 @@
 # ML Simulation Experiment Log
 
-Generated Source Digest: `b5f85adfbac0e773`
+Generated Source Digest: `797da5754aed804c`
 
 ## Purpose
 This file is generated. It summarizes the latest simulation stage status and auto-improvement backlog.
@@ -42,6 +42,12 @@ This file is generated. It summarizes the latest simulation stage status and aut
 | mdl-spot-energy-v1 | offline_replay | pending | pending | - | - | - | - | none |
 | mdl-spot-energy-v1 | shadow | pending | - | - | - | - | - | - |
 | mdl-spot-energy-v1 | limited_rollout | pending | - | - | - | - | - | - |
+
+## Learning Cycle Recovery Queue
+
+| Recovery ID | Model ID | Trigger | Stage | Status | Attempts | Next Action | Last Attempt (UTC) | Resolved (UTC) |
+|---|---|---|---|---|---|---|---|---|
+| - | - | - | - | - | - | - | - | - |
 
 ## Auto-Improvement Backlog
 

@@ -1,0 +1,1 @@
+recovery_id,model_id,entity_type,trigger_type,trigger_stage,trigger_run_id,detected_at_utc,status,attempt_count,last_attempt_at_utc,resolved_at_utc,action_plan,next_action,notes

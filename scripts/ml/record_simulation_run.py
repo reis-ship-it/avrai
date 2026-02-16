@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNS_CSV = ROOT / "configs/ml/simulation_experiment_runs.csv"
 REGISTRY_CSV = ROOT / "configs/ml/model_training_registry.csv"
 GENERATOR = ROOT / "scripts/generate_ml_training_checklist.py"
+AUTO_RECOVERY = ROOT / "scripts/ml/auto_recover_learning_cycles.py"
 
 
 def fail(msg: str) -> None:
@@ -86,6 +87,17 @@ def regenerate_docs() -> None:
     print(result.stdout.strip())
 
 
+def run_auto_recovery(apply_fixes: bool) -> None:
+    cmd = ["python3", str(AUTO_RECOVERY)]
+    if apply_fixes:
+        cmd.append("--apply-fixes")
+    result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        fail(f"Auto-recovery failed:\n{result.stdout}\n{result.stderr}")
+    if result.stdout.strip():
+        print(result.stdout.strip())
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Record a simulation stage run.")
     parser.add_argument("--model-id", required=True)
@@ -96,6 +108,7 @@ def main() -> None:
     parser.add_argument("--threshold", default="")
     parser.add_argument("--direction", default="")
     parser.add_argument("--notes", default="")
+    parser.add_argument("--skip-auto-recovery", action="store_true")
     parser.add_argument("--no-regenerate", action="store_true")
     args = parser.parse_args()
 
@@ -138,6 +151,9 @@ def main() -> None:
     run_rows.append(new_row)
     write_csv_rows(RUNS_CSV, run_rows)
     update_registry_for_failure(args.model_id, args.status == "fail")
+
+    if not args.skip_auto_recovery:
+        run_auto_recovery(apply_fixes=True)
 
     print(f"Recorded simulation run: {run_id}")
     if followup_id:

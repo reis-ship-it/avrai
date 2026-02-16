@@ -1,6 +1,6 @@
 # ML Model Training Checklist
 
-Generated Source Digest: `b5f85adfbac0e773`
+Generated Source Digest: `797da5754aed804c`
 
 ## Purpose
 This file is generated. Do not edit manually.
@@ -225,6 +225,8 @@ Spec: `sim-standard-v1` - Universal staged experiment contract for all entity mo
 - `configs/ml/avrai_native_type_contracts.json`
 - `configs/ml/simulation_experiment_contracts.json`
 - `configs/ml/simulation_experiment_runs.csv`
+- `configs/ml/learning_cycle_recovery_queue.csv`
+- `scripts/ml/auto_recover_learning_cycles.py`
 - `scripts/ml/build_training_dataset.py`
 - `scripts/generate_ml_training_checklist.py`
 

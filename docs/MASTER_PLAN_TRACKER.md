@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 16, 2026 (v17: AVRAI-native training data conversion governance added for knot/quantum/atomic + entity models, with canonical contracts and dataset builder linkage. Previous: v16 canonical experiment registry + ML training/simulation governance)
+**Last Updated:** February 16, 2026 (v18: universal self-healing contract propagation added across build/governance docs, including break-to-learning enforcement alignment to `docs/MASTER_PLAN.md` task `10.9.12`. Previous: v17 AVRAI-native training data conversion governance)
 
 ---
 
@@ -174,6 +174,7 @@
 | Experiment Registry (Canonical + Build-Enforced) | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all experiment scripts must be registry-tracked with deterministic canonical naming and target architecture space | [`EXPERIMENT_REGISTRY.md`](./EXPERIMENT_REGISTRY.md) |
 | ML Training Automation Governance | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model training + staged simulations auto-recorded and checklist-generated | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
 | AVRAI-Native Training Data Contracts + Builder | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model datasets must be converted to AVRAI-native envelopes (including knot/quantum/atomic) before simulation/training | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
+| Universal Self-Healing Contract Propagation (Break-to-Learning) | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; any subsystem break must auto-enter recovery/learning telemetry loop aligned to `10.9.12` | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
 | Codebase → Master Plan File Mapping (Full Inventory) | 2026-02-15 | 🟢 Active | **CRITICAL** | Generated baseline complete (2,844 files mapped); update alongside architecture-impacting changes | [`plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md) |
 | Architecture Spots Registry (Build-Enforced Placement) | 2026-02-15 | 🟢 Active | **CRITICAL** | Registered architecture spots used by CI placement guard; any new spot must be declared here | [`plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`](./plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv) |
 | File Placement Policy (Build-Enforced) | 2026-02-15 | 🟢 Active | **CRITICAL** | Enforces rule: every file must map to registered architecture spot; new spot required when unmatched | [`plans/architecture/FILE_PLACEMENT_POLICY.md`](./plans/architecture/FILE_PLACEMENT_POLICY.md) |

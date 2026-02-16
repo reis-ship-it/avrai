@@ -15,6 +15,7 @@ from typing import Dict, List
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_CSV = ROOT / "configs/ml/model_training_registry.csv"
 GENERATOR = ROOT / "scripts/generate_ml_training_checklist.py"
+AUTO_RECOVERY = ROOT / "scripts/ml/auto_recover_learning_cycles.py"
 
 
 def fail(msg: str) -> None:
@@ -47,6 +48,15 @@ def regenerate_docs() -> None:
     print(result.stdout.strip())
 
 
+def run_auto_recovery() -> None:
+    cmd = ["python3", str(AUTO_RECOVERY)]
+    result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        fail(f"Auto-recovery sync failed:\n{result.stdout}\n{result.stderr}")
+    if result.stdout.strip():
+        print(result.stdout.strip())
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Record model training run metadata.")
     parser.add_argument("--model-id", required=True)
@@ -59,6 +69,7 @@ def main() -> None:
     parser.add_argument("--execution-milestone-id", default="")
     parser.add_argument("--master-plan-refs", default="")
     parser.add_argument("--trained-at-utc", default="")
+    parser.add_argument("--skip-auto-recovery", action="store_true")
     parser.add_argument("--no-regenerate", action="store_true")
     args = parser.parse_args()
 
@@ -95,6 +106,9 @@ def main() -> None:
 
     write_registry(rows)
     print(f"Updated training registry for {args.model_id}")
+
+    if not args.skip_auto_recovery:
+        run_auto_recovery()
 
     if not args.no_regenerate:
         regenerate_docs()

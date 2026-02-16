@@ -20,4 +20,5 @@ jobs:
 
       - name: Verify generated ML training governance docs
         run: |
+          python3 scripts/ml/auto_recover_learning_cycles.py --check
           python3 scripts/generate_ml_training_checklist.py --check

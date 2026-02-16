@@ -28,9 +28,17 @@ CONTRACTS_JSON = ROOT / "configs/ml/feature_label_contracts.json"
 SIM_CONTRACTS_JSON = ROOT / "configs/ml/simulation_experiment_contracts.json"
 SIM_RUNS_CSV = ROOT / "configs/ml/simulation_experiment_runs.csv"
 NATIVE_CONTRACTS_JSON = ROOT / "configs/ml/avrai_native_type_contracts.json"
+RECOVERY_QUEUE_CSV = ROOT / "configs/ml/learning_cycle_recovery_queue.csv"
 CHECKLIST_MD = ROOT / "docs/ML_MODEL_TRAINING_CHECKLIST.md"
 SIM_LOG_MD = ROOT / "docs/ML_SIMULATION_EXPERIMENT_LOG.md"
-SOURCE_FILES = [REGISTRY_CSV, CONTRACTS_JSON, SIM_CONTRACTS_JSON, SIM_RUNS_CSV, NATIVE_CONTRACTS_JSON]
+SOURCE_FILES = [
+    REGISTRY_CSV,
+    CONTRACTS_JSON,
+    SIM_CONTRACTS_JSON,
+    SIM_RUNS_CSV,
+    NATIVE_CONTRACTS_JSON,
+    RECOVERY_QUEUE_CSV,
+]
 
 
 def fail(message: str) -> None:
@@ -216,6 +224,8 @@ def render_checklist(
     lines.append("- `configs/ml/avrai_native_type_contracts.json`")
     lines.append("- `configs/ml/simulation_experiment_contracts.json`")
     lines.append("- `configs/ml/simulation_experiment_runs.csv`")
+    lines.append("- `configs/ml/learning_cycle_recovery_queue.csv`")
+    lines.append("- `scripts/ml/auto_recover_learning_cycles.py`")
     lines.append("- `scripts/ml/build_training_dataset.py`")
     lines.append("- `scripts/generate_ml_training_checklist.py`")
     lines.append("")
@@ -226,6 +236,7 @@ def render_sim_log(
     registry: List[Dict[str, str]],
     sim_contracts: Dict,
     sim_runs: List[Dict[str, str]],
+    recovery_queue: List[Dict[str, str]],
 ) -> str:
     lines: List[str] = []
     generated = deterministic_source_digest()
@@ -261,6 +272,29 @@ def render_sim_log(
                     direction=run.get("direction", "") or "-",
                     followup=run.get("auto_created_followup_id", "") or "-",
                     followup_status=run.get("followup_status", "") or "-",
+                )
+            )
+    lines.append("")
+
+    lines.append("## Learning Cycle Recovery Queue")
+    lines.append("")
+    lines.append("| Recovery ID | Model ID | Trigger | Stage | Status | Attempts | Next Action | Last Attempt (UTC) | Resolved (UTC) |")
+    lines.append("|---|---|---|---|---|---|---|---|---|")
+    if not recovery_queue:
+        lines.append("| - | - | - | - | - | - | - | - | - |")
+    else:
+        for row in sorted(recovery_queue, key=lambda r: (r.get("model_id", ""), r.get("recovery_id", ""))):
+            lines.append(
+                "| {recovery_id} | {model_id} | {trigger_type} | {trigger_stage} | {status} | {attempt_count} | {next_action} | {last_attempt_at_utc} | {resolved_at_utc} |".format(
+                    recovery_id=row.get("recovery_id", "") or "-",
+                    model_id=row.get("model_id", "") or "-",
+                    trigger_type=row.get("trigger_type", "") or "-",
+                    trigger_stage=row.get("trigger_stage", "") or "-",
+                    status=normalize_status(row.get("status", "")) or "-",
+                    attempt_count=row.get("attempt_count", "") or "0",
+                    next_action=row.get("next_action", "") or "-",
+                    last_attempt_at_utc=row.get("last_attempt_at_utc", "") or "-",
+                    resolved_at_utc=row.get("resolved_at_utc", "") or "-",
                 )
             )
     lines.append("")
@@ -316,9 +350,10 @@ def main() -> None:
     sim_contracts = read_json(SIM_CONTRACTS_JSON)
     sim_runs = read_csv(SIM_RUNS_CSV)
     native_contracts = read_json(NATIVE_CONTRACTS_JSON)
+    recovery_queue = read_csv(RECOVERY_QUEUE_CSV)
 
     checklist_content = render_checklist(registry, contracts, sim_contracts, native_contracts)
-    sim_log_content = render_sim_log(registry, sim_contracts, sim_runs)
+    sim_log_content = render_sim_log(registry, sim_contracts, sim_runs, recovery_queue)
 
     if args.check:
         for path, generated in [(CHECKLIST_MD, checklist_content), (SIM_LOG_MD, sim_log_content)]:
