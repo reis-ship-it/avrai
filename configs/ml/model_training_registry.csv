@@ -1,0 +1,12 @@
+model_id,entity_type,feature_spec_id,label_spec_id,simulation_spec_id,status,last_dataset_snapshot_id,last_run_id,last_trained_at_utc,last_metrics_json,artifact_uri,rollback_artifact_uri,execution_milestone_id,master_plan_refs,auto_train_enabled,notes
+mdl-business-energy-v1,business,business-v1,business-labels-v1,sim-standard-v1,trained,ds_business_seed_20260216,run_business_seed_20260216_001,2026-02-16T02:05:18Z,"{""auc"": 0.79, ""calibration_error"": 0.06}",supabase://models/business/v1/model_seed.onnx,supabase://models/business/v1/model_prev.onnx,M0-P10-1,1.2.22|1.2.26|4.4.8|4.4.11,true,
+mdl-community-energy-v1,community,community-v1,community-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.2.5|4.4.1|4.4.6,true,
+mdl-spot-energy-v1,spot,spot-v1,spot-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.2.18|1.7.12|4.1,true,
+mdl-event-energy-v1,event,event-v1,event-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.2.6|1.2.20|4.4.2,true,
+mdl-locality-advisory-v1,locality,locality-v1,locality-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,8.9A|8.9B|8.9C,true,
+mdl-brand-sponsor-energy-v1,brand,brand-v1,brand-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.2.21|4.4.9|4.4.12,true,
+mdl-list-curation-energy-v1,list,list-v1,list-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.2.7|1.2.8|4.4.4|4.4.7,true,
+mdl-quantum-entanglement-v1,quantum_entanglement,quantum-entanglement-v1,quantum-entanglement-labels-v1,sim-standard-v1,simulated,,,,{},,,M0-P10-1,3.3.5|scripts/ml/train_entanglement_model.py,true,
+mdl-quantum-optimization-v1,quantum_optimization,quantum-optimization-v1,quantum-optimization-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,3|scripts/ml/train_quantum_optimization_model.py,true,
+mdl-knot-string-worldsheet-v1,knot_string_worldsheet,knot-string-worldsheet-v1,knot-string-worldsheet-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,3.3.14|3.4.5|patent_31,true,
+mdl-atomic-temporal-sync-v1,atomic_temporal,atomic-temporal-v1,atomic-temporal-labels-v1,sim-standard-v1,planned,,,,{},,,M0-P10-1,1.1.3|3.1.7|3.1A.2|patent_30,true,

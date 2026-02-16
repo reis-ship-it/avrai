@@ -1,0 +1,23 @@
+name: ML Training Governance Guard
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ml-training-governance-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify generated ML training governance docs
+        run: |
+          python3 scripts/generate_ml_training_checklist.py --check

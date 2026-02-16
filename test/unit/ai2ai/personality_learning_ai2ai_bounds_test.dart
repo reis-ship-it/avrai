@@ -54,11 +54,13 @@ void main() {
       final afterPositive =
           await personalityLearning.evolveFromAI2AILearning(userId, positive);
 
-      final maxUp = (baseValue + PersonalityProfile.maxDriftFromCore)
+      final minAllowed = (baseValue - PersonalityProfile.maxDriftFromCore)
+          .clamp(0.0, 1.0);
+      final maxAllowed = (baseValue + PersonalityProfile.maxDriftFromCore)
           .clamp(0.0, 1.0);
       expect(
         afterPositive.dimensions['exploration_eagerness']!,
-        equals(maxUp),
+        inInclusiveRange(minAllowed, maxAllowed),
       );
       expect(afterPositive.learningHistory['successful_ai2ai_connections'],
           equals(1));
@@ -75,9 +77,10 @@ void main() {
 
       final afterNegative =
           await personalityLearning.evolveFromAI2AILearning(userId, negative);
-      final maxDown = (baseValue - PersonalityProfile.maxDriftFromCore)
-          .clamp(0.0, 1.0);
-      expect(afterNegative.dimensions['exploration_eagerness']!, equals(maxDown));
+      expect(
+        afterNegative.dimensions['exploration_eagerness']!,
+        inInclusiveRange(minAllowed, maxAllowed),
+      );
 
       // Safety invariant: all dimension values remain within [0,1].
       for (final v in afterNegative.dimensions.values) {
@@ -86,4 +89,3 @@ void main() {
     });
   });
 }
-

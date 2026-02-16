@@ -2,11 +2,16 @@
 
 Purpose: make execution-governance rules automatic for all plan-derived work.
 
+Primary workflow runbook (human + AI): `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md` (`Wiring Map` + `Operator Runbook` sections).
+
 Applies to:
 - `docs/MASTER_PLAN.md`
 - `docs/EXECUTION_BOARD.csv`
 - `docs/EXECUTION_BOARD.md`
 - `docs/STATUS_WEEKLY.md`
+- `docs/EXPERIMENT_REGISTRY.md`
+- `docs/ML_MODEL_TRAINING_CHECKLIST.md`
+- `docs/ML_SIMULATION_EXPERIMENT_LOG.md`
 
 ## 1) Required Workflows
 
@@ -30,6 +35,21 @@ Ensure these workflows exist and are green on pull requests:
      - at least one master plan subsection reference `X.Y.Z`
      - every non-merge PR commit includes the same milestone ID + at least one `X.Y.Z` reference
 
+3. `Experiment Registry Guard`
+   - File: `.github/workflows/experiment-registry-guard.yml`
+   - Check name: `Experiment Registry Guard / experiment-registry`
+   - Enforces:
+     - canonical experiment inventory generation is current (`python3 scripts/generate_experiment_registry.py --check`)
+     - every tracked experiment has canonical naming and stage-contract metadata (`python3 scripts/validate_experiment_registry.py`)
+     - legacy-to-canonical path migration mappings stay deterministic
+
+4. `ML Training Governance Guard`
+   - File: `.github/workflows/ml-training-governance-guard.yml`
+   - Check name: `ML Training Governance Guard / ml-training-governance`
+   - Enforces:
+     - model/simulation registries stay synced with generated docs (`python3 scripts/generate_ml_training_checklist.py --check`)
+     - training/simulation run records are append-only and traceable
+
 Execution board schema expectations (enforced by `tool/update_execution_board.dart`):
 - Milestone rows must include:
   - `prd_ids` (one or more `PRD-###`)
@@ -42,7 +62,7 @@ Execution board schema expectations (enforced by `tool/update_execution_board.da
 - Reopen milestones must reference a prior `Done` milestone and be recorded in `docs/STATUS_WEEKLY.md`
 
 Optional PR quality workflow:
-3. `Quick Tests`
+5. `Quick Tests`
    - File: `.github/workflows/quick-tests.yml`
    - Use as required check only if you want stricter merge quality gates.
 
@@ -62,6 +82,8 @@ Manual-only workflows (intentionally not automatic):
 PR-triggered workflows (automatic):
 - `Execution Board Guard`
 - `PRD Traceability Guard`
+- `Experiment Registry Guard`
+- `ML Training Governance Guard`
 - `Architecture Placement Guard`
 - `Quick Tests` (PR path-filtered + manual)
 - `Test Coverage Report` (PR path-filtered + manual)
@@ -79,6 +101,8 @@ Repository settings:
 4. In required checks, add:
    - `Execution Board Guard / execution-board-check`
    - `PRD Traceability Guard / traceability`
+   - `Experiment Registry Guard / experiment-registry`
+   - `ML Training Governance Guard / ml-training-governance`
 5. Optional required checks:
    - `Quick Tests / quick-unit-tests`
 6. Optional but recommended:
@@ -99,6 +123,7 @@ Every PR touching plan-derived work must:
 4. Ensure every non-merge commit message includes the same milestone ID + at least one `X.Y.Z` reference
 5. Update evidence links for milestones moved to `Done`
 6. Pass `Execution Board Guard` and `PRD Traceability Guard`
+7. If the PR touches experiments or model training docs/scripts, pass `Experiment Registry Guard` and `ML Training Governance Guard`
 
 Template:
 - `.github/pull_request_template.md` already includes these fields.
@@ -113,6 +138,18 @@ dart run tool/update_execution_board.dart --check
 python3 scripts/generate_master_plan_file_mapping.py
 python3 scripts/generate_architecture_spots_registry.py
 python3 scripts/validate_architecture_placement.py
+python3 scripts/generate_experiment_registry.py
+python3 scripts/generate_experiment_registry.py --check
+python3 scripts/validate_experiment_registry.py
+python3 scripts/generate_ml_training_checklist.py
+python3 scripts/generate_ml_training_checklist.py --check
+# Per-model dataset build (run for PRs that add/update training snapshots):
+python3 scripts/ml/build_training_dataset.py \
+  --model-id <model_id> \
+  --snapshot-id <snapshot_id> \
+  --input-path <dataset.jsonl_or_csv> \
+  --input-format <jsonl|csv> \
+  --source-id <source_tag>
 python3 scripts/validate_pr_traceability.py \
   --title "PRD-123 M1-P7-1" \
   --body "phase/task refs: 7.4.2, 10.9.1" \
@@ -147,6 +184,9 @@ python3 scripts/validate_pr_traceability.py \
 11. A phase marked `Ready` must have at least one active milestone (`Ready`/`In Progress`/`Done`).
 12. New plan phases require same-PR board expansion:
 phase row + milestone row(s) + risk + gate criteria.
+13. New/renamed experiments must be reflected in `configs/experiments/EXPERIMENT_REGISTRY.csv` and `docs/EXPERIMENT_REGISTRY.md` in the same PR.
+14. Model training/simulation changes must update `configs/ml/model_training_registry.csv`, `configs/ml/simulation_experiment_runs.csv`, and regenerated checklist/log docs in the same PR.
+15. Training snapshot PRs must include AVRAI-native conversion outputs (`data/training/<model_id>/<snapshot_id>/avrai_native_dataset.jsonl` + `manifest.json`) generated by `scripts/ml/build_training_dataset.py`.
 
 ## 6) Troubleshooting
 
