@@ -28,10 +28,12 @@
 - **Rename closeout command:** `scripts/run_phase_rename_closeout.sh P#` (autofill + validate in one step per phase)
 - **End-of-phase rename mandate:** before any phase is marked `Done`, run inventory, update register, execute approved renames, and pass `python3 scripts/validate_rename_candidates.py`
 - **Phase branch baseline:** one stable branch per phase (`phase#_work`)
+- **Phase root sync command:** `scripts/phase_root_sync.sh --phase P# --push`
 - **Section branch start command:** `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
 - **Subsection auto-PR command:** `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
 - **Naming verification gate:** `scripts/verify_phase_naming.sh --phase P# --branch <branch>`
 - **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work/*` into their immediate parent branch)
+- **GitHub phase root sync workflow:** `.github/workflows/phase-root-sync.yml` (manual dispatch to merge `main` into `phase#_work`)
 
 ---
 
