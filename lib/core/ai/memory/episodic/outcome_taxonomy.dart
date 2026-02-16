@@ -56,6 +56,8 @@ class OutcomeSignal {
 
 /// Maps interaction events into outcome taxonomy buckets.
 class OutcomeTaxonomy {
+  static const String taxonomyVersion = '1.0';
+
   const OutcomeTaxonomy();
 
   OutcomeSignal classify({
@@ -79,20 +81,18 @@ class OutcomeTaxonomy {
       case 'form_partnership':
       case 'chat_started':
       case 'partnership_formed':
-        return OutcomeSignal(
+        return _binaryOutcome(
           type: eventType,
-          category: OutcomeCategory.binary,
-          value: 1.0,
-          metadata: parameters,
+          didOccur: true,
+          parameters: parameters,
         );
       case 'dismissed':
       case 'recommendation_rejected':
       case 'actual_action_failed':
-        return OutcomeSignal(
+        return _binaryOutcome(
           type: eventType,
-          category: OutcomeCategory.binary,
-          value: 0.0,
-          metadata: parameters,
+          didOccur: false,
+          parameters: parameters,
         );
       case 'rating_submitted':
       case 'feedback_rating':
@@ -103,74 +103,164 @@ class OutcomeTaxonomy {
       case 'business_partnership_outcome':
       case 'engagement_outcome':
       case 'ai2ai_connection_outcome':
-        return OutcomeSignal(
+        return _qualityOutcome(
           type: eventType,
-          category: OutcomeCategory.quality,
-          value: (parameters['connection_quality'] as num?)?.toDouble() ??
-              (parameters['learning_value'] as num?)?.toDouble() ??
-              (parameters['overall_rating'] as num?)?.toDouble() ??
-              (parameters['mutual_satisfaction_rating'] as num?)?.toDouble() ??
-              (parameters['rating'] as num?)?.toDouble() ??
-              0.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'return_visit_within_days':
-        return OutcomeSignal(
+        return _temporalOutcome(
           type: eventType,
-          category: OutcomeCategory.temporal,
-          value: (parameters['days'] as num?)?.toDouble() ?? 0.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'single_visit_only':
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: 0.5,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'no_action':
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: 0.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'browse_entity':
         if (parameters['no_action'] == true) {
-          return OutcomeSignal(
+          return _behavioralOutcome(
             type: 'no_action',
-            category: OutcomeCategory.behavioral,
             value: 0.0,
-            metadata: parameters,
+            parameters: parameters,
           );
         }
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: (parameters['shift_magnitude'] as num?)?.toDouble() ?? 0.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'passive_to_active_conversion':
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: 1.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       case 'active_to_passive_regression':
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: -1.0,
-          metadata: parameters,
+          parameters: parameters,
         );
       default:
-        return OutcomeSignal(
+        return _behavioralOutcome(
           type: eventType,
-          category: OutcomeCategory.behavioral,
           value: (parameters['shift_magnitude'] as num?)?.toDouble() ?? 0.0,
-          metadata: parameters,
+          parameters: parameters,
         );
     }
+  }
+
+  OutcomeSignal _binaryOutcome({
+    required String type,
+    required bool didOccur,
+    required Map<String, dynamic> parameters,
+  }) {
+    return OutcomeSignal(
+      type: type,
+      category: OutcomeCategory.binary,
+      value: didOccur ? 1.0 : 0.0,
+      metadata: {
+        ...parameters,
+        'taxonomy_version': taxonomyVersion,
+        'binary_outcome': didOccur,
+      },
+    );
+  }
+
+  OutcomeSignal _qualityOutcome({
+    required String type,
+    required Map<String, dynamic> parameters,
+  }) {
+    final connectionQuality =
+        (parameters['connection_quality'] as num?)?.toDouble();
+    if (connectionQuality != null) {
+      return OutcomeSignal(
+        type: type,
+        category: OutcomeCategory.quality,
+        value: connectionQuality.clamp(0.0, 1.0),
+        metadata: {
+          ...parameters,
+          'taxonomy_version': taxonomyVersion,
+          'scale_min': 0.0,
+          'scale_max': 1.0,
+        },
+      );
+    }
+
+    final learningValue = (parameters['learning_value'] as num?)?.toDouble();
+    if (learningValue != null) {
+      return OutcomeSignal(
+        type: type,
+        category: OutcomeCategory.quality,
+        value: learningValue.clamp(0.0, 1.0),
+        metadata: {
+          ...parameters,
+          'taxonomy_version': taxonomyVersion,
+          'scale_min': 0.0,
+          'scale_max': 1.0,
+        },
+      );
+    }
+
+    final rating = (parameters['overall_rating'] as num?)?.toDouble() ??
+        (parameters['mutual_satisfaction_rating'] as num?)?.toDouble() ??
+        (parameters['rating'] as num?)?.toDouble() ??
+        0.0;
+    return OutcomeSignal(
+      type: type,
+      category: OutcomeCategory.quality,
+      value: rating.clamp(0.0, 5.0),
+      metadata: {
+        ...parameters,
+        'taxonomy_version': taxonomyVersion,
+        'scale_min': 0.0,
+        'scale_max': 5.0,
+      },
+    );
+  }
+
+  OutcomeSignal _behavioralOutcome({
+    required String type,
+    required double value,
+    required Map<String, dynamic> parameters,
+  }) {
+    return OutcomeSignal(
+      type: type,
+      category: OutcomeCategory.behavioral,
+      value: value,
+      metadata: {
+        ...parameters,
+        'taxonomy_version': taxonomyVersion,
+      },
+    );
+  }
+
+  OutcomeSignal _temporalOutcome({
+    required String type,
+    required Map<String, dynamic> parameters,
+  }) {
+    final days = (parameters['days'] as num?)?.toDouble() ??
+        (parameters['return_days'] as num?)?.toDouble() ??
+        0.0;
+    final temporalWindowDays =
+        (parameters['window_days'] as num?)?.toInt() ?? 30;
+    return OutcomeSignal(
+      type: type,
+      category: OutcomeCategory.temporal,
+      value: days < 0 ? 0.0 : days,
+      metadata: {
+        ...parameters,
+        'taxonomy_version': taxonomyVersion,
+        'window_days': temporalWindowDays,
+      },
+    );
   }
 }

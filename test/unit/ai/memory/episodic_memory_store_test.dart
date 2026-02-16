@@ -332,5 +332,38 @@ void main() {
       expect(signal.category, OutcomeCategory.quality);
       expect(signal.value, 4.3);
     });
+
+    test('classifies return_visit_within_days as temporal outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'return_visit_within_days',
+        parameters: const {'days': 12, 'window_days': 30},
+      );
+      expect(signal.category, OutcomeCategory.temporal);
+      expect(signal.value, 12.0);
+      expect(signal.metadata['window_days'], 30);
+    });
+
+    test('clamps rating quality outcomes to 0-5 range', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'feedback_rating',
+        parameters: const {'rating': 9},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 5.0);
+      expect(signal.metadata['scale_max'], 5.0);
+    });
+
+    test('classifies ai2ai_connection_outcome with 0-1 quality scale', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'ai2ai_connection_outcome',
+        parameters: const {'connection_quality': 0.78},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 0.78);
+      expect(signal.metadata['scale_max'], 1.0);
+    });
   });
 }
