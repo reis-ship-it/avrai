@@ -105,7 +105,7 @@ packages/avrai_ml,1,package-modules,"packaging,10.7,10.8",active,architecture sp
 packages/avrai_network,72,package-modules,"packaging,10.7,10.8",active,architecture spot for file placement
 packages/avrai_quantum,7,quantum-package,"10.8.2,11.4",active,architecture spot for file placement
 packages/spots_knot,4,package-modules,"packaging,10.7,10.8",active,architecture spot for file placement
-scripts/_root,137,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/_root,138,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/ci,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/data_collection,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/deploy,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement

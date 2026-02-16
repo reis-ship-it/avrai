@@ -27,6 +27,7 @@ Last updated: 2026-02-16
 4. Run local guards before each commit and before PR update:
    - `dart run tool/update_execution_board.dart --check`
    - `python3 scripts/validate_architecture_placement.py`
+   - `python3 scripts/validate_rename_candidates.py`
    - `python3 scripts/validate_pr_traceability.py --title "PRD-123 M1-P7-1 <summary>" --body "Refs: 7.4.2" --require-execution-id --require-single-milestone --require-master-plan-ref`
 5. Commit in small checkpoints where each non-merge commit message includes:
    - the same milestone ID (`M#-P#-#`)
@@ -35,7 +36,13 @@ Last updated: 2026-02-16
    - `PRD-###`
    - exactly one milestone ID (`M#-P#-#`) in PR title
    - subsection references (`X.Y.Z`)
-7. Move milestone status only after exit criteria and evidence are satisfied.
+7. For phase work, use section automation + completion flow:
+   - sync phase root with main: `scripts/phase_root_sync.sh --phase P# --push`
+   - start section branch: `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
+   - complete subsection work: `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
+   - each completion opens PR back to the immediate parent branch (nested branches supported).
+   - naming verification gate is required before auto-PR (`scripts/verify_phase_naming.sh`).
+8. Move milestone status only after exit criteria and evidence are satisfied.
 
 ## Mandatory Rules (Wired To Master Plan Work)
 
