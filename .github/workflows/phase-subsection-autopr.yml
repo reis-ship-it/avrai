@@ -14,29 +14,54 @@ jobs:
   create-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Derive base/head branches
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Derive parent-aware base/head branches
         id: vars
         shell: bash
         run: |
           set -euo pipefail
           head_branch="${GITHUB_REF_NAME}"
-          base_branch="${head_branch%%/*}"
 
-          if [[ "${head_branch}" == "${base_branch}" ]]; then
+          if [[ "${head_branch}" != *"/"* ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [[ ! "${base_branch}" =~ ^phase[0-9]+_work$ ]]; then
+          phase_root="${head_branch%%/*}"
+          if [[ ! "${phase_root}" =~ ^phase[0-9]+_work$ ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          subsection="${head_branch#*/}"
+          base_branch="${head_branch%/*}"
+          if [[ "${base_branch}" == "${head_branch}" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          phase_num="${phase_root#phase}"
+          phase_num="${phase_num%_work}"
+          phase_id="P${phase_num}"
+          subsection="${head_branch#${phase_root}/}"
+
           echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "head_branch=${head_branch}" >> "$GITHUB_OUTPUT"
           echo "base_branch=${base_branch}" >> "$GITHUB_OUTPUT"
+          echo "phase_id=${phase_id}" >> "$GITHUB_OUTPUT"
           echo "subsection=${subsection}" >> "$GITHUB_OUTPUT"
+
+      - name: Naming verification gate
+        if: steps.vars.outputs.skip == 'false'
+        env:
+          BRANCH_NAME: ${{ steps.vars.outputs.head_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          scripts/verify_phase_naming.sh \
+            --phase "${{ steps.vars.outputs.phase_id }}" \
+            --branch "${{ steps.vars.outputs.head_branch }}"
 
       - name: Create PR if missing
         if: steps.vars.outputs.skip == 'false'
@@ -56,15 +81,16 @@ jobs:
 
           title="Auto PR: ${SUBSECTION} -> ${BASE_BRANCH}"
           body=$(
-            cat <<EOF
+            cat <<EOF_BODY
 Automated PR for subsection branch.
 
 - Head branch: \`${HEAD_BRANCH}\`
 - Base branch: \`${BASE_BRANCH}\`
-- Subsection branch key: \`${SUBSECTION}\`
+- Subsection key: \`${SUBSECTION}\`
 
+Naming verification gate: \`scripts/verify_phase_naming.sh\`
 Opened automatically by \`.github/workflows/phase-subsection-autopr.yml\`.
-EOF
+EOF_BODY
           )
 
           gh pr create \
