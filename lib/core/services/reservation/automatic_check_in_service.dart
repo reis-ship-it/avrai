@@ -447,6 +447,13 @@ class AutomaticCheckInService {
           qualityScore: updatedCheckIn.qualityScore,
           triggerType: activeCheckIn.triggerType.name,
         );
+        await _recordSpotVisitTuple(
+          userId: userId,
+          visit: updatedVisit,
+          qualityScore: updatedCheckIn.qualityScore,
+          triggerType: activeCheckIn.triggerType.name,
+          observedAt: checkout,
+        );
 
         return updatedCheckIn;
       } else {
@@ -610,5 +617,102 @@ class AutomaticCheckInService {
       _logger.warning('Failed to write automatic visit tuple: $e',
           tag: _logName);
     }
+  }
+
+  Future<void> _recordSpotVisitTuple({
+    required String userId,
+    required Visit visit,
+    required double qualityScore,
+    required String triggerType,
+    required DateTime observedAt,
+  }) async {
+    final store = _episodicStore;
+    if (store == null) return;
+    try {
+      final previousVisit = await _findPreviousSpotVisitTuple(
+        store: store,
+        agentId: userId,
+        spotId: visit.locationId,
+        before: observedAt,
+      );
+      final previousAt = previousVisit?.recordedAt;
+      final daysSincePrevious =
+          previousAt == null ? null : observedAt.difference(previousAt).inDays;
+      final isReturnVisit =
+          daysSincePrevious != null && daysSincePrevious <= 30;
+      final outcomeEventType =
+          isReturnVisit ? 'return_visit_within_days' : 'single_visit_only';
+
+      final tuple = EpisodicTuple(
+        agentId: userId,
+        stateBefore: {
+          'phase_ref': '1.2.18',
+          'user_state': {
+            'user_id': userId,
+            'automatic_checkin': true,
+          },
+        },
+        actionType: 'visit_spot',
+        actionPayload: {
+          'spot_features': {
+            'spot_id': visit.locationId,
+            'source': 'automatic_check_in',
+            'trigger_type': triggerType,
+            'visit_id': visit.id,
+            'quality_score': qualityScore,
+            'dwell_minutes':
+                (visit.dwellTime ?? visit.calculateDwellTime()).inMinutes,
+          },
+        },
+        nextState: {
+          'spot_outcome': {
+            'outcome_type': outcomeEventType,
+            if (daysSincePrevious != null)
+              'days_since_last_visit': daysSincePrevious,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: outcomeEventType,
+          parameters: {
+            'spot_id': visit.locationId,
+            if (daysSincePrevious != null) 'days': daysSincePrevious,
+            'window_days': 30,
+            'trigger_type': triggerType,
+            'quality_score': qualityScore,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.18',
+          'pipeline': 'automatic_check_in_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.warning('Failed to write automatic spot visit tuple: $e',
+          tag: _logName);
+    }
+  }
+
+  Future<EpisodicTuple?> _findPreviousSpotVisitTuple({
+    required EpisodicMemoryStore store,
+    required String agentId,
+    required String spotId,
+    required DateTime before,
+  }) async {
+    final rows = await store.getRecent(agentId: agentId, limit: 200);
+    for (final row in rows) {
+      if (row.recordedAt.isAfter(before) || row.actionType != 'visit_spot') {
+        continue;
+      }
+      final payloadSpotId = row.actionPayload['spot_id']?.toString() ??
+          (row.actionPayload['spot_features'] is Map
+              ? (row.actionPayload['spot_features'] as Map)['spot_id']
+                  ?.toString()
+              : null);
+      if (payloadSpotId == spotId) {
+        return row;
+      }
+    }
+    return null;
   }
 }

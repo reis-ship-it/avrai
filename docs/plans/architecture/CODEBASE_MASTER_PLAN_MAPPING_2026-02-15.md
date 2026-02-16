@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2885
+**Total mapped files:** 2886
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,7 +10,7 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2518 |
+| keep_update | 2519 |
 | keep_review | 341 |
 | refactor_planned | 26 |
 
@@ -18,7 +18,7 @@
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 889 |
+| testing-quality | 890 |
 | presentation | 381 |
 | core-services-general | 369 |
 | tooling-ops | 291 |
@@ -69,7 +69,7 @@
 | packages/avrai_network/lib | 67 |
 | test/widget/pages | 56 |
 | test/unit/models | 55 |
-| test/unit/ai | 53 |
+| test/unit/ai | 54 |
 | packages/avrai_core/lib | 34 |
 | scripts/ecommerce_experiments/results | 28 |
 | android/app | 27 |
