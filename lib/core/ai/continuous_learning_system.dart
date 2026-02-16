@@ -773,6 +773,11 @@ class ContinuousLearningSystem {
         tuple: tuple,
         source: source,
       );
+      await _recordChatToOutcomeCorrelationIfApplicable(
+        episodicStore: episodicStore,
+        tuple: tuple,
+        source: source,
+      );
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
@@ -902,6 +907,102 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordChatToOutcomeCorrelationIfApplicable({
+    required EpisodicMemoryStore episodicStore,
+    required EpisodicTuple tuple,
+    required String source,
+  }) async {
+    try {
+      const attendanceActions = <String>{
+        'event_attended',
+        'event_attend',
+        'attend_event',
+      };
+      if (!attendanceActions.contains(tuple.actionType)) return;
+
+      final communityId = tuple.actionPayload['community_id']?.toString();
+      if (communityId == null || communityId.isEmpty) return;
+
+      final eventId = tuple.actionPayload['event_id']?.toString() ?? '';
+      final recentChatTuple = await _findRecentCommunityChatTuple(
+        episodicStore: episodicStore,
+        agentId: tuple.agentId,
+        communityId: communityId,
+        before: tuple.recordedAt,
+      );
+      if (recentChatTuple == null) return;
+
+      final latencyHours =
+          tuple.recordedAt.difference(recentChatTuple.recordedAt).inHours;
+      final correlationTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.2.14',
+          'correlation_type': 'community_chat_to_event_attendance',
+          'community_id': communityId,
+          'chat_recorded_at': recentChatTuple.recordedAt.toIso8601String(),
+          'event_recorded_at': tuple.recordedAt.toIso8601String(),
+        },
+        actionType: 'chat_to_outcome_correlation',
+        actionPayload: {
+          'community_id': communityId,
+          if (eventId.isNotEmpty) 'event_id': eventId,
+          'chat_action': 'message_community',
+          'outcome_action': tuple.actionType,
+          'latency_hours': latencyHours,
+        },
+        nextState: {
+          'correlated_outcome_applied': true,
+          'community_id': communityId,
+          if (eventId.isNotEmpty) 'event_id': eventId,
+          'journey_state': 'community_chat_to_attendance',
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'chat_to_event_conversion',
+          parameters: {
+            'community_id': communityId,
+            if (eventId.isNotEmpty) 'event_id': eventId,
+            'latency_hours': latencyHours,
+            'source': source,
+          },
+        ),
+        recordedAt: tuple.recordedAt,
+        metadata: const {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.2.14',
+          'chat_outcome_correlation': true,
+        },
+      );
+      await episodicStore.writeTuple(correlationTuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record chat-to-outcome correlation tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Future<EpisodicTuple?> _findRecentCommunityChatTuple({
+    required EpisodicMemoryStore episodicStore,
+    required String agentId,
+    required String communityId,
+    required DateTime before,
+  }) async {
+    final recent = await episodicStore.getRecent(agentId: agentId, limit: 200);
+    final cutoff = before.subtract(const Duration(days: 30));
+    for (final row in recent) {
+      if (row.recordedAt.isAfter(before) || row.recordedAt.isBefore(cutoff)) {
+        continue;
+      }
+      if (row.actionType != 'message_community') continue;
+      final rowCommunityId = row.actionPayload['community_id']?.toString();
+      if (rowCommunityId == communityId) {
+        return row;
+      }
+    }
+    return null;
   }
 
   Future<EpisodicTuple?> _findRecentBrowseNoActionForSpot({

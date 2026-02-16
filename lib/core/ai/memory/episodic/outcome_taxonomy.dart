@@ -84,6 +84,7 @@ class OutcomeTaxonomy {
       case 'message_friend':
       case 'message_community':
       case 'ask_agent':
+      case 'chat_to_event_conversion':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,

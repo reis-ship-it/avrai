@@ -34,6 +34,8 @@ class FriendChatService {
   final DmMessageStore? _dmStore;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
+  final GetStorage? _outboxStorage;
 
   FriendChatService({
     MessageEncryptionService? encryptionService,
@@ -43,13 +45,20 @@ class FriendChatService {
     DmMessageStore? dmStore,
     EpisodicMemoryStore? episodicMemoryStore,
     OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
+    GetStorage? outboxStorage,
   })  : _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _agentIdService = agentIdService,
         _realtimeBackend = realtimeBackend,
         _atomicClock = atomicClock,
         _dmStore = dmStore,
         _episodicMemoryStore = episodicMemoryStore,
-        _outcomeTaxonomy = outcomeTaxonomy;
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage,
+        _outboxStorage = outboxStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
+  GetStorage get _outboxBox => _outboxStorage ?? GetStorage(_outboxStoreName);
 
   /// Send an encrypted message to a friend
   ///
@@ -284,7 +293,7 @@ class FriendChatService {
   ) async {
     try {
       final chatId = _generateChatId(userId, friendId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final List<dynamic> raw =
           box.read<List<dynamic>>('friend_chat_$chatId') ?? [];
 
@@ -391,7 +400,7 @@ class FriendChatService {
   Future<int> markAsRead(String userId, String friendId) async {
     try {
       final chatId = _generateChatId(userId, friendId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_$chatId';
       final List<dynamic> raw = box.read<List<dynamic>>(key) ?? [];
 
@@ -493,7 +502,7 @@ class FriendChatService {
   /// Save message to storage
   Future<void> _saveMessage(FriendChatMessage message) async {
     try {
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_${message.chatId}';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(message.toJson());
@@ -579,7 +588,7 @@ class FriendChatService {
     required String userId,
     required String friendId,
   }) async {
-    final box = GetStorage(_outboxStoreName);
+    final box = _outboxBox;
     final List<dynamic> pending =
         box.read<List<dynamic>>('outbox_pending') ?? [];
     pending.add(<String, dynamic>{
@@ -596,12 +605,12 @@ class FriendChatService {
     if (realtime == null) return;
 
     try {
-      final outboxBox = GetStorage(_outboxStoreName);
+      final outboxBox = _outboxBox;
       final List<dynamic> pending =
           outboxBox.read<List<dynamic>>('outbox_pending') ?? [];
       if (pending.isEmpty) return;
 
-      final chatBox = GetStorage(_chatStoreName);
+      final chatBox = _chatBox;
       final remaining = <Map<String, dynamic>>[];
 
       for (final entry in pending) {
@@ -662,7 +671,7 @@ class FriendChatService {
   }) async {
     try {
       final chatId = _generateChatId(senderUserId, recipientUserId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
 
