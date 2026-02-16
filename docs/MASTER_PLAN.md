@@ -896,6 +896,9 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.2.8 | Implement battery impact estimation: show user "Training will use ~X% battery" in settings, respect user override to disable training | New |
 | 5.2.9 | Implement device thermal monitoring: pause training if device gets warm (extend `DeviceCapabilityService`) | Extends existing |
 | 5.2.10 | Implement training priority: training during natural idle moments (screen off, charging, WiFi connected) is preferred over active-use training | New |
+| 5.2.11 | **Anchor Mind + Exploration Mind continual loop.** Keep a stable `AnchorMind` checkpoint (proven behavior baseline) while `ExplorationMind` learns from fresh episodic trajectories; apply `ContinuityAlignment` objective so new learning remains compatible with prior high-confidence behavior | Extends 1.1, 5.2.4 |
+| 5.2.12 | **Door-Loss Drift metrics.** Add explicit catastrophic-forgetting metrics on legacy cohorts (prior recommendation, scheduling, community/business matching lanes). Promote only when legacy deltas stay inside configured continuity bounds | Extends 5.2.5, 7.7 |
+| 5.2.13 | **Door-Ladder Expansion protocol.** Train capability slices sequentially (recommendation -> scheduling -> community matching -> business matching), with mandatory no-regression gate after each slice before moving to the next | Extends 7.7.4, 7.7A.3 |
 
 ### 5.3 Latent Variable System (Multi-Future Prediction)
 
@@ -1190,6 +1193,8 @@ ONNX models ship in the app binary (Phase 1.5D.3) and improve via federated aggr
 | 7.7.9 | **Deterministic rollout ledger.** For each model/policy promotion, persist a journal record with candidate id, expected deltas, guardrails, and rollback conditions for forensic traceability | Extends 1.1E.2 |
 | 7.7.10 | **Rollback diagnosis from lightweight memory core.** `RollbackGuardian` queries failure signatures and recent `HistoryJournal` windows before/after degradation to identify likely cause class (data drift, policy overfit, noise sensitivity, safety regression) | Extends 1.1E.8, 7.9.7 |
 | 7.7.11 | **Known-bad suppression rule.** Block re-deploy of previously failed candidate patterns unless new evidence clears contradiction and coverage gates | Extends 7.7.5, 7.9.8 |
+| 7.7.12 | **Continuity gate in promotion policy.** Rollout criteria must include `DoorContinuityScore` from `AnchorMind` vs `ExplorationMind` evaluation; candidate is blocked when continuity drops below threshold even if new-skill metrics improve | Extends 5.2.12, 7.7.4 |
+| 7.7.13 | **Forgetting-risk-aware rollback policy.** Attach `door_loss_risk` to every candidate manifest and auto-rollback when risk spikes after canary or limited rollout; persist cause class in deterministic ledger for future suppression | Extends 7.7.5, 7.7.9, 1.1E.8 |
 
 > **Why this matters:** Without model lifecycle management, updated models either ship only via App Store updates (slow, requires user action) or arrive unversioned and unrollbackable (dangerous). The staged rollout + canary + per-user rollback ensures model improvements reach users quickly while protecting against regressions.
 
@@ -2161,7 +2166,7 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Post-quantum security tasks:** 8 (Phase 2.5.1-2.5.8: session audit, Kyber rotation, prekey exhaustion, BLE mesh PQ, federated gradient PQ, cloud transport PQ, on-device storage audit, PQ dashboard)
 - **Post-quantum transport coverage:** Signal sessions (DONE via PQXDH), BLE discovery (Phase 2.5.4), federated gradients (Phase 2.5.5), cloud TLS (Phase 2.5.6), on-device storage (Phase 2.5.7 -- audit only, likely already safe)
 - **Locality happiness advisory tasks:** 17 (8.9A.1-8.9A.5 happiness aggregation, 8.9B.1-8.9B.6 advisory threshold, 8.9C.1-8.9C.5 cross-region transfer, 8.9D quantum readiness notes)
-- **Model lifecycle management tasks:** 11 (Phase 7.7.1-7.7.11: version schema, OTA delivery, compatibility gate, staged rollout, rollback controls, deterministic rollout ledger, known-bad suppression)
+- **Model lifecycle management tasks:** 13 (Phase 7.7.1-7.7.13: version schema, OTA delivery, compatibility gate, staged rollout, rollback controls, deterministic rollout ledger, known-bad suppression, continuity/forgetting-risk governance)
 - **Autonomous research/experimentation tasks:** 20 (Phase 7.9.1-7.9.20: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance, profile-gated systems optimization, bounded-space simulation/model policies)
 - **Multi-device reconciliation tasks:** 6 (Phase 7.8.1-7.8.6: device-linked accounts, episodic merge, personality sync, tier-aware sync, device migration, conflict resolution)
 - **Data transparency tasks:** 4 (Phase 2.1.8-2.1.8C: "What My AI Knows" page, "Why this recommendation?" tap-through, data correction mechanism, admin transparency dashboard)
