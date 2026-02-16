@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2883
+**Total mapped files:** 2884
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,7 +10,7 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2516 |
+| keep_update | 2517 |
 | keep_review | 341 |
 | refactor_planned | 26 |
 
@@ -18,7 +18,7 @@
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 887 |
+| testing-quality | 888 |
 | presentation | 381 |
 | core-services-general | 369 |
 | tooling-ops | 291 |
@@ -60,7 +60,7 @@
 |---|---:|
 | lib/core/services | 381 |
 | lib/presentation/widgets | 204 |
-| test/unit/services | 198 |
+| test/unit/services | 199 |
 | lib/presentation/pages | 173 |
 | lib/core/models | 141 |
 | lib/core/ai | 111 |

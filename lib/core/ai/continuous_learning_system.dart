@@ -778,6 +778,13 @@ class ContinuousLearningSystem {
         tuple: tuple,
         source: source,
       );
+      await _recordContrastiveTupleIfApplicable(
+        episodicStore: episodicStore,
+        tuple: tuple,
+        parameters: parameters,
+        context: context,
+        source: source,
+      );
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
@@ -982,6 +989,115 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordContrastiveTupleIfApplicable({
+    required EpisodicMemoryStore episodicStore,
+    required EpisodicTuple tuple,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required String source,
+  }) async {
+    try {
+      final recommendedAction = _extractRecommendedAction(parameters, context);
+      if (recommendedAction == null || recommendedAction.isEmpty) return;
+
+      final actualAction = tuple.actionType.trim();
+      if (actualAction.isEmpty || actualAction == recommendedAction) return;
+
+      final recommendedPayload =
+          _extractRecommendedActionPayload(parameters, context);
+      final contrastiveTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.2.16',
+          'contrastive_state': tuple.stateBefore,
+          'planner_recommendation': {
+            'recommended_action': recommendedAction,
+            'recommended_payload': recommendedPayload,
+          },
+        },
+        actionType: 'contrastive_preference_signal',
+        actionPayload: {
+          'recommended_action': recommendedAction,
+          'recommended_payload': recommendedPayload,
+          'actual_action': actualAction,
+          'actual_action_payload': tuple.actionPayload,
+          'recommendation_source':
+              _extractRecommendationSource(parameters, context),
+        },
+        nextState: {
+          'actual_outcome': tuple.outcome.toJson(),
+          'contrastive_signal_recorded': true,
+          'journey_state': 'recommended_vs_actual',
+        },
+        outcome: tuple.outcome,
+        recordedAt: tuple.recordedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.2.16',
+          'contrastive_signal': true,
+          'source': source,
+        },
+      );
+
+      await episodicStore.writeTuple(contrastiveTuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record contrastive tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String? _extractRecommendedAction(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final direct = parameters['recommended_action']?.toString().trim();
+    if (direct != null && direct.isNotEmpty) return direct;
+
+    final plannerRecommendation = context['planner_recommendation'];
+    if (plannerRecommendation is Map) {
+      final action =
+          plannerRecommendation['action_type']?.toString().trim() ?? '';
+      if (action.isNotEmpty) return action;
+    }
+    return null;
+  }
+
+  Map<String, dynamic> _extractRecommendedActionPayload(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final directPayload = parameters['recommended_action_payload'];
+    if (directPayload is Map) {
+      return Map<String, dynamic>.from(directPayload);
+    }
+
+    final plannerRecommendation = context['planner_recommendation'];
+    if (plannerRecommendation is Map) {
+      final plannerPayload = plannerRecommendation['action_payload'];
+      if (plannerPayload is Map) {
+        return Map<String, dynamic>.from(plannerPayload);
+      }
+    }
+    return const {};
+  }
+
+  String _extractRecommendationSource(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final direct = parameters['recommendation_source']?.toString().trim();
+    if (direct != null && direct.isNotEmpty) return direct;
+
+    final plannerRecommendation = context['planner_recommendation'];
+    if (plannerRecommendation is Map) {
+      final source = plannerRecommendation['planner']?.toString().trim() ?? '';
+      if (source.isNotEmpty) return source;
+    }
+    return 'unknown';
   }
 
   Future<EpisodicTuple?> _findRecentCommunityChatTuple({
