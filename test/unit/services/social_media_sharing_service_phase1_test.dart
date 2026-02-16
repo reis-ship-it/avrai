@@ -48,6 +48,19 @@ void main() {
         3,
       );
       expect(
+        tuples.first.actionPayload['list_features']['list_name'],
+        'Weekend Spots',
+      );
+      expect(
+        tuples.first.actionPayload['list_features']['tags'],
+        ['weekend', 'food'],
+      );
+      expect(
+        tuples.first.actionPayload['recipient_features']
+            ['successful_platform_ratio'],
+        0.0,
+      );
+      expect(
         tuples.first.metadata['phase_ref'],
         '1.2.10',
       );

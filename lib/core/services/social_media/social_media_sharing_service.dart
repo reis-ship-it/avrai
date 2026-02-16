@@ -752,6 +752,8 @@ class SocialMediaSharingService {
           .toList(growable: false);
       final requestedCount = requestedPlatforms.length;
       final successCount = successfulPlatforms.length;
+      final successRatio =
+          requestedCount == 0 ? 0.0 : successCount / requestedCount;
 
       final tuple = EpisodicTuple(
         agentId: agentId,
@@ -759,6 +761,7 @@ class SocialMediaSharingService {
           'user_id': userId,
           'list_id': listId,
           'list_name': listName,
+          'active_connection_count': activeConnectionCount,
         },
         actionType: 'share_list',
         actionPayload: {
@@ -766,11 +769,14 @@ class SocialMediaSharingService {
             'requested_platforms': requestedPlatforms,
             'active_connection_count': activeConnectionCount,
             'successful_platforms': successfulPlatforms,
+            'successful_platform_ratio': successRatio,
           },
           'list_features': {
             'list_id': listId,
+            'list_name': listName,
             'spot_count': spotCount ?? 0,
             'is_public': isPublic,
+            'tags': tags ?? const <String>[],
             'tag_count': tags?.length ?? 0,
             'description_length': listDescription?.length ?? 0,
           },
@@ -786,6 +792,7 @@ class SocialMediaSharingService {
             'requested_platform_count': requestedCount,
             'active_connection_count': activeConnectionCount,
             'success_count': successCount,
+            'success_ratio': successRatio,
           },
         ),
         metadata: const {
