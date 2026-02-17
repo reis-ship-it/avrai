@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 16, 2026 (v18: universal self-healing contract propagation added across build/governance docs, including break-to-learning enforcement alignment to `docs/MASTER_PLAN.md` task `10.9.12`. Previous: v17 AVRAI-native training data conversion governance)
+**Last Updated:** February 17, 2026 (v19: feedback/conviction/data-research batch mapped into core world-model phases `1.1E`, `1.4`, `4.1`, `5.1`, `5.2`, `6.1`, with addendum + index traceability. Previous: v18 universal self-healing contract propagation)
 
 ---
 
@@ -197,6 +197,7 @@
 | External Research Addendum: arXiv 2602.11136 (Formal Oversight / Proof-Backed Guardrails) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md) |
 | External Research Addendum: arXiv 2602.11865 (Delegation Dynamics / Trust-Calibrated Control) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md) |
 | External Research Addendum: Adaptive Reasoning + Runtime Control Batch (Ouro/UT/PonderNet/RLVR/Scaling/Data) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md) |
+| External Research Addendum: Feedback/Conviction/Data Research Ops Batch (DAAF/OpenAI Social Science/Delegation/Formal Oversight/Distal Objective) | 2026-02-17 | 📋 Reference | HIGH | Immediate planning input; core-phase mapping to `1.1E`, `1.4`, `4.1`, `5.1`, `5.2`, `6.1` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md) |
 | External Research Addendum: arXiv 2602.12259 (Scientist-style Agent Workflow) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md) |
 | External Research Addendum: HKUDS/nanobot (Lightweight Deterministic Memory Core) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md) |
 | External Research Addendum: Remaining Source Batch (world-model/agent/runtime/quantum references) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md) |
