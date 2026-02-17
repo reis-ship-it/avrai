@@ -161,10 +161,12 @@ This creates a self-growing research ontology instead of a static topic list.
 | Existing Phase | Integration |
 |---|---|
 | Phase 1 (Outcome + Memory) | Add hypothesis trigger signals and evidence-linked episodic tuples |
+| Phase 1.4 (Feedback collection) | Add conviction feedback signals, delayed validation windows, and source-utility feedback loops |
 | Phase 2 (Privacy + Compliance) | Enforce data-use/legal gates on research ingestion and experiments |
 | Phase 4 (Energy Function) | Use experiment outcomes to adjust objective components safely |
-| Phase 5 (Transition + Training) | Add continual-learning updates from validated experiments |
-| Phase 6 (MPC Planner) | Inject validated policy changes and horizon tuning |
+| Phase 5.1 (Transition predictor) | Condition transition forecasts on evidence quality, source agreement, and third-party drift risk |
+| Phase 5.2 (On-device training loop) | Use evidence-tiered curricula, conviction-gated optimizer controls, and source-family reliability weighting |
+| Phase 6.1 (MPC Planner) | Inject validated policy changes, evidence-backed priors, data-route selection, and conviction-aware horizon tuning |
 | Phase 7.9 (Autonomous Research Lane) | Run always-on loop orchestration, rollout gates, rollback |
 | Phase 8 (Federated AI2AI) | Share DP-safe research deltas and validated improvements |
 | Phase 1.1E (Deterministic Memory Core) | Persist facts/history journals for fallback retrieval and forensic recovery |
