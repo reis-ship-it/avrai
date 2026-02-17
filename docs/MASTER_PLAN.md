@@ -160,6 +160,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_PHASE_PLACEMENT_MATRIX_2026-02-16.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
@@ -1256,6 +1257,8 @@ Users may have multiple devices (phone + tablet, old phone + new phone). Episodi
 ### 7.9 Autonomous Research, Experimentation, and Evidence Cross-Reference
 
 This section operationalizes the always-on research/experiment loop so AVRAI can expand its own research definitions, test ideas safely, and integrate validated findings from external and internal evidence.
+
+**Placement rule:** Phase `7.9` owns research orchestration/governance. Runtime/training/lifecycle implementations from addenda must land in their owning phases (1.x, 5.x, 6.x, 7.5/7.7, 8.1, 10.9.x) per `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_PHASE_PLACEMENT_MATRIX_2026-02-16.md`.
 
 | Task | Description | Extends |
 |------|-------------|---------|
