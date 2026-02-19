@@ -91,6 +91,7 @@ This is not unconstrained autonomy. It is autonomy under hard validation and rol
 | `KernelRegistryService` | Serve immutable runtime kernels (`Purpose/Safety/Truth/Recovery/Learning/Exploration/Federation/Resource/HumanOverride`) | Signed manifests + versioned policy precedence |
 | `KernelLifecycleGuard` | Enforce kernel upgrade/downgrade protocol, rollback TTL, and emergency freeze controls | Blocks runtime drift from lifecycle policy |
 | `MetaLearningSupervisor` | Evaluate planned-vs-actual learning cycle quality and auto-adjust subsequent cycle policy | Macro guard over micro adaptation |
+| `ScalingReliabilityProfiler` | Classify downstream scaling regimes and compute setup sensitivity indices | Blocks linear-only extrapolation promotion paths |
 | `DwellBudgetController` | Enforce time/attempt ceilings per issue/hypothesis class and trigger escalation routes | Prevents infinite autonomous loops |
 | `FirstOccurrenceGovernor` | Enforce first-occurrence rate limits, dedupe horizon, and incident bundling | Prevents triage storm overload |
 | `HighImpactOversightGate` | Enforce max autonomous cycles before mandatory human review in high-impact domains | Signed review disposition required |
@@ -178,6 +179,7 @@ This creates a self-growing research ontology instead of a static topic list.
 | Phase 7.9 (Autonomous Research Lane) | Run always-on loop orchestration, rollout gates, rollback |
 | Phase 8 (Federated AI2AI) | Share DP-safe research deltas and validated improvements |
 | Phase 8.1 (Federated split governance) | Enforce anti-fragmentation shared core and cross-locality reconciliation cadence |
+| Phase 8.1 (Scaling reliability governance) | Track downstream scaling regimes per `locality x model_family` and quarantine cross-cohort inversion risk |
 | Phase 1.1E (Deterministic Memory Core) | Persist facts/history journals for fallback retrieval and forensic recovery |
 | Phase 10.9 (Reliability governance) | Enforce kernel lifecycle gates, first-occurrence storm SLOs, and high-impact oversight SLOs |
 | Phase 11.4 (Quantum Readiness) | Keep interfaces backend-agnostic for future acceleration |
@@ -227,6 +229,9 @@ This creates a self-growing research ontology instead of a static topic list.
 39. `ARE-39` Add high-impact autonomy cycle caps with mandatory human review SLO and signed disposition.
 40. `ARE-40` Add kernel lifecycle governance enforcement (upgrade/downgrade protocol, rollback TTL, emergency freeze rehearsals).
 41. `ARE-41` Add federated anti-fragmentation shared-core governance with periodic cross-locality reconciliation checks.
+42. `ARE-42` Add downstream scaling regime classifier (`predictable/inverse/nonmonotonic/trendless/breakthrough`) for every candidate update.
+43. `ARE-43` Add required validation/task/setup sensitivity sweeps and block promotion when benign setup changes flip downstream conclusions.
+44. `ARE-44` Add federated scaling reliability registry and cross-cohort inversion quarantine policy before global promotion.
 
 ---
 
@@ -241,6 +246,7 @@ This creates a self-growing research ontology instead of a static topic list.
 - No static research taxonomy: retrieval policy must support auditable growth and pruning of research categories.
 - No unbounded first-occurrence alerting: all critical alert lanes must honor rate-limit + dedupe + incident-bundle policy.
 - No unlimited autonomous loops in high-impact domains: mandatory human-review SLO is required once cycle cap is reached.
+- No linear-only downstream scaling assumptions: promotion requires cross-setting scaling robustness evidence.
 
 ---
 
