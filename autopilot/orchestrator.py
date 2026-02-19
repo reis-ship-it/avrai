@@ -26,6 +26,7 @@ from urllib import request
 
 ROOT = Path(__file__).resolve().parent.parent
 AUTOPILOT_DIR = ROOT / "autopilot"
+DOCS_DIR = ROOT / "docs"
 CONFIG_PATH = AUTOPILOT_DIR / "config.json"
 QUEUE_PATH = AUTOPILOT_DIR / "queue" / "milestones_queue.json"
 BLOCKED_PATH = AUTOPILOT_DIR / "queue" / "blocked_queue.json"
@@ -33,6 +34,9 @@ LEDGER_PATH = AUTOPILOT_DIR / "queue" / "run_ledger.jsonl"
 STATE_PATH = AUTOPILOT_DIR / "state" / "runtime_state.json"
 MILESTONE_DIR = AUTOPILOT_DIR / "milestones"
 SNAPSHOT_DIR = AUTOPILOT_DIR / "snapshots"
+MASTER_PLAN_PATH = DOCS_DIR / "MASTER_PLAN.md"
+MASTER_PLAN_TRACKER_PATH = DOCS_DIR / "MASTER_PLAN_TRACKER.md"
+ARCHITECTURE_INDEX_PATH = DOCS_DIR / "plans" / "architecture" / "ARCHITECTURE_INDEX.md"
 
 PRIORITY_RANK = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
 
@@ -108,6 +112,27 @@ def git_is_clean() -> bool:
     return rc == 0 and out == ""
 
 
+def git_upstream_branch() -> str:
+    rc, out, _ = run_cmd("git rev-parse --abbrev-ref --symbolic-full-name @{u}")
+    return out if rc == 0 else ""
+
+
+def expected_phase_root_branch(cfg: dict[str, Any], phase: str) -> str:
+    git_cfg = cfg.get("git", {})
+    template = git_cfg.get("phase_root_template", "phase{phase}_work")
+    phase_token = normalize_phase_token(phase)
+    return template.format(phase=phase_token)
+
+
+def branch_matches_phase(cfg: dict[str, Any], branch: str, phase: str) -> bool:
+    root = expected_phase_root_branch(cfg, phase)
+    if branch == root:
+        return True
+    if cfg.get("git", {}).get("allow_phase_child_branches", True) and branch.startswith(root + "/"):
+        return True
+    return False
+
+
 def load_config() -> dict[str, Any]:
     cfg = read_json(CONFIG_PATH, {})
     if not cfg:
@@ -155,12 +180,22 @@ def dependencies_satisfied(m: Milestone, by_id: dict[str, Milestone]) -> bool:
     return True
 
 
-def eligible_milestones(milestones: list[Milestone]) -> list[Milestone]:
+def normalize_phase_token(token: str) -> str:
+    raw = token.strip().upper()
+    if not raw:
+        return ""
+    if raw.startswith("P"):
+        return raw[1:]
+    return raw
+
+
+def eligible_milestones(milestones: list[Milestone], phase_scope: set[str] | None = None) -> list[Milestone]:
     by_id = {m.milestone_id: m for m in milestones}
     candidates = [
         m
         for m in milestones
         if m.status in {"Ready", "In Progress"} and dependencies_satisfied(m, by_id)
+        and (phase_scope is None or normalize_phase_token(m.phase) in phase_scope)
     ]
     return sorted(
         candidates,
@@ -172,11 +207,11 @@ def eligible_milestones(milestones: list[Milestone]) -> list[Milestone]:
     )
 
 
-def ensure_queue_from_board(force: bool = False) -> dict[str, Any]:
+def ensure_queue_from_board(force: bool = False, phase_scope: set[str] | None = None) -> dict[str, Any]:
     cfg = load_config()
     csv_path = ROOT / cfg["execution_board_csv"]
     milestones = load_milestones(csv_path)
-    candidates = eligible_milestones(milestones)
+    candidates = eligible_milestones(milestones, phase_scope=phase_scope)
 
     queue = read_json(
         QUEUE_PATH,
@@ -195,6 +230,201 @@ def ensure_queue_from_board(force: bool = False) -> dict[str, Any]:
     return queue
 
 
+def parse_master_ref_tokens(text: str) -> list[str]:
+    if not text:
+        return []
+    out: list[str] = []
+    for token in re.split(r"[;,]", text):
+        t = token.strip()
+        if t:
+            out.append(t)
+    return out
+
+
+def expand_ref_range(token: str) -> list[str]:
+    t = token.strip()
+    if "-" not in t:
+        return [t] if t else []
+    left, right = [x.strip() for x in t.split("-", 1)]
+    if not left or not right:
+        return [t]
+
+    left_parts = left.split(".")
+    right_parts = right.split(".")
+    if len(left_parts) != len(right_parts):
+        return [left, right]
+    if not left_parts[-1].isdigit() or not right_parts[-1].isdigit():
+        return [left, right]
+    if left_parts[:-1] != right_parts[:-1]:
+        return [left, right]
+
+    start = int(left_parts[-1])
+    end = int(right_parts[-1])
+    if end < start:
+        start, end = end, start
+    prefix = left_parts[:-1]
+    return [".".join(prefix + [str(i)]) for i in range(start, end + 1)]
+
+
+def build_master_plan_index() -> dict[str, str]:
+    if not MASTER_PLAN_PATH.exists():
+        return {}
+    idx: dict[str, str] = {}
+    row_re = re.compile(r"^\|\s*([0-9]+(?:\.[0-9A-Za-z]+)+)\s*\|\s*(.*?)\s*\|")
+    with MASTER_PLAN_PATH.open("r", encoding="utf-8") as f:
+        for raw in f:
+            m = row_re.match(raw)
+            if not m:
+                continue
+            ref_id = m.group(1).strip()
+            desc = re.sub(r"\s+", " ", re.sub(r"`|\*\*?", "", m.group(2))).strip()
+            if ref_id and ref_id not in idx:
+                idx[ref_id] = desc or "(no description)"
+    return idx
+
+
+def extract_doc_paths_from_text(text: str, base_dir: Path) -> list[str]:
+    paths: list[str] = []
+    for m in re.finditer(r"`((?:docs|autopilot|scripts|configs)/[^`]+)`", text):
+        paths.append(m.group(1))
+    for m in re.finditer(r"\[[^\]]+\]\(([^)]+)\)", text):
+        link = m.group(1).strip()
+        if not link or "://" in link or link.startswith("#"):
+            continue
+        resolved = (base_dir / link).resolve()
+        try:
+            rel = resolved.relative_to(ROOT).as_posix()
+        except ValueError:
+            continue
+        if rel.startswith("docs/"):
+            paths.append(rel)
+    return paths
+
+
+def related_docs_for_milestone(m: Milestone, expanded_refs: list[str]) -> list[str]:
+    docs: set[str] = {
+        "docs/MASTER_PLAN.md",
+        "docs/EXECUTION_BOARD.csv",
+        "docs/STATUS_WEEKLY.md",
+        "docs/MASTER_PLAN_TRACKER.md",
+        "docs/plans/architecture/ARCHITECTURE_INDEX.md",
+        "docs/GITHUB_ENFORCEMENT_SETUP.md",
+    }
+    if (DOCS_DIR / "security" / "RED_TEAM_TEST_MATRIX.md").exists():
+        docs.add("docs/security/RED_TEAM_TEST_MATRIX.md")
+
+    if MASTER_PLAN_PATH.exists():
+        mp_text = MASTER_PLAN_PATH.read_text(encoding="utf-8")
+        docs.update(extract_doc_paths_from_text(mp_text, MASTER_PLAN_PATH.parent))
+        for line in mp_text.splitlines():
+            if any(ref in line for ref in expanded_refs):
+                docs.update(extract_doc_paths_from_text(line, MASTER_PLAN_PATH.parent))
+
+    if ARCHITECTURE_INDEX_PATH.exists():
+        docs.update(
+            extract_doc_paths_from_text(
+                ARCHITECTURE_INDEX_PATH.read_text(encoding="utf-8"),
+                ARCHITECTURE_INDEX_PATH.parent,
+            )
+        )
+
+    if MASTER_PLAN_TRACKER_PATH.exists():
+        phase_markers = {f"Phase {normalize_phase_token(m.phase)}", f"P{normalize_phase_token(m.phase)}"}
+        for line in MASTER_PLAN_TRACKER_PATH.read_text(encoding="utf-8").splitlines():
+            if any(marker in line for marker in phase_markers):
+                docs.update(extract_doc_paths_from_text(line, MASTER_PLAN_TRACKER_PATH.parent))
+
+    return sorted(path for path in docs if (ROOT / path).exists())
+
+
+def expand_milestone_subtasks(master_refs: str) -> list[tuple[str, str]]:
+    tokens = parse_master_ref_tokens(master_refs)
+    expanded: list[str] = []
+    for t in tokens:
+        expanded.extend(expand_ref_range(t))
+    unique_ids: list[str] = []
+    seen: set[str] = set()
+    for t in expanded:
+        if t and t not in seen:
+            seen.add(t)
+            unique_ids.append(t)
+    index = build_master_plan_index()
+    return [(ref_id, index.get(ref_id, "(reference not found in MASTER_PLAN table rows)")) for ref_id in unique_ids]
+
+
+def write_codex_plan_brief(
+    run_id: str,
+    m: Milestone,
+    subtasks: list[tuple[str, str]],
+    related_docs: list[str],
+) -> Path:
+    SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    path = SNAPSHOT_DIR / f"{utc_stamp()}_{m.milestone_id}_codex_plan.md"
+    sub_lines = "\n".join(f"- `{sid}` {title}" for sid, title in subtasks) or "- none"
+    doc_lines = "\n".join(f"- `{d}`" for d in related_docs) or "- none"
+    text = (
+        f"# Codex Execution Brief: {m.milestone_id}\n\n"
+        f"- Run ID: `{run_id}`\n"
+        f"- Milestone: `{m.milestone_id}`\n"
+        f"- Phase: `{m.phase}`\n"
+        f"- Branch: `{current_branch()}`\n"
+        f"- Generated (UTC): `{utc_iso()}`\n\n"
+        f"## Build Scope\n"
+        f"{sub_lines}\n\n"
+        f"## Do Not Build\n"
+        f"- Features or docs outside this milestone's Master Plan refs unless explicitly cross-linked in listed docs.\n"
+        f"- Any unreferenced phase/subphase work not included in this milestone's scope.\n\n"
+        f"## Approach\n"
+        f"- Execute subtasks in listed order.\n"
+        f"- Validate architecture placement + execution-board sync before milestone closure.\n"
+        f"- Record blockers via HITL escalation and resume through `resolve --requeue`.\n\n"
+        f"## Validation Gates\n"
+        f"- `dart run tool/update_execution_board.dart --check`\n"
+        f"- `python3 scripts/validate_architecture_placement.py`\n\n"
+        f"## Linked Build Docs\n"
+        f"{doc_lines}\n"
+    )
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+def milestone_governance_preflight(
+    cfg: dict[str, Any],
+    m: Milestone,
+    subtasks: list[tuple[str, str]],
+) -> tuple[bool, str]:
+    issues: list[str] = []
+    gov_cfg = cfg.get("governance", {})
+    branch = current_branch()
+
+    if cfg.get("git", {}).get("require_phase_branch", True):
+        if not branch_matches_phase(cfg, branch, m.phase):
+            expected = expected_phase_root_branch(cfg, m.phase)
+            issues.append(
+                f"branch_mismatch: current branch '{branch}' does not match phase branch '{expected}'"
+            )
+
+    if cfg.get("git", {}).get("require_upstream_tracking", True):
+        upstream = git_upstream_branch()
+        if not upstream:
+            issues.append("missing_upstream: current branch has no upstream tracking branch")
+
+    if gov_cfg.get("require_nonempty_master_refs", True) and not m.master_refs.strip():
+        issues.append("missing_master_refs: milestone has no master_plan_refs")
+
+    if gov_cfg.get("require_nonempty_subtasks", True) and not subtasks:
+        issues.append("missing_subtasks: no subtask refs expanded from milestone")
+
+    if gov_cfg.get("require_resolved_subtask_descriptions", True):
+        unresolved = [sid for sid, title in subtasks if "reference not found" in title]
+        if unresolved:
+            issues.append("unresolved_subtasks: " + ", ".join(unresolved))
+
+    if issues:
+        return False, "\n".join(issues)
+    return True, "governance checks passed"
+
+
 def save_state(**kwargs: Any) -> None:
     state = read_json(
         STATE_PATH,
@@ -209,9 +439,15 @@ def save_state(**kwargs: Any) -> None:
     write_json(STATE_PATH, state)
 
 
-def write_milestone_snapshot(m: Milestone) -> Path:
+def write_milestone_snapshot(
+    m: Milestone,
+    subtasks: list[tuple[str, str]],
+    related_docs: list[str],
+) -> Path:
     MILESTONE_DIR.mkdir(parents=True, exist_ok=True)
     p = MILESTONE_DIR / f"{m.milestone_id}.md"
+    subtask_lines = "\n".join(f"- [ ] `{sid}` {title}" for sid, title in subtasks) if subtasks else "- none"
+    doc_lines = "\n".join(f"- `{d}`" for d in related_docs) if related_docs else "- none"
     text = (
         f"# Milestone Snapshot: {m.milestone_id}\n\n"
         f"- Name: {m.name}\n"
@@ -223,6 +459,12 @@ def write_milestone_snapshot(m: Milestone) -> Path:
         f"- Master Plan refs: {m.master_refs or 'none'}\n"
         f"- Architecture spot: {m.architecture_spot or 'none'}\n"
         f"- Captured at (UTC): {utc_iso()}\n"
+        f"- Expanded subtasks: {len(subtasks)}\n"
+        f"- Linked docs: {len(related_docs)}\n\n"
+        f"## Subtask Expansion\n"
+        f"{subtask_lines}\n\n"
+        f"## Linked Build Docs\n"
+        f"{doc_lines}\n"
     )
     p.write_text(text, encoding="utf-8")
     return p
@@ -355,12 +597,16 @@ def handle_block(
     notify_slack(cfg, f"Autopilot blocked: {milestone_id} - {reason}\n{doc}")
 
 
-def do_run(resume: bool = False, max_count: int | None = None) -> int:
+def do_run(
+    resume: bool = False,
+    max_count: int | None = None,
+    phase_scope: set[str] | None = None,
+) -> int:
     cfg = load_config()
     run_id = f"run_{utc_stamp()}"
     save_state(last_run_id=run_id, last_run_at=utc_iso(), last_status="running", last_error=None)
 
-    queue = ensure_queue_from_board(force=not resume)
+    queue = ensure_queue_from_board(force=not resume, phase_scope=phase_scope)
 
     if cfg.get("git", {}).get("require_clean_worktree", True) and not git_is_clean():
         details = "Working tree is not clean. Autopilot requires a clean workspace for safe orchestration."
@@ -397,18 +643,66 @@ def do_run(resume: bool = False, max_count: int | None = None) -> int:
         queue["in_progress"].append(milestone_id)
         write_json(QUEUE_PATH, queue)
 
-        snapshot_path = write_milestone_snapshot(m)
+        subtasks = expand_milestone_subtasks(m.master_refs)
+        related_docs = related_docs_for_milestone(m, [sid for sid, _ in subtasks])
+        snapshot_path = write_milestone_snapshot(m, subtasks=subtasks, related_docs=related_docs)
+        plan_brief_path = write_codex_plan_brief(run_id=run_id, m=m, subtasks=subtasks, related_docs=related_docs)
         append_ledger(
             {
                 "event": "milestone_started",
                 "run_id": run_id,
                 "milestone_id": milestone_id,
                 "snapshot": str(snapshot_path),
+                "codex_plan_brief": str(plan_brief_path),
+                "subtask_count": len(subtasks),
+                "related_doc_count": len(related_docs),
             }
         )
+        for sid, _ in subtasks:
+            append_ledger(
+                {
+                    "event": "subtask_started",
+                    "run_id": run_id,
+                    "milestone_id": milestone_id,
+                    "subtask_id": sid,
+                }
+            )
+
+        gov_ok, gov_detail = milestone_governance_preflight(cfg, m, subtasks)
+        if not gov_ok:
+            for sid, _ in subtasks:
+                append_ledger(
+                    {
+                        "event": "subtask_blocked",
+                        "run_id": run_id,
+                        "milestone_id": milestone_id,
+                        "subtask_id": sid,
+                        "reason": "governance_preflight_failure",
+                    }
+                )
+            handle_block(
+                cfg,
+                run_id=run_id,
+                queue=queue,
+                milestone_id=milestone_id,
+                reason="Governance drift prevention check failed",
+                details=gov_detail,
+            )
+            processed += 1
+            continue
 
         ok, detail = run_guards(cfg)
         if not ok:
+            for sid, _ in subtasks:
+                append_ledger(
+                    {
+                        "event": "subtask_blocked",
+                        "run_id": run_id,
+                        "milestone_id": milestone_id,
+                        "subtask_id": sid,
+                        "reason": "guard_failure",
+                    }
+                )
             handle_block(
                 cfg,
                 run_id=run_id,
@@ -420,6 +714,15 @@ def do_run(resume: bool = False, max_count: int | None = None) -> int:
             processed += 1
             continue
 
+        for sid, _ in subtasks:
+            append_ledger(
+                {
+                    "event": "subtask_completed",
+                    "run_id": run_id,
+                    "milestone_id": milestone_id,
+                    "subtask_id": sid,
+                }
+            )
         update_queue(queue, milestone_id, "in_progress", "completed")
         write_json(QUEUE_PATH, queue)
         append_ledger(
@@ -514,10 +817,17 @@ def do_resolve(milestone_id: str, note: str, requeue: bool) -> int:
     return 0
 
 
-def do_init(force: bool) -> int:
-    queue = ensure_queue_from_board(force=force)
+def do_init(force: bool, phase_scope: set[str] | None = None) -> int:
+    queue = ensure_queue_from_board(force=force, phase_scope=phase_scope)
     save_state(last_run_id=None, last_run_at=utc_iso(), last_status="initialized", last_error=None)
-    append_ledger({"event": "queue_initialized", "force": force, "queued": len(queue["queued"])})
+    append_ledger(
+        {
+            "event": "queue_initialized",
+            "force": force,
+            "queued": len(queue["queued"]),
+            "phase_scope": sorted(phase_scope) if phase_scope else [],
+        }
+    )
     print(
         f"Initialized queue (force={force}): queued={len(queue['queued'])}, "
         f"blocked={len(queue['blocked'])}, completed={len(queue['completed'])}"
@@ -531,10 +841,12 @@ def parse_args() -> argparse.Namespace:
 
     s_init = sub.add_parser("init", help="Initialize/refresh queue from execution board")
     s_init.add_argument("--force", action="store_true", help="Reset queue before refill")
+    s_init.add_argument("--phase", action="append", default=[], help="Restrict to phase ID(s), e.g., P1")
 
     s_run = sub.add_parser("run", help="Run autopilot cycle")
     s_run.add_argument("--resume", action="store_true", help="Resume existing queue")
     s_run.add_argument("--max", type=int, default=None, help="Override max milestones this run")
+    s_run.add_argument("--phase", action="append", default=[], help="Restrict queue build to phase ID(s), e.g., P1")
 
     sub.add_parser("status", help="Show autopilot status")
 
@@ -549,9 +861,11 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     if args.cmd == "init":
-        return do_init(force=args.force)
+        phase_scope = {normalize_phase_token(p) for p in args.phase if normalize_phase_token(p)}
+        return do_init(force=args.force, phase_scope=phase_scope if phase_scope else None)
     if args.cmd == "run":
-        return do_run(resume=args.resume, max_count=args.max)
+        phase_scope = {normalize_phase_token(p) for p in args.phase if normalize_phase_token(p)}
+        return do_run(resume=args.resume, max_count=args.max, phase_scope=phase_scope if phase_scope else None)
     if args.cmd == "status":
         return do_status()
     if args.cmd == "resolve":
