@@ -399,6 +399,47 @@ class FactsIndex {
     }
   }
 
+  /// Retrieve semantic entries for a concrete context.
+  ///
+  /// Ranking stays embedding-first, with lightweight context relevance boosts
+  /// for time/location/activity alignment.
+  Future<List<SemanticContextMatch>> querySemanticMemoryByContext({
+    required String userId,
+    required SemanticQueryContext context,
+  }) async {
+    final boundedTopK = context.topK <= 0 ? 0 : context.topK;
+    if (boundedTopK == 0) return const [];
+
+    final candidatePool = math.max(boundedTopK, boundedTopK * 3);
+    final nearest = await retrieveSemanticNearest(
+      userId: userId,
+      queryEmbedding: context.queryEmbedding,
+      topK: candidatePool,
+      minSimilarity: context.minSimilarity,
+    );
+
+    final ranked = nearest
+        .where((match) => match.entry.confidence >= context.minConfidence)
+        .map((match) {
+      final contextRelevance =
+          _contextRelevance(match.entry, context).clamp(0.0, 1.0);
+      final similarity = match.similarity.clamp(-1.0, 1.0);
+      final normalizedSimilarity = ((similarity + 1.0) / 2.0).clamp(0.0, 1.0);
+      final rankingScore = (normalizedSimilarity * 0.8) +
+          (contextRelevance * 0.15) +
+          (match.entry.confidence.clamp(0.0, 1.0) * 0.05);
+      return SemanticContextMatch(
+        entry: match.entry,
+        similarity: match.similarity,
+        contextRelevance: contextRelevance,
+        score: rankingScore,
+      );
+    }).toList(growable: true)
+      ..sort((a, b) => b.score.compareTo(a.score));
+
+    return ranked.take(boundedTopK).toList(growable: false);
+  }
+
   List<SemanticMemoryMatch> _rankSemanticEntries(
     List<SemanticMemoryEntry> entries, {
     required List<double> queryEmbedding,
@@ -434,6 +475,78 @@ class FactsIndex {
     if (leftNorm <= 0.0 || rightNorm <= 0.0) return -1.0;
     return dot / (math.sqrt(leftNorm) * math.sqrt(rightNorm));
   }
+
+  double _contextRelevance(
+    SemanticMemoryEntry entry,
+    SemanticQueryContext context,
+  ) {
+    final generalization = entry.generalization.toLowerCase();
+    var weightedSum = 0.0;
+    var weightTotal = 0.0;
+
+    if (context.activityType != null &&
+        context.activityType!.trim().isNotEmpty) {
+      const weight = 0.45;
+      weightedSum +=
+          _tokenContainmentRatio(generalization, context.activityType!) *
+              weight;
+      weightTotal += weight;
+    }
+
+    if (context.location != null && context.location!.trim().isNotEmpty) {
+      const weight = 0.25;
+      weightedSum +=
+          _tokenContainmentRatio(generalization, context.location!) * weight;
+      weightTotal += weight;
+    }
+
+    if (context.occursAt != null) {
+      final localTime = context.occursAt!.toLocal();
+      final dayPart = _dayPart(localTime.hour);
+
+      const dayPartWeight = 0.20;
+      if (generalization.contains(dayPart)) {
+        weightedSum += dayPartWeight;
+      }
+      weightTotal += dayPartWeight;
+
+      const weekendWeight = 0.10;
+      if (_isWeekend(localTime.weekday)) {
+        if (generalization.contains('weekend') ||
+            generalization.contains('saturday') ||
+            generalization.contains('sunday')) {
+          weightedSum += weekendWeight;
+        }
+      } else if (generalization.contains('weekday')) {
+        weightedSum += weekendWeight;
+      }
+      weightTotal += weekendWeight;
+    }
+
+    if (weightTotal <= 0.0) return 0.0;
+    return (weightedSum / weightTotal).clamp(0.0, 1.0);
+  }
+
+  double _tokenContainmentRatio(String haystack, String source) {
+    final tokens = source
+        .toLowerCase()
+        .split(RegExp(r'[^a-z0-9]+'))
+        .where((token) => token.length >= 3)
+        .toSet();
+    if (tokens.isEmpty) return 0.0;
+    final matches = tokens.where(haystack.contains).length;
+    return matches / tokens.length;
+  }
+
+  String _dayPart(int hour) {
+    if (hour < 6) return 'night';
+    if (hour < 12) return 'morning';
+    if (hour < 18) return 'afternoon';
+    return 'evening';
+  }
+
+  bool _isWeekend(int weekday) =>
+      weekday == DateTime.saturday || weekday == DateTime.sunday;
 }
 
 class SemanticMemoryMatch {
@@ -443,5 +556,39 @@ class SemanticMemoryMatch {
   const SemanticMemoryMatch({
     required this.entry,
     required this.similarity,
+  });
+}
+
+class SemanticQueryContext {
+  final List<double> queryEmbedding;
+  final DateTime? occursAt;
+  final String? location;
+  final String? activityType;
+  final int topK;
+  final double minSimilarity;
+  final double minConfidence;
+
+  const SemanticQueryContext({
+    required this.queryEmbedding,
+    this.occursAt,
+    this.location,
+    this.activityType,
+    this.topK = 5,
+    this.minSimilarity = 0.0,
+    this.minConfidence = 0.0,
+  });
+}
+
+class SemanticContextMatch {
+  final SemanticMemoryEntry entry;
+  final double similarity;
+  final double contextRelevance;
+  final double score;
+
+  const SemanticContextMatch({
+    required this.entry,
+    required this.similarity,
+    required this.contextRelevance,
+    required this.score,
   });
 }
