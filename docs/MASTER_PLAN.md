@@ -229,7 +229,7 @@ Compressed generalizations from episodes. The agent queries "what does this user
 
 | Task | Description | Extends |
 |------|-------------|---------|
-| 1.1A.1 | Design semantic memory schema: embedding vector + natural language generalization + evidence count + confidence + timestamp | New |
+| 1.1A.1 | Design semantic memory schema: embedding vector + natural language generalization + evidence count + confidence + timestamp | New -- COMPLETE (2026-02-19: added `SemanticMemoryEntry` schema with embedding/generalization/evidence/confidence/timestamp fields in `semantic_memory_schema.dart`, including merge semantics and schema round-trip coverage in `semantic_memory_schema_test`) |
 | 1.1A.2 | Extend `StructuredFactsIndex` with vector embeddings for semantic retrieval (nearest-neighbor query) | Extends existing |
 | 1.1A.3 | Implement generalization extraction: cluster similar episodic tuples → produce compressed knowledge entries (e.g., "user enjoys high-curation spots on weekends") | New |
 | 1.1A.4 | Implement semantic query API: given a context (time, location, activity type), retrieve top-K relevant knowledge entries by embedding similarity | New |
