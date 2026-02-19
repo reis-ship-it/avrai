@@ -1,6 +1,6 @@
 # Autonomous Research and Experimentation Engine
 
-**Date:** February 15, 2026  
+**Date:** February 19, 2026  
 **Status:** Active architecture spec  
 **Purpose:** Enable AVRAI to continuously generate hypotheses, run bounded experiments, explain outcomes, and integrate new/old research with safety and governance.
 
@@ -88,6 +88,12 @@ This is not unconstrained autonomy. It is autonomy under hard validation and rol
 | `CrossReferenceGraphService` | Link external claims to internal evidence (episodic tuples, outcomes, failures, planner traces) | Supports external/internal agreement and conflict scoring |
 | `ResearchIntegrator` | Convert validated findings into model/plan updates | Feature-flagged promotions |
 | `RollbackGuardian` | Enforce self-healing and auto-recovery | Mandatory for high-risk promotions |
+| `KernelRegistryService` | Serve immutable runtime kernels (`Purpose/Safety/Truth/Recovery/Learning/Exploration/Federation/Resource/HumanOverride`) | Signed manifests + versioned policy precedence |
+| `KernelLifecycleGuard` | Enforce kernel upgrade/downgrade protocol, rollback TTL, and emergency freeze controls | Blocks runtime drift from lifecycle policy |
+| `MetaLearningSupervisor` | Evaluate planned-vs-actual learning cycle quality and auto-adjust subsequent cycle policy | Macro guard over micro adaptation |
+| `DwellBudgetController` | Enforce time/attempt ceilings per issue/hypothesis class and trigger escalation routes | Prevents infinite autonomous loops |
+| `FirstOccurrenceGovernor` | Enforce first-occurrence rate limits, dedupe horizon, and incident bundling | Prevents triage storm overload |
+| `HighImpactOversightGate` | Enforce max autonomous cycles before mandatory human review in high-impact domains | Signed review disposition required |
 
 ---
 
@@ -161,15 +167,19 @@ This creates a self-growing research ontology instead of a static topic list.
 | Existing Phase | Integration |
 |---|---|
 | Phase 1 (Outcome + Memory) | Add hypothesis trigger signals and evidence-linked episodic tuples |
+| Phase 1.2 (Outcome taxonomy) | Add volunteer outcomes and nearby invite/install conversion telemetry as first-class learning signals |
 | Phase 1.4 (Feedback collection) | Add conviction feedback signals, delayed validation windows, and source-utility feedback loops |
 | Phase 2 (Privacy + Compliance) | Enforce data-use/legal gates on research ingestion and experiments |
 | Phase 4 (Energy Function) | Use experiment outcomes to adjust objective components safely |
 | Phase 5.1 (Transition predictor) | Condition transition forecasts on evidence quality, source agreement, and third-party drift risk |
 | Phase 5.2 (On-device training loop) | Use evidence-tiered curricula, conviction-gated optimizer controls, and source-family reliability weighting |
 | Phase 6.1 (MPC Planner) | Inject validated policy changes, evidence-backed priors, data-route selection, and conviction-aware horizon tuning |
+| Phase 6.2 (Guardrail objectives) | Enforce discoverability guarantee, first-occurrence triage invariant, and dwell-time escalation invariant |
 | Phase 7.9 (Autonomous Research Lane) | Run always-on loop orchestration, rollout gates, rollback |
 | Phase 8 (Federated AI2AI) | Share DP-safe research deltas and validated improvements |
+| Phase 8.1 (Federated split governance) | Enforce anti-fragmentation shared core and cross-locality reconciliation cadence |
 | Phase 1.1E (Deterministic Memory Core) | Persist facts/history journals for fallback retrieval and forensic recovery |
+| Phase 10.9 (Reliability governance) | Enforce kernel lifecycle gates, first-occurrence storm SLOs, and high-impact oversight SLOs |
 | Phase 11.4 (Quantum Readiness) | Keep interfaces backend-agnostic for future acceleration |
 
 ---
@@ -207,6 +217,16 @@ This creates a self-growing research ontology instead of a static topic list.
 29. `ARE-29` Add `CapabilityBoundaryGate`: require boundary evaluations to prevent promotion of overfit/overclaim candidates.
 30. `ARE-30` Add `ComputeOptimalTrainingPlanner`: enforce scaling-law-informed model/data/compute allocation and stopping rules.
 31. `ARE-31` Add `SyntheticLawStressSuite` + data-tier governance for controlled compositional/adversarial stress before production promotion.
+32. `ARE-32` Add signed `KernelRegistry` runtime contract and immutable kernel precedence policy.
+33. `ARE-33` Add recursive `MetaLearningSupervisor` scoring over each completed learning cycle.
+34. `ARE-34` Add first-occurrence critical-issue triage protocol with deterministic routing.
+35. `ARE-35` Add universal `DwellBudgetController` with forced escalation routes.
+36. `ARE-36` Add federated meta-learning split policy by `locality x model_family` (`reality_model`, `universe_model`, `world_model`).
+37. `ARE-37` Add first-occurrence storm suppression controls (global rate limits, dedupe horizon, incident bundling).
+38. `ARE-38` Add hypothesis-class dwell objective contracts with measurable stop criteria and forced escalation on miss.
+39. `ARE-39` Add high-impact autonomy cycle caps with mandatory human review SLO and signed disposition.
+40. `ARE-40` Add kernel lifecycle governance enforcement (upgrade/downgrade protocol, rollback TTL, emergency freeze rehearsals).
+41. `ARE-41` Add federated anti-fragmentation shared-core governance with periodic cross-locality reconciliation checks.
 
 ---
 
@@ -219,6 +239,8 @@ This creates a self-growing research ontology instead of a static topic list.
 - No opaque conviction changes.
 - No single-source external claim can directly change production behavior.
 - No static research taxonomy: retrieval policy must support auditable growth and pruning of research categories.
+- No unbounded first-occurrence alerting: all critical alert lanes must honor rate-limit + dedupe + incident-bundle policy.
+- No unlimited autonomous loops in high-impact domains: mandatory human-review SLO is required once cycle cap is reached.
 
 ---
 

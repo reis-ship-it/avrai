@@ -77,6 +77,7 @@ This boundary is mandatory for all self-improvement work: **hardcode the guardra
 | Resource budgets | CPU/memory/battery/latency caps per device tier, offline fallbacks | Compute-aware model/ranker selection under budget | 3.6, 7.5 |
 | Explainability & audit | Immutable change logs, signed manifests, rollback provenance | Explanatory ranking features and calibration | 7.7.1, 7.7A.5, 7.7A.6 |
 | World-model planning | Non-negotiable hard constraints for MPC (safety/diversity/quiet hours) | Energy function + transition dynamics + policy planning | 4.1, 5.1, 6.1, 6.2 |
+| Kernel governance | `PurposeKernel`, `SafetyKernel`, `TruthKernel`, `RecoveryKernel`, `LearningKernel`, `ExplorationKernel`, `FederationKernel`, `ResourceKernel`, `HumanOverrideKernel` contracts with immutable precedence rules, signed lifecycle policy, emergency freeze path, and rollback TTL | Kernel weights/tactics are learnable only inside immutable kernel boundaries with auditable promotion gates | 1.1E, 6.2, 7.9, 8.1, 10.9 |
 
 **Implementation rule:** Any component that can change production behavior autonomously must declare: (1) immutable constraints, (2) learnable parameters, (3) promotion gates, (4) rollback path.
 
@@ -161,6 +162,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_PHASE_PLACEMENT_MATRIX_2026-02-16.md`
+- `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
@@ -301,6 +303,13 @@ Add a lightweight, grepable memory lane for deterministic recall, auditability, 
 | 1.1E.9 | Add `EvidenceBundle` deterministic envelope for external and internal research claims: source URI, method class, recency, dataset fingerprint, experiment contract ID, and adoption verdict | Extends 7.9, 9.2.6 |
 | 1.1E.10 | Add `ConvictionLedger` append-only journal: every confidence increase/decrease must record supporting evidence IDs, contradiction IDs, and delayed-outcome validation window IDs | Feeds 1.4, 4.1, 5.1, 5.2, 6.1 |
 | 1.1E.11 | Add third-party research ingest receipts: consent scope, legal basis, DP tier, retention window, and allowed-use class before any claim can influence training/planning | Extends 2.1, 2.2, 9.2.6 |
+| 1.1E.12 | Add immutable `KernelRegistry` contract for core behavior kernels (`Purpose`, `Safety`, `Truth`, `Recovery`, `Learning`, `Exploration`, `Federation`, `Resource`, `HumanOverride`). Runtime reads only signed kernel manifests | Extends Hardcoded Invariants, 7.7.1 |
+| 1.1E.13 | Add `PurposeKernel` schema with explicit initial goals: understand human condition, test/prove convictions, learn from mistakes and fixes, improve user and agent happiness, discover new goals under safety/legal bounds | Feeds 6.1, 7.9, 8.9 |
+| 1.1E.14 | Add `FirstOccurrenceIssueLedger`: first-seen issue signature must create deterministic triage entry with severity, impact radius, and next action (`fix`, `experiment`, `escalate`) | Extends 1.1E.8, 10.9.12 |
+| 1.1E.15 | Add `DwellBudgetPolicy` contract per issue class (max active attempts, max wall-clock dwell time, forced escalation path) to prevent infinite rumination loops | Extends 7.9, 10.9.12 |
+| 1.1E.16 | Add model-family namespace for deterministic memory and telemetry (`reality_model`, `universe_model`, `world_model`) so federated/meta-learning decisions remain traceable by family and locality | Extends 8.1, 10.9.5 |
+| 1.1E.17 | Add `KernelLifecyclePolicy` contract: upgrade/downgrade protocol, compatibility matrix, mandatory rollback TTL by kernel family, and signed change windows | Extends 1.1E.12, 10.9.13 |
+| 1.1E.18 | Add `KernelEmergencyFreeze` contract: deterministic freeze trigger classes, freeze scope (`single_kernel`, `family`, `global`), and required human-release path | Extends 1.1E.17, 10.9.13 |
 
 ### 1.2 Outcome Data Collection Pipeline
 
@@ -335,6 +344,9 @@ Wire every user action to capture outcomes.
 | 1.2.25 | **Brand/sponsor quantum state training signals.** Brand and sponsor entities have `QuantumEntityType.brand` and `QuantumEntityType.sponsor` states but no mechanism to update those states based on sponsorship outcomes. Wire: when a brand's sponsored event succeeds, update the brand's quantum state to reflect "this brand is a good fit for events of type X." This requires defining brand state evolution rules (currently brands have static quantum states) | New -- COMPLETE (2026-02-16: `SponsorshipService.recordSponsorshipOutcome` updates both brand and sponsor quantum states from outcome metrics; verified in `sponsorship_service_test`) |
 | 1.2.26 | **Business patron engagement outcomes.** When users engage with a business (visit, reservation, purchase, review), capture: `(user_state, engage_business, business_features, engagement_outcome)`. This creates training data for the business-side energy function: which users are good patrons for which businesses? Currently business-patron interaction data exists in `ReservationService` and `AutomaticCheckInService` but is not captured as episodic tuples | New -- COMPLETE (2026-02-16: `ReservationService` and `AutomaticCheckInService` write `engage_business` episodic tuples with engagement outcomes; covered by `reservation_service_test` and `automatic_check_in_service_test`) |
 | 1.2.26A | **Passive↔Active intent transition learning.** Add explicit transition tuples that link passive observations to later active outcomes (and vice versa) across users and businesses. Examples: `(user_state, browse_entity, spot_features, no_action)` + later `(user_state, visit_spot, same_spot, outcome)` → write `passive_to_active_conversion`; reverse sequence writes `active_to_passive_regression`. Business analogs: profile/list/partner browse with no action later converting to outreach/partnership/sponsorship/reservation (or regressing). Store transition latency (`minutes/hours/days`) and journey context so planner learns activation windows and cooling signals, not just isolated events | New -- COMPLETE (2026-02-16: `ContinuousLearningSystem` transition tuples verified for spot/business/event/community/list/brand/sponsor in both passive→active and active→passive directions; covered by `continuous_learning_system_test`) |
+| 1.2.27 | **Wearable/physiology outcome channel (consent-gated).** Capture optional physiological context tuples `(state, context_signal, physiology_features, downstream_outcome)` for temporal conditioning and drift interpretation. Zero-fill when consent absent | Extends 2.1.3, 5.1.12 |
+| 1.2.28 | **Volunteer action/outcome pipeline.** Add first-class volunteer actions across community/event/business lanes: `volunteer_signup`, `volunteer_attend`, `volunteer_retention`, `volunteer_dropoff` with positive-social weighting and delayed outcomes (30/90-day community impact) | Extends 6.1, 8.9, 9.2.6 |
+| 1.2.29 | **Nearby invite/install conversion telemetry.** Capture non-user discovery/install funnel tuples for BLE/Wi-Fi invite pathways: `nearby_discovered_non_member`, `invite_sent`, `install_started`, `install_completed`, `first_action_after_install` (privacy-safe, consent-bounded) | Extends 8.4, 10.1 |
 
 ### 1.3 Calling Score Pipeline Generalization
 
@@ -368,6 +380,8 @@ Outcome data comes from both implicit signals and explicit feedback. This sectio
 | 1.4.13 | **Conviction feedback signals.** Add explicit "helpful / unhelpful / uncertain" feedback for high-impact recommendations and model explanations. Record as `(state, recommendation_or_explanation, conviction_feedback, outcome)` and route to `ConvictionLedger` updates |
 | 1.4.14 | **Delayed conviction validation windows.** For strong confidence updates, require 7/30/90-day delayed-outcome checkpoints before finalizing conviction increase. Early positive signals can provisionally increase confidence, but missing delayed validation decays it |
 | 1.4.15 | **Source utility feedback loop.** Track whether recommendations influenced by a research source family (internal telemetry, external paper, third-party dataset) actually improve outcomes. De-rank source families that repeatedly fail downstream validation |
+| 1.4.16 | **Discoverability non-gate feedback channel.** Add explicit user controls for "show everything in this area/category" and log outcomes to ensure personalized ranking never becomes hard suppression outside safety/legal constraints |
+| 1.4.17 | **First-occurrence pain signal priority.** If a novel high-severity negative signal appears once (new failure signature), boost triage priority immediately and emit `first_occurrence_alert` telemetry for self-healing queue intake |
 
 ### 1.5 Cold-Start Strategy & Chat-Free Learning
 
@@ -920,6 +934,9 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.2.14 | **Evidence-tiered training curriculum.** Train in ordered lanes: internal verified data -> external research-derived features -> third-party datasets. Advancement requires no-regression + contradiction checks at each lane boundary | Extends 1.1E.9, 4.1.10, 9.2.6 |
 | 5.2.15 | **Conviction-gated optimizer control.** Adjust learning rate, update magnitude, and EMA blending based on contradiction rate and delayed-validation misses. High contradiction automatically slows adaptation and increases rollback sensitivity | Extends 1.4.14, 7.7 |
 | 5.2.16 | **Source-family reliability weighting.** Maintain reliability weights per source family (internal telemetry, peer-reviewed external, third-party commercial data). Training batches are weighted by reliability and decay when downstream outcome lift fails replication | Extends 1.4.15, 8.1, 9.2.6 |
+| 5.2.17 | **Recursive meta-learning supervisor.** Add real-time planned-vs-actual learning cycle evaluator (`MetaLearningSupervisor`) that scores hypothesis quality, experiment adherence, and update effectiveness; writes corrections back into training policy | Extends 7.9, 10.9.12 |
+| 5.2.18 | **Plan-drift and hallucination macro monitor.** Maintain macro-level truth checks over micro-learning updates: if local gains conflict with global truth constraints or deterministic journals, quarantine update and trigger contradiction review | Extends 1.1E, 4.1.11, 8.1.7 |
+| 5.2.19 | **Kernel-compliance training gate.** Every training candidate must emit kernel-compliance metrics (purpose/safety/truth/recovery/exploration bounds). Non-compliant candidates cannot enter promotion stages | Extends 1.1E.12, 10.9.11 |
 
 ### 5.3 Latent Variable System (Multi-Future Prediction)
 
@@ -964,6 +981,9 @@ Uses the transition predictor to simulate action sequences and pick the best one
 | 6.1.16 | **Evidence-backed action priors.** Add planner priors derived from validated research (`EvidenceBundle` + `ConvictionLedger`) but require local simulation win before action selection. Research can bias search order, never bypass energy/transition checks |
 | 6.1.17 | **Internal vs external data route selection.** For each planning decision, choose `internal_only`, `blended`, or `external_suppressed` route based on consent scope, DP class, drift risk, and source reliability. Route choice is logged for audit and post-hoc learning |
 | 6.1.18 | **Conviction-aware horizon control.** Increase planning horizon only when conviction is supported by delayed validation and cross-source agreement; when contradiction rises, shorten horizon and shift to information-gathering actions |
+| 6.1.19 | **Volunteer pathway planning.** Include volunteer actions in MPC candidate space for community/event/business lanes and optimize for sustained positive community impact, not only short-term engagement |
+| 6.1.20 | **Nearby invite/install planner action.** Add planner action family for compliant nearby growth routes (`show_invite_qr`, `share_install_link`, `mesh_invite_ping`) with platform/legal constraints and consent checks |
+| 6.1.21 | **Unrestricted discovery action lane.** Add planner option `show_unfiltered_results` so users can access full discoverability views by explicit intent; personalization ranks but does not gate non-restricted entities |
 
 ### 6.2 Guardrail Objectives
 
@@ -986,6 +1006,11 @@ The world model optimizes for outcomes, but must respect constraints.
 | 6.2.13 | **Re-engagement frequency guardrail.** Re-engagement actions are limited to 1 per week maximum. If the user does not respond to 3 consecutive re-engagement attempts (over 3 weeks), enter "silent mode" for 30 days: stop all proactive outreach, but keep the AI agent ready to respond instantly when the user returns. After silent mode: one final "we're still here" notification with the most compelling recommendation the model can find. After that: fully passive until user initiates |
 | 6.2.14 | **Returning user fast-ramp.** When a dormant user returns (first interaction after 14+ days of inactivity), the MPC planner temporarily increases exploration to 40% (regardless of lifecycle stage) for the first 5 interactions. This accounts for possible taste drift during absence (Phase 5.1.9 catches real drift; this is a precautionary exploration bump). After 5 interactions, revert to the user's lifecycle-stage exploration rate |
 | 6.2.15 | **Dormancy outcome logging.** Every dormancy prediction and re-engagement action is logged as an episodic tuple: `(user_state_at_prediction, re-engagement_action, user_response, days_to_return)`. This data trains the transition predictor to improve dormancy prediction AND the energy function to score re-engagement actions. Wire into `UnifiedOutcomeCollector` |
+| 6.2.16 | **Discoverability guarantee invariant.** Personalization may rank results, but cannot hide discoverable spots/events/businesses/communities outside explicit legal/safety/consent constraints. Provide user-toggle unfiltered mode |
+| 6.2.17 | **First-occurrence response invariant.** Any first-seen high-severity issue signature must trigger immediate triage route (`fix`, `experiment`, or `human_guidance`) within bounded SLA and create deterministic ledger entries |
+| 6.2.18 | **Dwell-time escalation invariant.** Enforce per-issue dwell budgets; when budget expires without resolution, escalate to alternate strategy or human guidance and mark unresolved path for recurrence prevention |
+| 6.2.19 | **Discoverability precedence matrix.** Add explicit precedence ordering for conflicting controls: legal > safety > privacy/consent > user intent (`show_unfiltered_results`) > personalization ranker. Emit deterministic rationale telemetry whenever constraints suppress user-requested discoverability |
+| 6.2.20 | **Dwell exit criteria invariant.** Every dwell policy must declare measurable stop conditions (minimum confidence gain, contradiction reduction, and residual risk threshold). If stop conditions are not met before dwell budget expiry, force escalation |
 
 ### 6.3 Agent Architecture
 
@@ -1293,6 +1318,14 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.29 | **CapabilityBoundaryGate for promotion.** Require boundary evaluations (short-horizon metrics + deep-reasoning stress) before promoting RL/VR-optimized candidates; block rollout on overclaim signatures | Extends 7.7A.3, 7.9.7, 10.9.11 |
 | 7.9.30 | **ComputeOptimalTrainingPlanner.** Use scaling-law-informed model/data/compute allocation and stop criteria for training jobs; reject runs that violate compute-efficiency policy | Extends 5.2, ML training governance |
 | 7.9.31 | **SyntheticLawStressSuite + data-tier governance.** Add controlled synthetic environments and adversarial compositional tests plus explicit data-quality tiers before promotion to production lanes | Extends 7.9.6, 7.9.12, 10.9.12 |
+| 7.9.32 | **Kernel-bound autonomous loop contract.** `AutonomousResearchEngine` must consume immutable kernel manifests (`Purpose/Safety/Truth/Recovery/Learning/Exploration/Federation/Resource/HumanOverride`) before generating hypotheses or experiments |
+| 7.9.33 | **Recursive meta-learning audit loop.** Every research cycle must evaluate the prior cycle's process quality (hypothesis validity, protocol adherence, replication quality) and update the next cycle plan automatically |
+| 7.9.34 | **First-occurrence issue triage protocol.** First-seen critical contradictions/failures immediately open bounded experiments or mitigation actions; repeated occurrences reuse prior mitigations before novel branching |
+| 7.9.35 | **DwellBudgetController for autonomous research.** Apply hard time/attempt ceilings per hypothesis class; unresolved hypotheses auto-route to human review or downgraded confidence state |
+| 7.9.36 | **Interdisciplinary purpose expansion governance.** New candidate purposes/goals discovered by research must pass evidence, safety, and contradiction gates before entering active `PurposeKernel` set |
+| 7.9.37 | **First-occurrence storm suppression policy.** Add global rate limits, dedupe horizon, and incident bundling rules so critical first-occurrence alerts remain actionable and do not overload autonomous queues |
+| 7.9.38 | **Hypothesis dwell objective contracts.** Require per-hypothesis-class objective completion criteria (`target_signal`, `min_effect`, `confidence_floor`, `risk_floor`) before a loop may continue; otherwise auto-stop and escalate |
+| 7.9.39 | **High-impact autonomy cycle cap.** For safety/legal/high-impact social domains, enforce maximum autonomous cycle count before mandatory human oversight review with signed disposition |
 
 > **Required companion spec:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 >
@@ -1318,6 +1351,12 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 8.1.6 | Add DP-safe journal summary channel: share only aggregate failure-signature counts, hypothesis-class success rates, and rollback incidence (no raw journal entries) | Extends 1.1E.7 |
 | 8.1.7 | Add federated contradiction feedback: if global updates conflict with local deterministic outcomes, quarantine candidate update for shadow evaluation | Extends 7.9.8, 7.7.4 |
 | 8.1.8 | Add federated self-healing prior sync: distribute known-bad signature hashes and mitigation priors so devices can avoid repeating proven failure patterns | Extends 1.1E.8, 7.7.11 |
+| 8.1.9 | Add federated meta-learning split by `locality x model_family` (`reality_model`, `universe_model`, `world_model`) so each family adapts with cohort-appropriate hyperpolicy deltas | Extends 1.1E.16, 10.9.5 |
+| 8.1.10 | Add federated kernel-drift monitor: if local nodes diverge from immutable kernel manifests, block update import and issue signed drift alerts | Extends 1.1E.12, 10.9.11 |
+| 8.1.11 | Add first-occurrence failure signature propagation with bounded fan-out and dedupe windows so one proven critical failure can trigger immediate preventive mitigation without broadcast storms | Extends 1.1E.14, 10.9.12 |
+| 8.1.12 | Add federated dwell-budget harmonization: share recommended dwell/escalation budgets by issue class across similar localities and model families, with local override safety bounds | Extends 1.1E.15, 7.9.35 |
+| 8.1.13 | Add anti-fragmentation shared-core policy: enforce minimum global kernel/truth core and bounded local hyperpolicy divergence budgets per `locality x model_family` | Extends 8.1.9, 10.9.5 |
+| 8.1.14 | Add periodic cross-locality reconciliation cadence with signed merge proposals and quarantine path when locality-specific gains harm cross-cohort consistency | Extends 8.1.13, 10.9.14 |
 
 ### 8.2 Gradient Bandwidth Budget
 
@@ -1771,6 +1810,12 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.10 | **Adversarial hardening for learning channels.** Add poisoning/outlier detection, signed federated/advisory updates, participant reputation weighting, and emergency kill switches to disable specific learning pathways without shutting down the whole agent | Phase 2.5, 8.1, 8.9 |
 | 10.9.11 | **Autonomous change control policy.** Any self-updating component must declare immutable policy space, promotion gates, rollback path, and human override controls. Autonomous updates are staged (shadow → canary → partial → full) by policy, not per-feature discretion | Hardcoded Invariants section, 7.7A |
 | 10.9.12 | **Universal break-to-learning healing loop.** Any subsystem break (perception, ingest, reasoning, memory, planner, federated sync, advisory, rollout, communication) must auto-create a healing cycle entry, auto-schedule remediation, and feed break telemetry back into learning quality metrics (time-to-detect, time-to-heal, recurrence, impact radius). | 1.1E.8, 7.3.4, 7.4, 7.7, 8.1, 8.8 |
+| 10.9.13 | **Kernel integrity enforcement.** CI/runtime must verify immutable kernel manifests are signed, versioned, and unchanged by self-updating components; non-compliant updates fail closed | 1.1E.12, 7.9.32 |
+| 10.9.14 | **Recursive meta-learning anti-drift gate.** Promotion requires macro-vs-micro alignment metrics: local learning wins cannot ship if they violate global truth constraints, contradiction tolerances, or purpose kernel bounds | 5.2.17, 5.2.18, 8.1.9 |
+| 10.9.15 | **Universal first-occurrence + dwell SLA enforcement.** Every subsystem must enforce first-occurrence triage latency and dwell-budget escalation policy with observable SLOs and recurrence suppression checks | 1.1E.14, 1.1E.15, 6.2.17, 6.2.18, 10.9.12 |
+| 10.9.16 | **Kernel lifecycle governance gate.** Enforce upgrade/downgrade protocol, compatibility proofs, rollback TTL compliance, and emergency freeze rehearsal before kernel promotion | 1.1E.17, 1.1E.18, 10.9.13 |
+| 10.9.17 | **First-occurrence storm-control SLO.** Enforce global alert rate caps, dedupe horizon, and incident-bundle quality thresholds; block rollout if first-occurrence pipeline exceeds storm limits | 7.9.37, 8.1.11, 10.9.15 |
+| 10.9.18 | **High-impact autonomy oversight SLO.** Enforce maximum autonomous cycle count and mandatory human review latency for high-impact domains; no silent bypass allowed | 7.9.39, 10.9.11 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -1790,6 +1835,12 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.10 | Security Engineering + Federated Learning | 2.5, 8.1, 8.9 | 1-2 weeks | Signed update attestation path implemented; poisoning/outlier detection enforced at aggregation and advisory ingest; reputation-weighted participation active; scoped kill-switches can disable individual learning channels |
 | 10.9.11 | Architecture Council + Release Governance | Hardcoded Invariants section, 7.7A | 3-5 days | Autonomous change-control policy codified in docs + CI checks; every self-updating component declares immutable policy space, promotion gates, rollback path, human override; staged rollout lifecycle enforced by tooling |
 | 10.9.12 | AI Platform + Reliability + Federated Ops | 1.1E.8, 7.3.4, 7.4, 7.7, 8.1, 8.8 | 1-2 weeks | Universal healing queue exists for all break classes; automatic remediation scheduling works across entities; recovery SLOs tracked (`TTD`, `TTH`, recurrence); healed incidents are fed back into learning metrics and model governance reviews |
+| 10.9.13 | Platform Security + Governance | 1.1E.12, 7.9.32 | 4-6 days | Kernel manifests are signed/versioned; runtime and CI reject unsigned or self-mutated kernel changes; fail-closed behavior verified |
+| 10.9.14 | Applied ML + Reliability Science | 5.2.17, 5.2.18, 8.1.9 | 1-2 weeks | Macro-vs-micro alignment metrics are required for promotion; contradiction and purpose-bound violations block rollout; anti-drift dashboards active |
+| 10.9.15 | Reliability Engineering + Federated Ops | 1.1E.14, 1.1E.15, 6.2.17, 6.2.18, 10.9.12 | 1-2 weeks | First-occurrence triage SLA enforced for all break classes; dwell-budget escalation automated; recurrence suppression verified in CI/staging drills |
+| 10.9.16 | Platform Security + Architecture Council | 1.1E.17, 1.1E.18, 10.9.13 | 4-6 days | Kernel lifecycle checks enforced in CI/runtime; compatibility and rollback TTL proofs required; emergency freeze drill passes with signed release control |
+| 10.9.17 | Reliability Engineering + Observability | 7.9.37, 8.1.11, 10.9.15 | 4-6 days | First-occurrence alert storms stay within SLO; dedupe horizon and incident bundling verified in load tests; rollout blocked on storm overflow |
+| 10.9.18 | Governance + Reliability Engineering | 7.9.39, 10.9.11 | 3-5 days | High-impact domains enforce max autonomous cycle count; mandatory human review SLA met; audit trail proves no bypass in staging drills |
 
 > **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.12 in parallel where dependencies allow.
 
@@ -1803,7 +1854,9 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | M2: Observability + Signal Integrity | Ensure adaptation decisions are measurable and evidence quality is sufficient | 10.9.3, 10.9.9, 10.9.12, 7.3.4, 7.7A, 8.8 | Week 2-3 | Required dashboards live; dual-signal rollback gating active; confidence thresholds enforced; unexplained-outcome-drop detector alerting; universal break-to-heal metrics active |
 | M3: Federated + Advisory Safety | Harden cross-device and cross-locality propagation paths | 10.9.5, 10.9.6, 8.1, 8.9 | Week 3-5 | Cohort-wise no-regression checks passing; advisory quarantine enabled; credibility scoring + anomaly disable path operational; canary/shadow promotion policy enforced |
 | M4: Tier + Compatibility + Security Closure | Close resilience gaps across device tiers, schemas, and adversarial vectors | 10.9.7, 10.9.8, 10.9.10, 2.5, 7.5, 7.7.1 | Week 5-7 | Compatibility matrix blocks bad deploys; tier parity checks active; poisoning/outlier detection + signed update attestation enabled; scoped kill switches validated |
-| M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
+| M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, 10.9.13, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; kernel integrity enforcement active; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
+| M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts and alert storm SLO remains green |
+| M7: Oversight + Kernel Lifecycle Closure | Make kernel lifecycle and high-impact autonomy oversight operational and auditable | 10.9.16, 10.9.18, 1.1E.17, 1.1E.18, 7.9.39 | Week 10-11 | Kernel upgrade/downgrade/freeze drills pass; rollback TTL enforced; high-impact autonomous loop caps and mandatory human review SLA validated |
 
 #### 10.9C Cross-Phase Expansion Map (What to Update in Each Existing Phase)
 
@@ -1819,6 +1872,13 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | 8.8 Network Monitoring | Add failed-heal cycle monitoring, unexplained drift alarms, and cohort-level convergence/regression views | 10.9.3, 10.9.9 |
 | 8.9 Locality Happiness Advisory | Add advisory quarantine, advisor credibility decay, anomaly-based advisory source disable, advisory rollback independence | 10.9.6 |
 | 1.1E Lightweight Deterministic Memory Core | Add cross-subsystem failure-signature indexing and replayable healing provenance for all break classes | 10.9.12 |
+| 1.1E Lightweight Deterministic Memory Core | Add immutable kernel manifest registry and deterministic first-occurrence/dwell budget contracts | 10.9.13, 10.9.15 |
+| 1.1E Lightweight Deterministic Memory Core | Add kernel lifecycle protocol and emergency freeze controls | 10.9.16 |
+| 5.2 On-Device Training Loop | Add recursive meta-learning supervisor and anti-drift promotion controls | 10.9.14 |
+| 6.2 Guardrail Objectives | Add discoverability guarantee + first-occurrence and dwell-time escalation invariants | 10.9.15 |
+| 6.2 Guardrail Objectives | Add discoverability precedence matrix and measurable dwell exit criteria | 10.9.15, 10.9.17 |
+| 7.9 Autonomous Research Lane | Add first-occurrence storm suppression, objective dwell contracts, and high-impact autonomy cycle caps | 10.9.17, 10.9.18 |
+| 8.1 Federated World Model Learning | Add anti-fragmentation shared-core policy and cross-locality reconciliation cadence | 10.9.14, 10.9.17 |
 | 10.2 Stub/TODO Cleanup | Enforce adaptive critical-path placeholder elimination as release blocker | 10.9.1 |
 
 #### 10.9D Program-Level Checkpoints (Portfolio View)
@@ -1828,7 +1888,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | C1: Autonomy Enablement | Before enabling any autonomous adaptation in prod | M1 complete + CI gate green + rollback drill pass | Enable canary autonomy only |
 | C2: Federated Promotion | Before promoting any global federated update outside canary | M2 + M3 complete; cohort no-regression pass | Promote to staged rollout |
 | C3: Broad Rollout | Before full-population adaptive rollout | M4 complete + adversarial controls active + compatibility matrix pass | Full rollout allowed |
-| C4: Continuous Operation | Quarterly | M5 policy audit + rollback drill + incident postmortem review | Continue / tighten policy |
+| C4: Continuous Operation | Quarterly | M5 policy audit + M6 meta-learning integrity review + M7 oversight/lifecycle audit + rollback drill + incident postmortem review | Continue / tighten policy |
 
 #### 10.9E Governance RACI + Risk Scoring
 
@@ -1865,8 +1925,15 @@ Role abbreviations:
 | 10.9.9 | OBS, AP | REL | QA, MLE | GOV | 3 | 5 | 15 | High |
 | 10.9.10 | SEC, FED | GOV | AP, REL, QA | ARCH | 4 | 5 | 20 | Critical |
 | 10.9.11 | ARCH, GOV | GOV | AP, RE, REL | All teams | 3 | 5 | 15 | High |
+| 10.9.12 | AP, REL, FED | GOV | OBS, QA, MLE | All teams | 4 | 5 | 20 | Critical |
+| 10.9.13 | SEC, ARCH | GOV | AP, REL, QA | All teams | 4 | 5 | 20 | Critical |
+| 10.9.14 | MLE, REL | GOV | AP, FED, OBS | ARCH | 4 | 5 | 20 | Critical |
+| 10.9.15 | REL, AP, FED | GOV | OBS, QA, SEC | All teams | 4 | 5 | 20 | Critical |
+| 10.9.16 | SEC, ARCH | GOV | AP, REL, QA | All teams | 4 | 5 | 20 | Critical |
+| 10.9.17 | REL, OBS | GOV | AP, FED, QA | All teams | 4 | 4 | 16 | High |
+| 10.9.18 | GOV, REL | GOV | ARCH, SEC, QA | All teams | 4 | 5 | 20 | Critical |
 
-> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`) must have active owners and weekly status review before any autonomous scope expansion.
+> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`, `10.9.12`, `10.9.13`, `10.9.14`, `10.9.15`, `10.9.16`, `10.9.18`) must have active owners and weekly status review before any autonomous scope expansion.
 
 #### 10.9F Reusable Governance Template (Apply to All Phases)
 
@@ -2208,18 +2275,18 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 - **Quantum entity types:** 7 (expert, business, brand, event, user, sponsor, **list**) -- list is new
 - **List representation layers:** 8 (quantum state, knot, fabric, worldsheet, string, decoherence, entanglement, possibility engine)
 - **Action types in MPC space:** 22 (visit_spot, attend_event, join_community, connect_ai2ai, save_list, create_list, modify_list, share_list, create_reservation, message_friend, message_community, ask_agent, host_event, browse_entity, **initiate_business_outreach**, **propose_sponsorship**, **form_partnership**, **engage_business**, **novelty_injection**, **social_nudge**, **achievement_door**, **reduce_frequency**)
-- **Outcome data collection points:** 26 (Phase 1.2.1 through 1.2.26 -- expanded from 20) + organic discovery signals (Phase 1.7)
-- **Feedback signal types:** 10 hierarchically weighted (Phase 1.4.9: explicit rating 10x → scroll-past 0.5x) + 3 amplification tasks (1.4.10-1.4.12: asymmetric loss, confidence decay, bad day detection)
+- **Outcome data collection points:** 30 (Phase 1.2.1 through 1.2.29 plus 1.2.26A transition lane) + organic discovery signals (Phase 1.7)
+- **Feedback signal types:** 10 hierarchically weighted (Phase 1.4.9: explicit rating 10x → scroll-past 0.5x) + 8 advanced governance signals (1.4.10-1.4.17: amplification, conviction, delayed validation, discoverability, first-occurrence priority)
 - **Cold-start paths:** 3 (1.5A onboarding-based, 1.5B skip-onboarding behavioral, 1.5C business cold-start) + 1 pre-seeded global model (1.5D)
 - **Bidirectional energy pairings:** 7 (user↔community, user↔event, user↔connection, user↔list, **business↔expert**, **brand↔event**, **business↔business**)
-- **Guardrail objectives:** 15 (diversity, exploration, safety, doors, age, notification freq, quiet hours, diminishing returns, **active uncertainty reduction**, **domain-specific uncertainty tracking**, **lifecycle-stage exploration balance**, **re-engagement strategy**, **re-engagement frequency**, **returning user fast-ramp**, **dormancy outcome logging**)
+- **Guardrail objectives:** 20 (diversity, exploration, safety, doors, age, notification freq, quiet hours, diminishing returns, **active uncertainty reduction**, **domain-specific uncertainty tracking**, **lifecycle-stage exploration balance**, **re-engagement strategy**, **re-engagement frequency**, **returning user fast-ramp**, **dormancy outcome logging**, **discoverability guarantee**, **first-occurrence response invariant**, **dwell-time escalation invariant**, **discoverability precedence matrix**, **dwell exit criteria invariant**)
 - **Transition predictor outputs:** 12 (5.1.1 base + 5.1.4 variance + 5.1.5-5.1.7 replacements + 5.1.8 list transitions + **5.1.9 taste drift** + **5.1.10 temporal patterns** + **5.1.11 dormancy prediction** + **5.1.12 wearable temporal conditioning**)
 - **Formula replacement candidates (business layer):** 5 new (PartnershipMatchingService, SponsorshipService, BrandDiscoveryService, BusinessBusinessOutreachService, BusinessExpertOutreachService)
 - **Post-quantum security tasks:** 8 (Phase 2.5.1-2.5.8: session audit, Kyber rotation, prekey exhaustion, BLE mesh PQ, federated gradient PQ, cloud transport PQ, on-device storage audit, PQ dashboard)
 - **Post-quantum transport coverage:** Signal sessions (DONE via PQXDH), BLE discovery (Phase 2.5.4), federated gradients (Phase 2.5.5), cloud TLS (Phase 2.5.6), on-device storage (Phase 2.5.7 -- audit only, likely already safe)
 - **Locality happiness advisory tasks:** 17 (8.9A.1-8.9A.5 happiness aggregation, 8.9B.1-8.9B.6 advisory threshold, 8.9C.1-8.9C.5 cross-region transfer, 8.9D quantum readiness notes)
 - **Model lifecycle management tasks:** 13 (Phase 7.7.1-7.7.13: version schema, OTA delivery, compatibility gate, staged rollout, rollback controls, deterministic rollout ledger, known-bad suppression, continuity/forgetting-risk governance)
-- **Autonomous research/experimentation tasks:** 31 (Phase 7.9.1-7.9.31: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance, profile-gated systems optimization, bounded-space simulation/model policies, formal invariant oversight, delegation-control governance, adaptive-depth runtime + compute-optimal governance)
+- **Autonomous research/experimentation tasks:** 39 (Phase 7.9.1-7.9.39: hypothesis mining, interdisciplinary retrieval, self-expanding taxonomy, staged experiments, deterministic journaling, cross-reference scoring, rollback governance, profile-gated systems optimization, bounded-space simulation/model policies, formal invariant oversight, delegation-control governance, adaptive-depth runtime + compute-optimal governance, kernel-bound autonomy + recursive meta-audit + first-occurrence/dwell controls + storm suppression + high-impact oversight caps)
 - **Multi-device reconciliation tasks:** 6 (Phase 7.8.1-7.8.6: device-linked accounts, episodic merge, personality sync, tier-aware sync, device migration, conflict resolution)
 - **Data transparency tasks:** 4 (Phase 2.1.8-2.1.8C: "What My AI Knows" page, "Why this recommendation?" tap-through, data correction mechanism, admin transparency dashboard)
 - **Third-party data pipeline tasks:** 7 (Phase 9.2.6A-9.2.6G: insight catalog, DP noise injection, generation pipeline, consent gate, access control, buyer onboarding, revenue attribution)
