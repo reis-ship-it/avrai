@@ -1,6 +1,6 @@
 # External Research Addendum Phase Placement Matrix
 
-**Date:** February 16, 2026  
+**Date:** February 19, 2026  
 **Status:** Active governance reference  
 **Purpose:** Ensure addendum ideas are placed in owning execution phases rather than concentrated in Phase 7.9.
 
@@ -33,6 +33,7 @@ Phase `7.9` is the autonomous research/evidence loop.
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2502_17779.md` | 6.1, 7.5, 7.7 | Experiment/replay governance | Bounded-space simulation belongs in runtime + lifecycle implementation |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md` | 7.7A, 10.9.11 | Formal constraint integration in promotions | Proof-backed gates are policy/lifecycle hardening |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md` | 7.7, 7.7A, 10.9.12 | Delegation experiment governance | Delegation controls apply to lifecycle and self-healing routing |
+| `EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md` | 1.1E, 1.2, 1.4, 5.2, 6.1, 6.2, 8.1, 10.9 | Kernel/meta-learning governance + evidence intake | Kernel contracts and recursive anti-drift controls must land in owning runtime/training/robustness phases, not only 7.9 |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md` | 1.1E, 7.7, 8.1 | Experiment evidence + fallback checks | Deterministic memory core belongs in memory + rollback diagnostics |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md` | 5.2, 6.1, 7.7, 8.1 (varies by item) | Intake + prioritization | Batch sources require per-item ownership assignment before execution |
 
