@@ -221,6 +221,7 @@ import 'package:avrai/core/services/geographic/geographic_expansion_service.dart
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/facts_local_store.dart';
+import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
 import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
@@ -1200,6 +1201,14 @@ Future<void> init() async {
         if (!sl.isRegistered<SemanticMemoryLocalStore>()) {
           sl.registerLazySingleton(() => SemanticMemoryLocalStore());
           logger.debug('✅ [DI] SemanticMemoryLocalStore registered');
+        }
+        if (!sl.isRegistered<SemanticGeneralizationExtractor>()) {
+          sl.registerLazySingleton(
+            () => SemanticGeneralizationExtractor(
+              semanticLocalStore: sl<SemanticMemoryLocalStore>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticGeneralizationExtractor registered');
         }
         sl.registerLazySingleton(() => FactsIndex(
               supabase: supabaseClient,
