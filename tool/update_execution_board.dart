@@ -298,7 +298,7 @@ void _validateRows({
           'Milestone $id reopens unknown milestone: $reopensMilestone.',
         );
       }
-      if (reopened!['status']!.trim() != 'Done') {
+      if (reopened['status']!.trim() != 'Done') {
         _fail(
           'Milestone $id reopens $reopensMilestone, but that milestone is not Done.',
         );
