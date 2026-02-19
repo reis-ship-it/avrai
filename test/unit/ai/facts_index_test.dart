@@ -11,6 +11,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/facts_local_store.dart';
+import 'package:avrai/core/ai/semantic_memory_local_store.dart';
+import 'package:avrai/core/ai/semantic_memory_schema.dart';
 import 'package:avrai/core/ai/structured_facts.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -30,12 +32,14 @@ void main() {
   group('FactsIndex (local-first, offline)', () {
     late FactsIndex index;
     late FactsLocalStore localStore;
+    late SemanticMemoryLocalStore semanticLocalStore;
     late MockConnectivity mockConnectivity;
     late MockAgentIdService mockAgentId;
     late MockSupabaseClient mockSupabase;
 
     setUp(() {
       localStore = FactsLocalStore();
+      semanticLocalStore = SemanticMemoryLocalStore();
       mockConnectivity = MockConnectivity();
       mockAgentId = MockAgentIdService();
       mockSupabase = MockSupabaseClient();
@@ -49,6 +53,7 @@ void main() {
         supabase: mockSupabase,
         agentIdService: mockAgentId,
         localStore: localStore,
+        semanticLocalStore: semanticLocalStore,
         connectivity: mockConnectivity,
       );
     });
@@ -136,6 +141,64 @@ void main() {
       final got = await index.retrieveFacts(userId: uid);
       expect(got.traits, isEmpty);
       expect(localStore.getPending(), isNot(contains('agent-$uid')));
+    });
+
+    test('semantic nearest-neighbor retrieval ranks by embedding similarity',
+        () async {
+      const uid = 'user-semantic';
+      final createdAt = DateTime.utc(2026, 2, 19, 12, 0, 0);
+
+      await index.indexSemanticMemory(
+        userId: uid,
+        entry: SemanticMemoryEntry(
+          id: 'sem-1',
+          agentId: '',
+          embedding: const [1.0, 0.0],
+          generalization: 'User prefers curated jazz spots.',
+          evidenceCount: 2,
+          confidence: 0.8,
+          createdAt: createdAt,
+          updatedAt: createdAt,
+        ),
+      );
+      await index.indexSemanticMemory(
+        userId: uid,
+        entry: SemanticMemoryEntry(
+          id: 'sem-2',
+          agentId: '',
+          embedding: const [0.9, 0.1],
+          generalization: 'Late-night social preference.',
+          evidenceCount: 3,
+          confidence: 0.7,
+          createdAt: createdAt,
+          updatedAt: createdAt,
+        ),
+      );
+      await index.indexSemanticMemory(
+        userId: uid,
+        entry: SemanticMemoryEntry(
+          id: 'sem-3',
+          agentId: '',
+          embedding: const [0.0, 1.0],
+          generalization: 'Morning quiet venues.',
+          evidenceCount: 1,
+          confidence: 0.5,
+          createdAt: createdAt,
+          updatedAt: createdAt,
+        ),
+      );
+
+      final nearest = await index.retrieveSemanticNearest(
+        userId: uid,
+        queryEmbedding: const [1.0, 0.0],
+        topK: 2,
+      );
+
+      expect(nearest, hasLength(2));
+      expect(nearest.first.entry.id, 'sem-1');
+      expect(nearest[1].entry.id, 'sem-2');
+      expect(nearest.first.similarity, greaterThan(nearest[1].similarity));
+      verifyNever(mockSupabase.from(any));
     });
   });
 }

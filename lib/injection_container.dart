@@ -220,6 +220,8 @@ import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/core/ai/facts_local_store.dart';
+import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
 import 'package:avrai/data/repositories/supabase_community_repository.dart';
@@ -1191,9 +1193,21 @@ Future<void> init() async {
 
         // Register FactsIndex (Phase 11 Section 5: Retrieval + LLM Fusion)
         // Requires SupabaseClient to be available
+        if (!sl.isRegistered<FactsLocalStore>()) {
+          sl.registerLazySingleton(() => FactsLocalStore());
+          logger.debug('✅ [DI] FactsLocalStore registered');
+        }
+        if (!sl.isRegistered<SemanticMemoryLocalStore>()) {
+          sl.registerLazySingleton(() => SemanticMemoryLocalStore());
+          logger.debug('✅ [DI] SemanticMemoryLocalStore registered');
+        }
         sl.registerLazySingleton(() => FactsIndex(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
+              localStore: sl<FactsLocalStore>(),
+              connectivity:
+                  sl.isRegistered<Connectivity>() ? sl<Connectivity>() : null,
+              semanticLocalStore: sl<SemanticMemoryLocalStore>(),
             ));
         logger.debug('✅ [DI] FactsIndex registered');
 
