@@ -358,7 +358,7 @@ The existing `CallingScoreDataCollector` → `CallingScoreNeuralModel` → `Call
 |------|-------------|---------|
 | 1.3.1 | Extract `BaselineMetricsService` from `CallingScoreBaselineMetrics` (generalize to any formula) | Extends existing -- COMPLETE (2026-02-19: extracted generic `BaselineMetricsService` with reusable `BaselineEvaluationRecord`/`BaselineMetricsResult`, wired into `CallingScoreBaselineMetrics` via DI, and covered by `baseline_metrics_service_test`) |
 | 1.3.2 | Extract `FormulaABTestingService` from `CallingScoreABTestingService` (generalize to any formula vs learned comparison) | Extends existing -- COMPLETE (2026-02-19: extracted reusable `FormulaABTestingService` for deterministic treatment assignment and generic control/treatment metric comparison, wired into `CallingScoreABTestingService` and DI, and covered by `formula_ab_testing_service_test`) |
-| 1.3.3 | Create `TrainingDataPreparationService` generalized from `CallingScoreTrainingDataPreparer` | Extends existing |
+| 1.3.3 | Create `TrainingDataPreparationService` generalized from `CallingScoreTrainingDataPreparer` | Extends existing -- COMPLETE (2026-02-19: extracted reusable `TrainingDataPreparationService` for split validation, normalization, and dataset partitioning; wired into `CallingScoreTrainingDataPreparer` via DI and covered by `training_data_preparation_service_test` and `calling_score_training_data_preparer_test`) |
 | 1.3.4 | Add feature flag support for each formula replacement (extend `FeatureFlagService`) | Extends existing -- COMPLETE (2026-02-16) |
 
 ### 1.4 Feedback Collection UX
