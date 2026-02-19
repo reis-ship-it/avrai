@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "mode": "supervised",
+  "max_milestones_per_run": 3,
+  "execution_board_csv": "docs/EXECUTION_BOARD.csv",
+  "git": {
+    "default_base_branch": "main",
+    "default_phase_branch_prefix": "phase",
+    "require_clean_worktree": true
+  },
+  "guards": {
+    "enabled": true,
+    "commands": [
+      "dart run tool/update_execution_board.dart --check",
+      "python3 scripts/validate_architecture_placement.py"
+    ]
+  },
+  "notifications": {
+    "slack_webhook_env": "AUTOPILOT_SLACK_WEBHOOK",
+    "emit_console_summary": true
+  },
+  "escalation": {
+    "write_docs": true,
+    "open_dir": "autopilot/hitl/open",
+    "resolved_dir": "autopilot/hitl/resolved"
+  }
+}
