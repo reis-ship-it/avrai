@@ -6,6 +6,10 @@
 **Estimated Duration:** 6-8 weeks  
 **Purpose:** Implement comprehensive security measures for user account → AI agent separation and AI2AI network protection
 
+Canonical red-team authority:
+- `docs/security/RED_TEAM_TEST_MATRIX.md` (system hijack + security lane simulations)
+- `docs/MASTER_PLAN.md` task `10.9.20` (critical red-team lanes are release-blocking for autonomous scope expansion)
+
 ---
 
 ## 🎯 **PLAN OVERVIEW**
@@ -589,4 +593,3 @@ This plan implements the security recommendations from `docs/SECURITY_ANALYSIS.m
 
 **Last Updated:** November 27, 2025  
 **Next Review:** After Phase 1 completion
-

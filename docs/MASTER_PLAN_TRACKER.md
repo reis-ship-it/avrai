@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 19, 2026 (v22: added arXiv 2507.00885 downstream-scaling reliability mapping across phases `5.2`, `7.7`, `7.9`, `8.1`, `10.9`, including addendum + placement matrix + master-plan governance gates. Previous: v21 hardening pass for kernel lifecycle/oversight/storm control)
+**Last Updated:** February 19, 2026 (v23: added canonical red-team hijack/security matrix governance (`10.9.20`) and linked it across master-plan execution + security enforcement docs. Previous: v22 added arXiv 2507.00885 downstream-scaling reliability mapping)
 
 ---
 
@@ -166,6 +166,7 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| Red-Team Test Matrix (System Hijack + Data Security) | 2026-02-19 | 🟢 Active | **CRITICAL** | Continuous; critical lanes release-block autonomous scope expansion until resolved | [`security/RED_TEAM_TEST_MATRIX.md`](./security/RED_TEAM_TEST_MATRIX.md) |
 | Signal Protocol Implementation (Phase 14) | 2025-12-28 | 🟡 In Progress | P2 Enhancement | 3-6 weeks (Framework: Complete) | [`plans/security_implementation/PHASE_14_IMPLEMENTATION_PLAN.md`](./plans/security_implementation/PHASE_14_IMPLEMENTATION_PLAN.md) |
 | Security Implementation Plan | 2025-11-27 | 🟢 Active | CRITICAL (P0) | 6-8 weeks | [`plans/security_implementation/SECURITY_IMPLEMENTATION_PLAN.md`](./plans/security_implementation/SECURITY_IMPLEMENTATION_PLAN.md) |
 

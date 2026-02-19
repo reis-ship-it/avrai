@@ -44,6 +44,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **ML training governance authority:** [`docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](../methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md)
 - **Execution/PR traceability integration:** [`docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`](../methodology/PRD_EXECUTION_BOARD_INTEGRATION.md)
 - **Build enforcement setup:** [`docs/GITHUB_ENFORCEMENT_SETUP.md`](../../GITHUB_ENFORCEMENT_SETUP.md)
+- **Red-team hijack/security matrix (governance authority):** [`docs/security/RED_TEAM_TEST_MATRIX.md`](../../security/RED_TEAM_TEST_MATRIX.md)
 - **AVRAI native type contracts:** [`configs/ml/avrai_native_type_contracts.json`](../../../configs/ml/avrai_native_type_contracts.json)
 - **AVRAI dataset builder:** [`scripts/ml/build_training_dataset.py`](../../../scripts/ml/build_training_dataset.py)
 
