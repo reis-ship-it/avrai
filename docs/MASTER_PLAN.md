@@ -245,7 +245,7 @@ If-then heuristics extracted from episode patterns. Used by the planning loop to
 
 | Task | Description |
 |------|-------------|
-| 1.1B.1 | Design procedural memory schema: condition (feature thresholds) + action preference + evidence count + success rate |
+| 1.1B.1 | Design procedural memory schema: condition (feature thresholds) + action preference + evidence count + success rate | COMPLETE (2026-02-20: added `ProceduralRule` and `FeatureThreshold` schema in `procedural_rule_schema.dart` with JSON round-trip, threshold matching, and evidence-weighted merge semantics; covered by `procedural_rule_schema_test`) |
 | 1.1B.2 | Implement rule extraction: identify recurring patterns in episodic memory where specific state features consistently predict action success (e.g., "When novelty_saturation > 0.8 AND energy is moderate, novel exploration spots outperform familiar comfort spots by 23%") |
 | 1.1B.3 | Implement rule application API: given current state features, return applicable strategy rules with confidence scores |
 | 1.1B.4 | Wire procedural rules as heuristics in MPC planning loop (Phase 6): rules pre-filter candidate actions before exhaustive energy scoring, reducing compute |
