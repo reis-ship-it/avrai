@@ -19,6 +19,28 @@ class FactsJournalEntry {
     this.metadata = const {},
   });
 
+  FactsJournalEntry copyWith({
+    String? entryId,
+    String? factKey,
+    String? factValue,
+    String? source,
+    double? confidence,
+    DateTime? timestamp,
+    String? provenanceId,
+    Map<String, Object?>? metadata,
+  }) {
+    return FactsJournalEntry(
+      entryId: entryId ?? this.entryId,
+      factKey: factKey ?? this.factKey,
+      factValue: factValue ?? this.factValue,
+      source: source ?? this.source,
+      confidence: confidence ?? this.confidence,
+      timestamp: timestamp ?? this.timestamp,
+      provenanceId: provenanceId ?? this.provenanceId,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'entry_id': entryId,
