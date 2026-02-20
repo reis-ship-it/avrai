@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2917
+**Total mapped files:** 2919
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,7 +10,7 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2550 |
+| keep_update | 2552 |
 | keep_review | 341 |
 | refactor_planned | 26 |
 
@@ -18,13 +18,13 @@
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 904 |
+| testing-quality | 906 |
 | presentation | 381 |
 | core-services-general | 369 |
 | tooling-ops | 291 |
 | package-modules | 207 |
 | core-models | 141 |
-| world-model-ai-core | 126 |
+| world-model-ai-core | 128 |
 | supabase-infra | 124 |
 | platform-runtime | 62 |
 | data-layer | 55 |
@@ -35,9 +35,9 @@
 | workflow-controllers | 21 |
 | ai2ai-network | 20 |
 | domain-layer | 19 |
-| app-composition-root | 15 |
 | config-and-theme | 15 |
 | security-signal | 14 |
+| app-composition-root | 13 |
 | security-services | 11 |
 | monitoring-observability | 9 |
 | quantum-package | 7 |
@@ -63,11 +63,11 @@
 | test/unit/services | 200 |
 | lib/presentation/pages | 173 |
 | lib/core/models | 141 |
-| lib/core/ai | 126 |
+| lib/core/ai | 128 |
 | test/widget/widgets | 101 |
 | packages/avrai_knot/lib | 84 |
+| test/unit/ai | 69 |
 | packages/avrai_network/lib | 67 |
-| test/unit/ai | 67 |
 | test/widget/pages | 56 |
 | test/unit/models | 55 |
 | packages/avrai_core/lib | 34 |
