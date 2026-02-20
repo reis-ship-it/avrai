@@ -3,7 +3,7 @@ name: phase-subsection-autopr
 on:
   push:
     branches:
-      - "phase*_work/**"
+      - "phase*_work__*"
   workflow_dispatch:
 
 permissions:
@@ -24,19 +24,19 @@ jobs:
           set -euo pipefail
           head_branch="${GITHUB_REF_NAME}"
 
-          if [[ "${head_branch}" != *"/"* ]]; then
+          if [[ ! "${head_branch}" =~ ^(phase[0-9]+_work)(__.+)$ ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          phase_root="${head_branch%%/*}"
-          if [[ ! "${phase_root}" =~ ^phase[0-9]+_work$ ]]; then
+          phase_root="${BASH_REMATCH[1]}"
+          if [[ ! "${head_branch}" =~ __s[a-z0-9_]+(_r[0-9]+)?$ ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          base_branch="${head_branch%/*}"
-          if [[ "${base_branch}" == "${head_branch}" ]]; then
+          base_branch="${head_branch%__s*}"
+          if [[ -z "${base_branch}" || "${base_branch}" == "${head_branch}" ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -44,7 +44,7 @@ jobs:
           phase_num="${phase_root#phase}"
           phase_num="${phase_num%_work}"
           phase_id="P${phase_num}"
-          subsection="${head_branch#${phase_root}/}"
+          subsection="${head_branch#${phase_root}__}"
 
           echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "head_branch=${head_branch}" >> "$GITHUB_OUTPUT"

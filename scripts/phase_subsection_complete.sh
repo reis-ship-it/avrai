@@ -6,18 +6,16 @@ usage() {
 Usage:
   scripts/phase_subsection_complete.sh --phase P1 --subsection 1.2.8 [--title "PR title"] [--body "PR body"] [--no-pr] [--skip-naming-verification]
 
+Branch format:
+  phase#_work__sX_Y_Z[__sA_B_C...]
+
 What this does:
-  1) Requires you to be on phase branch hierarchy (e.g., phase1_work or phase1_work/s1_2_8).
-  2) Creates a child branch from the current branch (e.g., phase1_work/s1_2_8).
+  1) Requires you to be on phase branch hierarchy.
+  2) Creates a child branch from the current branch.
   3) Commits all current changes.
   4) Pushes the child branch.
   5) Runs naming verification unless skipped.
   6) Opens a PR back into the immediate parent branch (unless --no-pr).
-
-Notes:
-  - Unmerged/conflicted files are not allowed.
-  - Requires at least one staged change after add.
-  - Uses gh CLI for PR creation.
 USAGE
 }
 
@@ -86,21 +84,21 @@ fi
 
 phase_branch="phase${phase_num}_work"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
+valid_pattern="^${phase_branch}(__s[a-z0-9_]+(_r[0-9]+)?)*$"
 
-if ! [[ "$current_branch" =~ ^${phase_branch}(/.*)?$ ]]; then
-  echo "Current branch is '$current_branch'. Must be '$phase_branch' or a child branch of it." >&2
+if ! [[ "$current_branch" =~ $valid_pattern ]]; then
+  echo "Current branch is '$current_branch'. Must be '$phase_branch' or child hierarchy under it." >&2
   exit 1
 fi
 
 parent_branch="$current_branch"
-
 section_slug="$(echo "$subsection" | tr '.' '_' | tr -cd '[:alnum:]_')"
 if [[ -z "$section_slug" ]]; then
   echo "Invalid subsection: $subsection" >&2
   exit 1
 fi
 
-child_branch="${parent_branch}/s${section_slug}"
+child_branch="${parent_branch}__s${section_slug}"
 if git show-ref --verify --quiet "refs/heads/${child_branch}"; then
   i=2
   while git show-ref --verify --quiet "refs/heads/${child_branch}_r${i}"; do
