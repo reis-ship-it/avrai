@@ -177,6 +177,34 @@ void main() {
       });
     });
 
+    group('Operational Metrics', () {
+      test('should record and retrieve operational metrics by name', () async {
+        skipIfServiceNull();
+        await service!.recordOperationalMetric(
+          userId: 'test-user-1',
+          metricName: 'memory_consolidation_duration_ms',
+          value: 1200,
+          dimensions: const {'lane': 'memory_consolidation'},
+          timestamp: DateTime.utc(2026, 2, 20, 2, 0, 0),
+        );
+        await service!.recordOperationalMetric(
+          userId: 'test-user-1',
+          metricName: 'memory_consolidation_duration_ms',
+          value: 1400,
+          dimensions: const {'lane': 'memory_consolidation'},
+          timestamp: DateTime.utc(2026, 2, 20, 3, 0, 0),
+        );
+
+        final metrics = service!.getOperationalMetrics(
+          userId: 'test-user-1',
+          metricName: 'memory_consolidation_duration_ms',
+        );
+        expect(metrics, hasLength(2));
+        expect(metrics.first.value, 1400);
+        expect(metrics.last.value, 1200);
+      });
+    });
+
     group('Disposal', () {
       test('should dispose resources', () {
         skipIfServiceNull();

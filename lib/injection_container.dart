@@ -228,6 +228,7 @@ import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_local_store.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
 import 'package:avrai/core/ai/memory/consolidation/nightly_memory_consolidation_scheduler.dart';
+import 'package:avrai/core/ai/memory/consolidation/consolidation_metrics_service.dart';
 import 'package:avrai/core/ai/memory/consolidation/procedural_rule_consolidation_service.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
@@ -251,6 +252,7 @@ import 'package:avrai/core/services/recommendations/outcome_prediction_service.d
 import 'package:avrai/core/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai/core/services/ai_infrastructure/online_learning_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_retraining_service.dart';
+import 'package:avrai/core/services/ai_infrastructure/ai_improvement_tracking_service.dart';
 import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
@@ -1254,6 +1256,16 @@ Future<void> init() async {
             ),
           );
           logger.debug('✅ [DI] ProceduralRuleConsolidationService registered');
+        }
+        if (!sl.isRegistered<ConsolidationMetricsService>()) {
+          sl.registerLazySingleton(
+            () => ConsolidationMetricsService(
+              trackingService: sl.isRegistered<AIImprovementTrackingService>()
+                  ? sl<AIImprovementTrackingService>()
+                  : null,
+            ),
+          );
+          logger.debug('✅ [DI] ConsolidationMetricsService registered');
         }
         if (!sl.isRegistered<PlannerActionPreFilter>()) {
           sl.registerLazySingleton(

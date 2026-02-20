@@ -15,6 +15,20 @@ class EpisodicWriteResult {
   });
 }
 
+class EpisodicPruneResult {
+  final int deletedCount;
+  final int retainedRecentCount;
+  final int retainedSurpriseCount;
+  final int retainedUncompressedCount;
+
+  const EpisodicPruneResult({
+    required this.deletedCount,
+    required this.retainedRecentCount,
+    required this.retainedSurpriseCount,
+    required this.retainedUncompressedCount,
+  });
+}
+
 /// Phase 1.1 episodic store with SQLite schema via Drift runtime.
 ///
 /// This service intentionally uses `customStatement/customSelect` to avoid
@@ -322,6 +336,154 @@ class EpisodicMemoryStore {
     if (_database != null) {
       await _database.customStatement('DELETE FROM $_tableName');
     }
+  }
+
+  /// Prune old episodic tuples after consolidation.
+  ///
+  /// Retention policy:
+  /// - keep recent tuples (newer than [retainWindow])
+  /// - keep high-surprise tuples (unexpected outcomes)
+  /// - keep tuples not listed in [compressedTupleHashes] when provided
+  ///
+  /// If [compressedTupleHashes] is omitted/null, compression gating is skipped.
+  Future<EpisodicPruneResult> pruneConsolidated({
+    required String agentId,
+    required DateTime now,
+    Duration retainWindow = const Duration(days: 30),
+    Set<String>? compressedTupleHashes,
+    double surpriseThreshold = 0.5,
+  }) async {
+    await initialize();
+    final cutoff = now.toUtc().subtract(retainWindow);
+    final database = _database;
+
+    var deletedCount = 0;
+    var retainedRecentCount = 0;
+    var retainedSurpriseCount = 0;
+    var retainedUncompressedCount = 0;
+
+    final canDeleteWithoutCompressionGate = compressedTupleHashes == null;
+    bool isCompressed(EpisodicTuple tuple) =>
+        canDeleteWithoutCompressionGate ||
+        compressedTupleHashes.contains(tuple.tupleHash);
+
+    if (database == null) {
+      final toRemove = <String>[];
+      for (final entry in _inMemoryFallback.entries) {
+        final tuple = entry.value;
+        if (tuple.agentId != agentId) continue;
+        if (!tuple.recordedAt.toUtc().isBefore(cutoff)) {
+          retainedRecentCount += 1;
+          continue;
+        }
+        if (!isCompressed(tuple)) {
+          retainedUncompressedCount += 1;
+          continue;
+        }
+        if (_isHighSurprise(tuple, surpriseThreshold: surpriseThreshold)) {
+          retainedSurpriseCount += 1;
+          continue;
+        }
+        toRemove.add(entry.key);
+      }
+
+      for (final tupleHash in toRemove) {
+        _inMemoryFallback.remove(tupleHash);
+      }
+      deletedCount = toRemove.length;
+      return EpisodicPruneResult(
+        deletedCount: deletedCount,
+        retainedRecentCount: retainedRecentCount,
+        retainedSurpriseCount: retainedSurpriseCount,
+        retainedUncompressedCount: retainedUncompressedCount,
+      );
+    }
+
+    final rows = await database.customSelect(
+      '''
+      SELECT * FROM $_tableName
+      WHERE agent_id = ?
+      ''',
+      variables: <Variable<Object>>[Variable<String>(agentId)],
+      readsFrom: const {},
+    ).get();
+    final tuples = rows.map(_mapRow);
+
+    final toDeleteHashes = <String>[];
+    for (final tuple in tuples) {
+      if (!tuple.recordedAt.toUtc().isBefore(cutoff)) {
+        retainedRecentCount += 1;
+        continue;
+      }
+      if (!isCompressed(tuple)) {
+        retainedUncompressedCount += 1;
+        continue;
+      }
+      if (_isHighSurprise(tuple, surpriseThreshold: surpriseThreshold)) {
+        retainedSurpriseCount += 1;
+        continue;
+      }
+      toDeleteHashes.add(tuple.tupleHash);
+    }
+
+    if (toDeleteHashes.isNotEmpty) {
+      const batchSize = 250;
+      for (var i = 0; i < toDeleteHashes.length; i += batchSize) {
+        final chunk = toDeleteHashes.skip(i).take(batchSize).toList();
+        final placeholders = List.filled(chunk.length, '?').join(', ');
+        await database.customStatement(
+          '''
+          DELETE FROM $_tableName
+          WHERE tuple_hash IN ($placeholders)
+          ''',
+          chunk,
+        );
+      }
+    }
+
+    deletedCount = toDeleteHashes.length;
+    return EpisodicPruneResult(
+      deletedCount: deletedCount,
+      retainedRecentCount: retainedRecentCount,
+      retainedSurpriseCount: retainedSurpriseCount,
+      retainedUncompressedCount: retainedUncompressedCount,
+    );
+  }
+
+  bool _isHighSurprise(
+    EpisodicTuple tuple, {
+    required double surpriseThreshold,
+  }) {
+    final metadata = tuple.metadata;
+    final explicitHighSurprise = metadata['high_surprise'];
+    if (explicitHighSurprise is bool && explicitHighSurprise) {
+      return true;
+    }
+
+    final surpriseScore = _asDouble(metadata['surprise_score']);
+    if (surpriseScore != null && surpriseScore >= surpriseThreshold) {
+      return true;
+    }
+
+    final predictionError = _asDouble(metadata['prediction_error']);
+    if (predictionError != null && predictionError.abs() >= surpriseThreshold) {
+      return true;
+    }
+
+    final predictedOutcomeValue =
+        _asDouble(metadata['predicted_outcome_value']);
+    if (predictedOutcomeValue == null) return false;
+    final actual = tuple.outcome.value;
+    final contradicted = (predictedOutcomeValue >= 0.5 && actual < 0.5) ||
+        (predictedOutcomeValue < 0.5 && actual >= 0.5);
+    final delta = (actual - predictedOutcomeValue).abs();
+    return contradicted && delta >= surpriseThreshold;
+  }
+
+  double? _asDouble(Object? value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
   EpisodicTuple _mapRow(QueryRow row) {
