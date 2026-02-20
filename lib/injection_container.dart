@@ -223,6 +223,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/facts_local_store.dart';
 import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
 import 'package:avrai/core/ai/semantic_memory_local_store.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
@@ -1210,6 +1211,10 @@ Future<void> init() async {
             ),
           );
           logger.debug('✅ [DI] SemanticGeneralizationExtractor registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleExtractor>()) {
+          sl.registerLazySingleton(() => const ProceduralRuleExtractor());
+          logger.debug('✅ [DI] ProceduralRuleExtractor registered');
         }
         sl.registerLazySingleton(() => FactsIndex(
               supabase: supabaseClient,
