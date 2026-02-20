@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 20, 2026 (v24: added dream-training conviction-governance architecture spec and wired belief-tier safety controls across `1.1E`, `5.2`, `6.2`, `7.7`, `7.9`, `8.1`, and `10.9.21`. Previous: v23 added canonical red-team hijack/security matrix governance (`10.9.20`))
+**Last Updated:** February 20, 2026 (v26: added topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings across `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, and `10.9`. Previous: v25 added offline/online transfer continuity addendum (`arXiv 2602.17632`) and explicit cross-phase wiring to `5.2`, `7.7`, `7.9`, `8.1`, and `10.9.22`)
 
 ---
 
@@ -201,6 +201,8 @@
 | External Research Addendum: Adaptive Reasoning + Runtime Control Batch (Ouro/UT/PonderNet/RLVR/Scaling/Data) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md) |
 | External Research Addendum: Feedback/Conviction/Data Research Ops Batch (DAAF/OpenAI Social Science/Delegation/Formal Oversight/Distal Objective) | 2026-02-17 | 📋 Reference | HIGH | Immediate planning input; core-phase mapping to `1.1E`, `1.4`, `4.1`, `5.1`, `5.2`, `6.1` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md) |
 | External Research Addendum: arXiv 2507.00885 (Downstream Scaling Reliability / Cross-Setting Sensitivity) | 2026-02-19 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `5.2`, `7.7`, `7.9`, `8.1`, `10.9` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md) |
+| External Research Addendum: arXiv 2602.17632 (Offline/Online Transfer Continuity) | 2026-02-20 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `5.2`, `7.7`, `7.9`, `8.1`, `10.9.22` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md) |
+| External Research Addendum: arXiv 2602.16873 (Task-Adaptive Orchestration Topology) | 2026-02-20 | 📋 Reference | HIGH | Immediate planning input; caution-gated mapping to `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, `10.9` for online/offline + ai2ai topology policy | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md) |
 | External Research Addendum: Recursive Meta-Learning + Kernel Contracts + Discoverability Batch (arXiv 2602.03814/16708/13671/03837/15799/2512.14982/2602.15001 + AVRAI operating concerns) | 2026-02-19 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `1.1E`, `1.2`, `1.4`, `5.2`, `6.1`, `6.2`, `7.9`, `8.1`, `10.9` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md) |
 | External Research Addendum: arXiv 2602.12259 (Scientist-style Agent Workflow) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md) |
 | External Research Addendum: HKUDS/nanobot (Lightweight Deterministic Memory Core) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md) |
@@ -511,7 +513,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 20, 2026 (v24: dream-training conviction-governance architecture added; previous entries preserved above)
+**Last Updated:** February 20, 2026 (v26: topology-adaptive orchestration addendum mapped with caution gates; previous entries preserved above)
 
 ---
 
