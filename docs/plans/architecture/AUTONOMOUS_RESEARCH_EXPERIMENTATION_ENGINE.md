@@ -176,6 +176,7 @@ This creates a self-growing research ontology instead of a static topic list.
 | Phase 4 (Energy Function) | Use experiment outcomes to adjust objective components safely |
 | Phase 5.1 (Transition predictor) | Condition transition forecasts on evidence quality, source agreement, and third-party drift risk |
 | Phase 5.2 (On-device training loop) | Use evidence-tiered curricula, conviction-gated optimizer controls, and source-family reliability weighting |
+| Phase 5.2 (Offline/online transfer continuity) | Enforce continuity shaping, bridge-stage adaptation, and early-online regret/recovery thresholds before full promotion |
 | Phase 5.2 (Dream lane controls) | Add bounded DreamEnv lane, mismatch gating, OOD/leakage/spec-gaming checks, and no recursive self-confirmation policy |
 | Phase 6.1 (MPC Planner) | Inject validated policy changes, evidence-backed priors, data-route selection, and conviction-aware horizon tuning |
 | Phase 6.2 (Guardrail objectives) | Enforce discoverability guarantee, first-occurrence triage invariant, and dwell-time escalation invariant |
@@ -241,6 +242,10 @@ This creates a self-growing research ontology instead of a static topic list.
 47. `ARE-47` Add negative-dream archive with anti-repeat suppression tags and automatic contradiction-prior reuse.
 48. `ARE-48` Add dream/reality divergence monitor with auto-throttle, quarantine, and rollback hooks.
 49. `ARE-49` Add belief-tier audit dashboard (promotion/demotion counts, hierarchy-violation rejects, delayed-validation outcomes).
+50. `ARE-50` Add transfer-valley stress protocol (`offline -> shadow_online -> canary_online -> full_online`) with controlled perturbation sweeps.
+51. `ARE-51` Add static-vs-semi-online-vs-online ablation lane and retain cohort-level handoff failure traces.
+52. `ARE-52` Add early-online regret dashboard (`handoff_dip`, `initial_online_regret`, `recovery_steps`, `worst_cohort_handoff_delta`) as release-blocking evidence.
+53. `ARE-53` Add transfer mitigation playbook registry so failed handoff patterns auto-map to tested remediation recipes.
 
 ---
 
@@ -256,6 +261,7 @@ This creates a self-growing research ontology instead of a static topic list.
 - No unbounded first-occurrence alerting: all critical alert lanes must honor rate-limit + dedupe + incident-bundle policy.
 - No unlimited autonomous loops in high-impact domains: mandatory human-review SLO is required once cycle cap is reached.
 - No linear-only downstream scaling assumptions: promotion requires cross-setting scaling robustness evidence.
+- No offline-only promotion claims: bridge-stage and early-online continuity gates must pass before production rollout.
 - No dream-tier override of proven convictions: belief-tier precedence is immutable and enforced in runtime + CI.
 - No dream-only policy truth: dream evidence must pass dual-key validation before tier elevation above `hypothesis`.
 
