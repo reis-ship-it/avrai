@@ -55,12 +55,36 @@ class SemanticGeneralizationExtractor {
 
     final semanticStore = _semanticLocalStore;
     if (semanticStore != null) {
+      final existingEntries = await semanticStore.getAll(agentId);
+      final existingById = <String, SemanticMemoryEntry>{
+        for (final existing in existingEntries) existing.id: existing,
+      };
+      final persisted = <SemanticMemoryEntry>[];
       for (final entry in entries) {
-        await semanticStore.upsert(agentId, entry);
+        final existing = existingById[entry.id];
+        if (existing == null) {
+          await semanticStore.upsert(agentId, entry);
+          persisted.add(entry);
+          continue;
+        }
+
+        final merged = existing
+            .copyWith(
+              embedding: entry.embedding,
+              generalization: entry.generalization,
+            )
+            .mergeEvidence(
+              additionalEvidence: entry.evidenceCount,
+              observedConfidence: entry.confidence,
+              mergedAt: entry.updatedAt,
+            );
+        await semanticStore.upsert(agentId, merged);
+        persisted.add(merged);
       }
       if (entries.isNotEmpty) {
         await semanticStore.addPending(agentId);
       }
+      return persisted;
     }
 
     return entries;
