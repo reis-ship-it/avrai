@@ -92,6 +92,8 @@ This is not unconstrained autonomy. It is autonomy under hard validation and rol
 | `KernelLifecycleGuard` | Enforce kernel upgrade/downgrade protocol, rollback TTL, and emergency freeze controls | Blocks runtime drift from lifecycle policy |
 | `MetaLearningSupervisor` | Evaluate planned-vs-actual learning cycle quality and auto-adjust subsequent cycle policy | Macro guard over micro adaptation |
 | `ScalingReliabilityProfiler` | Classify downstream scaling regimes and compute setup sensitivity indices | Blocks linear-only extrapolation promotion paths |
+| `DreamEnvOrchestrator` | Run bounded dream simulation/counterfactual episodes and emit speculative candidates | Cannot produce direct production promotions |
+| `DreamConvictionGate` | Enforce belief-tier precedence and dual-key evidence requirements for dream-derived updates | Fail-closed on hierarchy violations |
 | `DwellBudgetController` | Enforce time/attempt ceilings per issue/hypothesis class and trigger escalation routes | Prevents infinite autonomous loops |
 | `FirstOccurrenceGovernor` | Enforce first-occurrence rate limits, dedupe horizon, and incident bundling | Prevents triage storm overload |
 | `HighImpactOversightGate` | Enforce max autonomous cycles before mandatory human review in high-impact domains | Signed review disposition required |
@@ -174,11 +176,13 @@ This creates a self-growing research ontology instead of a static topic list.
 | Phase 4 (Energy Function) | Use experiment outcomes to adjust objective components safely |
 | Phase 5.1 (Transition predictor) | Condition transition forecasts on evidence quality, source agreement, and third-party drift risk |
 | Phase 5.2 (On-device training loop) | Use evidence-tiered curricula, conviction-gated optimizer controls, and source-family reliability weighting |
+| Phase 5.2 (Dream lane controls) | Add bounded DreamEnv lane, mismatch gating, OOD/leakage/spec-gaming checks, and no recursive self-confirmation policy |
 | Phase 6.1 (MPC Planner) | Inject validated policy changes, evidence-backed priors, data-route selection, and conviction-aware horizon tuning |
 | Phase 6.2 (Guardrail objectives) | Enforce discoverability guarantee, first-occurrence triage invariant, and dwell-time escalation invariant |
 | Phase 7.9 (Autonomous Research Lane) | Run always-on loop orchestration, rollout gates, rollback |
 | Phase 8 (Federated AI2AI) | Share DP-safe research deltas and validated improvements |
 | Phase 8.1 (Federated split governance) | Enforce anti-fragmentation shared core and cross-locality reconciliation cadence |
+| Phase 8.1 (Dream federation controls) | Quarantine raw dream outputs, share only vetted tiered candidates, and enforce cross-family belief-tier consistency |
 | Phase 8.1 (Scaling reliability governance) | Track downstream scaling regimes per `locality x model_family` and quarantine cross-cohort inversion risk |
 | Phase 1.1E (Deterministic Memory Core) | Persist facts/history journals for fallback retrieval and forensic recovery |
 | Phase 10.9 (Reliability governance) | Enforce kernel lifecycle gates, first-occurrence storm SLOs, and high-impact oversight SLOs |
@@ -232,6 +236,11 @@ This creates a self-growing research ontology instead of a static topic list.
 42. `ARE-42` Add downstream scaling regime classifier (`predictable/inverse/nonmonotonic/trendless/breakthrough`) for every candidate update.
 43. `ARE-43` Add required validation/task/setup sensitivity sweeps and block promotion when benign setup changes flip downstream conclusions.
 44. `ARE-44` Add federated scaling reliability registry and cross-cohort inversion quarantine policy before global promotion.
+45. `ARE-45` Add DreamEnv bounded simulation lane with deterministic provenance (`DreamLedger`) and falsification contract enforcement.
+46. `ARE-46` Add dream-conviction hierarchy gate and dual-key evidence validator; block any direct dream-to-proven promotion path.
+47. `ARE-47` Add negative-dream archive with anti-repeat suppression tags and automatic contradiction-prior reuse.
+48. `ARE-48` Add dream/reality divergence monitor with auto-throttle, quarantine, and rollback hooks.
+49. `ARE-49` Add belief-tier audit dashboard (promotion/demotion counts, hierarchy-violation rejects, delayed-validation outcomes).
 
 ---
 
@@ -247,6 +256,8 @@ This creates a self-growing research ontology instead of a static topic list.
 - No unbounded first-occurrence alerting: all critical alert lanes must honor rate-limit + dedupe + incident-bundle policy.
 - No unlimited autonomous loops in high-impact domains: mandatory human-review SLO is required once cycle cap is reached.
 - No linear-only downstream scaling assumptions: promotion requires cross-setting scaling robustness evidence.
+- No dream-tier override of proven convictions: belief-tier precedence is immutable and enforced in runtime + CI.
+- No dream-only policy truth: dream evidence must pass dual-key validation before tier elevation above `hypothesis`.
 
 ---
 
