@@ -180,6 +180,97 @@ void main() {
       expect(rows, hasLength(1));
       expect(rows.first.outcome.value, 1.0);
     });
+
+    test('pruneConsolidated removes old compressed non-surprise tuples',
+        () async {
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-prunable',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-prunable',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 1, 1, 0, 0, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-surprise',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-surprise',
+          category: OutcomeCategory.binary,
+          value: 0,
+        ),
+        metadata: const {'predicted_outcome_value': 1.0},
+        recordedAt: DateTime.utc(2026, 1, 2, 0, 0, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'recent',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'recent',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 18, 0, 0, 0),
+      ));
+
+      final before = await store.getRecent(agentId: 'agent-1', limit: 10);
+      final hashes = before.map((t) => t.tupleHash).toSet();
+      final prunable = before.firstWhere((t) => t.actionType == 'old-prunable');
+      final result = await store.pruneConsolidated(
+        agentId: 'agent-1',
+        now: DateTime.utc(2026, 2, 20, 0, 0, 0),
+        retainWindow: const Duration(days: 30),
+        compressedTupleHashes: hashes,
+      );
+
+      expect(result.deletedCount, 1);
+      expect(result.retainedSurpriseCount, 1);
+      expect(result.retainedRecentCount, 1);
+
+      final after = await store.getRecent(agentId: 'agent-1', limit: 10);
+      expect(after.map((t) => t.actionType), contains('old-surprise'));
+      expect(after.map((t) => t.actionType), contains('recent'));
+      expect(
+          after.map((t) => t.tupleHash), isNot(contains(prunable.tupleHash)));
+    });
+
+    test('pruneConsolidated keeps old tuples that are not compressed',
+        () async {
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-keep',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-keep',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 1, 1, 0, 0, 0),
+      ));
+
+      final result = await store.pruneConsolidated(
+        agentId: 'agent-1',
+        now: DateTime.utc(2026, 2, 20, 0, 0, 0),
+        retainWindow: const Duration(days: 30),
+        compressedTupleHashes: const {},
+      );
+      expect(result.deletedCount, 0);
+      expect(result.retainedUncompressedCount, 1);
+      expect(await store.count(agentId: 'agent-1'), 1);
+    });
   });
 
   group('OutcomeTaxonomy', () {

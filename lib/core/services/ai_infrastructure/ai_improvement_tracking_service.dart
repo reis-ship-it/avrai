@@ -9,6 +9,8 @@ class AIImprovementTrackingService {
   static const String _logName = 'AIImprovementTrackingService';
   static const String _storageKey = 'ai_improvement_metrics';
   static const String _historyKey = 'ai_improvement_history';
+  static const String _operationalMetricsKey = 'ai_operational_metrics_v1';
+  static const int _maxOperationalMetricSamples = 4000;
 
   final GetStorage _storage;
 
@@ -45,14 +47,17 @@ class AIImprovementTrackingService {
       );
 
       // #region agent log
-      developer.log('Started periodic tracking timer (5 minute intervals)', name: _logName);
+      developer.log('Started periodic tracking timer (5 minute intervals)',
+          name: _logName);
       // #endregion
 
       // Capture initial snapshot
       await _captureImprovementSnapshot();
 
       // #region agent log
-      developer.log('AI improvement tracking initialized: ${_historySnapshots.length} history snapshots loaded', name: _logName);
+      developer.log(
+          'AI improvement tracking initialized: ${_historySnapshots.length} history snapshots loaded',
+          name: _logName);
       // #endregion
     } catch (e) {
       // #region agent log
@@ -66,7 +71,8 @@ class AIImprovementTrackingService {
     // Check in-memory cache first
     if (_currentMetrics != null && _currentMetrics!.userId == userId) {
       // #region agent log
-      developer.log('Returning cached metrics for user: $userId', name: _logName);
+      developer.log('Returning cached metrics for user: $userId',
+          name: _logName);
       // #endregion
       return _currentMetrics!;
     }
@@ -76,12 +82,15 @@ class AIImprovementTrackingService {
       final stored = _storage.read<Map<String, dynamic>>(_storageKey);
       if (stored != null && stored['userId'] == userId) {
         // #region agent log
-        developer.log('Loaded metrics from storage for user: $userId', name: _logName);
+        developer.log('Loaded metrics from storage for user: $userId',
+            name: _logName);
         // #endregion
         _currentMetrics = AIImprovementMetrics(
           userId: stored['userId'] as String,
-          dimensionScores: Map<String, double>.from(stored['dimensionScores'] as Map),
-          performanceScores: Map<String, double>.from(stored['performanceScores'] as Map),
+          dimensionScores:
+              Map<String, double>.from(stored['dimensionScores'] as Map),
+          performanceScores:
+              Map<String, double>.from(stored['performanceScores'] as Map),
           overallScore: (stored['overallScore'] as num).toDouble(),
           improvementRate: (stored['improvementRate'] as num).toDouble(),
           totalImprovements: stored['totalImprovements'] as int,
@@ -91,16 +100,18 @@ class AIImprovementTrackingService {
       }
     } catch (e) {
       // #region agent log
-      developer.log('Error loading metrics from storage: $e, calculating new metrics', name: _logName);
+      developer.log(
+          'Error loading metrics from storage: $e, calculating new metrics',
+          name: _logName);
       // #endregion
     }
 
     // Calculate new metrics if not found
     final metrics = await _calculateMetrics(userId);
-    
+
     // Save to storage for future access
     await _saveCurrentMetrics(metrics);
-    
+
     return metrics;
   }
 
@@ -124,13 +135,15 @@ class AIImprovementTrackingService {
     // #region agent log
     developer.log('Getting milestones for user: $userId', name: _logName);
     // #endregion
-    
+
     final milestones = <ImprovementMilestone>[];
     final history = getHistory(userId: userId);
 
     if (history.isEmpty) {
       // #region agent log
-      developer.log('No history found for user: $userId, returning empty milestones', name: _logName);
+      developer.log(
+          'No history found for user: $userId, returning empty milestones',
+          name: _logName);
       // #endregion
       return milestones;
     }
@@ -159,7 +172,8 @@ class AIImprovementTrackingService {
     }
 
     // #region agent log
-    developer.log('Found ${milestones.length} milestones for user: $userId', name: _logName);
+    developer.log('Found ${milestones.length} milestones for user: $userId',
+        name: _logName);
     // #endregion
 
     return milestones..sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -179,6 +193,90 @@ class AIImprovementTrackingService {
     );
   }
 
+  /// Record low-level operational metrics for infrastructure components.
+  Future<void> recordOperationalMetric({
+    required String userId,
+    required String metricName,
+    required double value,
+    Map<String, Object> dimensions = const {},
+    DateTime? timestamp,
+  }) async {
+    try {
+      final sample = OperationalMetricSample(
+        userId: userId,
+        metricName: metricName,
+        value: value,
+        dimensions: dimensions,
+        timestamp: timestamp ?? DateTime.now().toUtc(),
+      );
+
+      final existing = _storage.read<List>(_operationalMetricsKey);
+      final all = <OperationalMetricSample>[];
+      if (existing != null) {
+        for (final item in existing) {
+          if (item is Map<String, dynamic>) {
+            all.add(OperationalMetricSample.fromJson(item));
+          } else if (item is Map) {
+            all.add(OperationalMetricSample.fromJson(
+              Map<String, dynamic>.from(item),
+            ));
+          }
+        }
+      }
+      all.add(sample);
+      if (all.length > _maxOperationalMetricSamples) {
+        all.removeRange(0, all.length - _maxOperationalMetricSamples);
+      }
+      await _storage.write(
+        _operationalMetricsKey,
+        all.map((e) => e.toJson()).toList(growable: false),
+      );
+    } catch (e) {
+      developer.log('Error recording operational metric: $e', name: _logName);
+    }
+  }
+
+  List<OperationalMetricSample> getOperationalMetrics({
+    required String userId,
+    String? metricName,
+    Duration? timeWindow,
+  }) {
+    try {
+      final raw = _storage.read<List>(_operationalMetricsKey);
+      if (raw == null) return const [];
+
+      final parsed = <OperationalMetricSample>[];
+      for (final item in raw) {
+        if (item is Map<String, dynamic>) {
+          parsed.add(OperationalMetricSample.fromJson(item));
+        } else if (item is Map) {
+          parsed.add(OperationalMetricSample.fromJson(
+              Map<String, dynamic>.from(item)));
+        }
+      }
+
+      final cutoff = timeWindow == null
+          ? null
+          : DateTime.now().toUtc().subtract(timeWindow);
+      return parsed.where((sample) {
+        if (sample.userId != userId) return false;
+        if (metricName != null &&
+            metricName.isNotEmpty &&
+            sample.metricName != metricName) {
+          return false;
+        }
+        if (cutoff != null && sample.timestamp.isBefore(cutoff)) {
+          return false;
+        }
+        return true;
+      }).toList(growable: false)
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    } catch (e) {
+      developer.log('Error reading operational metrics: $e', name: _logName);
+      return const [];
+    }
+  }
+
   /// Capture current state as a snapshot
   Future<void> _captureImprovementSnapshot() async {
     try {
@@ -187,7 +285,8 @@ class AIImprovementTrackingService {
       const userId = 'current_user';
 
       // #region agent log
-      developer.log('Capturing improvement snapshot for user: $userId', name: _logName);
+      developer.log('Capturing improvement snapshot for user: $userId',
+          name: _logName);
       // #endregion
 
       final metrics = await _calculateMetrics(userId);
@@ -208,7 +307,9 @@ class AIImprovementTrackingService {
       }
 
       // #region agent log
-      developer.log('Snapshot captured: overallScore=${snapshot.overallScore.toStringAsFixed(2)}, dimensions=${snapshot.dimensions.length}, historySize: $beforeTrim -> ${_historySnapshots.length}', name: _logName);
+      developer.log(
+          'Snapshot captured: overallScore=${snapshot.overallScore.toStringAsFixed(2)}, dimensions=${snapshot.dimensions.length}, historySize: $beforeTrim -> ${_historySnapshots.length}',
+          name: _logName);
       // #endregion
 
       // Save to storage
@@ -216,9 +317,11 @@ class AIImprovementTrackingService {
 
       // Notify listeners
       _metricsController.add(metrics);
-      
+
       // #region agent log
-      developer.log('Snapshot saved and metrics broadcast to ${_metricsController.hasListener ? "listeners" : "no listeners"}', name: _logName);
+      developer.log(
+          'Snapshot saved and metrics broadcast to ${_metricsController.hasListener ? "listeners" : "no listeners"}',
+          name: _logName);
       // #endregion
     } catch (e) {
       // #region agent log
@@ -269,14 +372,16 @@ class AIImprovementTrackingService {
       );
 
       _currentMetrics = metrics;
-      
+
       // Save to storage
       await _saveCurrentMetrics(metrics);
-      
+
       // #region agent log
-      developer.log('Calculated metrics for user: $userId, overallScore: ${metrics.overallScore.toStringAsFixed(2)}, dimensions: ${metrics.dimensionScores.length}', name: _logName);
+      developer.log(
+          'Calculated metrics for user: $userId, overallScore: ${metrics.overallScore.toStringAsFixed(2)}, dimensions: ${metrics.dimensionScores.length}',
+          name: _logName);
       // #endregion
-      
+
       return metrics;
     } catch (e) {
       // #region agent log
@@ -285,7 +390,7 @@ class AIImprovementTrackingService {
       return AIImprovementMetrics.empty(userId);
     }
   }
-  
+
   /// Save current metrics to storage
   Future<void> _saveCurrentMetrics(AIImprovementMetrics metrics) async {
     try {
@@ -299,7 +404,9 @@ class AIImprovementTrackingService {
         'lastUpdated': metrics.lastUpdated.toIso8601String(),
       });
       // #region agent log
-      developer.log('Saved current metrics to storage for user: ${metrics.userId}', name: _logName);
+      developer.log(
+          'Saved current metrics to storage for user: ${metrics.userId}',
+          name: _logName);
       // #endregion
     } catch (e) {
       // #region agent log
@@ -312,9 +419,10 @@ class AIImprovementTrackingService {
   Future<void> _loadStoredHistory() async {
     try {
       // #region agent log
-      developer.log('Loading stored history from storage key: $_historyKey', name: _logName);
+      developer.log('Loading stored history from storage key: $_historyKey',
+          name: _logName);
       // #endregion
-      
+
       final stored = _storage.read<List>(_historyKey);
       if (stored != null) {
         _historySnapshots.clear();
@@ -324,11 +432,14 @@ class AIImprovementTrackingService {
           }
         }
         // #region agent log
-        developer.log('Loaded ${_historySnapshots.length} history snapshots from storage', name: _logName);
+        developer.log(
+            'Loaded ${_historySnapshots.length} history snapshots from storage',
+            name: _logName);
         // #endregion
       } else {
         // #region agent log
-        developer.log('No stored history found, starting with empty history', name: _logName);
+        developer.log('No stored history found, starting with empty history',
+            name: _logName);
         // #endregion
       }
     } catch (e) {
@@ -344,7 +455,9 @@ class AIImprovementTrackingService {
       final data = _historySnapshots.map((s) => s.toJson()).toList();
       await _storage.write(_historyKey, data);
       // #region agent log
-      developer.log('Saved ${data.length} history snapshots to storage key: $_historyKey', name: _logName);
+      developer.log(
+          'Saved ${data.length} history snapshots to storage key: $_historyKey',
+          name: _logName);
       // #endregion
     } catch (e) {
       // #region agent log
@@ -477,4 +590,43 @@ class AccuracyMetrics {
           predictionAccuracy +
           userSatisfactionScore) /
       3;
+}
+
+class OperationalMetricSample {
+  final String userId;
+  final String metricName;
+  final double value;
+  final Map<String, Object> dimensions;
+  final DateTime timestamp;
+
+  const OperationalMetricSample({
+    required this.userId,
+    required this.metricName,
+    required this.value,
+    required this.dimensions,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'metricName': metricName,
+      'value': value,
+      'dimensions': dimensions,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+
+  factory OperationalMetricSample.fromJson(Map<String, dynamic> json) {
+    return OperationalMetricSample(
+      userId: json['userId'] as String? ?? '',
+      metricName: json['metricName'] as String? ?? '',
+      value: (json['value'] as num?)?.toDouble() ?? 0,
+      dimensions: Map<String, Object>.from(
+        json['dimensions'] as Map? ?? const <String, Object>{},
+      ),
+      timestamp: DateTime.tryParse(json['timestamp'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
+  }
 }
