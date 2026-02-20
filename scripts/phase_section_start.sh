@@ -6,16 +6,15 @@ usage() {
 Usage:
   scripts/phase_section_start.sh --phase P1 --section 1.2.8 [--parent <branch>] [--push]
 
+Branch format:
+  phase#_work__sX_Y_Z[__sA_B_C...]
+
 What this does:
   1) Resolves the parent branch (explicit --parent, current phase branch path, or phase#_work).
   2) Creates the next section branch as a child of the parent:
-     <parent>/sX_Y_Z
+     <parent>__sX_Y_Z
   3) Switches to the new branch.
   4) Optionally pushes branch with --push.
-
-Examples:
-  scripts/phase_section_start.sh --phase P1 --section 1.2.8
-  scripts/phase_section_start.sh --phase P1 --section 1.2.8.1 --parent phase1_work/s1_2_8
 USAGE
 }
 
@@ -69,17 +68,18 @@ fi
 
 phase_branch="phase${phase_num}_work"
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
+valid_pattern="^${phase_branch}(__s[a-z0-9_]+(_r[0-9]+)?)*$"
 
 parent_branch="$parent_override"
 if [[ -z "$parent_branch" ]]; then
-  if [[ "$current_branch" =~ ^${phase_branch}(/.*)?$ ]]; then
+  if [[ "$current_branch" =~ $valid_pattern ]]; then
     parent_branch="$current_branch"
   else
     parent_branch="$phase_branch"
   fi
 fi
 
-if ! [[ "$parent_branch" =~ ^${phase_branch}(/.*)?$ ]]; then
+if ! [[ "$parent_branch" =~ $valid_pattern ]]; then
   echo "Parent branch '$parent_branch' is not under phase root '$phase_branch'." >&2
   exit 1
 fi
@@ -95,7 +95,7 @@ if [[ -z "$section_slug" ]]; then
   exit 1
 fi
 
-new_branch="${parent_branch}/s${section_slug}"
+new_branch="${parent_branch}__s${section_slug}"
 if git show-ref --verify --quiet "refs/heads/${new_branch}"; then
   echo "Branch already exists locally. Switching to: $new_branch"
   git switch "$new_branch"

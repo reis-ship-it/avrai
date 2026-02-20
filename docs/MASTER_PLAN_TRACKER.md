@@ -32,7 +32,7 @@
 - **Section branch start command:** `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
 - **Subsection auto-PR command:** `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
 - **Naming verification gate:** `scripts/verify_phase_naming.sh --phase P# --branch <branch>`
-- **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work/*` into their immediate parent branch)
+- **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work__*` into their immediate parent branch)
 - **GitHub phase root sync workflow:** `.github/workflows/phase-root-sync.yml` (manual dispatch to merge `main` into `phase#_work`)
 
 ---
