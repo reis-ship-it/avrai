@@ -225,6 +225,7 @@ import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
 import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_applier.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
@@ -1221,6 +1222,11 @@ Future<void> init() async {
         if (!sl.isRegistered<ProceduralRuleApplier>()) {
           sl.registerLazySingleton(() => const ProceduralRuleApplier());
           logger.debug('✅ [DI] ProceduralRuleApplier registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleRetirementService>()) {
+          sl.registerLazySingleton(
+              () => const ProceduralRuleRetirementService());
+          logger.debug('✅ [DI] ProceduralRuleRetirementService registered');
         }
         if (!sl.isRegistered<PlannerActionPreFilter>()) {
           sl.registerLazySingleton(
