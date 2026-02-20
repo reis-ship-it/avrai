@@ -260,7 +260,7 @@ Runs during charging + WiFi + idle via `WorkManager` (Android) / `BGTaskSchedule
 
 | Task | Description | Depends |
 |------|-------------|---------|
-| 1.1C.1 | Implement consolidation scheduler: triggers when device is (a) charging, (b) connected to WiFi, (c) idle (screen off for > 30min). Uses `BatteryAdaptiveBleScheduler` patterns | Extends existing |
+| 1.1C.1 | Implement consolidation scheduler: triggers when device is (a) charging, (b) connected to WiFi, (c) idle (screen off for > 30min). Uses `BatteryAdaptiveBleScheduler` patterns | Extends existing -- COMPLETE (2026-02-20: added `NightlyMemoryConsolidationScheduler` in `memory/consolidation/nightly_memory_consolidation_scheduler.dart` with charging+WiFi+screen-off-idle gating, lifecycle-aware idle tracking, and trigger cooldown to schedule nightly consolidation requests; wired in DI and covered by `nightly_memory_consolidation_scheduler_test`) |
 | 1.1C.2 | Implement episode → semantic memory compression: cluster episodes by similarity, produce generalization entries, update existing generalizations with new evidence | 1.1A |
 | 1.1C.3 | Implement episode → procedural rule extraction: scan for recurring state-action-outcome patterns that exceed confidence threshold | 1.1B |
 | 1.1C.4 | Implement episode pruning: after consolidation, discard episodes older than N days that have been compressed into semantic/procedural memory. Keep recent episodes and high-surprise episodes (outcomes that contradicted predictions) | 1.1.5 |

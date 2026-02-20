@@ -226,6 +226,7 @@ import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_applier.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/nightly_memory_consolidation_scheduler.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
@@ -1227,6 +1228,17 @@ Future<void> init() async {
           sl.registerLazySingleton(
               () => const ProceduralRuleRetirementService());
           logger.debug('✅ [DI] ProceduralRuleRetirementService registered');
+        }
+        if (!sl.isRegistered<NightlyMemoryConsolidationScheduler>()) {
+          sl.registerLazySingleton(
+            () => NightlyMemoryConsolidationScheduler(
+              prefs: sl<SharedPreferencesCompat>(),
+              onConsolidationRequested: () async {
+                // Phase 1.1C.2+ will attach consolidation pipeline here.
+              },
+            ),
+          );
+          logger.debug('✅ [DI] NightlyMemoryConsolidationScheduler registered');
         }
         if (!sl.isRegistered<PlannerActionPreFilter>()) {
           sl.registerLazySingleton(
