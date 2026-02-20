@@ -32,6 +32,7 @@
 | `.github/workflows/architecture-placement-guard.yml` | Current | Yes | Global | CI guard that fails on unmapped/unregistered file placement |
 | `REPO_HYGIENE_AND_ARCHITECTURE_RULES.md` | Current | Yes | 10.7, methodology | Guardrails for boundaries and generated artifacts |
 | `AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md` | Current | Yes | 7.x, 8, 11.4 | Governance for bounded autonomous improvement |
+| `DREAM_TRAINING_CONVICTION_GOVERNANCE.md` | Current | Yes | 1.1E, 5.2, 6.2, 7.7, 7.9, 8.1, 10.9 | Belief-tier safety architecture for bounded dream training and conviction promotion |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_*.md` | Current | Yes | 1, 3, 4, 5, 6 | Research-informed planning references |
 | `OFFLINE_CLOUD_AI_ARCHITECTURE.md` | Reference | Partial | 6.7, 7.x | Useful, but verify implementation details before code changes |
 | `ONLINE_OFFLINE_STRATEGY.md` | Reference | Partial | 7.5, 10.x | Strategy-level; not a file-level execution source |

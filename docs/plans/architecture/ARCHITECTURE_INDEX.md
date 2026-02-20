@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** February 19, 2026  
+**Last Updated:** February 20, 2026  
 **Status:** Active Reference (Current Architecture)  
 **Purpose:** Canonical navigation for architecture documents aligned to the current codebase and `docs/MASTER_PLAN.md`.
 
@@ -37,6 +37,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
 - **Universal self-healing contract (all subsystems):** [`docs/MASTER_PLAN.md` section `Universal Self-Healing Contract` + task `10.9.12`](../../MASTER_PLAN.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
+- **Dream training + conviction hierarchy governance:** [`DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./DREAM_TRAINING_CONVICTION_GOVERNANCE.md)
 - **Canonical experiment registry (build-enforced):** [`docs/EXPERIMENT_REGISTRY.md`](../../EXPERIMENT_REGISTRY.md)
 - **Experiment registry source CSV:** [`configs/experiments/EXPERIMENT_REGISTRY.csv`](../../../configs/experiments/EXPERIMENT_REGISTRY.csv)
 - **Experiment registry generator:** [`scripts/generate_experiment_registry.py`](../../../scripts/generate_experiment_registry.py)

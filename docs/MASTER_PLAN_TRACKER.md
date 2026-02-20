@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 19, 2026 (v23: added canonical red-team hijack/security matrix governance (`10.9.20`) and linked it across master-plan execution + security enforcement docs. Previous: v22 added arXiv 2507.00885 downstream-scaling reliability mapping)
+**Last Updated:** February 20, 2026 (v24: added dream-training conviction-governance architecture spec and wired belief-tier safety controls across `1.1E`, `5.2`, `6.2`, `7.7`, `7.9`, `8.1`, and `10.9.21`. Previous: v23 added canonical red-team hijack/security matrix governance (`10.9.20`))
 
 ---
 
@@ -185,6 +185,7 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
+| Dream Training and Conviction Governance | 2026-02-20 | 🟢 Active | **CRITICAL** | Continuous governance; bounded dream simulation with fail-closed belief-tier enforcement and anti-delusion promotion controls | [`plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md) |
 | Experiment Registry (Canonical + Build-Enforced) | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all experiment scripts must be registry-tracked with deterministic canonical naming and target architecture space | [`EXPERIMENT_REGISTRY.md`](./EXPERIMENT_REGISTRY.md) |
 | ML Training Automation Governance | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model training + staged simulations auto-recorded and checklist-generated | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
 | AVRAI-Native Training Data Contracts + Builder | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model datasets must be converted to AVRAI-native envelopes (including knot/quantum/atomic) before simulation/training | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
@@ -510,7 +511,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 15, 2026 (v15: canonical PRD + traceability governance; previous entries preserved above)
+**Last Updated:** February 20, 2026 (v24: dream-training conviction-governance architecture added; previous entries preserved above)
 
 ---
 
