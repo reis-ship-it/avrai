@@ -10,7 +10,10 @@ class AIImprovementTrackingService {
   static const String _storageKey = 'ai_improvement_metrics';
   static const String _historyKey = 'ai_improvement_history';
   static const String _operationalMetricsKey = 'ai_operational_metrics_v1';
+  static const String _retrievalObservabilityKey =
+      'ai_retrieval_observability_v1';
   static const int _maxOperationalMetricSamples = 4000;
+  static const int _maxRetrievalObservabilitySamples = 4000;
 
   final GetStorage _storage;
 
@@ -273,6 +276,111 @@ class AIImprovementTrackingService {
         ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     } catch (e) {
       developer.log('Error reading operational metrics: $e', name: _logName);
+      return const [];
+    }
+  }
+
+  /// Record retrieval observability payload for ranking and outcome analysis.
+  Future<void> recordRetrievalObservability({
+    required String userId,
+    required String queryText,
+    required int latencyBudgetMs,
+    required int actualLatencyMs,
+    required List<String> selectedTopK,
+    required String finalOutcome,
+    Map<String, List<String>> laneCandidateSets = const {},
+    Map<String, Map<String, double>> scoreContributionsByItem = const {},
+    DateTime? timestamp,
+    String? queryId,
+  }) async {
+    try {
+      final sample = RetrievalObservabilitySample(
+        userId: userId,
+        queryId: queryId,
+        queryText: queryText,
+        laneCandidateSets: laneCandidateSets,
+        scoreContributionsByItem: scoreContributionsByItem,
+        selectedTopK: selectedTopK,
+        latencyBudgetMs: latencyBudgetMs,
+        actualLatencyMs: actualLatencyMs,
+        finalOutcome: finalOutcome,
+        timestamp: timestamp ?? DateTime.now().toUtc(),
+      );
+
+      final existing = _storage.read<List>(_retrievalObservabilityKey);
+      final all = <RetrievalObservabilitySample>[];
+      if (existing != null) {
+        for (final item in existing) {
+          if (item is Map<String, dynamic>) {
+            all.add(RetrievalObservabilitySample.fromJson(item));
+          } else if (item is Map) {
+            all.add(RetrievalObservabilitySample.fromJson(
+              Map<String, dynamic>.from(item),
+            ));
+          }
+        }
+      }
+
+      all.add(sample);
+      if (all.length > _maxRetrievalObservabilitySamples) {
+        all.removeRange(0, all.length - _maxRetrievalObservabilitySamples);
+      }
+
+      await _storage.write(
+        _retrievalObservabilityKey,
+        all.map((e) => e.toJson()).toList(growable: false),
+      );
+    } catch (e) {
+      developer.log('Error recording retrieval observability: $e',
+          name: _logName);
+    }
+  }
+
+  List<RetrievalObservabilitySample> getRetrievalObservability({
+    required String userId,
+    String? queryId,
+    String? finalOutcome,
+    Duration? timeWindow,
+  }) {
+    try {
+      final raw = _storage.read<List>(_retrievalObservabilityKey);
+      if (raw == null) return const [];
+
+      final parsed = <RetrievalObservabilitySample>[];
+      for (final item in raw) {
+        if (item is Map<String, dynamic>) {
+          parsed.add(RetrievalObservabilitySample.fromJson(item));
+        } else if (item is Map) {
+          parsed.add(RetrievalObservabilitySample.fromJson(
+            Map<String, dynamic>.from(item),
+          ));
+        }
+      }
+
+      final cutoff = timeWindow == null
+          ? null
+          : DateTime.now().toUtc().subtract(timeWindow);
+      return parsed.where((sample) {
+        if (sample.userId != userId) return false;
+        if (queryId != null &&
+            queryId.isNotEmpty &&
+            sample.queryId != queryId) {
+          return false;
+        }
+        if (finalOutcome != null &&
+            finalOutcome.isNotEmpty &&
+            sample.finalOutcome != finalOutcome) {
+          return false;
+        }
+        if (cutoff != null && sample.timestamp.isBefore(cutoff)) {
+          return false;
+        }
+        return true;
+      }).toList(growable: false)
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    } catch (e) {
+      developer.log('Error reading retrieval observability: $e',
+          name: _logName);
       return const [];
     }
   }
@@ -625,6 +733,88 @@ class OperationalMetricSample {
       dimensions: Map<String, Object>.from(
         json['dimensions'] as Map? ?? const <String, Object>{},
       ),
+      timestamp: DateTime.tryParse(json['timestamp'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
+  }
+}
+
+class RetrievalObservabilitySample {
+  final String userId;
+  final String? queryId;
+  final String queryText;
+  final Map<String, List<String>> laneCandidateSets;
+  final Map<String, Map<String, double>> scoreContributionsByItem;
+  final List<String> selectedTopK;
+  final int latencyBudgetMs;
+  final int actualLatencyMs;
+  final String finalOutcome;
+  final DateTime timestamp;
+
+  const RetrievalObservabilitySample({
+    required this.userId,
+    required this.queryText,
+    required this.laneCandidateSets,
+    required this.scoreContributionsByItem,
+    required this.selectedTopK,
+    required this.latencyBudgetMs,
+    required this.actualLatencyMs,
+    required this.finalOutcome,
+    required this.timestamp,
+    this.queryId,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'queryId': queryId,
+      'queryText': queryText,
+      'laneCandidateSets': laneCandidateSets,
+      'scoreContributionsByItem': scoreContributionsByItem,
+      'selectedTopK': selectedTopK,
+      'latencyBudgetMs': latencyBudgetMs,
+      'actualLatencyMs': actualLatencyMs,
+      'finalOutcome': finalOutcome,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+
+  factory RetrievalObservabilitySample.fromJson(Map<String, dynamic> json) {
+    final rawLaneSets =
+        json['laneCandidateSets'] as Map? ?? const <String, List<String>>{};
+    final laneSets = <String, List<String>>{};
+    rawLaneSets.forEach((key, value) {
+      final values =
+          value is List ? value.map((e) => '$e').toList() : <String>[];
+      laneSets['$key'] = values;
+    });
+
+    final rawContrib = json['scoreContributionsByItem'] as Map? ??
+        const <String, Map<String, double>>{};
+    final contributions = <String, Map<String, double>>{};
+    rawContrib.forEach((itemId, value) {
+      final laneMap = <String, double>{};
+      if (value is Map) {
+        value.forEach((k, v) {
+          if (v is num) {
+            laneMap['$k'] = v.toDouble();
+          }
+        });
+      }
+      contributions['$itemId'] = laneMap;
+    });
+
+    return RetrievalObservabilitySample(
+      userId: json['userId'] as String? ?? '',
+      queryId: json['queryId'] as String?,
+      queryText: json['queryText'] as String? ?? '',
+      laneCandidateSets: laneSets,
+      scoreContributionsByItem: contributions,
+      selectedTopK:
+          (json['selectedTopK'] as List? ?? const []).map((e) => '$e').toList(),
+      latencyBudgetMs: (json['latencyBudgetMs'] as num?)?.toInt() ?? 0,
+      actualLatencyMs: (json['actualLatencyMs'] as num?)?.toInt() ?? 0,
+      finalOutcome: json['finalOutcome'] as String? ?? '',
       timestamp: DateTime.tryParse(json['timestamp'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
     );
