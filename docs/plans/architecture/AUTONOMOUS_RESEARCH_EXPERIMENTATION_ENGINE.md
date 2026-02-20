@@ -246,6 +246,10 @@ This creates a self-growing research ontology instead of a static topic list.
 51. `ARE-51` Add static-vs-semi-online-vs-online ablation lane and retain cohort-level handoff failure traces.
 52. `ARE-52` Add early-online regret dashboard (`handoff_dip`, `initial_online_regret`, `recovery_steps`, `worst_cohort_handoff_delta`) as release-blocking evidence.
 53. `ARE-53` Add transfer mitigation playbook registry so failed handoff patterns auto-map to tested remediation recipes.
+54. `ARE-54` Add topology-policy candidate lane with two-level routing (`local` runtime + `federated` threshold governance) for DAG/coupling-aware orchestration choice.
+55. `ARE-55` Add controlled causality suite: `model-fixed/topology-varied` and `topology-fixed/model-varied` ablations before any topology policy promotion.
+56. `ARE-56` Add offline-calibration/online-approximation protocol for topology features (`width/depth/coupling`) with strict latency and energy budgets.
+57. `ARE-57` Add fail-closed reroute ceilings with deterministic fallback topology and human escalation route when synthesis conflict persists.
 
 ---
 
@@ -262,6 +266,8 @@ This creates a self-growing research ontology instead of a static topic list.
 - No unlimited autonomous loops in high-impact domains: mandatory human-review SLO is required once cycle cap is reached.
 - No linear-only downstream scaling assumptions: promotion requires cross-setting scaling robustness evidence.
 - No offline-only promotion claims: bridge-stage and early-online continuity gates must pass before production rollout.
+- No topology-policy promotion without model-fixed and topology-fixed ablation evidence.
+- No unbounded topology reroute loops: enforce retry ceilings and deterministic fallback/escalation.
 - No dream-tier override of proven convictions: belief-tier precedence is immutable and enforced in runtime + CI.
 - No dream-only policy truth: dream evidence must pass dual-key validation before tier elevation above `hypothesis`.
 
