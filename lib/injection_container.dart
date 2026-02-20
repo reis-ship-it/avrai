@@ -229,6 +229,8 @@ import 'package:avrai/core/ai/memory/procedural/procedural_rule_local_store.dart
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
 import 'package:avrai/core/ai/memory/consolidation/nightly_memory_consolidation_scheduler.dart';
 import 'package:avrai/core/ai/memory/consolidation/consolidation_metrics_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/consolidation_federated_gradient_sync_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/on_device_world_model_training_service.dart';
 import 'package:avrai/core/ai/memory/consolidation/procedural_rule_consolidation_service.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
@@ -1242,7 +1244,18 @@ Future<void> init() async {
             () => NightlyMemoryConsolidationScheduler(
               prefs: sl<SharedPreferencesCompat>(),
               onConsolidationRequested: () async {
-                // Phase 1.1C.2+ will attach consolidation pipeline here.
+                if (sl.isRegistered<OnDeviceWorldModelTrainingService>()) {
+                  final trainingResult =
+                      await sl<OnDeviceWorldModelTrainingService>()
+                          .runAfterConsolidation();
+                  if (trainingResult.status ==
+                          OnDeviceWorldModelTrainingStatus.triggered &&
+                      sl.isRegistered<
+                          ConsolidationFederatedGradientSyncService>()) {
+                    await sl<ConsolidationFederatedGradientSyncService>()
+                        .syncAfterLocalTraining();
+                  }
+                }
               },
             ),
           );
@@ -1357,6 +1370,25 @@ Future<void> init() async {
               agentIdService: sl<AgentIdService>(),
             ));
         logger.debug('✅ [DI] OnlineLearningService registered');
+        if (!sl.isRegistered<OnDeviceWorldModelTrainingService>()) {
+          sl.registerLazySingleton(
+            () => OnDeviceWorldModelTrainingService.fromOnlineLearning(
+              onlineLearningService: sl<OnlineLearningService>(),
+            ),
+          );
+          logger.debug('✅ [DI] OnDeviceWorldModelTrainingService registered');
+        }
+        if (!sl.isRegistered<ConsolidationFederatedGradientSyncService>()) {
+          sl.registerLazySingleton(
+            () => ConsolidationFederatedGradientSyncService(
+              orchestrator: sl.isRegistered<VibeConnectionOrchestrator>()
+                  ? sl<VibeConnectionOrchestrator>()
+                  : null,
+            ),
+          );
+          logger.debug(
+              '✅ [DI] ConsolidationFederatedGradientSyncService registered');
+        }
 
         sl.registerLazySingleton(() => CallingScoreNeuralModel());
         logger.debug('✅ [DI] CallingScoreNeuralModel registered');
