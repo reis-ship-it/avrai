@@ -297,7 +297,7 @@ Add a lightweight, grepable memory lane for deterministic recall, auditability, 
 |------|-------------|---------|
 | 1.1E.1 | Define `FactsJournal` schema (append-only factual entries with source, confidence, timestamp, provenance id) | New |
 | 1.1E.2 | Define `HistoryJournal` schema (chronological decision/event trace: hypothesis, experiment, rollout, rollback, outcome) | New |
-| 1.1E.3 | Implement deterministic retrieval API (keyword + metadata filters) as a fallback when semantic retrieval confidence is low | Extends 1.1A |
+| 1.1E.3 | Implement deterministic retrieval API (keyword + metadata filters) as a fallback when semantic retrieval confidence is low | Extends 1.1A -- COMPLETE (2026-02-20: added `FactsJournalDeterministicRetrieval` with deterministic keyword + metadata-filter ranking over `FactsJournalEntry` records for low-confidence semantic fallback paths; covered by `facts_journal_retrieval_test`) |
 | 1.1E.4 | Implement memory-window consolidation for journals: summarize older entries, keep critical facts and failure signatures verbatim | Extends 1.1C |
 | 1.1E.5 | Wire autonomous research lane (Phase 7.9) to write every experiment contract and outcome summary into `HistoryJournal` | Feeds 7.9 |
 | 1.1E.6 | Wire model lifecycle (Phase 7.7) to log promotion rationale and rollback triggers in deterministic form | Feeds 7.7 |
