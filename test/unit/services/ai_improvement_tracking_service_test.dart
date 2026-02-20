@@ -205,6 +205,51 @@ void main() {
       });
     });
 
+    group('Retrieval Observability', () {
+      test('should record and retrieve retrieval observability records',
+          () async {
+        skipIfServiceNull();
+        await service!.recordRetrievalObservability(
+          userId: 'test-user-1',
+          queryId: 'q-123',
+          queryText: 'jazz bars nearby',
+          latencyBudgetMs: 250,
+          actualLatencyMs: 142,
+          selectedTopK: const ['spot-1', 'spot-2'],
+          finalOutcome: 'save',
+          laneCandidateSets: const {
+            'keyword': ['spot-1', 'spot-3'],
+            'semantic': ['spot-2', 'spot-1'],
+            'structured': ['spot-1'],
+          },
+          scoreContributionsByItem: const {
+            'spot-1': {
+              'recency': 0.09,
+              'source_trust': 0.1,
+              'locality_relevance': 0.14,
+            },
+          },
+          timestamp: DateTime.utc(2026, 2, 20, 5, 0, 0),
+        );
+
+        final records = service!.getRetrievalObservability(
+          userId: 'test-user-1',
+          queryId: 'q-123',
+          finalOutcome: 'save',
+        );
+
+        expect(records, hasLength(1));
+        final sample = records.single;
+        expect(sample.queryText, 'jazz bars nearby');
+        expect(sample.laneCandidateSets['keyword'], ['spot-1', 'spot-3']);
+        expect(sample.selectedTopK, ['spot-1', 'spot-2']);
+        expect(sample.latencyBudgetMs, 250);
+        expect(sample.actualLatencyMs, 142);
+        expect(sample.finalOutcome, 'save');
+        expect(sample.scoreContributionsByItem['spot-1']?['source_trust'], 0.1);
+      });
+    });
+
     group('Disposal', () {
       test('should dispose resources', () {
         skipIfServiceNull();
