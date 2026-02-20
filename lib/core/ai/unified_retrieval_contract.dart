@@ -43,6 +43,9 @@ class UnifiedRetrievalFilters {
   final String? category;
   final RetrievalPlatform? platform;
   final RetrievalTrustTier? trustTier;
+  final bool openNowOnly;
+  final int? userAge;
+  final bool safetyEligibleOnly;
 
   const UnifiedRetrievalFilters({
     this.timeWindow,
@@ -50,6 +53,9 @@ class UnifiedRetrievalFilters {
     this.category,
     this.platform,
     this.trustTier,
+    this.openNowOnly = false,
+    this.userAge,
+    this.safetyEligibleOnly = false,
   });
 }
 
