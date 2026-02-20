@@ -225,8 +225,10 @@ import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
 import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_applier.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_local_store.dart';
 import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
 import 'package:avrai/core/ai/memory/consolidation/nightly_memory_consolidation_scheduler.dart';
+import 'package:avrai/core/ai/memory/consolidation/procedural_rule_consolidation_service.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
 import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
@@ -1220,6 +1222,10 @@ Future<void> init() async {
           sl.registerLazySingleton(() => const ProceduralRuleExtractor());
           logger.debug('✅ [DI] ProceduralRuleExtractor registered');
         }
+        if (!sl.isRegistered<ProceduralRuleLocalStore>()) {
+          sl.registerLazySingleton(() => ProceduralRuleLocalStore());
+          logger.debug('✅ [DI] ProceduralRuleLocalStore registered');
+        }
         if (!sl.isRegistered<ProceduralRuleApplier>()) {
           sl.registerLazySingleton(() => const ProceduralRuleApplier());
           logger.debug('✅ [DI] ProceduralRuleApplier registered');
@@ -1239,6 +1245,15 @@ Future<void> init() async {
             ),
           );
           logger.debug('✅ [DI] NightlyMemoryConsolidationScheduler registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleConsolidationService>()) {
+          sl.registerLazySingleton(
+            () => ProceduralRuleConsolidationService(
+              extractor: sl<ProceduralRuleExtractor>(),
+              localStore: sl<ProceduralRuleLocalStore>(),
+            ),
+          );
+          logger.debug('✅ [DI] ProceduralRuleConsolidationService registered');
         }
         if (!sl.isRegistered<PlannerActionPreFilter>()) {
           sl.registerLazySingleton(
