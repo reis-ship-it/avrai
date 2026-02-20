@@ -277,7 +277,7 @@ Universe models need retrieval that combines explicit search intent, semantic in
 | Task | Description | Extends |
 |------|-------------|---------|
 | 1.1D.1 | Define unified retrieval contract for local events/places/platforms: query text, semantic embedding, filters (`time_window`, `geo_radius`, `category`, `platform`, `trust_tier`), and ranking trace fields | New |
-| 1.1D.2 | Implement keyword retrieval lane (BM25/FTS equivalent) for exact intent and hard term matching. Keep as first-class lane, not fallback-only | New |
+| 1.1D.2 | Implement keyword retrieval lane (BM25/FTS equivalent) for exact intent and hard term matching. Keep as first-class lane, not fallback-only | New -- COMPLETE (2026-02-20: added `KeywordRetrievalLane` with first-class lexical scoring over a corpus boundary, filter support for time/geo/category/platform/trust-tier, and ranking-trace emission into unified retrieval items; covered by `keyword_retrieval_lane_test`) |
 | 1.1D.3 | Implement semantic retrieval lane (vector ANN over embeddings) for intent-level matches beyond literal keywords | Extends 1.1A |
 | 1.1D.4 | Implement structured retrieval lane for hard constraints: date/time, geo bounds, open-now, platform availability, age/safety constraints | New |
 | 1.1D.5 | Implement fusion ranker: blend keyword + semantic + structured scores with recency, source trust, and locality relevance | New |
