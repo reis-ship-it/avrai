@@ -296,7 +296,7 @@ Add a lightweight, grepable memory lane for deterministic recall, auditability, 
 
 | Task | Description | Extends |
 |------|-------------|---------|
-| 1.1E.1 | Define `FactsJournal` schema (append-only factual entries with source, confidence, timestamp, provenance id) | New |
+| 1.1E.1 | Define `FactsJournal` schema (append-only factual entries with source, confidence, timestamp, provenance id) | New -- COMPLETE (2026-02-20: added append-only `FactsJournalEntry`/`FactsJournalSnapshot` schema in `facts_journal_schema.dart` with required source/confidence/timestamp/provenance fields, validation helpers, and JSON round-trip coverage in `facts_journal_schema_test`) |
 | 1.1E.2 | Define `HistoryJournal` schema (chronological decision/event trace: hypothesis, experiment, rollout, rollback, outcome) | New |
 | 1.1E.3 | Implement deterministic retrieval API (keyword + metadata filters) as a fallback when semantic retrieval confidence is low | Extends 1.1A |
 | 1.1E.4 | Implement memory-window consolidation for journals: summarize older entries, keep critical facts and failure signatures verbatim | Extends 1.1C |
