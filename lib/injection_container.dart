@@ -223,6 +223,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/facts_local_store.dart';
 import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
 import 'package:avrai/core/ai/semantic_memory_local_store.dart';
+import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
 import 'package:avrai/data/repositories/supabase_community_repository.dart';
@@ -1219,6 +1220,22 @@ Future<void> init() async {
               semanticLocalStore: sl<SemanticMemoryLocalStore>(),
             ));
         logger.debug('✅ [DI] FactsIndex registered');
+        if (!sl.isRegistered<SemanticMemoryContextClient>()) {
+          sl.registerLazySingleton<SemanticMemoryContextClient>(
+            () => FactsIndexSemanticMemoryContextClient(
+              factsIndex: sl<FactsIndex>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticMemoryContextClient registered');
+        }
+        if (!sl.isRegistered<SemanticPlannerContextBuilder>()) {
+          sl.registerLazySingleton(
+            () => SemanticPlannerContextBuilder(
+              semanticClient: sl<SemanticMemoryContextClient>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticPlannerContextBuilder registered');
+        }
 
         // Register EpisodicMemoryStore (Phase 1.1.1, M2-P1-1)
         sl.registerLazySingleton(() => EpisodicMemoryStore(
