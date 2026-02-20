@@ -85,6 +85,9 @@ class OutcomeTaxonomy {
       case 'message_community':
       case 'ask_agent':
       case 'chat_to_event_conversion':
+      case 'search_result_click':
+      case 'search_result_save':
+      case 'search_result_check_in':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,
@@ -93,6 +96,7 @@ class OutcomeTaxonomy {
       case 'dismissed':
       case 'recommendation_rejected':
       case 'actual_action_failed':
+      case 'search_result_bounce':
         return _binaryOutcome(
           type: eventType,
           didOccur: false,
@@ -123,6 +127,7 @@ class OutcomeTaxonomy {
           parameters: parameters,
         );
       case 'no_action':
+      case 'search_result_no_action':
         return _behavioralOutcome(
           type: eventType,
           value: 0.0,
