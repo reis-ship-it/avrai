@@ -167,6 +167,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
+- `docs/plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`
 - `docs/security/RED_TEAM_TEST_MATRIX.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
@@ -312,6 +313,10 @@ Add a lightweight, grepable memory lane for deterministic recall, auditability, 
 | 1.1E.16 | Add model-family namespace for deterministic memory and telemetry (`reality_model`, `universe_model`, `world_model`) so federated/meta-learning decisions remain traceable by family and locality | Extends 8.1, 10.9.5 |
 | 1.1E.17 | Add `KernelLifecyclePolicy` contract: upgrade/downgrade protocol, compatibility matrix, mandatory rollback TTL by kernel family, and signed change windows | Extends 1.1E.12, 10.9.13 |
 | 1.1E.18 | Add `KernelEmergencyFreeze` contract: deterministic freeze trigger classes, freeze scope (`single_kernel`, `family`, `global`), and required human-release path | Extends 1.1E.17, 10.9.13 |
+| 1.1E.19 | Add `DreamLedger` schema for speculative episodes: dream id, model family, assumptions, simulator version, hypothesis refs, predicted deltas, and falsification plan id | Extends 7.9, 5.2 |
+| 1.1E.20 | Add `BeliefTierContract` with immutable precedence (`dream < hypothesis < candidate_conviction < proven_conviction`) and confidence ceilings per tier; reject any write that violates monotonic promotion flow | Extends 1.1E.10, 10.9.21 |
+| 1.1E.21 | Add dream-conviction bridge contract: every dream-derived confidence update must include dual-key evidence (`internal_validation_id` + `external_or_real_outcome_id`) before it can rise above `hypothesis` tier | Extends 1.1E.9, 1.1E.10, 7.7 |
+| 1.1E.22 | Add `DreamFailureArchive` with anti-repeat suppression tags so invalidated dream paths are queryable and blocked from re-promotion without new contradiction-clearing evidence | Extends 1.1E.8, 7.7.11 |
 
 ### 1.2 Outcome Data Collection Pipeline
 
@@ -941,6 +946,11 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.2.19 | **Kernel-compliance training gate.** Every training candidate must emit kernel-compliance metrics (purpose/safety/truth/recovery/exploration bounds). Non-compliant candidates cannot enter promotion stages | Extends 1.1E.12, 10.9.11 |
 | 5.2.20 | **Downstream scaling behavior profiler.** For each training lane, classify observed scaling regime (`predictable`, `inverse`, `nonmonotonic`, `trendless/noisy`, `breakthrough`) instead of assuming linear gain from added scale | Extends 7.9.40, 10.9.19 |
 | 5.2.21 | **Multi-setting scaling robustness gate.** Promotion requires consistency checks across validation corpus variants, task framing variants, and eval setup variants; single-setting linear gains are insufficient | Extends 7.9.41, 7.7.15 |
+| 5.2.22 | **DreamEnv bounded training lane.** Add internal dream simulation lane (`DreamEnv`) that runs counterfactual rollouts using `state_encoder + transition_predictor + energy_function + planner` and emits speculative candidates only (never direct production truth) | Extends 5.1, 6.1, 7.7 |
+| 5.2.23 | **Simulator-exploit mismatch gate.** Add dream-vs-reality mismatch score; if dream gains fail replay/holdout alignment, auto-quarantine candidate and decay conviction update weight | Extends 7.7.4, 10.9.14 |
+| 5.2.24 | **OOD/leakage/spec-gaming checks for dream training.** Block dream promotions when out-of-distribution support is low, temporal leakage is detected, or objective-gaming probes fail | Extends 7.9.31, 10.9.11 |
+| 5.2.25 | **Dream compute + safety budget controller.** Enforce strict resource budgets, max cycles, and auto-freeze triggers for runaway dream loops; preserve runtime QoS for live user paths | Extends 7.9.28, 10.9.18 |
+| 5.2.26 | **No recursive self-confirmation rule.** Dream-generated labels may train exploration policies only; policy-critical updates require later real-outcome confirmation to prevent self-proving loops | Extends 1.1E.21, 10.9.21 |
 
 ### 5.3 Latent Variable System (Multi-Future Prediction)
 
@@ -1015,6 +1025,9 @@ The world model optimizes for outcomes, but must respect constraints.
 | 6.2.18 | **Dwell-time escalation invariant.** Enforce per-issue dwell budgets; when budget expires without resolution, escalate to alternate strategy or human guidance and mark unresolved path for recurrence prevention |
 | 6.2.19 | **Discoverability precedence matrix.** Add explicit precedence ordering for conflicting controls: legal > safety > privacy/consent > user intent (`show_unfiltered_results`) > personalization ranker. Emit deterministic rationale telemetry whenever constraints suppress user-requested discoverability |
 | 6.2.20 | **Dwell exit criteria invariant.** Every dwell policy must declare measurable stop conditions (minimum confidence gain, contradiction reduction, and residual risk threshold). If stop conditions are not met before dwell budget expiry, force escalation |
+| 6.2.21 | **Belief-tier action authority gate.** High-impact actions must read `proven_conviction` only; `dream` and `hypothesis` tiers may influence exploration branches but cannot drive hard action execution |
+| 6.2.22 | **Dream contradiction dampener.** When dream-derived recommendations conflict with proven convictions or deterministic journals, apply automatic penalty, route to shadow exploration, and emit contradiction telemetry |
+| 6.2.23 | **Dream-safe discoverability rule.** Dream policies may reorder but cannot suppress non-restricted discoverability; explicit user unfiltered intent always bypasses dream-tier ranking constraints within legal/safety bounds |
 
 ### 6.3 Agent Architecture
 
@@ -1250,6 +1263,9 @@ ONNX models ship in the app binary (Phase 1.5D.3) and improve via federated aggr
 | 7.7.13 | **Forgetting-risk-aware rollback policy.** Attach `door_loss_risk` to every candidate manifest and auto-rollback when risk spikes after canary or limited rollout; persist cause class in deterministic ledger for future suppression | Extends 7.7.5, 7.7.9, 1.1E.8 |
 | 7.7.14 | **Scaling reliability metadata in manifests.** Add `scaling_profile` fields to candidate manifests (`regime_class`, `fit_confidence`, `sensitivity_index`, `cross-setting_consistency`) for promotion/rollback decisions | Extends 7.7.1, 5.2.20 |
 | 7.7.15 | **No linear-only extrapolation promotion rule.** Block rollout when expected gains are justified only by single-setting linear extrapolation without cross-setting confirmation and inversion/nonmonotonic containment plan | Extends 7.7.4, 10.9.19 |
+| 7.7.16 | **Dream promotion chain enforcement.** Enforce lifecycle states `dream -> hypothesis -> candidate_conviction -> proven_conviction`; direct jumps are invalid and fail promotion checks | Extends 1.1E.20, 7.7.4 |
+| 7.7.17 | **Dream conflict fail-closed rule.** If dream-derived candidates conflict with `proven_conviction` and real-outcome checks do not justify reopening, block rollout and archive as negative path | Extends 1.1E.22, 7.7.11 |
+| 7.7.18 | **Dream rollback bundle requirement.** Every dream-derived promotion must include rollback artifacts, mismatch diagnostics, and delayed-validation checkpoints before advancing beyond canary | Extends 7.7.5, 1.4.14 |
 
 > **Why this matters:** Without model lifecycle management, updated models either ship only via App Store updates (slow, requires user action) or arrive unversioned and unrollbackable (dangerous). The staged rollout + canary + per-user rollback ensures model improvements reach users quickly while protecting against regressions.
 
@@ -1334,8 +1350,12 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.39 | **High-impact autonomy cycle cap.** For safety/legal/high-impact social domains, enforce maximum autonomous cycle count before mandatory human oversight review with signed disposition |
 | 7.9.40 | **Downstream scaling failure-mode taxonomy.** Every candidate must be tagged with observed downstream scaling regime (`predictable`, `inverse`, `nonmonotonic`, `trendless/noisy`, `breakthrough`) and required mitigation playbook before promotion consideration |
 | 7.9.41 | **Validation/task/setup sensitivity sweeps.** Require controlled perturbation sweeps across validation corpus, task framing, and eval setup; promotion is blocked when candidate behavior is brittle to benign setup changes |
+| 7.9.42 | **Dream hypothesis contract.** Every dream episode must define explicit falsification tests, contradiction probes, and real-world validation plan before it can create `candidate_conviction` artifacts |
+| 7.9.43 | **Negative dream archive governance.** Failed dream paths are retained with cause taxonomy (`simulator_exploit`, `ood_gap`, `policy_conflict`, `cohort_harm`, `leakage`) and enforced as anti-repeat suppression priors |
+| 7.9.44 | **Dream/reality divergence monitor.** Continuously track drift between DreamEnv predictions and observed outcomes; sustained divergence auto-throttles dream influence and triggers recalibration experiments |
+| 7.9.45 | **Belief-tier audit dashboard.** Publish tier transition metrics (promotion/demotion counts, contradiction density, delayed-validation pass rates, override-attempt rejects) for governance review |
 
-> **Required companion spec:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
+> **Required companion specs:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`, `docs/plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`
 >
 > **Non-negotiable constraint:** Interdisciplinary and creative framing is required for human-centered hypotheses, but production promotion remains evidence-gated and falsification-first.
 
@@ -1367,6 +1387,9 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 8.1.14 | Add periodic cross-locality reconciliation cadence with signed merge proposals and quarantine path when locality-specific gains harm cross-cohort consistency | Extends 8.1.13, 10.9.14 |
 | 8.1.15 | Add federated downstream scaling profile registry per `locality x model_family`, including regime class and sensitivity index, so aggregation policies are conditioned on measured scaling reliability | Extends 5.2.20, 7.7.14 |
 | 8.1.16 | Add cross-cohort scaling inversion quarantine: if a global candidate improves one cohort but shows inverse/nonmonotonic response in protected cohorts, hold in shadow and require targeted mitigation before promotion | Extends 8.1.15, 10.9.19 |
+| 8.1.17 | Add federated dream-policy quarantine lane: share only vetted dream-derived candidates (`candidate_conviction` or higher), never raw dream episodes or speculative labels | Extends 1.1E.20, 7.7.16 |
+| 8.1.18 | Add cross-locality dream divergence exchange: publish DP-safe DreamEnv mismatch summaries and block import of dream-derived updates from divergent cohorts until recalibrated | Extends 7.9.44, 10.9.14 |
+| 8.1.19 | Add federated belief-tier consistency checks across `reality_model/universe_model/world_model`; reject updates that attempt tier escalation without dual-key evidence receipts | Extends 1.1E.21, 10.9.21 |
 
 ### 8.2 Gradient Bandwidth Budget
 
@@ -1828,6 +1851,7 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.18 | **High-impact autonomy oversight SLO.** Enforce maximum autonomous cycle count and mandatory human review latency for high-impact domains; no silent bypass allowed | 7.9.39, 10.9.11 |
 | 10.9.19 | **Downstream scaling reliability gate.** Promotion requires cross-setting scaling robustness evidence (validation/task/setup sensitivity sweeps), explicit regime classification, and documented mitigation for inversion/nonmonotonic responses | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 7.9.41, 8.1.16 |
 | 10.9.20 | **System hijack red-team gate.** Maintain and execute canonical red-team matrix across auth/session, backend authorization, secrets/CI, federated/advisory channels, encryption lifecycle, BLE discovery metadata, third-party exports, autonomy governance, logging, supply chain, and operator controls. Critical lanes block autonomous scope expansion when red | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 |
+| 10.9.21 | **Dream-conviction hierarchy safety gate.** Enforce immutable belief-tier precedence, no dream override of proven convictions, dual-key evidence requirement for tier elevation, simulator-exploit containment, and fail-closed dream promotion control | 1.1E.20, 1.1E.21, 5.2.23, 5.2.26, 7.7.16, 8.1.19 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -1855,6 +1879,7 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.18 | Governance + Reliability Engineering | 7.9.39, 10.9.11 | 3-5 days | High-impact domains enforce max autonomous cycle count; mandatory human review SLA met; audit trail proves no bypass in staging drills |
 | 10.9.19 | Applied ML + Reliability Science + Federated Learning | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 8.1.16 | 1-2 weeks | Cross-setting scaling sweeps are mandatory before promotion; regime classification attached to manifests; inversion/nonmonotonic cohorts are quarantined or mitigated before rollout |
 | 10.9.20 | Security Engineering + Reliability Engineering + Governance | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 | 1-2 weeks | `docs/security/RED_TEAM_TEST_MATRIX.md` is current; critical lanes execute on cadence in staging; failed lanes auto-open remediation milestones; autonomous scope expansion is blocked while critical lanes are red |
+| 10.9.21 | Applied ML + Governance + Reliability Engineering | 1.1E.20, 1.1E.21, 5.2.23, 7.7.16, 8.1.19 | 1-2 weeks | CI/runtime reject any tier-precedence violations; dream-only updates cannot promote; dual-key evidence receipts required for tier elevation; dream/reality mismatch alarms auto-trigger quarantine and rollback paths |
 
 > **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.20 in parallel where dependencies allow.
 
@@ -1869,7 +1894,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | M3: Federated + Advisory Safety | Harden cross-device and cross-locality propagation paths | 10.9.5, 10.9.6, 8.1, 8.9 | Week 3-5 | Cohort-wise no-regression checks passing; advisory quarantine enabled; credibility scoring + anomaly disable path operational; canary/shadow promotion policy enforced |
 | M4: Tier + Compatibility + Security Closure | Close resilience gaps across device tiers, schemas, and adversarial vectors | 10.9.7, 10.9.8, 10.9.10, 10.9.20, 2.5, 7.5, 7.7.1 | Week 5-7 | Compatibility matrix blocks bad deploys; tier parity checks active; poisoning/outlier detection + signed update attestation enabled; red-team critical lanes passing; scoped kill switches validated |
 | M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, 10.9.13, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; kernel integrity enforcement active; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
-| M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 10.9.19, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts, alert storm SLO remains green, and scaling reliability gates pass |
+| M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls, dream-conviction hierarchy safety, and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 10.9.19, 10.9.21, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; dream-tier precedence checks remain green; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts, alert storm SLO remains green, and scaling reliability gates pass |
 | M7: Oversight + Kernel Lifecycle Closure | Make kernel lifecycle and high-impact autonomy oversight operational and auditable | 10.9.16, 10.9.18, 1.1E.17, 1.1E.18, 7.9.39 | Week 10-11 | Kernel upgrade/downgrade/freeze drills pass; rollback TTL enforced; high-impact autonomous loop caps and mandatory human review SLA validated |
 
 #### 10.9C Cross-Phase Expansion Map (What to Update in Each Existing Phase)
@@ -1899,6 +1924,12 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | 9.2.6 Third-Party Data Insights Pipeline | Add re-identification simulation and buyer-retention enforcement drills as export release gates | 10.9.20 |
 | 8.1 Federated World Model Learning | Add anti-fragmentation shared-core policy and cross-locality reconciliation cadence | 10.9.14, 10.9.17 |
 | 8.1 Federated World Model Learning | Add federated scaling profile registry and inversion quarantine | 10.9.19 |
+| 1.1E Lightweight Deterministic Memory Core | Add dream ledger + belief-tier precedence contracts and dual-key evidence bridge | 10.9.21 |
+| 5.2 On-Device Training Loop | Add DreamEnv mismatch containment, OOD/leakage/spec-gaming checks, and no-recursive-self-confirmation rule | 10.9.21 |
+| 6.2 Guardrail Objectives | Add belief-tier action authority and dream contradiction dampening rules | 10.9.21 |
+| 7.7 Model Lifecycle Management | Add dream promotion chain enforcement and dream-specific rollback bundles | 10.9.21 |
+| 7.9 Autonomous Research Lane | Add dream falsification contracts, negative-dream archive governance, and divergence monitoring | 10.9.21 |
+| 8.1 Federated World Model Learning | Add federated dream-policy quarantine and cross-family belief-tier consistency checks | 10.9.21 |
 | 10.2 Stub/TODO Cleanup | Enforce adaptive critical-path placeholder elimination as release blocker | 10.9.1 |
 
 #### 10.9D Program-Level Checkpoints (Portfolio View)
@@ -1954,8 +1985,9 @@ Role abbreviations:
 | 10.9.18 | GOV, REL | GOV | ARCH, SEC, QA | All teams | 4 | 5 | 20 | Critical |
 | 10.9.19 | MLE, REL, FED | GOV | AP, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
 | 10.9.20 | SEC, REL, GOV | GOV | AP, FED, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
+| 10.9.21 | MLE, GOV, REL | GOV | AP, FED, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
 
-> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`, `10.9.12`, `10.9.13`, `10.9.14`, `10.9.15`, `10.9.16`, `10.9.18`, `10.9.19`, `10.9.20`) must have active owners and weekly status review before any autonomous scope expansion.
+> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`, `10.9.12`, `10.9.13`, `10.9.14`, `10.9.15`, `10.9.16`, `10.9.18`, `10.9.19`, `10.9.20`, `10.9.21`) must have active owners and weekly status review before any autonomous scope expansion.
 
 #### 10.9F Reusable Governance Template (Apply to All Phases)
 
