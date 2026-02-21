@@ -781,3 +781,12 @@ finding meaning in the endless search.
 
 *All development must align with this philosophy. When in doubt, ask: "What doors does this help open?", "Is this being a good key?", and "Does this advance the pursuit of understanding?"*
 
+A change is successful only if it improves real-world utility while preserving:
+- dignity,
+- fairness,
+- privacy,
+- user agency,
+- and recourse.
+
+Implementation pointer:
+- Canonical failure/contradiction handling and self-healing integrity controls are maintained in `docs/MASTER_PLAN.md` under **10.9J System Failure + Self-Healing Integrity Matrix (Canonical)**.
