@@ -1924,6 +1924,58 @@ Authoring workflow:
 
 > **Program management rule:** `M0-P2-1` and `M0-P10-1` run continuously as cross-cutting controls while Waves 1-3 execute in sequence.
 
+#### 10.9J System Failure + Self-Healing Integrity Matrix (Canonical)
+
+Self-healing is required to be **fail-closed, bounded, and non-self-escalating**. Contradiction handling is allowed to adapt model behavior, but it cannot mutate immutable policy boundaries, bypass promotion gates, or recurse into unlimited autonomous loops.
+
+The matrix below is the canonical plan record for failure/contradiction classes and required controls. A CSV source may be maintained for authoring input, but if any divergence exists, this section in `docs/MASTER_PLAN.md` is authoritative.
+
+| ID | Failure / Contradiction Event | Required Policy | Implementation Detail | Plan Refs | Related Doc Refs |
+|----|-------------------------------|-----------------|-----------------------|-----------|------------------|
+| 1 | Perception freshness failure, missing inputs, modality drift | Perception-safe fail-closed fallback | Route to safe mode, log drift telemetry, re-enter autonomy only after verification | 10.9.12, Break contract (Eyes) | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8; `BIAS_AND_DIGNITY_GUARDRAILS.md` §1 |
+| 2 | Trigger loss, duplicate events, federated update corruption | Ingest quarantine with deterministic replay | Dedupe/replay keys, quarantine corrupt channel, block tainted lane promotion | 10.9.10, 10.9.12, Break contract (Ears) | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §7 |
+| 3 | Invalid recommendations, policy-unsafe actions, rollout regressions | Immediate circuit-break rollback | Bounded retry, dual-signal rollback decisions, anti-flap cooldown | 10.9.3, 10.9.4, Break contract (Mouth) | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8 |
+| 4 | Planner contradiction, model instability, memory inconsistency, belief divergence | Recovery state machine required | Force `open -> scheduled -> recovering -> resolved` with provenance and healing telemetry | 10.9.12, Break contract (Brain) | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 5 | Failed orchestration steps leaving dead states | Auto-remediation scheduling | No dead terminal states; unresolved path escalates by dwell policy | 10.9.12, 1.1E.15, Break contract (Hands) | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §10 |
+| 6 | Non-atomic evolution cascade creates inconsistent present state | Atomic state publication only | Execute full cascade and publish one committed snapshot version only | 7.1.2, LeCun alignment note | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §7 |
+| 7 | World model inference OOM/crash | Tiered containment fallback | Degrade capability tier instead of hard crash; preserve core service | 7.5.4 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §6 |
+| 8 | Model/episodic schema mismatch | Compatibility gate before load | Migrate forward for newer model; pad fields for rollback model | 7.7.3, 10.9.7 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 9 | Bad global model candidate rollout | Canary + staged rollout + global rollback | 5% canary with outcome/happiness checks before wider rollout | 7.7.4, 7.7.5, 10.9.4 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §6.3 |
+| 10 | Per-user degradation after update | Per-user rollback | Revert impacted users independently while global candidate is diagnosed | 7.7.6, 7.7.10 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 11 | Behavioral taste drift breaks past-based predictions | Drift-triggered exploration reset | EMA residual detector resets affected confidence and re-enters exploration | 5.1.9, 6.2.11, 6.2.14 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8 |
+| 12 | External/third-party data drift conflicts with local reality | Internal-only fallback route | Quarantine drifted external features until revalidated | 5.1.14, 6.1.17, 5.2.16 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §2 |
+| 13 | Predicted positive but observed negative outcomes | Negative-amplified correction policy | Asymmetric loss, confidence decay, model-failure tuple weighting | 1.4.10, 1.4.11, 4.1.7 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §11 |
+| 14 | Premature conviction increase from short-term signal spikes | Delayed validation window gate | Require 7/30/90-day delayed-outcome checkpoints for conviction increases | 1.4.14, 5.1.15, 5.2.15 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8 |
+| 15 | Local metric gains violate global truth constraints | Anti-drift macro/micro gate | Quarantine updates when local wins conflict with deterministic truth constraints | 5.2.18, 10.9.14 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §6 |
+| 16 | Dream simulator gains fail replay/holdout alignment | Dream mismatch quarantine | Decay dream influence and quarantine candidate on mismatch | 5.2.23, 7.9.44, 10.9.21 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §1 |
+| 17 | Dream training OOD/leakage/spec-gaming | Dream integrity fail-closed gate | Block dream promotions when integrity probes fail | 5.2.24, 7.9.31, 10.9.11 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §6 |
+| 18 | Runaway dream compute or safety loops | Bounded dream compute controller | Enforce strict compute/cycle budgets with auto-freeze triggers | 5.2.25, 7.9.28, 10.9.18 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §10 |
+| 19 | Recursive self-confirmation from dream-generated labels | No self-proving policy updates | Dream labels may train exploration only; policy-critical changes require real outcomes | 5.2.26, 1.1E.21, 10.9.21 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 20 | Dream tier overrides proven conviction | Belief-tier precedence lock | Immutable tier order and high-impact action authority gate | 1.1E.20, 6.2.21, 7.7.16, 10.9.21 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §7 |
+| 21 | Dream policy conflicts with deterministic journals/proven conviction | Dream contradiction dampener + fail-closed conflict rule | Auto-penalize and shadow-route; block unresolved conflict rollout | 6.2.22, 7.7.17, 10.9.21 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 22 | Global update conflicts with local deterministic outcomes | Federated contradiction quarantine | Hold candidate in shadow until reconciliation evidence passes | 8.1.7, 8.1.14, 10.9.14 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §7 |
+| 23 | Cross-cohort scaling inversion/nonmonotonic harm | Inversion quarantine before promotion | Require targeted mitigation and revalidation before release | 8.1.16, 10.9.19 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §6 |
+| 24 | Divergent dream imports across localities/model families | Federated dream-policy quarantine lane | Share only vetted dream candidates; block divergent imports until recalibration | 8.1.17, 8.1.18, 8.1.19 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §6.2 |
+| 25 | Advisory strategy degradation or anomalous guidance | Advisory quarantine + credibility decay | Shadow/quarantine advisory paths; advisory-specific rollback independent from model rollback | 10.9.6, 8.9 expansion map rows | `BIAS_AND_DIGNITY_GUARDRAILS.md` §7 |
+| 26 | Poisoning/outlier injection into learning channels | Attestation + outlier defenses + scoped kill switch | Signed updates, reputation weighting, and per-channel disable controls | 10.9.10, 10.9.20 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §6 |
+| 27 | Cross-surface system hijack attempt | Red-team gate blocks scope expansion | Autonomous scope cannot expand while critical red-team lanes are red | 10.9.20 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §8 |
+| 28 | First-occurrence alert storms overwhelm healing queues | Storm-control SLO | Rate caps, dedupe horizon, incident bundling, rollout block on overflow | 10.9.17, 7.9.37, 10.9.15 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 29 | Infinite rumination on unresolved contradictions | Dwell-budget enforcement | Per-issue attempt/time caps and forced escalation paths | 1.1E.15, 6.2.18, 6.2.20, 10.9.15 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 30 | Novel severe failure ignored or delayed | First-occurrence SLA and deterministic triage | Immediate `fix/experiment/escalate` route with deterministic issue ledger | 1.1E.14, 6.2.17, 10.9.15 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
+| 31 | Self-healing mutates immutable kernel boundaries | Kernel integrity and lifecycle governance gate | Signed manifests, compatibility proofs, rollback TTL, emergency freeze drill | 10.9.13, 10.9.16, 1.1E.17, 1.1E.18 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §4 |
+| 32 | Rollback path itself creates inconsistent state | Atomic rollback bundle + drill requirement | Roll back `model + flags + orchestrator policy + schema target` as one unit; validate quarterly | 10.9.4, 7.7.9, 7.7.5 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §10 |
+
+#### 10.9J.1 Acceptance Criteria (Self-Healing Integrity)
+
+1. CI/runtime rejects any change that violates kernel immutability, belief-tier precedence, or fail-closed conflict rules.
+2. No autonomous self-healing promotion proceeds without dual-signal evidence and confidence bounds.
+3. Every self-healing action is replayable and auditable via deterministic ledgers with provenance and contradiction linkage.
+4. Every contradiction class has bounded dwell policy, measurable stop criteria, and forced escalation behavior.
+5. Dream-lane updates cannot bypass real-outcome confirmation requirements for policy-critical behavior.
+6. Federated/advisory channels must pass attestation, anomaly/outlier checks, and scoped kill-switch readiness before promotion.
+7. Rollback drills must prove atomic bundle restoration (soft + hard) on a recurring cadence.
+8. Runtime instability during healing (including OOM/crash) must demonstrate tier fallback containment instead of service collapse.
+
 ---
 
 ## Phase 11: Industry Integrations & Platform Expansion
