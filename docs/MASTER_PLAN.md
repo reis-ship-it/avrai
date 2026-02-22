@@ -316,7 +316,7 @@ Add a lightweight, grepable memory lane for deterministic recall, auditability, 
 | 1.1E.18 | Add `KernelEmergencyFreeze` contract: deterministic freeze trigger classes, freeze scope (`single_kernel`, `family`, `global`), and required human-release path | Extends 1.1E.17, 10.9.13 |
 | 1.1E.19 | Add `DreamLedger` schema for speculative episodes: dream id, model family, assumptions, simulator version, hypothesis refs, predicted deltas, and falsification plan id | Extends 7.9, 5.2 |
 | 1.1E.20 | Add `BeliefTierContract` with immutable precedence (`dream < hypothesis < candidate_conviction < proven_conviction`) and confidence ceilings per tier; reject any write that violates monotonic promotion flow | Extends 1.1E.10, 10.9.21 |
-| 1.1E.21 | Add dream-conviction bridge contract: every dream-derived confidence update must include dual-key evidence (`internal_validation_id` + `external_or_real_outcome_id`) before it can rise above `hypothesis` tier | Extends 1.1E.9, 1.1E.10, 7.7 |
+| 1.1E.21 | Add dream-conviction bridge contract: every dream-derived confidence update must include dual-key evidence (`internal_validation_id` + `external_or_real_outcome_id`) before it can rise above `hypothesis` tier | Extends 1.1E.9, 1.1E.10, 7.7 -- COMPLETE (2026-02-20: added deterministic `DreamConvictionBridgeContract` that enforces dual-key evidence for dream-derived promotions above `hypothesis` and rejects non-monotonic tier jumps; covered by `dream_conviction_bridge_contract_test`) |
 | 1.1E.22 | Add `DreamFailureArchive` with anti-repeat suppression tags so invalidated dream paths are queryable and blocked from re-promotion without new contradiction-clearing evidence | Extends 1.1E.8, 7.7.11 |
 
 ### 1.2 Outcome Data Collection Pipeline
