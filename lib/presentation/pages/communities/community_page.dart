@@ -1,7 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/community/community.dart';
 import 'package:avrai/core/services/community/community_service.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
+import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -11,6 +18,7 @@ import 'package:avrai/presentation/pages/events/create_community_event_page.dart
 import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
 import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Community Page
 /// Agent 2: Frontend & UX Specialist (Phase 6)
@@ -36,6 +44,11 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage> {
   final CommunityService _communityService = di.sl<CommunityService>();
+  late EventLogger _eventLogger;
+  DateTime? _viewStartTime;
+  String? _currentUserId;
+  bool _isLoggerInitialized = false;
+  bool _hasFollowUpAction = false;
 
   bool _isLoading = true;
   bool _isMember = false;
@@ -48,7 +61,24 @@ class _CommunityPageState extends State<CommunityPage> {
   @override
   void initState() {
     super.initState();
+    _initializeEventLogger();
+    _viewStartTime = DateTime.now();
     _loadCommunity();
+  }
+
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        _currentUserId = currentUser.id;
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('community_details');
+      }
+      _isLoggerInitialized = true;
+    } catch (_) {
+      _isLoggerInitialized = false;
+    }
   }
 
   Future<void> _loadCommunity() async {
@@ -103,6 +133,7 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   Future<void> _joinCommunity() async {
+    _hasFollowUpAction = true;
     if (_community == null) return;
 
     final authState = context.read<AuthBloc>().state;
@@ -153,6 +184,7 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   Future<void> _leaveCommunity() async {
+    _hasFollowUpAction = true;
     if (_community == null) return;
 
     final authState = context.read<AuthBloc>().state;
@@ -186,6 +218,7 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   void _viewMembers() {
+    _hasFollowUpAction = true;
     // TODO: Navigate to members page when created
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -195,6 +228,7 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   void _viewEvents() {
+    _hasFollowUpAction = true;
     // TODO: Navigate to community events page when created
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -204,12 +238,91 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   void _createEvent() {
+    _hasFollowUpAction = true;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const CreateCommunityEventPage(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    if (_isLoggerInitialized && _viewStartTime != null && !_hasFollowUpAction) {
+      final duration = DateTime.now().difference(_viewStartTime!);
+      _eventLogger.logBrowseNoAction(
+        entityType: 'community',
+        entityId: widget.communityId,
+        browseDurationMs: duration.inMilliseconds,
+        surface: 'community_details',
+      );
+      unawaited(_recordBrowseNoActionTuple(duration.inMilliseconds));
+    }
+    super.dispose();
+  }
+
+  Future<void> _recordBrowseNoActionTuple(int durationMs) async {
+    try {
+      if (!di.sl.isRegistered<EpisodicMemoryStore>() ||
+          !di.sl.isRegistered<AgentIdService>()) {
+        return;
+      }
+      final userId = _currentUserId;
+      final community = _community;
+      if (userId == null || userId.isEmpty || community == null) return;
+      final agentIdService = di.sl<AgentIdService>();
+      final episodicStore = di.sl<EpisodicMemoryStore>();
+      final outcomeTaxonomy = const OutcomeTaxonomy();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.19',
+          'surface': 'community_details',
+          'entity_type': 'community',
+          'entity_id': community.id,
+        },
+        actionType: 'browse_entity',
+        actionPayload: {
+          'entity_type': 'community',
+          'entity_id': community.id,
+          'entity_features': {
+            'community_id': community.id,
+            'member_count': community.memberCount,
+            'event_count': community.eventCount,
+            'engagement_score': community.engagementScore,
+            'diversity_score': community.diversityScore,
+          },
+          'no_action': true,
+          'browse_context': {
+            'duration_ms': durationMs,
+            'surface': 'community_details',
+          },
+        },
+        nextState: const {
+          'no_action': true,
+          'browse_session_complete': true,
+        },
+        outcome: outcomeTaxonomy.classify(
+          eventType: 'no_action',
+          parameters: {
+            'entity_type': 'community',
+            'entity_id': community.id,
+            'duration_ms': durationMs,
+            'surface': 'community_details',
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.19',
+          'pipeline': 'community_page',
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (_) {
+      // Non-critical on teardown.
+    }
   }
 
   @override

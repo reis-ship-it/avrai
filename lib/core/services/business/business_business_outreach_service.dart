@@ -1,4 +1,7 @@
 import 'dart:developer' as developer;
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/business/business_business_chat_service_ai2ai.dart';
 import 'package:avrai/core/models/business/business_account.dart';
@@ -12,14 +15,20 @@ class BusinessBusinessOutreachService {
   static const String _logName = 'BusinessBusinessOutreachService';
   final BusinessAccountService? _businessService;
   final BusinessBusinessChatServiceAI2AI? _chatService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   BusinessBusinessOutreachService({
     dynamic
         partnershipService, // Reserved for future use (PartnershipService type)
     BusinessAccountService? businessService,
     BusinessBusinessChatServiceAI2AI? chatService,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
   })  : _businessService = businessService,
-        _chatService = chatService;
+        _chatService = chatService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy;
 
   /// Discover businesses for potential partnerships
   ///
@@ -290,6 +299,80 @@ class BusinessBusinessOutreachService {
     } catch (e) {
       developer.log('Error getting recommended businesses: $e', name: _logName);
       return [];
+    }
+  }
+
+  /// Record business-to-business partnership outcomes for model training.
+  ///
+  /// Captures: `(business_A_state, partner_with, business_B_features, partnership_outcome)`
+  /// with joint event success, cross-referral rate, and renewal result.
+  Future<void> recordPartnershipOutcome({
+    required String businessAId,
+    required String businessBId,
+    required String partnershipId,
+    required double jointEventSuccessScore,
+    required double crossReferralRate,
+    required bool partnershipRenewed,
+    int jointEventCount = 0,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final normalizedJointSuccess = jointEventSuccessScore.clamp(0.0, 1.0);
+      final normalizedCrossReferral = crossReferralRate.clamp(0.0, 1.0);
+      final overallRating =
+          ((normalizedJointSuccess + normalizedCrossReferral) / 2.0) *
+              (partnershipRenewed ? 1.0 : 0.9);
+
+      final tuple = EpisodicTuple(
+        agentId: businessAId,
+        stateBefore: {
+          'phase_ref': '1.2.24',
+          'business_state': {
+            'business_id': businessAId,
+            'partnership_id': partnershipId,
+          },
+        },
+        actionType: 'partner_with',
+        actionPayload: {
+          'business_b_features': {
+            'business_id': businessBId,
+          },
+          'partnership_features': {
+            'partnership_id': partnershipId,
+            'joint_event_count': jointEventCount,
+          },
+        },
+        nextState: {
+          'partnership_outcome': {
+            'joint_event_success_score': normalizedJointSuccess,
+            'cross_referral_rate': normalizedCrossReferral,
+            'partnership_renewed': partnershipRenewed,
+            'overall_rating': overallRating,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'business_partnership_outcome',
+          parameters: {
+            'partnership_id': partnershipId,
+            'business_a_id': businessAId,
+            'business_b_id': businessBId,
+            'joint_event_success_score': normalizedJointSuccess,
+            'cross_referral_rate': normalizedCrossReferral,
+            'partnership_renewed': partnershipRenewed,
+            'joint_event_count': jointEventCount,
+            'overall_rating': overallRating,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.24',
+          'pipeline': 'business_business_outreach_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log('Error recording business partnership outcome: $e',
+          name: _logName);
     }
   }
 }

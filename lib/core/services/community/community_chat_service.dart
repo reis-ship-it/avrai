@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:avrai_ai/models/community_chat_message.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/models/community/community.dart';
 import 'package:avrai/core/crypto/aes256gcm_fixed_key_codec.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
@@ -39,6 +42,9 @@ class CommunityChatService {
   final DmMessageStore? _dmStore;
   final CommunitySenderKeyService? _senderKeyService;
   final CommunityMessageStore? _communityMessageStore;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
 
   CommunityChatService({
     MessageEncryptionService? encryptionService,
@@ -48,13 +54,21 @@ class CommunityChatService {
     DmMessageStore? dmStore,
     CommunitySenderKeyService? senderKeyService,
     CommunityMessageStore? communityMessageStore,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
   })  : _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _agentIdService = agentIdService,
         _realtimeBackend = realtimeBackend,
         _atomicClock = atomicClock,
         _dmStore = dmStore,
         _senderKeyService = senderKeyService,
-        _communityMessageStore = communityMessageStore;
+        _communityMessageStore = communityMessageStore,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
 
   /// Send an encrypted group message
   ///
@@ -98,6 +112,11 @@ class CommunityChatService {
 
       // Store message
       await _saveMessage(chatMessage);
+      await _recordMessageCommunityTuple(
+        userId: userId,
+        communityId: communityId,
+        timestamp: chatMessage.timestamp,
+      );
 
       developer.log('✅ Group message sent and saved: ${chatMessage.messageId}',
           name: _logName);
@@ -111,6 +130,57 @@ class CommunityChatService {
       );
       rethrow;
     }
+  }
+
+  Future<void> _recordMessageCommunityTuple({
+    required String userId,
+    required String communityId,
+    required DateTime timestamp,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService != null
+          ? await agentIdService.getUserAgentId(userId)
+          : userId;
+      final nowIso = timestamp.toUtc().toIso8601String();
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.13',
+          'chat_context': {
+            'chat_type': 'community',
+            'community_id': communityId,
+          },
+        },
+        actionType: 'message_community',
+        actionPayload: {
+          'community_id': communityId,
+          'timestamp': nowIso,
+        },
+        nextState: {
+          'chat_state': {
+            'last_action': 'message_community',
+            'community_id': communityId,
+            'timestamp': nowIso,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'message_community',
+          parameters: {
+            'community_id': communityId,
+            'timestamp': nowIso,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.13',
+          'pipeline': 'community_chat_service',
+          'privacy': 'metadata_only_no_message_content',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (_) {}
   }
 
   /// Send a group/community message and broadcast it over realtime using Signal Protocol (fanout).
@@ -294,11 +364,13 @@ class CommunityChatService {
       String communityId) async {
     try {
       final chatId = _generateChatId(communityId);
-      final box = GetStorage(_chatStoreName);
-      final List<dynamic> raw = box.read<List<dynamic>>('community_chat_$chatId') ?? [];
+      final box = _chatBox;
+      final List<dynamic> raw =
+          box.read<List<dynamic>>('community_chat_$chatId') ?? [];
 
       final messages = raw
-          .map((e) => CommunityChatMessage.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) => CommunityChatMessage.fromJson(
+              Map<String, dynamic>.from(e as Map)))
           .toList();
 
       // Sort most recent first
@@ -537,7 +609,7 @@ class CommunityChatService {
   /// Save message to storage
   Future<void> _saveMessage(CommunityChatMessage message) async {
     try {
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'community_chat_${message.chatId}';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(message.toJson());
@@ -552,7 +624,6 @@ class CommunityChatService {
       rethrow;
     }
   }
-
 
   // Legacy fanout path (Signal-per-recipient) removed in favor of sender keys.
 
@@ -634,13 +705,13 @@ class CommunityChatService {
   }) async {
     try {
       final chatId = _generateChatId(communityId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'community_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
 
       // De-dupe: if we already stored this message ID, do nothing.
-      final alreadyExists = existing.any((e) =>
-          (e as Map)['messageId'] == messageId);
+      final alreadyExists =
+          existing.any((e) => (e as Map)['messageId'] == messageId);
       if (alreadyExists) return null;
 
       final timestamp = sentAtIso != null

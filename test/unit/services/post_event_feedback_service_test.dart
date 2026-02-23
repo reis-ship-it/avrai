@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/events/post_event_feedback_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
@@ -19,6 +20,7 @@ void main() {
     late PostEventFeedbackService service;
     late MockExpertiseEventService mockEventService;
     late MockPartnershipService mockPartnershipService;
+    late EpisodicMemoryStore episodicMemoryStore;
 
     late ExpertiseEvent testEvent;
     late UnifiedUser testUser;
@@ -26,10 +28,12 @@ void main() {
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockPartnershipService = MockPartnershipService();
+      episodicMemoryStore = EpisodicMemoryStore();
 
       service = PostEventFeedbackService(
         eventService: mockEventService,
         partnershipService: mockPartnershipService,
+        episodicMemoryStore: episodicMemoryStore,
       );
 
       testUser = ModelFactories.createTestUser(
@@ -168,6 +172,43 @@ void main() {
         expect(feedback2.improvements, isNull);
         expect(feedback2.wouldAttendAgain, isFalse);
         expect(feedback2.wouldRecommend, isFalse);
+      });
+
+      test('writes detailed expert-event feedback episodic tuple', () async {
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+
+        await service.submitFeedback(
+          eventId: 'event-123',
+          userId: 'user-456',
+          overallRating: 4.2,
+          categoryRatings: {
+            'organization': 4.0,
+            'topic_relevance': 4.7,
+          },
+          wouldAttendAgain: true,
+          wouldRecommend: true,
+          topicRelevanceRating: 4.7,
+          expertiseLevelMatch: 'just_right',
+        );
+
+        final tuples = await episodicMemoryStore.getRecent(agentId: 'user-456');
+        expect(tuples.length, equals(1));
+        expect(tuples.first.actionType, equals('attend_expert_event'));
+        expect(
+          tuples.first.actionPayload['detailed_feedback']
+              ['topic_relevance_rating'],
+          equals(4.7),
+        );
+        expect(
+          tuples.first.actionPayload['detailed_feedback']
+              ['expertise_level_match'],
+          equals('just_right'),
+        );
+        expect(
+          tuples.first.outcome.type,
+          equals('attend_expert_event_feedback'),
+        );
       });
     });
 

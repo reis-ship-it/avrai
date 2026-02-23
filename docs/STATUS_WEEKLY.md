@@ -7,6 +7,9 @@ Update cadence: once per week (minimum), plus major gate decisions.
 Validation commands:
 - Sync board from CSV: `dart run tool/update_execution_board.dart`
 - Validate board is in sync: `dart run tool/update_execution_board.dart --check`
+- Validate deferred rename assignments: `python3 scripts/validate_rename_candidates.py`
+- Inventory untracked rename candidates: `python3 scripts/suggest_rename_candidates_inventory.py`
+- Phase closeout command: `scripts/run_phase_rename_closeout.sh P#`
 
 ## How To Use
 
@@ -66,6 +69,11 @@ Validation commands:
 - CI/test report:
 - Monitoring dashboard snapshot:
 
+### 8) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
+
+| Rename ID | Category | Phase Close Target | Decision | Owner | Target Milestone | Notes |
+|-----------|----------|--------------------|----------|-------|------------------|-------|
+
 ---
 
 ## Template (Copy For Next Week)
@@ -111,4 +119,8 @@ Validation commands:
 - Board update commit:
 - CI/test report:
 - Monitoring dashboard snapshot:
+
+### 8) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
+| Rename ID | Category | Phase Close Target | Decision | Owner | Target Milestone | Notes |
+|-----------|----------|--------------------|----------|-------|------------------|-------|
 ```

@@ -3,6 +3,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai/privacy_protection.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -79,12 +82,16 @@ class ConnectionManager {
   final PersonalityLearning?
       personalityLearning; // NEW: For offline AI learning
   final AI2AIProtocol? ai2aiProtocol; // NEW: For offline peer exchange
+  final EpisodicMemoryStore? episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   ConnectionManager({
     required this.vibeAnalyzer,
     this.personalityLearning, // Optional for backward compatibility
     this.ai2aiProtocol, // Optional for backward compatibility
-  });
+    this.episodicMemoryStore,
+    OutcomeTaxonomy? outcomeTaxonomy,
+  }) : _outcomeTaxonomy = outcomeTaxonomy ?? const OutcomeTaxonomy();
 
   Future<ConnectionMetrics?> establish(
     String localUserId,
@@ -114,7 +121,20 @@ class ConnectionManager {
       compatibility: compatibility.basicCompatibility,
     );
 
-    return performEstablishment(localVibe, remoteNode, compatibility, metrics);
+    final establishedMetrics = await performEstablishment(
+        localVibe, remoteNode, compatibility, metrics);
+
+    if (establishedMetrics != null) {
+      await _recordConnectionOutcomeTuple(
+        localUserId: localUserId,
+        remoteNodeId: remoteNode.nodeId,
+        mode: 'online',
+        compatibility: compatibility,
+        metrics: establishedMetrics,
+      );
+    }
+
+    return establishedMetrics;
   }
 
   bool _isWorthy(VibeCompatibilityResult c) {
@@ -202,6 +222,14 @@ class ConnectionManager {
         compatibility: compatibility.basicCompatibility,
       );
 
+      await _recordConnectionOutcomeTuple(
+        localUserId: localUserId,
+        remoteNodeId: remoteProfile.agentId,
+        mode: 'offline_peer',
+        compatibility: compatibility,
+        metrics: metrics,
+      );
+
       // TODO: Queue connection log for cloud sync when online
       // This is optional - the AI has already learned offline
 
@@ -265,6 +293,79 @@ class ConnectionManager {
 
     return (compatibility.basicCompatibility * 0.6 + avgMagnitude * 0.4)
         .clamp(0.0, 1.0);
+  }
+
+  Future<void> _recordConnectionOutcomeTuple({
+    required String localUserId,
+    required String remoteNodeId,
+    required String mode,
+    required VibeCompatibilityResult compatibility,
+    required ConnectionMetrics metrics,
+  }) async {
+    final store = episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final connectionQuality = metrics.qualityScore.clamp(0.0, 1.0);
+      final learningValue = metrics.learningEffectiveness.clamp(0.0, 1.0);
+      final nowIso = DateTime.now().toUtc().toIso8601String();
+
+      final tuple = EpisodicTuple(
+        agentId: localUserId,
+        stateBefore: {
+          'phase_ref': '1.2.11',
+          'user_state': {
+            'local_user_id': localUserId,
+            'local_ai_signature': metrics.localAISignature,
+          },
+          'connection_candidate': {
+            'remote_node_id': remoteNodeId,
+            'remote_ai_signature': metrics.remoteAISignature,
+            'compatibility_precheck': compatibility.basicCompatibility,
+            'learning_opportunity_count':
+                compatibility.learningOpportunities.length,
+          },
+        },
+        actionType: 'connect_ai2ai',
+        actionPayload: {
+          'connection_mode': mode,
+          'connection_id': metrics.connectionId,
+          'compatibility': compatibility.basicCompatibility,
+          'ai_pleasure_potential': compatibility.aiPleasurePotential,
+          'recommended_duration_seconds':
+              compatibility.recommendedConnectionDuration.inSeconds,
+        },
+        nextState: {
+          'connection_state': {
+            'connected': true,
+            'connection_id': metrics.connectionId,
+            'status': metrics.status.name,
+            'current_compatibility': metrics.currentCompatibility,
+            'connection_quality': connectionQuality,
+            'learning_value': learningValue,
+            'recorded_at': nowIso,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'ai2ai_connection_outcome',
+          parameters: {
+            'connection_quality': connectionQuality,
+            'learning_value': learningValue,
+            'connection_mode': mode,
+            'connection_duration_seconds': metrics.connectionDuration.inSeconds,
+            'interaction_count': metrics.interactionHistory.length,
+            'learning_outcomes': metrics.learningOutcomes,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.11',
+          'pipeline': 'connection_manager',
+        },
+      );
+
+      await store.writeTuple(tuple);
+    } catch (_) {
+      // Non-fatal: AI2AI connection flow must continue even if episodic write fails.
+    }
   }
 }
 
