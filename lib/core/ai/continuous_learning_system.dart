@@ -19,6 +19,7 @@ import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
 import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
+import 'package:avrai/core/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 
@@ -467,6 +468,14 @@ class ContinuousLearningSystem {
         parameters: parameters,
         context: context,
         adjustedDimensionUpdates: adjustedUpdates,
+        observedAt: now,
+      );
+      await _recordPhysiologyOutcomeTupleIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
         observedAt: now,
       );
 
@@ -920,6 +929,97 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordPhysiologyOutcomeTupleIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    final contextSignal = parameters['context_signal']?.toString() ??
+        context['context_signal']?.toString();
+    final providedFeatures = parameters['physiology_features'];
+    final hasPhysiologyPayload =
+        contextSignal != null || providedFeatures is Map;
+    if (!hasPhysiologyPayload) return;
+
+    try {
+      final agentId = await _agentIdService.getUserAgentId(userId);
+      final consentGranted =
+          await _resolvePhysiologyConsent(parameters: parameters);
+
+      final physiologyFeatures = consentGranted
+          ? Map<String, dynamic>.from(
+              providedFeatures as Map? ?? const <String, dynamic>{})
+          : <String, dynamic>{
+              'resting_heart_rate_trend': 0.0,
+              'sleep_quality_rolling_avg': 0.0,
+              'activity_level_steps_per_day': 0.0,
+            };
+
+      final downstreamOutcome =
+          parameters['downstream_outcome']?.toString() ?? 'no_action';
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.27',
+          'source': source,
+          'event_type': eventType,
+        },
+        actionType: 'context_signal',
+        actionPayload: {
+          'signal_type': 'physiology',
+          'context_signal': contextSignal ?? eventType,
+          'physiology_features': physiologyFeatures,
+        },
+        nextState: {
+          'downstream_outcome': downstreamOutcome,
+          'consent_granted': consentGranted,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: downstreamOutcome,
+          parameters: {
+            'context_signal': contextSignal ?? eventType,
+            'consent_granted': consentGranted,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: const {
+          'phase_ref': '1.2.27',
+          'pipeline': 'continuous_learning_system',
+          'channel': 'wearable_physiology',
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record physiology outcome tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Future<bool> _resolvePhysiologyConsent({
+    required Map<String, dynamic> parameters,
+  }) async {
+    final explicitConsent = parameters['wearable_consent_granted'];
+    if (explicitConsent is bool) {
+      return explicitConsent;
+    }
+
+    if (GetIt.instance.isRegistered<CrossAppConsentService>()) {
+      final service = GetIt.instance<CrossAppConsentService>();
+      return service.isEnabled(CrossAppDataSource.health);
+    }
+
+    return false;
   }
 
   Future<void> _recordChatToOutcomeCorrelationIfApplicable({
