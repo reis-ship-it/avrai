@@ -94,11 +94,23 @@ AVRAI should:
 - explain core rationale,
 - support user correction,
 - and preserve variety of paths.
+- preserve reflective agency when AI confidence is high but uncertainty remains.
 
 AVRAI should not:
 - force narrow recommendation funnels,
 - penalize minority patterns as "wrong",
-- or hide tradeoffs behind opaque optimization.
+- hide tradeoffs behind opaque optimization,
+- or train users into uncritical acceptance of AI output.
+
+## 8.1 Tri-System Agency Boundary
+
+AVRAI treats external AI assistance as a third cognition lane (outside user intuition and deliberation).
+
+Operational constraints:
+- External assistance may supplement judgment, never silently replace it for high-impact actions.
+- High-impact recommendations must expose uncertainty and provide an easy counter-view.
+- Confidence is not authority: confidence must stay calibrated to realized outcomes over delayed windows.
+- When confidence/accuracy diverges, autonomy is automatically throttled and reflective checkpoints increase.
 
 ## 9. Access and Hierarchy
 
