@@ -327,7 +327,7 @@ Wire every user action to capture outcomes.
 |------|-------------|---------|
 | 1.2.1 | Create `UnifiedOutcomeCollector` service (generalizes `CallingScoreDataCollector` pattern to all entity types) | Extends existing -- COMPLETE (2026-02-23: added lane-agnostic `UnifiedOutcomeCollector` in `lib/core/ai/unified_outcome_collector.dart`, wired through DI with `EpisodicMemoryStore` + `AgentIdService` (+ optional `AtomicClockService`) for consistent tuple writes across entity types, and covered by `unified_outcome_collector_test`) |
 | 1.2.2 | Wire `ReservationCheckInService` confirmations as attendance outcomes | Existing service |
-| 1.2.3 | Wire `PostEventFeedbackService` responses as quality outcomes | Existing service |
+| 1.2.3 | Wire `PostEventFeedbackService` responses as quality outcomes | Existing service -- COMPLETE (2026-02-23: `PostEventFeedbackService.submitFeedback` now records a general quality outcome tuple via `_recordFeedbackOutcomeTuple` (`feedback_rating`, phase `1.2.3`) in addition to expert-event detailed feedback capture; covered in `post_event_feedback_service_test`) |
 | 1.2.4 | Wire `ContinuousLearningSystem.processUserInteraction` to write episodic tuples (not just dimension updates) | Existing service |
 | 1.2.5 | Add `community_join` as an interaction type in `ContinuousLearningSystem` (currently missing) | Gap fix |
 | 1.2.6 | Wire `EventAttendanceController` to record `(state, attend_event, next_state, checkin_confirmed)` tuples | Existing controller |

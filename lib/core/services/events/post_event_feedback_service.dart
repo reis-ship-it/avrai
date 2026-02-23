@@ -249,12 +249,21 @@ class PostEventFeedbackService {
       await _saveFeedback(feedback);
 
       final event = await _eventService.getEventById(eventId);
-      await _recordExpertEventDetailedFeedbackTuple(
-        event: event,
-        feedback: feedback,
-        topicRelevanceRating: topicRelevanceRating,
-        expertiseLevelMatch: expertiseLevelMatch,
-      );
+      final hasExpertDetailedFeedback = topicRelevanceRating != null ||
+          (expertiseLevelMatch != null && expertiseLevelMatch.isNotEmpty);
+      if (hasExpertDetailedFeedback) {
+        await _recordExpertEventDetailedFeedbackTuple(
+          event: event,
+          feedback: feedback,
+          topicRelevanceRating: topicRelevanceRating,
+          expertiseLevelMatch: expertiseLevelMatch,
+        );
+      } else {
+        await _recordFeedbackOutcomeTuple(
+          event: event,
+          feedback: feedback,
+        );
+      }
 
       // Step 3: Update event aggregate ratings
       await _updateEventRatings(eventId);
@@ -349,6 +358,59 @@ class PostEventFeedbackService {
     } catch (e) {
       _logger.error(
         'Error recording expert event detailed feedback tuple',
+        error: e,
+        tag: _logName,
+      );
+    }
+  }
+
+  Future<void> _recordFeedbackOutcomeTuple({
+    required ExpertiseEvent? event,
+    required EventFeedback feedback,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+
+    try {
+      final tuple = EpisodicTuple(
+        agentId: feedback.userId,
+        stateBefore: {
+          'phase_ref': '1.2.3',
+          'event_id': feedback.eventId,
+          'event_type': event?.eventType.name ?? 'unknown',
+          'attendee_id': feedback.userId,
+        },
+        actionType: 'feedback_rating',
+        actionPayload: {
+          'event_feedback': {
+            'event_id': feedback.eventId,
+            'overall_rating': feedback.overallRating,
+            'category_ratings': feedback.categoryRatings,
+            'would_attend_again': feedback.wouldAttendAgain,
+            'would_recommend': feedback.wouldRecommend,
+          },
+        },
+        nextState: {
+          'feedback_submitted': true,
+          'submitted_at': feedback.submittedAt.toIso8601String(),
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'feedback_rating',
+          parameters: {
+            'overall_rating': feedback.overallRating,
+            'event_id': feedback.eventId,
+          },
+        ),
+        metadata: {
+          'phase_ref': '1.2.3',
+          'pipeline': 'post_event_feedback_service',
+        },
+      );
+
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error(
+        'Error recording event feedback outcome tuple',
         error: e,
         tag: _logName,
       );
