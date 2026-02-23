@@ -390,6 +390,10 @@ Outcome data comes from both implicit signals and explicit feedback. This sectio
 | 1.4.15 | **Source utility feedback loop.** Track whether recommendations influenced by a research source family (internal telemetry, external paper, third-party dataset) actually improve outcomes. De-rank source families that repeatedly fail downstream validation |
 | 1.4.16 | **Discoverability non-gate feedback channel.** Add explicit user controls for "show everything in this area/category" and log outcomes to ensure personalized ranking never becomes hard suppression outside safety/legal constraints |
 | 1.4.17 | **First-occurrence pain signal priority.** If a novel high-severity negative signal appears once (new failure signature), boost triage priority immediately and emit `first_occurrence_alert` telemetry for self-healing queue intake |
+| 1.4.18 | **Cognitive surrender detection feedback lane.** Add explicit post-decision feedback for AI-assisted high-impact choices: `accepted_as_is`, `accepted_after_verification`, `overrode_ai`, `accepted_but_regretted`. Log as calibration tuples for confidence-vs-accuracy monitoring |
+| 1.4.19 | **Pre-action reflective challenge prompt.** For high-impact recommendations, offer one-tap `show_alternative` and `show_uncertainty` controls before acceptance; record usage as anti-overreliance signal, not friction penalty |
+| 1.4.20 | **Confidence-after-error telemetry.** When an AI-assisted action fails, capture immediate confidence state and follow-up confidence 24h later to measure overconfidence persistence and route to calibration correction |
+| 1.4.21 | **Trust-profile adaptive feedback pacing.** Increase verification prompts for users with sustained high `uncritical_accept_rate`; reduce prompts when confidence/accuracy calibration remains healthy over delayed windows |
 
 ### 1.5 Cold-Start Strategy & Chat-Free Learning
 
@@ -777,6 +781,9 @@ The energy function replaces ALL hardcoded scoring formulas. It takes state embe
 | 4.1.9 | **Conviction-aware energy regularizer.** Penalize overconfident low-energy recommendations when evidence coverage is weak or contradictory (`ConvictionLedger` conflict high, coverage low). Confidence must be earned by evidence depth, not score sharpness |
 | 4.1.10 | **Cross-source robustness objective.** During training/evaluation, require gains to hold across internal-only, external-research-informed, and third-party-data-informed slices. Block promotion if lift depends on a single fragile source lane |
 | 4.1.11 | **Contradiction stress testing for critic outputs.** Add adversarial replay sets where prior high-confidence predictions failed; require critic recalibration on these sets before promotion to keep conviction aligned with observed reality |
+| 4.1.12 | **Symmetry/invariance critic stress suite.** Add perturbation tests (order/view/context reshuffles) and require critic score stability under invariant-preserving transformations before promotion |
+| 4.1.13 | **Warrant-gap instability metric.** Add a `WarrantGapScore` for critic confidence-to-outcome mismatch; block candidate promotion when gap exceeds configured bounds on any protected cohort |
+| 4.1.14 | **Collective-outcome critic term.** Add optional welfare regularizer for multi-entity recommendations so local gains that predict collective harm are penalized before planner consumption |
 
 ### 4.2 Formula Replacement Schedule
 
@@ -921,6 +928,7 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.1.13 | **Evidence-conditioned transition forecasting.** Add context inputs for evidence quality and source agreement (`agreement_score`, `conflict_score`, `coverage_score`) so state-transition predictions can discount low-quality external claims instead of overfitting to noisy priors | Extends 1.1E.9, 7.9.16 |
 | 5.1.14 | **Third-party data drift forecasting.** Predict when external dataset distributions diverge from internal behavioral distributions; trigger fallback to internal-only transition lane and quarantine drifted external features until revalidated | Extends 2.2, 9.2.6 |
 | 5.1.15 | **Delayed-credit transition chains.** Learn explicit long-horizon action chains with distal objectives (7/30/90-day outcome links), so transition learning captures why early actions later succeed/fail rather than optimizing immediate proxies only | Extends 1.4.14, 6.1 |
+| 5.1.16 | **Posterior-ensemble transition lane (high assurance only).** For high-impact lanes, produce posterior ensembles (not single-point predictions) and require external cross-probe consistency checks before high-confidence horizon expansion | Extends 7.9.8, 10.9 |
 
 ### 5.2 On-Device Training Loop
 
@@ -952,6 +960,11 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.2.24 | **OOD/leakage/spec-gaming checks for dream training.** Block dream promotions when out-of-distribution support is low, temporal leakage is detected, or objective-gaming probes fail | Extends 7.9.31, 10.9.11 |
 | 5.2.25 | **Dream compute + safety budget controller.** Enforce strict resource budgets, max cycles, and auto-freeze triggers for runaway dream loops; preserve runtime QoS for live user paths | Extends 7.9.28, 10.9.18 |
 | 5.2.26 | **No recursive self-confirmation rule.** Dream-generated labels may train exploration policies only; policy-critical updates require later real-outcome confirmation to prevent self-proving loops | Extends 1.1E.21, 10.9.21 |
+| 5.2.27 | **Risk-bounded adaptive stopping.** Add dual-threshold early-stop policy (`confident_success`, `likely_stuck`) with finite-sample correction; enforce tier-aware compute budgets without unbounded reasoning loops | Extends 6.1, 7.7, 10.9 |
+| 5.2.28 | **Topology-adaptive execution policy.** Add `TopologyPolicySelector` (`parallel`, `sequential`, `hierarchical`, `hybrid`) keyed by task-coupling and locality policy; require deterministic fallback topology on synthesis conflict | Extends 6.1, 8.1, 10.9 |
+| 5.2.29 | **Teacher-student invariant distillation lane.** Distill multi-view teacher policies into single-pass student models for edge/runtime efficiency while preserving invariant behavior under perturbation suites | Extends 4.1.12, 7.7 |
+| 5.2.30 | **Feature proposal verification loop.** Formalize `Proposal -> Validate -> Keep/Reject` feature synthesis workflow with reproducibility hash and independent evaluator gating before training admission | Extends 7.9, 9.2.6 |
+| 5.2.31 | **Confidence-accuracy divergence gate.** Track and gate on calibration mismatch where confidence rises while realized outcomes drop; auto-throttle adaptation and increase verification prompts when divergence persists | Extends 1.4.20, 6.2.24, 7.7A.9 |
 
 ### 5.3 Latent Variable System (Multi-Future Prediction)
 
@@ -1029,6 +1042,10 @@ The world model optimizes for outcomes, but must respect constraints.
 | 6.2.21 | **Belief-tier action authority gate.** High-impact actions must read `proven_conviction` only; `dream` and `hypothesis` tiers may influence exploration branches but cannot drive hard action execution |
 | 6.2.22 | **Dream contradiction dampener.** When dream-derived recommendations conflict with proven convictions or deterministic journals, apply automatic penalty, route to shadow exploration, and emit contradiction telemetry |
 | 6.2.23 | **Dream-safe discoverability rule.** Dream policies may reorder but cannot suppress non-restricted discoverability; explicit user unfiltered intent always bypasses dream-tier ranking constraints within legal/safety bounds |
+| 6.2.24 | **Cognitive surrender guardrail.** For high-impact recommendations, require uncertainty display plus optional counter-view; block one-click high-confidence acceptance when contradiction risk is elevated |
+| 6.2.25 | **Collective welfare floor gate.** Add population-level welfare thresholds for multi-agent/ai2ai strategies; routes that optimize local gain while degrading collective outcomes are quarantined |
+| 6.2.26 | **Confidence-over-error dampener.** When the system detects repeated confidence-after-error patterns, force planner to conservative mode (`shorter horizon`, `broader alternatives`, `higher evidence threshold`) until recalibrated |
+| 6.2.27 | **Trust-profile anti-overreliance policy.** For high `uncritical_accept_rate` cohorts, increase reflective checkpoints and reduce autonomy authority for high-impact suggestions until calibration recovers |
 
 ### 6.3 Agent Architecture
 
@@ -1284,6 +1301,9 @@ Search can self-improve, but production behavior changes must be gated by measur
 | 7.7A.6 | Implement one-click rollback for search candidate artifacts (ranker weights, rewrite rules, fusion params, feature flags) with full state restore | Extends 7.7 rollback |
 | 7.7A.7 | Add anti-drift monitor: detect when live query distribution shifts from eval distribution; auto-route to shadow retraining cycle before promoting new candidates | New |
 | 7.7A.8 | Add policy boundary: autonomous system may tune parameters and ranking functions, but may NOT mutate hard safety/compliance rules without explicit human approval | Extends Phase 2 guardrails |
+| 7.7A.9 | Add confidence-vs-outcome calibration gate: block promotion when confidence rises but realized accuracy/outcome quality drops on any critical slice | Extends 1.4.20, 5.2.31 |
+| 7.7A.10 | Add collective-equilibrium stress requirement: promotion candidates must pass mixed-strategy population simulations (`cooperative`, `exploitative`, `hybrid`) at multiple group sizes | Extends 6.2.25, 8.1 |
+| 7.7A.11 | Add topology-fit evidence requirement: candidate manifests must include topology choice rationale + model-fixed ablation proof before production rollout | Extends 5.2.28, 7.7 |
 
 > **Autonomy boundary:** Self-improving search is allowed. Unsupervised self-modifying production logic is not.
 
@@ -1355,6 +1375,11 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.43 | **Negative dream archive governance.** Failed dream paths are retained with cause taxonomy (`simulator_exploit`, `ood_gap`, `policy_conflict`, `cohort_harm`, `leakage`) and enforced as anti-repeat suppression priors |
 | 7.9.44 | **Dream/reality divergence monitor.** Continuously track drift between DreamEnv predictions and observed outcomes; sustained divergence auto-throttles dream influence and triggers recalibration experiments |
 | 7.9.45 | **Belief-tier audit dashboard.** Publish tier transition metrics (promotion/demotion counts, contradiction density, delayed-validation pass rates, override-attempt rejects) for governance review |
+| 7.9.46 | **Research batch 2026-02-23 integration harness.** Register the full paper set (`2602.03814`, `2602.02363`, `2602.16873`, `2602.17641`, `2602.16662`, `2602.16173`, `mezzanine`, `ssrn_6097646`) with explicit experiment contracts and phase placement receipts |
+| 7.9.47 | **Cognitive surrender experiment lane.** Run controlled accurate-vs-faulty assistant trials with time-pressure and incentive variants to measure AVRAI-specific surrender risk and mitigation effectiveness before broad autonomy expansion |
+| 7.9.48 | **Invariant distillation acceptance battery.** Require perturbation, disagreement, and shift robustness tests for teacher-student distillation lanes before edge deployment in production |
+| 7.9.49 | **Topology policy federation trial.** Evaluate local-only vs federated topology policy exchange with contradiction quarantine and latency budgets per model family (`reality`, `universe`, `world`) |
+| 7.9.50 | **Intervention efficacy meta-analysis.** Quarterly analyze which anti-overreliance interventions materially reduce calibration gap without harming user autonomy or discoverability access |
 
 > **Required companion specs:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`, `docs/plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`
 >

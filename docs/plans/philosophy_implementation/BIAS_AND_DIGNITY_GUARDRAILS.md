@@ -112,6 +112,17 @@ Users and operators must have recourse:
 
 Dignity is not only prevention; dignity also requires correction paths.
 
+## 12. Cognitive Surrender Safeguard
+
+As AI assistance becomes embedded in reasoning, AVRAI must prevent "cognitive surrender" (accepting AI output with minimal scrutiny).
+
+Required controls:
+- For high-impact outputs, show uncertainty and an accessible alternative/counter-view.
+- Track confidence-vs-outcome calibration by cohort and block promotion on sustained divergence.
+- Detect high uncritical-acceptance patterns and increase reflective checkpoints until calibration recovers.
+- Treat overconfidence-after-error as a safety signal, not a user-fault signal.
+- Preserve user override authority and discoverability rights even during conservative safety modes.
+
 ## 11. Relation to Philosophy
 
 These guardrails operationalize AVRAI philosophy:
