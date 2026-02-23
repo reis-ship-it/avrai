@@ -1,6 +1,6 @@
 # Bias, Dignity, and Anti-Discrimination Guardrails
 
-**Last Updated:** February 20, 2026  
+**Last Updated:** February 23, 2026  
 **Status:** ACTIVE - Required for all model and product changes
 
 ## 1. Core Doctrine
@@ -96,11 +96,16 @@ Preferred language:
 - "uncertainty"
 - "trajectory"
 - "behavior under conditions"
+- "confidence range"
+- "assumption-dependent"
 
 Avoid:
 - "better humans"
 - "higher quality people"
 - "innate social rank"
+- "guaranteed outcome"
+- "certain win"
+- "can't fail"
 
 ## 10. Recourse and Repair
 
@@ -109,6 +114,8 @@ Users and operators must have recourse:
 - challenge incorrect inferences,
 - repair future routing,
 - and audit resolution outcomes.
+- For high-impact outputs, offer explicit `challenge_assumption` and `run_conservative_variant` controls.
+- Skepticism ("too good to be true") must route to verification/pilot paths, not engagement penalties.
 
 Dignity is not only prevention; dignity also requires correction paths.
 
@@ -122,6 +129,7 @@ Required controls:
 - Detect high uncritical-acceptance patterns and increase reflective checkpoints until calibration recovers.
 - Treat overconfidence-after-error as a safety signal, not a user-fault signal.
 - Preserve user override authority and discoverability rights even during conservative safety modes.
+- Treat repeated "too good to be true" feedback as a calibration/safety signal requiring translation review and pilot rerouting.
 
 ## 11. Relation to Philosophy
 

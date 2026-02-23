@@ -394,6 +394,8 @@ Outcome data comes from both implicit signals and explicit feedback. This sectio
 | 1.4.19 | **Pre-action reflective challenge prompt.** For high-impact recommendations, offer one-tap `show_alternative` and `show_uncertainty` controls before acceptance; record usage as anti-overreliance signal, not friction penalty |
 | 1.4.20 | **Confidence-after-error telemetry.** When an AI-assisted action fails, capture immediate confidence state and follow-up confidence 24h later to measure overconfidence persistence and route to calibration correction |
 | 1.4.21 | **Trust-profile adaptive feedback pacing.** Increase verification prompts for users with sustained high `uncritical_accept_rate`; reduce prompts when confidence/accuracy calibration remains healthy over delayed windows |
+| 1.4.22 | **Too-good-to-be-true (TGTBT) feedback signal.** Add explicit skepticism feedback class `too_good_to_be_true` distinct from `unhelpful`. Log tuple `(state, recommendation_or_explanation, model_confidence, uncertainty, tgtbt_signal, adoption_decision, delayed_outcomes_7_30_90d)` and route updates through `ConvictionLedger` for calibration, not user penalty |
+| 1.4.23 | **Belief-outcome latency tracking for bold claims.** For high-upside/high-impact recommendations, track lag distributions from recommendation -> adoption -> observable outcome (`p50/p90`) and decay conviction when latency exceeds class-specific bounds without corroboration |
 
 ### 1.5 Cold-Start Strategy & Chat-Free Learning
 
@@ -533,6 +535,10 @@ Learns meaningful locations from user behavior that don't exist in any external 
 | 2.1.8A | **"Why this recommendation?" tap-through.** On any recommendation card, a small (i) icon expands to show a 1-sentence explanation: "Suggested because you enjoy [category] and this spot matches your [dimension] vibe." Uses Phase 4.6.1 feature attribution to generate explanations. Template-based (not LLM-generated) for privacy and speed. Never reveals other users' data. Examples: "Based on your visits to similar spots," "Popular with people who share your interests," "New in your area" | Extends Phase 4.6.1 |
 | 2.1.8B | **Data correction mechanism.** If a user sees an incorrect inference in "What My AI Knows" (e.g., "The AI thinks I like nightclubs but I don't"), provide a "That's not right" button that: (a) records an explicit negative signal for that category (10x weight, Phase 1.4.9), (b) temporarily increases exploration in that category to recalibrate (Phase 6.2.9), (c) shows "Got it, I'll adjust" confirmation. This closes the feedback loop between transparency and learning | New |
 | 2.1.8C | **Admin data transparency dashboard.** Extend `AdminSystemMonitoringService` with aggregate transparency metrics: how many users view "What My AI Knows" page, how often "That's not right" is triggered (signals model confusion at scale), which categories have highest uncertainty across user base. All aggregate, never individual-user | Extends `AdminSystemMonitoringService` |
+| 2.1.8D | **Plausibility translation contract (high-impact).** For high-impact recommendations/explanations, require user-readable fields: `claim`, `why_now`, `assumptions`, `what_would_disprove_this`, and `safe_test_step`. High-impact surfaces fail closed if any field is missing |
+| 2.1.8E | **External verifiability pack for entities.** Provide machine-readable audit packet for business/operator lanes with assumptions, confidence intervals, provenance IDs, delayed-validation status, and contradiction history so entities can validate without blind trust |
+| 2.1.8F | **Anti-hype language policy for high-upside claims.** Block absolute certainty phrasing in high-impact templates; require bounded language with uncertainty ranges and explicit assumptions. Enforce via template lint checks before release |
+| 2.1.8G | **Skepticism-preserving recourse UX.** Add one-tap `challenge_assumption` and `run_conservative_variant` actions on high-impact recommendations; route each challenge to auditable resolution outcomes and future routing repair |
 | 2.1.9 | Consent-revocation world model handling: when user revokes outcome tracking, purge their episodic memory; DP guarantee means existing model weights are safe | New |
 
 ### 2.2 Differential Privacy for World Model
@@ -929,6 +935,7 @@ Predicts `next_state = current_state + delta(current_state, action)`. Replaces a
 | 5.1.14 | **Third-party data drift forecasting.** Predict when external dataset distributions diverge from internal behavioral distributions; trigger fallback to internal-only transition lane and quarantine drifted external features until revalidated | Extends 2.2, 9.2.6 |
 | 5.1.15 | **Delayed-credit transition chains.** Learn explicit long-horizon action chains with distal objectives (7/30/90-day outcome links), so transition learning captures why early actions later succeed/fail rather than optimizing immediate proxies only | Extends 1.4.14, 6.1 |
 | 5.1.16 | **Posterior-ensemble transition lane (high assurance only).** For high-impact lanes, produce posterior ensembles (not single-point predictions) and require external cross-probe consistency checks before high-confidence horizon expansion | Extends 7.9.8, 10.9 |
+| 5.1.17 | **Two-channel confidence contract (`model` vs `adoption`).** Track separate confidence channels: `model_confidence` (prediction validity) and `adoption_confidence` (probability user/entity will trust and execute). Route high-gap cases to conservative/pilot plans rather than hard-action execution |
 
 ### 5.2 On-Device Training Loop
 
@@ -1012,6 +1019,8 @@ Uses the transition predictor to simulate action sequences and pick the best one
 | 6.1.19 | **Volunteer pathway planning.** Include volunteer actions in MPC candidate space for community/event/business lanes and optimize for sustained positive community impact, not only short-term engagement |
 | 6.1.20 | **Nearby invite/install planner action.** Add planner action family for compliant nearby growth routes (`show_invite_qr`, `share_install_link`, `mesh_invite_ping`) with platform/legal constraints and consent checks |
 | 6.1.21 | **Unrestricted discovery action lane.** Add planner option `show_unfiltered_results` so users can access full discoverability views by explicit intent; personalization ranks but does not gate non-restricted entities |
+| 6.1.22 | **Claim-class planning contract.** Classify high-impact recommendations as `incremental`, `step_change`, or `breakthrough` and bind planning horizon/authority to claim class evidence floors before action execution |
+| 6.1.23 | **Counterfactual baseline requirement.** High-impact recommendation views must include expected outcome ranges for: recommended path, conservative alternative, and do-nothing baseline so users/entities can compare upside versus plausible alternatives |
 
 ### 6.2 Guardrail Objectives
 
@@ -1046,6 +1055,9 @@ The world model optimizes for outcomes, but must respect constraints.
 | 6.2.25 | **Collective welfare floor gate.** Add population-level welfare thresholds for multi-agent/ai2ai strategies; routes that optimize local gain while degrading collective outcomes are quarantined |
 | 6.2.26 | **Confidence-over-error dampener.** When the system detects repeated confidence-after-error patterns, force planner to conservative mode (`shorter horizon`, `broader alternatives`, `higher evidence threshold`) until recalibrated |
 | 6.2.27 | **Trust-profile anti-overreliance policy.** For high `uncritical_accept_rate` cohorts, increase reflective checkpoints and reduce autonomy authority for high-impact suggestions until calibration recovers |
+| 6.2.28 | **Trust-preserving pilot mode.** When `model_confidence` is high but `adoption_confidence` is low, route high-impact recommendations to reversible low-commitment pilot actions with checkpoint + fallback path instead of one-click full commitment |
+| 6.2.29 | **Pre-mortem requirement for high-upside actions.** Before acceptance of high-upside/high-impact paths, render top failure modes, early warning signals, and mitigation checks. Missing pre-mortem artifact blocks high-impact accept flow |
+| 6.2.30 | **Trust recovery cooldown policy.** If a high-upside claim fails downstream validation, automatically reduce autonomy, raise evidence thresholds, force conservative language, and apply domain cooldown until calibration recovers |
 
 ### 6.3 Agent Architecture
 
@@ -1304,6 +1316,7 @@ Search can self-improve, but production behavior changes must be gated by measur
 | 7.7A.9 | Add confidence-vs-outcome calibration gate: block promotion when confidence rises but realized accuracy/outcome quality drops on any critical slice | Extends 1.4.20, 5.2.31 |
 | 7.7A.10 | Add collective-equilibrium stress requirement: promotion candidates must pass mixed-strategy population simulations (`cooperative`, `exploitative`, `hybrid`) at multiple group sizes | Extends 6.2.25, 8.1 |
 | 7.7A.11 | Add topology-fit evidence requirement: candidate manifests must include topology choice rationale + model-fixed ablation proof before production rollout | Extends 5.2.28, 7.7 |
+| 7.7A.12 | Add extraordinary-claim evidence multiplier: for `step_change` and `breakthrough` candidates, increase minimum sample size, replication count, and cross-source agreement thresholds before promotion | Extends 6.1.22, 7.9.16, 10.9.3 |
 
 > **Autonomy boundary:** Self-improving search is allowed. Unsupervised self-modifying production logic is not.
 
@@ -1380,6 +1393,8 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 7.9.48 | **Invariant distillation acceptance battery.** Require perturbation, disagreement, and shift robustness tests for teacher-student distillation lanes before edge deployment in production |
 | 7.9.49 | **Topology policy federation trial.** Evaluate local-only vs federated topology policy exchange with contradiction quarantine and latency budgets per model family (`reality`, `universe`, `world`) |
 | 7.9.50 | **Intervention efficacy meta-analysis.** Quarterly analyze which anti-overreliance interventions materially reduce calibration gap without harming user autonomy or discoverability access |
+| 7.9.51 | **Human skepticism research lane.** Run quarterly mixed-method studies on TGTBT skepticism by cohort/domain to measure comprehension gaps, trust-recovery effectiveness, and belief-to-action lag for high-impact recommendations |
+| 7.9.52 | **Skeptic persona red-team gate.** Add mandatory adversarial evaluator personas (`risk_off_user`, `CFO`, `legal_review`, `operator_safety`) and block high-impact promotion when warrant-gap thresholds fail for any required persona |
 
 > **Required companion specs:** `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`, `docs/plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`
 >
@@ -1878,6 +1893,7 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.19 | **Downstream scaling reliability gate.** Promotion requires cross-setting scaling robustness evidence (validation/task/setup sensitivity sweeps), explicit regime classification, and documented mitigation for inversion/nonmonotonic responses | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 7.9.41, 8.1.16 |
 | 10.9.20 | **System hijack red-team gate.** Maintain and execute canonical red-team matrix across auth/session, backend authorization, secrets/CI, federated/advisory channels, encryption lifecycle, BLE discovery metadata, third-party exports, autonomy governance, logging, supply chain, and operator controls. Critical lanes block autonomous scope expansion when red | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 |
 | 10.9.21 | **Dream-conviction hierarchy safety gate.** Enforce immutable belief-tier precedence, no dream override of proven convictions, dual-key evidence requirement for tier elevation, simulator-exploit containment, and fail-closed dream promotion control | 1.1E.20, 1.1E.21, 5.2.23, 5.2.26, 7.7.16, 8.1.19 |
+| 10.9.22 | **TGTBT skepticism mismatch reliability gate.** Detect and heal repeated high-upside recommendation skepticism (`too_good_to_be_true`) with low adoption or delayed regret signatures. Require translation recalibration, pilot-mode rerouting, and confidence dampening before autonomy restoration | 1.4.22, 5.1.17, 6.2.28, 6.2.30, 7.7A.12 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -1906,8 +1922,9 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.19 | Applied ML + Reliability Science + Federated Learning | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 8.1.16 | 1-2 weeks | Cross-setting scaling sweeps are mandatory before promotion; regime classification attached to manifests; inversion/nonmonotonic cohorts are quarantined or mitigated before rollout |
 | 10.9.20 | Security Engineering + Reliability Engineering + Governance | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 | 1-2 weeks | `docs/security/RED_TEAM_TEST_MATRIX.md` is current; critical lanes execute on cadence in staging; failed lanes auto-open remediation milestones; autonomous scope expansion is blocked while critical lanes are red |
 | 10.9.21 | Applied ML + Governance + Reliability Engineering | 1.1E.20, 1.1E.21, 5.2.23, 7.7.16, 8.1.19 | 1-2 weeks | CI/runtime reject any tier-precedence violations; dream-only updates cannot promote; dual-key evidence receipts required for tier elevation; dream/reality mismatch alarms auto-trigger quarantine and rollback paths |
+| 10.9.22 | Trust & Safety UX + Applied ML + Reliability Engineering | 1.4.22, 5.1.17, 6.2.28, 6.2.30, 7.7A.12 | 1-2 weeks | Skepticism mismatch detector live with dual-signal evidence thresholds; pilot-mode reroute and translation recalibration auto-triggered; recurrence drops on 30-day window without autonomy/agency regressions |
 
-> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.21 in parallel where dependencies allow.
+> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.22 in parallel where dependencies allow.
 
 #### 10.9B Milestone Rollout Plan (Expanded Across Existing Phases)
 
@@ -1920,7 +1937,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | M3: Federated + Advisory Safety | Harden cross-device and cross-locality propagation paths | 10.9.5, 10.9.6, 8.1, 8.9 | Week 3-5 | Cohort-wise no-regression checks passing; advisory quarantine enabled; credibility scoring + anomaly disable path operational; canary/shadow promotion policy enforced |
 | M4: Tier + Compatibility + Security Closure | Close resilience gaps across device tiers, schemas, and adversarial vectors | 10.9.7, 10.9.8, 10.9.10, 10.9.20, 2.5, 7.5, 7.7.1 | Week 5-7 | Compatibility matrix blocks bad deploys; tier parity checks active; poisoning/outlier detection + signed update attestation enabled; red-team critical lanes passing; scoped kill switches validated |
 | M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, 10.9.13, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; kernel integrity enforcement active; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
-| M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls, dream-conviction hierarchy safety, and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 10.9.19, 10.9.21, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; dream-tier precedence checks remain green; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts, alert storm SLO remains green, and scaling reliability gates pass |
+| M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls, dream-conviction hierarchy safety, TGTBT skepticism mismatch reliability, and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 10.9.19, 10.9.21, 10.9.22, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; dream-tier precedence checks remain green; skepticism mismatch controls reduce repeat non-adoption loops; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts, alert storm SLO remains green, and scaling reliability gates pass |
 | M7: Oversight + Kernel Lifecycle Closure | Make kernel lifecycle and high-impact autonomy oversight operational and auditable | 10.9.16, 10.9.18, 1.1E.17, 1.1E.18, 7.9.39 | Week 10-11 | Kernel upgrade/downgrade/freeze drills pass; rollback TTL enforced; high-impact autonomous loop caps and mandatory human review SLA validated |
 
 #### 10.9C Cross-Phase Expansion Map (What to Update in Each Existing Phase)
@@ -2012,8 +2029,9 @@ Role abbreviations:
 | 10.9.19 | MLE, REL, FED | GOV | AP, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
 | 10.9.20 | SEC, REL, GOV | GOV | AP, FED, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
 | 10.9.21 | MLE, GOV, REL | GOV | AP, FED, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
+| 10.9.22 | Trust UX, MLE, REL | GOV | AP, OBS, QA | ARCH | 4 | 5 | 20 | Critical |
 
-> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`, `10.9.12`, `10.9.13`, `10.9.14`, `10.9.15`, `10.9.16`, `10.9.18`, `10.9.19`, `10.9.20`, `10.9.21`) must have active owners and weekly status review before any autonomous scope expansion.
+> **Execution policy:** Tasks with `Critical` priority (`10.9.1`, `10.9.3`, `10.9.4`, `10.9.10`, `10.9.12`, `10.9.13`, `10.9.14`, `10.9.15`, `10.9.16`, `10.9.18`, `10.9.19`, `10.9.20`, `10.9.21`, `10.9.22`) must have active owners and weekly status review before any autonomous scope expansion.
 
 #### 10.9F Reusable Governance Template (Apply to All Phases)
 
@@ -2155,6 +2173,10 @@ The matrix below is the canonical plan record for failure/contradiction classes 
 | 30 | Novel severe failure ignored or delayed | First-occurrence SLA and deterministic triage | Immediate `fix/experiment/escalate` route with deterministic issue ledger | 1.1E.14, 6.2.17, 10.9.15 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
 | 31 | Self-healing mutates immutable kernel boundaries | Kernel integrity and lifecycle governance gate | Signed manifests, compatibility proofs, rollback TTL, emergency freeze drill | 10.9.13, 10.9.16, 1.1E.17, 1.1E.18 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §4 |
 | 32 | Rollback path itself creates inconsistent state | Atomic rollback bundle + drill requirement | Roll back `model + flags + orchestrator policy + schema target` as one unit; validate quarterly | 10.9.4, 7.7.9, 7.7.5 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §10 |
+| 33 | High-upside recommendation repeatedly flagged as "too good to be true" and not adopted | Skepticism mismatch calibration gate | Dual-signal confirmation (`tgtbt_signal` + non-adoption/regret), translation recalibration, confidence dampening, and pilot-mode reroute before re-promotion | 1.4.22, 5.1.17, 6.2.28, 10.9.22 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8.1; `BIAS_AND_DIGNITY_GUARDRAILS.md` §12 |
+| 34 | Model confidence high but adoption confidence persistently low | Two-channel divergence guardrail | Enforce `model_confidence`/`adoption_confidence` split, throttle autonomy for high-impact lanes, require conservative alternatives and staged verification | 5.1.17, 6.1.23, 6.2.28, 6.2.30 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §8.1 |
+| 35 | Bold claim language implies certainty beyond evidence bounds | Anti-hype output safety gate | Block high-impact release when bounded-language checks fail; require assumption and uncertainty rendering before acceptance | 2.1.8D, 2.1.8F, 6.2.29, 7.7A.12 | `BIAS_AND_DIGNITY_GUARDRAILS.md` §9 |
+| 36 | Repeated failed bold claims degrade trust in a domain | Trust-recovery cooldown policy | Temporary stricter evidence thresholds, reduced autonomy authority, mandatory conservative variant route, and delayed conviction recovery criteria | 1.4.23, 6.2.30, 7.7A.12, 10.9.22 | `AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` §10; `BIAS_AND_DIGNITY_GUARDRAILS.md` §10 |
 
 #### 10.9J.1 Acceptance Criteria (Self-Healing Integrity)
 
@@ -2166,6 +2188,7 @@ The matrix below is the canonical plan record for failure/contradiction classes 
 6. Federated/advisory channels must pass attestation, anomaly/outlier checks, and scoped kill-switch readiness before promotion.
 7. Rollback drills must prove atomic bundle restoration (soft + hard) on a recurring cadence.
 8. Runtime instability during healing (including OOM/crash) must demonstrate tier fallback containment instead of service collapse.
+9. High-upside skepticism mismatch controls must show reduced repeat non-adoption loops without suppressing user recourse or conservative-path access.
 
 ---
 
