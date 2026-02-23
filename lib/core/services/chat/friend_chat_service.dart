@@ -1,6 +1,9 @@
 import 'dart:developer' as developer;
 
 import 'package:avrai_ai/models/friend_chat_message.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/chat/dm_message_store.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,13 +12,13 @@ import 'package:avrai_network/avra_network.dart';
 import 'package:uuid/uuid.dart';
 
 /// FriendChatService
-/// 
+///
 /// Service for 1-on-1 encrypted friend chats.
 /// All messages are encrypted with AES-256-GCM before storage.
-/// 
+///
 /// Philosophy: "Doors, not badges" - Authentic connections through secure communication.
 /// Privacy: All messages encrypted on-device, never transmitted unencrypted.
-/// 
+///
 /// Phase 2.2: Friend Chat Service
 class FriendChatService {
   static const String _logName = 'FriendChatService';
@@ -23,31 +26,46 @@ class FriendChatService {
   static const String _chatIdPrefix = 'friend_chat_';
   static const String _dmMailboxChannelPrefix = 'dm_mailbox:';
   static const String _outboxStoreName = 'friend_chat_outbox';
-  
+
   final MessageEncryptionService _encryptionService;
   final AgentIdService? _agentIdService;
   final RealtimeBackend? _realtimeBackend;
   final AtomicClockService? _atomicClock;
   final DmMessageStore? _dmStore;
-  
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
+  final GetStorage? _outboxStorage;
+
   FriendChatService({
     MessageEncryptionService? encryptionService,
     AgentIdService? agentIdService,
     RealtimeBackend? realtimeBackend,
     AtomicClockService? atomicClock,
     DmMessageStore? dmStore,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
+    GetStorage? outboxStorage,
   })  : _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _agentIdService = agentIdService,
         _realtimeBackend = realtimeBackend,
         _atomicClock = atomicClock,
-        _dmStore = dmStore;
-  
+        _dmStore = dmStore,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage,
+        _outboxStorage = outboxStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
+  GetStorage get _outboxBox => _outboxStorage ?? GetStorage(_outboxStoreName);
+
   /// Send an encrypted message to a friend
-  /// 
+  ///
   /// [userId] - Sender's user ID
   /// [friendId] - Recipient's user ID
   /// [message] - Plaintext message to send
-  /// 
+  ///
   /// Returns the created FriendChatMessage
   Future<FriendChatMessage> sendMessage(
     String userId,
@@ -55,14 +73,15 @@ class FriendChatService {
     String message,
   ) async {
     try {
-      developer.log('Sending message from $userId to $friendId', name: _logName);
-      
+      developer.log('Sending message from $userId to $friendId',
+          name: _logName);
+
       // Generate consistent chat ID (sorted IDs for bidirectional chats)
       final chatId = _generateChatId(userId, friendId);
-      
+
       // Encrypt message
       final encrypted = await _encryptionService.encrypt(message, chatId);
-      
+
       // Create message
       final chatMessage = FriendChatMessage(
         messageId: const Uuid().v4(),
@@ -73,11 +92,17 @@ class FriendChatService {
         timestamp: DateTime.now(),
         isRead: false,
       );
-      
+
       // Store message
       await _saveMessage(chatMessage);
-      
-      developer.log('✅ Message sent and saved: ${chatMessage.messageId}', name: _logName);
+      await _recordMessageFriendTuple(
+        userId: userId,
+        friendId: friendId,
+        timestamp: chatMessage.timestamp,
+      );
+
+      developer.log('✅ Message sent and saved: ${chatMessage.messageId}',
+          name: _logName);
       return chatMessage;
     } catch (e, stackTrace) {
       developer.log(
@@ -88,6 +113,57 @@ class FriendChatService {
       );
       rethrow;
     }
+  }
+
+  Future<void> _recordMessageFriendTuple({
+    required String userId,
+    required String friendId,
+    required DateTime timestamp,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService != null
+          ? await agentIdService.getUserAgentId(userId)
+          : userId;
+      final nowIso = timestamp.toUtc().toIso8601String();
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.13',
+          'chat_context': {
+            'chat_type': 'friend',
+            'participant_id': friendId,
+          },
+        },
+        actionType: 'message_friend',
+        actionPayload: {
+          'participant_id': friendId,
+          'timestamp': nowIso,
+        },
+        nextState: {
+          'chat_state': {
+            'last_action': 'message_friend',
+            'participant_id': friendId,
+            'timestamp': nowIso,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'message_friend',
+          parameters: {
+            'participant_id': friendId,
+            'timestamp': nowIso,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.13',
+          'pipeline': 'friend_chat_service',
+          'privacy': 'metadata_only_no_message_content',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (_) {}
   }
 
   /// Send a direct message and broadcast it over realtime using Signal Protocol.
@@ -204,12 +280,12 @@ class FriendChatService {
       }
     }
   }
-  
+
   /// Get conversation history between two users
-  /// 
+  ///
   /// [userId] - Current user's ID
   /// [friendId] - Friend's user ID
-  /// 
+  ///
   /// Returns list of messages, most recent first
   Future<List<FriendChatMessage>> getConversationHistory(
     String userId,
@@ -217,11 +293,13 @@ class FriendChatService {
   ) async {
     try {
       final chatId = _generateChatId(userId, friendId);
-      final box = GetStorage(_chatStoreName);
-      final List<dynamic> raw = box.read<List<dynamic>>('friend_chat_$chatId') ?? [];
+      final box = _chatBox;
+      final List<dynamic> raw =
+          box.read<List<dynamic>>('friend_chat_$chatId') ?? [];
 
       final messages = raw
-          .map((e) => FriendChatMessage.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) =>
+              FriendChatMessage.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
 
       // Sort most recent first
@@ -237,12 +315,12 @@ class FriendChatService {
       return [];
     }
   }
-  
+
   /// Get list of friend conversations for a user
-  /// 
+  ///
   /// [userId] - User's ID
   /// [friendIds] - List of friend IDs to get conversations for
-  /// 
+  ///
   /// Returns list of chat previews, sorted by most recent message
   Future<List<FriendChatPreview>> getFriendsChatList(
     String userId,
@@ -253,34 +331,35 @@ class FriendChatService {
   }) async {
     try {
       final previews = <FriendChatPreview>[];
-      
+
       for (final friendId in friendIds) {
         final history = await getConversationHistory(userId, friendId);
-        
+
         if (history.isEmpty) {
           // No conversation yet, skip
           continue;
         }
-        
+
         // Get last message
         final lastMessage = history.first;
-        
+
         // Decrypt last message for preview (first 50 chars)
         String? preview;
         try {
-          final decrypted = await getDecryptedMessage(lastMessage, userId, friendId);
-          preview = decrypted.length > 50 
-              ? '${decrypted.substring(0, 50)}...' 
+          final decrypted =
+              await getDecryptedMessage(lastMessage, userId, friendId);
+          preview = decrypted.length > 50
+              ? '${decrypted.substring(0, 50)}...'
               : decrypted;
         } catch (e) {
           preview = '[Encrypted message]';
         }
-        
+
         // Count unread messages
-        final unreadCount = history.where((msg) => 
-          !msg.isRead && msg.recipientId == userId
-        ).length;
-        
+        final unreadCount = history
+            .where((msg) => !msg.isRead && msg.recipientId == userId)
+            .length;
+
         previews.add(FriendChatPreview(
           friendId: friendId,
           friendName: friendNames?[friendId] ?? friendId,
@@ -291,7 +370,7 @@ class FriendChatService {
           isOnline: friendOnlineStatus?[friendId] ?? false,
         ));
       }
-      
+
       // Sort by most recent message
       previews.sort((a, b) {
         if (a.lastMessageTime == null && b.lastMessageTime == null) return 0;
@@ -299,7 +378,7 @@ class FriendChatService {
         if (b.lastMessageTime == null) return -1;
         return b.lastMessageTime!.compareTo(a.lastMessageTime!);
       });
-      
+
       return previews;
     } catch (e, stackTrace) {
       developer.log(
@@ -311,17 +390,17 @@ class FriendChatService {
       return [];
     }
   }
-  
+
   /// Mark messages as read
-  /// 
+  ///
   /// [userId] - User who read the messages
   /// [friendId] - Friend whose messages were read
-  /// 
+  ///
   /// Returns number of messages marked as read
   Future<int> markAsRead(String userId, String friendId) async {
     try {
       final chatId = _generateChatId(userId, friendId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_$chatId';
       final List<dynamic> raw = box.read<List<dynamic>>(key) ?? [];
 
@@ -340,7 +419,7 @@ class FriendChatService {
       if (markedCount > 0) {
         await box.write(key, updated);
       }
-      
+
       developer.log('✅ Marked $markedCount messages as read', name: _logName);
       return markedCount;
     } catch (e, stackTrace) {
@@ -353,13 +432,13 @@ class FriendChatService {
       return 0;
     }
   }
-  
+
   /// Get decrypted message content
-  /// 
+  ///
   /// [message] - Encrypted message
   /// [userId] - Current user's ID (for chat ID generation)
   /// [friendId] - Friend's ID (for chat ID generation)
-  /// 
+  ///
   /// Returns decrypted message text
   Future<String> getDecryptedMessage(
     FriendChatMessage message,
@@ -379,24 +458,24 @@ class FriendChatService {
       return '[Message decryption failed]';
     }
   }
-  
+
   /// Get total unread count across all friend chats
-  /// 
+  ///
   /// [userId] - User's ID
   /// [friendIds] - List of friend IDs
-  /// 
+  ///
   /// Returns total number of unread messages
   Future<int> getTotalUnreadCount(String userId, List<String> friendIds) async {
     try {
       int totalUnread = 0;
-      
+
       for (final friendId in friendIds) {
         final history = await getConversationHistory(userId, friendId);
-        totalUnread += history.where((msg) => 
-          !msg.isRead && msg.recipientId == userId
-        ).length;
+        totalUnread += history
+            .where((msg) => !msg.isRead && msg.recipientId == userId)
+            .length;
       }
-      
+
       return totalUnread;
     } catch (e, stackTrace) {
       developer.log(
@@ -408,22 +487,22 @@ class FriendChatService {
       return 0;
     }
   }
-  
+
   // ========================================================================
   // PRIVATE METHODS
   // ========================================================================
-  
+
   /// Generate consistent chat ID from two user IDs
   /// Sorts IDs to ensure same chat ID regardless of order
   String _generateChatId(String userId1, String userId2) {
     final sortedIds = [userId1, userId2]..sort();
     return '$_chatIdPrefix${sortedIds[0]}_${sortedIds[1]}';
   }
-  
+
   /// Save message to storage
   Future<void> _saveMessage(FriendChatMessage message) async {
     try {
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_${message.chatId}';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(message.toJson());
@@ -438,7 +517,6 @@ class FriendChatService {
       rethrow;
     }
   }
-  
 
   Future<void> _broadcastDirectMessage({
     required String userId,
@@ -510,8 +588,9 @@ class FriendChatService {
     required String userId,
     required String friendId,
   }) async {
-    final box = GetStorage(_outboxStoreName);
-    final List<dynamic> pending = box.read<List<dynamic>>('outbox_pending') ?? [];
+    final box = _outboxBox;
+    final List<dynamic> pending =
+        box.read<List<dynamic>>('outbox_pending') ?? [];
     pending.add(<String, dynamic>{
       'messageId': messageId,
       'userId': userId,
@@ -526,11 +605,12 @@ class FriendChatService {
     if (realtime == null) return;
 
     try {
-      final outboxBox = GetStorage(_outboxStoreName);
-      final List<dynamic> pending = outboxBox.read<List<dynamic>>('outbox_pending') ?? [];
+      final outboxBox = _outboxBox;
+      final List<dynamic> pending =
+          outboxBox.read<List<dynamic>>('outbox_pending') ?? [];
       if (pending.isEmpty) return;
 
-      final chatBox = GetStorage(_chatStoreName);
+      final chatBox = _chatBox;
       final remaining = <Map<String, dynamic>>[];
 
       for (final entry in pending) {
@@ -544,15 +624,18 @@ class FriendChatService {
         final chatId = _generateChatId(userId, friendId);
         final key = 'friend_chat_$chatId';
         final List<dynamic> messages = chatBox.read<List<dynamic>>(key) ?? [];
-        final storedMap = messages.cast<Map>().where(
-            (m) => m['messageId'] == messageId).firstOrNull;
+        final storedMap = messages
+            .cast<Map>()
+            .where((m) => m['messageId'] == messageId)
+            .firstOrNull;
 
         if (storedMap == null) {
           // Message no longer exists, skip
           continue;
         }
 
-        final msg = FriendChatMessage.fromJson(Map<String, dynamic>.from(storedMap));
+        final msg =
+            FriendChatMessage.fromJson(Map<String, dynamic>.from(storedMap));
         final plaintext = await getDecryptedMessage(msg, userId, friendId);
 
         try {
@@ -588,13 +671,13 @@ class FriendChatService {
   }) async {
     try {
       final chatId = _generateChatId(senderUserId, recipientUserId);
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'friend_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
 
       // De-dupe: if we already stored this message ID, do nothing.
-      final alreadyExists = existing.any((e) =>
-          (e as Map)['messageId'] == messageId);
+      final alreadyExists =
+          existing.any((e) => (e as Map)['messageId'] == messageId);
       if (alreadyExists) return null;
 
       final timestamp = sentAtIso != null
@@ -602,7 +685,8 @@ class FriendChatService {
           : DateTime.now();
 
       // Encrypt-at-rest (chatId-scoped; Hybrid will fall back to AES here).
-      final encryptedAtRest = await _encryptionService.encrypt(plaintext, chatId);
+      final encryptedAtRest =
+          await _encryptionService.encrypt(plaintext, chatId);
 
       final chatMessage = FriendChatMessage(
         messageId: messageId,
@@ -628,4 +712,3 @@ class FriendChatService {
     }
   }
 }
-

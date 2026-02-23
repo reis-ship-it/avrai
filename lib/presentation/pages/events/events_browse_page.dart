@@ -1,9 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
+import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_event_widget.dart';
 import 'package:avrai/presentation/widgets/events/community_event_widget.dart';
@@ -17,6 +25,7 @@ import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/models/user/user.dart' as user_model;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Event Discovery UI - Browse/Search Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -56,6 +65,13 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   final CrossLocalityConnectionService _connectionService =
       CrossLocalityConnectionService();
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  late EventLogger _eventLogger;
+  DateTime? _viewStartTime;
+  String? _currentUserId;
+  bool _isLoggerInitialized = false;
+  bool _hasFollowUpAction = false;
+  double _maxScrollDepth = 0.0;
 
   List<ExpertiseEvent> _events = [];
   List<ExpertiseEvent> _communityEvents =
@@ -111,14 +127,140 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   @override
   void initState() {
     super.initState();
+    _initializeEventLogger();
+    _viewStartTime = DateTime.now();
+    _scrollController.addListener(_onScroll);
     _loadEvents();
     _searchController.addListener(_onSearchChanged);
   }
 
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        _currentUserId = currentUser.id;
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('events_browse');
+      }
+      _isLoggerInitialized = true;
+    } catch (_) {
+      _isLoggerInitialized = false;
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentDepth =
+          _scrollController.position.pixels / (maxScroll > 0 ? maxScroll : 1);
+      if (currentDepth > _maxScrollDepth) {
+        _maxScrollDepth = currentDepth;
+      }
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
+
+    if (_isLoggerInitialized && _viewStartTime != null && !_hasFollowUpAction) {
+      final duration = DateTime.now().difference(_viewStartTime!);
+      _eventLogger.logBrowseNoAction(
+        entityType: 'event_list',
+        entityId: _eventListScopeId,
+        browseDurationMs: duration.inMilliseconds,
+        surface: 'events_browse',
+      );
+      unawaited(_recordBrowseNoActionTuple(duration.inMilliseconds));
+    }
+
     super.dispose();
+  }
+
+  String get _eventListScopeId => 'scope_${_selectedScope.name}';
+
+  Future<void> _recordBrowseNoActionTuple(int durationMs) async {
+    try {
+      if (!di.sl.isRegistered<EpisodicMemoryStore>() ||
+          !di.sl.isRegistered<AgentIdService>()) {
+        return;
+      }
+
+      final userId = _currentUserId;
+      if (userId == null || userId.isEmpty) return;
+
+      final agentIdService = di.sl<AgentIdService>();
+      final episodicStore = di.sl<EpisodicMemoryStore>();
+      final outcomeTaxonomy = const OutcomeTaxonomy();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.19',
+          'surface': 'events_browse',
+          'entity_type': 'event_list',
+          'entity_id': _eventListScopeId,
+        },
+        actionType: 'browse_entity',
+        actionPayload: {
+          'entity_type': 'event_list',
+          'entity_id': _eventListScopeId,
+          'entity_features': {
+            'scope': _selectedScope.name,
+            'visible_event_count': _filteredEvents.length,
+            'cross_locality_visible_count': _filteredEvents
+                .where((e) => _crossLocalityEventIds.contains(e.id))
+                .length,
+            'sample_event_ids':
+                _filteredEvents.take(10).map((e) => e.id).toList(),
+            'active_filter_count': _activeFilterCount,
+            'search_query_length': _searchController.text.trim().length,
+          },
+          'no_action': true,
+          'browse_context': {
+            'duration_ms': durationMs,
+            'surface': 'events_browse',
+            'scroll_depth_percent': (_maxScrollDepth * 100).clamp(0.0, 100.0),
+          },
+        },
+        nextState: const {
+          'no_action': true,
+          'browse_session_complete': true,
+        },
+        outcome: outcomeTaxonomy.classify(
+          eventType: 'no_action',
+          parameters: {
+            'entity_type': 'event_list',
+            'entity_id': _eventListScopeId,
+            'duration_ms': durationMs,
+            'surface': 'events_browse',
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.19',
+          'pipeline': 'events_browse_page',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (_) {
+      // Non-critical on teardown.
+    }
+  }
+
+  int get _activeFilterCount {
+    var count = 0;
+    if (_selectedCategory != null) count++;
+    if (_selectedLocation != null) count++;
+    if (_selectedDateFilter != null) count++;
+    if (_selectedPriceFilter != null) count++;
+    if (_selectedEventType != null) count++;
+    if (_searchController.text.trim().isNotEmpty) count++;
+    return count;
   }
 
   Future<void> _loadEvents() async {
@@ -704,7 +846,10 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           ),
           const SizedBox(width: 10),
           ElevatedButton(
-            onPressed: () => context.push('/communities/discover'),
+            onPressed: () {
+              _hasFollowUpAction = true;
+              context.push('/communities/discover');
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.electricGreen,
               foregroundColor: AppColors.black,
@@ -1059,6 +1204,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
     final isCommunityScope = _selectedScope == EventScope.community;
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: _filteredEvents.length,
       itemBuilder: (context, index) {
@@ -1106,6 +1252,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 // TODO: Get upgrade eligibility from CommunityEvent when Agent 1 creates it
                 isEligibleForUpgrade: false,
                 onTap: () {
+                  _hasFollowUpAction = true;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -1119,6 +1266,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 event: event,
                 currentUser: unifiedUser,
                 onTap: () {
+                  _hasFollowUpAction = true;
                   Navigator.push(
                     context,
                     MaterialPageRoute(

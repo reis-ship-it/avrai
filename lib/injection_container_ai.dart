@@ -30,6 +30,7 @@ import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/unified_evolution_orchestrator.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai/core/ai/event_queue.dart';
@@ -288,6 +289,9 @@ Future<void> registerAIServices(GetIt sl) async {
     final signalKeyManager =
         sl.isRegistered<SignalKeyManager>() ? sl<SignalKeyManager>() : null;
     final prefs = sl<SharedPreferencesCompat>();
+    final episodicMemoryStore = sl.isRegistered<EpisodicMemoryStore>()
+        ? sl<EpisodicMemoryStore>()
+        : null;
 
     final orchestrator = VibeConnectionOrchestrator(
       vibeAnalyzer: vibeAnalyzer,
@@ -298,6 +302,7 @@ Future<void> registerAIServices(GetIt sl) async {
       protocol: ai2aiProtocol,
       signalKeyManager: signalKeyManager,
       prefs: prefs,
+      episodicMemoryStore: episodicMemoryStore,
     );
 
     // Wire personality evolution -> advertising refresh.
@@ -365,7 +370,12 @@ Future<void> registerAIServices(GetIt sl) async {
   // Action History Service
   sl.registerLazySingleton(() {
     final storageService = sl<StorageService>();
-    return ActionHistoryService(storage: storageService.defaultStorage);
+    return ActionHistoryService(
+      storage: storageService.defaultStorage,
+      episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+          ? sl<EpisodicMemoryStore>()
+          : null,
+    );
   });
 
   // Contextual Personality Service
@@ -398,6 +408,9 @@ Future<void> registerAIServices(GetIt sl) async {
     );
     return ContinuousLearningSystem(
       agentIdService: agentIdService,
+      episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+          ? sl<EpisodicMemoryStore>()
+          : null,
       orchestrator: orchestrator,
     );
   });
@@ -629,6 +642,9 @@ Future<void> registerAIServices(GetIt sl) async {
         agentIdService: sl<AgentIdService>(),
         personalityLearning: sl<PersonalityLearning>(),
         searchRepository: sl<HybridSearchRepository>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
   // DM blob store (payloadless realtime)
   if (!sl.isRegistered<DmMessageStore>()) {
@@ -653,6 +669,9 @@ Future<void> registerAIServices(GetIt sl) async {
             sl.isRegistered<RealtimeBackend>() ? sl<RealtimeBackend>() : null,
         atomicClock: sl<AtomicClockService>(),
         dmStore: sl<DmMessageStore>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
   sl.registerLazySingleton(() => CommunityChatService(
         encryptionService: sl<MessageEncryptionService>(),
@@ -663,6 +682,9 @@ Future<void> registerAIServices(GetIt sl) async {
         dmStore: sl<DmMessageStore>(),
         senderKeyService: sl<CommunitySenderKeyService>(),
         communityMessageStore: sl<CommunityMessageStore>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Community Service (for community chat member lists)
@@ -731,6 +753,9 @@ Future<void> registerAIServices(GetIt sl) async {
   sl.registerLazySingleton(() => BusinessExpertOutreachService(
         partnershipService: sl<PartnershipService>(),
         chatService: sl<BusinessExpertChatServiceAI2AI>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Business-Business Outreach Service (partnership discovery)
@@ -738,6 +763,9 @@ Future<void> registerAIServices(GetIt sl) async {
         partnershipService: sl<PartnershipService>(),
         businessService: sl<BusinessAccountService>(),
         chatService: sl<BusinessBusinessChatServiceAI2AI>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Business Member Service (multi-user support)

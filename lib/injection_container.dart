@@ -94,6 +94,7 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/network/enhanced_connectivity_service.dart';
 // Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
@@ -138,6 +139,7 @@ import 'package:avrai/core/services/fraud/dispute_resolution_service.dart';
 import 'package:avrai/core/services/disputes/dispute_evidence_storage_service.dart';
 import 'package:avrai/core/controllers/sync_controller.dart';
 import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
+import 'package:avrai/data/database/app_database.dart';
 
 // Phase 19: Multi-Entity Quantum Entanglement Matching System
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
@@ -218,6 +220,20 @@ import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/ai/facts_index.dart';
+import 'package:avrai/core/ai/facts_local_store.dart';
+import 'package:avrai/core/ai/semantic_generalization_extractor.dart';
+import 'package:avrai/core/ai/semantic_memory_local_store.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_applier.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_extractor.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_local_store.dart';
+import 'package:avrai/core/ai/memory/procedural/procedural_rule_retirement_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/nightly_memory_consolidation_scheduler.dart';
+import 'package:avrai/core/ai/memory/consolidation/consolidation_metrics_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/consolidation_federated_gradient_sync_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/on_device_world_model_training_service.dart';
+import 'package:avrai/core/ai/memory/consolidation/procedural_rule_consolidation_service.dart';
+import 'package:avrai/core/ai/world_model/mpc_planner/planner_action_prefilter.dart';
+import 'package:avrai/core/ai/world_model/mpc_planner/semantic_planner_context_builder.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
 import 'package:avrai/data/repositories/supabase_community_repository.dart';
@@ -225,9 +241,12 @@ import 'package:avrai/domain/repositories/community_repository.dart';
 // Phase 12: Neural Network Implementation
 import 'package:avrai/core/services/calling_score/calling_score_data_collector.dart';
 import 'package:avrai/core/services/calling_score/calling_score_calculator.dart';
+import 'package:avrai/core/services/calling_score/baseline_metrics_service.dart';
 import 'package:avrai/core/services/calling_score/calling_score_baseline_metrics.dart';
 import 'package:avrai/core/services/calling_score/calling_score_training_data_preparer.dart';
 import 'package:avrai/core/services/calling_score/calling_score_ab_testing_service.dart';
+import 'package:avrai/core/services/calling_score/formula_ab_testing_service.dart';
+import 'package:avrai/core/services/calling_score/training_data_preparation_service.dart';
 import 'package:avrai/core/ml/calling_score_neural_model.dart';
 import 'package:avrai/core/services/behavior/behavior_assessment_service.dart';
 import 'package:avrai/core/ml/outcome_prediction_model.dart';
@@ -235,6 +254,7 @@ import 'package:avrai/core/services/recommendations/outcome_prediction_service.d
 import 'package:avrai/core/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai/core/services/ai_infrastructure/online_learning_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_retraining_service.dart';
+import 'package:avrai/core/services/ai_infrastructure/ai_improvement_tracking_service.dart';
 import 'package:avrai/core/crypto/signal/signal_ffi_bindings.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
@@ -274,10 +294,8 @@ Future<void> init() async {
 
   // Data Sources - Local (Offline-First)
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthDriftDataSource());
-  sl.registerLazySingleton<SpotsLocalDataSource>(
-      () => SpotsDriftDataSource());
-  sl.registerLazySingleton<ListsLocalDataSource>(
-      () => ListsDriftDataSource());
+  sl.registerLazySingleton<SpotsLocalDataSource>(() => SpotsDriftDataSource());
+  sl.registerLazySingleton<ListsLocalDataSource>(() => ListsDriftDataSource());
 
   // Data Sources - Remote (Optional, for online features)
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -584,6 +602,9 @@ Future<void> init() async {
         eventService: sl<ExpertiseEventService>(),
         partnershipService: sl.isRegistered<PartnershipService>()
             ? sl<PartnershipService>()
+            : null,
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
             : null,
       ));
   logger.debug(
@@ -1185,11 +1206,120 @@ Future<void> init() async {
 
         // Register FactsIndex (Phase 11 Section 5: Retrieval + LLM Fusion)
         // Requires SupabaseClient to be available
+        if (!sl.isRegistered<FactsLocalStore>()) {
+          sl.registerLazySingleton(() => FactsLocalStore());
+          logger.debug('✅ [DI] FactsLocalStore registered');
+        }
+        if (!sl.isRegistered<SemanticMemoryLocalStore>()) {
+          sl.registerLazySingleton(() => SemanticMemoryLocalStore());
+          logger.debug('✅ [DI] SemanticMemoryLocalStore registered');
+        }
+        if (!sl.isRegistered<SemanticGeneralizationExtractor>()) {
+          sl.registerLazySingleton(
+            () => SemanticGeneralizationExtractor(
+              semanticLocalStore: sl<SemanticMemoryLocalStore>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticGeneralizationExtractor registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleExtractor>()) {
+          sl.registerLazySingleton(() => const ProceduralRuleExtractor());
+          logger.debug('✅ [DI] ProceduralRuleExtractor registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleLocalStore>()) {
+          sl.registerLazySingleton(() => ProceduralRuleLocalStore());
+          logger.debug('✅ [DI] ProceduralRuleLocalStore registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleApplier>()) {
+          sl.registerLazySingleton(() => const ProceduralRuleApplier());
+          logger.debug('✅ [DI] ProceduralRuleApplier registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleRetirementService>()) {
+          sl.registerLazySingleton(
+              () => const ProceduralRuleRetirementService());
+          logger.debug('✅ [DI] ProceduralRuleRetirementService registered');
+        }
+        if (!sl.isRegistered<NightlyMemoryConsolidationScheduler>()) {
+          sl.registerLazySingleton(
+            () => NightlyMemoryConsolidationScheduler(
+              prefs: sl<SharedPreferencesCompat>(),
+              onConsolidationRequested: () async {
+                if (sl.isRegistered<OnDeviceWorldModelTrainingService>()) {
+                  final trainingResult =
+                      await sl<OnDeviceWorldModelTrainingService>()
+                          .runAfterConsolidation();
+                  if (trainingResult.status ==
+                          OnDeviceWorldModelTrainingStatus.triggered &&
+                      sl.isRegistered<
+                          ConsolidationFederatedGradientSyncService>()) {
+                    await sl<ConsolidationFederatedGradientSyncService>()
+                        .syncAfterLocalTraining();
+                  }
+                }
+              },
+            ),
+          );
+          logger.debug('✅ [DI] NightlyMemoryConsolidationScheduler registered');
+        }
+        if (!sl.isRegistered<ProceduralRuleConsolidationService>()) {
+          sl.registerLazySingleton(
+            () => ProceduralRuleConsolidationService(
+              extractor: sl<ProceduralRuleExtractor>(),
+              localStore: sl<ProceduralRuleLocalStore>(),
+            ),
+          );
+          logger.debug('✅ [DI] ProceduralRuleConsolidationService registered');
+        }
+        if (!sl.isRegistered<ConsolidationMetricsService>()) {
+          sl.registerLazySingleton(
+            () => ConsolidationMetricsService(
+              trackingService: sl.isRegistered<AIImprovementTrackingService>()
+                  ? sl<AIImprovementTrackingService>()
+                  : null,
+            ),
+          );
+          logger.debug('✅ [DI] ConsolidationMetricsService registered');
+        }
+        if (!sl.isRegistered<PlannerActionPreFilter>()) {
+          sl.registerLazySingleton(
+            () => PlannerActionPreFilter(
+              proceduralRuleApplier: sl<ProceduralRuleApplier>(),
+            ),
+          );
+          logger.debug('✅ [DI] PlannerActionPreFilter registered');
+        }
         sl.registerLazySingleton(() => FactsIndex(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
+              localStore: sl<FactsLocalStore>(),
+              connectivity:
+                  sl.isRegistered<Connectivity>() ? sl<Connectivity>() : null,
+              semanticLocalStore: sl<SemanticMemoryLocalStore>(),
             ));
         logger.debug('✅ [DI] FactsIndex registered');
+        if (!sl.isRegistered<SemanticMemoryContextClient>()) {
+          sl.registerLazySingleton<SemanticMemoryContextClient>(
+            () => FactsIndexSemanticMemoryContextClient(
+              factsIndex: sl<FactsIndex>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticMemoryContextClient registered');
+        }
+        if (!sl.isRegistered<SemanticPlannerContextBuilder>()) {
+          sl.registerLazySingleton(
+            () => SemanticPlannerContextBuilder(
+              semanticClient: sl<SemanticMemoryContextClient>(),
+            ),
+          );
+          logger.debug('✅ [DI] SemanticPlannerContextBuilder registered');
+        }
+
+        // Register EpisodicMemoryStore (Phase 1.1.1, M2-P1-1)
+        sl.registerLazySingleton(() => EpisodicMemoryStore(
+              database:
+                  sl.isRegistered<AppDatabase>() ? sl<AppDatabase>() : null,
+            ));
+        logger.debug('✅ [DI] EpisodicMemoryStore registered');
 
         // Register Calling Score Data Collector (Phase 12 Section 1: Foundation & Data Collection)
         // Note: Register BehaviorAssessmentService first (if not already registered)
@@ -1209,8 +1339,13 @@ Future<void> init() async {
         logger.debug('✅ [DI] CallingScoreDataCollector registered');
 
         // Register Calling Score Baseline Metrics (Phase 12 Section 1.2: Baseline Metrics)
+        if (!sl.isRegistered<BaselineMetricsService>()) {
+          sl.registerLazySingleton(() => const BaselineMetricsService());
+          logger.debug('✅ [DI] BaselineMetricsService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreBaselineMetrics(
               supabase: supabaseClient,
+              baselineMetricsService: sl<BaselineMetricsService>(),
             ));
         logger.debug('✅ [DI] CallingScoreBaselineMetrics registered');
 
@@ -1229,26 +1364,62 @@ Future<void> init() async {
         sl.registerLazySingleton(() => OnlineLearningService(
               supabase: supabaseClient,
               dataCollector: sl<CallingScoreDataCollector>(),
+              trainingDataPreparer: sl<CallingScoreTrainingDataPreparer>(),
               versionManager: sl<ModelVersionManager>(),
               retrainingService: sl<ModelRetrainingService>(),
+              agentIdService: sl<AgentIdService>(),
             ));
         logger.debug('✅ [DI] OnlineLearningService registered');
+        if (!sl.isRegistered<OnDeviceWorldModelTrainingService>()) {
+          sl.registerLazySingleton(
+            () => OnDeviceWorldModelTrainingService.fromOnlineLearning(
+              onlineLearningService: sl<OnlineLearningService>(),
+            ),
+          );
+          logger.debug('✅ [DI] OnDeviceWorldModelTrainingService registered');
+        }
+        if (!sl.isRegistered<ConsolidationFederatedGradientSyncService>()) {
+          sl.registerLazySingleton(
+            () => ConsolidationFederatedGradientSyncService(
+              orchestrator: sl.isRegistered<VibeConnectionOrchestrator>()
+                  ? sl<VibeConnectionOrchestrator>()
+                  : null,
+            ),
+          );
+          logger.debug(
+              '✅ [DI] ConsolidationFederatedGradientSyncService registered');
+        }
 
         sl.registerLazySingleton(() => CallingScoreNeuralModel());
         logger.debug('✅ [DI] CallingScoreNeuralModel registered');
 
         // Register Calling Score Training Data Preparer (Phase 12 Section 2.1)
+        if (!sl.isRegistered<TrainingDataPreparationService>()) {
+          sl.registerLazySingleton(
+              () => const TrainingDataPreparationService());
+          logger.debug('✅ [DI] TrainingDataPreparationService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreTrainingDataPreparer(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
               neuralModel: sl<CallingScoreNeuralModel>(),
+              episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+                  ? sl<EpisodicMemoryStore>()
+                  : null,
+              trainingDataPreparationService:
+                  sl<TrainingDataPreparationService>(),
             ));
         logger.debug('✅ [DI] CallingScoreTrainingDataPreparer registered');
 
         // Register Calling Score A/B Testing Service (Phase 12 Section 2.3: A/B Testing Framework)
+        if (!sl.isRegistered<FormulaABTestingService>()) {
+          sl.registerLazySingleton(() => const FormulaABTestingService());
+          logger.debug('✅ [DI] FormulaABTestingService registered');
+        }
         sl.registerLazySingleton(() => CallingScoreABTestingService(
               supabase: supabaseClient,
               agentIdService: sl<AgentIdService>(),
+              formulaABTestingService: sl<FormulaABTestingService>(),
             ));
         logger.debug('✅ [DI] CallingScoreABTestingService registered');
 
@@ -1277,6 +1448,7 @@ Future<void> init() async {
                   sl<CallingScoreABTestingService>(), // Optional: A/B testing
               outcomePredictionService: sl<
                   OutcomePredictionService>(), // Optional: Outcome prediction
+              featureFlags: sl<FeatureFlagService>(),
             ));
         logger.debug(
             '✅ [DI] CallingScoreCalculator registered (with neural model, A/B testing, and outcome prediction support)');
@@ -1373,6 +1545,9 @@ Future<void> init() async {
                   : null,
               eventLogger:
                   sl.isRegistered<EventLogger>() ? sl<EventLogger>() : null,
+              episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+                  ? sl<EpisodicMemoryStore>()
+                  : null,
             ));
         logger.debug('✅ [DI] ReservationService registered');
 

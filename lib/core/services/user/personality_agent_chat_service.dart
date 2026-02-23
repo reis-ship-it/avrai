@@ -1,6 +1,9 @@
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai_ai/models/personality_chat_message.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai_network/network/message_encryption_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/language_pattern_learning_service.dart';
@@ -33,6 +36,9 @@ class PersonalityAgentChatService {
   final LLMService _llmService;
   final pl.PersonalityLearning _personalityLearning;
   final HybridSearchRepository? _searchRepository;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _chatStorage;
 
   PersonalityAgentChatService({
     AgentIdService? agentIdService,
@@ -41,13 +47,21 @@ class PersonalityAgentChatService {
     required LLMService llmService,
     pl.PersonalityLearning? personalityLearning,
     HybridSearchRepository? searchRepository,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? chatStorage,
   })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _languageLearningService =
             languageLearningService ?? LanguagePatternLearningService(),
         _llmService = llmService,
         _personalityLearning = personalityLearning ?? pl.PersonalityLearning(),
-        _searchRepository = searchRepository;
+        _searchRepository = searchRepository,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _chatStorage = chatStorage;
+
+  GetStorage get _chatBox => _chatStorage ?? GetStorage(_chatStoreName);
 
   /// Main chat method - handles user message and returns agent response
   ///
@@ -80,6 +94,10 @@ class PersonalityAgentChatService {
         message: message,
         agentId: agentId,
         userId: userId,
+      );
+      await _recordAskAgentTuple(
+        userId: userId,
+        agentId: agentId,
       );
 
       // Check if message contains search request
@@ -305,11 +323,13 @@ class PersonalityAgentChatService {
   ) async {
     try {
       final chatId = '$_chatIdPrefix$agentId}_$userId';
-      final box = GetStorage(_chatStoreName);
-      final List<dynamic> raw = box.read<List<dynamic>>('personality_chat_$chatId') ?? [];
+      final box = _chatBox;
+      final List<dynamic> raw =
+          box.read<List<dynamic>>('personality_chat_$chatId') ?? [];
 
       final messages = raw
-          .map((e) => PersonalityChatMessage.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) => PersonalityChatMessage.fromJson(
+              Map<String, dynamic>.from(e as Map)))
           .toList();
 
       // Sort most recent first
@@ -350,7 +370,7 @@ class PersonalityAgentChatService {
       );
 
       // Store in GetStorage
-      final box = GetStorage(_chatStoreName);
+      final box = _chatBox;
       final key = 'personality_chat_$chatId';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(chatMessage.toJson());
@@ -394,4 +414,49 @@ class PersonalityAgentChatService {
     }
   }
 
+  Future<void> _recordAskAgentTuple({
+    required String userId,
+    required String agentId,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final nowIso = DateTime.now().toUtc().toIso8601String();
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.13',
+          'chat_context': {
+            'chat_type': 'agent',
+            'participant_id': userId,
+          },
+        },
+        actionType: 'ask_agent',
+        actionPayload: {
+          'participant_id': userId,
+          'timestamp': nowIso,
+        },
+        nextState: {
+          'chat_state': {
+            'last_action': 'ask_agent',
+            'participant_id': userId,
+            'timestamp': nowIso,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'ask_agent',
+          parameters: {
+            'participant_id': userId,
+            'timestamp': nowIso,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.13',
+          'pipeline': 'personality_agent_chat_service',
+          'privacy': 'metadata_only_no_message_content',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (_) {}
+  }
 }

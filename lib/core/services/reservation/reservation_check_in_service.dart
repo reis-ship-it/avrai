@@ -18,6 +18,9 @@ import 'package:avrai/core/services/device/wifi_fingerprint_service.dart';
 import 'package:avrai/core/services/reservation/reservation_quantum_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai/core/services/security/hybrid_encryption_service.dart';
 import 'package:avrai/core/ai2ai/anonymous_communication.dart';
@@ -158,14 +161,14 @@ class ReservationCheckInService {
   final WiFiFingerprintService _wifiService;
   // ignore: unused_field - Reserved for Phase 10.1: Enhanced quantum state creation/validation
   final ReservationQuantumService _quantumService;
-  
+
   // Phase 10.1: Knot/Quantum/AI2AI Integration Services
   // ignore: unused_field - Reserved for Phase 10.1: AgentId lookups for personality profile
   final AgentIdService _agentIdService;
   // ignore: unused_field - Reserved for Phase 10.1: Personality profile retrieval for knot generation
   final PersonalityLearning _personalityLearning;
   final AtomicClockService _atomicClock;
-  
+
   // Knot Services (Phase 10.1: Full knot integration)
   final KnotOrchestratorService? _knotOrchestrator;
   final KnotStorageService? _knotStorage;
@@ -173,10 +176,12 @@ class ReservationCheckInService {
   // ignore: unused_field - Reserved for Phase 10.1: Fabric integration for group check-ins
   final KnotFabricService? _fabricService;
   final KnotWorldsheetService? _worldsheetService;
-  
+
   // AI2AI Mesh Learning (Phase 10.1: Check-in propagation)
   final QuantumMatchingAILearningService? _aiLearningService;
-  
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+
   // Signal Protocol (Phase 10.1: Privacy-preserving mesh - reserved for future full integration)
   // ignore: unused_field - Reserved for Phase 10.1: Signal Protocol encryption integration
   final HybridEncryptionService? _encryptionService;
@@ -186,7 +191,7 @@ class ReservationCheckInService {
   final VibeConnectionOrchestrator? _orchestrator;
   // ignore: unused_field - Reserved for Phase 10.1: Mesh networking service integration
   final AdaptiveMeshNetworkingService? _meshService;
-  
+
   // Phase 9.2: Performance Caching
   final Map<String, _CachedKnotSignature> _knotSignatureCache = {};
   final Map<String, _CachedCompatibility> _compatibilityCache = {};
@@ -209,6 +214,7 @@ class ReservationCheckInService {
     KnotWorldsheetService? worldsheetService,
     // Optional AI2AI services (graceful degradation if not available)
     QuantumMatchingAILearningService? aiLearningService,
+    EpisodicMemoryStore? episodicMemoryStore,
     HybridEncryptionService? encryptionService,
     AnonymousCommunicationProtocol? ai2aiProtocol,
     VibeConnectionOrchestrator? orchestrator,
@@ -226,6 +232,8 @@ class ReservationCheckInService {
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
         _aiLearningService = aiLearningService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = const OutcomeTaxonomy(),
         _encryptionService = encryptionService,
         _ai2aiProtocol = ai2aiProtocol,
         _orchestrator = orchestrator,
@@ -301,7 +309,8 @@ class ReservationCheckInService {
       );
 
       // Get reservation for validation
-      final reservation = await _reservationService.getReservationById(reservationId);
+      final reservation =
+          await _reservationService.getReservationById(reservationId);
       if (reservation == null) {
         developer.log('Reservation not found: $reservationId', name: _logName);
         return CheckInResult.error('Reservation not found: $reservationId');
@@ -369,15 +378,16 @@ class ReservationCheckInService {
           );
           return CheckInResult.error('Quantum state validation failed');
         }
-        
+
         // Phase 10.1: Additional quantum state validation using ReservationQuantumService
         // Validate quantum state integrity and freshness
         try {
           final quantumState = reservation.quantumState!;
           final tAtomic = await _atomicClock.getAtomicTimestamp();
-          
+
           // Check quantum state freshness (should be recent, not stale)
-          final stateAge = tAtomic.deviceTime.difference(quantumState.tAtomic.deviceTime);
+          final stateAge =
+              tAtomic.deviceTime.difference(quantumState.tAtomic.deviceTime);
           if (stateAge.inDays > 30) {
             developer.log(
               'Warning: Quantum state is ${stateAge.inDays} days old (may be stale)',
@@ -385,7 +395,7 @@ class ReservationCheckInService {
             );
             // Don't fail check-in, but log warning
           }
-          
+
           // Validate quantum state structure
           if (quantumState.entityId != reservation.agentId) {
             developer.log(
@@ -421,17 +431,18 @@ class ReservationCheckInService {
         quantumValid: quantumValid,
         knotValid: knotValid,
       );
-      
+
       // Calculate hybrid compatibility (Phase 10.1: Phase 19 enhancement)
       final hybridCompatibility = await _calculateHybridCompatibility(
         reservation: reservation,
         spot: spot,
         checkInTime: DateTime.now(),
       );
-      
+
       // Combine base confidence with hybrid compatibility
       // Weight: 60% base confidence (validation layers), 40% hybrid compatibility (quantum/knot/string)
-      final confidenceScore = (0.6 * baseConfidenceScore) + (0.4 * hybridCompatibility);
+      final confidenceScore =
+          (0.6 * baseConfidenceScore) + (0.4 * hybridCompatibility);
 
       // Minimum confidence threshold: 0.8 (geohash + quantum + knot required)
       if (confidenceScore < 0.8) {
@@ -445,13 +456,25 @@ class ReservationCheckInService {
       }
 
       // All validations passed → complete check-in
-      final updatedReservation = await _reservationService.checkIn(reservationId);
+      final updatedReservation =
+          await _reservationService.checkIn(reservationId);
 
       // Phase 10.1: AI2AI Mesh Learning - Propagate successful check-in
       await _propagateCheckInLearning(
         reservation: updatedReservation,
         success: true,
         confidenceScore: confidenceScore,
+      );
+      await _recordSpotVisitTuple(
+        reservation: updatedReservation,
+        spot: spot,
+        confidenceScore: confidenceScore,
+        validationLayers: {
+          'geohash': inProximity,
+          'wifi': wifiValid,
+          'quantum': quantumValid,
+          'knot': knotValid,
+        },
       );
 
       developer.log(
@@ -485,6 +508,103 @@ class ReservationCheckInService {
     }
   }
 
+  Future<void> _recordSpotVisitTuple({
+    required Reservation reservation,
+    required Spot spot,
+    required double confidenceScore,
+    required Map<String, bool> validationLayers,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final now = DateTime.now().toUtc();
+      final previousVisit = await _findPreviousSpotVisitTuple(
+        store: store,
+        agentId: reservation.agentId,
+        spotId: spot.id,
+        before: now,
+      );
+      final previousAt = previousVisit?.recordedAt;
+      final daysSincePrevious =
+          previousAt == null ? null : now.difference(previousAt).inDays;
+      final isReturnVisit =
+          daysSincePrevious != null && daysSincePrevious <= 30;
+      final outcomeEventType =
+          isReturnVisit ? 'return_visit_within_days' : 'single_visit_only';
+
+      final tuple = EpisodicTuple(
+        agentId: reservation.agentId,
+        stateBefore: {
+          'phase_ref': '1.2.18',
+          'reservation_state': {
+            'reservation_id': reservation.id,
+            'reservation_type': reservation.type.name,
+          },
+        },
+        actionType: 'visit_spot',
+        actionPayload: {
+          'spot_features': {
+            'spot_id': spot.id,
+            'source': 'reservation_check_in',
+            'reservation_id': reservation.id,
+            'confidence_score': confidenceScore,
+            'validation_layers': validationLayers,
+          },
+        },
+        nextState: {
+          'spot_outcome': {
+            'outcome_type': outcomeEventType,
+            if (daysSincePrevious != null)
+              'days_since_last_visit': daysSincePrevious,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: outcomeEventType,
+          parameters: {
+            'spot_id': spot.id,
+            if (daysSincePrevious != null) 'days': daysSincePrevious,
+            'window_days': 30,
+            'confidence_score': confidenceScore,
+          },
+        ),
+        recordedAt: now,
+        metadata: const {
+          'phase_ref': '1.2.18',
+          'pipeline': 'reservation_check_in_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to write reservation check-in spot tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Future<EpisodicTuple?> _findPreviousSpotVisitTuple({
+    required EpisodicMemoryStore store,
+    required String agentId,
+    required String spotId,
+    required DateTime before,
+  }) async {
+    final rows = await store.getRecent(agentId: agentId, limit: 200);
+    for (final row in rows) {
+      if (row.recordedAt.isAfter(before) || row.actionType != 'visit_spot') {
+        continue;
+      }
+      final payloadSpotId = row.actionPayload['spot_id']?.toString() ??
+          (row.actionPayload['spot_features'] is Map
+              ? (row.actionPayload['spot_features'] as Map)['spot_id']
+                  ?.toString()
+              : null);
+      if (payloadSpotId == spotId) {
+        return row;
+      }
+    }
+    return null;
+  }
+
   /// Generate NFC payload (for host phone to write to tag or transmit)
   ///
   /// **Purpose:** Generate NFC payload with reservation data, quantum state, and knot signature
@@ -509,7 +629,8 @@ class ReservationCheckInService {
       );
 
       // Get reservation to extract quantum state and generate knot signature
-      final reservation = await _reservationService.getReservationById(reservationId);
+      final reservation =
+          await _reservationService.getReservationById(reservationId);
       if (reservation == null) {
         throw Exception('Reservation not found: $reservationId');
       }
@@ -621,7 +742,7 @@ class ReservationCheckInService {
     // Check cache first (Phase 9.2: Performance optimization)
     final cacheKey = '$agentId:$reservationId';
     final cached = _knotSignatureCache[cacheKey];
-    if (cached != null && 
+    if (cached != null &&
         DateTime.now().difference(cached.cachedAt) < _cacheExpiry) {
       developer.log(
         'Using cached knot signature for agentId=${agentId.substring(0, 10)}...',
@@ -637,21 +758,22 @@ class ReservationCheckInService {
         if (knot != null) {
           // Extract real knot signature from invariants
           final knotSignatureValue = knot.invariants.signature;
-          
+
           // Create signature hash: knot signature + reservation ID + timestamp
-          final signatureData = '$knotSignatureValue:$reservationId:${timestamp.toIso8601String()}';
+          final signatureData =
+              '$knotSignatureValue:$reservationId:${timestamp.toIso8601String()}';
           final bytes = utf8.encode(signatureData);
           final hash = sha256.convert(bytes);
           final signature = 'knot_${hash.toString().substring(0, 16)}';
-          
+
           // Cache the result (Phase 9.2: Performance optimization)
           _updateKnotSignatureCache(cacheKey, signature);
-          
+
           developer.log(
             'Generated real knot signature from knot invariants (signature=$knotSignatureValue)',
             name: _logName,
           );
-          
+
           return signature;
         } else {
           developer.log(
@@ -676,17 +798,18 @@ class ReservationCheckInService {
     }
 
     // Fallback: Simplified signature based on agentId (if knot services unavailable)
-    final signatureData = '$agentId:$reservationId:${timestamp.toIso8601String()}';
+    final signatureData =
+        '$agentId:$reservationId:${timestamp.toIso8601String()}';
     final bytes = utf8.encode(signatureData);
     final hash = sha256.convert(bytes);
     final signature = 'knot_${hash.toString().substring(0, 16)}';
-    
+
     // Cache the fallback result
     _updateKnotSignatureCache(cacheKey, signature);
-    
+
     return signature;
   }
-  
+
   /// Update knot signature cache (Phase 9.2: Performance optimization)
   void _updateKnotSignatureCache(String key, String signature) {
     // Remove oldest entries if cache is full
@@ -694,7 +817,7 @@ class ReservationCheckInService {
       final oldestKey = _knotSignatureCache.keys.first;
       _knotSignatureCache.remove(oldestKey);
     }
-    
+
     _knotSignatureCache[key] = _CachedKnotSignature(
       signature: signature,
       cachedAt: DateTime.now(),
@@ -723,7 +846,8 @@ class ReservationCheckInService {
       }
 
       // Parse quantum state from NFC payload
-      final nfcQuantumState = QuantumEntityState.fromJson(nfcPayload.quantumState);
+      final nfcQuantumState =
+          QuantumEntityState.fromJson(nfcPayload.quantumState);
       final reservationQuantumState = reservation.quantumState!;
 
       // Validate entity ID
@@ -819,7 +943,9 @@ class ReservationCheckInService {
   Future<NFCPayload?> readNFCTag() async {
     try {
       if (!Platform.isAndroid && !Platform.isIOS) {
-        developer.log('NFC not supported on platform: ${Platform.operatingSystem}', name: _logName);
+        developer.log(
+            'NFC not supported on platform: ${Platform.operatingSystem}',
+            name: _logName);
         return null;
       }
 
@@ -1021,7 +1147,7 @@ class ReservationCheckInService {
       // Note: This is a limitation - we need userId but only have agentId
       // For now, we'll skip personality learning and just propagate the insight
       // TODO(Phase 10.1): Add method to get userId from agentId or update API to accept agentId
-      
+
       developer.log(
         'Propagating check-in learning: success=$success, confidence=${(confidenceScore * 100).toStringAsFixed(1)}%',
         name: _logName,
@@ -1030,15 +1156,19 @@ class ReservationCheckInService {
       // Create MatchingResult for AI2AI learning (Phase 10.1: Full integration)
       if (reservation.quantumState != null) {
         final tAtomic = await _atomicClock.getAtomicTimestamp();
-        
+
         // Extract compatibility scores from hybrid compatibility calculation
         // We'll use the confidence score as the base compatibility
         final matchingResult = MatchingResult(
           compatibility: confidenceScore,
-          quantumCompatibility: confidenceScore * 0.4, // Estimate from quantum validation
-          knotCompatibility: confidenceScore * 0.2, // Estimate from knot validation
-          locationCompatibility: confidenceScore * 0.2, // Estimate from geohash proximity
-          timingCompatibility: confidenceScore * 0.2, // Estimate from reservation timing
+          quantumCompatibility:
+              confidenceScore * 0.4, // Estimate from quantum validation
+          knotCompatibility:
+              confidenceScore * 0.2, // Estimate from knot validation
+          locationCompatibility:
+              confidenceScore * 0.2, // Estimate from geohash proximity
+          timingCompatibility:
+              confidenceScore * 0.2, // Estimate from reservation timing
           meaningfulConnectionScore: success ? confidenceScore : null,
           timestamp: tAtomic,
           entities: [reservation.quantumState!], // User quantum state
@@ -1061,7 +1191,7 @@ class ReservationCheckInService {
             'MatchingResult: compatibility=${matchingResult.compatibility.toStringAsFixed(3)}, entities=${matchingResult.entities.length}',
             name: _logName,
           );
-          
+
           // Note: learnFromSuccessfulMatch requires userId, but we only have agentId from reservation
           // Full integration requires:
           // 1. userId lookup from agentId (reverse mapping), OR
@@ -1113,7 +1243,7 @@ class ReservationCheckInService {
     // Check cache first (Phase 9.2: Performance optimization)
     final cacheKey = '${reservation.id}:${spot.id}';
     final cached = _compatibilityCache[cacheKey];
-    if (cached != null && 
+    if (cached != null &&
         DateTime.now().difference(cached.cachedAt) < _cacheExpiry) {
       developer.log(
         'Using cached compatibility score for reservation=${reservation.id}',
@@ -1134,7 +1264,8 @@ class ReservationCheckInService {
       if (reservation.quantumState != null) {
         // Use quantum state for compatibility calculation
         // For now, use a simplified calculation based on quantum state presence
-        quantumCompatibility = 0.7; // Presence of quantum state indicates some compatibility
+        quantumCompatibility =
+            0.7; // Presence of quantum state indicates some compatibility
         // TODO(Phase 10.1): Full quantum compatibility calculation using ReservationQuantumService
       }
 
@@ -1145,7 +1276,8 @@ class ReservationCheckInService {
           if (userKnot != null) {
             // For spot compatibility, we'd need spot knot - simplified for now
             // Full implementation would calculate knot topological compatibility
-            knotCompatibility = 0.6; // Knot exists, indicates some compatibility
+            knotCompatibility =
+                0.6; // Knot exists, indicates some compatibility
             // TODO(Phase 10.1): Calculate full knot compatibility with spot/event knot
           }
         } catch (e) {
@@ -1207,7 +1339,8 @@ class ReservationCheckInService {
       }
 
       // 6. Worldsheet compatibility (group reservations) - Phase 10.1: Full integration
-      if (_worldsheetService != null && reservation.type == ReservationType.event) {
+      if (_worldsheetService != null &&
+          reservation.type == ReservationType.event) {
         try {
           // For group events, calculate worldsheet compatibility
           // Note: Group check-in coordination requires multiple agentIds
@@ -1218,7 +1351,7 @@ class ReservationCheckInService {
           // 3. Calculate worldsheet compatibility from 2D group representation
           // 4. Use fabric stability for group coordination
           worldsheetCompatibility = 0.6; // Default for group events
-          
+
           // If fabric service is available, we could also check fabric stability
           if (_fabricService != null) {
             // TODO(Phase 10.1): Load or create fabric for group reservation
@@ -1241,16 +1374,18 @@ class ReservationCheckInService {
       }
 
       // Calculate hybrid compatibility: (quantum * knot * string)^(1/3) * (0.4 * location + 0.3 * timing + 0.3 * worldsheet)
-      final geometricMean = (quantumCompatibility * knotCompatibility * stringCompatibility);
-      final geometricRoot = geometricMean > 0 ? 
-          (geometricMean < 0.001 ? 0.0 : geometricMean) : 0.0;
-      final geometricComponent = geometricRoot > 0 ? 
-          (geometricRoot < 1.0 ? geometricRoot : 1.0) : 0.0;
-      
-      final weightedAverage = (0.4 * locationCompatibility) + 
-                             (0.3 * timingCompatibility) + 
-                             (0.3 * worldsheetCompatibility);
-      
+      final geometricMean =
+          (quantumCompatibility * knotCompatibility * stringCompatibility);
+      final geometricRoot = geometricMean > 0
+          ? (geometricMean < 0.001 ? 0.0 : geometricMean)
+          : 0.0;
+      final geometricComponent =
+          geometricRoot > 0 ? (geometricRoot < 1.0 ? geometricRoot : 1.0) : 0.0;
+
+      final weightedAverage = (0.4 * locationCompatibility) +
+          (0.3 * timingCompatibility) +
+          (0.3 * worldsheetCompatibility);
+
       final hybridScore = geometricComponent * weightedAverage;
       final finalScore = hybridScore.clamp(0.0, 1.0);
 
@@ -1281,7 +1416,7 @@ class ReservationCheckInService {
       final oldestKey = _compatibilityCache.keys.first;
       _compatibilityCache.remove(oldestKey);
     }
-    
+
     _compatibilityCache[key] = _CachedCompatibility(
       score: score,
       cachedAt: DateTime.now(),

@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2855
+**Total mapped files:** 2971
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,25 +10,25 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2496 |
-| keep_review | 333 |
+| keep_update | 2604 |
+| keep_review | 341 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 873 |
+| testing-quality | 933 |
 | presentation | 381 |
-| core-services-general | 366 |
-| tooling-ops | 285 |
+| core-services-general | 369 |
+| tooling-ops | 291 |
 | package-modules | 207 |
+| world-model-ai-core | 153 |
 | core-models | 141 |
 | supabase-infra | 124 |
-| world-model-ai-core | 108 |
 | platform-runtime | 62 |
 | data-layer | 55 |
-| assets | 24 |
+| assets | 26 |
 | native-modules | 24 |
 | ml-legacy-and-transition | 22 |
 | security-signal-ffi | 21 |
@@ -58,18 +58,18 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 378 |
+| lib/core/services | 381 |
 | lib/presentation/widgets | 204 |
-| test/unit/services | 188 |
+| test/unit/services | 200 |
 | lib/presentation/pages | 173 |
+| lib/core/ai | 153 |
 | lib/core/models | 141 |
-| lib/core/ai | 108 |
 | test/widget/widgets | 101 |
+| test/unit/ai | 95 |
 | packages/avrai_knot/lib | 84 |
 | packages/avrai_network/lib | 67 |
 | test/widget/pages | 56 |
 | test/unit/models | 55 |
-| test/unit/ai | 49 |
 | packages/avrai_core/lib | 34 |
 | scripts/ecommerce_experiments/results | 28 |
 | android/app | 27 |
@@ -80,7 +80,7 @@
 | lib/core/ai2ai | 20 |
 | test/unit/data | 20 |
 | test/integration/ai | 19 |
-| test/unit/ai2ai | 18 |
+| test/unit/ai2ai | 19 |
 | lib/core/crypto | 17 |
 | test/integration/controllers | 17 |
 | test/unit/controllers | 17 |

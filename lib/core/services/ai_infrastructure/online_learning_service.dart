@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:avrai/core/services/calling_score/calling_score_training_data_preparer.dart';
 import 'package:avrai/core/services/calling_score/calling_score_data_collector.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
@@ -15,136 +16,145 @@ import 'package:avrai/core/ml/model_version_registry.dart';
 import 'package:avrai/core/ml/model_version_info.dart';
 
 /// Online Learning Service
-/// 
+///
 /// Manages continuous learning for neural network models:
 /// - Collects new training data from outcomes
 /// - Triggers periodic retraining (weekly/monthly)
 /// - Auto-registers new model versions
 /// - Tracks model performance over time
-/// 
+///
 /// Phase 12 Section 3.2.1: Continuous Learning
 class OnlineLearningService {
   static const String _logName = 'OnlineLearningService';
-  
+
   final SupabaseClient _supabase;
   final ModelVersionManager _versionManager;
   final ModelRetrainingService _retrainingService;
-  
+  final CallingScoreTrainingDataPreparer? _trainingDataPreparer;
+  final AgentIdService? _agentIdService;
+
   // Retraining configuration
   static const int minSamplesForRetraining = 1000; // Minimum new samples needed
-  static const Duration retrainingInterval = Duration(days: 7); // Weekly retraining
-  static const Duration performanceTrackingInterval = Duration(hours: 24); // Daily tracking
-  
+  static const Duration retrainingInterval =
+      Duration(days: 7); // Weekly retraining
+  static const Duration performanceTrackingInterval =
+      Duration(hours: 24); // Daily tracking
+
   // State tracking
   DateTime? _lastRetrainingDate;
   Timer? _retrainingTimer;
   Timer? _performanceTrackingTimer;
   bool _isRetraining = false;
-  
+
   // Performance metrics cache
   final Map<String, ModelPerformanceMetrics> _performanceMetrics = {};
-  
+
   OnlineLearningService({
     required SupabaseClient supabase,
     required CallingScoreDataCollector dataCollector,
+    CallingScoreTrainingDataPreparer? trainingDataPreparer,
     required ModelVersionManager versionManager,
     required ModelRetrainingService retrainingService,
     AgentIdService? agentIdService,
-  }) : _supabase = supabase,
-       _versionManager = versionManager,
-       _retrainingService = retrainingService;
-  
+  })  : _supabase = supabase,
+        _versionManager = versionManager,
+        _retrainingService = retrainingService,
+        _trainingDataPreparer = trainingDataPreparer,
+        _agentIdService = agentIdService;
+
   /// Initialize online learning service
-  /// 
+  ///
   /// Starts scheduled retraining and performance tracking
   Future<void> initialize() async {
     developer.log('Initializing online learning service...', name: _logName);
-    
+
     // Load last retraining date from storage
     await _loadState();
-    
+
     // Start scheduled retraining
     _startScheduledRetraining();
-    
+
     // Start performance tracking
     _startPerformanceTracking();
-    
+
     developer.log('✅ Online learning service initialized', name: _logName);
   }
-  
+
   /// Start scheduled periodic retraining
   void _startScheduledRetraining() {
     // Cancel existing timer if any
     _retrainingTimer?.cancel();
-    
+
     // Schedule next retraining check
     _retrainingTimer = Timer.periodic(
       const Duration(hours: 24), // Check daily
       (_) => _checkAndTriggerRetraining(),
     );
-    
+
     developer.log(
       'Scheduled retraining: checking every 24 hours, retraining every ${retrainingInterval.inDays} days',
       name: _logName,
     );
   }
-  
+
   /// Start performance tracking
   void _startPerformanceTracking() {
     // Cancel existing timer if any
     _performanceTrackingTimer?.cancel();
-    
+
     // Track performance daily
     _performanceTrackingTimer = Timer.periodic(
       performanceTrackingInterval,
       (_) => _trackPerformanceForAllVersions(),
     );
-    
+
     developer.log(
       'Performance tracking: every ${performanceTrackingInterval.inHours} hours',
       name: _logName,
     );
   }
-  
+
   /// Check if retraining should be triggered and trigger if needed
   Future<void> _checkAndTriggerRetraining() async {
     if (_isRetraining) {
-      developer.log('Retraining already in progress, skipping check', name: _logName);
+      developer.log('Retraining already in progress, skipping check',
+          name: _logName);
       return;
     }
-    
+
     // Check if enough time has passed since last retraining
     final shouldRetrainByTime = _lastRetrainingDate == null ||
         DateTime.now().difference(_lastRetrainingDate!) >= retrainingInterval;
-    
+
     // Check if enough new data is available
     final newDataCount = await _countNewTrainingData();
     final shouldRetrainByData = newDataCount >= minSamplesForRetraining;
-    
+
     if (shouldRetrainByTime || shouldRetrainByData) {
       developer.log(
         'Retraining trigger: time=$shouldRetrainByTime, data=$shouldRetrainByData ($newDataCount new samples)',
         name: _logName,
       );
-      
+
       await triggerRetraining(
         reason: shouldRetrainByTime ? 'scheduled' : 'data_threshold',
         newDataCount: newDataCount,
       );
     }
   }
-  
+
   /// Count new training data since last retraining
   Future<int> _countNewTrainingData() async {
     try {
-      final lastDate = _lastRetrainingDate ?? DateTime.now().subtract(const Duration(days: 30));
-      
+      final lastDate = _lastRetrainingDate ??
+          DateTime.now().subtract(const Duration(days: 30));
+
       final response = await _supabase
           .from('calling_score_training_data')
           .select('id')
           .gte('timestamp', lastDate.toIso8601String())
           .not('outcome_type', 'is', null); // Only count records with outcomes
-      
+
       return (response as List).length;
     } catch (e, stackTrace) {
       developer.log(
@@ -156,37 +166,40 @@ class OnlineLearningService {
       return 0;
     }
   }
-  
+
   /// Trigger model retraining
-  /// 
+  ///
   /// **Parameters:**
   /// - `modelType`: 'calling_score' or 'outcome'
   /// - `reason`: Why retraining was triggered ('scheduled', 'data_threshold', 'manual')
   /// - `newDataCount`: Number of new training samples available
-  /// 
+  /// - `requireStrictLocalFirst`: if true, export must come from local episodic
+  ///   replay and remote fallback is not allowed.
+  ///
   /// **Returns:**
   /// True if retraining was successfully triggered
   Future<bool> triggerRetraining({
     String modelType = 'calling_score',
     String reason = 'manual',
     int? newDataCount,
+    bool requireStrictLocalFirst = false,
   }) async {
     if (_isRetraining) {
       developer.log('Retraining already in progress', name: _logName);
       return false;
     }
-    
+
     _isRetraining = true;
-    
+
     try {
       developer.log(
         'Triggering retraining for $modelType (reason: $reason, new data: ${newDataCount ?? "unknown"})',
         name: _logName,
       );
-      
+
       // Count new data if not provided
       final dataCount = newDataCount ?? await _countNewTrainingData();
-      
+
       if (dataCount < minSamplesForRetraining) {
         developer.log(
           'Insufficient new data for retraining: $dataCount < $minSamplesForRetraining',
@@ -195,36 +208,46 @@ class OnlineLearningService {
         _isRetraining = false;
         return false;
       }
-      
+
+      final strictLocalFirst = requireStrictLocalFirst || reason == 'scheduled';
+
       // Export new training data
-      final exportResult = await _exportTrainingDataForRetraining();
+      final exportResult = await _exportTrainingDataForRetraining(
+        requireStrictLocalFirst: strictLocalFirst,
+      );
       if (exportResult == null) {
-        developer.log('Failed to export training data for retraining', name: _logName);
+        developer.log(
+          strictLocalFirst
+              ? 'Failed to export strict local-first training data for retraining'
+              : 'Failed to export training data for retraining',
+          name: _logName,
+        );
         _isRetraining = false;
         return false;
       }
-      
+
       // Trigger complete retraining workflow (retrain + validate + deploy)
-      final deployedVersion = await _retrainingService.completeRetrainingWorkflow(
+      final deployedVersion =
+          await _retrainingService.completeRetrainingWorkflow(
         modelType: modelType,
         dataPath: exportResult,
       );
-      
+
       if (deployedVersion == null) {
         developer.log('Retraining workflow failed', name: _logName);
         _isRetraining = false;
         return false;
       }
-      
+
       developer.log(
         '✅ Retraining complete and model deployed: $deployedVersion',
         name: _logName,
       );
-      
+
       // Update last retraining date
       _lastRetrainingDate = DateTime.now();
       await _saveState();
-      
+
       _isRetraining = false;
       return true;
     } catch (e, stackTrace) {
@@ -238,53 +261,96 @@ class OnlineLearningService {
       return false;
     }
   }
-  
+
   /// Export training data for retraining
-  /// 
+  ///
   /// Exports new training data since last retraining to JSON format
   /// for Python training scripts
-  /// 
+  ///
   /// **Returns:**
   /// Path to exported data file, or null if export failed
-  Future<String?> _exportTrainingDataForRetraining() async {
+  Future<String?> _exportTrainingDataForRetraining({
+    bool requireStrictLocalFirst = false,
+  }) async {
     try {
-      final lastDate = _lastRetrainingDate ?? DateTime.now().subtract(const Duration(days: 30));
-      
-      // Fetch new training data with outcomes
-      final response = await _supabase
-          .from('calling_score_training_data')
-          .select()
-          .gte('timestamp', lastDate.toIso8601String())
-          .not('outcome_type', 'is', null)
-          .order('timestamp', ascending: true);
-      
-      if (response.isEmpty) {
-        developer.log('No new training data to export', name: _logName);
+      final lastDate = _lastRetrainingDate ??
+          DateTime.now().subtract(const Duration(days: 30));
+
+      // Prefer local episodic replay for active agent/window.
+      List<Map<String, dynamic>> trainingData = const [];
+      if (_trainingDataPreparer != null &&
+          _agentIdService != null &&
+          _supabase.auth.currentUser != null) {
+        try {
+          final trainingDataPreparer = _trainingDataPreparer;
+          final userId = _supabase.auth.currentUser!.id;
+          final agentId = await _agentIdService.getUserAgentId(userId);
+          trainingData =
+              await trainingDataPreparer.buildTrainingRecordsFromEpisodicReplay(
+            agentId: agentId,
+            windowStartInclusive: lastDate,
+            windowEndExclusive: DateTime.now(),
+          );
+          developer.log(
+            'Using episodic replay export path (${trainingData.length} samples)${requireStrictLocalFirst ? " [strict]" : ""}',
+            name: _logName,
+          );
+        } catch (e) {
+          developer.log(
+            requireStrictLocalFirst
+                ? 'Episodic replay export unavailable under strict local-first: $e'
+                : 'Episodic replay export unavailable, falling back to Supabase: $e',
+            name: _logName,
+          );
+        }
+      }
+
+      if (requireStrictLocalFirst && trainingData.isEmpty) {
+        developer.log(
+          'Strict local-first is enabled and no episodic replay samples were available.',
+          name: _logName,
+        );
         return null;
       }
-      
-      // Convert to training data format
-      final trainingData = (response as List).map((record) {
-        return {
-          'user_vibe_dimensions': record['user_vibe_dimensions'],
-          'spot_vibe_dimensions': record['spot_vibe_dimensions'],
-          'context_features': record['context_features'],
-          'timing_features': record['timing_features'],
-          'formula_calling_score': record['formula_calling_score'],
-          'is_called': record['formula_is_called'],
-          'outcome_type': record['outcome_type'],
-          'outcome_score': record['outcome_score'],
-        };
-      }).toList();
-      
+
+      // Fallback: fetch from remote training table.
+      if (trainingData.isEmpty) {
+        final response = await _supabase
+            .from('calling_score_training_data')
+            .select()
+            .gte('timestamp', lastDate.toIso8601String())
+            .not('outcome_type', 'is', null)
+            .order('timestamp', ascending: true);
+
+        if (response.isEmpty) {
+          developer.log('No new training data to export', name: _logName);
+          return null;
+        }
+
+        trainingData = (response as List)
+            .map((record) => {
+                  'user_vibe_dimensions': record['user_vibe_dimensions'],
+                  'spot_vibe_dimensions': record['spot_vibe_dimensions'],
+                  'context_features': record['context_features'],
+                  'timing_features': record['timing_features'],
+                  'formula_calling_score': record['formula_calling_score'],
+                  'is_called': record['formula_is_called'],
+                  'outcome_type': record['outcome_type'],
+                  'outcome_score': record['outcome_score'],
+                })
+            .toList();
+      }
+
       // Save to file
-      final timestamp = DateTime.now().toIso8601String().split('T').first.replaceAll('-', '');
-      final exportPath = 'data/calling_score_training_data_retrain_$timestamp.json';
+      final timestamp =
+          DateTime.now().toIso8601String().split('T').first.replaceAll('-', '');
+      final exportPath =
+          'data/calling_score_training_data_retrain_$timestamp.json';
       final exportFile = File(exportPath);
-      
+
       // Create data directory if needed
       await exportFile.parent.create(recursive: true);
-      
+
       // Write JSON file
       final jsonData = {
         'metadata': {
@@ -295,16 +361,16 @@ class OnlineLearningService {
         },
         'training_data': trainingData,
       };
-      
+
       await exportFile.writeAsString(
         const JsonEncoder.withIndent('  ').convert(jsonData),
       );
-      
+
       developer.log(
         '✅ Exported ${trainingData.length} training records to: $exportPath',
         name: _logName,
       );
-      
+
       return exportPath;
     } catch (e, stackTrace) {
       developer.log(
@@ -316,11 +382,11 @@ class OnlineLearningService {
       return null;
     }
   }
-  
+
   /// Register a newly trained model version
-  /// 
+  ///
   /// Called after retraining completes to register the new version
-  /// 
+  ///
   /// **Parameters:**
   /// - `version`: Version identifier (e.g., 'v1.2-hybrid')
   /// - `modelPath`: Path to ONNX model file
@@ -343,12 +409,12 @@ class OnlineLearningService {
         description: 'Auto-retrained model (online learning)',
         trainingMetrics: trainingMetrics,
       );
-      
+
       await _versionManager.registerVersion(
         versionInfo,
         modelType: modelType,
       );
-      
+
       developer.log(
         '✅ Registered new model version: $version ($modelType)',
         name: _logName,
@@ -362,14 +428,16 @@ class OnlineLearningService {
       );
     }
   }
-  
+
   /// Track performance for all active model versions
   Future<void> _trackPerformanceForAllVersions() async {
     try {
       // Track calling score model performance
-      final callingScoreVersion = ModelVersionRegistry.activeCallingScoreVersion;
-      await trackModelPerformance(callingScoreVersion, modelType: 'calling_score');
-      
+      final callingScoreVersion =
+          ModelVersionRegistry.activeCallingScoreVersion;
+      await trackModelPerformance(callingScoreVersion,
+          modelType: 'calling_score');
+
       // Track outcome prediction model performance
       final outcomeVersion = ModelVersionRegistry.activeOutcomeVersion;
       await trackModelPerformance(outcomeVersion, modelType: 'outcome');
@@ -382,9 +450,9 @@ class OnlineLearningService {
       );
     }
   }
-  
+
   /// Track performance metrics for a specific model version
-  /// 
+  ///
   /// **Parameters:**
   /// - `version`: Model version to track
   /// - `modelType`: 'calling_score' or 'outcome'
@@ -396,26 +464,28 @@ class OnlineLearningService {
       final versionInfo = modelType == 'calling_score'
           ? ModelVersionRegistry.getCallingScoreVersion(version)
           : ModelVersionRegistry.getOutcomeVersion(version);
-      
+
       if (versionInfo == null) {
-        developer.log('Version $version not found for performance tracking', name: _logName);
+        developer.log('Version $version not found for performance tracking',
+            name: _logName);
         return;
       }
-      
+
       // Calculate performance metrics from recent A/B test outcomes
       final metrics = await _calculatePerformanceMetrics(version, modelType);
-      
+
       // Update version info with performance metrics
       final updatedMetrics = {
         ...versionInfo.performanceMetrics,
         ...metrics,
         'last_tracked': DateTime.now().toIso8601String(),
       };
-      
+
       // Update version info (would need a method to update in registry)
       // For now, log the metrics
-      _performanceMetrics[version] = ModelPerformanceMetrics.fromMap(updatedMetrics);
-      
+      _performanceMetrics[version] =
+          ModelPerformanceMetrics.fromMap(updatedMetrics);
+
       developer.log(
         'Performance tracked for $version: ${metrics.toString()}',
         name: _logName,
@@ -429,7 +499,7 @@ class OnlineLearningService {
       );
     }
   }
-  
+
   /// Calculate performance metrics for a model version
   Future<Map<String, dynamic>> _calculatePerformanceMetrics(
     String version,
@@ -442,22 +512,28 @@ class OnlineLearningService {
           .from('calling_score_ab_test_outcomes')
           .select()
           .eq('test_group', modelType == 'calling_score' ? 'hybrid' : 'formula')
-          .gte('timestamp', DateTime.now().subtract(const Duration(days: 7)).toIso8601String());
-      
+          .gte(
+              'timestamp',
+              DateTime.now()
+                  .subtract(const Duration(days: 7))
+                  .toIso8601String());
+
       if (response.isEmpty) {
         return {
           'sample_count': 0,
           'note': 'Insufficient data for metrics',
         };
       }
-      
+
       final outcomes = response as List;
-      final positiveOutcomes = outcomes.where((o) => o['outcome_type'] == 'positive').length;
+      final positiveOutcomes =
+          outcomes.where((o) => o['outcome_type'] == 'positive').length;
       final totalOutcomes = outcomes.length;
-      
+
       return {
         'sample_count': totalOutcomes,
-        'positive_outcome_rate': totalOutcomes > 0 ? positiveOutcomes / totalOutcomes : 0.0,
+        'positive_outcome_rate':
+            totalOutcomes > 0 ? positiveOutcomes / totalOutcomes : 0.0,
         'average_calling_score': _calculateAverage(outcomes, 'calling_score'),
         'average_outcome_score': _calculateAverage(outcomes, 'outcome_score'),
         'tracking_period_days': 7,
@@ -472,21 +548,21 @@ class OnlineLearningService {
       return {};
     }
   }
-  
+
   /// Calculate average value from list of records
   double _calculateAverage(List records, String field) {
     if (records.isEmpty) return 0.0;
-    
+
     final values = records
         .map((r) => (r[field] as num?)?.toDouble() ?? 0.0)
         .where((v) => v > 0)
         .toList();
-    
+
     if (values.isEmpty) return 0.0;
-    
+
     return values.reduce((a, b) => a + b) / values.length;
   }
-  
+
   /// Load service state (last retraining date, etc.)
   Future<void> _loadState() async {
     try {
@@ -497,7 +573,7 @@ class OnlineLearningService {
       developer.log('Error loading state: $e', name: _logName);
     }
   }
-  
+
   /// Save service state
   Future<void> _saveState() async {
     try {
@@ -511,18 +587,18 @@ class OnlineLearningService {
       developer.log('Error saving state: $e', name: _logName);
     }
   }
-  
+
   /// Get performance metrics for a version
   ModelPerformanceMetrics? getPerformanceMetrics(String version) {
     return _performanceMetrics[version];
   }
-  
+
   /// Check if retraining is in progress
   bool get isRetraining => _isRetraining;
-  
+
   /// Get last retraining date
   DateTime? get lastRetrainingDate => _lastRetrainingDate;
-  
+
   /// Dispose resources
   void dispose() {
     _retrainingTimer?.cancel();
@@ -540,7 +616,7 @@ class ModelPerformanceMetrics {
   final double averageOutcomeScore;
   final int trackingPeriodDays;
   final DateTime? lastTracked;
-  
+
   ModelPerformanceMetrics({
     required this.sampleCount,
     required this.positiveOutcomeRate,
@@ -549,20 +625,23 @@ class ModelPerformanceMetrics {
     required this.trackingPeriodDays,
     this.lastTracked,
   });
-  
+
   factory ModelPerformanceMetrics.fromMap(Map<String, dynamic> map) {
     return ModelPerformanceMetrics(
       sampleCount: map['sample_count'] as int? ?? 0,
-      positiveOutcomeRate: (map['positive_outcome_rate'] as num?)?.toDouble() ?? 0.0,
-      averageCallingScore: (map['average_calling_score'] as num?)?.toDouble() ?? 0.0,
-      averageOutcomeScore: (map['average_outcome_score'] as num?)?.toDouble() ?? 0.0,
+      positiveOutcomeRate:
+          (map['positive_outcome_rate'] as num?)?.toDouble() ?? 0.0,
+      averageCallingScore:
+          (map['average_calling_score'] as num?)?.toDouble() ?? 0.0,
+      averageOutcomeScore:
+          (map['average_outcome_score'] as num?)?.toDouble() ?? 0.0,
       trackingPeriodDays: map['tracking_period_days'] as int? ?? 7,
       lastTracked: map['last_tracked'] != null
           ? DateTime.parse(map['last_tracked'] as String)
           : null,
     );
   }
-  
+
   Map<String, dynamic> toMap() {
     return {
       'sample_count': sampleCount,
