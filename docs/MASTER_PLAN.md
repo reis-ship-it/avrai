@@ -326,7 +326,7 @@ Wire every user action to capture outcomes.
 | Task | Description | Extends |
 |------|-------------|---------|
 | 1.2.1 | Create `UnifiedOutcomeCollector` service (generalizes `CallingScoreDataCollector` pattern to all entity types) | Extends existing |
-| 1.2.2 | Wire `ReservationCheckInService` confirmations as attendance outcomes | Existing service |
+| 1.2.2 | Wire `ReservationCheckInService` confirmations as attendance outcomes | Existing service -- COMPLETE (2026-02-23: `ReservationCheckInService.checkInViaNFC` now writes attendance outcome tuples on successful confirmation via `_recordAttendanceOutcomeTuple`, emitting `checkin_confirmed` outcomes (and `event_attended` action typing for event reservations) with validation-layer metadata and atomic timestamps; implemented in `reservation_check_in_service.dart`) |
 | 1.2.3 | Wire `PostEventFeedbackService` responses as quality outcomes | Existing service |
 | 1.2.4 | Wire `ContinuousLearningSystem.processUserInteraction` to write episodic tuples (not just dimension updates) | Existing service |
 | 1.2.5 | Add `community_join` as an interaction type in `ContinuousLearningSystem` (currently missing) | Gap fix |

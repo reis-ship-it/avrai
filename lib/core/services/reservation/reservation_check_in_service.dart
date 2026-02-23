@@ -476,6 +476,17 @@ class ReservationCheckInService {
           'knot': knotValid,
         },
       );
+      await _recordAttendanceOutcomeTuple(
+        reservation: updatedReservation,
+        spot: spot,
+        confidenceScore: confidenceScore,
+        validationLayers: {
+          'geohash': inProximity,
+          'wifi': wifiValid,
+          'quantum': quantumValid,
+          'knot': knotValid,
+        },
+      );
 
       developer.log(
         '✅ NFC check-in complete: reservationId=$reservationId, confidence=${(confidenceScore * 100).toStringAsFixed(1)}%',
@@ -579,6 +590,85 @@ class ReservationCheckInService {
         'Failed to write reservation check-in spot tuple: $e',
         name: _logName,
       );
+    }
+  }
+
+  Future<void> _recordAttendanceOutcomeTuple({
+    required Reservation reservation,
+    required Spot spot,
+    required double confidenceScore,
+    required Map<String, bool> validationLayers,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+
+    try {
+      final atomicNow = await _atomicClock.getAtomicTimestamp();
+      final now = atomicNow.deviceTime.toUtc();
+      final entityType = _entityTypeForReservation(reservation.type);
+      final eventType = reservation.type == ReservationType.event
+          ? 'event_attended'
+          : 'checkin_confirmed';
+
+      final tuple = EpisodicTuple(
+        agentId: reservation.agentId,
+        stateBefore: {
+          'phase_ref': '1.2.2',
+          'reservation_state': {
+            'reservation_id': reservation.id,
+            'reservation_type': reservation.type.name,
+            'status': reservation.status.name,
+          },
+        },
+        actionType: eventType,
+        actionPayload: {
+          'reservation_id': reservation.id,
+          'entity_type': entityType,
+          'entity_id': reservation.targetId,
+          'spot_id': spot.id,
+          'source': 'reservation_check_in_confirmation',
+        },
+        nextState: {
+          'attendance_outcome': {
+            'confirmed': true,
+            'confidence_score': confidenceScore,
+            'validation_layers': validationLayers,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'checkin_confirmed',
+          parameters: {
+            'reservation_id': reservation.id,
+            'entity_type': entityType,
+            'entity_id': reservation.targetId,
+            'spot_id': spot.id,
+            'confidence_score': confidenceScore,
+          },
+        ),
+        recordedAt: now,
+        metadata: const {
+          'phase_ref': '1.2.2',
+          'pipeline': 'reservation_check_in_service',
+        },
+      );
+
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to write reservation check-in attendance tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String _entityTypeForReservation(ReservationType type) {
+    switch (type) {
+      case ReservationType.event:
+        return 'event';
+      case ReservationType.business:
+        return 'business';
+      case ReservationType.spot:
+        return 'spot';
     }
   }
 
