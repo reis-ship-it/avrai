@@ -1,6 +1,6 @@
 # AVRAI Philosophy and Architecture
 
-**Last Updated:** February 20, 2026  
+**Last Updated:** February 23, 2026  
 **Status:** ACTIVE - Master Philosophy Document
 
 ## 1. Core Philosophy: Doors
@@ -95,12 +95,15 @@ AVRAI should:
 - support user correction,
 - and preserve variety of paths.
 - preserve reflective agency when AI confidence is high but uncertainty remains.
+- treat "too good to be true" skepticism as valid feedback, not user resistance to optimize away.
+- provide reversible pilot paths for high-upside, high-impact recommendations when trust is low.
 
 AVRAI should not:
 - force narrow recommendation funnels,
 - penalize minority patterns as "wrong",
 - hide tradeoffs behind opaque optimization,
 - or train users into uncritical acceptance of AI output.
+- use certainty theater or hype framing to pressure high-impact acceptance.
 
 ## 8.1 Tri-System Agency Boundary
 
@@ -111,6 +114,8 @@ Operational constraints:
 - High-impact recommendations must expose uncertainty and provide an easy counter-view.
 - Confidence is not authority: confidence must stay calibrated to realized outcomes over delayed windows.
 - When confidence/accuracy diverges, autonomy is automatically throttled and reflective checkpoints increase.
+- High-impact claims must include a plausibility translation (`claim`, `why_now`, `assumptions`, `what would disprove`, `safe test step`).
+- Adoption realism is explicit: `model_confidence` and `adoption_confidence` are tracked separately, and high-gap lanes are routed to pilot mode.
 
 ## 9. Access and Hierarchy
 
@@ -129,6 +134,7 @@ A change is successful only if it improves real-world utility while preserving:
 - privacy,
 - user agency,
 - and recourse.
+- trust calibration and recoverability after overconfident or overhyped failures.
 
 Implementation pointer:
 - Canonical failure/contradiction handling and self-healing integrity controls are maintained in `docs/MASTER_PLAN.md` under **10.9J System Failure + Self-Healing Integrity Matrix (Canonical)**.
