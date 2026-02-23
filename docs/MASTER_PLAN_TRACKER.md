@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 19, 2026 (v21: hardening pass adds kernel lifecycle/freeze governance, first-occurrence storm suppression, measurable dwell exit criteria, federated anti-fragmentation reconciliation, and high-impact autonomy oversight SLOs across phases `1.1E`, `6.2`, `7.9`, `8.1`, `10.9`, plus autonomous research architecture/addendum alignment. Previous: v20 recursive meta-learning + kernel/discoverability core mapping)
+**Last Updated:** February 20, 2026 (v26: added topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings across `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, and `10.9`. Previous: v25 added offline/online transfer continuity addendum (`arXiv 2602.17632`) and explicit cross-phase wiring to `5.2`, `7.7`, `7.9`, `8.1`, and `10.9.22`)
 
 ---
 
@@ -32,7 +32,7 @@
 - **Section branch start command:** `scripts/phase_section_start.sh --phase P# --section X.Y.Z`
 - **Subsection auto-PR command:** `scripts/phase_subsection_complete.sh --phase P# --subsection X.Y.Z`
 - **Naming verification gate:** `scripts/verify_phase_naming.sh --phase P# --branch <branch>`
-- **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work/*` into their immediate parent branch)
+- **GitHub subsection auto-PR workflow:** `.github/workflows/phase-subsection-autopr.yml` (auto-opens PRs from `phase#_work__*` into their immediate parent branch)
 - **GitHub phase root sync workflow:** `.github/workflows/phase-root-sync.yml` (manual dispatch to merge `main` into `phase#_work`)
 
 ---
@@ -166,6 +166,7 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| Red-Team Test Matrix (System Hijack + Data Security) | 2026-02-19 | 🟢 Active | **CRITICAL** | Continuous; critical lanes release-block autonomous scope expansion until resolved | [`security/RED_TEAM_TEST_MATRIX.md`](./security/RED_TEAM_TEST_MATRIX.md) |
 | Signal Protocol Implementation (Phase 14) | 2025-12-28 | 🟡 In Progress | P2 Enhancement | 3-6 weeks (Framework: Complete) | [`plans/security_implementation/PHASE_14_IMPLEMENTATION_PLAN.md`](./plans/security_implementation/PHASE_14_IMPLEMENTATION_PLAN.md) |
 | Security Implementation Plan | 2025-11-27 | 🟢 Active | CRITICAL (P0) | 6-8 weeks | [`plans/security_implementation/SECURITY_IMPLEMENTATION_PLAN.md`](./plans/security_implementation/SECURITY_IMPLEMENTATION_PLAN.md) |
 
@@ -184,6 +185,7 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
+| Dream Training and Conviction Governance | 2026-02-20 | 🟢 Active | **CRITICAL** | Continuous governance; bounded dream simulation with fail-closed belief-tier enforcement and anti-delusion promotion controls | [`plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md) |
 | Experiment Registry (Canonical + Build-Enforced) | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all experiment scripts must be registry-tracked with deterministic canonical naming and target architecture space | [`EXPERIMENT_REGISTRY.md`](./EXPERIMENT_REGISTRY.md) |
 | ML Training Automation Governance | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model training + staged simulations auto-recorded and checklist-generated | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
 | AVRAI-Native Training Data Contracts + Builder | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model datasets must be converted to AVRAI-native envelopes (including knot/quantum/atomic) before simulation/training | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |
@@ -198,6 +200,9 @@
 | External Research Addendum: arXiv 2602.11865 (Delegation Dynamics / Trust-Calibrated Control) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md) |
 | External Research Addendum: Adaptive Reasoning + Runtime Control Batch (Ouro/UT/PonderNet/RLVR/Scaling/Data) | 2026-02-16 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md) |
 | External Research Addendum: Feedback/Conviction/Data Research Ops Batch (DAAF/OpenAI Social Science/Delegation/Formal Oversight/Distal Objective) | 2026-02-17 | 📋 Reference | HIGH | Immediate planning input; core-phase mapping to `1.1E`, `1.4`, `4.1`, `5.1`, `5.2`, `6.1` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md) |
+| External Research Addendum: arXiv 2507.00885 (Downstream Scaling Reliability / Cross-Setting Sensitivity) | 2026-02-19 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `5.2`, `7.7`, `7.9`, `8.1`, `10.9` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md) |
+| External Research Addendum: arXiv 2602.17632 (Offline/Online Transfer Continuity) | 2026-02-20 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `5.2`, `7.7`, `7.9`, `8.1`, `10.9.22` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md) |
+| External Research Addendum: arXiv 2602.16873 (Task-Adaptive Orchestration Topology) | 2026-02-20 | 📋 Reference | HIGH | Immediate planning input; caution-gated mapping to `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, `10.9` for online/offline + ai2ai topology policy | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md) |
 | External Research Addendum: Recursive Meta-Learning + Kernel Contracts + Discoverability Batch (arXiv 2602.03814/16708/13671/03837/15799/2512.14982/2602.15001 + AVRAI operating concerns) | 2026-02-19 | 📋 Reference | HIGH | Immediate planning input; cross-phase mapping to `1.1E`, `1.2`, `1.4`, `5.2`, `6.1`, `6.2`, `7.9`, `8.1`, `10.9` | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md) |
 | External Research Addendum: arXiv 2602.12259 (Scientist-style Agent Workflow) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_12259.md) |
 | External Research Addendum: HKUDS/nanobot (Lightweight Deterministic Memory Core) | 2026-02-15 | 📋 Reference | HIGH | Immediate planning input | [`plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`](./plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md) |
@@ -508,7 +513,7 @@ New Idea
 **Paused:** 1  
 **Deprecated:** 14  
 
-**Last Updated:** February 15, 2026 (v15: canonical PRD + traceability governance; previous entries preserved above)
+**Last Updated:** February 20, 2026 (v26: topology-adaptive orchestration addendum mapped with caution gates; previous entries preserved above)
 
 ---
 

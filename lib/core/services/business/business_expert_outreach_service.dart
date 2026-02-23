@@ -1,7 +1,18 @@
 import 'dart:developer' as developer;
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/business/business_expert_chat_service_ai2ai.dart';
 import 'package:avrai/core/models/business/business_expert_message.dart';
+
+typedef OutreachSendMessage = Future<void> Function({
+  required String businessId,
+  required String expertId,
+  required String content,
+  required MessageSenderType senderType,
+  required MessageType messageType,
+});
 
 /// Business-Expert Outreach Service
 ///
@@ -11,12 +22,21 @@ class BusinessExpertOutreachService {
   static const String _logName = 'BusinessExpertOutreachService';
   final PartnershipService? _partnershipService;
   final BusinessExpertChatServiceAI2AI? _chatService;
+  final OutreachSendMessage? _sendMessageOverride;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   BusinessExpertOutreachService({
     PartnershipService? partnershipService,
     BusinessExpertChatServiceAI2AI? chatService,
+    OutreachSendMessage? sendMessageOverride,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
   })  : _partnershipService = partnershipService,
-        _chatService = chatService;
+        _chatService = chatService,
+        _sendMessageOverride = sendMessageOverride,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy;
 
   /// Discover experts based on vibe compatibility
   ///
@@ -105,7 +125,7 @@ class BusinessExpertOutreachService {
     String? subject, // Optional subject/topic
   }) async {
     try {
-      if (_chatService == null) {
+      if (_sendMessageOverride == null && _chatService == null) {
         developer.log(
           'ChatService not available, cannot send outreach',
           name: _logName,
@@ -120,12 +140,29 @@ class BusinessExpertOutreachService {
       );
 
       // Send initial message via chat service
-      await _chatService.sendMessage(
+      if (_sendMessageOverride != null) {
+        await _sendMessageOverride(
+          businessId: businessId,
+          expertId: expertId,
+          content: message,
+          senderType: MessageSenderType.business,
+          messageType: MessageType.text,
+        );
+      } else {
+        await _chatService!.sendMessage(
+          businessId: businessId,
+          expertId: expertId,
+          content: message,
+          senderType: MessageSenderType.business,
+          messageType: MessageType.text,
+        );
+      }
+      await _recordOutreachTuple(
         businessId: businessId,
         expertId: expertId,
-        content: message,
-        senderType: MessageSenderType.business,
-        messageType: MessageType.text,
+        compatibilityScore: compatibilityScore,
+        messageLength: message.length,
+        subject: subject,
       );
 
       developer.log(
@@ -225,6 +262,62 @@ class BusinessExpertOutreachService {
     } catch (e) {
       developer.log('Error getting recommended experts: $e', name: _logName);
       return [];
+    }
+  }
+
+  Future<void> _recordOutreachTuple({
+    required String businessId,
+    required String expertId,
+    required int messageLength,
+    required double? compatibilityScore,
+    String? subject,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final nowIso = DateTime.now().toUtc().toIso8601String();
+      final tuple = EpisodicTuple(
+        agentId: businessId,
+        stateBefore: {
+          'phase_ref': '1.2.23',
+          'business_state': {
+            'business_id': businessId,
+            'channel': 'business_expert_chat',
+          },
+        },
+        actionType: 'initiate_outreach',
+        actionPayload: {
+          'expert_features': {
+            'expert_id': expertId,
+            'compatibility_score': compatibilityScore,
+          },
+          'outreach_context': {
+            'message_length': messageLength,
+            if (subject != null && subject.isNotEmpty) 'subject': subject,
+          },
+        },
+        nextState: {
+          'chat_state': {
+            'chat_started': true,
+            'started_at': nowIso,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'chat_started',
+          parameters: {
+            'business_id': businessId,
+            'expert_id': expertId,
+            'compatibility_score': compatibilityScore,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.23',
+          'pipeline': 'business_expert_outreach_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log('Error writing outreach tuple: $e', name: _logName);
     }
   }
 }

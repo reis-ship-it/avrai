@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/business/sponsorship_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
@@ -13,6 +14,7 @@ import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:avrai/core/models/sponsorship/sponsorship.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/business/brand_account.dart';
+import 'package:avrai_core/models/quantum_entity_type.dart';
 import '../../fixtures/model_factories.dart';
 
 import 'sponsorship_service_test.mocks.dart';
@@ -35,17 +37,20 @@ void main() {
     late SponsorshipService service;
     late MockExpertiseEventService mockEventService;
     late MockPartnershipService mockPartnershipService;
+    late EpisodicMemoryStore episodicMemoryStore;
     late ExpertiseEvent testEvent;
     late BrandAccount testBrand;
 
     setUp(() {
       mockEventService = MockExpertiseEventService();
       mockPartnershipService = MockPartnershipService();
+      episodicMemoryStore = EpisodicMemoryStore();
 
       service = SponsorshipService(
         eventService: mockEventService,
         partnershipService: mockPartnershipService,
         vibeCompatibilityService: vibeCompatibilityService,
+        episodicMemoryStore: episodicMemoryStore,
       );
 
       final testUser = ModelFactories.createTestUser(
@@ -233,6 +238,102 @@ void main() {
             'message',
             contains('Product sponsorship requires productValue'),
           )),
+        );
+      });
+
+      test('writes sponsor_event episodic tuple on sponsorship creation',
+          () async {
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
+            .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
+
+        final sponsorship = await service.createSponsorship(
+          eventId: 'event-123',
+          brandId: 'brand-123',
+          type: SponsorshipType.financial,
+          contributionAmount: 500.00,
+          vibeCompatibilityScore: 0.75,
+        );
+
+        final tuples =
+            await episodicMemoryStore.getRecent(agentId: 'brand-123');
+        expect(tuples, hasLength(1));
+        expect(tuples.first.actionType, equals('sponsor_event'));
+        expect(tuples.first.outcome.type, equals('sponsor_event'));
+        expect(
+          tuples.first.actionPayload['sponsorship_features']['sponsorship_id'],
+          equals(sponsorship.id),
+        );
+      });
+    });
+
+    group('recordSponsorshipOutcome', () {
+      test(
+          'writes sponsorship outcome tuple with engagement, awareness, revenue, and quality metrics',
+          () async {
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+        when(mockPartnershipService.getPartnershipsForEvent('event-123'))
+            .thenAnswer((_) async => []);
+        await service.registerBrand(testBrand);
+
+        final sponsorship = await service.createSponsorship(
+          eventId: 'event-123',
+          brandId: 'brand-123',
+          type: SponsorshipType.hybrid,
+          contributionAmount: 500.00,
+          productValue: 250.00,
+          vibeCompatibilityScore: 0.82,
+        );
+        final brandStateBefore =
+            await service.getBrandQuantumState('brand-123');
+        final sponsorStateBefore =
+            await service.getSponsorQuantumState('brand-123');
+
+        when(mockEventService.getEventById('event-123'))
+            .thenAnswer((_) async => testEvent);
+
+        await service.recordSponsorshipOutcome(
+          sponsorshipId: sponsorship.id,
+          attendeeEngagementCount: 42,
+          brandAwarenessLift: 0.18,
+          revenueGenerated: 3200.0,
+          eventQualityImpactRating: 4.4,
+          repeatSponsorshipIntent: true,
+        );
+
+        final tuples =
+            await episodicMemoryStore.getRecent(agentId: 'brand-123');
+        expect(tuples.length, equals(2));
+        expect(
+            tuples.first.outcome.type, equals('sponsorship_outcome_recorded'));
+        expect(
+          tuples.first.actionPayload['sponsorship_outcome']
+              ['attendee_engagement_count'],
+          equals(42),
+        );
+        expect(
+          tuples.first.actionPayload['sponsorship_outcome']
+              ['revenue_generated'],
+          equals(3200.0),
+        );
+
+        final brandState = await service.getBrandQuantumState('brand-123');
+        expect(brandState.entityType, equals(QuantumEntityType.brand));
+        expect(
+          brandState.quantumVibeAnalysis['sponsorship_roi']! >
+              brandStateBefore.quantumVibeAnalysis['sponsorship_roi']!,
+          isTrue,
+        );
+
+        final sponsorState = await service.getSponsorQuantumState('brand-123');
+        expect(sponsorState.entityType, equals(QuantumEntityType.sponsor));
+        expect(
+          sponsorState.quantumVibeAnalysis['renewal_likelihood']! >
+              sponsorStateBefore.quantumVibeAnalysis['renewal_likelihood']!,
+          isTrue,
         );
       });
     });

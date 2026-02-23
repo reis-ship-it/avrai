@@ -6,6 +6,7 @@ import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/services/behavior/behavior_assessment_service.dart';
 import 'package:avrai/core/services/calling_score/calling_score_data_collector.dart';
 import 'package:avrai/core/services/calling_score/calling_score_ab_testing_service.dart';
+import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/ml/calling_score_neural_model.dart';
 import 'package:avrai/core/services/recommendations/outcome_prediction_service.dart';
 import 'package:geolocator/geolocator.dart';
@@ -34,6 +35,7 @@ class CallingScoreCalculator {
       _abTestingService; // Phase 12 Section 2.3: A/B testing
   final OutcomePredictionService?
       _outcomePredictionService; // Phase 12 Section 3.1: Outcome prediction
+  final FeatureFlagService? _featureFlags;
 
   CallingScoreCalculator({
     required BehaviorAssessmentService behaviorAssessment,
@@ -44,11 +46,13 @@ class CallingScoreCalculator {
         abTestingService, // Phase 12 Section 2.3: Optional A/B testing
     OutcomePredictionService?
         outcomePredictionService, // Phase 12 Section 3.1: Optional outcome prediction
+    FeatureFlagService? featureFlags,
   })  : _behaviorAssessment = behaviorAssessment,
         _dataCollector = dataCollector,
         _neuralModel = neuralModel,
         _abTestingService = abTestingService,
-        _outcomePredictionService = outcomePredictionService;
+        _outcomePredictionService = outcomePredictionService,
+        _featureFlags = featureFlags;
 
   /// Calculate unified calling score for a spot/event/opportunity
   ///
@@ -111,8 +115,20 @@ class CallingScoreCalculator {
       bool useHybrid = false;
 
       if (_abTestingService != null && userId != null) {
-        userGroup = await _abTestingService.getUserGroup(userId: userId);
-        useHybrid = userGroup == ABTestGroup.hybrid;
+        final replacementEnabled = _featureFlags == null
+            ? false
+            : await _featureFlags.isFormulaReplacementEnabled(
+                FormulaReplacementFeatureFlags.callingScore,
+                userId: userId,
+                defaultValue: false,
+              );
+        if (replacementEnabled) {
+          userGroup = await _abTestingService.getUserGroup(userId: userId);
+          useHybrid = userGroup == ABTestGroup.hybrid;
+        } else {
+          userGroup = ABTestGroup.formulaBased;
+          useHybrid = false;
+        }
       }
 
       // Phase 12 Section 2.2: Hybrid calling score calculation
@@ -629,7 +645,8 @@ class CallingScoreCalculator {
     // Additional context features (formerly placeholders):
     // These are computed from the same observable inputs and are also logged
     // via CallingScoreDataCollector so the model can be retrained with them.
-    final vibeCompatibility = opportunityVibe.calculateVibeCompatibility(userVibe);
+    final vibeCompatibility =
+        opportunityVibe.calculateVibeCompatibility(userVibe);
     final energyMatch = matchDim(
       userDimensions['overall_energy'],
       opportunityVibe.vibeDimensions['overall_energy'],

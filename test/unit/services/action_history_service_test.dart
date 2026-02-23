@@ -18,6 +18,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:avrai/core/ai/action_models.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/misc/action_history_service.dart';
 import '../../mocks/mock_storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
@@ -358,6 +359,85 @@ void main() {
           expect(canUndoSpot, isTrue);
           expect(canUndoList, isTrue);
           expect(canUndoAdd, isTrue);
+        });
+      });
+
+      group('Contrastive Tuple Logging', () {
+        test(
+            'writes contrastive tuple when recommended action differs from executed action',
+            () async {
+          final episodicStore = EpisodicMemoryStore();
+          final episodicService = ActionHistoryService(
+            storage: testStorage,
+            episodicMemoryStore: episodicStore,
+          );
+
+          const intent = CreateSpotIntent(
+            name: 'Contrastive Spot',
+            description: 'Test',
+            latitude: 0.0,
+            longitude: 0.0,
+            category: 'Test',
+            userId: 'user123',
+            confidence: 0.9,
+          );
+          final result = ActionResult.success(intent: intent);
+
+          await episodicService.addAction(
+            intent: intent,
+            result: result,
+            context: {
+              'agent_id': 'agent_action_history',
+              'recommended_action_type': 'create_list',
+              'state_before': {
+                'turn_id': 'turn_1',
+              },
+            },
+          );
+
+          final tuples =
+              await episodicStore.getRecent(agentId: 'agent_action_history');
+          expect(tuples.length, equals(1));
+          expect(tuples.first.actionType, equals('contrastive_action_choice'));
+          expect(tuples.first.stateBefore['recommended_action_type'],
+              equals('create_list'));
+          expect(tuples.first.stateBefore['actual_action_type'],
+              equals('create_spot'));
+          expect(tuples.first.outcome.type, equals('actual_action_succeeded'));
+          expect(tuples.first.outcome.value, equals(1.0));
+        });
+
+        test(
+            'does not write tuple when recommended action matches executed action',
+            () async {
+          final episodicStore = EpisodicMemoryStore();
+          final episodicService = ActionHistoryService(
+            storage: testStorage,
+            episodicMemoryStore: episodicStore,
+          );
+
+          const intent = CreateSpotIntent(
+            name: 'Aligned Spot',
+            description: 'Test',
+            latitude: 0.0,
+            longitude: 0.0,
+            category: 'Test',
+            userId: 'user123',
+            confidence: 0.9,
+          );
+
+          await episodicService.addAction(
+            intent: intent,
+            result: ActionResult.success(intent: intent),
+            context: {
+              'agent_id': 'agent_action_history',
+              'recommended_action_type': 'create_spot',
+            },
+          );
+
+          final tuples =
+              await episodicStore.getRecent(agentId: 'agent_action_history');
+          expect(tuples, isEmpty);
         });
       });
     });

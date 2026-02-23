@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/models/events/event_partnership.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/business/business_service.dart';
@@ -39,6 +42,8 @@ class PartnershipService {
   final ExpertiseEventService _eventService;
   final BusinessService _businessService;
   final VibeCompatibilityService _vibeCompatibilityService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
   final LedgerRecorderServiceV0 _ledger;
 
   // In-memory storage for partnerships (in production, use database)
@@ -48,10 +53,14 @@ class PartnershipService {
     required ExpertiseEventService eventService,
     required BusinessService businessService,
     required VibeCompatibilityService vibeCompatibilityService,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
     LedgerRecorderServiceV0? ledgerRecorder,
   })  : _eventService = eventService,
         _businessService = businessService,
         _vibeCompatibilityService = vibeCompatibilityService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
         _ledger = ledgerRecorder ??
             LedgerRecorderServiceV0(
               supabaseService: SupabaseService(),
@@ -192,6 +201,14 @@ class PartnershipService {
 
       // Step 7: Save partnership
       await _savePartnership(partnership);
+      await _recordPartnershipTuple(
+        partnership: partnership,
+        eventCategory: event.category,
+      );
+      await _recordChatToPartnershipTuple(
+        partnership: partnership,
+        eventCategory: event.category,
+      );
 
       // Best-effort dual-write to ledger (must never block UX).
       unawaited(_tryLedgerAppendForUser(
@@ -544,6 +561,53 @@ class PartnershipService {
     }
   }
 
+  /// Record partnership outcomes for training:
+  /// longevity, co-hosted events, revenue, and mutual satisfaction.
+  Future<void> recordPartnershipOutcome({
+    required String partnershipId,
+    required int activeDays,
+    required int coHostedEventCount,
+    required double revenueGenerated,
+    required double businessSatisfactionRating,
+    required double expertSatisfactionRating,
+  }) async {
+    try {
+      final partnership = await getPartnershipById(partnershipId);
+      if (partnership == null) {
+        throw Exception('Partnership not found: $partnershipId');
+      }
+      final event = await _eventService.getEventById(partnership.eventId);
+      final eventCategory = event?.category ?? 'unknown';
+      await _recordPartnershipTuple(
+        partnership: partnership,
+        eventCategory: eventCategory,
+        partnershipOutcome: {
+          'active_days': activeDays,
+          'co_hosted_event_count': coHostedEventCount,
+          'revenue_generated': revenueGenerated,
+          'business_satisfaction_rating': businessSatisfactionRating,
+          'expert_satisfaction_rating': expertSatisfactionRating,
+          'mutual_satisfaction_rating':
+              (businessSatisfactionRating + expertSatisfactionRating) / 2.0,
+        },
+      );
+      await _recordCoHostedEventTuple(
+        partnership: partnership,
+        eventCategory: eventCategory,
+        coHostedEventCount: coHostedEventCount,
+        revenueGenerated: revenueGenerated,
+        businessSatisfactionRating: businessSatisfactionRating,
+        expertSatisfactionRating: expertSatisfactionRating,
+      );
+      _logger.info('Recorded partnership outcome: $partnershipId',
+          tag: _logName);
+    } catch (e) {
+      _logger.error('Error recording partnership outcome',
+          error: e, tag: _logName);
+      rethrow;
+    }
+  }
+
   // Private helper methods
 
   String _generatePartnershipId() {
@@ -553,6 +617,184 @@ class PartnershipService {
   Future<void> _savePartnership(EventPartnership partnership) async {
     // In production, save to database
     _partnerships[partnership.id] = partnership;
+  }
+
+  Future<void> _recordPartnershipTuple({
+    required EventPartnership partnership,
+    required String eventCategory,
+    Map<String, dynamic>? partnershipOutcome,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final tuple = EpisodicTuple(
+        agentId: partnership.businessId,
+        stateBefore: {
+          'phase_ref': '1.2.22',
+          'business_id': partnership.businessId,
+          'event_id': partnership.eventId,
+          'partnership_id': partnership.id,
+          'partnership_status': partnership.status.name,
+        },
+        actionType: 'form_partnership',
+        actionPayload: {
+          'expert_features': {
+            'expert_id': partnership.userId,
+            'vibe_compatibility_score': partnership.vibeCompatibilityScore,
+            'shared_responsibilities_count':
+                partnership.sharedResponsibilities.length,
+          },
+          'partnership_features': {
+            'partnership_id': partnership.id,
+            'type': partnership.type.name,
+            'status': partnership.status.name,
+            'event_id': partnership.eventId,
+            'event_category': eventCategory,
+          },
+          if (partnershipOutcome != null)
+            'partnership_outcome': partnershipOutcome,
+        },
+        nextState: {
+          'partnership_outcome_recorded': partnershipOutcome != null,
+          'recorded_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: partnershipOutcome == null
+              ? 'form_partnership'
+              : 'partnership_outcome_recorded',
+          parameters: {
+            'partnership_id': partnership.id,
+            'status': partnership.status.name,
+            if (partnershipOutcome != null) ...partnershipOutcome,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.22',
+          'pipeline': 'partnership_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error('Error writing partnership tuple', error: e, tag: _logName);
+    }
+  }
+
+  Future<void> _recordChatToPartnershipTuple({
+    required EventPartnership partnership,
+    required String eventCategory,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final tuple = EpisodicTuple(
+        agentId: partnership.businessId,
+        stateBefore: {
+          'phase_ref': '1.2.23',
+          'chat_state': {
+            'business_id': partnership.businessId,
+            'expert_id': partnership.userId,
+            'conversation_started': true,
+          },
+        },
+        actionType: 'negotiate_terms',
+        actionPayload: {
+          'partnership_features': {
+            'partnership_id': partnership.id,
+            'event_id': partnership.eventId,
+            'event_category': eventCategory,
+            'status': partnership.status.name,
+            'type': partnership.type.name,
+            'vibe_compatibility_score': partnership.vibeCompatibilityScore,
+          },
+        },
+        nextState: {
+          'partnership_state': {
+            'partnership_formed': true,
+            'partnership_id': partnership.id,
+            'status': partnership.status.name,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'partnership_formed',
+          parameters: {
+            'partnership_id': partnership.id,
+            'event_id': partnership.eventId,
+            'status': partnership.status.name,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.23',
+          'pipeline': 'partnership_service',
+          'chain_stage': 'chat_to_partnership',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error('Error writing chat->partnership tuple',
+          error: e, tag: _logName);
+    }
+  }
+
+  Future<void> _recordCoHostedEventTuple({
+    required EventPartnership partnership,
+    required String eventCategory,
+    required int coHostedEventCount,
+    required double revenueGenerated,
+    required double businessSatisfactionRating,
+    required double expertSatisfactionRating,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+    try {
+      final mutualSatisfaction =
+          (businessSatisfactionRating + expertSatisfactionRating) / 2.0;
+      final tuple = EpisodicTuple(
+        agentId: partnership.businessId,
+        stateBefore: {
+          'phase_ref': '1.2.23',
+          'partnership_state': {
+            'partnership_id': partnership.id,
+            'status': partnership.status.name,
+          },
+        },
+        actionType: 'co_host_event',
+        actionPayload: {
+          'event_features': {
+            'event_id': partnership.eventId,
+            'event_category': eventCategory,
+            'co_hosted_event_count': coHostedEventCount,
+            'revenue_generated': revenueGenerated,
+          },
+        },
+        nextState: {
+          'event_outcome': {
+            'mutual_satisfaction_rating': mutualSatisfaction,
+            'business_satisfaction_rating': businessSatisfactionRating,
+            'expert_satisfaction_rating': expertSatisfactionRating,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'event_outcome',
+          parameters: {
+            'partnership_id': partnership.id,
+            'event_id': partnership.eventId,
+            'overall_rating': mutualSatisfaction,
+            'mutual_satisfaction_rating': mutualSatisfaction,
+            'co_hosted_event_count': coHostedEventCount,
+            'revenue_generated': revenueGenerated,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.23',
+          'pipeline': 'partnership_service',
+          'chain_stage': 'partnership_to_event',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      _logger.error('Error writing co-host event tuple',
+          error: e, tag: _logName);
+    }
   }
 
   Future<List<EventPartnership>> _getAllPartnerships() async {

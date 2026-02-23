@@ -11,15 +11,141 @@
 // - Interaction processing
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/perpetual_list/perpetual_list_orchestrator.dart';
 import 'package:avrai/core/ai/perpetual_list/engines/trigger_engine.dart';
+import 'package:avrai/core/ai/perpetual_list/engines/context_engine.dart';
+import 'package:avrai/core/ai/perpetual_list/engines/generation_engine.dart';
+import 'package:avrai/core/ai/perpetual_list/analyzers/location_pattern_analyzer.dart';
 import 'package:avrai/core/ai/perpetual_list/analyzers/string_theory_possibility_engine.dart';
 import 'package:avrai/core/ai/perpetual_list/filters/age_aware_list_filter.dart';
+import 'package:avrai/core/ai/perpetual_list/integration/ai2ai_list_learning_integration.dart';
 import 'package:avrai/core/ai/perpetual_list/models/models.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 
+class MockTriggerEngine extends Mock implements TriggerEngine {}
+
+class MockContextEngine extends Mock implements ContextEngine {}
+
+class MockGenerationEngine extends Mock implements GenerationEngine {}
+
+class MockLocationPatternAnalyzer extends Mock
+    implements LocationPatternAnalyzer {}
+
+class MockStringTheoryPossibilityEngine extends Mock
+    implements StringTheoryPossibilityEngine {}
+
+class MockAgeAwareListFilter extends Mock implements AgeAwareListFilter {}
+
+class MockAI2AIListLearningIntegration extends Mock
+    implements AI2AIListLearningIntegration {}
+
 void main() {
+  setUpAll(() {
+    registerFallbackValue(
+      ListInteraction(
+        type: ListInteractionType.viewed,
+        listId: 'fallback-list',
+        timestamp: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      ),
+    );
+  });
+
   group('PerpetualListOrchestrator', () {
+    group('processListInteraction', () {
+      test('writes episodic tuples for viewed/saved/dismissed interactions',
+          () async {
+        final triggerEngine = MockTriggerEngine();
+        final contextEngine = MockContextEngine();
+        final generationEngine = MockGenerationEngine();
+        final locationAnalyzer = MockLocationPatternAnalyzer();
+        final possibilityEngine = MockStringTheoryPossibilityEngine();
+        final ageFilter = MockAgeAwareListFilter();
+        final ai2aiIntegration = MockAI2AIListLearningIntegration();
+        final episodicStore = EpisodicMemoryStore();
+        await episodicStore.clearForTesting();
+
+        when(() => ai2aiIntegration.learnFromListInteraction(
+              userId: any(named: 'userId'),
+              userAge: any(named: 'userAge'),
+              interaction: any(named: 'interaction'),
+            )).thenAnswer((_) async => true);
+
+        final orchestrator = PerpetualListOrchestrator(
+          triggerEngine: triggerEngine,
+          contextEngine: contextEngine,
+          generationEngine: generationEngine,
+          locationAnalyzer: locationAnalyzer,
+          possibilityEngine: possibilityEngine,
+          ageFilter: ageFilter,
+          ai2aiIntegration: ai2aiIntegration,
+          episodicMemoryStore: episodicStore,
+        );
+
+        final now = DateTime.now().toUtc();
+        const userId = 'user-list-1';
+
+        await orchestrator.processListInteraction(
+          userId: userId,
+          userAge: 29,
+          interaction: ListInteraction(
+            type: ListInteractionType.viewed,
+            listId: 'list-viewed-1',
+            timestamp: now,
+          ),
+        );
+        await orchestrator.processListInteraction(
+          userId: userId,
+          userAge: 29,
+          interaction: ListInteraction(
+            type: ListInteractionType.saved,
+            listId: 'list-saved-1',
+            timestamp: now.add(const Duration(seconds: 1)),
+          ),
+        );
+        await orchestrator.processListInteraction(
+          userId: userId,
+          userAge: 29,
+          interaction: ListInteraction(
+            type: ListInteractionType.dismissed,
+            listId: 'list-dismissed-1',
+            timestamp: now.add(const Duration(seconds: 2)),
+          ),
+        );
+
+        final tuples =
+            await episodicStore.getRecent(agentId: userId, limit: 10);
+        expect(tuples.length, equals(3));
+
+        final viewed = tuples
+            .firstWhere((t) => t.actionPayload['entity_id'] == 'list-viewed-1');
+        final saved = tuples
+            .firstWhere((t) => t.actionPayload['entity_id'] == 'list-saved-1');
+        final dismissed = tuples.firstWhere(
+            (t) => t.actionPayload['entity_id'] == 'list-dismissed-1');
+
+        expect(viewed.actionType, equals('view_list'));
+        expect(viewed.outcome.type, equals('browse_entity'));
+        expect(viewed.metadata['phase_ref'], equals('1.2.7'));
+
+        expect(saved.actionType, equals('save_list'));
+        expect(saved.outcome.type, equals('save_list'));
+        expect(saved.nextState['is_positive'], isTrue);
+
+        expect(dismissed.actionType, equals('dismiss_list'));
+        expect(dismissed.outcome.type, equals('recommendation_rejected'));
+        expect(dismissed.nextState['is_negative'], isTrue);
+
+        verify(() => ai2aiIntegration.learnFromListInteraction(
+              userId: userId,
+              userAge: 29,
+              interaction: any(named: 'interaction'),
+            )).called(3);
+      });
+    });
+
     group('clearUserState', () {
       test('should clear all state for user', () {
         final triggerEngine = TriggerEngine();

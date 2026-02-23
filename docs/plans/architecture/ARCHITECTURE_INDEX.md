@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** February 19, 2026  
+**Last Updated:** February 20, 2026  
 **Status:** Active Reference (Current Architecture)  
 **Purpose:** Canonical navigation for architecture documents aligned to the current codebase and `docs/MASTER_PLAN.md`.
 
@@ -37,6 +37,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
 - **Universal self-healing contract (all subsystems):** [`docs/MASTER_PLAN.md` section `Universal Self-Healing Contract` + task `10.9.12`](../../MASTER_PLAN.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
+- **Dream training + conviction hierarchy governance:** [`DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./DREAM_TRAINING_CONVICTION_GOVERNANCE.md)
 - **Canonical experiment registry (build-enforced):** [`docs/EXPERIMENT_REGISTRY.md`](../../EXPERIMENT_REGISTRY.md)
 - **Experiment registry source CSV:** [`configs/experiments/EXPERIMENT_REGISTRY.csv`](../../../configs/experiments/EXPERIMENT_REGISTRY.csv)
 - **Experiment registry generator:** [`scripts/generate_experiment_registry.py`](../../../scripts/generate_experiment_registry.py)
@@ -44,6 +45,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **ML training governance authority:** [`docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](../methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md)
 - **Execution/PR traceability integration:** [`docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`](../methodology/PRD_EXECUTION_BOARD_INTEGRATION.md)
 - **Build enforcement setup:** [`docs/GITHUB_ENFORCEMENT_SETUP.md`](../../GITHUB_ENFORCEMENT_SETUP.md)
+- **Red-team hijack/security matrix (governance authority):** [`docs/security/RED_TEAM_TEST_MATRIX.md`](../../security/RED_TEAM_TEST_MATRIX.md)
 - **AVRAI native type contracts:** [`configs/ml/avrai_native_type_contracts.json`](../../../configs/ml/avrai_native_type_contracts.json)
 - **AVRAI dataset builder:** [`scripts/ml/build_training_dataset.py`](../../../scripts/ml/build_training_dataset.py)
 
@@ -51,6 +53,8 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 
 ## Research Addenda (External -> AVRAI Mapping)
 
+- [`EXTERNAL_RESEARCH_ANALYSIS_2026-02-23_ONLINE_OFFLINE_AI2AI.md`](./EXTERNAL_RESEARCH_ANALYSIS_2026-02-23_ONLINE_OFFLINE_AI2AI.md)
+- [`generated/external_research_crossref_2026-02-23_online_offline_ai2ai.csv`](./generated/external_research_crossref_2026-02-23_online_offline_ai2ai.csv)
 - [`EXTERNAL_RESEARCH_ADDENDUM_PHASE_PLACEMENT_MATRIX_2026-02-16.md`](./EXTERNAL_RESEARCH_ADDENDUM_PHASE_PLACEMENT_MATRIX_2026-02-16.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2602_09000.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_ARXIV_2601_19897.md)
@@ -62,6 +66,9 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_BATCH_ADAPTIVE_REASONING_RUNTIME.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-17_FEEDBACK_CONVICTION_DATAOPS.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md)
+- [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md)
+- [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md)
+- [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md)
 - [`EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md`](./EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md)
 

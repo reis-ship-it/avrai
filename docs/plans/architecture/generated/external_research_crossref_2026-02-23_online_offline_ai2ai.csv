@@ -1,0 +1,9 @@
+source_id,source_url,where_in_master_plan,primary_additions,priority,status
+arxiv_2602.03814,https://arxiv.org/pdf/2602.03814v1,"5.2;6.1;7.7;10.9","RiskBoundedExitPolicy, dual-threshold stopping, calibration correction",P1,actionable
+arxiv_2602.02363,https://arxiv.org/pdf/2602.02363,"4.1;5.1;7.9;10.9","Posterior ensemble lane, cross-probe validation",P3,actionable
+arxiv_2602.16873,https://arxiv.org/pdf/2602.16873,"5.2;6.1;7.7A;8.1;10.9","TopologyPolicySelector, model-fixed/topology-fixed ablations",P1,actionable
+mezzanine_repo,https://github.com/leochlon/mezzanine,"4.1;5.2;7.9;8.1","Invariant stress suite, warrant-gap diagnostics, teacher-student distillation",P2,actionable
+arxiv_2602.17641,https://arxiv.org/pdf/2602.17641v1,"1.4;5.2;7.9;9.2.6","Proposal-Validate-Keep/Reject feature loop",P2,actionable
+arxiv_2602.16662,https://arxiv.org/html/2602.16662v1,"6.2;7.7A;8.1;10.9","Collective welfare floor, exploitative-mix stress simulation",P1,actionable
+arxiv_2602.16173,https://arxiv.org/pdf/2602.16173,"1.1E;1.4;5.2;6.1;8.1","Dual-channel feedback policies and drift-aware personalization",P1,actionable
+ssrn_6097646,https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6097646,"1.4;6.2;7.7A;10.9;philosophy","CognitiveSurrenderRiskScore, ReflectiveCheckpointPolicy, calibration divergence gate",P1,actionable

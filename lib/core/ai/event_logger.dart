@@ -14,7 +14,7 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 
 /// Event logger service for tracking user interactions
-/// 
+///
 /// Features:
 /// - Context enrichment (location, weather, time, social, app state)
 /// - Automatic agent ID resolution
@@ -22,12 +22,12 @@ import 'package:avrai_core/models/atomic_timestamp.dart';
 /// - Batch submission to database
 class EventLogger {
   static const String _logName = 'EventLogger';
-  
+
   final AgentIdService _agentIdService;
   final SupabaseService _supabaseService;
   final EventQueue _eventQueue;
   final ContinuousLearningSystem? _learningSystem;
-  
+
   String? _currentAgentId;
   String? _currentScreen;
   String? _previousScreen;
@@ -39,8 +39,7 @@ class EventLogger {
     SupabaseService? supabaseService,
     EventQueue? eventQueue,
     ContinuousLearningSystem? learningSystem,
-  })  : _agentIdService = agentIdService ?? 
-        di.sl<AgentIdService>(),
+  })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
         _supabaseService = supabaseService ?? SupabaseService(),
         _eventQueue = eventQueue ?? EventQueue(),
         _learningSystem = learningSystem;
@@ -53,13 +52,13 @@ class EventLogger {
       if (userId != null) {
         _currentAgentId = await _agentIdService.getUserAgentId(userId);
       }
-      
+
       // Set up event queue submit callback
       _eventQueue.onSubmitEvents = _submitEventsToDatabase;
-      
+
       // Initialize event queue
       await _eventQueue.initialize();
-      
+
       developer.log('✅ EventLogger initialized', name: _logName);
     } catch (e, stackTrace) {
       developer.log(
@@ -87,7 +86,7 @@ class EventLogger {
   }
 
   /// Log an interaction event
-  /// 
+  ///
   /// Automatically enriches event with context (location, weather, time, etc.)
   Future<void> logEvent({
     required String eventType,
@@ -98,7 +97,7 @@ class EventLogger {
     try {
       // Use provided agent ID or resolve from current user
       final eventAgentId = agentId ?? _currentAgentId;
-      
+
       if (eventAgentId == null) {
         developer.log(
           '⚠️ No agent ID available, skipping event: $eventType',
@@ -106,10 +105,10 @@ class EventLogger {
         );
         return;
       }
-      
+
       // Build enriched context
       final enrichedContext = context ?? await _buildContext();
-      
+
       // Phase 11.8.6: Use atomic time for quantum formula compatibility
       // Create event with atomic timestamp
       AtomicTimestamp? atomicTimestamp;
@@ -132,16 +131,16 @@ class EventLogger {
         atomicTimestamp: atomicTimestamp, // Explicit atomic time if available
         agentId: eventAgentId,
       );
-      
+
       // Add to recent actions
       _recentActions.add(eventType);
       if (_recentActions.length > _maxRecentActions) {
         _recentActions.removeAt(0);
       }
-      
+
       // Enqueue event (handles offline storage and batch submission)
       await _eventQueue.enqueue(event);
-      
+
       developer.log(
         'Event logged: $eventType',
         name: _logName,
@@ -159,7 +158,7 @@ class EventLogger {
   /// Build enriched context for event
   Future<InteractionContext> _buildContext() async {
     final now = DateTime.now();
-    
+
     // Collect location data (non-blocking, may be null)
     LocationData? locationData;
     try {
@@ -179,7 +178,7 @@ class EventLogger {
       // Location unavailable, continue without it
       developer.log('Location unavailable for context: $e', name: _logName);
     }
-    
+
     // Collect weather data (non-blocking, may be null)
     WeatherData? weatherData;
     if (locationData != null) {
@@ -190,14 +189,14 @@ class EventLogger {
         developer.log('Weather unavailable for context: $e', name: _logName);
       }
     }
-    
+
     // Build app context
     final appContext = AppContext(
       currentScreen: _currentScreen,
       previousScreen: _previousScreen,
       recentActions: List<String>.from(_recentActions),
     );
-    
+
     // Build social context (if learning system available)
     SocialContext? socialContext;
     if (_learningSystem != null) {
@@ -208,7 +207,7 @@ class EventLogger {
         developer.log('Social context unavailable: $e', name: _logName);
       }
     }
-    
+
     return InteractionContext(
       timeOfDay: now,
       location: locationData,
@@ -259,7 +258,8 @@ class EventLogger {
   Future<bool> _submitEventsToDatabase(List<InteractionEvent> events) async {
     try {
       if (!_supabaseService.isAvailable) {
-        developer.log('Supabase not available, cannot submit events', name: _logName);
+        developer.log('Supabase not available, cannot submit events',
+            name: _logName);
         return false;
       }
 
@@ -271,9 +271,9 @@ class EventLogger {
         );
         return false;
       }
-      
+
       final client = _supabaseService.client;
-      
+
       // Prepare events for database insertion
       final eventsData = events.map((event) {
         return {
@@ -285,17 +285,15 @@ class EventLogger {
           'timestamp': event.timestamp.toIso8601String(),
         };
       }).toList();
-      
+
       // Insert events in batch
-      await client
-          .from('interaction_events')
-          .insert(eventsData);
-      
+      await client.from('interaction_events').insert(eventsData);
+
       developer.log(
         '✅ Submitted ${events.length} events to database',
         name: _logName,
       );
-      
+
       return true;
     } catch (e, stackTrace) {
       developer.log(
@@ -309,7 +307,7 @@ class EventLogger {
   }
 
   /// Convenience methods for common event types
-  
+
   /// Log list view started
   Future<void> logListViewStarted({
     required String listId,
@@ -427,7 +425,27 @@ class EventLogger {
       eventType: 'event_attended',
       parameters: {
         'event_id': eventId,
-        if (attendanceDuration != null) 'attendance_duration': attendanceDuration,
+        if (attendanceDuration != null)
+          'attendance_duration': attendanceDuration,
+      },
+    );
+  }
+
+  /// Log exploration where the user browsed but took no follow-up action.
+  Future<void> logBrowseNoAction({
+    required String entityType,
+    required String entityId,
+    int? browseDurationMs,
+    String? surface,
+  }) async {
+    await logEvent(
+      eventType: 'browse_entity',
+      parameters: {
+        'entity_type': entityType,
+        'entity_id': entityId,
+        'no_action': true,
+        if (browseDurationMs != null) 'duration_ms': browseDurationMs,
+        if (surface != null) 'surface': surface,
       },
     );
   }

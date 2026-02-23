@@ -16,7 +16,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart';
 /// **Usage:**
 /// ```dart
 /// final featureFlags = sl<FeatureFlagService>();
-/// 
+///
 /// if (await featureFlags.isEnabled('quantum_location_entanglement')) {
 ///   // Use location entanglement
 /// }
@@ -34,7 +34,7 @@ class FeatureFlagService {
 
   FeatureFlagService({
     required StorageService storage,
-  })  : _storage = storage;
+  }) : _storage = storage;
 
   /// Check if a feature is enabled for a specific user
   ///
@@ -138,7 +138,7 @@ class FeatureFlagService {
   ) async {
     try {
       _remoteConfig = config;
-      
+
       // Store config locally for offline use
       for (final entry in config.entries) {
         await _storeConfig(entry.key, entry.value);
@@ -159,17 +159,44 @@ class FeatureFlagService {
   }
 
   /// Get all enabled features for a user
-  Future<Set<String>> getEnabledFeatures({String? userId}) async {
+  Future<Set<String>> getEnabledFeatures({
+    String? userId,
+    bool includeFormulaReplacementFlags = false,
+  }) async {
     final enabled = <String>{};
-    
+
     // Check all known feature flags
     for (final flag in QuantumFeatureFlags.allFlags) {
       if (await isEnabled(flag, userId: userId)) {
         enabled.add(flag);
       }
     }
-    
+
+    if (includeFormulaReplacementFlags) {
+      for (final flag in FormulaReplacementFeatureFlags.allFlags) {
+        if (await isEnabled(flag, userId: userId)) {
+          enabled.add(flag);
+        }
+      }
+    }
+
     return enabled;
+  }
+
+  /// Formula replacement helper.
+  ///
+  /// Keeps all replacement checks behind one API so services can migrate from
+  /// formulas to learned scoring consistently.
+  Future<bool> isFormulaReplacementEnabled(
+    String featureName, {
+    String? userId,
+    bool defaultValue = false,
+  }) async {
+    return isEnabled(
+      featureName,
+      userId: userId,
+      defaultValue: defaultValue,
+    );
   }
 
   /// Evaluate remote config with rollout logic
@@ -229,7 +256,8 @@ class FeatureFlagService {
   }
 
   /// Store config locally
-  Future<void> _storeConfig(String featureName, FeatureFlagConfig config) async {
+  Future<void> _storeConfig(
+      String featureName, FeatureFlagConfig config) async {
     try {
       final key = '$_rolloutPrefix$featureName';
       await _storage.setObject(key, config.toJson());
@@ -274,7 +302,8 @@ class FeatureFlagConfig {
   factory FeatureFlagConfig.fromJson(Map<String, dynamic> json) {
     return FeatureFlagConfig(
       enabled: json['enabled'] as bool? ?? false,
-      rolloutPercentage: (json['rolloutPercentage'] as num?)?.toDouble() ?? 100.0,
+      rolloutPercentage:
+          (json['rolloutPercentage'] as num?)?.toDouble() ?? 100.0,
       targetUsers: json['targetUsers'] as List<String>?,
       description: json['description'] as String?,
     );
@@ -333,3 +362,111 @@ class QuantumFeatureFlags {
   }
 }
 
+/// Formula Replacement Feature Flags
+///
+/// One flag per formula/threshold replacement target from the architecture plan.
+/// All default to 0% rollout to support safe parallel-run and rollback.
+class FormulaReplacementFeatureFlags {
+  static const String callingScore = 'replace_formula_calling_score';
+  static const String vibeCompatibilityCombined =
+      'replace_formula_vibe_compatibility_combined';
+  static const String vibeCompatibilityWeave =
+      'replace_formula_vibe_compatibility_weave';
+  static const String eventRecommendationExplorationBalance =
+      'replace_formula_event_recommendation_exploration_balance';
+  static const String groupMatching = 'replace_formula_group_matching';
+  static const String reservationCompatibility =
+      'replace_formula_reservation_compatibility';
+  static const String realtimeUserCalling =
+      'replace_formula_realtime_user_calling';
+  static const String userEventPredictionMatching =
+      'replace_formula_user_event_prediction_matching';
+  static const String businessExpertMatching =
+      'replace_formula_business_expert_matching';
+  static const String knotFabricStability =
+      'replace_formula_knot_fabric_stability';
+  static const String communityCompatibility =
+      'replace_formula_community_compatibility';
+  static const String ai2aiDiscoveryPriority =
+      'replace_formula_ai2ai_discovery_priority';
+  static const String expertiseMatching = 'replace_formula_expertise_matching';
+  static const String expertiseEventPriority =
+      'replace_formula_expertise_event_priority';
+  static const String expertSearchRelevance =
+      'replace_formula_expert_search_relevance';
+  static const String multiPathExpertise =
+      'replace_formula_multi_path_expertise';
+  static const String saturationAlgorithm =
+      'replace_formula_saturation_algorithm';
+  static const String meaningfulExperienceTiming =
+      'replace_formula_meaningful_experience_timing';
+  static const String spotVibeMatching = 'replace_formula_spot_vibe_matching';
+  static const String eventMatching = 'replace_formula_event_matching';
+  static const String partnershipCompatibility =
+      'replace_formula_partnership_compatibility';
+  static const String sponsorshipCompatibility =
+      'replace_formula_sponsorship_compatibility';
+  static const String brandDiscoveryScoring =
+      'replace_formula_brand_discovery_scoring';
+  static const String businessBusinessPartnershipScoring =
+      'replace_formula_business_business_partnership_scoring';
+  static const String businessExpertDiscoveryScoring =
+      'replace_formula_business_expert_discovery_scoring';
+  static const String listGenerationIntervalThreshold =
+      'replace_threshold_perpetual_list_generation_interval';
+  static const String listPersonalityDriftThreshold =
+      'replace_threshold_perpetual_list_personality_drift';
+  static const String automaticCheckInTriggerThreshold =
+      'replace_threshold_automatic_check_in_trigger';
+  static const String dynamicExpertiseThreshold =
+      'replace_threshold_dynamic_expertise';
+  static const String learningConfidenceThreshold =
+      'replace_threshold_learning_confidence';
+  static const String searchCacheExpiryThreshold =
+      'replace_threshold_search_cache_expiry';
+
+  static const List<String> allFlags = [
+    callingScore,
+    vibeCompatibilityCombined,
+    vibeCompatibilityWeave,
+    eventRecommendationExplorationBalance,
+    groupMatching,
+    reservationCompatibility,
+    realtimeUserCalling,
+    userEventPredictionMatching,
+    businessExpertMatching,
+    knotFabricStability,
+    communityCompatibility,
+    ai2aiDiscoveryPriority,
+    expertiseMatching,
+    expertiseEventPriority,
+    expertSearchRelevance,
+    multiPathExpertise,
+    saturationAlgorithm,
+    meaningfulExperienceTiming,
+    spotVibeMatching,
+    eventMatching,
+    partnershipCompatibility,
+    sponsorshipCompatibility,
+    brandDiscoveryScoring,
+    businessBusinessPartnershipScoring,
+    businessExpertDiscoveryScoring,
+    listGenerationIntervalThreshold,
+    listPersonalityDriftThreshold,
+    automaticCheckInTriggerThreshold,
+    dynamicExpertiseThreshold,
+    learningConfidenceThreshold,
+    searchCacheExpiryThreshold,
+  ];
+
+  static Map<String, FeatureFlagConfig> getDefaultConfigs() {
+    return {
+      for (final flag in allFlags)
+        flag: FeatureFlagConfig(
+          enabled: true,
+          rolloutPercentage: 0.0,
+          description: 'Formula/threshold replacement rollout flag for $flag',
+        ),
+    };
+  }
+}

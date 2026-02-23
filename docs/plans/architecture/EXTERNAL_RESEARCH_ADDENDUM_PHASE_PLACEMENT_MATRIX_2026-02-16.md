@@ -33,7 +33,10 @@ Phase `7.9` is the autonomous research/evidence loop.
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2502_17779.md` | 6.1, 7.5, 7.7 | Experiment/replay governance | Bounded-space simulation belongs in runtime + lifecycle implementation |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11136.md` | 7.7A, 10.9.11 | Formal constraint integration in promotions | Proof-backed gates are policy/lifecycle hardening |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-16_ARXIV_2602_11865.md` | 7.7, 7.7A, 10.9.12 | Delegation experiment governance | Delegation controls apply to lifecycle and self-healing routing |
+| `EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_ARXIV_2507_00885.md` | 5.2, 7.7, 7.9, 8.1, 10.9 | Scaling-evidence governance and promotion containment | Downstream scaling reliability is a cross-setting gate; linear-only extrapolation is not sufficient for rollout |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-19_RECURSIVE_META_KERNELS_AND_DISCOVERABILITY.md` | 1.1E, 1.2, 1.4, 5.2, 6.1, 6.2, 8.1, 10.9 | Kernel/meta-learning governance + evidence intake | Kernel contracts and recursive anti-drift controls must land in owning runtime/training/robustness phases, not only 7.9 |
+| `EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_17632.md` | 5.2, 7.7, 7.9, 8.1, 10.9 | Offline/online transfer continuity governance | Enforce bridge-stage adaptation and early-online stability gates; offline-only improvement is insufficient for promotion |
+| `EXTERNAL_RESEARCH_ADDENDUM_2026-02-20_ARXIV_2602_16873.md` | 5.2, 6.1, 7.7, 7.9, 8.1, 10.9 | Topology-adaptive orchestration governance | Route by DAG/coupling signals under caution gates: model-fixed ablation, offline calibration, online bounded heuristics, and fail-closed reroute limits |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md` | 1.1E, 7.7, 8.1 | Experiment evidence + fallback checks | Deterministic memory core belongs in memory + rollback diagnostics |
 | `EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_BATCH_OTHERS.md` | 5.2, 6.1, 7.7, 8.1 (varies by item) | Intake + prioritization | Batch sources require per-item ownership assignment before execution |
 

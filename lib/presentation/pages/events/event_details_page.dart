@@ -1,12 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
+import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/controllers/event_attendance_controller.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -21,6 +29,7 @@ import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/fraud/fraud_detection_service.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/injection_container.dart' as di;
 
 /// Event Details Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -61,6 +70,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   ExpertiseEvent? _currentEvent;
   bool _hasPartnerships = false;
   bool _hasFraudFlag = false;
+  late EventLogger _eventLogger;
+  DateTime? _viewStartTime;
+  String? _currentUserId;
+  bool _isLoggerInitialized = false;
+  bool _hasFollowUpAction = false;
   // ignore: unused_field
   double? _fraudRiskScore;
 
@@ -68,9 +82,26 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   void initState() {
     super.initState();
     _currentEvent = widget.event;
+    _initializeEventLogger();
+    _viewStartTime = DateTime.now();
     _checkRegistrationStatus();
     _checkPartnerships();
     _checkFraudStatus();
+  }
+
+  Future<void> _initializeEventLogger() async {
+    try {
+      _eventLogger = di.sl<EventLogger>();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        _currentUserId = currentUser.id;
+        await _eventLogger.initialize(userId: currentUser.id);
+        _eventLogger.updateScreen('event_details');
+      }
+      _isLoggerInitialized = true;
+    } catch (_) {
+      _isLoggerInitialized = false;
+    }
   }
 
   Future<void> _checkFraudStatus() async {
@@ -111,6 +142,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   Future<void> _registerForEvent() async {
+    _hasFollowUpAction = true;
     if (_currentEvent == null) return;
 
     setState(() {
@@ -184,6 +216,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   Future<void> _cancelRegistration() async {
+    _hasFollowUpAction = true;
     if (_currentEvent == null) return;
 
     setState(() {
@@ -253,6 +286,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   void _handlePurchaseTicket() {
+    _hasFollowUpAction = true;
     if (_currentEvent == null) return;
 
     // Navigate to checkout page with smooth transition
@@ -265,6 +299,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   void _shareEvent() {
+    _hasFollowUpAction = true;
     if (_currentEvent == null) return;
 
     final event = _currentEvent!;
@@ -291,6 +326,7 @@ SPOTS - know you belong.''';
   }
 
   Future<void> _addToCalendar() async {
+    _hasFollowUpAction = true;
     if (_currentEvent == null) return;
 
     final event = _currentEvent!;
@@ -366,6 +402,85 @@ SPOTS - know you belong.''';
       return '$hours hour${hours > 1 ? 's' : ''}';
     } else {
       return '$minutes minute${minutes > 1 ? 's' : ''}';
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_isLoggerInitialized && _viewStartTime != null && !_hasFollowUpAction) {
+      final duration = DateTime.now().difference(_viewStartTime!);
+      _eventLogger.logBrowseNoAction(
+        entityType: 'event',
+        entityId: (_currentEvent ?? widget.event).id,
+        browseDurationMs: duration.inMilliseconds,
+        surface: 'event_details',
+      );
+      unawaited(_recordBrowseNoActionTuple(duration.inMilliseconds));
+    }
+    super.dispose();
+  }
+
+  Future<void> _recordBrowseNoActionTuple(int durationMs) async {
+    try {
+      if (!di.sl.isRegistered<EpisodicMemoryStore>() ||
+          !di.sl.isRegistered<AgentIdService>()) {
+        return;
+      }
+      final userId = _currentUserId;
+      final event = _currentEvent ?? widget.event;
+      if (userId == null || userId.isEmpty) return;
+      final agentIdService = di.sl<AgentIdService>();
+      final episodicStore = di.sl<EpisodicMemoryStore>();
+      final outcomeTaxonomy = const OutcomeTaxonomy();
+      final agentId = await agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.19',
+          'surface': 'event_details',
+          'entity_type': 'event',
+          'entity_id': event.id,
+        },
+        actionType: 'browse_entity',
+        actionPayload: {
+          'entity_type': 'event',
+          'entity_id': event.id,
+          'entity_features': {
+            'event_id': event.id,
+            'event_type': event.eventType.name,
+            'category': event.category,
+            'is_paid': event.isPaid,
+            'price': event.price,
+            'attendee_count': event.attendeeCount,
+          },
+          'no_action': true,
+          'browse_context': {
+            'duration_ms': durationMs,
+            'surface': 'event_details',
+          },
+        },
+        nextState: const {
+          'no_action': true,
+          'browse_session_complete': true,
+        },
+        outcome: outcomeTaxonomy.classify(
+          eventType: 'no_action',
+          parameters: {
+            'entity_type': 'event',
+            'entity_id': event.id,
+            'duration_ms': durationMs,
+            'surface': 'event_details',
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.19',
+          'pipeline': 'event_details_page',
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (_) {
+      // Non-critical on teardown.
     }
   }
 

@@ -6,7 +6,16 @@
   "git": {
     "default_base_branch": "main",
     "default_phase_branch_prefix": "phase",
-    "require_clean_worktree": true
+    "require_clean_worktree": true,
+    "phase_root_template": "phase{phase}_work",
+    "allow_phase_child_branches": true,
+    "require_phase_branch": true,
+    "require_upstream_tracking": true
+  },
+  "governance": {
+    "require_nonempty_master_refs": true,
+    "require_nonempty_subtasks": true,
+    "require_resolved_subtask_descriptions": true
   },
   "guards": {
     "enabled": true,
