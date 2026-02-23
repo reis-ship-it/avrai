@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'package:avrai/core/ai2ai/anonymous_communication.dart' as ai2ai;
 import 'package:avrai_network/network/message_encryption_service.dart';
 import 'package:avrai/core/models/business/business_expert_message.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
@@ -24,6 +27,10 @@ class BusinessExpertChatServiceAI2AI {
   final PartnershipService? _partnershipService;
   final BusinessAccountService? _businessService;
   final AgentIdService _agentIdService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+  final GetStorage? _messageStorage;
+  final GetStorage? _conversationStorage;
   final _uuid = const Uuid();
 
   // Local storage container names
@@ -36,11 +43,19 @@ class BusinessExpertChatServiceAI2AI {
     PartnershipService? partnershipService,
     BusinessAccountService? businessService,
     AgentIdService? agentIdService,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
+    GetStorage? messageStorage,
+    GetStorage? conversationStorage,
   })  : _ai2aiProtocol = ai2aiProtocol ?? _createDefaultProtocol(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _partnershipService = partnershipService,
         _businessService = businessService,
-        _agentIdService = agentIdService ?? di.sl<AgentIdService>();
+        _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy,
+        _messageStorage = messageStorage,
+        _conversationStorage = conversationStorage;
 
   static ai2ai.AnonymousCommunicationProtocol _createDefaultProtocol() {
     // Try to get from DI - protocol must be registered
@@ -183,9 +198,10 @@ class BusinessExpertChatServiceAI2AI {
     String expertId,
   ) async {
     try {
-      final box = GetStorage(_conversationsStoreName);
+      final box = _conversationsBox();
       final conversationId = _generateConversationId(businessId, expertId);
-      final data = box.read<Map<String, dynamic>>('conversation_$conversationId');
+      final data =
+          box.read<Map<String, dynamic>>('conversation_$conversationId');
       return data;
     } catch (e) {
       developer.log('Error getting conversation: $e', name: _logName);
@@ -197,8 +213,9 @@ class BusinessExpertChatServiceAI2AI {
   Future<List<Map<String, dynamic>>> getBusinessConversations(
       String businessId) async {
     try {
-      final box = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
+      final box = _conversationsBox();
+      final List<dynamic> allConvs =
+          box.read<List<dynamic>>('all_conversations') ?? [];
 
       final filtered = allConvs
           .map((e) => Map<String, dynamic>.from(e as Map))
@@ -219,8 +236,9 @@ class BusinessExpertChatServiceAI2AI {
   Future<List<Map<String, dynamic>>> getExpertConversations(
       String expertId) async {
     try {
-      final box = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
+      final box = _conversationsBox();
+      final List<dynamic> allConvs =
+          box.read<List<dynamic>>('all_conversations') ?? [];
 
       final filtered = allConvs
           .map((e) => Map<String, dynamic>.from(e as Map))
@@ -292,11 +310,12 @@ class BusinessExpertChatServiceAI2AI {
       'updated_at': DateTime.now().toIso8601String(),
     };
 
-    final box = GetStorage(_conversationsStoreName);
+    final box = _conversationsBox();
     await box.write('conversation_$conversationId', conversationData);
 
     // Also maintain a list of all conversations for filtering
-    final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
+    final List<dynamic> allConvs =
+        box.read<List<dynamic>>('all_conversations') ?? [];
     allConvs.add(conversationData);
     await box.write('all_conversations', allConvs);
 
@@ -310,11 +329,13 @@ class BusinessExpertChatServiceAI2AI {
     int offset = 0,
   }) async {
     try {
-      final box = GetStorage(_messagesStoreName);
-      final List<dynamic> raw = box.read<List<dynamic>>('messages_$conversationId') ?? [];
+      final box = _messagesBox();
+      final List<dynamic> raw =
+          box.read<List<dynamic>>('messages_$conversationId') ?? [];
 
       final allMessages = raw
-          .map((e) => BusinessExpertMessage.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) => BusinessExpertMessage.fromJson(
+              Map<String, dynamic>.from(e as Map)))
           .toList();
 
       // Sort newest first
@@ -365,11 +386,12 @@ class BusinessExpertChatServiceAI2AI {
   /// Mark message as read
   Future<void> markAsRead(String messageId) async {
     try {
-      final box = GetStorage(_messagesStoreName);
+      final box = _messagesBox();
       // We need to find which conversation this message belongs to
       // Iterate through known conversations
-      final convBox = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = convBox.read<List<dynamic>>('all_conversations') ?? [];
+      final convBox = _conversationsBox();
+      final List<dynamic> allConvs =
+          convBox.read<List<dynamic>>('all_conversations') ?? [];
 
       for (final conv in allConvs) {
         final convId = (conv as Map)['id'] as String?;
@@ -403,9 +425,10 @@ class BusinessExpertChatServiceAI2AI {
   Future<int> getUnreadCount(
       String businessIdOrExpertId, bool isBusiness) async {
     try {
-      final box = GetStorage(_messagesStoreName);
-      final convBox = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = convBox.read<List<dynamic>>('all_conversations') ?? [];
+      final box = _messagesBox();
+      final convBox = _conversationsBox();
+      final List<dynamic> allConvs =
+          convBox.read<List<dynamic>>('all_conversations') ?? [];
 
       int count = 0;
       final recipientType = isBusiness ? 'business' : 'expert';
@@ -414,7 +437,8 @@ class BusinessExpertChatServiceAI2AI {
         final convId = (conv as Map)['id'] as String?;
         if (convId == null) continue;
 
-        final List<dynamic> messages = box.read<List<dynamic>>('messages_$convId') ?? [];
+        final List<dynamic> messages =
+            box.read<List<dynamic>>('messages_$convId') ?? [];
         count += messages.where((e) {
           final map = e as Map;
           return map['is_read'] == false &&
@@ -469,7 +493,7 @@ class BusinessExpertChatServiceAI2AI {
   /// Save message locally in GetStorage
   Future<void> _saveMessageLocally(BusinessExpertMessage message) async {
     try {
-      final box = GetStorage(_messagesStoreName);
+      final box = _messagesBox();
       final key = 'messages_${message.conversationId}';
       final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
       existing.add(message.toJson());
@@ -483,8 +507,9 @@ class BusinessExpertChatServiceAI2AI {
   /// Update conversation last message timestamp
   Future<void> _updateConversationLastMessage(String conversationId) async {
     try {
-      final box = GetStorage(_conversationsStoreName);
-      final data = box.read<Map<String, dynamic>>('conversation_$conversationId');
+      final box = _conversationsBox();
+      final data =
+          box.read<Map<String, dynamic>>('conversation_$conversationId');
       if (data != null) {
         final updated = Map<String, dynamic>.from(data)
           ..['last_message_at'] = DateTime.now().toIso8601String()
@@ -492,8 +517,10 @@ class BusinessExpertChatServiceAI2AI {
         await box.write('conversation_$conversationId', updated);
 
         // Update in all_conversations list too
-        final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
-        final idx = allConvs.indexWhere((c) => (c as Map)['id'] == conversationId);
+        final List<dynamic> allConvs =
+            box.read<List<dynamic>>('all_conversations') ?? [];
+        final idx =
+            allConvs.indexWhere((c) => (c as Map)['id'] == conversationId);
         if (idx >= 0) {
           allConvs[idx] = updated;
           await box.write('all_conversations', allConvs);
@@ -510,4 +537,106 @@ class BusinessExpertChatServiceAI2AI {
     final ids = [businessId, expertId]..sort();
     return 'conv_${ids.join('_')}';
   }
+
+  /// Phase 1.2.15: Correlate business-expert chat with downstream outcomes.
+  ///
+  /// Returns `true` when a tuple is written and `false` when no prior chat exists
+  /// (or episodic storage is unavailable).
+  Future<bool> recordChatOutcomeCorrelation({
+    required String businessId,
+    required String expertId,
+    required BusinessChatOutcomeType outcomeType,
+    Map<String, dynamic> outcomeContext = const {},
+    DateTime? occurredAt,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return false;
+
+    try {
+      final conversation = await getConversation(businessId, expertId);
+      if (conversation == null) {
+        return false;
+      }
+
+      final now = occurredAt ?? DateTime.now().toUtc();
+      DateTime? lastMessageAt;
+      final lastMessageRaw = conversation['last_message_at'];
+      if (lastMessageRaw is String && lastMessageRaw.isNotEmpty) {
+        lastMessageAt = DateTime.tryParse(lastMessageRaw)?.toUtc();
+      }
+      final latencyMs = lastMessageAt == null
+          ? null
+          : now.difference(lastMessageAt).inMilliseconds;
+
+      final mappedOutcomeEvent = _mapOutcomeTypeToTaxonomyEvent(outcomeType);
+      final tuple = EpisodicTuple(
+        agentId: businessId,
+        stateBefore: {
+          'phase_ref': '1.2.15',
+          'chat_state': {
+            'business_id': businessId,
+            'expert_id': expertId,
+            'conversation_id': conversation['id'],
+            'chat_started': true,
+            'last_message_at': conversation['last_message_at'],
+          },
+        },
+        actionType: 'business_chat_outcome_correlation',
+        actionPayload: {
+          'correlation_type': 'business_expert_chat_to_${outcomeType.name}',
+          'outcome_type': outcomeType.name,
+          'outcome_context': outcomeContext,
+        },
+        nextState: {
+          'journey_state': 'business_chat_to_${outcomeType.name}',
+          'outcome_event': mappedOutcomeEvent,
+          'recorded_at': now.toIso8601String(),
+          if (latencyMs != null) 'chat_to_outcome_latency_ms': latencyMs,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: mappedOutcomeEvent,
+          parameters: {
+            'business_id': businessId,
+            'expert_id': expertId,
+            if (latencyMs != null) 'chat_to_outcome_latency_ms': latencyMs,
+            ...outcomeContext,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.15',
+          'pipeline': 'business_expert_chat_service_ai2ai',
+        },
+      );
+
+      await store.writeTuple(tuple);
+      return true;
+    } catch (e) {
+      developer.log('Error recording chat outcome correlation: $e',
+          name: _logName);
+      return false;
+    }
+  }
+
+  GetStorage _messagesBox() =>
+      _messageStorage ?? GetStorage(_messagesStoreName);
+
+  GetStorage _conversationsBox() =>
+      _conversationStorage ?? GetStorage(_conversationsStoreName);
+
+  String _mapOutcomeTypeToTaxonomyEvent(BusinessChatOutcomeType outcomeType) {
+    switch (outcomeType) {
+      case BusinessChatOutcomeType.partnership:
+        return 'partnership_formed';
+      case BusinessChatOutcomeType.event:
+        return 'event_outcome';
+      case BusinessChatOutcomeType.reservation:
+        return 'create_reservation';
+    }
+  }
+}
+
+enum BusinessChatOutcomeType {
+  partnership,
+  event,
+  reservation,
 }

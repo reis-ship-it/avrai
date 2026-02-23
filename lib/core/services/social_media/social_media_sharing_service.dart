@@ -1,4 +1,7 @@
 import 'package:avrai/core/models/social_media/social_media_connection.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/social_media/social_media_connection_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:http/http.dart' as http;
@@ -15,10 +18,15 @@ class SocialMediaSharingService {
   static const String _logName = 'SocialMediaSharingService';
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS');
   final SocialMediaConnectionService _connectionService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   SocialMediaSharingService({
     required SocialMediaConnectionService connectionService,
-  })  : _connectionService = connectionService;
+    EpisodicMemoryStore? episodicMemoryStore,
+  })  : _connectionService = connectionService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = const OutcomeTaxonomy();
 
   /// Share a place to social media platforms
   ///
@@ -53,14 +61,17 @@ class SocialMediaSharingService {
     final results = <String, bool>{};
 
     try {
-      _logger.info('📤 Sharing place to ${platforms.length} platform(s)', tag: _logName);
+      _logger.info('📤 Sharing place to ${platforms.length} platform(s)',
+          tag: _logName);
 
       // Get active connections for requested platforms
       final connections = await _connectionService.getActiveConnections(userId);
-      final activeConnections = connections.where((c) => platforms.contains(c.platform)).toList();
+      final activeConnections =
+          connections.where((c) => platforms.contains(c.platform)).toList();
 
       if (activeConnections.isEmpty) {
-        _logger.warn('No active connections for requested platforms', tag: _logName);
+        _logger.warn('No active connections for requested platforms',
+            tag: _logName);
         return results;
       }
 
@@ -77,15 +88,19 @@ class SocialMediaSharingService {
           );
           results[connection.platform] = success;
         } catch (e) {
-          _logger.warn('Failed to share to ${connection.platform}: $e', tag: _logName);
+          _logger.warn('Failed to share to ${connection.platform}: $e',
+              tag: _logName);
           results[connection.platform] = false;
         }
       }
 
-      _logger.info('✅ Shared place to ${results.values.where((v) => v).length}/${results.length} platform(s)', tag: _logName);
+      _logger.info(
+          '✅ Shared place to ${results.values.where((v) => v).length}/${results.length} platform(s)',
+          tag: _logName);
       return results;
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to share place', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to share place',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return results;
     }
   }
@@ -110,19 +125,26 @@ class SocialMediaSharingService {
     required String listName,
     String? listDescription,
     int? spotCount,
+    bool? isPublic,
+    List<String>? tags,
     required List<String> platforms,
   }) async {
     final results = <String, bool>{};
+    int activeConnectionCount = 0;
 
     try {
-      _logger.info('📤 Sharing list to ${platforms.length} platform(s)', tag: _logName);
+      _logger.info('📤 Sharing list to ${platforms.length} platform(s)',
+          tag: _logName);
 
       // Get active connections for requested platforms
       final connections = await _connectionService.getActiveConnections(userId);
-      final activeConnections = connections.where((c) => platforms.contains(c.platform)).toList();
+      final activeConnections =
+          connections.where((c) => platforms.contains(c.platform)).toList();
+      activeConnectionCount = activeConnections.length;
 
       if (activeConnections.isEmpty) {
-        _logger.warn('No active connections for requested platforms', tag: _logName);
+        _logger.warn('No active connections for requested platforms',
+            tag: _logName);
         return results;
       }
 
@@ -138,16 +160,34 @@ class SocialMediaSharingService {
           );
           results[connection.platform] = success;
         } catch (e) {
-          _logger.warn('Failed to share to ${connection.platform}: $e', tag: _logName);
+          _logger.warn('Failed to share to ${connection.platform}: $e',
+              tag: _logName);
           results[connection.platform] = false;
         }
       }
 
-      _logger.info('✅ Shared list to ${results.values.where((v) => v).length}/${results.length} platform(s)', tag: _logName);
+      _logger.info(
+          '✅ Shared list to ${results.values.where((v) => v).length}/${results.length} platform(s)',
+          tag: _logName);
       return results;
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to share list', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to share list',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return results;
+    } finally {
+      await _recordListShareEpisode(
+        agentId: agentId,
+        userId: userId,
+        listId: listId,
+        listName: listName,
+        listDescription: listDescription,
+        spotCount: spotCount,
+        isPublic: isPublic,
+        tags: tags,
+        requestedPlatforms: platforms,
+        activeConnectionCount: activeConnectionCount,
+        results: results,
+      );
     }
   }
 
@@ -176,14 +216,17 @@ class SocialMediaSharingService {
     final results = <String, bool>{};
 
     try {
-      _logger.info('📤 Sharing experience to ${platforms.length} platform(s)', tag: _logName);
+      _logger.info('📤 Sharing experience to ${platforms.length} platform(s)',
+          tag: _logName);
 
       // Get active connections for requested platforms
       final connections = await _connectionService.getActiveConnections(userId);
-      final activeConnections = connections.where((c) => platforms.contains(c.platform)).toList();
+      final activeConnections =
+          connections.where((c) => platforms.contains(c.platform)).toList();
 
       if (activeConnections.isEmpty) {
-        _logger.warn('No active connections for requested platforms', tag: _logName);
+        _logger.warn('No active connections for requested platforms',
+            tag: _logName);
         return results;
       }
 
@@ -199,15 +242,19 @@ class SocialMediaSharingService {
           );
           results[connection.platform] = success;
         } catch (e) {
-          _logger.warn('Failed to share to ${connection.platform}: $e', tag: _logName);
+          _logger.warn('Failed to share to ${connection.platform}: $e',
+              tag: _logName);
           results[connection.platform] = false;
         }
       }
 
-      _logger.info('✅ Shared experience to ${results.values.where((v) => v).length}/${results.length} platform(s)', tag: _logName);
+      _logger.info(
+          '✅ Shared experience to ${results.values.where((v) => v).length}/${results.length} platform(s)',
+          tag: _logName);
       return results;
     } catch (e, stackTrace) {
-      _logger.error('❌ Failed to share experience', error: e, stackTrace: stackTrace, tag: _logName);
+      _logger.error('❌ Failed to share experience',
+          error: e, stackTrace: stackTrace, tag: _logName);
       return results;
     }
   }
@@ -271,15 +318,19 @@ class SocialMediaSharingService {
         case 'reddit':
           return await _shareToReddit(accessToken, message, placeImageUrl);
         case 'tumblr':
-          return await _shareToTumblr(accessToken, message, placeImageUrl, username: connection.platformUsername);
+          return await _shareToTumblr(accessToken, message, placeImageUrl,
+              username: connection.platformUsername);
         case 'pinterest':
-          return await _shareToPinterest(accessToken, message, placeImageUrl, placeName);
+          return await _shareToPinterest(
+              accessToken, message, placeImageUrl, placeName);
         default:
-          _logger.warn('Sharing not yet implemented for ${connection.platform}', tag: _logName);
+          _logger.warn('Sharing not yet implemented for ${connection.platform}',
+              tag: _logName);
           return false;
       }
     } catch (e) {
-      _logger.error('Error sharing place to ${connection.platform}: $e', tag: _logName);
+      _logger.error('Error sharing place to ${connection.platform}: $e',
+          tag: _logName);
       return false;
     }
   }
@@ -323,13 +374,16 @@ class SocialMediaSharingService {
         case 'reddit':
           return await _shareToReddit(accessToken, message, null);
         case 'tumblr':
-          return await _shareToTumblr(accessToken, message, null, username: connection.platformUsername);
+          return await _shareToTumblr(accessToken, message, null,
+              username: connection.platformUsername);
         default:
-          _logger.warn('Sharing not yet implemented for ${connection.platform}', tag: _logName);
+          _logger.warn('Sharing not yet implemented for ${connection.platform}',
+              tag: _logName);
           return false;
       }
     } catch (e) {
-      _logger.error('Error sharing list to ${connection.platform}: $e', tag: _logName);
+      _logger.error('Error sharing list to ${connection.platform}: $e',
+          tag: _logName);
       return false;
     }
   }
@@ -364,21 +418,27 @@ class SocialMediaSharingService {
       // Platform-specific sharing
       switch (connection.platform) {
         case 'instagram':
-          return await _shareToInstagram(accessToken, message, experienceImageUrl);
+          return await _shareToInstagram(
+              accessToken, message, experienceImageUrl);
         case 'facebook':
-          return await _shareToFacebook(accessToken, message, experienceImageUrl);
+          return await _shareToFacebook(
+              accessToken, message, experienceImageUrl);
         case 'twitter':
-          return await _shareToTwitter(accessToken, message, experienceImageUrl);
+          return await _shareToTwitter(
+              accessToken, message, experienceImageUrl);
         case 'reddit':
           return await _shareToReddit(accessToken, message, experienceImageUrl);
         case 'tumblr':
-          return await _shareToTumblr(accessToken, message, experienceImageUrl, username: connection.platformUsername);
+          return await _shareToTumblr(accessToken, message, experienceImageUrl,
+              username: connection.platformUsername);
         default:
-          _logger.warn('Sharing not yet implemented for ${connection.platform}', tag: _logName);
+          _logger.warn('Sharing not yet implemented for ${connection.platform}',
+              tag: _logName);
           return false;
       }
     } catch (e) {
-      _logger.error('Error sharing experience to ${connection.platform}: $e', tag: _logName);
+      _logger.error('Error sharing experience to ${connection.platform}: $e',
+          tag: _logName);
       return false;
     }
   }
@@ -386,7 +446,8 @@ class SocialMediaSharingService {
   // Platform-specific sharing implementations
 
   /// Share to Instagram
-  Future<bool> _shareToInstagram(String accessToken, String message, String? imageUrl) async {
+  Future<bool> _shareToInstagram(
+      String accessToken, String message, String? imageUrl) async {
     try {
       // Instagram Graph API - create media container
       if (imageUrl != null) {
@@ -405,7 +466,8 @@ class SocialMediaSharingService {
           throw Exception('Failed to create Instagram media container');
         }
 
-        final containerData = jsonDecode(containerResponse.body) as Map<String, dynamic>;
+        final containerData =
+            jsonDecode(containerResponse.body) as Map<String, dynamic>;
         final containerId = containerData['id'] as String;
 
         // Publish media
@@ -432,7 +494,8 @@ class SocialMediaSharingService {
   }
 
   /// Share to Facebook
-  Future<bool> _shareToFacebook(String accessToken, String message, String? imageUrl) async {
+  Future<bool> _shareToFacebook(
+      String accessToken, String message, String? imageUrl) async {
     try {
       final body = <String, String>{
         'message': message,
@@ -457,7 +520,8 @@ class SocialMediaSharingService {
   }
 
   /// Share to Twitter/X
-  Future<bool> _shareToTwitter(String accessToken, String message, String? imageUrl) async {
+  Future<bool> _shareToTwitter(
+      String accessToken, String message, String? imageUrl) async {
     try {
       // Twitter API v2 - create tweet
       final body = <String, dynamic>{
@@ -487,7 +551,8 @@ class SocialMediaSharingService {
   }
 
   /// Share to Reddit
-  Future<bool> _shareToReddit(String accessToken, String message, String? imageUrl) async {
+  Future<bool> _shareToReddit(
+      String accessToken, String message, String? imageUrl) async {
     try {
       // Reddit API - submit link or text post
       final body = <String, String>{
@@ -518,7 +583,9 @@ class SocialMediaSharingService {
   }
 
   /// Share to Tumblr
-  Future<bool> _shareToTumblr(String accessToken, String message, String? imageUrl, {String? username}) async {
+  Future<bool> _shareToTumblr(
+      String accessToken, String message, String? imageUrl,
+      {String? username}) async {
     try {
       final body = <String, dynamic>{
         'type': imageUrl != null ? 'photo' : 'text',
@@ -548,7 +615,8 @@ class SocialMediaSharingService {
   }
 
   /// Share to Pinterest
-  Future<bool> _shareToPinterest(String accessToken, String message, String? imageUrl, String? title) async {
+  Future<bool> _shareToPinterest(String accessToken, String message,
+      String? imageUrl, String? title) async {
     try {
       if (imageUrl == null) {
         _logger.warn('Pinterest sharing requires an image', tag: _logName);
@@ -595,17 +663,17 @@ class SocialMediaSharingService {
   }) {
     final buffer = StringBuffer();
     buffer.writeln('📍 $placeName');
-    
+
     if (placeDescription != null && placeDescription.isNotEmpty) {
       buffer.writeln(placeDescription);
     }
-    
+
     if (placeLocation != null && placeLocation.isNotEmpty) {
       buffer.writeln('📍 $placeLocation');
     }
-    
+
     buffer.writeln('\nShared from SPOTS - know you belong.');
-    
+
     return buffer.toString();
   }
 
@@ -617,17 +685,17 @@ class SocialMediaSharingService {
   }) {
     final buffer = StringBuffer();
     buffer.writeln('📝 $listName');
-    
+
     if (listDescription != null && listDescription.isNotEmpty) {
       buffer.writeln(listDescription);
     }
-    
+
     if (spotCount != null) {
       buffer.writeln('$spotCount ${spotCount == 1 ? 'spot' : 'spots'}');
     }
-    
+
     buffer.writeln('\nShared from SPOTS - know you belong.');
-    
+
     return buffer.toString();
   }
 
@@ -637,25 +705,109 @@ class SocialMediaSharingService {
     String? spotName,
   }) {
     final buffer = StringBuffer();
-    
+
     if (spotName != null) {
       buffer.writeln('📍 $spotName');
     }
-    
+
     buffer.writeln(experienceText);
     buffer.writeln('\nShared from SPOTS - know you belong.');
-    
+
     return buffer.toString();
   }
 
   /// Get tokens for a connection (helper method)
   /// Uses the connection service's public getAccessTokens method
-  Future<Map<String, dynamic>?> _getTokensForConnection(SocialMediaConnection connection) async {
+  Future<Map<String, dynamic>?> _getTokensForConnection(
+      SocialMediaConnection connection) async {
     try {
-      return await _connectionService.getAccessTokens(connection.agentId, connection.platform);
+      return await _connectionService.getAccessTokens(
+          connection.agentId, connection.platform);
     } catch (e) {
       _logger.error('Error getting tokens: $e', tag: _logName);
       return null;
+    }
+  }
+
+  Future<void> _recordListShareEpisode({
+    required String agentId,
+    required String userId,
+    required String listId,
+    required String listName,
+    required String? listDescription,
+    required int? spotCount,
+    required bool? isPublic,
+    required List<String>? tags,
+    required List<String> requestedPlatforms,
+    required int activeConnectionCount,
+    required Map<String, bool> results,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final successfulPlatforms = results.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList(growable: false);
+      final requestedCount = requestedPlatforms.length;
+      final successCount = successfulPlatforms.length;
+      final successRatio =
+          requestedCount == 0 ? 0.0 : successCount / requestedCount;
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'user_id': userId,
+          'list_id': listId,
+          'list_name': listName,
+          'active_connection_count': activeConnectionCount,
+        },
+        actionType: 'share_list',
+        actionPayload: {
+          'recipient_features': {
+            'requested_platforms': requestedPlatforms,
+            'active_connection_count': activeConnectionCount,
+            'successful_platforms': successfulPlatforms,
+            'successful_platform_ratio': successRatio,
+          },
+          'list_features': {
+            'list_id': listId,
+            'list_name': listName,
+            'spot_count': spotCount ?? 0,
+            'is_public': isPublic,
+            'tags': tags ?? const <String>[],
+            'tag_count': tags?.length ?? 0,
+            'description_length': listDescription?.length ?? 0,
+          },
+        },
+        nextState: {
+          'share_attempted': true,
+          'requested_platform_count': requestedCount,
+          'success_count': successCount,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'share_list',
+          parameters: {
+            'requested_platform_count': requestedCount,
+            'active_connection_count': activeConnectionCount,
+            'success_count': successCount,
+            'success_ratio': successRatio,
+          },
+        ),
+        metadata: const {
+          'pipeline': 'social_media_sharing_service',
+          'phase_ref': '1.2.10',
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (e, stackTrace) {
+      _logger.error(
+        '❌ Failed to record list sharing episodic tuple',
+        error: e,
+        stackTrace: stackTrace,
+        tag: _logName,
+      );
     }
   }
 }

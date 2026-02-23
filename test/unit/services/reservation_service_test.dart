@@ -1,25 +1,25 @@
 /// SPOTS Reservation Service Tests
 /// Date: January 1, 2026
 /// Purpose: Test ReservationService functionality
-/// 
+///
 /// Test Coverage:
 /// - Core Methods: createReservation, getUserReservations, updateReservation, cancelReservation
 /// - Offline-First: Local storage operations
 /// - Privacy: agentId usage (not userId)
 /// - Error Handling: Invalid inputs, edge cases
-/// 
+///
 /// Dependencies:
 /// - Mock AtomicClockService: Atomic timestamp generation
 /// - Mock ReservationQuantumService: Quantum state creation
 /// - Mock AgentIdService: Agent ID resolution
 /// - Mock StorageService: Local storage
 /// - Mock SupabaseService: Cloud sync
-/// 
+///
 /// ⚠️  TEST QUALITY GUIDELINES:
 /// ✅ DO: Test business logic, error handling, async operations, side effects
 /// ✅ DO: Test service behavior and interactions with dependencies
 /// ✅ DO: Consolidate related checks into comprehensive test blocks
-/// 
+///
 /// See: docs/plans/test_refactoring/TEST_WRITING_GUIDE.md
 library;
 
@@ -40,19 +40,29 @@ import 'package:avrai/core/models/payment/payment_result.dart';
 import 'package:avrai/core/models/payment/payment_intent.dart';
 import 'package:avrai/core/models/payment/payment_status.dart';
 import 'package:avrai/core/models/payment/refund_distribution.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/models/quantum_entity_state.dart';
 import 'package:avrai_core/models/quantum_entity_type.dart';
 
 // Mock dependencies
 class MockAtomicClockService extends Mock implements AtomicClockService {}
-class MockReservationQuantumService extends Mock implements ReservationQuantumService {}
+
+class MockReservationQuantumService extends Mock
+    implements ReservationQuantumService {}
+
 class MockAgentIdService extends Mock implements AgentIdService {}
+
 class MockStorageService extends Mock implements StorageService {}
+
 class MockSupabaseService extends Mock implements SupabaseService {}
+
 class MockPaymentService extends Mock implements PaymentService {}
+
 class MockRefundService extends Mock implements RefundService {}
-class MockReservationCancellationPolicyService extends Mock implements ReservationCancellationPolicyService {}
+
+class MockReservationCancellationPolicyService extends Mock
+    implements ReservationCancellationPolicyService {}
 
 void main() {
   setUpAll(() {
@@ -79,9 +89,11 @@ void main() {
     late MockSupabaseService mockSupabaseService;
     late MockPaymentService? mockPaymentService;
     late MockRefundService? mockRefundService;
-    late MockReservationCancellationPolicyService? mockCancellationPolicyService;
+    late MockReservationCancellationPolicyService?
+        mockCancellationPolicyService;
+    late EpisodicMemoryStore episodicMemoryStore;
 
-    setUp(() {
+    setUp(() async {
       mockAtomicClock = MockAtomicClockService();
       mockQuantumService = MockReservationQuantumService();
       mockAgentIdService = MockAgentIdService();
@@ -89,7 +101,10 @@ void main() {
       mockSupabaseService = MockSupabaseService();
       mockPaymentService = null; // Default: no payment service
       mockRefundService = null; // Default: no refund service
-      mockCancellationPolicyService = null; // Default: no cancellation policy service
+      mockCancellationPolicyService =
+          null; // Default: no cancellation policy service
+      episodicMemoryStore = EpisodicMemoryStore();
+      await episodicMemoryStore.clearForTesting();
 
       service = ReservationService(
         atomicClock: mockAtomicClock,
@@ -100,11 +115,13 @@ void main() {
         paymentService: mockPaymentService,
         refundService: mockRefundService,
         cancellationPolicyService: mockCancellationPolicyService,
+        episodicMemoryStore: episodicMemoryStore,
       );
     });
 
     group('createReservation', () {
-      test('should create reservation with quantum state and atomic timestamp', () async {
+      test('should create reservation with quantum state and atomic timestamp',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -130,13 +147,14 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
-        when(() => mockSupabaseService.isAvailable).thenReturn(false); // Offline
+        when(() => mockSupabaseService.isAvailable)
+            .thenReturn(false); // Offline
 
         // Act
         final reservation = await service.createReservation(
@@ -149,11 +167,15 @@ void main() {
 
         // Assert - Test actual behavior
         expect(reservation, isA<Reservation>());
-        expect(reservation.agentId, equals(agentId)); // Uses agentId, not userId
+        expect(
+            reservation.agentId, equals(agentId)); // Uses agentId, not userId
         expect(reservation.type, equals(ReservationType.event));
         expect(reservation.targetId, equals(eventId));
         expect(reservation.partySize, equals(2));
-        expect(reservation.status, equals(ReservationStatus.confirmed)); // Free reservations are automatically confirmed
+        expect(
+            reservation.status,
+            equals(ReservationStatus
+                .confirmed)); // Free reservations are automatically confirmed
         expect(reservation.atomicTimestamp, equals(atomicTimestamp));
         expect(reservation.quantumState, equals(quantumState));
 
@@ -161,10 +183,10 @@ void main() {
         verify(() => mockAgentIdService.getUserAgentId(userId)).called(1);
         verify(() => mockAtomicClock.getTicketPurchaseTimestamp()).called(1);
         verify(() => mockQuantumService.createReservationQuantumState(
-          userId: userId,
-          eventId: eventId,
-          reservationTime: reservationTime,
-        )).called(1);
+              userId: userId,
+              eventId: eventId,
+              reservationTime: reservationTime,
+            )).called(1);
         verify(() => mockStorageService.setString(any(), any())).called(1);
       });
 
@@ -194,14 +216,15 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(true); // Online
-        when(() => mockSupabaseService.client).thenThrow(Exception('Not implemented')); // Will fail gracefully
+        when(() => mockSupabaseService.client)
+            .thenThrow(Exception('Not implemented')); // Will fail gracefully
 
         // Act
         final reservation = await service.createReservation(
@@ -215,6 +238,59 @@ void main() {
         // Assert - Reservation should still be created even if cloud sync fails
         expect(reservation, isA<Reservation>());
         expect(reservation.agentId, equals(agentId));
+      });
+
+      test('writes engage_business tuple for reservation engagement', () async {
+        const userId = 'user-episodic-1';
+        const agentId = 'agent-episodic-1';
+        const businessTargetId = 'business-spot-42';
+        final reservationTime = DateTime.now().add(const Duration(days: 2));
+
+        final atomicTimestamp = AtomicTimestamp.now(
+          precision: TimePrecision.millisecond,
+        );
+
+        final quantumState = QuantumEntityState(
+          entityId: userId,
+          entityType: QuantumEntityType.user,
+          personalityState: const {},
+          quantumVibeAnalysis: const {},
+          entityCharacteristics: const {},
+          tAtomic: atomicTimestamp,
+        );
+
+        when(() => mockAgentIdService.getUserAgentId(userId))
+            .thenAnswer((_) async => agentId);
+        when(() => mockAtomicClock.getTicketPurchaseTimestamp())
+            .thenAnswer((_) async => atomicTimestamp);
+        when(() => mockQuantumService.createReservationQuantumState(
+              userId: any(named: 'userId'),
+              spotId: any(named: 'spotId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
+        when(() => mockStorageService.setString(any(), any()))
+            .thenAnswer((_) async => true);
+        when(() => mockSupabaseService.isAvailable).thenReturn(false);
+
+        await service.createReservation(
+          userId: userId,
+          type: ReservationType.spot,
+          targetId: businessTargetId,
+          reservationTime: reservationTime,
+          partySize: 2,
+          ticketPrice: 25.0,
+        );
+
+        final tuples = await episodicMemoryStore.getRecent(agentId: userId);
+        expect(tuples, isNotEmpty);
+        final engagementTuple =
+            tuples.firstWhere((t) => t.actionType == 'engage_business');
+        expect(engagementTuple.outcome.type, equals('engagement_outcome'));
+        expect(
+          engagementTuple.actionPayload['business_features']
+              ['business_entity_id'],
+          equals(businessTargetId),
+        );
       });
     });
 
@@ -239,10 +315,14 @@ void main() {
         // Setup mocks
         when(() => mockAgentIdService.getUserAgentId(userId))
             .thenAnswer((_) async => agentId);
-        when(() => mockStorageService.getKeys()).thenReturn(['reservation_reservation-1']);
-        when(() => mockStorageService.getString('reservation_reservation-1'))
-            .thenReturn('{"id":"reservation-1","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${testReservation.reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${testReservation.createdAt.toIso8601String()}","updatedAt":"${testReservation.updatedAt.toIso8601String()}"}');
-        when(() => mockSupabaseService.isAvailable).thenReturn(false); // Offline
+        when(() => mockStorageService.getKeys())
+            .thenReturn(['reservation_reservation-1']);
+        when(() =>
+            mockStorageService
+                .getString('reservation_reservation-1')).thenReturn(
+            '{"id":"reservation-1","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${testReservation.reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${testReservation.createdAt.toIso8601String()}","updatedAt":"${testReservation.updatedAt.toIso8601String()}"}');
+        when(() => mockSupabaseService.isAvailable)
+            .thenReturn(false); // Offline
 
         // Act
         final reservations = await service.getUserReservations(userId: userId);
@@ -254,7 +334,9 @@ void main() {
     });
 
     group('hasExistingReservation', () {
-      test('should return true when reservation exists for same target and time', () async {
+      test(
+          'should return true when reservation exists for same target and time',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -276,9 +358,12 @@ void main() {
         // Setup mocks
         when(() => mockAgentIdService.getUserAgentId(userId))
             .thenAnswer((_) async => agentId);
-        when(() => mockStorageService.getKeys()).thenReturn(['reservation_reservation-1']);
-        when(() => mockStorageService.getString('reservation_reservation-1'))
-            .thenReturn('{"id":"reservation-1","agentId":"$agentId","type":"event","targetId":"$eventId","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() => mockStorageService.getKeys())
+            .thenReturn(['reservation_reservation-1']);
+        when(() =>
+            mockStorageService
+                .getString('reservation_reservation-1')).thenReturn(
+            '{"id":"reservation-1","agentId":"$agentId","type":"event","targetId":"$eventId","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
 
         // Act
@@ -319,7 +404,8 @@ void main() {
     });
 
     group('updateReservation', () {
-      test('should update reservation and increment modification count', () async {
+      test('should update reservation and increment modification count',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
@@ -340,8 +426,10 @@ void main() {
         );
 
         // Setup mocks
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${originalTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${originalTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -360,11 +448,13 @@ void main() {
         expect(updated.lastModifiedAt, isNotNull);
       });
 
-      test('should throw exception when reservation cannot be modified', () async {
+      test('should throw exception when reservation cannot be modified',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
-        final originalTime = DateTime.now().add(const Duration(hours: 30)); // Too close
+        final originalTime =
+            DateTime.now().add(const Duration(hours: 30)); // Too close
 
         // Create existing reservation with max modifications
         final existingReservation = Reservation(
@@ -380,8 +470,10 @@ void main() {
         );
 
         // Setup mocks
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${originalTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":3,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${originalTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":3,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
 
         // Act & Assert
         expect(
@@ -419,8 +511,10 @@ void main() {
         );
 
         // Setup mocks
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"pending","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -437,7 +531,8 @@ void main() {
         expect(cancelled.status, equals(ReservationStatus.cancelled));
       });
 
-      test('should throw exception when reservation cannot be cancelled', () async {
+      test('should throw exception when reservation cannot be cancelled',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
@@ -456,8 +551,10 @@ void main() {
         );
 
         // Setup mocks
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${existingReservation.reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"cancelled","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${existingReservation.reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"cancelled","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
 
         // Act & Assert
         expect(
@@ -473,12 +570,14 @@ void main() {
         );
       });
 
-      test('should process refund when reservation qualifies and has payment', () async {
+      test('should process refund when reservation qualifies and has payment',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
         const paymentId = 'payment-123';
-        final reservationTime = DateTime.now().add(const Duration(days: 2)); // 48 hours away
+        final reservationTime =
+            DateTime.now().add(const Duration(days: 2)); // 48 hours away
 
         // Create paid reservation with payment ID in metadata
         final existingReservation = Reservation(
@@ -523,7 +622,8 @@ void main() {
         // Setup mocks
         mockPaymentService = MockPaymentService();
         mockRefundService = MockRefundService();
-        mockCancellationPolicyService = MockReservationCancellationPolicyService();
+        mockCancellationPolicyService =
+            MockReservationCancellationPolicyService();
 
         service = ReservationService(
           atomicClock: mockAtomicClock,
@@ -534,10 +634,13 @@ void main() {
           paymentService: mockPaymentService,
           refundService: mockRefundService,
           cancellationPolicyService: mockCancellationPolicyService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -545,18 +648,18 @@ void main() {
         when(() => mockPaymentService!.getPayment(paymentId))
             .thenReturn(payment);
         when(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).thenAnswer((_) async => true);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).thenAnswer((_) async => true);
         when(() => mockCancellationPolicyService!.calculateRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).thenAnswer((_) async => 50.0); // Full refund
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).thenAnswer((_) async => 50.0); // Full refund
         when(() => mockRefundService!.processRefund(
-          paymentId: any(named: 'paymentId'),
-          amount: any(named: 'amount'),
-          cancellationId: any(named: 'cancellationId'),
-        )).thenAnswer((_) async => [refundDistribution]);
+              paymentId: any(named: 'paymentId'),
+              amount: any(named: 'amount'),
+              cancellationId: any(named: 'cancellationId'),
+            )).thenAnswer((_) async => [refundDistribution]);
 
         // Act
         final cancelled = await service.cancelReservation(
@@ -569,31 +672,34 @@ void main() {
         expect(cancelled.status, equals(ReservationStatus.cancelled));
         expect(cancelled.metadata['refundProcessed'], equals(true));
         expect(cancelled.metadata['refundAmount'], equals(50.0));
-        expect(cancelled.metadata['refundDistributionId'], equals('re_test123'));
+        expect(
+            cancelled.metadata['refundDistributionId'], equals('re_test123'));
 
         // Verify interactions
         verify(() => mockPaymentService!.getPayment(paymentId)).called(1);
         verify(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).called(1);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).called(1);
         verify(() => mockCancellationPolicyService!.calculateRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).called(1);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).called(1);
         verify(() => mockRefundService!.processRefund(
-          paymentId: paymentId,
-          amount: 50.0,
-          cancellationId: reservationId,
-        )).called(1);
+              paymentId: paymentId,
+              amount: 50.0,
+              cancellationId: reservationId,
+            )).called(1);
       });
 
-      test('should cancel without refund when reservation does not qualify', () async {
+      test('should cancel without refund when reservation does not qualify',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
         const paymentId = 'payment-123';
-        final reservationTime = DateTime.now().add(const Duration(hours: 12)); // Too late (12 hours < 24)
+        final reservationTime = DateTime.now()
+            .add(const Duration(hours: 12)); // Too late (12 hours < 24)
 
         // Create paid reservation
         final existingReservation = Reservation(
@@ -628,7 +734,8 @@ void main() {
         // Setup mocks
         mockPaymentService = MockPaymentService();
         mockRefundService = MockRefundService();
-        mockCancellationPolicyService = MockReservationCancellationPolicyService();
+        mockCancellationPolicyService =
+            MockReservationCancellationPolicyService();
 
         service = ReservationService(
           atomicClock: mockAtomicClock,
@@ -639,10 +746,13 @@ void main() {
           paymentService: mockPaymentService,
           refundService: mockRefundService,
           cancellationPolicyService: mockCancellationPolicyService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -650,9 +760,9 @@ void main() {
         when(() => mockPaymentService!.getPayment(paymentId))
             .thenReturn(payment);
         when(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).thenAnswer((_) async => false); // Doesn't qualify
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).thenAnswer((_) async => false); // Doesn't qualify
 
         // Act
         final cancelled = await service.cancelReservation(
@@ -663,26 +773,28 @@ void main() {
 
         // Assert
         expect(cancelled.status, equals(ReservationStatus.cancelled));
-        expect(cancelled.metadata['refundProcessed'], isNull); // No refund processed
+        expect(cancelled.metadata['refundProcessed'],
+            isNull); // No refund processed
 
         // Verify interactions
         verify(() => mockPaymentService!.getPayment(paymentId)).called(1);
         verify(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).called(1);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).called(1);
         verifyNever(() => mockCancellationPolicyService!.calculateRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        ));
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            ));
         verifyNever(() => mockRefundService!.processRefund(
-          paymentId: any(named: 'paymentId'),
-          amount: any(named: 'amount'),
-          cancellationId: any(named: 'cancellationId'),
-        ));
+              paymentId: any(named: 'paymentId'),
+              amount: any(named: 'amount'),
+              cancellationId: any(named: 'cancellationId'),
+            ));
       });
 
-      test('should cancel free reservation without refund processing', () async {
+      test('should cancel free reservation without refund processing',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
@@ -705,7 +817,8 @@ void main() {
         // Setup mocks
         mockPaymentService = MockPaymentService();
         mockRefundService = MockRefundService();
-        mockCancellationPolicyService = MockReservationCancellationPolicyService();
+        mockCancellationPolicyService =
+            MockReservationCancellationPolicyService();
 
         service = ReservationService(
           atomicClock: mockAtomicClock,
@@ -716,10 +829,13 @@ void main() {
           paymentService: mockPaymentService,
           refundService: mockRefundService,
           cancellationPolicyService: mockCancellationPolicyService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -733,22 +849,25 @@ void main() {
 
         // Assert
         expect(cancelled.status, equals(ReservationStatus.cancelled));
-        expect(cancelled.metadata['refundProcessed'], isNull); // No refund for free reservation
+        expect(cancelled.metadata['refundProcessed'],
+            isNull); // No refund for free reservation
 
         // Verify no refund processing attempted
         verifyNever(() => mockPaymentService!.getPayment(any()));
         verifyNever(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        ));
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            ));
         verifyNever(() => mockRefundService!.processRefund(
-          paymentId: any(named: 'paymentId'),
-          amount: any(named: 'amount'),
-          cancellationId: any(named: 'cancellationId'),
-        ));
+              paymentId: any(named: 'paymentId'),
+              amount: any(named: 'amount'),
+              cancellationId: any(named: 'cancellationId'),
+            ));
       });
 
-      test('should cancel without refund when services unavailable (graceful degradation)', () async {
+      test(
+          'should cancel without refund when services unavailable (graceful degradation)',
+          () async {
         // Arrange
         const reservationId = 'reservation-1';
         const agentId = 'agent-123';
@@ -772,8 +891,10 @@ void main() {
         );
 
         // Setup mocks - services not available
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"payment-123"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":1,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"payment-123"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -830,7 +951,8 @@ void main() {
         // Setup mocks
         mockPaymentService = MockPaymentService();
         mockRefundService = MockRefundService();
-        mockCancellationPolicyService = MockReservationCancellationPolicyService();
+        mockCancellationPolicyService =
+            MockReservationCancellationPolicyService();
 
         service = ReservationService(
           atomicClock: mockAtomicClock,
@@ -841,10 +963,13 @@ void main() {
           paymentService: mockPaymentService,
           refundService: mockRefundService,
           cancellationPolicyService: mockCancellationPolicyService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
-        when(() => mockStorageService.getString('reservation_$reservationId'))
-            .thenReturn('{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
+        when(() =>
+            mockStorageService
+                .getString('reservation_$reservationId')).thenReturn(
+            '{"id":"$reservationId","agentId":"$agentId","type":"event","targetId":"event-456","reservationTime":"${reservationTime.toIso8601String()}","partySize":2,"ticketCount":2,"ticketPrice":25.0,"status":"confirmed","modificationCount":0,"disputeStatus":"none","metadata":{"paymentId":"$paymentId"},"createdAt":"${existingReservation.createdAt.toIso8601String()}","updatedAt":"${existingReservation.updatedAt.toIso8601String()}"}');
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
         when(() => mockSupabaseService.isAvailable).thenReturn(false);
@@ -852,18 +977,18 @@ void main() {
         when(() => mockPaymentService!.getPayment(paymentId))
             .thenReturn(payment);
         when(() => mockCancellationPolicyService!.qualifiesForRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).thenAnswer((_) async => true);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).thenAnswer((_) async => true);
         when(() => mockCancellationPolicyService!.calculateRefund(
-          reservation: any(named: 'reservation'),
-          cancellationTime: any(named: 'cancellationTime'),
-        )).thenAnswer((_) async => 50.0);
+              reservation: any(named: 'reservation'),
+              cancellationTime: any(named: 'cancellationTime'),
+            )).thenAnswer((_) async => 50.0);
         when(() => mockRefundService!.processRefund(
-          paymentId: any(named: 'paymentId'),
-          amount: any(named: 'amount'),
-          cancellationId: any(named: 'cancellationId'),
-        )).thenThrow(Exception('Refund processing failed')); // Refund fails
+              paymentId: any(named: 'paymentId'),
+              amount: any(named: 'amount'),
+              cancellationId: any(named: 'cancellationId'),
+            )).thenThrow(Exception('Refund processing failed')); // Refund fails
 
         // Act
         final cancelled = await service.cancelReservation(
@@ -874,17 +999,19 @@ void main() {
 
         // Assert - Cancellation should proceed even if refund fails
         expect(cancelled.status, equals(ReservationStatus.cancelled));
-        expect(cancelled.metadata['refundProcessed'], isNull); // No refund metadata (failed)
+        expect(cancelled.metadata['refundProcessed'],
+            isNull); // No refund metadata (failed)
 
         // Verify refund was attempted
         verify(() => mockRefundService!.processRefund(
-          paymentId: paymentId,
-          amount: 50.0,
-          cancellationId: reservationId,
-        )).called(1);
+              paymentId: paymentId,
+              amount: 50.0,
+              cancellationId: reservationId,
+            )).called(1);
       });
 
-      test('should create free reservation and automatically confirm', () async {
+      test('should create free reservation and automatically confirm',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -910,13 +1037,14 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
-        when(() => mockSupabaseService.isAvailable).thenReturn(false); // Offline
+        when(() => mockSupabaseService.isAvailable)
+            .thenReturn(false); // Offline
 
         // Act - Create free reservation (ticketPrice == null)
         final reservation = await service.createReservation(
@@ -937,7 +1065,9 @@ void main() {
         // No-op since payment service is null for free reservations
       });
 
-      test('should create free reservation with ticketPrice 0 and automatically confirm', () async {
+      test(
+          'should create free reservation with ticketPrice 0 and automatically confirm',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -963,13 +1093,14 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
-        when(() => mockSupabaseService.isAvailable).thenReturn(false); // Offline
+        when(() => mockSupabaseService.isAvailable)
+            .thenReturn(false); // Offline
 
         // Act - Create free reservation (ticketPrice == 0)
         final reservation = await service.createReservation(
@@ -987,7 +1118,8 @@ void main() {
         expect(reservation.metadata.containsKey('paymentId'), isFalse);
       });
 
-      test('should process payment for paid reservation and confirm on success', () async {
+      test('should process payment for paid reservation and confirm on success',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -1018,6 +1150,7 @@ void main() {
           storageService: mockStorageService,
           supabaseService: mockSupabaseService,
           paymentService: mockPaymentService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
         // Create payment and payment intent for successful payment
@@ -1048,23 +1181,25 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockStorageService.setString(any(), any()))
             .thenAnswer((_) async => true);
-        when(() => mockSupabaseService.isAvailable).thenReturn(false); // Offline
+        when(() => mockSupabaseService.isAvailable)
+            .thenReturn(false); // Offline
         when(() => mockPaymentService!.processReservationPayment(
-          reservationId: any(named: 'reservationId'),
-          reservationType: any(named: 'reservationType'),
-          userId: any(named: 'userId'),
-          ticketPrice: any(named: 'ticketPrice'),
-          ticketCount: any(named: 'ticketCount'),
-          depositAmount: any(named: 'depositAmount'),
-        )).thenAnswer((invocation) async {
+              reservationId: any(named: 'reservationId'),
+              reservationType: any(named: 'reservationType'),
+              userId: any(named: 'userId'),
+              ticketPrice: any(named: 'ticketPrice'),
+              ticketCount: any(named: 'ticketCount'),
+              depositAmount: any(named: 'depositAmount'),
+            )).thenAnswer((invocation) async {
           // Get reservationId from invocation named arguments
-          final reservationId = invocation.namedArguments[#reservationId] as String;
+          final reservationId =
+              invocation.namedArguments[#reservationId] as String;
           // Return payment result with reservationId
           final paymentWithReservationId = payment.copyWith(
             eventId: reservationId,
@@ -1092,20 +1227,22 @@ void main() {
         expect(reservation.ticketPrice, equals(ticketPrice));
         expect(reservation.metadata.containsKey('paymentId'), isTrue);
         expect(reservation.metadata['paymentId'], equals('payment-123'));
-        expect(reservation.metadata['stripePaymentIntentId'], equals('pi_test123'));
+        expect(reservation.metadata['stripePaymentIntentId'],
+            equals('pi_test123'));
 
         // Verify payment processing was called
         verify(() => mockPaymentService!.processReservationPayment(
-          reservationId: reservation.id,
-          reservationType: ReservationType.event,
-          userId: userId,
-          ticketPrice: ticketPrice,
-          ticketCount: ticketCount,
-          depositAmount: null,
-        )).called(1);
+              reservationId: reservation.id,
+              reservationType: ReservationType.event,
+              userId: userId,
+              ticketPrice: ticketPrice,
+              ticketCount: ticketCount,
+              depositAmount: null,
+            )).called(1);
       });
 
-      test('should fail reservation creation when payment processing fails', () async {
+      test('should fail reservation creation when payment processing fails',
+          () async {
         // Arrange
         const userId = 'user-123';
         const agentId = 'agent-123';
@@ -1135,6 +1272,7 @@ void main() {
           storageService: mockStorageService,
           supabaseService: mockSupabaseService,
           paymentService: mockPaymentService,
+          episodicMemoryStore: episodicMemoryStore,
         );
 
         final paymentResult = PaymentResult.failure(
@@ -1148,18 +1286,18 @@ void main() {
         when(() => mockAtomicClock.getTicketPurchaseTimestamp())
             .thenAnswer((_) async => atomicTimestamp);
         when(() => mockQuantumService.createReservationQuantumState(
-          userId: any(named: 'userId'),
-          eventId: any(named: 'eventId'),
-          reservationTime: any(named: 'reservationTime'),
-        )).thenAnswer((_) async => quantumState);
+              userId: any(named: 'userId'),
+              eventId: any(named: 'eventId'),
+              reservationTime: any(named: 'reservationTime'),
+            )).thenAnswer((_) async => quantumState);
         when(() => mockPaymentService!.processReservationPayment(
-          reservationId: any(named: 'reservationId'),
-          reservationType: any(named: 'reservationType'),
-          userId: any(named: 'userId'),
-          ticketPrice: any(named: 'ticketPrice'),
-          ticketCount: any(named: 'ticketCount'),
-          depositAmount: any(named: 'depositAmount'),
-        )).thenAnswer((_) async => paymentResult);
+              reservationId: any(named: 'reservationId'),
+              reservationType: any(named: 'reservationType'),
+              userId: any(named: 'userId'),
+              ticketPrice: any(named: 'ticketPrice'),
+              ticketCount: any(named: 'ticketCount'),
+              depositAmount: any(named: 'depositAmount'),
+            )).thenAnswer((_) async => paymentResult);
 
         // Act & Assert - Reservation creation should fail when payment fails
         try {
@@ -1179,13 +1317,13 @@ void main() {
 
         // Verify payment processing was called (payment should be attempted before exception)
         verify(() => mockPaymentService!.processReservationPayment(
-          reservationId: any(named: 'reservationId'),
-          reservationType: ReservationType.event,
-          userId: userId,
-          ticketPrice: ticketPrice,
-          ticketCount: 2, // Defaults to partySize
-          depositAmount: null,
-        )).called(1);
+              reservationId: any(named: 'reservationId'),
+              reservationType: ReservationType.event,
+              userId: userId,
+              ticketPrice: ticketPrice,
+              ticketCount: 2, // Defaults to partySize
+              depositAmount: null,
+            )).called(1);
 
         // Verify reservation was NOT stored (should not reach storage due to exception)
         verifyNever(() => mockStorageService.setString(any(), any()));

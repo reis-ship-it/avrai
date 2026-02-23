@@ -1,0 +1,54 @@
+{
+  "version": "v1",
+  "domain": "local_events_places_platforms",
+  "queries": [
+    {
+      "id": "q_jazz_tonight_sf",
+      "query_text": "live jazz tonight",
+      "locale": "en-US",
+      "geo_hint": "San Francisco, CA",
+      "edge_case_tags": [],
+      "expected_relevance_tiers": {
+        "high": ["sf-jazz-cellar", "sf-late-jazz-lounge"],
+        "medium": ["sf-blues-club"],
+        "low": ["oakland-jazz-festival"]
+      }
+    },
+    {
+      "id": "q_sparse_community_theater",
+      "query_text": "community theater this weekend",
+      "locale": "en-US",
+      "geo_hint": "Bismarck, ND",
+      "edge_case_tags": ["sparse_area"],
+      "expected_relevance_tiers": {
+        "high": ["bismarck-community-stage"],
+        "medium": ["mandan-youth-theater"],
+        "low": ["fargo-mainstage"]
+      }
+    },
+    {
+      "id": "q_ambiguous_springfield_brunch",
+      "query_text": "best brunch springfield",
+      "locale": "en-US",
+      "geo_hint": "MA",
+      "edge_case_tags": ["ambiguous_place"],
+      "expected_relevance_tiers": {
+        "high": ["springfield-ma-brunch-house"],
+        "medium": ["springfield-ma-riverside-cafe"],
+        "low": ["springfield-il-brunch-spot"]
+      }
+    },
+    {
+      "id": "q_multilingual_futbol_viewing",
+      "query_text": "donde ver futbol tonight",
+      "locale": "es-US",
+      "geo_hint": "Los Angeles, CA",
+      "edge_case_tags": ["multilingual_name"],
+      "expected_relevance_tiers": {
+        "high": ["la-futbol-cantina"],
+        "medium": ["la-sports-bar-central"],
+        "low": ["la-cocktail-lounge"]
+      }
+    }
+  ]
+}

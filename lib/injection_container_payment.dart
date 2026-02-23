@@ -13,6 +13,7 @@ import 'package:avrai/core/services/business/business_service.dart';
 import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai/core/services/business/sponsorship_service.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/services/payment/product_tracking_service.dart';
 import 'package:avrai/core/services/payment/product_sales_service.dart';
 import 'package:avrai/core/services/business/brand_analytics_service.dart';
@@ -85,6 +86,9 @@ Future<void> registerPaymentServices(GetIt sl) async {
         eventService: sl<ExpertiseEventService>(),
         businessService: sl<BusinessService>(),
         vibeCompatibilityService: sl<VibeCompatibilityService>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
         ledgerRecorder: sl<LedgerRecorderServiceV0>(),
       ));
 
@@ -93,6 +97,9 @@ Future<void> registerPaymentServices(GetIt sl) async {
         eventService: sl<ExpertiseEventService>(),
         partnershipService: sl<PartnershipService>(),
         vibeCompatibilityService: sl<VibeCompatibilityService>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Register RevenueSplitService (required by PayoutService)

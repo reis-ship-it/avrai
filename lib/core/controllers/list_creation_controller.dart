@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
@@ -6,7 +7,11 @@ import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
+import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/domain/repositories/lists_repository.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
@@ -15,10 +20,10 @@ import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 
 /// List Creation Controller
-/// 
+///
 /// Orchestrates the complete list creation workflow. Coordinates validation,
 /// permissions, list creation, spot addition, and optional AI suggestions.
-/// 
+///
 /// **Responsibilities:**
 /// - Validate list data
 /// - Check user permissions (via repository)
@@ -26,11 +31,11 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 /// - Add initial spots (if provided)
 /// - Generate AI suggestions (optional, when service available)
 /// - Return unified result with errors
-/// 
+///
 /// **Dependencies:**
 /// - `ListsRepository` - Create lists and check permissions
 /// - `AtomicClockService` - Mandatory for timestamps (Phase 8.3+)
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = ListCreationController();
@@ -44,7 +49,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 ///   curator: user,
 ///   initialSpotIds: ['spot1', 'spot2'],
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   // List created successfully
 /// } else {
@@ -57,7 +62,10 @@ class ListCreationController
 
   final ListsRepository _listsRepository;
   final AtomicClockService _atomicClock;
-  
+  final AgentIdService? _agentIdService;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
+
   // AVRAI Core System Integration (optional, graceful degradation)
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
@@ -73,9 +81,13 @@ class ListCreationController
     CrossEntityCompatibilityService? knotCompatibilityService,
     IntegratedKnotRecommendationEngine? knotEngine,
     QuantumMatchingAILearningService? aiLearningService,
-  })  : _listsRepository =
-            listsRepository ?? GetIt.instance<ListsRepository>(),
+    AgentIdService? agentIdService,
+    EpisodicMemoryStore? episodicMemoryStore,
+  })  : _listsRepository = listsRepository ?? GetIt.instance<ListsRepository>(),
         _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _agentIdService = agentIdService,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = const OutcomeTaxonomy(),
         _locationTimingService = locationTimingService ??
             (GetIt.instance.isRegistered<LocationTimingQuantumStateService>()
                 ? GetIt.instance<LocationTimingQuantumStateService>()
@@ -98,7 +110,7 @@ class ListCreationController
                 : null);
 
   /// Create a list
-  /// 
+  ///
   /// Orchestrates the complete list creation workflow:
   /// 1. Validate input
   /// 2. Check user permissions
@@ -106,13 +118,13 @@ class ListCreationController
   /// 4. Add initial spots (if provided)
   /// 5. Generate AI suggestions (optional, when service available)
   /// 6. Return unified result
-  /// 
+  ///
   /// **Parameters:**
   /// - `data`: List form data (title, description, category, etc.)
   /// - `curator`: User creating the list
   /// - `initialSpotIds`: Optional list of spot IDs to add initially
   /// - `generateAISuggestions`: Whether to generate AI suggestions (default: false)
-  /// 
+  ///
   /// **Returns:**
   /// `ListCreationResult` with success/failure and error details
   Future<ListCreationResult> createList({
@@ -181,15 +193,17 @@ class ListCreationController
       }
 
       // Step 5: AVRAI Core System Integration (optional, graceful degradation)
-      
+
       // 5.1: Create 4D quantum states for spots in list (if spots provided)
-      if (_locationTimingService != null && initialSpotIds != null && initialSpotIds.isNotEmpty) {
+      if (_locationTimingService != null &&
+          initialSpotIds != null &&
+          initialSpotIds.isNotEmpty) {
         try {
           developer.log(
             '🌐 Creating 4D quantum states for ${initialSpotIds.length} spots in list',
             name: _logName,
           );
-          
+
           // Note: Full implementation would load Spot objects and create quantum states
           // This is a placeholder for future 4D quantum state creation for list spots
           developer.log(
@@ -205,9 +219,11 @@ class ListCreationController
           // Continue - quantum state creation is optional
         }
       }
-      
+
       // 5.2: Calculate quantum compatibility (user ↔ spots)
-      if (_quantumEntanglementService != null && initialSpotIds != null && initialSpotIds.isNotEmpty) {
+      if (_quantumEntanglementService != null &&
+          initialSpotIds != null &&
+          initialSpotIds.isNotEmpty) {
         try {
           developer.log(
             '🔬 Quantum compatibility calculation deferred (requires Spot objects and user profile)',
@@ -223,7 +239,7 @@ class ListCreationController
           // Continue - quantum compatibility is optional
         }
       }
-      
+
       // 5.3: Calculate knot compatibility for recommendations
       if (_knotCompatibilityService != null) {
         try {
@@ -241,7 +257,7 @@ class ListCreationController
           // Continue - knot compatibility is optional
         }
       }
-      
+
       // 5.4: Use knot-based recommendations (if available)
       if (_knotEngine != null && generateAISuggestions) {
         try {
@@ -260,7 +276,7 @@ class ListCreationController
           // Continue - knot recommendations are optional
         }
       }
-      
+
       // 5.5: Learn from list creation via AI2AI mesh (optional, fire-and-forget)
       if (_aiLearningService != null) {
         try {
@@ -278,7 +294,7 @@ class ListCreationController
           // Continue - AI2AI learning is optional and non-blocking
         }
       }
-      
+
       // Step 6: Generate AI suggestions (optional, when service available)
       // TODO(Phase 8.12): Implement AI list generation when AIListGeneratorService is available
       if (generateAISuggestions) {
@@ -289,6 +305,13 @@ class ListCreationController
         // For now, AI suggestions are not implemented
         // This can be added when AIListGeneratorService is available
       }
+
+      await _recordListCreationEpisode(
+        curator: curator,
+        createdList: createdList,
+        formData: data,
+        initialSpotIds: initialSpotIds ?? const [],
+      );
 
       return ListCreationResult.success(
         list: createdList,
@@ -371,10 +394,184 @@ class ListCreationController
       }
     }
   }
+
+  Future<void> _recordListCreationEpisode({
+    required UnifiedUser curator,
+    required SpotList createdList,
+    required ListFormData formData,
+    required List<String> initialSpotIds,
+  }) async {
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final agentIdService = _agentIdService;
+      final agentId = agentIdService == null
+          ? curator.id
+          : await agentIdService.getUserAgentId(curator.id);
+      final computedCompositionFeatures = _buildListCompositionFeatures(
+        createdList: createdList,
+        initialSpotIds: initialSpotIds,
+        purposeTags: formData.tags ?? const <String>[],
+      );
+      final listMetadata = <String, dynamic>{
+        'description_length': formData.description.length,
+        'tags': formData.tags ?? const <String>[],
+        'is_public': createdList.isPublic,
+        'category': createdList.category,
+        'respect_count': createdList.respectCount,
+      };
+
+      final compositionFeatures = <String, dynamic>{
+        ...computedCompositionFeatures,
+      };
+
+      final actionPayload = <String, dynamic>{
+        'list_id': createdList.id,
+        'title': createdList.title,
+        'category': createdList.category,
+        'is_public': createdList.isPublic,
+        'spot_ids': initialSpotIds,
+        'list_metadata': listMetadata,
+        'list_composition_features': compositionFeatures,
+      };
+
+      final outcome = _outcomeTaxonomy.classify(
+        eventType: 'create_list',
+        parameters: {
+          'list_id': createdList.id,
+          'item_count': initialSpotIds.length,
+        },
+      );
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'user_id': curator.id,
+          'user_tags': curator.tags,
+          'list_count_delta': 0,
+          'action_context': 'list_creation_controller',
+        },
+        actionType: 'create_list',
+        actionPayload: actionPayload,
+        nextState: {
+          'user_id': curator.id,
+          'created_list_id': createdList.id,
+          'list_count_delta': 1,
+          'created_item_count': initialSpotIds.length,
+          'composition_feature_keys': compositionFeatures.keys.toList(),
+        },
+        outcome: outcome,
+        metadata: const {
+          'pipeline': 'list_creation_controller',
+          'phase_ref': '1.2.8',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record list creation episodic tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  Map<String, dynamic> _buildListCompositionFeatures({
+    required SpotList createdList,
+    required List<String> initialSpotIds,
+    required List<String> purposeTags,
+  }) {
+    final spots = createdList.spots;
+    final itemCount = initialSpotIds.length;
+
+    final categoryCounts = <String, int>{};
+    final spotPrices = <double>[];
+    final vibeScores = <double>[];
+    final latitudes = <double>[];
+    final longitudes = <double>[];
+
+    for (final spot in spots) {
+      if (spot.category.isNotEmpty) {
+        categoryCounts.update(spot.category, (count) => count + 1,
+            ifAbsent: () => 1);
+      }
+
+      final rawPrice = spot.metadata['price_level'];
+      if (rawPrice is num) {
+        spotPrices.add(rawPrice.toDouble());
+      }
+
+      final rawVibe = spot.metadata['vibe_score'];
+      if (rawVibe is num) {
+        vibeScores.add(rawVibe.toDouble());
+      }
+
+      latitudes.add(spot.latitude);
+      longitudes.add(spot.longitude);
+    }
+
+    final categoryDistribution = <String, double>{};
+    if (spots.isNotEmpty) {
+      for (final entry in categoryCounts.entries) {
+        categoryDistribution[entry.key] = entry.value / spots.length;
+      }
+    } else if (createdList.category != null &&
+        createdList.category!.isNotEmpty) {
+      // Fallback when only list-level category is known at creation time.
+      categoryDistribution[createdList.category!] = 1.0;
+    }
+
+    final geographicSpreadKm = _estimateGeographicSpreadKm(
+      latitudes: latitudes,
+      longitudes: longitudes,
+    );
+
+    final minPrice =
+        spotPrices.isEmpty ? null : spotPrices.reduce((a, b) => a < b ? a : b);
+    final maxPrice =
+        spotPrices.isEmpty ? null : spotPrices.reduce((a, b) => a > b ? a : b);
+    final avgVibe = vibeScores.isEmpty
+        ? null
+        : vibeScores.reduce((a, b) => a + b) / vibeScores.length;
+
+    return <String, dynamic>{
+      'avg_spot_vibe': avgVibe,
+      'category_distribution': categoryDistribution,
+      'geographic_spread_km': geographicSpreadKm,
+      'price_range': {
+        'min': minPrice,
+        'max': maxPrice,
+      },
+      'item_count': itemCount,
+      'purpose_tags': purposeTags,
+      'composition_data_quality':
+          spots.isNotEmpty ? 'spot_enriched' : 'id_only',
+      'spot_enriched_count': spots.length,
+    };
+  }
+
+  double? _estimateGeographicSpreadKm({
+    required List<double> latitudes,
+    required List<double> longitudes,
+  }) {
+    if (latitudes.length < 2 || longitudes.length < 2) {
+      return null;
+    }
+    final minLat = latitudes.reduce((a, b) => a < b ? a : b);
+    final maxLat = latitudes.reduce((a, b) => a > b ? a : b);
+    final minLng = longitudes.reduce((a, b) => a < b ? a : b);
+    final maxLng = longitudes.reduce((a, b) => a > b ? a : b);
+
+    // Approximate map-box diagonal in km.
+    final latKm = (maxLat - minLat).abs() * 111.0;
+    final lngKm = (maxLng - minLng).abs() * 111.0;
+    return math.sqrt((latKm * latKm) + (lngKm * lngKm));
+  }
 }
 
 /// List Form Data
-/// 
+///
 /// Input data for list creation
 class ListFormData {
   final String title;
@@ -399,7 +596,7 @@ class ListFormData {
 }
 
 /// List Creation Result
-/// 
+///
 /// Unified result for list creation operations
 class ListCreationResult extends ControllerResult {
   final SpotList? list;
@@ -444,4 +641,3 @@ class ListCreationResult extends ControllerResult {
     );
   }
 }
-

@@ -1,0 +1,470 @@
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('EpisodicMemoryStore', () {
+    late EpisodicMemoryStore store;
+
+    setUp(() async {
+      store = EpisodicMemoryStore();
+      await store.clearForTesting();
+    });
+
+    test('keeps schema consistent for new tuples', () async {
+      final tuple = EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {'dim_a': 0.2},
+        actionType: 'spot_visited',
+        actionPayload: const {'spot_id': 's1'},
+        nextState: const {'dim_a': 0.25},
+        outcome: const OutcomeSignal(
+          type: 'spot_visited',
+          category: OutcomeCategory.binary,
+          value: 1.0,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 10, 0, 0),
+      );
+
+      expect(tuple.schemaVersion, EpisodicTuple.currentSchemaVersion);
+      final written = await store.writeTuple(tuple);
+      expect(written.inserted, isTrue);
+      expect(await store.count(agentId: 'agent-1'), 1);
+    });
+
+    test('deduplicates identical tuple hashes', () async {
+      final tuple = EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {'state': 'before'},
+        actionType: 'recommendation_rejected',
+        actionPayload: const {'entity_id': 'e1'},
+        nextState: const {'state': 'after'},
+        outcome: const OutcomeSignal(
+          type: 'recommendation_rejected',
+          category: OutcomeCategory.binary,
+          value: 0.0,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 10, 5, 0),
+      );
+
+      final first = await store.writeTuple(tuple);
+      final second = await store.writeTuple(tuple);
+
+      expect(first.inserted, isTrue);
+      expect(second.inserted, isFalse);
+      expect(await store.count(agentId: 'agent-1'), 1);
+    });
+
+    test('replay returns oldest to newest ordering', () async {
+      final t1 = EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {'x': 1},
+        actionType: 'a1',
+        actionPayload: const {},
+        nextState: const {'x': 2},
+        outcome: const OutcomeSignal(
+          type: 'a1',
+          category: OutcomeCategory.behavioral,
+          value: 0.1,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 9, 0, 0),
+      );
+      final t2 = EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {'x': 2},
+        actionType: 'a2',
+        actionPayload: const {},
+        nextState: const {'x': 3},
+        outcome: const OutcomeSignal(
+          type: 'a2',
+          category: OutcomeCategory.behavioral,
+          value: 0.2,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 9, 5, 0),
+      );
+      final t3 = EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {'x': 3},
+        actionType: 'a3',
+        actionPayload: const {},
+        nextState: const {'x': 4},
+        outcome: const OutcomeSignal(
+          type: 'a3',
+          category: OutcomeCategory.behavioral,
+          value: 0.3,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 9, 10, 0),
+      );
+
+      await store.writeTuple(t2);
+      await store.writeTuple(t3);
+      await store.writeTuple(t1);
+
+      final replay = await store.replay(agentId: 'agent-1');
+      expect(replay.map((t) => t.actionType).toList(), ['a1', 'a2', 'a3']);
+    });
+
+    test('replayWindow returns only tuples in range', () async {
+      final start = DateTime.utc(2026, 2, 16, 9, 0, 0);
+      final end = DateTime.utc(2026, 2, 16, 10, 0, 0);
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'in-window',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'in-window',
+          category: OutcomeCategory.behavioral,
+          value: 0.5,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 9, 30, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'out-of-window',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'out-of-window',
+          category: OutcomeCategory.behavioral,
+          value: 0.5,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 10, 30, 0),
+      ));
+
+      final replay = await store.replayWindow(
+        agentId: 'agent-1',
+        windowStartInclusive: start,
+        windowEndExclusive: end,
+      );
+      expect(replay, hasLength(1));
+      expect(replay.first.actionType, 'in-window');
+    });
+
+    test('queryRelevant filters by action and minimum outcome', () async {
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'spot_visited',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'spot_visited',
+          category: OutcomeCategory.binary,
+          value: 1.0,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 8, 0, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'spot_visited',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'spot_visited',
+          category: OutcomeCategory.binary,
+          value: 0.0,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 16, 8, 5, 0),
+      ));
+
+      final rows = await store.queryRelevant(
+        agentId: 'agent-1',
+        actionType: 'spot_visited',
+        minOutcomeValue: 0.5,
+      );
+      expect(rows, hasLength(1));
+      expect(rows.first.outcome.value, 1.0);
+    });
+
+    test('pruneConsolidated removes old compressed non-surprise tuples',
+        () async {
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-prunable',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-prunable',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 1, 1, 0, 0, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-surprise',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-surprise',
+          category: OutcomeCategory.binary,
+          value: 0,
+        ),
+        metadata: const {'predicted_outcome_value': 1.0},
+        recordedAt: DateTime.utc(2026, 1, 2, 0, 0, 0),
+      ));
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'recent',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'recent',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 2, 18, 0, 0, 0),
+      ));
+
+      final before = await store.getRecent(agentId: 'agent-1', limit: 10);
+      final hashes = before.map((t) => t.tupleHash).toSet();
+      final prunable = before.firstWhere((t) => t.actionType == 'old-prunable');
+      final result = await store.pruneConsolidated(
+        agentId: 'agent-1',
+        now: DateTime.utc(2026, 2, 20, 0, 0, 0),
+        retainWindow: const Duration(days: 30),
+        compressedTupleHashes: hashes,
+      );
+
+      expect(result.deletedCount, 1);
+      expect(result.retainedSurpriseCount, 1);
+      expect(result.retainedRecentCount, 1);
+
+      final after = await store.getRecent(agentId: 'agent-1', limit: 10);
+      expect(after.map((t) => t.actionType), contains('old-surprise'));
+      expect(after.map((t) => t.actionType), contains('recent'));
+      expect(
+          after.map((t) => t.tupleHash), isNot(contains(prunable.tupleHash)));
+    });
+
+    test('pruneConsolidated keeps old tuples that are not compressed',
+        () async {
+      await store.writeTuple(EpisodicTuple(
+        agentId: 'agent-1',
+        stateBefore: const {},
+        actionType: 'old-keep',
+        actionPayload: const {},
+        nextState: const {},
+        outcome: const OutcomeSignal(
+          type: 'old-keep',
+          category: OutcomeCategory.binary,
+          value: 1,
+        ),
+        recordedAt: DateTime.utc(2026, 1, 1, 0, 0, 0),
+      ));
+
+      final result = await store.pruneConsolidated(
+        agentId: 'agent-1',
+        now: DateTime.utc(2026, 2, 20, 0, 0, 0),
+        retainWindow: const Duration(days: 30),
+        compressedTupleHashes: const {},
+      );
+      expect(result.deletedCount, 0);
+      expect(result.retainedUncompressedCount, 1);
+      expect(await store.count(agentId: 'agent-1'), 1);
+    });
+  });
+
+  group('OutcomeTaxonomy', () {
+    test('classifies quality outcomes', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'feedback_rating',
+        parameters: const {'rating': 4},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.0);
+    });
+
+    test('classifies community_join as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'community_join',
+        parameters: const {'community_id': 'community-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies event_attend as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'event_attend',
+        parameters: const {'event_id': 'event-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies create_list as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'create_list',
+        parameters: const {'item_count': 2},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies modify_list as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'modify_list',
+        parameters: const {'delta_count': 1},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies share_list as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'share_list',
+        parameters: const {'success_count': 0},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies actual_action_succeeded as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'actual_action_succeeded',
+        parameters: const {'actual_action_type': 'create_spot'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies actual_action_failed as binary negative outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'actual_action_failed',
+        parameters: const {'actual_action_type': 'create_spot'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 0.0);
+    });
+
+    test('classifies single_visit_only as neutral behavioral outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'single_visit_only',
+        parameters: const {'spot_id': 'spot-1'},
+      );
+      expect(signal.category, OutcomeCategory.behavioral);
+      expect(signal.value, 0.5);
+    });
+
+    test('classifies no_action as behavioral exploration outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'no_action',
+        parameters: const {'entity_type': 'spot'},
+      );
+      expect(signal.category, OutcomeCategory.behavioral);
+      expect(signal.value, 0.0);
+    });
+
+    test('classifies attend_expert_event_feedback as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'attend_expert_event_feedback',
+        parameters: const {'overall_rating': 4.6},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.6);
+    });
+
+    test('classifies sponsor_event as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'sponsor_event',
+        parameters: const {'sponsorship_id': 'sp-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies sponsorship_outcome_recorded as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'sponsorship_outcome_recorded',
+        parameters: const {'overall_rating': 4.1},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.1);
+    });
+
+    test('classifies form_partnership as binary positive outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'form_partnership',
+        parameters: const {'partnership_id': 'pt-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+
+    test('classifies partnership_outcome_recorded as quality outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'partnership_outcome_recorded',
+        parameters: const {'overall_rating': 4.3},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 4.3);
+    });
+
+    test('classifies return_visit_within_days as temporal outcome', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'return_visit_within_days',
+        parameters: const {'days': 12, 'window_days': 30},
+      );
+      expect(signal.category, OutcomeCategory.temporal);
+      expect(signal.value, 12.0);
+      expect(signal.metadata['window_days'], 30);
+    });
+
+    test('clamps rating quality outcomes to 0-5 range', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'feedback_rating',
+        parameters: const {'rating': 9},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 5.0);
+      expect(signal.metadata['scale_max'], 5.0);
+    });
+
+    test('classifies ai2ai_connection_outcome with 0-1 quality scale', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'ai2ai_connection_outcome',
+        parameters: const {'connection_quality': 0.78},
+      );
+      expect(signal.category, OutcomeCategory.quality);
+      expect(signal.value, 0.78);
+      expect(signal.metadata['scale_max'], 1.0);
+    });
+
+    test('classifies chat action metadata events as binary positive', () {
+      final taxonomy = const OutcomeTaxonomy();
+      final signal = taxonomy.classify(
+        eventType: 'message_community',
+        parameters: const {'community_id': 'community-1'},
+      );
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
+  });
+}

@@ -5,60 +5,62 @@
 import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
+import 'package:avrai/core/services/calling_score/formula_ab_testing_service.dart';
 
 /// Calling Score A/B Testing Service
-/// 
+///
 /// Manages A/B testing between formula-based and hybrid calling score systems.
-/// 
+///
 /// Phase 12 Section 2.3: A/B Testing Framework
 /// - Splits users: 50% formula-based, 50% hybrid
 /// - Tracks outcomes for both groups
 /// - Measures improvement in outcome rates
 class CallingScoreABTestingService {
   static const String _logName = 'CallingScoreABTestingService';
-  
+
   final SupabaseClient _supabase;
   final AgentIdService _agentIdService;
-  
+  final FormulaABTestingService _formulaABTestingService;
+
   // A/B test configuration
-  static const double hybridGroupPercentage = 0.5; // 50% hybrid, 50% formula-based
-  
+  static const double hybridGroupPercentage =
+      0.5; // 50% hybrid, 50% formula-based
+
   CallingScoreABTestingService({
     required SupabaseClient supabase,
     required AgentIdService agentIdService,
-  }) : _supabase = supabase,
-       _agentIdService = agentIdService;
-  
+    FormulaABTestingService formulaABTestingService =
+        const FormulaABTestingService(),
+  })  : _supabase = supabase,
+        _agentIdService = agentIdService,
+        _formulaABTestingService = formulaABTestingService;
+
   /// Determine which group a user belongs to (formula-based or hybrid)
-  /// 
+  ///
   /// Uses consistent hashing based on agentId to ensure users stay in the same group
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID (required)
-  /// 
+  ///
   /// **Returns:**
   /// `ABTestGroup.formulaBased` or `ABTestGroup.hybrid`
   Future<ABTestGroup> getUserGroup({required String userId}) async {
     try {
       // Get agentId for consistent hashing
       final agentId = await _agentIdService.getUserAgentId(userId);
-      
-      // Use consistent hashing to assign group
-      final hash = sha256.convert(utf8.encode(agentId));
-      final hashValue = hash.bytes.first;
-      
-      // Assign to hybrid group if hash value is in bottom 50%
-      final isHybrid = hashValue < 128; // 0-127 = hybrid, 128-255 = formula-based
-      
+
+      final isHybrid = _formulaABTestingService.isTreatmentGroup(
+        stableSubjectId: agentId,
+        treatmentPercentage: hybridGroupPercentage,
+      );
+
       final group = isHybrid ? ABTestGroup.hybrid : ABTestGroup.formulaBased;
-      
+
       developer.log(
         'User assigned to A/B test group: $group (agentId: $agentId)',
         name: _logName,
       );
-      
+
       return group;
     } catch (e, stackTrace) {
       developer.log(
@@ -71,11 +73,11 @@ class CallingScoreABTestingService {
       return ABTestGroup.formulaBased;
     }
   }
-  
+
   /// Log A/B test outcome
-  /// 
+  ///
   /// Records the outcome of a calling score calculation for A/B testing analysis
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID
   /// - `opportunityId`: Opportunity ID (spot/event/etc.)
@@ -93,7 +95,7 @@ class CallingScoreABTestingService {
   }) async {
     try {
       final agentId = await _agentIdService.getUserAgentId(userId);
-      
+
       // Log outcome to database
       await _supabase.from('calling_score_ab_test_outcomes').insert({
         'agent_id': agentId,
@@ -105,7 +107,7 @@ class CallingScoreABTestingService {
         'outcome_score': outcome?.score,
         'timestamp': DateTime.now().toIso8601String(),
       });
-      
+
       developer.log(
         'A/B test outcome logged: group=$group, score=${(callingScore * 100).toStringAsFixed(1)}%, '
         'called=$isCalled, outcome=${outcome?.type ?? "none"}',
@@ -121,11 +123,11 @@ class CallingScoreABTestingService {
       // Non-fatal error, don't throw
     }
   }
-  
+
   /// Get A/B test metrics
-  /// 
+  ///
   /// Returns aggregated metrics comparing formula-based vs hybrid groups
-  /// 
+  ///
   /// **Returns:**
   /// A/B test metrics with comparison between groups
   Future<ABTestMetrics> getABTestMetrics() async {
@@ -135,33 +137,45 @@ class CallingScoreABTestingService {
           .from('calling_score_ab_test_outcomes')
           .select('*')
           .eq('test_group', 'formulaBased');
-      
+
       // Get outcomes for hybrid group
       final hybridOutcomes = await _supabase
           .from('calling_score_ab_test_outcomes')
           .select('*')
           .eq('test_group', 'hybrid');
-      
+
       final formulaList = List<Map<String, dynamic>>.from(formulaOutcomes);
       final hybridList = List<Map<String, dynamic>>.from(hybridOutcomes);
-      
-      // Calculate metrics for formula-based group
-      final formulaMetrics = _calculateGroupMetrics(formulaList);
-      
-      // Calculate metrics for hybrid group
-      final hybridMetrics = _calculateGroupMetrics(hybridList);
-      
-      // Calculate improvement
-      final callingScoreImprovement = hybridMetrics.avgCallingScore - formulaMetrics.avgCallingScore;
-      final outcomeRateImprovement = hybridMetrics.positiveOutcomeRate - formulaMetrics.positiveOutcomeRate;
-      final engagementImprovement = hybridMetrics.avgEngagement - formulaMetrics.avgEngagement;
-      
+
+      final formulaGeneric =
+          _formulaABTestingService.calculateGroupMetrics(formulaList);
+      final hybridGeneric =
+          _formulaABTestingService.calculateGroupMetrics(hybridList);
+      final comparison = _formulaABTestingService.compare(
+        controlGroup: formulaGeneric,
+        treatmentGroup: hybridGeneric,
+      );
+      final formulaMetrics = GroupMetrics(
+        totalOutcomes: formulaGeneric.totalOutcomes,
+        avgCallingScore: formulaGeneric.avgScore,
+        callRate: formulaGeneric.actionRate,
+        positiveOutcomeRate: formulaGeneric.positiveOutcomeRate,
+        avgEngagement: formulaGeneric.avgOutcomeScore,
+      );
+      final hybridMetrics = GroupMetrics(
+        totalOutcomes: hybridGeneric.totalOutcomes,
+        avgCallingScore: hybridGeneric.avgScore,
+        callRate: hybridGeneric.actionRate,
+        positiveOutcomeRate: hybridGeneric.positiveOutcomeRate,
+        avgEngagement: hybridGeneric.avgOutcomeScore,
+      );
+
       return ABTestMetrics(
         formulaGroup: formulaMetrics,
         hybridGroup: hybridMetrics,
-        callingScoreImprovement: callingScoreImprovement,
-        outcomeRateImprovement: outcomeRateImprovement,
-        engagementImprovement: engagementImprovement,
+        callingScoreImprovement: comparison.scoreImprovement,
+        outcomeRateImprovement: comparison.positiveOutcomeRateImprovement,
+        engagementImprovement: comparison.outcomeScoreImprovement,
         calculatedAt: DateTime.now(),
       );
     } catch (e, stackTrace) {
@@ -174,60 +188,13 @@ class CallingScoreABTestingService {
       return ABTestMetrics.empty();
     }
   }
-  
-  /// Calculate metrics for a test group
-  GroupMetrics _calculateGroupMetrics(List<Map<String, dynamic>> outcomes) {
-    if (outcomes.isEmpty) {
-      return GroupMetrics.empty();
-    }
-    
-    // Calculate average calling score
-    double totalScore = 0.0;
-    int calledCount = 0;
-    int positiveOutcomes = 0;
-    int totalOutcomes = 0;
-    double totalEngagement = 0.0;
-    
-    for (final outcome in outcomes) {
-      final score = (outcome['calling_score'] as num).toDouble();
-      totalScore += score;
-      
-      if (outcome['is_called'] == true) {
-        calledCount++;
-      }
-      
-      final outcomeType = outcome['outcome_type'] as String?;
-      if (outcomeType != null) {
-        totalOutcomes++;
-        if (outcomeType == 'positive') {
-          positiveOutcomes++;
-        }
-        
-        final outcomeScore = (outcome['outcome_score'] as num?)?.toDouble() ?? 0.0;
-        totalEngagement += outcomeScore;
-      }
-    }
-    
-    final avgCallingScore = totalScore / outcomes.length;
-    final callRate = calledCount / outcomes.length;
-    final positiveOutcomeRate = totalOutcomes > 0 ? positiveOutcomes / totalOutcomes : 0.0;
-    final avgEngagement = totalOutcomes > 0 ? totalEngagement / totalOutcomes : 0.0;
-    
-    return GroupMetrics(
-      totalOutcomes: outcomes.length,
-      avgCallingScore: avgCallingScore,
-      callRate: callRate,
-      positiveOutcomeRate: positiveOutcomeRate,
-      avgEngagement: avgEngagement,
-    );
-  }
 }
 
 /// A/B Test Group
 enum ABTestGroup {
   formulaBased,
   hybrid;
-  
+
   String get name {
     switch (this) {
       case ABTestGroup.formulaBased:
@@ -236,7 +203,7 @@ enum ABTestGroup {
         return 'hybrid';
     }
   }
-  
+
   static ABTestGroup fromString(String name) {
     switch (name) {
       case 'formulaBased':
@@ -250,12 +217,12 @@ enum ABTestGroup {
 }
 
 /// Outcome Result
-/// 
+///
 /// Represents the outcome of a user action on a recommendation
 class OutcomeResult {
   final String type; // 'positive', 'negative', 'neutral'
   final double score; // 0.0 to 1.0
-  
+
   OutcomeResult({
     required this.type,
     required this.score,
@@ -263,7 +230,7 @@ class OutcomeResult {
 }
 
 /// Group Metrics
-/// 
+///
 /// Metrics for a single A/B test group
 class GroupMetrics {
   final int totalOutcomes;
@@ -271,7 +238,7 @@ class GroupMetrics {
   final double callRate; // Percentage of outcomes where user was "called"
   final double positiveOutcomeRate; // Percentage of positive outcomes
   final double avgEngagement; // Average engagement score
-  
+
   GroupMetrics({
     required this.totalOutcomes,
     required this.avgCallingScore,
@@ -279,7 +246,7 @@ class GroupMetrics {
     required this.positiveOutcomeRate,
     required this.avgEngagement,
   });
-  
+
   factory GroupMetrics.empty() {
     return GroupMetrics(
       totalOutcomes: 0,
@@ -292,7 +259,7 @@ class GroupMetrics {
 }
 
 /// A/B Test Metrics
-/// 
+///
 /// Aggregated metrics comparing formula-based vs hybrid groups
 class ABTestMetrics {
   final GroupMetrics formulaGroup;
@@ -301,7 +268,7 @@ class ABTestMetrics {
   final double outcomeRateImprovement; // Hybrid - Formula
   final double engagementImprovement; // Hybrid - Formula
   final DateTime calculatedAt;
-  
+
   ABTestMetrics({
     required this.formulaGroup,
     required this.hybridGroup,
@@ -310,7 +277,7 @@ class ABTestMetrics {
     required this.engagementImprovement,
     required this.calculatedAt,
   });
-  
+
   factory ABTestMetrics.empty() {
     return ABTestMetrics(
       formulaGroup: GroupMetrics.empty(),
@@ -321,10 +288,10 @@ class ABTestMetrics {
       calculatedAt: DateTime.now(),
     );
   }
-  
+
   /// Check if hybrid group shows significant improvement
   bool get hasSignificantImprovement {
     return outcomeRateImprovement > 0.05 && // At least 5% improvement
-           callingScoreImprovement > 0.0; // Positive improvement
+        callingScoreImprovement > 0.0; // Positive improvement
   }
 }

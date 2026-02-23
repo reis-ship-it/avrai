@@ -20,6 +20,9 @@ import 'package:avrai/core/services/payment/refund_service.dart';
 import 'package:avrai/core/services/reservation/reservation_cancellation_policy_service.dart';
 import 'package:avrai/core/services/reservation/reservation_analytics_service.dart';
 import 'package:avrai/core/ai/event_logger.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:uuid/uuid.dart';
 
 /// Modification check result
@@ -64,6 +67,8 @@ class ReservationService {
   // Phase 7.1: Analytics Integration
   final ReservationAnalyticsService? _analyticsService;
   final EventLogger? _eventLogger;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
   final Uuid _uuid = const Uuid();
 
   ReservationService({
@@ -78,6 +83,8 @@ class ReservationService {
     // Phase 7.1: Analytics Integration
     ReservationAnalyticsService? analyticsService,
     EventLogger? eventLogger,
+    EpisodicMemoryStore? episodicMemoryStore,
+    OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
   })  : _atomicClock = atomicClock,
         _quantumService = quantumService,
         _agentIdService = agentIdService,
@@ -87,7 +94,9 @@ class ReservationService {
         _refundService = refundService,
         _cancellationPolicyService = cancellationPolicyService,
         _analyticsService = analyticsService,
-        _eventLogger = eventLogger;
+        _eventLogger = eventLogger,
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = outcomeTaxonomy;
 
   /// Create reservation (free by default, business can require fee)
   ///
@@ -157,6 +166,10 @@ class ReservationService {
             cancellationPolicy ?? CancellationPolicy.defaultPolicy(),
         atomicTimestamp: atomicTimestamp,
         quantumState: quantumState,
+        metadata: {
+          'userId': userId,
+          'engagement_source': 'reservation_service',
+        },
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -170,8 +183,7 @@ class ReservationService {
             name: _logName,
           );
 
-          final paymentResult =
-              await _paymentService.processReservationPayment(
+          final paymentResult = await _paymentService.processReservationPayment(
             reservationId: reservation.id,
             reservationType: type,
             userId: userId,
@@ -263,6 +275,18 @@ class ReservationService {
         userId: userId,
         eventType: 'reservation_created',
         reservation: reservation,
+      );
+      await _recordBusinessEngagementTuple(
+        userId: userId,
+        reservation: reservation,
+        engagementType: price != null && price > 0 ? 'purchase' : 'reservation',
+        outcomeScore:
+            reservation.status == ReservationStatus.confirmed ? 1.0 : 0.7,
+        outcomeLabel: 'reservation_created',
+        extraOutcome: {
+          if (price != null) 'ticket_price': price,
+          'party_size': partySize,
+        },
       );
 
       return reservation;
@@ -1006,6 +1030,13 @@ class ReservationService {
           eventType: 'reservation_completed',
           reservation: updated,
         );
+        await _recordBusinessEngagementTuple(
+          userId: userId,
+          reservation: updated,
+          engagementType: 'visit',
+          outcomeScore: 1.0,
+          outcomeLabel: 'reservation_completed',
+        );
       }
 
       return updated;
@@ -1049,30 +1080,38 @@ class ReservationService {
           // Phase 4: No-show fee configuration - get from reservation metadata or business settings
           double? configuredNoShowFeePercentage;
           double? configuredNoShowFeeMinimum;
-          
+
           // Check reservation metadata for business-specific no-show fee configuration
           if (reservation.metadata.containsKey('noShowFeePercentage')) {
-            configuredNoShowFeePercentage = (reservation.metadata['noShowFeePercentage'] as num?)?.toDouble();
+            configuredNoShowFeePercentage =
+                (reservation.metadata['noShowFeePercentage'] as num?)
+                    ?.toDouble();
           }
           if (reservation.metadata.containsKey('noShowFeeMinimum')) {
-            configuredNoShowFeeMinimum = (reservation.metadata['noShowFeeMinimum'] as num?)?.toDouble();
+            configuredNoShowFeeMinimum =
+                (reservation.metadata['noShowFeeMinimum'] as num?)?.toDouble();
           }
-          
+
           // Use configured values or defaults
-          final feePercentage = configuredNoShowFeePercentage ?? 0.20; // Default: 20%
-          final feeMinimum = configuredNoShowFeeMinimum ?? 10.0; // Default: $10 minimum
-          
-          final baseFee = reservation.ticketPrice != null && reservation.ticketPrice! > 0
-              ? reservation.ticketPrice! * feePercentage
-              : feeMinimum;
+          final feePercentage =
+              configuredNoShowFeePercentage ?? 0.20; // Default: 20%
+          final feeMinimum =
+              configuredNoShowFeeMinimum ?? 10.0; // Default: $10 minimum
+
+          final baseFee =
+              reservation.ticketPrice != null && reservation.ticketPrice! > 0
+                  ? reservation.ticketPrice! * feePercentage
+                  : feeMinimum;
           noShowFeeAmount = baseFee;
 
           // Get userId from reservation metadata or use agentId lookup
           // TODO(Phase 4): Get userId from agentId lookup when available
-          final userId = reservation.metadata['userId'] as String? ?? reservation.agentId;
+          final userId =
+              reservation.metadata['userId'] as String? ?? reservation.agentId;
 
           // Create payment for no-show fee
-          final noShowPaymentResult = await _paymentService.processReservationPayment(
+          final noShowPaymentResult =
+              await _paymentService.processReservationPayment(
             reservationId: reservation.id,
             reservationType: reservation.type,
             userId: userId,
@@ -1081,7 +1120,8 @@ class ReservationService {
             depositAmount: null,
           );
 
-          if (noShowPaymentResult.isSuccess && noShowPaymentResult.payment != null) {
+          if (noShowPaymentResult.isSuccess &&
+              noShowPaymentResult.payment != null) {
             noShowFeePaymentId = noShowPaymentResult.payment!.id;
             developer.log(
               '✅ No-show fee charged: reservation=$reservationId, fee=\$${noShowFeeAmount.toStringAsFixed(2)}, payment=$noShowFeePaymentId',
@@ -1125,7 +1165,7 @@ class ReservationService {
             agentId: reservation.agentId, // Use agentId for privacy
           );
         }
-        
+
         developer.log(
           '✅ No-show expertise impact tracked: reservation=$reservationId, agentId=${reservation.agentId}',
           name: _logName,
@@ -1172,6 +1212,21 @@ class ReservationService {
         '✅ Reservation marked as no-show: $reservationId',
         name: _logName,
       );
+
+      final userId = updated.metadata['userId'] as String?;
+      if (userId != null) {
+        await _recordBusinessEngagementTuple(
+          userId: userId,
+          reservation: updated,
+          engagementType: 'visit',
+          outcomeScore: 0.0,
+          outcomeLabel: 'reservation_no_show',
+          extraOutcome: {
+            if (reason != null) 'reason': reason,
+            if (noShowFeeAmount != null) 'no_show_fee_amount': noShowFeeAmount,
+          },
+        );
+      }
 
       return updated;
     } catch (e, stackTrace) {
@@ -1226,6 +1281,20 @@ class ReservationService {
         '✅ Checked in: $reservationId',
         name: _logName,
       );
+
+      final userId = updated.metadata['userId'] as String?;
+      if (userId != null) {
+        await _recordBusinessEngagementTuple(
+          userId: userId,
+          reservation: updated,
+          engagementType: 'visit',
+          outcomeScore: 0.9,
+          outcomeLabel: 'checked_in',
+          extraOutcome: const {
+            'checkin_source': 'reservation_checkin',
+          },
+        );
+      }
 
       return updated;
     } catch (e, stackTrace) {
@@ -1516,6 +1585,87 @@ class ReservationService {
       );
       rethrow;
     }
+  }
+
+  Future<void> _recordBusinessEngagementTuple({
+    required String userId,
+    required Reservation reservation,
+    required String engagementType,
+    required double outcomeScore,
+    required String outcomeLabel,
+    Map<String, dynamic>? extraOutcome,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+
+    try {
+      final businessEntityId = _extractBusinessEntityId(reservation);
+      final normalizedScore = outcomeScore.clamp(0.0, 1.0);
+      final nowIso = DateTime.now().toUtc().toIso8601String();
+
+      final tuple = EpisodicTuple(
+        agentId: userId,
+        stateBefore: {
+          'phase_ref': '1.2.26',
+          'user_state': {
+            'user_id': userId,
+            'agent_id': reservation.agentId,
+            'reservation_status': reservation.status.name,
+          },
+        },
+        actionType: 'engage_business',
+        actionPayload: {
+          'business_features': {
+            'business_entity_id': businessEntityId,
+            'reservation_type': reservation.type.name,
+            'target_id': reservation.targetId,
+          },
+          'engagement_context': {
+            'engagement_type': engagementType,
+            'reservation_id': reservation.id,
+            'party_size': reservation.partySize,
+            if (reservation.ticketPrice != null)
+              'ticket_price': reservation.ticketPrice,
+          },
+        },
+        nextState: {
+          'engagement_outcome': {
+            'label': outcomeLabel,
+            'overall_rating': normalizedScore,
+            'recorded_at': nowIso,
+            if (extraOutcome != null) ...extraOutcome,
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'engagement_outcome',
+          parameters: {
+            'overall_rating': normalizedScore,
+            'label': outcomeLabel,
+            'reservation_id': reservation.id,
+            'business_entity_id': businessEntityId,
+            if (extraOutcome != null) ...extraOutcome,
+          },
+        ),
+        metadata: const {
+          'phase_ref': '1.2.26',
+          'pipeline': 'reservation_service',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to write business engagement tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String _extractBusinessEntityId(Reservation reservation) {
+    final metadataBusinessId = reservation.metadata['businessId'] as String?;
+    if (metadataBusinessId != null && metadataBusinessId.isNotEmpty) {
+      return metadataBusinessId;
+    }
+    return reservation.targetId;
   }
 
   /// Merge local and cloud reservations (prefer newer)

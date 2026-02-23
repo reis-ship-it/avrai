@@ -131,7 +131,8 @@ The hierarchy ensures the energy function weights its training data appropriatel
 - [ ] Outcome taxonomy (1.2.12) is defined: binary, quality, behavioral, temporal
 - [ ] `CallingScoreDataCollector` → `BaselineMetricsService` generalization (1.3.1) is complete
 - [ ] `FormulaABTestingService` (1.3.2) is ready for parallel-run mode
-- [ ] Feature flag support for formula replacement is in place (1.3.4)
+- [x] Feature flag support for formula replacement is in place (1.3.4)
+- [x] Passive↔active transition tuples are flowing for at least spot + one business journey (1.2.26A)
 
 **Before starting Phase 5 (Transition Predictor):**
 - [ ] Episodic tuples contain `next_state` snapshots (not just outcomes)
