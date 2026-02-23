@@ -325,7 +325,7 @@ Wire every user action to capture outcomes.
 
 | Task | Description | Extends |
 |------|-------------|---------|
-| 1.2.1 | Create `UnifiedOutcomeCollector` service (generalizes `CallingScoreDataCollector` pattern to all entity types) | Extends existing |
+| 1.2.1 | Create `UnifiedOutcomeCollector` service (generalizes `CallingScoreDataCollector` pattern to all entity types) | Extends existing -- COMPLETE (2026-02-23: added lane-agnostic `UnifiedOutcomeCollector` in `lib/core/ai/unified_outcome_collector.dart`, wired through DI with `EpisodicMemoryStore` + `AgentIdService` (+ optional `AtomicClockService`) for consistent tuple writes across entity types, and covered by `unified_outcome_collector_test`) |
 | 1.2.2 | Wire `ReservationCheckInService` confirmations as attendance outcomes | Existing service |
 | 1.2.3 | Wire `PostEventFeedbackService` responses as quality outcomes | Existing service |
 | 1.2.4 | Wire `ContinuousLearningSystem.processUserInteraction` to write episodic tuples (not just dimension updates) | Existing service |
