@@ -95,6 +95,7 @@ import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/unified_outcome_collector.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/network/enhanced_connectivity_service.dart';
 // Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
@@ -1320,6 +1321,18 @@ Future<void> init() async {
                   sl.isRegistered<AppDatabase>() ? sl<AppDatabase>() : null,
             ));
         logger.debug('✅ [DI] EpisodicMemoryStore registered');
+        if (!sl.isRegistered<UnifiedOutcomeCollector>()) {
+          sl.registerLazySingleton(
+            () => UnifiedOutcomeCollector(
+              episodicMemoryStore: sl<EpisodicMemoryStore>(),
+              agentIdService: sl<AgentIdService>(),
+              atomicClock: sl.isRegistered<AtomicClockService>()
+                  ? sl<AtomicClockService>()
+                  : null,
+            ),
+          );
+          logger.debug('✅ [DI] UnifiedOutcomeCollector registered');
+        }
 
         // Register Calling Score Data Collector (Phase 12 Section 1: Foundation & Data Collection)
         // Note: Register BehaviorAssessmentService first (if not already registered)
