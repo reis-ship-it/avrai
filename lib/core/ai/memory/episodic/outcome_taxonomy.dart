@@ -57,6 +57,36 @@ class OutcomeSignal {
 /// Maps interaction events into outcome taxonomy buckets.
 class OutcomeTaxonomy {
   static const String taxonomyVersion = '1.0';
+  static const double negativeOutcomeAmplificationFactor = 2.0;
+
+  static const Map<String, double> _defaultSignalWeightByEventType = {
+    'rating_submitted': 10.0,
+    'feedback_rating': 10.0,
+    'attend_expert_event_feedback': 10.0,
+    'return_visit_within_days': 8.0,
+    'recommendation_rejected': 5.0,
+    'explicit_rejection': 5.0,
+    'dismissed': 5.0,
+    'explicit_preference': 10.0,
+    'create_reservation': 4.0,
+    'attend_event': 4.0,
+    'event_attended': 4.0,
+    'event_attend': 4.0,
+    'save_entity': 3.0,
+    'save_event': 3.0,
+    'save_community': 3.0,
+    'save_spot': 3.0,
+    'save_list': 3.0,
+    'search_result_save': 3.0,
+    'recommendation_notification_opened': 2.0,
+    'dwell_time': 1.5,
+    'entity_detail_long_dwell': 1.5,
+    'no_action': 1.0,
+    'search_result_no_action': 1.0,
+    'browse_entity': 1.0,
+    'scroll_past_without_tap': 0.5,
+    'recommendation_scrolled_past': 0.5,
+  };
 
   const OutcomeTaxonomy();
 
@@ -64,6 +94,7 @@ class OutcomeTaxonomy {
     required String eventType,
     required Map<String, dynamic> parameters,
   }) {
+    late final OutcomeSignal baseSignal;
     switch (eventType) {
       case 'spot_visited':
       case 'event_attended':
@@ -96,22 +127,24 @@ class OutcomeTaxonomy {
       case 'install_completed':
       case 'first_action_after_install':
       case 'explicit_preference':
-        return _binaryOutcome(
+        baseSignal = _binaryOutcome(
           type: eventType,
           didOccur: true,
           parameters: parameters,
         );
+        break;
       case 'dismissed':
       case 'recommendation_rejected':
       case 'explicit_rejection':
       case 'recommendation_post_view_abandonment':
       case 'actual_action_failed':
       case 'search_result_bounce':
-        return _binaryOutcome(
+        baseSignal = _binaryOutcome(
           type: eventType,
           didOccur: false,
           parameters: parameters,
         );
+        break;
       case 'rating_submitted':
       case 'feedback_rating':
       case 'attend_expert_event_feedback':
@@ -121,30 +154,34 @@ class OutcomeTaxonomy {
       case 'business_partnership_outcome':
       case 'engagement_outcome':
       case 'ai2ai_connection_outcome':
-        return _qualityOutcome(
+        baseSignal = _qualityOutcome(
           type: eventType,
           parameters: parameters,
         );
+        break;
       case 'return_visit_within_days':
-        return _temporalOutcome(
+        baseSignal = _temporalOutcome(
           type: eventType,
           parameters: parameters,
         );
+        break;
       case 'single_visit_only':
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: 0.5,
           parameters: parameters,
         );
+        break;
       case 'no_action':
       case 'search_result_no_action':
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: 0.0,
           parameters: parameters,
         );
+        break;
       case 'volunteer_retention':
-        return _temporalOutcome(
+        baseSignal = _temporalOutcome(
           type: eventType,
           parameters: {
             ...parameters,
@@ -154,8 +191,9 @@ class OutcomeTaxonomy {
                     30,
           },
         );
+        break;
       case 'volunteer_dropoff':
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: -1.0,
           parameters: {
@@ -166,38 +204,50 @@ class OutcomeTaxonomy {
                     30,
           },
         );
+        break;
       case 'browse_entity':
         if (parameters['no_action'] == true) {
-          return _behavioralOutcome(
+          baseSignal = _behavioralOutcome(
             type: 'no_action',
             value: 0.0,
             parameters: parameters,
           );
+          break;
         }
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: (parameters['shift_magnitude'] as num?)?.toDouble() ?? 0.0,
           parameters: parameters,
         );
+        break;
       case 'passive_to_active_conversion':
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: 1.0,
           parameters: parameters,
         );
+        break;
       case 'active_to_passive_regression':
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: -1.0,
           parameters: parameters,
         );
+        break;
       default:
-        return _behavioralOutcome(
+        baseSignal = _behavioralOutcome(
           type: eventType,
           value: (parameters['shift_magnitude'] as num?)?.toDouble() ?? 0.0,
           parameters: parameters,
         );
+        break;
     }
+
+    return _applyNegativeOutcomeAmplification(
+      eventType: eventType,
+      parameters: parameters,
+      signal: baseSignal,
+    );
   }
 
   OutcomeSignal _binaryOutcome({
@@ -304,5 +354,80 @@ class OutcomeTaxonomy {
         'window_days': temporalWindowDays,
       },
     );
+  }
+
+  OutcomeSignal _applyNegativeOutcomeAmplification({
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required OutcomeSignal signal,
+  }) {
+    final baseSignalWeight = _resolveBaseSignalWeight(
+      eventType: eventType,
+      parameters: parameters,
+    );
+    final isNegative = _isNegativeOutcome(signal);
+    final effectiveTrainingWeight = isNegative
+        ? baseSignalWeight * negativeOutcomeAmplificationFactor
+        : baseSignalWeight;
+
+    return OutcomeSignal(
+      type: signal.type,
+      category: signal.category,
+      value: signal.value,
+      metadata: {
+        ...signal.metadata,
+        'base_signal_weight': baseSignalWeight,
+        'asymmetric_loss_factor': negativeOutcomeAmplificationFactor,
+        'negative_outcome_amplified': isNegative,
+        'effective_training_weight': effectiveTrainingWeight,
+        'amplification_phase_ref': '1.4.10',
+      },
+    );
+  }
+
+  double _resolveBaseSignalWeight({
+    required String eventType,
+    required Map<String, dynamic> parameters,
+  }) {
+    final explicitSignalWeight = _toDouble(parameters['signal_weight']);
+    if (explicitSignalWeight != null && explicitSignalWeight > 0) {
+      return explicitSignalWeight;
+    }
+
+    final implicitStrength =
+        _toDouble(parameters['implicit_feedback_strength']);
+    if (implicitStrength != null && implicitStrength > 0) {
+      return implicitStrength;
+    }
+
+    return _defaultSignalWeightByEventType[eventType] ?? 1.0;
+  }
+
+  bool _isNegativeOutcome(OutcomeSignal signal) {
+    final binaryOutcome = signal.metadata['binary_outcome'];
+    if (binaryOutcome is bool) {
+      return !binaryOutcome;
+    }
+
+    switch (signal.category) {
+      case OutcomeCategory.binary:
+        return signal.value <= 0.0;
+      case OutcomeCategory.quality:
+        final scaleMax = _toDouble(signal.metadata['scale_max']) ?? 5.0;
+        if (scaleMax <= 1.0) {
+          return signal.value < 0.5;
+        }
+        return signal.value <= 2.0;
+      case OutcomeCategory.behavioral:
+        return signal.value < 0.0;
+      case OutcomeCategory.temporal:
+        return signal.metadata['negative_outcome'] == true;
+    }
+  }
+
+  double? _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

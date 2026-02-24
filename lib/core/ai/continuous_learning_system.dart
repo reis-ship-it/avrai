@@ -70,6 +70,17 @@ class ContinuousLearningSystem {
     'trend_prediction': 0.14,
     'collaboration_effectiveness': 0.17,
   };
+  static const double _negativeOutcomeAmplificationFactor = 2.0;
+  static const Set<String> _negativeOutcomeAmplifiedEvents = {
+    'recommendation_rejected',
+    'recommendation_post_view_abandonment',
+    'scroll_past_without_tap',
+    'organic_spot_dismissed',
+    'spot_dismissed',
+    'dismiss_spot',
+    'volunteer_dropoff',
+    'actual_action_failed',
+  };
 
   // Phase 1.4: Refactored to use orchestrator
   ContinuousLearningOrchestrator? _orchestrator;
@@ -2094,7 +2105,25 @@ class ContinuousLearningSystem {
         break;
     }
 
-    return dimensionUpdates;
+    return _applyNegativeOutcomeAmplificationToDimensionUpdates(
+      eventType: eventType,
+      updates: dimensionUpdates,
+    );
+  }
+
+  Map<String, double> _applyNegativeOutcomeAmplificationToDimensionUpdates({
+    required String eventType,
+    required Map<String, double> updates,
+  }) {
+    if (!_negativeOutcomeAmplifiedEvents.contains(eventType)) {
+      return updates;
+    }
+    return updates.map(
+      (dimension, delta) => MapEntry(
+        dimension,
+        delta < 0 ? delta * _negativeOutcomeAmplificationFactor : delta,
+      ),
+    );
   }
 
   String _resolveVolunteerLane({
