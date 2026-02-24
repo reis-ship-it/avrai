@@ -20,6 +20,9 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
+import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
+import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 
 /// Event Attendance Controller
 ///
@@ -65,6 +68,8 @@ class EventAttendanceController
   final PreferencesProfileService? _preferencesService;
   final AgentIdService? _agentIdService;
   final AtomicClockService _atomicClock;
+  final EpisodicMemoryStore? _episodicMemoryStore;
+  final OutcomeTaxonomy _outcomeTaxonomy;
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final PersonalityKnotService? _personalityKnotService;
@@ -81,6 +86,7 @@ class EventAttendanceController
     PreferencesProfileService? preferencesService,
     AgentIdService? agentIdService,
     AtomicClockService? atomicClock,
+    EpisodicMemoryStore? episodicMemoryStore,
     PersonalityKnotService? personalityKnotService,
     KnotFabricService? knotFabricService,
     KnotWorldsheetService? knotWorldsheetService,
@@ -95,6 +101,8 @@ class EventAttendanceController
             preferencesService ?? GetIt.instance<PreferencesProfileService>(),
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _episodicMemoryStore = episodicMemoryStore,
+        _outcomeTaxonomy = const OutcomeTaxonomy(),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()
@@ -358,8 +366,8 @@ class EventAttendanceController
           );
 
           // Create timing quantum state from event start time
-          final timingQuantumState = await _locationTimingService
-              .createTimingQuantumStateFromDateTime(
+          final timingQuantumState =
+              await _locationTimingService.createTimingQuantumStateFromDateTime(
             preferredTime: updatedEvent.startTime,
             frequencyPreference: 0.5,
             durationPreference: 0.5,
@@ -474,6 +482,11 @@ class EventAttendanceController
       // Step 7: Send confirmation (when NotificationService available)
       // TODO(Phase 8.12): Implement confirmation notification
       // For now, confirmation is handled by UI (success page/message)
+      await _recordAttendanceOutcomeTuple(
+        attendee: attendee,
+        event: updatedEvent,
+        quantity: quantity,
+      );
 
       developer.log(
         'Event registration completed successfully: event=${event.id}, user=${attendee.id}',
@@ -545,6 +558,67 @@ class EventAttendanceController
     // For now, rollback is not implemented as registration is generally
     // considered final (users should use cancellation flow instead)
     // If needed in the future, can implement unregistration here
+  }
+
+  Future<void> _recordAttendanceOutcomeTuple({
+    required UnifiedUser attendee,
+    required ExpertiseEvent event,
+    required int quantity,
+  }) async {
+    final store = _episodicMemoryStore;
+    if (store == null) return;
+
+    try {
+      final tAtomic = await _atomicClock.getAtomicTimestamp();
+      final agentId = _agentIdService == null
+          ? attendee.id
+          : await _agentIdService.getUserAgentId(attendee.id);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.6',
+          'attendee_id': attendee.id,
+          'event_id': event.id,
+          'event_status': event.status.name,
+        },
+        actionType: 'attend_event',
+        actionPayload: {
+          'event_id': event.id,
+          'event_type': event.eventType.name,
+          'category': event.category,
+          'quantity': quantity,
+        },
+        nextState: {
+          'attendance': {
+            'registered': true,
+            'checkin_confirmed': true,
+            'recorded_at': tAtomic.deviceTime.toIso8601String(),
+          },
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'checkin_confirmed',
+          parameters: {
+            'event_id': event.id,
+            'attendee_id': attendee.id,
+            'quantity': quantity,
+          },
+        ),
+        recordedAt: tAtomic.deviceTime.toUtc(),
+        metadata: const {
+          'phase_ref': '1.2.6',
+          'pipeline': 'event_attendance_controller',
+        },
+      );
+      await store.writeTuple(tuple);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Failed to record event attendance tuple: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
   }
 }
 

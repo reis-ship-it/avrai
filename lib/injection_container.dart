@@ -937,6 +937,9 @@ Future<void> init() async {
         paymentController: sl<PaymentProcessingController>(),
         preferencesService: sl<PreferencesProfileService>(),
         agentIdService: sl<AgentIdService>(),
+        episodicMemoryStore: sl.isRegistered<EpisodicMemoryStore>()
+            ? sl<EpisodicMemoryStore>()
+            : null,
       ));
 
   // Register ListCreationController (Phase 8.11)
