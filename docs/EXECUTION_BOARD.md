@@ -109,6 +109,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M1-P8-1 | 8 | 1 | Federated cohort gating + canary/shadow pipeline | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.1.3, 8.1.4, 8.1.5 | lib/core/ai2ai | FED, MLE | AP | M1-P7-1 | 20 | Critical | Week 3-4 | Backlog | - |
 | M1-P8-2 | 8 | 1 | Advisory quarantine + rollback independence | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.9.2, 8.9.4, 8.9.5 | lib/core/services/locality_agents | LOC | AP | M1-P8-1 | 16 | High | Week 4-5 | Backlog | - |
 | M2-P1-1 | 1 | 2 | Memory reliability gates | baseline | none | PRD-001, PRD-002, PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.2.12, 1.3.1 | lib/core/ai | AP, MLE | AP | none | 12 | High | Week 5-6 | In Progress | - |
+| M2-P1-2 | 1 | 2 | ContinuousLearningSystem modular decomposition (facade + modules) | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 1.4.24, 1.4.25, 1.4.26, 1.4.27, 1.4.28, 1.4.29 | lib/core/ai | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Backlog | - |
 | M2-P3-1 | 3 | 2 | State encoder consistency/freshness controls | baseline | none | PRD-010, PRD-011, PRD-033, PRD-034 | 3.1.1, 3.1.4, 3.2.1 | lib/core/models | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Backlog | - |
 | M2-P4-1 | 4 | 2 | Energy function safety and regression governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 4.1.3, 4.1.7, 4.5.7 | lib/core/ml | MLE | AP | M2-P3-1 | 20 | Critical | Week 7-8 | Backlog | - |
 | M2-P5-1 | 5 | 2 | Transition predictor drift/calibration controls | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 5.1.3, 5.1.9, 5.2.1 | lib/core/ml | MLE | AP | M2-P4-1 | 20 | Critical | Week 8-9 | Backlog | - |
@@ -122,7 +123,7 @@ phase row + milestone row(s) + risk + gate criteria.
 <!-- EXECUTION_BOARD:KANBAN_START -->
 ### Backlog
 
-`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
+`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
 
 ### Ready
 
