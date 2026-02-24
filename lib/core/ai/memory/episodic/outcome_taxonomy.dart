@@ -88,6 +88,8 @@ class OutcomeTaxonomy {
       case 'search_result_click':
       case 'search_result_save':
       case 'search_result_check_in':
+      case 'volunteer_signup':
+      case 'volunteer_attend':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,
@@ -132,6 +134,29 @@ class OutcomeTaxonomy {
           type: eventType,
           value: 0.0,
           parameters: parameters,
+        );
+      case 'volunteer_retention':
+        return _temporalOutcome(
+          type: eventType,
+          parameters: {
+            ...parameters,
+            'window_days':
+                (parameters['impact_window_days'] as num?)?.toInt() ??
+                    (parameters['window_days'] as num?)?.toInt() ??
+                    30,
+          },
+        );
+      case 'volunteer_dropoff':
+        return _behavioralOutcome(
+          type: eventType,
+          value: -1.0,
+          parameters: {
+            ...parameters,
+            'window_days':
+                (parameters['impact_window_days'] as num?)?.toInt() ??
+                    (parameters['window_days'] as num?)?.toInt() ??
+                    30,
+          },
         );
       case 'browse_entity':
         if (parameters['no_action'] == true) {
