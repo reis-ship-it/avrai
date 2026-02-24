@@ -1,6 +1,7 @@
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
 import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:avrai/core/ai/feedback_signal_strength_hierarchy.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 
 /// Phase 1.4.6 one-tap recommendation dismissal recorder.
@@ -20,6 +21,8 @@ class RecommendationDismissalRecorder {
   final OutcomeTaxonomy _outcomeTaxonomy;
   final int _suppressionThreshold;
   final Map<String, Map<String, int>> _dismissCountsByUserAndCategory = {};
+  static const FeedbackSignalStrengthHierarchy _signalHierarchy =
+      FeedbackSignalStrengthHierarchy();
 
   Future<EpisodicTuple> recordDismissal({
     required String userId,
@@ -52,7 +55,8 @@ class RecommendationDismissalRecorder {
         parameters: {
           'entity_type': entityType,
           'entity_id': entityId,
-          'signal_weight': 5.0,
+          'signal_weight':
+              _signalHierarchy.resolveForEvent('explicit_rejection')!.weight,
           'signal_strength_ref': 'one_tap_dismiss',
         },
       ),
@@ -111,7 +115,8 @@ class RecommendationDismissalRecorder {
         parameters: {
           'category': normalizedCategory,
           'dismiss_count': nextCount,
-          'signal_weight': 10.0,
+          'signal_weight':
+              _signalHierarchy.resolveForEvent('explicit_preference')!.weight,
           'preference_type': 'show_fewer',
         },
       ),

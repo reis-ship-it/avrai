@@ -1,3 +1,5 @@
+import 'package:avrai/core/ai/feedback_signal_strength_hierarchy.dart';
+
 enum ImplicitFeedbackSignalType {
   dwellTimeOnEntityListing,
   scrollPastWithoutTap,
@@ -29,6 +31,8 @@ class ImplicitFeedbackObservation {
 /// Phase 1.4.1 implicit feedback signal definitions.
 class ImplicitFeedbackSignals {
   const ImplicitFeedbackSignals();
+  static const FeedbackSignalStrengthHierarchy _signalHierarchy =
+      FeedbackSignalStrengthHierarchy();
 
   ImplicitFeedbackObservation? resolve({
     required String eventType,
@@ -45,22 +49,28 @@ class ImplicitFeedbackSignals {
         return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.dwellTimeOnEntityListing,
           polarity: ImplicitFeedbackPolarity.positive,
-          strength: 1.5,
+          strength: _signalHierarchy
+              .resolveForEvent('entity_detail_long_dwell')!
+              .weight,
           metadata: {'duration_ms': durationMs},
         );
       case 'scroll_past_without_tap':
       case 'recommendation_scrolled_past':
-        return const ImplicitFeedbackObservation(
+        return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.scrollPastWithoutTap,
           polarity: ImplicitFeedbackPolarity.negative,
-          strength: 0.5,
+          strength: _signalHierarchy
+              .resolveForEvent('scroll_past_without_tap')!
+              .weight,
         );
       case 'reopen_after_recommendation':
       case 'recommendation_notification_opened':
-        return const ImplicitFeedbackObservation(
+        return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.reopenAfterRecommendation,
           polarity: ImplicitFeedbackPolarity.positive,
-          strength: 2.0,
+          strength: _signalHierarchy
+              .resolveForEvent('recommendation_notification_opened')!
+              .weight,
         );
       case 'save_entity':
       case 'save_event':
@@ -68,10 +78,10 @@ class ImplicitFeedbackSignals {
       case 'save_spot':
       case 'save_list':
       case 'search_result_save':
-        return const ImplicitFeedbackObservation(
+        return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.saveAction,
           polarity: ImplicitFeedbackPolarity.positive,
-          strength: 3.0,
+          strength: _signalHierarchy.resolveForEvent('save_entity')!.weight,
         );
       case 'dismiss_spot':
       case 'spot_dismissed':
@@ -80,10 +90,10 @@ class ImplicitFeedbackSignals {
       case 'dismiss_community':
       case 'explicit_rejection':
       case 'recommendation_rejected':
-        return const ImplicitFeedbackObservation(
+        return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.dismissAction,
           polarity: ImplicitFeedbackPolarity.negative,
-          strength: 5.0,
+          strength: _signalHierarchy.resolveForEvent('dismiss_entity')!.weight,
         );
       case 'message_friend':
       case 'message_community':
@@ -94,7 +104,7 @@ class ImplicitFeedbackSignals {
                 parameters['recommendation_id'] != null ||
                 context['recommendation_id'] != null;
         if (!isAfterRecommendation) return null;
-        return const ImplicitFeedbackObservation(
+        return ImplicitFeedbackObservation(
           type: ImplicitFeedbackSignalType.chatAfterRecommendation,
           polarity: ImplicitFeedbackPolarity.positive,
           strength: 2.5,
