@@ -90,6 +90,11 @@ class OutcomeTaxonomy {
       case 'search_result_check_in':
       case 'volunteer_signup':
       case 'volunteer_attend':
+      case 'nearby_discovered_non_member':
+      case 'invite_sent':
+      case 'install_started':
+      case 'install_completed':
+      case 'first_action_after_install':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,

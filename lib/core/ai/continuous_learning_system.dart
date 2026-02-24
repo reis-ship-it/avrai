@@ -462,6 +462,29 @@ class ContinuousLearningSystem {
         case 'recommendation_accepted':
           dimensionUpdates['recommendation_accuracy'] = 0.04;
           break;
+
+        case 'nearby_discovered_non_member':
+          dimensionUpdates['location_intelligence'] = 0.02;
+          dimensionUpdates['social_dynamics'] = 0.01;
+          break;
+
+        case 'invite_sent':
+          dimensionUpdates['social_dynamics'] = 0.02;
+          break;
+
+        case 'install_started':
+          dimensionUpdates['recommendation_accuracy'] = 0.01;
+          break;
+
+        case 'install_completed':
+          dimensionUpdates['recommendation_accuracy'] = 0.03;
+          dimensionUpdates['community_evolution'] = 0.02;
+          break;
+
+        case 'first_action_after_install':
+          dimensionUpdates['recommendation_accuracy'] = 0.04;
+          dimensionUpdates['user_preference_understanding'] = 0.02;
+          break;
       }
 
       // Apply context modifiers
@@ -868,6 +891,14 @@ class ContinuousLearningSystem {
         parameters: parameters,
         source: source,
       );
+      await _recordNearbyInviteInstallTupleIfApplicable(
+        userId: userId,
+        source: source,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
+        observedAt: observedAt,
+      );
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
@@ -1072,6 +1103,149 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordNearbyInviteInstallTupleIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    const funnelEvents = <String>{
+      'nearby_discovered_non_member',
+      'invite_sent',
+      'install_started',
+      'install_completed',
+      'first_action_after_install',
+    };
+    if (!funnelEvents.contains(eventType)) return;
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final consentGranted = _resolveNearbyTelemetryConsent(parameters);
+      final sanitizedParameters = _sanitizeNearbyTelemetryParameters(
+        parameters: parameters,
+        consentGranted: consentGranted,
+      );
+      final funnelStage = _funnelStageForEvent(eventType);
+      final agentId = await _agentIdService.getUserAgentId(userId);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          'phase_ref': '1.2.29',
+          'source': source,
+          'event_type': eventType,
+          'funnel_stage': funnelStage,
+          'consent_granted': consentGranted,
+        },
+        actionType: 'nearby_invite_install_funnel',
+        actionPayload: {
+          'event_type': eventType,
+          'funnel_stage': funnelStage,
+          ...sanitizedParameters,
+        },
+        nextState: {
+          'funnel_stage': funnelStage,
+          'funnel_completed': eventType == 'first_action_after_install',
+          'consent_granted': consentGranted,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: eventType,
+          parameters: {
+            ...sanitizedParameters,
+            'source': source,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: const {
+          'phase_ref': '1.2.29',
+          'pipeline': 'continuous_learning_system',
+          'channel': 'nearby_invite_install_funnel',
+        },
+      );
+
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record nearby invite/install tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  bool _resolveNearbyTelemetryConsent(Map<String, dynamic> parameters) {
+    final explicitConsent = parameters['nearby_telemetry_consent_granted'];
+    if (explicitConsent is bool) {
+      return explicitConsent;
+    }
+    return false;
+  }
+
+  String _funnelStageForEvent(String eventType) {
+    switch (eventType) {
+      case 'nearby_discovered_non_member':
+        return 'discovered';
+      case 'invite_sent':
+        return 'invited';
+      case 'install_started':
+        return 'install_started';
+      case 'install_completed':
+        return 'install_completed';
+      case 'first_action_after_install':
+        return 'activated';
+      default:
+        return 'unknown';
+    }
+  }
+
+  Map<String, dynamic> _sanitizeNearbyTelemetryParameters({
+    required Map<String, dynamic> parameters,
+    required bool consentGranted,
+  }) {
+    const blockedKeyFragments = <String>[
+      'id',
+      'token',
+      'link',
+      'url',
+      'device',
+      'mac',
+      'ip',
+      'email',
+      'phone',
+    ];
+
+    final scrubbed = <String, dynamic>{};
+    parameters.forEach((key, value) {
+      final normalized = key.toLowerCase();
+      if (normalized == 'nearby_telemetry_consent_granted') {
+        return;
+      }
+      if (blockedKeyFragments.any(normalized.contains)) {
+        return;
+      }
+      scrubbed[key] = value;
+    });
+
+    if (consentGranted) {
+      return {
+        ...scrubbed,
+        'consent_granted': true,
+      };
+    }
+
+    return {
+      if (scrubbed['platform'] != null) 'platform': scrubbed['platform'],
+      if (scrubbed['transport'] != null) 'transport': scrubbed['transport'],
+      if (scrubbed['funnel_session_bucket'] != null)
+        'funnel_session_bucket': scrubbed['funnel_session_bucket'],
+      'consent_granted': false,
+      'privacy_mode': 'minimal',
+    };
   }
 
   Future<bool> _resolvePhysiologyConsent({
@@ -1847,6 +2021,23 @@ class ContinuousLearningSystem {
       case 'volunteer_dropoff':
         dimensionUpdates['community_evolution'] = -0.08;
         dimensionUpdates['social_dynamics'] = -0.06;
+      case 'nearby_discovered_non_member':
+        dimensionUpdates['location_intelligence'] = 0.02;
+        dimensionUpdates['social_dynamics'] = 0.01;
+        break;
+      case 'invite_sent':
+        dimensionUpdates['social_dynamics'] = 0.02;
+        break;
+      case 'install_started':
+        dimensionUpdates['recommendation_accuracy'] = 0.01;
+        break;
+      case 'install_completed':
+        dimensionUpdates['recommendation_accuracy'] = 0.03;
+        dimensionUpdates['community_evolution'] = 0.02;
+        break;
+      case 'first_action_after_install':
+        dimensionUpdates['recommendation_accuracy'] = 0.04;
+        dimensionUpdates['user_preference_understanding'] = 0.02;
         break;
       case 'organic_spot_discovered':
         // User's behavior revealed a new meaningful location not in any
