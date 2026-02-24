@@ -36,5 +36,53 @@ void main() {
       expect(rows, hasLength(1));
       expect(rows.first.metadata['phase_ref'], '1.4.6');
     });
+
+    test('records suppress_category after threshold and user acceptance',
+        () async {
+      final r = RecommendationDismissalRecorder(
+        episodicMemoryStore: store,
+        agentIdService: AgentIdService(),
+        suppressionThreshold: 3,
+      );
+
+      final first = await r.recordCategorySuppressionIfThresholdReached(
+        userId: 'phase1-user',
+        category: 'Nightlife',
+        userAcceptedSuppressPrompt: true,
+      );
+      final second = await r.recordCategorySuppressionIfThresholdReached(
+        userId: 'phase1-user',
+        category: 'Nightlife',
+        userAcceptedSuppressPrompt: true,
+      );
+      final third = await r.recordCategorySuppressionIfThresholdReached(
+        userId: 'phase1-user',
+        category: 'Nightlife',
+        userAcceptedSuppressPrompt: true,
+      );
+
+      expect(first, isNull);
+      expect(second, isNull);
+      expect(third, isNotNull);
+      expect(third!.actionType, 'suppress_category');
+      expect(third.outcome.type, 'explicit_preference');
+      expect(third.outcome.metadata['signal_weight'], 10.0);
+    });
+
+    test('does not record suppress_category when prompt is declined', () async {
+      final r = RecommendationDismissalRecorder(
+        episodicMemoryStore: store,
+        agentIdService: AgentIdService(),
+      );
+
+      for (var i = 0; i < 5; i++) {
+        final tuple = await r.recordCategorySuppressionIfThresholdReached(
+          userId: 'phase1-user',
+          category: 'Nightlife',
+          userAcceptedSuppressPrompt: false,
+        );
+        expect(tuple, isNull);
+      }
+    });
   });
 }
