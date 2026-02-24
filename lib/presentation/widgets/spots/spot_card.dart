@@ -13,6 +13,7 @@ class SpotCard extends StatelessWidget {
   final bool? hasExistingReservation;
   final int? availableCapacity;
   final VoidCallback? onReservationTap;
+  final VoidCallback? onDismissTap;
 
   const SpotCard({
     super.key,
@@ -23,6 +24,7 @@ class SpotCard extends StatelessWidget {
     this.hasExistingReservation,
     this.availableCapacity,
     this.onReservationTap,
+    this.onDismissTap,
   });
 
   @override
@@ -91,7 +93,20 @@ class SpotCard extends StatelessWidget {
             ),
           ],
         ),
-        trailing: trailing ?? const Icon(Icons.arrow_forward_ios),
+        trailing: trailing ??
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onDismissTap != null)
+                  IconButton(
+                    key: const Key('spot_card_dismiss_button'),
+                    icon: const Icon(Icons.close, color: AppColors.error),
+                    tooltip: 'Dismiss recommendation',
+                    onPressed: onDismissTap,
+                  ),
+                const Icon(Icons.arrow_forward_ios),
+              ],
+            ),
         onTap: onTap,
       ),
     );

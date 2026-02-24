@@ -97,6 +97,7 @@ class OutcomeTaxonomy {
         );
       case 'dismissed':
       case 'recommendation_rejected':
+      case 'explicit_rejection':
       case 'actual_action_failed':
       case 'search_result_bounce':
         return _binaryOutcome(
