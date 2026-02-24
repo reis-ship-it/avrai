@@ -373,7 +373,7 @@ Outcome data comes from both implicit signals and explicit feedback. This sectio
 
 | Task | Description |
 |------|-------------|
-| 1.4.1 | Define implicit feedback signals: dwell time on entity listing, scroll-past-without-tap, re-open after recommendation, save/dismiss actions, chat-after-recommendation |
+| 1.4.1 | Define implicit feedback signals: dwell time on entity listing, scroll-past-without-tap, re-open after recommendation, save/dismiss actions, chat-after-recommendation | COMPLETE (2026-02-24: added `ImplicitFeedbackSignals` contract with typed signal/polarity/strength definitions for dwell, scroll-past, reopen-after-recommendation, save/dismiss, and chat-after-recommendation; wired annotations into `ContinuousLearningSystem.processUserInteraction` so episodic tuples carry normalized implicit-feedback fields; covered by `implicit_feedback_signals_test` and `continuous_learning_system_phase1_implicit_feedback_test`) |
 | 1.4.2 | Define explicit feedback triggers: post-event (next app open after check-in), post-reservation (24hr after), post-community-join (7 days after) |
 | 1.4.3 | Design minimal-friction feedback UI: 1-tap thumbs up/down as default, optional 1-5 star and free-text for users who want to elaborate |
 | 1.4.4 | Implement feedback rate limiting: max 1 explicit feedback request per session, never back-to-back, respect `OutreachPreferencesService` settings |

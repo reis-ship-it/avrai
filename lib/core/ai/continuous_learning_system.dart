@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/interaction_events.dart';
+import 'package:avrai/core/ai/implicit_feedback_signals.dart';
 import 'package:avrai/core/ai/structured_facts_extractor.dart';
 import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
@@ -76,6 +77,7 @@ class ContinuousLearningSystem {
   final AgentIdService _agentIdService;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final ImplicitFeedbackSignals _implicitFeedbackSignals;
   SupabaseClient? _supabase;
 
   // AI2AI Learning Safeguards (Phase 11 Enhancement)
@@ -137,6 +139,7 @@ class ContinuousLearningSystem {
   })  : _agentIdService = _resolveAgentIdService(agentIdService),
         _episodicMemoryStore = _resolveEpisodicMemoryStore(episodicMemoryStore),
         _outcomeTaxonomy = const OutcomeTaxonomy(),
+        _implicitFeedbackSignals = const ImplicitFeedbackSignals(),
         _supabase = supabase,
         _orchestrator = orchestrator,
         _rateLimiter = rateLimiter {
@@ -205,6 +208,20 @@ class ContinuousLearningSystem {
           payload['parameters'] as Map? ?? const <String, dynamic>{});
       final context = Map<String, dynamic>.from(
           payload['context'] as Map? ?? const <String, dynamic>{});
+      final implicitFeedback = _implicitFeedbackSignals.resolve(
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
+      );
+      if (implicitFeedback != null) {
+        parameters['implicit_feedback_signal'] = implicitFeedback.type.name;
+        parameters['implicit_feedback_polarity'] =
+            implicitFeedback.polarity.name;
+        parameters['implicit_feedback_strength'] = implicitFeedback.strength;
+        if (implicitFeedback.metadata.isNotEmpty) {
+          parameters['implicit_feedback_metadata'] = implicitFeedback.metadata;
+        }
+      }
       final recommendationStats =
           _trackRecommendationDecision(eventType, parameters);
       if (recommendationStats != null) {
@@ -371,6 +388,15 @@ class ContinuousLearningSystem {
           if (resultsCount > 0) {
             dimensionUpdates['user_preference_understanding'] = 0.02;
           }
+          break;
+
+        case 'scroll_past_without_tap':
+          dimensionUpdates['recommendation_accuracy'] = -0.01;
+          break;
+
+        case 'reopen_after_recommendation':
+          dimensionUpdates['recommendation_accuracy'] = 0.02;
+          dimensionUpdates['user_preference_understanding'] = 0.01;
           break;
 
         case 'event_attended':
@@ -1792,6 +1818,13 @@ class ContinuousLearningSystem {
           dimensionUpdates['user_preference_understanding'] = 0.04;
           dimensionUpdates['recommendation_accuracy'] = 0.02;
         }
+        break;
+      case 'scroll_past_without_tap':
+        dimensionUpdates['recommendation_accuracy'] = -0.01;
+        break;
+      case 'reopen_after_recommendation':
+        dimensionUpdates['recommendation_accuracy'] = 0.02;
+        dimensionUpdates['user_preference_understanding'] = 0.01;
         break;
       case 'event_attended':
       case 'event_attend':
