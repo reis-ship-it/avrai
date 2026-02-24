@@ -71,6 +71,9 @@ class ContinuousLearningSystem {
     'collaboration_effectiveness': 0.17,
   };
   static const double _negativeOutcomeAmplificationFactor = 2.0;
+  static const double _categoryConfidenceDecayFactor = 0.8;
+  static const int _reexplorationNegativeStreakThreshold = 3;
+  static const double _modelFailureTrainingWeight = 3.0;
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -101,6 +104,9 @@ class ContinuousLearningSystem {
   final Map<String, _RecommendationDecisionStats>
       _recommendationDecisionStatsByEntityType = {};
   final Map<String, Map<String, DateTime>> _spotLastVisitByAgentAndSpot = {};
+  final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
+  final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
+      {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -926,6 +932,13 @@ class ContinuousLearningSystem {
         parameters: parameters,
         source: source,
       );
+      await _recordNegativeOutcomeConfidenceDecayIfApplicable(
+        episodicStore: episodicStore,
+        tuple: tuple,
+        parameters: parameters,
+        context: context,
+        source: source,
+      );
       await _recordNearbyInviteInstallTupleIfApplicable(
         userId: userId,
         source: source,
@@ -940,6 +953,197 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
+    required EpisodicMemoryStore episodicStore,
+    required EpisodicTuple tuple,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required String source,
+  }) async {
+    try {
+      final category = _extractRecommendationCategory(parameters);
+      if (category == null) return;
+
+      final isNegative = _isNegativeOutcomeSignal(tuple.outcome);
+      final confidenceByCategory = _categoryConfidenceByAgent.putIfAbsent(
+        tuple.agentId,
+        () => <String, double>{},
+      );
+      final streakByCategory =
+          _consecutiveNegativeByAgentAndCategory.putIfAbsent(
+        tuple.agentId,
+        () => <String, int>{},
+      );
+
+      final previousConfidence = confidenceByCategory[category] ?? 1.0;
+      if (!isNegative) {
+        streakByCategory[category] = 0;
+        return;
+      }
+
+      final updatedConfidence =
+          (previousConfidence * _categoryConfidenceDecayFactor).clamp(0.0, 1.0);
+      confidenceByCategory[category] = updatedConfidence;
+
+      final nextStreak = (streakByCategory[category] ?? 0) + 1;
+      streakByCategory[category] = nextStreak;
+      final shouldTriggerReexploration =
+          nextStreak == _reexplorationNegativeStreakThreshold;
+
+      final modelFailureTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.4.11',
+          'category': category,
+          'previous_confidence': previousConfidence,
+          'negative_outcome_streak_before': nextStreak - 1,
+          'prediction_snapshot':
+              _extractPredictedOutcomeSnapshot(parameters, context),
+        },
+        actionType: 'model_failure_event',
+        actionPayload: {
+          'category': category,
+          'entity_type': parameters['entity_type']?.toString(),
+          'entity_id': parameters['entity_id']?.toString() ??
+              parameters['spot_id']?.toString() ??
+              parameters['event_id']?.toString(),
+          'predicted_outcome':
+              _extractPredictedOutcomeSnapshot(parameters, context),
+          'actual_negative_outcome': tuple.outcome.toJson(),
+        },
+        nextState: {
+          'category_confidence': updatedConfidence,
+          'negative_outcome_streak': nextStreak,
+          'reexploration_triggered': shouldTriggerReexploration,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'actual_action_failed',
+          parameters: {
+            ...parameters,
+            'category': category,
+            'source': source,
+            'signal_weight': _modelFailureTrainingWeight,
+            'model_failure': true,
+          },
+        ),
+        recordedAt: tuple.recordedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.4.11',
+          'model_failure_tuple': true,
+          'training_weight': _modelFailureTrainingWeight,
+        },
+      );
+      await episodicStore.writeTuple(modelFailureTuple);
+
+      if (!shouldTriggerReexploration) return;
+      final reexplorationTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.4.11',
+          'category': category,
+          'negative_outcome_streak': nextStreak,
+          'category_confidence': updatedConfidence,
+        },
+        actionType: 'trigger_reexploration',
+        actionPayload: {
+          'category': category,
+          'trigger_reason': 'three_consecutive_negative_outcomes',
+          'negative_outcome_streak': nextStreak,
+        },
+        nextState: {
+          'reexploration_requested': true,
+          'target_phase_refs': const ['6.2.9', '6.2.10'],
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'actual_action_failed',
+          parameters: {
+            ...parameters,
+            'category': category,
+            'source': source,
+            'signal_weight': _modelFailureTrainingWeight,
+            'reexploration_triggered': true,
+          },
+        ),
+        recordedAt: tuple.recordedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.4.11',
+          'reexploration_trigger': true,
+        },
+      );
+      await episodicStore.writeTuple(reexplorationTuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record negative-outcome confidence decay tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String? _extractRecommendationCategory(Map<String, dynamic> parameters) {
+    const categoryKeys = <String>[
+      'category',
+      'entity_category',
+      'entity_type',
+      'recommended_entity_type',
+    ];
+    for (final key in categoryKeys) {
+      final value = parameters[key]?.toString().trim().toLowerCase();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
+  bool _isNegativeOutcomeSignal(OutcomeSignal signal) {
+    if (signal.metadata['negative_outcome_amplified'] == true) return true;
+
+    switch (signal.category) {
+      case OutcomeCategory.binary:
+        return signal.value <= 0.0;
+      case OutcomeCategory.quality:
+        final scaleMax = (signal.metadata['scale_max'] as num?)?.toDouble();
+        if (scaleMax != null && scaleMax <= 1.0) return signal.value < 0.5;
+        return signal.value <= 2.0;
+      case OutcomeCategory.behavioral:
+        return signal.value < 0.0;
+      case OutcomeCategory.temporal:
+        return signal.metadata['negative_outcome'] == true;
+    }
+  }
+
+  Map<String, dynamic> _extractPredictedOutcomeSnapshot(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final prediction = <String, dynamic>{};
+    const predictedKeys = <String>[
+      'predicted_outcome',
+      'predicted_outcome_value',
+      'predicted_score',
+      'predicted_success_probability',
+      'recommendation_confidence',
+      'model_confidence',
+    ];
+    for (final key in predictedKeys) {
+      if (parameters.containsKey(key)) prediction[key] = parameters[key];
+      if (context.containsKey(key) && !prediction.containsKey(key)) {
+        prediction[key] = context[key];
+      }
+    }
+    final plannerRecommendation = context['planner_recommendation'];
+    if (plannerRecommendation is Map) {
+      if (!prediction.containsKey('planner_action_type')) {
+        prediction['planner_action_type'] =
+            plannerRecommendation['action_type']?.toString();
+      }
+      if (!prediction.containsKey('planner')) {
+        prediction['planner'] = plannerRecommendation['planner']?.toString();
+      }
+    }
+    return prediction;
   }
 
   Future<void> _recordIntentTransitionTupleIfApplicable({
