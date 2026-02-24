@@ -369,6 +369,8 @@ class ContinuousLearningSystem {
 
         case 'spot_dismissed':
         case 'dismiss_spot':
+        case 'dismiss_entity':
+        case 'explicit_rejection':
           dimensionUpdates['recommendation_accuracy'] = -0.04;
           break;
 
@@ -388,6 +390,16 @@ class ContinuousLearningSystem {
           if (resultsCount > 0) {
             dimensionUpdates['user_preference_understanding'] = 0.02;
           }
+          break;
+        case 'save_entity':
+        case 'save_event':
+        case 'save_community':
+          dimensionUpdates['user_preference_understanding'] = 0.03;
+          dimensionUpdates['recommendation_accuracy'] = 0.02;
+          break;
+
+        case 'recommendation_notification_opened':
+          dimensionUpdates['recommendation_accuracy'] = 0.02;
           break;
 
         case 'scroll_past_without_tap':
@@ -1989,6 +2001,12 @@ class ContinuousLearningSystem {
         dimensionUpdates['recommendation_accuracy'] = 0.05;
         dimensionUpdates['location_intelligence'] = 0.03;
         break;
+      case 'save_entity':
+      case 'save_event':
+      case 'save_community':
+        dimensionUpdates['user_preference_understanding'] = 0.03;
+        dimensionUpdates['recommendation_accuracy'] = 0.02;
+        break;
       case 'list_view_duration':
       case 'spot_view_duration':
         final duration = parameters['duration_ms'] as int? ?? 0;
@@ -1996,6 +2014,9 @@ class ContinuousLearningSystem {
           dimensionUpdates['user_preference_understanding'] = 0.04;
           dimensionUpdates['recommendation_accuracy'] = 0.02;
         }
+        break;
+      case 'recommendation_notification_opened':
+        dimensionUpdates['recommendation_accuracy'] = 0.02;
         break;
       case 'scroll_past_without_tap':
         dimensionUpdates['recommendation_accuracy'] = -0.01;
