@@ -40,20 +40,34 @@ class NegativeOutcomeSignalDetector {
     required DateTime? appClosedAt,
     required DateTime? returnedAt,
     required DateTime now,
+    int? thresholdDaysOverride,
   }) {
     if (appClosedAt == null) return null;
-    if (appClosedAt.isBefore(recommendationSeenAt)) return null;
+    final seenAtUtc = recommendationSeenAt.toUtc();
+    final closedAtUtc = appClosedAt.toUtc();
+    final nowUtc = now.toUtc();
+    final returnedAtUtc = returnedAt?.toUtc();
 
-    final absenceReference = returnedAt ?? now;
-    final daysAbsent =
-        absenceReference.toUtc().difference(appClosedAt.toUtc()).inDays;
-    final negative = daysAbsent >= absenceThresholdDays;
+    if (closedAtUtc.isBefore(seenAtUtc)) {
+      return null;
+    }
+    if (closedAtUtc.isAfter(nowUtc)) {
+      return null;
+    }
+    if (returnedAtUtc != null && returnedAtUtc.isBefore(closedAtUtc)) {
+      return null;
+    }
+
+    final thresholdDays = thresholdDaysOverride ?? absenceThresholdDays;
+    final absenceReference = returnedAtUtc ?? nowUtc;
+    final daysAbsent = absenceReference.difference(closedAtUtc).inDays;
+    final negative = daysAbsent >= thresholdDays;
 
     return NegativeOutcomeSignal(
       eventType: 'recommendation_post_view_abandonment',
       recommendationId: recommendationId,
       daysAbsent: daysAbsent,
-      thresholdDays: absenceThresholdDays,
+      thresholdDays: thresholdDays,
       isNegative: negative,
     );
   }

@@ -41,5 +41,23 @@ void main() {
       );
       expect(rows.first.actionPayload['implicit_feedback_strength'], 2.0);
     });
+
+    test('annotates alias save events as implicit positive feedback', () async {
+      await learningSystem.processUserInteraction(
+        userId: 'phase1-user',
+        payload: {
+          'event_type': 'save_entity',
+          'parameters': {'entity_type': 'event'},
+          'context': const {'surface': 'recommendation_card'},
+        },
+      );
+
+      final rows = await episodicStore.getRecent(limit: 1);
+      expect(
+          rows.first.actionPayload['implicit_feedback_signal'], 'saveAction');
+      expect(
+          rows.first.actionPayload['implicit_feedback_polarity'], 'positive');
+      expect(rows.first.actionPayload['implicit_feedback_strength'], 3.0);
+    });
   });
 }

@@ -47,5 +47,39 @@ void main() {
 
       expect(signal, isNull);
     });
+
+    test('returns null for invalid ordering and future timestamps', () {
+      final closedBeforeSeen = detector.detect(
+        recommendationId: 'rec-4',
+        recommendationSeenAt: DateTime.utc(2026, 2, 20, 10),
+        appClosedAt: DateTime.utc(2026, 2, 20, 9),
+        returnedAt: null,
+        now: DateTime.utc(2026, 2, 24),
+      );
+      expect(closedBeforeSeen, isNull);
+
+      final closedInFuture = detector.detect(
+        recommendationId: 'rec-5',
+        recommendationSeenAt: DateTime.utc(2026, 2, 20, 10),
+        appClosedAt: DateTime.utc(2026, 2, 25, 10),
+        returnedAt: null,
+        now: DateTime.utc(2026, 2, 24),
+      );
+      expect(closedInFuture, isNull);
+    });
+
+    test('supports per-call threshold override', () {
+      final signal = detector.detect(
+        recommendationId: 'rec-6',
+        recommendationSeenAt: DateTime.utc(2026, 2, 20, 10),
+        appClosedAt: DateTime.utc(2026, 2, 20, 10, 1),
+        returnedAt: null,
+        now: DateTime.utc(2026, 2, 22, 12),
+        thresholdDaysOverride: 2,
+      );
+      expect(signal, isNotNull);
+      expect(signal!.thresholdDays, 2);
+      expect(signal.isNegative, isTrue);
+    });
   });
 }
