@@ -38,5 +38,15 @@ void main() {
       expect(signal.category, OutcomeCategory.binary);
       expect(signal.value, 0.0);
     });
+
+    test('classifies explicit_preference as binary positive', () {
+      final signal = taxonomy.classify(
+        eventType: 'explicit_preference',
+        parameters: const {'category': 'nightlife'},
+      );
+
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
   });
 }

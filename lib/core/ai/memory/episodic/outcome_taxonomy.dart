@@ -95,6 +95,7 @@ class OutcomeTaxonomy {
       case 'install_started':
       case 'install_completed':
       case 'first_action_after_install':
+      case 'explicit_preference':
         return _binaryOutcome(
           type: eventType,
           didOccur: true,
@@ -104,7 +105,6 @@ class OutcomeTaxonomy {
       case 'recommendation_rejected':
       case 'explicit_rejection':
       case 'recommendation_post_view_abandonment':
-      case 'explicit_rejection':
       case 'actual_action_failed':
       case 'search_result_bounce':
         return _binaryOutcome(
