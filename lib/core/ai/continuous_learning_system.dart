@@ -458,6 +458,10 @@ class ContinuousLearningSystem {
             dimensionUpdates['user_preference_understanding'] = 0.04;
           }
           break;
+        case 'recommendation_post_view_abandonment':
+          dimensionUpdates['recommendation_accuracy'] = -0.05;
+          dimensionUpdates['user_preference_understanding'] = 0.02;
+          break;
 
         case 'recommendation_accepted':
           dimensionUpdates['recommendation_accuracy'] = 0.04;
@@ -2037,6 +2041,8 @@ class ContinuousLearningSystem {
         break;
       case 'first_action_after_install':
         dimensionUpdates['recommendation_accuracy'] = 0.04;
+      case 'recommendation_post_view_abandonment':
+        dimensionUpdates['recommendation_accuracy'] = -0.05;
         dimensionUpdates['user_preference_understanding'] = 0.02;
         break;
       case 'organic_spot_discovered':

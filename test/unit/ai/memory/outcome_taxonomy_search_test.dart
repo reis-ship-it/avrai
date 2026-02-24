@@ -27,5 +27,16 @@ void main() {
       expect(signal.category, OutcomeCategory.behavioral);
       expect(signal.value, 0.0);
     });
+
+    test('classifies recommendation post-view abandonment as binary negative',
+        () {
+      final signal = taxonomy.classify(
+        eventType: 'recommendation_post_view_abandonment',
+        parameters: const {'days_absent': 4},
+      );
+
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 0.0);
+    });
   });
 }
