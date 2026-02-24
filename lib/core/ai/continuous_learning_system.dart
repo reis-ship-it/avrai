@@ -380,6 +380,48 @@ class ContinuousLearningSystem {
           dimensionUpdates['community_evolution'] = 0.08;
           dimensionUpdates['social_dynamics'] = 0.05;
           break;
+        case 'volunteer_signup':
+          parameters['volunteer_lane'] =
+              _resolveVolunteerLane(parameters: parameters, context: context);
+          parameters['positive_social_weight'] = 1.25;
+          dimensionUpdates['community_evolution'] = 0.10 * 1.25;
+          dimensionUpdates['social_dynamics'] = 0.08 * 1.25;
+          dimensionUpdates['personalization_depth'] = 0.03 * 1.25;
+          break;
+        case 'volunteer_attend':
+          parameters['volunteer_lane'] =
+              _resolveVolunteerLane(parameters: parameters, context: context);
+          parameters['positive_social_weight'] = 1.35;
+          dimensionUpdates['community_evolution'] = 0.12 * 1.35;
+          dimensionUpdates['social_dynamics'] = 0.09 * 1.35;
+          dimensionUpdates['recommendation_accuracy'] = 0.04 * 1.35;
+          break;
+        case 'volunteer_retention':
+          parameters['volunteer_lane'] =
+              _resolveVolunteerLane(parameters: parameters, context: context);
+          final impactWindowDays =
+              (parameters['impact_window_days'] as num?)?.toInt() ?? 30;
+          final socialWeight = impactWindowDays >= 90 ? 1.45 : 1.3;
+          parameters['impact_window_days'] = impactWindowDays;
+          parameters['positive_social_weight'] = socialWeight;
+          parameters['days'] =
+              (parameters['days'] as num?)?.toDouble() ?? impactWindowDays;
+          dimensionUpdates['community_evolution'] = 0.10 * socialWeight;
+          dimensionUpdates['social_dynamics'] = 0.08 * socialWeight;
+          dimensionUpdates['personalization_depth'] = 0.04 * socialWeight;
+          break;
+        case 'volunteer_dropoff':
+          parameters['volunteer_lane'] =
+              _resolveVolunteerLane(parameters: parameters, context: context);
+          final impactWindowDays =
+              (parameters['impact_window_days'] as num?)?.toInt() ?? 30;
+          parameters['impact_window_days'] = impactWindowDays;
+          parameters['days'] =
+              (parameters['days'] as num?)?.toDouble() ?? impactWindowDays;
+          dimensionUpdates['community_evolution'] = -0.09;
+          dimensionUpdates['social_dynamics'] = -0.07;
+          dimensionUpdates['recommendation_accuracy'] = -0.03;
+          break;
 
         case 'recommendation_rejected':
           // Rejections indicate mismatch between model ranking and user preference.
@@ -1603,6 +1645,10 @@ class ContinuousLearningSystem {
       case 'event_attended':
       case 'event_attend':
       case 'community_join':
+      case 'volunteer_signup':
+      case 'volunteer_attend':
+      case 'volunteer_retention':
+      case 'volunteer_dropoff':
         actionType = UserActionType.socialInteraction;
         break;
       default:
@@ -1753,6 +1799,22 @@ class ContinuousLearningSystem {
         dimensionUpdates['community_evolution'] = 0.08;
         dimensionUpdates['social_dynamics'] = 0.05;
         break;
+      case 'volunteer_signup':
+        dimensionUpdates['community_evolution'] = 0.12;
+        dimensionUpdates['social_dynamics'] = 0.10;
+        break;
+      case 'volunteer_attend':
+        dimensionUpdates['community_evolution'] = 0.14;
+        dimensionUpdates['social_dynamics'] = 0.11;
+        break;
+      case 'volunteer_retention':
+        dimensionUpdates['community_evolution'] = 0.13;
+        dimensionUpdates['social_dynamics'] = 0.10;
+        break;
+      case 'volunteer_dropoff':
+        dimensionUpdates['community_evolution'] = -0.08;
+        dimensionUpdates['social_dynamics'] = -0.06;
+        break;
       case 'organic_spot_discovered':
         // User's behavior revealed a new meaningful location not in any
         // database. This is a strong location intelligence signal and
@@ -1782,6 +1844,16 @@ class ContinuousLearningSystem {
     }
 
     return dimensionUpdates;
+  }
+
+  String _resolveVolunteerLane({
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+  }) {
+    return parameters['volunteer_lane']?.toString() ??
+        parameters['entity_type']?.toString() ??
+        context['entity_type']?.toString() ??
+        'community';
   }
 
   Future<double> evaluateModel(dynamic data) async {
