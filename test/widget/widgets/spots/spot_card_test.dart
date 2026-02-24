@@ -60,6 +60,20 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget4);
       expect(find.byIcon(Icons.favorite), findsOneWidget);
+
+      bool dismissTapped = false;
+      final testSpot5 = ModelFactories.createTestSpot(id: 'spot-123');
+      final widget5 = WidgetTestHelpers.createTestableWidget(
+        child: SpotCard(
+          spot: testSpot5,
+          onDismissTap: () => dismissTapped = true,
+        ),
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget5);
+      expect(find.byKey(const Key('spot_card_dismiss_button')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('spot_card_dismiss_button')));
+      await tester.pump();
+      expect(dismissTapped, isTrue);
     });
   });
 }
