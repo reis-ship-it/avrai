@@ -74,6 +74,8 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const int _badDayNegativeSessionThreshold = 3;
+  static const double _badDayRetroactiveDampeningFactor = 0.5;
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -107,6 +109,8 @@ class ContinuousLearningSystem {
   final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
   final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
       {};
+  final Map<String, Map<String, int>> _sessionNegativeCountByAgent = {};
+  final Map<String, _PendingBadDaySession> _pendingBadDaySessionByAgent = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -593,7 +597,7 @@ class ContinuousLearningSystem {
 
       final sourceType = source ?? 'user';
       final now = DateTime.now().toUtc();
-      await _recordEpisodicTuple(
+      final episodicTuple = await _recordEpisodicTuple(
         userId: userId,
         source: sourceType,
         eventType: eventType,
@@ -602,6 +606,15 @@ class ContinuousLearningSystem {
         adjustedDimensionUpdates: adjustedUpdates,
         observedAt: now,
       );
+      if (episodicTuple != null) {
+        await _recordBadDayDampeningIfApplicable(
+          episodicStore: _episodicMemoryStore,
+          tuple: episodicTuple,
+          parameters: parameters,
+          context: context,
+          source: sourceType,
+        );
+      }
       await _recordPhysiologyOutcomeTupleIfApplicable(
         userId: userId,
         source: sourceType,
@@ -844,7 +857,7 @@ class ContinuousLearningSystem {
     }
   }
 
-  Future<void> _recordEpisodicTuple({
+  Future<EpisodicTuple?> _recordEpisodicTuple({
     required String userId,
     required String source,
     required String eventType,
@@ -854,7 +867,7 @@ class ContinuousLearningSystem {
     required DateTime observedAt,
   }) async {
     final episodicStore = _episodicMemoryStore;
-    if (episodicStore == null) return;
+    if (episodicStore == null) return null;
 
     try {
       final agentId = await _agentIdService.getUserAgentId(userId);
@@ -947,12 +960,184 @@ class ContinuousLearningSystem {
         context: context,
         observedAt: observedAt,
       );
+      return tuple;
     } catch (e) {
       developer.log(
         'Failed to write episodic tuple: $e',
         name: _logName,
       );
+      return null;
     }
+  }
+
+  Future<void> _recordBadDayDampeningIfApplicable({
+    required EpisodicMemoryStore? episodicStore,
+    required EpisodicTuple tuple,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required String source,
+  }) async {
+    if (episodicStore == null) return;
+    try {
+      final sessionKey = _resolveInteractionSessionKey(
+        tuple: tuple,
+        parameters: parameters,
+        context: context,
+      );
+      if (sessionKey == null) return;
+
+      final perAgentSessionCounts = _sessionNegativeCountByAgent.putIfAbsent(
+        tuple.agentId,
+        () => <String, int>{},
+      );
+      final pending = _pendingBadDaySessionByAgent[tuple.agentId];
+      final isNegative = _isNegativeOutcomeSignal(tuple.outcome);
+
+      if (pending != null &&
+          pending.sessionKey != sessionKey &&
+          !pending.isResolved) {
+        if (isNegative) {
+          final withheldTuple = EpisodicTuple(
+            agentId: tuple.agentId,
+            stateBefore: {
+              'phase_ref': '1.4.12',
+              'pending_bad_day_session': pending.sessionKey,
+              'next_session': sessionKey,
+              'pending_negative_count': pending.negativeSignalCount,
+            },
+            actionType: 'bad_day_dampening_withheld',
+            actionPayload: {
+              'source_session': pending.sessionKey,
+              'evaluation_session': sessionKey,
+              'reason':
+                  'negative_pattern_continued_across_sessions_treat_as_genuine',
+            },
+            nextState: const {
+              'retroactive_dampening_applied': false,
+              'treat_as_genuine_taste_shift': true,
+            },
+            outcome: tuple.outcome,
+            recordedAt: tuple.recordedAt,
+            metadata: const {
+              'pipeline': 'continuous_learning_system',
+              'phase_ref': '1.4.12',
+              'bad_day_dampening': 'withheld',
+            },
+          );
+          await episodicStore.writeTuple(withheldTuple);
+        } else {
+          final dampeningTuple = EpisodicTuple(
+            agentId: tuple.agentId,
+            stateBefore: {
+              'phase_ref': '1.4.12',
+              'source_session': pending.sessionKey,
+              'source_negative_count': pending.negativeSignalCount,
+              'evaluation_session': sessionKey,
+            },
+            actionType: 'bad_day_retroactive_dampening',
+            actionPayload: {
+              'source_session': pending.sessionKey,
+              'evaluation_session': sessionKey,
+              'retroactive_dampening_factor': _badDayRetroactiveDampeningFactor,
+              'dampened_signal_scope': 'negative_signals_only',
+            },
+            nextState: const {
+              'retroactive_dampening_applied': true,
+              'session_pattern_normalized': true,
+            },
+            outcome: _outcomeTaxonomy.classify(
+              eventType: 'actual_action_succeeded',
+              parameters: {
+                'source': source,
+                'retroactive_dampening_factor':
+                    _badDayRetroactiveDampeningFactor,
+              },
+            ),
+            recordedAt: tuple.recordedAt,
+            metadata: const {
+              'pipeline': 'continuous_learning_system',
+              'phase_ref': '1.4.12',
+              'bad_day_dampening': 'applied',
+            },
+          );
+          await episodicStore.writeTuple(dampeningTuple);
+        }
+        _pendingBadDaySessionByAgent.remove(tuple.agentId);
+      }
+
+      if (!isNegative) return;
+
+      final nextCount = (perAgentSessionCounts[sessionKey] ?? 0) + 1;
+      perAgentSessionCounts[sessionKey] = nextCount;
+
+      if (nextCount != _badDayNegativeSessionThreshold) return;
+
+      _pendingBadDaySessionByAgent[tuple.agentId] = _PendingBadDaySession(
+        sessionKey: sessionKey,
+        negativeSignalCount: nextCount,
+        isResolved: false,
+      );
+
+      final detectedTuple = EpisodicTuple(
+        agentId: tuple.agentId,
+        stateBefore: {
+          'phase_ref': '1.4.12',
+          'session_key': sessionKey,
+          'negative_signal_count': nextCount,
+          'threshold': _badDayNegativeSessionThreshold,
+        },
+        actionType: 'bad_day_session_detected',
+        actionPayload: {
+          'session_key': sessionKey,
+          'negative_signal_count': nextCount,
+          'candidate_dampening_factor': _badDayRetroactiveDampeningFactor,
+        },
+        nextState: const {
+          'bad_day_candidate': true,
+          'awaiting_next_session_validation': true,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'actual_action_failed',
+          parameters: {
+            'source': source,
+            'bad_day_candidate': true,
+          },
+        ),
+        recordedAt: tuple.recordedAt,
+        metadata: const {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': '1.4.12',
+          'bad_day_dampening': 'candidate_detected',
+        },
+      );
+      await episodicStore.writeTuple(detectedTuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record bad-day dampening signal: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  String? _resolveInteractionSessionKey({
+    required EpisodicTuple tuple,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+  }) {
+    const sessionKeys = <String>[
+      'session_id',
+      'session_key',
+      'analytics_session_id',
+      'funnel_session_bucket',
+    ];
+    for (final key in sessionKeys) {
+      final fromParams = parameters[key]?.toString().trim();
+      if (fromParams != null && fromParams.isNotEmpty) return fromParams;
+
+      final fromContext = context[key]?.toString().trim();
+      if (fromContext != null && fromContext.isNotEmpty) return fromContext;
+    }
+    return '${tuple.recordedAt.toUtc().toIso8601String().substring(0, 13)}Z';
   }
 
   Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
@@ -3329,4 +3514,16 @@ class _RecommendationDecisionStats {
       accepted: accepted ?? this.accepted,
     );
   }
+}
+
+class _PendingBadDaySession {
+  final String sessionKey;
+  final int negativeSignalCount;
+  final bool isResolved;
+
+  const _PendingBadDaySession({
+    required this.sessionKey,
+    required this.negativeSignalCount,
+    this.isResolved = false,
+  });
 }
