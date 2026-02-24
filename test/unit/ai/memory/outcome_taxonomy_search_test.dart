@@ -48,5 +48,15 @@ void main() {
       expect(signal.category, OutcomeCategory.binary);
       expect(signal.value, 1.0);
     });
+
+    test('classifies organic recommendation hit as binary positive', () {
+      final signal = taxonomy.classify(
+        eventType: 'recommended_entity_visited_organically',
+        parameters: const {'recommended_entity_id': 'spot-1'},
+      );
+
+      expect(signal.category, OutcomeCategory.binary);
+      expect(signal.value, 1.0);
+    });
   });
 }

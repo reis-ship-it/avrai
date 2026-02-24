@@ -401,6 +401,14 @@ class ContinuousLearningSystem {
         case 'recommendation_notification_opened':
           dimensionUpdates['recommendation_accuracy'] = 0.02;
           break;
+        case 'recommended_entity_visited_organically':
+          dimensionUpdates['recommendation_accuracy'] = 0.04;
+          dimensionUpdates['location_intelligence'] = 0.02;
+          break;
+        case 'entity_detail_long_dwell':
+          dimensionUpdates['user_preference_understanding'] = 0.03;
+          dimensionUpdates['recommendation_accuracy'] = 0.02;
+          break;
 
         case 'scroll_past_without_tap':
           dimensionUpdates['recommendation_accuracy'] = -0.01;
@@ -2016,6 +2024,14 @@ class ContinuousLearningSystem {
         }
         break;
       case 'recommendation_notification_opened':
+        dimensionUpdates['recommendation_accuracy'] = 0.02;
+        break;
+      case 'recommended_entity_visited_organically':
+        dimensionUpdates['recommendation_accuracy'] = 0.04;
+        dimensionUpdates['location_intelligence'] = 0.02;
+        break;
+      case 'entity_detail_long_dwell':
+        dimensionUpdates['user_preference_understanding'] = 0.03;
         dimensionUpdates['recommendation_accuracy'] = 0.02;
         break;
       case 'scroll_past_without_tap':

@@ -95,6 +95,9 @@ class OutcomeTaxonomy {
       case 'install_started':
       case 'install_completed':
       case 'first_action_after_install':
+      case 'recommendation_notification_opened':
+      case 'recommended_entity_visited_organically':
+      case 'entity_detail_long_dwell':
       case 'explicit_preference':
         return _binaryOutcome(
           type: eventType,
