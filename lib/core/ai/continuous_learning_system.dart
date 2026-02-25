@@ -12,6 +12,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
 import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:avrai/core/ai/memory/journal/conviction_ledger.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
@@ -74,6 +75,8 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const String _convictionFeedbackPhaseRef = '1.4.13';
+  static const double _convictionFeedbackDefaultConfidence = 0.5;
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -91,6 +94,7 @@ class ContinuousLearningSystem {
   final AgentIdService _agentIdService;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final ConvictionLedger _convictionLedger;
   final ImplicitFeedbackSignals _implicitFeedbackSignals;
   SupabaseClient? _supabase;
 
@@ -107,6 +111,7 @@ class ContinuousLearningSystem {
   final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
   final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
       {};
+  final Map<String, Map<String, double>> _convictionConfidenceByAgentAndId = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -151,11 +156,13 @@ class ContinuousLearningSystem {
     SupabaseClient? supabase,
     AgentIdService? agentIdService,
     EpisodicMemoryStore? episodicMemoryStore,
+    ConvictionLedger? convictionLedger,
     ContinuousLearningOrchestrator? orchestrator,
     RateLimiter? rateLimiter,
   })  : _agentIdService = _resolveAgentIdService(agentIdService),
         _episodicMemoryStore = _resolveEpisodicMemoryStore(episodicMemoryStore),
         _outcomeTaxonomy = const OutcomeTaxonomy(),
+        _convictionLedger = convictionLedger ?? ConvictionLedger(),
         _implicitFeedbackSignals = const ImplicitFeedbackSignals(),
         _supabase = supabase,
         _orchestrator = orchestrator,
@@ -207,6 +214,9 @@ class ContinuousLearningSystem {
   bool get isLearningActive {
     return _orchestrator?.isLearningActive ?? false;
   }
+
+  List<ConvictionLedgerEntry> get convictionLedgerEntries =>
+      _convictionLedger.entries();
 
   Future<void> initialize() async {
     await _ensureOrchestrator();
@@ -503,6 +513,25 @@ class ContinuousLearningSystem {
         case 'recommendation_accepted':
           dimensionUpdates['recommendation_accuracy'] = 0.04;
           break;
+        case 'conviction_feedback_submitted':
+          final feedbackKind =
+              _parseConvictionFeedbackKind(parameters['conviction_feedback']);
+          switch (feedbackKind) {
+            case _ConvictionFeedbackKind.helpful:
+              dimensionUpdates['recommendation_accuracy'] = 0.03;
+              dimensionUpdates['personalization_depth'] = 0.02;
+              break;
+            case _ConvictionFeedbackKind.unhelpful:
+              dimensionUpdates['recommendation_accuracy'] = -0.04;
+              dimensionUpdates['user_preference_understanding'] = 0.03;
+              break;
+            case _ConvictionFeedbackKind.uncertain:
+              dimensionUpdates['user_preference_understanding'] = 0.01;
+              break;
+            case null:
+              break;
+          }
+          break;
 
         case 'nearby_discovered_non_member':
           dimensionUpdates['location_intelligence'] = 0.02;
@@ -600,6 +629,14 @@ class ContinuousLearningSystem {
         parameters: parameters,
         context: context,
         adjustedDimensionUpdates: adjustedUpdates,
+        observedAt: now,
+      );
+      await _recordConvictionFeedbackTupleIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
         observedAt: now,
       );
       await _recordPhysiologyOutcomeTupleIfApplicable(
@@ -953,6 +990,252 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordConvictionFeedbackTupleIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    if (eventType != 'conviction_feedback_submitted') return;
+    if (!_isHighImpactConvictionFeedback(parameters, context)) return;
+
+    final feedbackKind =
+        _parseConvictionFeedbackKind(parameters['conviction_feedback']);
+    if (feedbackKind == null) return;
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+
+    try {
+      final agentId = await _agentIdService.getUserAgentId(userId);
+      final recommendationOrExplanation =
+          _resolveRecommendationOrExplanation(parameters, context);
+      final convictionId = _resolveConvictionId(
+        parameters: parameters,
+        recommendationOrExplanation: recommendationOrExplanation,
+      );
+
+      final confidenceByConviction =
+          _convictionConfidenceByAgentAndId.putIfAbsent(
+        agentId,
+        () => <String, double>{},
+      );
+      final previousConfidence = confidenceByConviction[convictionId] ??
+          _convictionFeedbackDefaultConfidence;
+      final updatedConfidence =
+          (previousConfidence + feedbackKind.confidenceDelta)
+              .clamp(0.0, 1.0)
+              .toDouble();
+      confidenceByConviction[convictionId] = updatedConfidence;
+
+      final evidenceIds = _toStringList(parameters['supporting_evidence_ids']);
+      final contradictionIds = _toStringList(parameters['contradiction_ids']);
+      if (feedbackKind == _ConvictionFeedbackKind.helpful &&
+          evidenceIds.isEmpty) {
+        evidenceIds.add('${convictionId}_helpful_feedback');
+      }
+      if (feedbackKind == _ConvictionFeedbackKind.unhelpful &&
+          contradictionIds.isEmpty) {
+        contradictionIds.add('${convictionId}_unhelpful_feedback');
+      }
+      if (feedbackKind == _ConvictionFeedbackKind.uncertain &&
+          evidenceIds.isEmpty &&
+          contradictionIds.isEmpty) {
+        evidenceIds.add('${convictionId}_uncertain_feedback');
+      }
+
+      final delayedWindowIds =
+          _toStringList(parameters['delayed_validation_window_ids']);
+      if (delayedWindowIds.isEmpty) {
+        delayedWindowIds.add('conviction_feedback_pending_7d');
+      }
+
+      final entry = ConvictionLedgerEntry(
+        entryId:
+            'conviction_feedback_${observedAt.millisecondsSinceEpoch}_${feedbackKind.wireValue}',
+        convictionId: convictionId,
+        previousConfidence: previousConfidence,
+        updatedConfidence: updatedConfidence,
+        supportingEvidenceIds: evidenceIds,
+        contradictionIds: contradictionIds,
+        delayedValidationWindowIds: delayedWindowIds,
+        recordedAt: observedAt,
+        metadata: {
+          'phase_ref': _convictionFeedbackPhaseRef,
+          'source': source,
+          'feedback': feedbackKind.wireValue,
+          'high_impact': true,
+        },
+      );
+      _convictionLedger.append(entry);
+
+      final tuple = EpisodicTuple(
+        agentId: agentId,
+        stateBefore: _buildStateSnapshot(
+          userId: userId,
+          source: source,
+          eventType: eventType,
+          context: context,
+          observedAt: observedAt,
+        )..addAll({
+            'phase_ref': _convictionFeedbackPhaseRef,
+            'conviction_id': convictionId,
+            'previous_confidence': previousConfidence,
+            'recommendation_or_explanation': recommendationOrExplanation,
+          }),
+        actionType: 'conviction_feedback',
+        actionPayload: {
+          'conviction_id': convictionId,
+          'conviction_feedback': feedbackKind.wireValue,
+          'recommendation_or_explanation': recommendationOrExplanation,
+          'high_impact': true,
+        },
+        nextState: {
+          'conviction_id': convictionId,
+          'updated_confidence': updatedConfidence,
+          'confidence_delta': feedbackKind.confidenceDelta,
+          'ledger_entry_id': entry.entryId,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: feedbackKind.outcomeEventType,
+          parameters: {
+            ...parameters,
+            'source': source,
+            'signal_weight': feedbackKind.signalWeight,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': _convictionFeedbackPhaseRef,
+          'conviction_feedback': true,
+        },
+      );
+      await episodicStore.writeTuple(tuple);
+    } catch (e) {
+      developer.log(
+        'Failed to record conviction feedback tuple: $e',
+        name: _logName,
+      );
+    }
+  }
+
+  bool _isHighImpactConvictionFeedback(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final explicitHighImpact =
+        _toBool(parameters['high_impact']) ?? _toBool(context['high_impact']);
+    if (explicitHighImpact != null) return explicitHighImpact;
+    final impactLevel = (parameters['impact_level'] ??
+            context['impact_level'] ??
+            parameters['decision_impact'] ??
+            context['decision_impact'])
+        ?.toString()
+        .toLowerCase()
+        .trim();
+    return impactLevel == 'high' || impactLevel == 'critical';
+  }
+
+  _ConvictionFeedbackKind? _parseConvictionFeedbackKind(dynamic rawFeedback) {
+    final normalized = rawFeedback?.toString().trim().toLowerCase();
+    switch (normalized) {
+      case 'helpful':
+        return _ConvictionFeedbackKind.helpful;
+      case 'unhelpful':
+        return _ConvictionFeedbackKind.unhelpful;
+      case 'uncertain':
+        return _ConvictionFeedbackKind.uncertain;
+      default:
+        return null;
+    }
+  }
+
+  Map<String, dynamic> _resolveRecommendationOrExplanation(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final direct = parameters['recommendation_or_explanation'];
+    if (direct is Map) {
+      return Map<String, dynamic>.from(direct);
+    }
+
+    final recommendation = parameters['recommendation'];
+    if (recommendation is Map) {
+      return {
+        ...Map<String, dynamic>.from(recommendation),
+        'kind': 'recommendation',
+      };
+    }
+    final explanation = parameters['explanation'];
+    if (explanation is Map) {
+      return {
+        ...Map<String, dynamic>.from(explanation),
+        'kind': 'explanation',
+      };
+    }
+    final plannerRecommendation = context['planner_recommendation'];
+    if (plannerRecommendation is Map) {
+      return {
+        ...Map<String, dynamic>.from(plannerRecommendation),
+        'kind': 'recommendation',
+      };
+    }
+    return <String, dynamic>{
+      'kind': 'unknown',
+      'reference_id': parameters['recommendation_id']?.toString() ??
+          parameters['explanation_id']?.toString() ??
+          'unknown',
+    };
+  }
+
+  String _resolveConvictionId({
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> recommendationOrExplanation,
+  }) {
+    final direct = parameters['conviction_id']?.toString().trim();
+    if (direct != null && direct.isNotEmpty) return direct;
+    final recommendationId = parameters['recommendation_id']?.toString().trim();
+    if (recommendationId != null && recommendationId.isNotEmpty) {
+      return 'recommendation_$recommendationId';
+    }
+    final explanationId = parameters['explanation_id']?.toString().trim();
+    if (explanationId != null && explanationId.isNotEmpty) {
+      return 'explanation_$explanationId';
+    }
+    final fallbackRef =
+        recommendationOrExplanation['reference_id']?.toString().trim();
+    if (fallbackRef != null && fallbackRef.isNotEmpty) {
+      return 'reference_$fallbackRef';
+    }
+    return 'conviction_unknown';
+  }
+
+  List<String> _toStringList(dynamic raw) {
+    if (raw is! List) return <String>[];
+    return raw
+        .map((entry) => entry.toString().trim())
+        .where((entry) => entry.isNotEmpty)
+        .toList(growable: true);
+  }
+
+  bool? _toBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == '1' || normalized == 'yes') {
+        return true;
+      }
+      if (normalized == 'false' || normalized == '0' || normalized == 'no') {
+        return false;
+      }
+    }
+    return null;
   }
 
   Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
@@ -3329,4 +3612,37 @@ class _RecommendationDecisionStats {
       accepted: accepted ?? this.accepted,
     );
   }
+}
+
+class _ConvictionFeedbackKind {
+  final String wireValue;
+  final double confidenceDelta;
+  final double signalWeight;
+  final String outcomeEventType;
+
+  const _ConvictionFeedbackKind._({
+    required this.wireValue,
+    required this.confidenceDelta,
+    required this.signalWeight,
+    required this.outcomeEventType,
+  });
+
+  static const helpful = _ConvictionFeedbackKind._(
+    wireValue: 'helpful',
+    confidenceDelta: 0.05,
+    signalWeight: 3.0,
+    outcomeEventType: 'conviction_feedback_helpful',
+  );
+  static const unhelpful = _ConvictionFeedbackKind._(
+    wireValue: 'unhelpful',
+    confidenceDelta: -0.08,
+    signalWeight: 5.0,
+    outcomeEventType: 'conviction_feedback_unhelpful',
+  );
+  static const uncertain = _ConvictionFeedbackKind._(
+    wireValue: 'uncertain',
+    confidenceDelta: -0.02,
+    signalWeight: 1.0,
+    outcomeEventType: 'conviction_feedback_uncertain',
+  );
 }

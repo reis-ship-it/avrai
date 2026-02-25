@@ -79,6 +79,9 @@ class OutcomeTaxonomy {
     'save_list': 3.0,
     'search_result_save': 3.0,
     'recommendation_notification_opened': 2.0,
+    'conviction_feedback_helpful': 3.0,
+    'conviction_feedback_unhelpful': 5.0,
+    'conviction_feedback_uncertain': 1.0,
     'dwell_time': 1.5,
     'entity_detail_long_dwell': 1.5,
     'no_action': 1.0,
@@ -130,6 +133,7 @@ class OutcomeTaxonomy {
       case 'recommended_entity_visited_organically':
       case 'entity_detail_long_dwell':
       case 'explicit_preference':
+      case 'conviction_feedback_helpful':
         baseSignal = _binaryOutcome(
           type: eventType,
           didOccur: true,
@@ -142,9 +146,17 @@ class OutcomeTaxonomy {
       case 'recommendation_post_view_abandonment':
       case 'actual_action_failed':
       case 'search_result_bounce':
+      case 'conviction_feedback_unhelpful':
         baseSignal = _binaryOutcome(
           type: eventType,
           didOccur: false,
+          parameters: parameters,
+        );
+        break;
+      case 'conviction_feedback_uncertain':
+        baseSignal = _behavioralOutcome(
+          type: eventType,
+          value: 0.0,
           parameters: parameters,
         );
         break;
