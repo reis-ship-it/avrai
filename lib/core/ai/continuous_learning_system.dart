@@ -74,6 +74,11 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const String _sourceUtilityPhaseRef = '1.4.15';
+  static const int _sourceFamilyMinimumSampleForDerank = 3;
+  static const double _sourceFamilyFailureRateDerankThreshold = 0.6;
+  static const double _sourceFamilyDerankFactor = 0.85;
+  static const double _sourceFamilyMinimumMultiplier = 0.4;
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -107,6 +112,8 @@ class ContinuousLearningSystem {
   final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
   final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
       {};
+  final Map<String, Map<String, _SourceFamilyUtilityStats>>
+      _sourceUtilityStatsByAgentAndFamily = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -206,6 +213,25 @@ class ContinuousLearningSystem {
   /// Check if continuous learning is currently active
   bool get isLearningActive {
     return _orchestrator?.isLearningActive ?? false;
+  }
+
+  Map<String, Map<String, dynamic>> getSourceUtilityStatsForAgent(
+    String agentId,
+  ) {
+    final byFamily = _sourceUtilityStatsByAgentAndFamily[agentId];
+    if (byFamily == null) return const <String, Map<String, dynamic>>{};
+    return {
+      for (final entry in byFamily.entries)
+        entry.key: <String, dynamic>{
+          'total_count': entry.value.totalCount,
+          'success_count': entry.value.successCount,
+          'failure_count': entry.value.failureCount,
+          'reliability_score': entry.value.reliabilityScore,
+          'weight_multiplier': entry.value.weightMultiplier,
+          'is_deranked': entry.value.isDeranked,
+          'derank_count': entry.value.derankCount,
+        },
+    };
   }
 
   Future<void> initialize() async {
@@ -602,6 +628,14 @@ class ContinuousLearningSystem {
         adjustedDimensionUpdates: adjustedUpdates,
         observedAt: now,
       );
+      await _recordSourceUtilityFeedbackIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
+        observedAt: now,
+      );
       await _recordPhysiologyOutcomeTupleIfApplicable(
         userId: userId,
         source: sourceType,
@@ -953,6 +987,236 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordSourceUtilityFeedbackIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final sourceFamily = _resolveSourceFamily(parameters, context);
+    if (sourceFamily == null) return;
+
+    final outcome = _outcomeTaxonomy.classify(
+      eventType: eventType,
+      parameters: {
+        ...parameters,
+        'source': source,
+      },
+    );
+    final outcomePolarity = _resolveSourceUtilityOutcomePolarity(
+      eventType: eventType,
+      outcome: outcome,
+      parameters: parameters,
+    );
+    if (outcomePolarity == null) return;
+
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    final statsByFamily = _sourceUtilityStatsByAgentAndFamily.putIfAbsent(
+      agentId,
+      () => <String, _SourceFamilyUtilityStats>{},
+    );
+    final previousStats =
+        statsByFamily[sourceFamily] ?? const _SourceFamilyUtilityStats();
+    final updatedStats = previousStats.recordOutcome(
+      isPositive: outcomePolarity == _SourceOutcomePolarity.positive,
+    );
+    statsByFamily[sourceFamily] = updatedStats;
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore != null) {
+      await episodicStore.writeTuple(
+        EpisodicTuple(
+          agentId: agentId,
+          stateBefore: {
+            ..._buildStateSnapshot(
+              userId: userId,
+              source: source,
+              eventType: eventType,
+              context: context,
+              observedAt: observedAt,
+            ),
+            'phase_ref': _sourceUtilityPhaseRef,
+            'source_family': sourceFamily,
+            'weight_multiplier_before': previousStats.weightMultiplier,
+          },
+          actionType: 'source_utility_feedback',
+          actionPayload: {
+            'source_family': sourceFamily,
+            'outcome_polarity': outcomePolarity.name,
+            'trigger_event_type': eventType,
+          },
+          nextState: {
+            'total_count': updatedStats.totalCount,
+            'success_count': updatedStats.successCount,
+            'failure_count': updatedStats.failureCount,
+            'reliability_score': updatedStats.reliabilityScore,
+            'weight_multiplier_after': updatedStats.weightMultiplier,
+            'is_deranked': updatedStats.isDeranked,
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: outcomePolarity == _SourceOutcomePolarity.positive
+                ? 'source_utility_positive'
+                : 'source_utility_negative',
+            parameters: {
+              ...parameters,
+              'source': source,
+              'source_family': sourceFamily,
+              'shift_magnitude':
+                  outcomePolarity == _SourceOutcomePolarity.positive
+                      ? 1.0
+                      : -1.0,
+              'signal_weight':
+                  outcomePolarity == _SourceOutcomePolarity.positive
+                      ? 2.0
+                      : 4.0,
+              'phase_ref': _sourceUtilityPhaseRef,
+            },
+          ),
+          recordedAt: observedAt,
+          metadata: {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': _sourceUtilityPhaseRef,
+          },
+        ),
+      );
+    }
+
+    final shouldDerank = _shouldDerankSourceFamily(updatedStats) &&
+        updatedStats.weightMultiplier > _sourceFamilyMinimumMultiplier;
+    if (!shouldDerank) return;
+
+    final derankedStats = updatedStats.deranked(
+      factor: _sourceFamilyDerankFactor,
+      minMultiplier: _sourceFamilyMinimumMultiplier,
+    );
+    statsByFamily[sourceFamily] = derankedStats;
+
+    if (episodicStore != null) {
+      await episodicStore.writeTuple(
+        EpisodicTuple(
+          agentId: agentId,
+          stateBefore: {
+            ..._buildStateSnapshot(
+              userId: userId,
+              source: source,
+              eventType: eventType,
+              context: context,
+              observedAt: observedAt,
+            ),
+            'phase_ref': _sourceUtilityPhaseRef,
+            'source_family': sourceFamily,
+            'weight_multiplier_before': updatedStats.weightMultiplier,
+          },
+          actionType: 'source_family_deranked',
+          actionPayload: {
+            'source_family': sourceFamily,
+            'failure_rate': derankedStats.failureRate,
+            'derank_factor': _sourceFamilyDerankFactor,
+          },
+          nextState: {
+            'weight_multiplier_after': derankedStats.weightMultiplier,
+            'derank_count': derankedStats.derankCount,
+            'is_deranked': derankedStats.isDeranked,
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: 'source_utility_deranked',
+            parameters: {
+              ...parameters,
+              'source': source,
+              'source_family': sourceFamily,
+              'shift_magnitude': -1.0,
+              'signal_weight': 5.0,
+              'negative_outcome': true,
+              'phase_ref': _sourceUtilityPhaseRef,
+            },
+          ),
+          recordedAt: observedAt,
+          metadata: {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': _sourceUtilityPhaseRef,
+            'source_family_deranked': true,
+          },
+        ),
+      );
+    }
+  }
+
+  String? _resolveSourceFamily(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    const candidates = <String>[
+      'source_family',
+      'research_source_family',
+      'influencing_source_family',
+    ];
+    for (final key in candidates) {
+      final fromParameters = parameters[key]?.toString().trim().toLowerCase();
+      if (fromParameters != null && fromParameters.isNotEmpty) {
+        return fromParameters;
+      }
+      final fromContext = context[key]?.toString().trim().toLowerCase();
+      if (fromContext != null && fromContext.isNotEmpty) {
+        return fromContext;
+      }
+    }
+    return null;
+  }
+
+  _SourceOutcomePolarity? _resolveSourceUtilityOutcomePolarity({
+    required String eventType,
+    required OutcomeSignal outcome,
+    required Map<String, dynamic> parameters,
+  }) {
+    const explicitPositiveEvents = <String>{
+      'recommendation_accepted',
+      'spot_visited',
+      'visit_spot',
+      'event_attended',
+      'event_attend',
+      'save_entity',
+      'save_event',
+      'save_community',
+      'create_reservation',
+      'attend_event',
+    };
+    if (explicitPositiveEvents.contains(eventType)) {
+      return _SourceOutcomePolarity.positive;
+    }
+
+    const explicitNegativeEvents = <String>{
+      'recommendation_rejected',
+      'recommendation_post_view_abandonment',
+      'spot_dismissed',
+      'dismiss_spot',
+      'dismiss_entity',
+      'explicit_rejection',
+      'search_result_bounce',
+    };
+    if (explicitNegativeEvents.contains(eventType)) {
+      return _SourceOutcomePolarity.negative;
+    }
+
+    if (eventType == 'no_action' || eventType == 'search_result_no_action') {
+      return null;
+    }
+    if (outcome.category == OutcomeCategory.behavioral &&
+        outcome.value == 0.0) {
+      return null;
+    }
+    if (_isNegativeOutcomeSignal(outcome)) {
+      return _SourceOutcomePolarity.negative;
+    }
+    return _SourceOutcomePolarity.positive;
+  }
+
+  bool _shouldDerankSourceFamily(_SourceFamilyUtilityStats stats) {
+    if (stats.totalCount < _sourceFamilyMinimumSampleForDerank) return false;
+    return stats.failureRate >= _sourceFamilyFailureRateDerankThreshold;
   }
 
   Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
@@ -3327,6 +3591,61 @@ class _RecommendationDecisionStats {
       total: total ?? this.total,
       rejected: rejected ?? this.rejected,
       accepted: accepted ?? this.accepted,
+    );
+  }
+}
+
+enum _SourceOutcomePolarity {
+  positive,
+  negative,
+}
+
+class _SourceFamilyUtilityStats {
+  final int totalCount;
+  final int successCount;
+  final int failureCount;
+  final double weightMultiplier;
+  final int derankCount;
+  final bool isDeranked;
+
+  const _SourceFamilyUtilityStats({
+    this.totalCount = 0,
+    this.successCount = 0,
+    this.failureCount = 0,
+    this.weightMultiplier = 1.0,
+    this.derankCount = 0,
+    this.isDeranked = false,
+  });
+
+  double get reliabilityScore => (successCount + 1) / (totalCount + 2);
+  double get failureRate => totalCount == 0 ? 0.0 : failureCount / totalCount;
+
+  _SourceFamilyUtilityStats recordOutcome({required bool isPositive}) {
+    return _SourceFamilyUtilityStats(
+      totalCount: totalCount + 1,
+      successCount: successCount + (isPositive ? 1 : 0),
+      failureCount: failureCount + (isPositive ? 0 : 1),
+      weightMultiplier: weightMultiplier,
+      derankCount: derankCount,
+      isDeranked: isDeranked,
+    );
+  }
+
+  _SourceFamilyUtilityStats deranked({
+    required double factor,
+    required double minMultiplier,
+  }) {
+    final nextMultiplier = (weightMultiplier * factor).clamp(
+      minMultiplier,
+      1.0,
+    );
+    return _SourceFamilyUtilityStats(
+      totalCount: totalCount,
+      successCount: successCount,
+      failureCount: failureCount,
+      weightMultiplier: nextMultiplier.toDouble(),
+      derankCount: derankCount + 1,
+      isDeranked: true,
     );
   }
 }
