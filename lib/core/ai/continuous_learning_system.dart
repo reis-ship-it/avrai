@@ -12,6 +12,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
 import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:avrai/core/ai/memory/journal/conviction_ledger.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
@@ -74,6 +75,10 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const String _delayedValidationPhaseRef = '1.4.14';
+  static const List<int> _convictionValidationWindowsDays = [7, 30, 90];
+  static const double _strongConvictionDeltaThreshold = 0.05;
+  static const double _delayedValidationDecayFactor = 0.85;
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -91,6 +96,7 @@ class ContinuousLearningSystem {
   final AgentIdService _agentIdService;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final ConvictionLedger _convictionLedger;
   final ImplicitFeedbackSignals _implicitFeedbackSignals;
   SupabaseClient? _supabase;
 
@@ -107,6 +113,8 @@ class ContinuousLearningSystem {
   final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
   final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
       {};
+  final Map<String, Map<String, _PendingConvictionValidation>>
+      _pendingConvictionValidationByAgent = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -151,11 +159,13 @@ class ContinuousLearningSystem {
     SupabaseClient? supabase,
     AgentIdService? agentIdService,
     EpisodicMemoryStore? episodicMemoryStore,
+    ConvictionLedger? convictionLedger,
     ContinuousLearningOrchestrator? orchestrator,
     RateLimiter? rateLimiter,
   })  : _agentIdService = _resolveAgentIdService(agentIdService),
         _episodicMemoryStore = _resolveEpisodicMemoryStore(episodicMemoryStore),
         _outcomeTaxonomy = const OutcomeTaxonomy(),
+        _convictionLedger = convictionLedger ?? ConvictionLedger(),
         _implicitFeedbackSignals = const ImplicitFeedbackSignals(),
         _supabase = supabase,
         _orchestrator = orchestrator,
@@ -207,6 +217,9 @@ class ContinuousLearningSystem {
   bool get isLearningActive {
     return _orchestrator?.isLearningActive ?? false;
   }
+
+  List<ConvictionLedgerEntry> get convictionLedgerEntries =>
+      _convictionLedger.entries();
 
   Future<void> initialize() async {
     await _ensureOrchestrator();
@@ -503,6 +516,29 @@ class ContinuousLearningSystem {
         case 'recommendation_accepted':
           dimensionUpdates['recommendation_accuracy'] = 0.04;
           break;
+        case 'conviction_confidence_update':
+          final confidenceDelta =
+              (parameters['confidence_delta'] as num?)?.toDouble() ?? 0.0;
+          if (confidenceDelta > 0) {
+            dimensionUpdates['personalization_depth'] = 0.02;
+          } else if (confidenceDelta < 0) {
+            dimensionUpdates['recommendation_accuracy'] = -0.02;
+          }
+          break;
+        case 'conviction_validation_checkpoint':
+          final validationPassed = _parseBoolFlag(
+            parameters['validation_passed'],
+          );
+          if (validationPassed == true) {
+            dimensionUpdates['personalization_depth'] = 0.01;
+          } else if (validationPassed == false) {
+            dimensionUpdates['recommendation_accuracy'] = -0.03;
+          }
+          break;
+        case 'conviction_validation_window_expired':
+          dimensionUpdates['recommendation_accuracy'] = -0.03;
+          dimensionUpdates['user_preference_understanding'] = 0.02;
+          break;
 
         case 'nearby_discovered_non_member':
           dimensionUpdates['location_intelligence'] = 0.02;
@@ -600,6 +636,14 @@ class ContinuousLearningSystem {
         parameters: parameters,
         context: context,
         adjustedDimensionUpdates: adjustedUpdates,
+        observedAt: now,
+      );
+      await _recordDelayedConvictionValidationIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
         observedAt: now,
       );
       await _recordPhysiologyOutcomeTupleIfApplicable(
@@ -842,6 +886,501 @@ class ContinuousLearningSystem {
       );
       // Non-blocking - don't throw
     }
+  }
+
+  Future<void> _recordDelayedConvictionValidationIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    if (eventType == 'conviction_confidence_update') {
+      await _recordProvisionalConvictionIncreaseIfApplicable(
+        userId: userId,
+        source: source,
+        parameters: parameters,
+        context: context,
+        observedAt: observedAt,
+      );
+      return;
+    }
+    if (eventType == 'conviction_validation_checkpoint') {
+      await _recordConvictionValidationCheckpointIfApplicable(
+        userId: userId,
+        source: source,
+        parameters: parameters,
+        context: context,
+        observedAt: observedAt,
+      );
+      return;
+    }
+    if (eventType == 'conviction_validation_window_expired') {
+      await _recordMissingConvictionValidationDecayIfApplicable(
+        userId: userId,
+        source: source,
+        parameters: parameters,
+        context: context,
+        observedAt: observedAt,
+      );
+    }
+  }
+
+  Future<void> _recordProvisionalConvictionIncreaseIfApplicable({
+    required String userId,
+    required String source,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final confidenceDelta =
+        (parameters['confidence_delta'] as num?)?.toDouble() ?? 0.0;
+    if (confidenceDelta <= 0.0) return;
+    if (confidenceDelta.abs() < _strongConvictionDeltaThreshold) return;
+
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    final convictionId = _resolveConvictionIdForValidation(parameters, context);
+    final previousConfidence =
+        (parameters['previous_confidence'] as num?)?.toDouble() ?? 0.5;
+    final provisionalConfidence =
+        (previousConfidence + confidenceDelta).clamp(0.0, 1.0).toDouble();
+    final windowIds = _convictionValidationWindowsDays
+        .map(_convictionWindowId)
+        .toList(growable: false);
+
+    final pendingByConviction = _pendingConvictionValidationByAgent.putIfAbsent(
+      agentId,
+      () => <String, _PendingConvictionValidation>{},
+    );
+    pendingByConviction[convictionId] = _PendingConvictionValidation(
+      convictionId: convictionId,
+      previousConfidence: previousConfidence,
+      currentConfidence: provisionalConfidence,
+      pendingWindowDays: _convictionValidationWindowsDays.toSet(),
+      passedWindowDays: <int>{},
+      createdAt: observedAt,
+    );
+
+    _convictionLedger.append(
+      ConvictionLedgerEntry(
+        entryId:
+            'conviction_provisional_${observedAt.millisecondsSinceEpoch}_$convictionId',
+        convictionId: convictionId,
+        previousConfidence: previousConfidence,
+        updatedConfidence: provisionalConfidence,
+        supportingEvidenceIds:
+            _toStringList(parameters['supporting_evidence_ids']).isEmpty
+                ? <String>['conviction_update_signal']
+                : _toStringList(parameters['supporting_evidence_ids']),
+        contradictionIds: const <String>[],
+        delayedValidationWindowIds: windowIds,
+        recordedAt: observedAt,
+        metadata: {
+          'phase_ref': _delayedValidationPhaseRef,
+          'source': source,
+          'provisional_increase': true,
+          'confidence_delta': confidenceDelta,
+        },
+      ),
+    );
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+    await episodicStore.writeTuple(
+      EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          ..._buildStateSnapshot(
+            userId: userId,
+            source: source,
+            eventType: 'conviction_confidence_update',
+            context: context,
+            observedAt: observedAt,
+          ),
+          'phase_ref': _delayedValidationPhaseRef,
+          'conviction_id': convictionId,
+          'previous_confidence': previousConfidence,
+        },
+        actionType: 'conviction_increase_provisional',
+        actionPayload: {
+          'conviction_id': convictionId,
+          'confidence_delta': confidenceDelta,
+          'delayed_validation_windows_days': _convictionValidationWindowsDays,
+        },
+        nextState: {
+          'provisional_confidence': provisionalConfidence,
+          'requires_delayed_validation': true,
+          'pending_windows': _convictionValidationWindowsDays,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'conviction_provisional_increase',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'signal_weight': 3.0,
+            'phase_ref': _delayedValidationPhaseRef,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': _delayedValidationPhaseRef,
+          'delayed_validation_pending': true,
+        },
+      ),
+    );
+  }
+
+  Future<void> _recordConvictionValidationCheckpointIfApplicable({
+    required String userId,
+    required String source,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final windowDays = (parameters['window_days'] as num?)?.toInt();
+    if (windowDays == null ||
+        !_convictionValidationWindowsDays.contains(windowDays)) {
+      return;
+    }
+    final validationPassed = _parseBoolFlag(parameters['validation_passed']);
+    if (validationPassed == null) return;
+
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    final convictionId = _resolveConvictionIdForValidation(parameters, context);
+    final pending = _pendingConvictionValidationByAgent[agentId]?[convictionId];
+    if (pending == null || !pending.pendingWindowDays.contains(windowDays)) {
+      return;
+    }
+
+    final windowId = _convictionWindowId(windowDays);
+    final previousConfidence = pending.currentConfidence;
+    late final double updatedConfidence;
+
+    if (validationPassed) {
+      pending.pendingWindowDays.remove(windowDays);
+      pending.passedWindowDays.add(windowDays);
+      updatedConfidence = previousConfidence;
+    } else {
+      pending.pendingWindowDays.remove(windowDays);
+      pending.currentConfidence =
+          (pending.currentConfidence * _delayedValidationDecayFactor)
+              .clamp(0.0, 1.0);
+      updatedConfidence = pending.currentConfidence;
+    }
+
+    _convictionLedger.append(
+      ConvictionLedgerEntry(
+        entryId:
+            'conviction_validation_${observedAt.millisecondsSinceEpoch}_${windowDays}d_$convictionId',
+        convictionId: convictionId,
+        previousConfidence: previousConfidence,
+        updatedConfidence: updatedConfidence,
+        supportingEvidenceIds: validationPassed
+            ? <String>['${windowId}_validated']
+            : const <String>[],
+        contradictionIds: validationPassed
+            ? const <String>[]
+            : <String>['${windowId}_failed'],
+        delayedValidationWindowIds: <String>[windowId],
+        recordedAt: observedAt,
+        metadata: {
+          'phase_ref': _delayedValidationPhaseRef,
+          'source': source,
+          'validation_passed': validationPassed,
+          'window_days': windowDays,
+        },
+      ),
+    );
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore != null) {
+      await episodicStore.writeTuple(
+        EpisodicTuple(
+          agentId: agentId,
+          stateBefore: {
+            ..._buildStateSnapshot(
+              userId: userId,
+              source: source,
+              eventType: 'conviction_validation_checkpoint',
+              context: context,
+              observedAt: observedAt,
+            ),
+            'phase_ref': _delayedValidationPhaseRef,
+            'conviction_id': convictionId,
+            'window_days': windowDays,
+            'confidence_before': previousConfidence,
+          },
+          actionType: validationPassed
+              ? 'conviction_validation_checkpoint_passed'
+              : 'conviction_validation_checkpoint_failed',
+          actionPayload: {
+            'conviction_id': convictionId,
+            'window_days': windowDays,
+            'validation_passed': validationPassed,
+          },
+          nextState: {
+            'confidence_after': updatedConfidence,
+            'remaining_windows': pending.pendingWindowDays.toList()..sort(),
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: validationPassed
+                ? 'conviction_validation_passed'
+                : 'conviction_validation_failed',
+            parameters: {
+              ...parameters,
+              'source': source,
+              'window_days': windowDays,
+              'negative_outcome': !validationPassed,
+              'signal_weight': validationPassed ? 1.5 : 4.0,
+              'phase_ref': _delayedValidationPhaseRef,
+            },
+          ),
+          recordedAt: observedAt,
+          metadata: {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': _delayedValidationPhaseRef,
+            'delayed_validation_checkpoint': true,
+          },
+        ),
+      );
+    }
+
+    if (validationPassed && pending.pendingWindowDays.isEmpty) {
+      await _finalizeDelayedConvictionValidation(
+        userId: userId,
+        source: source,
+        context: context,
+        observedAt: observedAt,
+        agentId: agentId,
+        pending: pending,
+      );
+      _pendingConvictionValidationByAgent[agentId]?.remove(convictionId);
+      return;
+    }
+
+    if (!validationPassed && pending.pendingWindowDays.isEmpty) {
+      _pendingConvictionValidationByAgent[agentId]?.remove(convictionId);
+    }
+  }
+
+  Future<void> _recordMissingConvictionValidationDecayIfApplicable({
+    required String userId,
+    required String source,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final windowDays = (parameters['window_days'] as num?)?.toInt();
+    if (windowDays == null ||
+        !_convictionValidationWindowsDays.contains(windowDays)) {
+      return;
+    }
+
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    final convictionId = _resolveConvictionIdForValidation(parameters, context);
+    final pending = _pendingConvictionValidationByAgent[agentId]?[convictionId];
+    if (pending == null || !pending.pendingWindowDays.contains(windowDays)) {
+      return;
+    }
+
+    final previousConfidence = pending.currentConfidence;
+    pending.currentConfidence =
+        (pending.currentConfidence * _delayedValidationDecayFactor)
+            .clamp(0.0, 1.0);
+    pending.pendingWindowDays.remove(windowDays);
+    final updatedConfidence = pending.currentConfidence;
+    final windowId = _convictionWindowId(windowDays);
+
+    _convictionLedger.append(
+      ConvictionLedgerEntry(
+        entryId:
+            'conviction_missing_validation_${observedAt.millisecondsSinceEpoch}_${windowDays}d_$convictionId',
+        convictionId: convictionId,
+        previousConfidence: previousConfidence,
+        updatedConfidence: updatedConfidence,
+        supportingEvidenceIds: const <String>[],
+        contradictionIds: <String>['${windowId}_missing'],
+        delayedValidationWindowIds: <String>[windowId],
+        recordedAt: observedAt,
+        metadata: {
+          'phase_ref': _delayedValidationPhaseRef,
+          'source': source,
+          'missing_window_decay': true,
+          'window_days': windowDays,
+        },
+      ),
+    );
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore != null) {
+      await episodicStore.writeTuple(
+        EpisodicTuple(
+          agentId: agentId,
+          stateBefore: {
+            ..._buildStateSnapshot(
+              userId: userId,
+              source: source,
+              eventType: 'conviction_validation_window_expired',
+              context: context,
+              observedAt: observedAt,
+            ),
+            'phase_ref': _delayedValidationPhaseRef,
+            'conviction_id': convictionId,
+            'window_days': windowDays,
+            'confidence_before': previousConfidence,
+          },
+          actionType: 'conviction_missing_validation_decay',
+          actionPayload: {
+            'conviction_id': convictionId,
+            'window_days': windowDays,
+            'decay_factor': _delayedValidationDecayFactor,
+          },
+          nextState: {
+            'confidence_after': updatedConfidence,
+            'remaining_windows': pending.pendingWindowDays.toList()..sort(),
+          },
+          outcome: _outcomeTaxonomy.classify(
+            eventType: 'conviction_validation_missing',
+            parameters: {
+              ...parameters,
+              'source': source,
+              'window_days': windowDays,
+              'negative_outcome': true,
+              'signal_weight': 4.0,
+              'phase_ref': _delayedValidationPhaseRef,
+            },
+          ),
+          recordedAt: observedAt,
+          metadata: {
+            'pipeline': 'continuous_learning_system',
+            'phase_ref': _delayedValidationPhaseRef,
+            'missing_validation_decay': true,
+          },
+        ),
+      );
+    }
+
+    if (pending.pendingWindowDays.isEmpty) {
+      _pendingConvictionValidationByAgent[agentId]?.remove(convictionId);
+    }
+  }
+
+  Future<void> _finalizeDelayedConvictionValidation({
+    required String userId,
+    required String source,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+    required String agentId,
+    required _PendingConvictionValidation pending,
+  }) async {
+    _convictionLedger.append(
+      ConvictionLedgerEntry(
+        entryId:
+            'conviction_finalized_${observedAt.millisecondsSinceEpoch}_${pending.convictionId}',
+        convictionId: pending.convictionId,
+        previousConfidence: pending.previousConfidence,
+        updatedConfidence: pending.currentConfidence,
+        supportingEvidenceIds: pending.passedWindowDays
+            .map((days) => '${_convictionWindowId(days)}_validated')
+            .toList(growable: false),
+        contradictionIds: const <String>[],
+        delayedValidationWindowIds: _convictionValidationWindowsDays
+            .map(_convictionWindowId)
+            .toList(growable: false),
+        recordedAt: observedAt,
+        metadata: {
+          'phase_ref': _delayedValidationPhaseRef,
+          'source': source,
+          'finalized_after_delayed_validation': true,
+        },
+      ),
+    );
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+    await episodicStore.writeTuple(
+      EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          ..._buildStateSnapshot(
+            userId: userId,
+            source: source,
+            eventType: 'conviction_validation_checkpoint',
+            context: context,
+            observedAt: observedAt,
+          ),
+          'phase_ref': _delayedValidationPhaseRef,
+          'conviction_id': pending.convictionId,
+          'pending_windows': const <int>[],
+          'validation_started_at': pending.createdAt.toIso8601String(),
+        },
+        actionType: 'conviction_increase_finalized',
+        actionPayload: {
+          'conviction_id': pending.convictionId,
+          'validated_windows': pending.passedWindowDays.toList()..sort(),
+        },
+        nextState: {
+          'finalized_confidence': pending.currentConfidence,
+          'delayed_validation_complete': true,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'conviction_validation_finalized',
+          parameters: {
+            'source': source,
+            'phase_ref': _delayedValidationPhaseRef,
+            'signal_weight': 2.0,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': _delayedValidationPhaseRef,
+          'delayed_validation_finalized': true,
+        },
+      ),
+    );
+  }
+
+  String _resolveConvictionIdForValidation(
+    Map<String, dynamic> parameters,
+    Map<String, dynamic> context,
+  ) {
+    final direct = parameters['conviction_id']?.toString().trim();
+    if (direct != null && direct.isNotEmpty) return direct;
+    final fallback = context['conviction_id']?.toString().trim();
+    if (fallback != null && fallback.isNotEmpty) return fallback;
+    final recommendationId = parameters['recommendation_id']?.toString().trim();
+    if (recommendationId != null && recommendationId.isNotEmpty) {
+      return 'recommendation_$recommendationId';
+    }
+    return 'conviction_unknown';
+  }
+
+  String _convictionWindowId(int days) => 'delayed_validation_${days}d';
+
+  bool? _parseBoolFlag(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == 'yes' || normalized == '1') {
+        return true;
+      }
+      if (normalized == 'false' || normalized == 'no' || normalized == '0') {
+        return false;
+      }
+    }
+    return null;
+  }
+
+  List<String> _toStringList(dynamic value) {
+    if (value is! List) return <String>[];
+    return value
+        .map((item) => item.toString().trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
   }
 
   Future<void> _recordEpisodicTuple({
@@ -3298,6 +3837,24 @@ class _EntityRef {
   const _EntityRef({
     required this.type,
     required this.id,
+  });
+}
+
+class _PendingConvictionValidation {
+  final String convictionId;
+  final double previousConfidence;
+  double currentConfidence;
+  final Set<int> pendingWindowDays;
+  final Set<int> passedWindowDays;
+  final DateTime createdAt;
+
+  _PendingConvictionValidation({
+    required this.convictionId,
+    required this.previousConfidence,
+    required this.currentConfidence,
+    required this.pendingWindowDays,
+    required this.passedWindowDays,
+    required this.createdAt,
   });
 }
 
