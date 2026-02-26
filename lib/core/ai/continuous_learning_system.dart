@@ -74,6 +74,13 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const String _discoverabilityPhaseRef = '1.4.16';
+  static const Set<String> _guardrailAllowedSuppressionReasons = {
+    'legal',
+    'safety',
+    'privacy',
+    'consent',
+  };
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -107,6 +114,8 @@ class ContinuousLearningSystem {
   final Map<String, Map<String, double>> _categoryConfidenceByAgent = {};
   final Map<String, Map<String, int>> _consecutiveNegativeByAgentAndCategory =
       {};
+  final Map<String, _DiscoverabilityOverrideState>
+      _discoverabilityOverrideByAgent = {};
 
   static AgentIdService _resolveAgentIdService(AgentIdService? agentIdService) {
     if (agentIdService != null) {
@@ -206,6 +215,21 @@ class ContinuousLearningSystem {
   /// Check if continuous learning is currently active
   bool get isLearningActive {
     return _orchestrator?.isLearningActive ?? false;
+  }
+
+  Map<String, dynamic> getDiscoverabilityOverrideStateForAgent(String agentId) {
+    final state = _discoverabilityOverrideByAgent[agentId];
+    if (state == null) {
+      return const <String, dynamic>{
+        'show_everything_in_all_areas': false,
+        'category_overrides': <String>[],
+      };
+    }
+    return {
+      'show_everything_in_all_areas': state.showEverythingInAllAreas,
+      'category_overrides': state.categoryOverrides.toList()..sort(),
+      'last_updated_at': state.lastUpdatedAt.toIso8601String(),
+    };
   }
 
   Future<void> initialize() async {
@@ -503,6 +527,18 @@ class ContinuousLearningSystem {
         case 'recommendation_accepted':
           dimensionUpdates['recommendation_accuracy'] = 0.04;
           break;
+        case 'discoverability_show_everything_area':
+          dimensionUpdates['personalization_depth'] = 0.02;
+          break;
+        case 'discoverability_show_everything_category':
+          dimensionUpdates['user_preference_understanding'] = 0.02;
+          break;
+        case 'discoverability_unfiltered_results_opened':
+          dimensionUpdates['user_preference_understanding'] = 0.03;
+          break;
+        case 'discoverability_personalization_suppressed':
+          dimensionUpdates['recommendation_accuracy'] = -0.03;
+          break;
 
         case 'nearby_discovered_non_member':
           dimensionUpdates['location_intelligence'] = 0.02;
@@ -600,6 +636,14 @@ class ContinuousLearningSystem {
         parameters: parameters,
         context: context,
         adjustedDimensionUpdates: adjustedUpdates,
+        observedAt: now,
+      );
+      await _recordDiscoverabilityFeedbackIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
         observedAt: now,
       );
       await _recordPhysiologyOutcomeTupleIfApplicable(
@@ -953,6 +997,196 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordDiscoverabilityFeedbackIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    final previousState = _discoverabilityOverrideByAgent[agentId] ??
+        _DiscoverabilityOverrideState.empty();
+    final updatedState = previousState.copy();
+    final episodicStore = _episodicMemoryStore;
+
+    if (eventType == 'discoverability_show_everything_area') {
+      updatedState.showEverythingInAllAreas = true;
+      updatedState.lastUpdatedAt = observedAt;
+      _discoverabilityOverrideByAgent[agentId] = updatedState;
+      if (episodicStore != null) {
+        await episodicStore.writeTuple(
+          EpisodicTuple(
+            agentId: agentId,
+            stateBefore: {
+              ..._buildStateSnapshot(
+                userId: userId,
+                source: source,
+                eventType: eventType,
+                context: context,
+                observedAt: observedAt,
+              ),
+              'phase_ref': _discoverabilityPhaseRef,
+              'show_everything_in_all_areas_before':
+                  previousState.showEverythingInAllAreas,
+            },
+            actionType: 'discoverability_override_enabled',
+            actionPayload: {
+              'scope': 'area',
+              'show_everything': true,
+            },
+            nextState: {
+              'show_everything_in_all_areas':
+                  updatedState.showEverythingInAllAreas,
+              'category_overrides': updatedState.categoryOverrides.toList()
+                ..sort(),
+            },
+            outcome: _outcomeTaxonomy.classify(
+              eventType: 'explicit_preference',
+              parameters: {
+                ...parameters,
+                'source': source,
+                'signal_weight': 6.0,
+                'phase_ref': _discoverabilityPhaseRef,
+              },
+            ),
+            recordedAt: observedAt,
+            metadata: {
+              'pipeline': 'continuous_learning_system',
+              'phase_ref': _discoverabilityPhaseRef,
+              'discoverability_override': true,
+            },
+          ),
+        );
+      }
+      return;
+    }
+
+    if (eventType == 'discoverability_show_everything_category') {
+      final category = _normalizeCategory(parameters['category']);
+      if (category == null) return;
+      updatedState.categoryOverrides.add(category);
+      updatedState.lastUpdatedAt = observedAt;
+      _discoverabilityOverrideByAgent[agentId] = updatedState;
+      if (episodicStore != null) {
+        await episodicStore.writeTuple(
+          EpisodicTuple(
+            agentId: agentId,
+            stateBefore: {
+              ..._buildStateSnapshot(
+                userId: userId,
+                source: source,
+                eventType: eventType,
+                context: context,
+                observedAt: observedAt,
+              ),
+              'phase_ref': _discoverabilityPhaseRef,
+              'category_overrides_before':
+                  previousState.categoryOverrides.toList()..sort(),
+            },
+            actionType: 'discoverability_override_enabled',
+            actionPayload: {
+              'scope': 'category',
+              'category': category,
+              'show_everything': true,
+            },
+            nextState: {
+              'category_overrides': updatedState.categoryOverrides.toList()
+                ..sort(),
+            },
+            outcome: _outcomeTaxonomy.classify(
+              eventType: 'explicit_preference',
+              parameters: {
+                ...parameters,
+                'source': source,
+                'signal_weight': 6.0,
+                'phase_ref': _discoverabilityPhaseRef,
+              },
+            ),
+            recordedAt: observedAt,
+            metadata: {
+              'pipeline': 'continuous_learning_system',
+              'phase_ref': _discoverabilityPhaseRef,
+              'discoverability_override': true,
+            },
+          ),
+        );
+      }
+      return;
+    }
+
+    if (eventType != 'discoverability_personalization_suppressed') {
+      return;
+    }
+
+    final suppressionReason = (parameters['suppression_reason'] ??
+            context['suppression_reason'] ??
+            '')
+        .toString()
+        .trim()
+        .toLowerCase();
+    final category = _normalizeCategory(parameters['category']);
+    final hasOverride = updatedState.showEverythingInAllAreas ||
+        (category != null && updatedState.categoryOverrides.contains(category));
+    final allowed =
+        _guardrailAllowedSuppressionReasons.contains(suppressionReason);
+    final shouldEmitViolation = hasOverride && !allowed;
+    if (!shouldEmitViolation || episodicStore == null) return;
+
+    await episodicStore.writeTuple(
+      EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          ..._buildStateSnapshot(
+            userId: userId,
+            source: source,
+            eventType: eventType,
+            context: context,
+            observedAt: observedAt,
+          ),
+          'phase_ref': _discoverabilityPhaseRef,
+          'active_discoverability_override': true,
+          'suppression_reason': suppressionReason,
+        },
+        actionType: 'discoverability_guardrail_violation',
+        actionPayload: {
+          'category': category,
+          'suppression_reason': suppressionReason,
+          'allowed_reasons': _guardrailAllowedSuppressionReasons.toList()
+            ..sort(),
+        },
+        nextState: {
+          'violation_logged': true,
+          'requires_precedence_matrix': true,
+          'target_phase_ref': '6.2.19',
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'discoverability_guardrail_violation',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'negative_outcome': true,
+            'signal_weight': 8.0,
+            'phase_ref': _discoverabilityPhaseRef,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': _discoverabilityPhaseRef,
+          'discoverability_violation': true,
+        },
+      ),
+    );
+  }
+
+  String? _normalizeCategory(dynamic value) {
+    final category = value?.toString().trim().toLowerCase();
+    if (category == null || category.isEmpty) return null;
+    return category;
   }
 
   Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
@@ -3299,6 +3533,34 @@ class _EntityRef {
     required this.type,
     required this.id,
   });
+}
+
+class _DiscoverabilityOverrideState {
+  bool showEverythingInAllAreas;
+  Set<String> categoryOverrides;
+  DateTime lastUpdatedAt;
+
+  _DiscoverabilityOverrideState({
+    required this.showEverythingInAllAreas,
+    required this.categoryOverrides,
+    required this.lastUpdatedAt,
+  });
+
+  factory _DiscoverabilityOverrideState.empty() {
+    return _DiscoverabilityOverrideState(
+      showEverythingInAllAreas: false,
+      categoryOverrides: <String>{},
+      lastUpdatedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
+  }
+
+  _DiscoverabilityOverrideState copy() {
+    return _DiscoverabilityOverrideState(
+      showEverythingInAllAreas: showEverythingInAllAreas,
+      categoryOverrides: Set<String>.from(categoryOverrides),
+      lastUpdatedAt: lastUpdatedAt,
+    );
+  }
 }
 
 class _RecommendationDecisionStats {
