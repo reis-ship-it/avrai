@@ -37,6 +37,7 @@ import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
+import 'package:avrai/core/ai2ai/resilience/mesh_packet_forwarder.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -2599,27 +2600,15 @@ class VibeConnectionOrchestrator {
       forwardedPayload['hop'] = hop + 1;
       forwardedPayload['origin_id'] = originId;
 
-      for (final peerId in candidates) {
-        final device = discovery.getDevice(peerId);
-        if (device == null) continue;
-        if (device.type != DeviceType.bluetooth) continue;
-
-        final recipientId =
-            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-        final packetBytes = await protocol.encodePacketBytes(
-          type: MessageType.learningInsight,
-          payload: forwardedPayload,
-          senderNodeId: _localBleNodeId,
-          recipientNodeId: recipientId,
-        );
-
-        // Best-effort ACK-confirmed send.
-        await sendBlePacketsBatch(
-          device: device,
-          senderId: _localBleNodeId,
-          packetBytesList: <Uint8List>[packetBytes],
-        );
-      }
+      await MeshPacketForwarder.forwardToCandidates(
+        candidatePeerIds: candidates,
+        discovery: discovery,
+        protocol: protocol,
+        senderNodeId: _localBleNodeId,
+        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+        messageType: MessageType.learningInsight,
+        payload: forwardedPayload,
+      );
     } catch (e) {
       _logger.debug('Learning insight gossip forward failed: $e',
           tag: _logName);
@@ -3396,46 +3385,29 @@ class VibeConnectionOrchestrator {
         'scope': 'locality', // Prekey bundles are locality-scoped
       };
 
-      // Forward to candidates
-      for (final peerId in candidates) {
-        final peerDevice = _deviceDiscovery.getDevice(peerId);
-        if (peerDevice == null || peerDevice.type != DeviceType.bluetooth) {
-          continue;
-        }
-
-        final peerRecipientId =
-            _peerNodeIdByDeviceId[peerDevice.deviceId] ?? peerDevice.deviceId;
-
-        try {
-          final packetBytes = await _protocol.encodePacketBytes(
-            type: MessageType
-                .learningInsight, // Reuse learning insight type for prekey forwarding
-            payload: forwardPayload,
-            senderNodeId: _localBleNodeId,
-            recipientNodeId: peerRecipientId,
-            geographicScope: 'locality',
-          );
-
-          // Best-effort send (don't block)
-          unawaited(
-            sendBlePacketsBatch(
-              device: peerDevice,
-              senderId: _localBleNodeId,
-              packetBytesList: <Uint8List>[packetBytes],
-            ),
-          );
-
+      await MeshPacketForwarder.forwardToCandidates(
+        candidatePeerIds: candidates,
+        discovery: _deviceDiscovery,
+        protocol: _protocol,
+        senderNodeId: _localBleNodeId,
+        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+        messageType: MessageType.learningInsight,
+        payload: forwardPayload,
+        geographicScope: 'locality',
+        fireAndForgetSend: true,
+        onForwarded: (_, peerRecipientId) {
           _logger.debug(
             'Forwarded prekey bundle through mesh: $recipientId → $peerRecipientId',
             tag: _logName,
           );
-        } catch (e) {
+        },
+        onForwardFailed: (_, peerRecipientId, error) {
           _logger.debug(
-            'Failed to forward prekey bundle to $peerRecipientId: $e',
+            'Failed to forward prekey bundle to $peerRecipientId: $error',
             tag: _logName,
           );
-        }
-      }
+        },
+      );
     } catch (e) {
       _logger.debug(
         'Error forwarding prekey bundle through mesh: $e',
@@ -4033,28 +4005,15 @@ class VibeConnectionOrchestrator {
       forwardedMessage['hop'] = hop + 1;
       forwardedMessage['origin_id'] = originId;
 
-      for (final peerId in candidates) {
-        final device = discovery.getDevice(peerId);
-        if (device == null) continue;
-        if (device.type != DeviceType.bluetooth) continue;
-
-        final recipientId =
-            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-        final packetBytes = await protocol.encodePacketBytes(
-          type: MessageType
-              .learningInsight, // Reuse learning insight type for now
-          payload: forwardedMessage,
-          senderNodeId: _localBleNodeId,
-          recipientNodeId: recipientId,
-        );
-
-        // Best-effort ACK-confirmed send
-        await sendBlePacketsBatch(
-          device: device,
-          senderId: _localBleNodeId,
-          packetBytesList: <Uint8List>[packetBytes],
-        );
-      }
+      await MeshPacketForwarder.forwardToCandidates(
+        candidatePeerIds: candidates,
+        discovery: discovery,
+        protocol: protocol,
+        senderNodeId: _localBleNodeId,
+        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+        messageType: MessageType.learningInsight,
+        payload: forwardedMessage,
+      );
 
       _logger.debug('Forwarded locality agent update through mesh',
           tag: _logName);
@@ -4280,27 +4239,15 @@ class VibeConnectionOrchestrator {
       forwardedPayload['hop'] = hop + 1;
       forwardedPayload['origin_id'] = originId;
 
-      for (final peerId in candidates) {
-        final device = discovery.getDevice(peerId);
-        if (device == null) continue;
-        if (device.type != DeviceType.bluetooth) continue;
-
-        final recipientId =
-            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-        final packetBytes = await protocol.encodePacketBytes(
-          type: MessageType.learningInsight, // Reuse learning insight type
-          payload: forwardedPayload,
-          senderNodeId: _localBleNodeId,
-          recipientNodeId: recipientId,
-        );
-
-        // Best-effort ACK-confirmed send
-        await sendBlePacketsBatch(
-          device: device,
-          senderId: _localBleNodeId,
-          packetBytesList: <Uint8List>[packetBytes],
-        );
-      }
+      await MeshPacketForwarder.forwardToCandidates(
+        candidatePeerIds: candidates,
+        discovery: discovery,
+        protocol: protocol,
+        senderNodeId: _localBleNodeId,
+        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+        messageType: MessageType.learningInsight,
+        payload: forwardedPayload,
+      );
     } catch (e) {
       _logger.debug('Locality agent update gossip forward failed: $e',
           tag: _logName);
