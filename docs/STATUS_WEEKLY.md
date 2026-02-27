@@ -43,6 +43,7 @@ Validation commands:
 - `Backlog -> In Progress`: `M2-P6-1`
 - `Backlog -> In Progress`: `M3-P9-1`
 - `Backlog -> In Progress`: `M3-P11-1`
+- `In Progress -> Done`: `M0-P10-3`
 - `In Progress -> Done`: `M2-P1-1`
 - `In Progress -> Done`: `M2-P3-1`
 - `In Progress -> Done`: `M2-P4-1`
@@ -92,9 +93,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Continue `M0-P10-3` split-pass wiring + CI guard/contracts hardening closeout.
-2. Prepare governance weekly closeout evidence package from M2/M3 milestone completions.
-3. Run final pass for branch-wide board/review sync and readiness handoff.
+1. Prepare governance weekly closeout evidence package from M2/M3/M0 milestone completions.
+2. Run final pass for branch-wide board/review sync and readiness handoff.
+3. Queue next phase planning candidates from remaining backlog for leadership review.
 
 ### 7) Evidence Links
 
@@ -160,6 +161,8 @@ Validation commands:
 - M3-P11-1 integration governance/security config + report automation: `configs/runtime/integration_governance_contract_security_controls.json`, `scripts/runtime/generate_integration_governance_contract_security_report.py`, `docs/plans/methodology/MASTER_PLAN_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_REPORT.md`
 - M3-P11-1 integration governance/security contract + tests: `lib/core/cloud/integration_governance_contract_security_contract.dart`, `test/unit/cloud/integration_governance_contract_security_contract_test.dart`
 - M3-P11-1 test report: `flutter test test/unit/cloud/integration_governance_contract_security_contract_test.dart` (pass)
+- M0-P10-3 split-pass CI guard baseline: `docs/plans/methodology/M0_P10_3_SPLIT_PASS_CI_GUARD_CONTRACT_HARDENING_BASELINE.md`
+- M0-P10-3 split-pass CI guard config + report automation: `configs/runtime/split_pass_ci_guard_contract_hardening_controls.json`, `scripts/runtime/generate_split_pass_ci_guard_contract_hardening_report.py`, `docs/plans/methodology/MASTER_PLAN_SPLIT_PASS_CI_GUARD_CONTRACT_HARDENING_REPORT.md`
 
 ---
 

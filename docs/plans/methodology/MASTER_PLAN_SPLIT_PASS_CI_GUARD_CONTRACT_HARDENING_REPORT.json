@@ -1,0 +1,10 @@
+{
+  "duplicated_commands": [],
+  "generated_at": "2026-02-27T21:45:00Z",
+  "missing_commands": [],
+  "required_command_count": 12,
+  "source": "configs/runtime/split_pass_ci_guard_contract_hardening_controls.json",
+  "verdict": "PASS",
+  "version": "v1",
+  "workflow_path": ".github/workflows/execution-board-guard.yml"
+}
