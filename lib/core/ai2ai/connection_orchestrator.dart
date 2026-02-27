@@ -38,6 +38,7 @@ import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_l
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
@@ -55,8 +56,6 @@ import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
 import 'package:avrai/core/services/user/user_anonymization_service.dart';
-import 'package:avrai/core/services/locality_agents/locality_agent_models_v1.dart';
-import 'package:avrai/core/services/locality_agents/locality_agent_mesh_cache.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
@@ -3829,84 +3828,20 @@ class VibeConnectionOrchestrator {
       ProtocolMessage message) async {
     try {
       final payload = message.payload;
-      final type = payload['type'] as String?;
-      if (type != 'locality_agent_update') return;
-
-      final keyStr = payload['key'] as String?;
-      final geohashPrefix = payload['geohash_prefix'] as String?;
-      final precision = (payload['precision'] as num?)?.toInt() ?? 7;
-      final cityCode = payload['city_code'] as String?;
-      final delta12Raw = payload['delta12'] as List?;
-      final hop = (payload['hop'] as num?)?.toInt() ?? 0;
-
-      if (keyStr == null || geohashPrefix == null || delta12Raw == null) return;
-
-      // Validate hop count
-      if (hop < 0) return;
-
-      // Use adaptive mesh service to check hop limit
-      final scope = payload['scope'] as String?;
-      if (_adaptiveMeshService != null) {
-        if (!_adaptiveMeshService!.shouldForwardMessage(
-          currentHop: hop,
-          priority: mesh_policy.MessagePriority.high,
-          messageType: mesh_policy.MessageType.localityAgentUpdate,
-          geographicScope: scope,
-        )) {
-          return; // Adaptive policy says this hop is beyond limit
-        }
-      }
-
-      // Parse delta12
-      final delta12 = delta12Raw
-          .map((e) => (e as num).toDouble())
-          .where((v) => v.abs() <= 0.35) // Hard cap like learning insights
-          .toList();
-
-      if (delta12.length != 12) return;
-
-      // Create locality agent key
-      final key = LocalityAgentKeyV1(
-        geohashPrefix: geohashPrefix,
-        precision: precision,
-        cityCode: cityCode,
+      final ingestionResult = await IncomingLocalityAgentUpdateProcessor.process(
+        payload: payload,
+        senderId: message.senderId,
+        adaptiveMeshService: _adaptiveMeshService,
+        logger: _logger,
+        logName: _logName,
       );
-
-      // Store mesh update in cache for neighbor smoothing
-      final sl = GetIt.instance;
-      if (sl.isRegistered<LocalityAgentMeshCache>()) {
-        try {
-          final meshCache = sl<LocalityAgentMeshCache>();
-          final ttlMs = (payload['ttl_ms'] as num?)?.toInt() ??
-              (6 * 60 * 60 * 1000); // Default 6 hours
-          await meshCache.storeMeshUpdate(
-            key: key,
-            delta12: delta12,
-            receivedAt: DateTime.now(),
-            ttl: Duration(milliseconds: ttlMs),
-          );
-          _logger.debug(
-            'Stored locality agent mesh update: ${key.stableKey} (hop=$hop)',
-            tag: _logName,
-          );
-        } catch (e) {
-          _logger.debug(
-            'Failed to store mesh update in cache: $e',
-            tag: _logName,
-          );
-        }
-      }
-
-      _logger.debug(
-        'Received locality agent update: ${key.stableKey} (hop=$hop)',
-        tag: _logName,
-      );
+      if (ingestionResult == null) return;
 
       // Forward through mesh if within limits
       await _maybeForwardLocalityAgentUpdateGossip(
         payload: payload,
-        originId: payload['origin_id'] as String? ?? message.senderId,
-        hop: hop,
+        originId: ingestionResult.originId,
+        hop: ingestionResult.hop,
         receivedFromDeviceId: message.senderId,
       );
     } catch (e, st) {
