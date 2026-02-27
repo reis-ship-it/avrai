@@ -55,6 +55,7 @@ import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_metrics_index.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2573,85 +2574,13 @@ class VibeConnectionOrchestrator {
   /// even if temporarily inactive.
   Future<void> _cleanupInactiveSessions(
       SignalSessionManager sessionManager) async {
-    try {
-      const inactivityThreshold = Duration(hours: 24); // 24 hours of inactivity
-      final now = DateTime.now();
-
-      final metricsByAgentId =
-          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
-
-      // Get sessions that should be maintained (high-quality connections)
-      final sessionsToMaintain =
-          sessionManager.getSessionsToMaintain(metricsByAgentId);
-      final maintainedSet = sessionsToMaintain.toSet();
-
-      // Get all sessions from SignalSessionManager
-      // Note: SignalSessionManager doesn't have a method to list all sessions,
-      // so we track sessions through active connections and discovered nodes
-
-      // Check sessions for active connections
-      final activeAgentIds =
-          _activeConnections.values.map((c) => c.remoteAISignature).toSet();
-
-      // Also check discovered nodes (may have sessions)
-      final discoveredAgentIds = _discoveredNodes.values
-          .map((n) => n.nodeId)
-          .where((id) => id.isNotEmpty)
-          .toSet();
-
-      // Combine all potential agent IDs that might have sessions
-      final allAgentIds = {...activeAgentIds, ...discoveredAgentIds};
-
-      // Check each potential session
-      for (final agentId in allAgentIds) {
-        // Skip if this agent has an active connection
-        final hasActiveConnection = _activeConnections.values.any(
-          (c) =>
-              c.remoteAISignature == agentId &&
-              (c.status == ConnectionStatus.active ||
-                  c.status == ConnectionStatus.learning),
-        );
-
-        if (hasActiveConnection) {
-          continue; // Active connection, don't clean up
-        }
-
-        // Skip if session should be maintained (high-quality)
-        if (maintainedSet.contains(agentId)) {
-          _logger.debug(
-            'Skipping cleanup for maintained session (high-quality): $agentId',
-            tag: _logName,
-          );
-          continue; // High-quality session, maintain it
-        }
-
-        final session = await sessionManager.getSession(agentId);
-        if (session == null) {
-          continue; // No session to clean up
-        }
-
-        // Check last activity time
-        final lastActivity = session.lastUsedAt ?? session.createdAt;
-        final timeSinceActivity = now.difference(lastActivity);
-
-        if (timeSinceActivity >= inactivityThreshold) {
-          _logger.info(
-            'Cleaning up inactive session for agent $agentId: inactive for ${timeSinceActivity.inHours}h',
-            tag: _logName,
-          );
-
-          // Delete the inactive session
-          await sessionManager.deleteSession(agentId);
-        }
-      }
-    } catch (e, st) {
-      _logger.error(
-        'Error cleaning up inactive sessions: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await InactiveSessionCleanupLane.run(
+      sessionManager: sessionManager,
+      activeConnections: _activeConnections.values,
+      discoveredNodes: _discoveredNodes.values,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Renew sessions for frequent/active connections
