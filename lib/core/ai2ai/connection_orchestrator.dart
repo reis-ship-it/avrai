@@ -44,6 +44,7 @@ import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
+import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
@@ -2137,31 +2138,15 @@ class VibeConnectionOrchestrator {
     PersonalityProfile? personalityProfile, {
     bool isAdmin = false,
   }) async {
-    if (_anonymizationService == null) {
-      throw Exception(
-          'UserAnonymizationService not available. Cannot anonymize user for transmission.');
-    }
-
-    _logger.info(
-        'Anonymizing user for AI2AI transmission: ${user.id} -> $agentId',
-        tag: _logName);
-
-    try {
-      final anonymousUser = await _anonymizationService.anonymizeUser(
-        user,
-        agentId,
-        personalityProfile,
-        isAdmin: isAdmin,
-      );
-
-      _logger.info('User anonymized successfully for transmission',
-          tag: _logName);
-      return anonymousUser;
-    } catch (e) {
-      _logger.error('Failed to anonymize user for transmission',
-          error: e, tag: _logName);
-      rethrow;
-    }
+    return PayloadAnonymizationLane.anonymizeUserForTransmission(
+      anonymizationService: _anonymizationService,
+      user: user,
+      agentId: agentId,
+      personalityProfile: personalityProfile,
+      isAdmin: isAdmin,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Validate that no UnifiedUser is being sent directly in AI2AI network
@@ -2169,36 +2154,7 @@ class VibeConnectionOrchestrator {
   /// This is a safety check to prevent accidental personal data leaks.
   /// All user data must be converted to AnonymousUser before transmission.
   void validateNoUnifiedUserInPayload(Map<String, dynamic> payload) {
-    // Check for common UnifiedUser fields that should never appear in AI2AI payloads
-    final forbiddenFields = [
-      'id',
-      'email',
-      'displayName',
-      'photoUrl',
-      'userId'
-    ];
-
-    for (final field in forbiddenFields) {
-      if (payload.containsKey(field)) {
-        throw Exception(
-            'CRITICAL: UnifiedUser field "$field" detected in AI2AI payload. '
-            'All user data must be converted to AnonymousUser before transmission. '
-            'Use anonymizeUserForTransmission() method.');
-      }
-    }
-
-    // Recursively check nested objects
-    for (final value in payload.values) {
-      if (value is Map<String, dynamic>) {
-        validateNoUnifiedUserInPayload(value);
-      } else if (value is List) {
-        for (final item in value) {
-          if (item is Map<String, dynamic>) {
-            validateNoUnifiedUserInPayload(item);
-          }
-        }
-      }
-    }
+    PayloadAnonymizationLane.validateNoUnifiedUserInPayload(payload);
   }
 
   /// Set up realtime listeners for AI2AI communication (safe no-op if unavailable)
