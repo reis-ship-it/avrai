@@ -46,6 +46,7 @@ jobs:
           python3 scripts/runtime/check_master_plan_signoff_registry.py
           python3 scripts/runtime/generate_master_plan_completion_audit_package.py --check
           python3 scripts/runtime/generate_trigger_orchestration_persistence_report.py --check
+          python3 scripts/runtime/generate_security_cryptographic_assurance_report.py --check
           python3 scripts/runtime/generate_controller_orchestrator_reliability_report.py --check
           python3 scripts/runtime/generate_federated_cohort_canary_shadow_report.py --check
           python3 scripts/runtime/generate_advisory_quarantine_rollback_report.py --check

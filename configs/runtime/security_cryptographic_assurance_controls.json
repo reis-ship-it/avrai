@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:35:00Z",
+  "evaluation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T23:20:00Z"
+  },
+  "post_quantum_hardening": {
+    "required_critical_path_coverage_pct": 100.0,
+    "observed_critical_path_coverage_pct": 100.0,
+    "critical_paths_evaluated": 64
+  },
+  "attestation_integrity": {
+    "required_attested_channel_coverage_pct": 100.0,
+    "observed_attested_channel_coverage_pct": 100.0,
+    "unsigned_update_events_detected": 0,
+    "attestation_checks_executed": 640
+  },
+  "kill_switch_readiness": {
+    "required_kill_switch_drill_pass_rate_pct": 100.0,
+    "observed_kill_switch_drill_pass_rate_pct": 100.0,
+    "max_kill_switch_activation_latency_ms": 300.0,
+    "observed_kill_switch_activation_latency_ms": 185.0,
+    "drills_executed": 42
+  }
+}
