@@ -53,9 +53,9 @@ import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/active_connection_metrics_index.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2527,44 +2527,13 @@ class VibeConnectionOrchestrator {
   /// for connections with poor quality.
   Future<void> _expireSessionsBasedOnQuality(
       SignalSessionManager sessionManager) async {
-    try {
-      final metricsByAgentId =
-          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
-
-      // Get sessions to close using SignalSessionManager's quality-based method
-      final sessionsToClose =
-          sessionManager.getSessionsToClose(metricsByAgentId);
-
-      // Close sessions and complete connections
-      for (final agentId in sessionsToClose) {
-        final connection = _activeConnections.values.firstWhere(
-          (c) => c.remoteAISignature == agentId,
-          orElse: () => throw StateError('Connection not found for agent'),
-        );
-
-        _logger.info(
-          'Expiring session for agent $agentId due to poor connection quality',
-          tag: _logName,
-        );
-
-        // Delete the session
-        await sessionManager.deleteSession(agentId);
-
-        // Mark connection for completion
-        _activeConnections.remove(connection.connectionId);
-        await _completeConnection(
-          connection,
-          reason: 'poor_connection_quality',
-        );
-      }
-    } catch (e, st) {
-      _logger.error(
-        'Error expiring sessions based on quality: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await SessionExpiryLane.run(
+      sessionManager: sessionManager,
+      activeConnectionsById: _activeConnections,
+      completeConnection: _completeConnection,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Clean up inactive sessions (no activity for extended period)
