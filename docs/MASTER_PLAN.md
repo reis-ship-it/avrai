@@ -7,6 +7,7 @@
 **Legacy Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)  
 **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
+**3-prong target end-state companion spec:** `docs/plans/methodology/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
 **Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
 **Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
 **Design rationale:** `docs/plans/rationale/` (WHY decisions were made -- read before each phase)  
@@ -173,6 +174,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
 - `docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`
+- `docs/plans/methodology/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`
 - `docs/GITHUB_ENFORCEMENT_SETUP.md`
 
 ---
@@ -2169,6 +2171,21 @@ The matrix below is the canonical plan record for failure/contradiction classes 
 
 ---
 
+### 10.10 3-Prong Architecture Separation (Reality Engine, Runtime OS, AVRAI App)
+
+Goal: enforce clean boundaries where the Reality Engine stays product-agnostic, AVRAI Runtime OS owns host OS integration/capability adaptation, and AVRAI App remains a host product layer.
+
+| Item | Scope | Notes |
+|------|-------|-------|
+| 10.10.1 | Extract engine policy modules from large facades (`continuous_learning_system.dart`) | Initial pass complete (2026-02-27): `learning_dimension_policy.dart`, `interaction_dimension_mapper.dart`, `ai2ai_learning_safeguard.dart`; continue decomposition into ingestion/outcomes/runtime-adapters |
+| 10.10.2 | Extract runtime routing/resilience/telemetry helpers from AI2AI orchestrator | Initial pass complete (2026-02-27): discovery/resilience/telemetry/routing helper modules extracted; continue manager-level decomposition |
+| 10.10.3 | Split bootstrap by layer and keep one composition entrypoint | Complete (2026-02-27): `runtime_bootstrap.dart`, `engine_bootstrap.dart`, `app_bootstrap.dart` wired through `injection_container.dart` |
+| 10.10.4 | Add 3-prong boundary guard | Complete (2026-02-27): `scripts/ci/check_three_prong_boundaries.py` + baseline + CI wiring |
+| 10.10.5 | Add cross-OS runtime capability contracts | Complete (2026-02-27): manifests under `configs/runtime/capabilities/*.json` + validator in CI |
+| 10.10.6 | Expand reservation/social large-file splits into policy/orchestrator/router/repository modules | Initial pass complete (2026-02-27): reservation and social-media services split with functional delegation |
+| 10.10.7 | Maintain architecture mapping and execution-board traceability for 3-prong conversions | Required for every PR touching boundary modules |
+| 10.10.8 | Continue LOC-priority split queue for remaining oversized files | Use a rolling split queue with explicit target module boundaries and non-regression gates |
+
 ## Phase 11: Industry Integrations & Platform Expansion
 
 **Tier:** 3 (Depends on Phases 8 and 9)  
@@ -2442,5 +2459,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** February 15, 2026 (v14 -- Execution Boundary Hardening Update. Tightened 10.9F.1 enforcement to require exactly one milestone ID per PR (`Mx-Py-z`) and mandatory `X.Y.Z` subsection references in every non-merge commit. This aligns CI traceability enforcement with phase-by-phase anti-drift execution governance. Previous: v13 robustness hardening update)  
+**Last Updated:** February 27, 2026 (v15 -- 3-Prong Boundary Hardening Update. Added Phase `10.10` for Reality Engine/Runtime OS/App separation execution, wired import-boundary CI for the 3-prong model, and introduced cross-OS runtime capability contracts with validator checks. Previous: v14 execution boundary hardening update)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

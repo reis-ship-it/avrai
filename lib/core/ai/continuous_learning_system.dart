@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/interaction_events.dart';
 import 'package:avrai/core/ai/structured_facts_extractor.dart';
@@ -11,9 +10,10 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/core/ai/continuous_learning/policy/ai2ai_learning_safeguard.dart';
+import 'package:avrai/core/ai/continuous_learning/policy/interaction_dimension_mapper.dart';
 import 'package:avrai/core/ai/continuous_learning/policy/learning_dimension_policy.dart';
 import 'package:avrai_network/network/rate_limiter.dart';
-import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
 import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
@@ -44,8 +44,8 @@ class ContinuousLearningSystem {
       return agentIdService;
     }
     try {
-      if (di.sl.isRegistered<AgentIdService>()) {
-        return di.sl<AgentIdService>();
+      if (GetIt.instance.isRegistered<AgentIdService>()) {
+        return GetIt.instance<AgentIdService>();
       }
     } catch (e) {
       developer.log(
@@ -131,197 +131,37 @@ class ContinuousLearningSystem {
       final parameters = payload['parameters'] as Map<String, dynamic>? ?? {};
       final context = payload['context'] as Map<String, dynamic>? ?? {};
 
-      // ========================================
-      // AI2AI LEARNING SAFEGUARDS (Phase 11 Enhancement)
-      // ========================================
-      // If this is AI2AI-derived learning, check all safeguards before processing
       final source = payload['source'] as String?;
-      if (source == 'ai2ai') {
-        final peerId = payload['peer_id'] as String?;
-
-        // SAFEGUARD 1: Check 20-minute interval per peer
-        // Phase 11.8.6: Use atomic time for quantum formula compatibility
-        if (peerId != null) {
-          final last = _lastAi2AiLearningAtByPeerId[peerId];
-          if (last != null) {
-            try {
-              if (GetIt.instance.isRegistered<AtomicClockService>()) {
-                final atomicClock = GetIt.instance<AtomicClockService>();
-                final atomicTimeNow = await atomicClock.getAtomicTimestamp();
-                final timeSinceLastLearning = atomicTimeNow.difference(last);
-                if (timeSinceLastLearning < const Duration(minutes: 20)) {
-                  developer.log(
-                    'AI2AI learning throttled: 20-min interval not met for peer $peerId '
-                    '(last learning: ${timeSinceLastLearning.inMinutes} minutes ago)',
-                    name: _logName,
-                  );
-                  return; // Skip learning (too soon)
-                }
-              } else {
-                // Fallback to DateTime if AtomicClockService not available
-                final timeSinceLastLearning =
-                    DateTime.now().difference(last.deviceTime);
-                if (timeSinceLastLearning < const Duration(minutes: 20)) {
-                  developer.log(
-                    'AI2AI learning throttled: 20-min interval not met for peer $peerId',
-                    name: _logName,
-                  );
-                  return;
-                }
-              }
-            } catch (e) {
-              developer.log(
-                'Error checking AI2AI learning interval: $e, using fallback',
-                name: _logName,
-              );
-              // Fallback to DateTime check
-              final timeSinceLastLearning =
-                  DateTime.now().difference(last.deviceTime);
-              if (timeSinceLastLearning < const Duration(minutes: 20)) {
-                return;
-              }
-            }
-          }
-        }
-
-        // SAFEGUARD 2: Check learning quality threshold (65% minimum)
-        final learningQuality = payload['learning_quality'] as double? ?? 0.0;
-        if (learningQuality < 0.65) {
-          developer.log(
-            'AI2AI learning rejected: quality ${(learningQuality * 100).toStringAsFixed(1)}% '
-            'below 65% threshold',
-            name: _logName,
-          );
-          return; // Skip learning (low quality)
-        }
-
-        // SAFEGUARD 3: Check rate limit (if rate limiter available)
-        if (peerId != null && _rateLimiter != null) {
-          final allowed = await _rateLimiter!.checkRateLimit(
-            peerAgentId: peerId,
-            limitType: RateLimitType.message,
-            messageType: MessageType.learningInsight,
-          );
-
-          if (!allowed) {
-            developer.log(
-              'AI2AI learning rate limited for peer: $peerId',
-              name: _logName,
-            );
-            return; // Skip learning (rate limit exceeded)
-          }
-        }
+      final preChecksOk = await Ai2AiLearningSafeguard.passesPreChecks(
+        payload: payload,
+        lastLearningByPeer: _lastAi2AiLearningAtByPeerId,
+        rateLimiter: _rateLimiter,
+        logName: _logName,
+      );
+      if (!preChecksOk) {
+        return;
       }
 
-      // Map event to learning dimensions
-      final dimensionUpdates = <String, double>{};
-
-      switch (eventType) {
-        case 'respect_tap':
-          // Respecting a list/spot indicates community engagement
-          final targetType = parameters['target_type'] as String?;
-          if (targetType == 'list') {
-            final category = parameters['category'] as String?;
-            dimensionUpdates['community_evolution'] = 0.05;
-            dimensionUpdates['personalization_depth'] = 0.03;
-
-            // Category-specific learning
-            if (category != null) {
-              dimensionUpdates['user_preference_understanding'] = 0.02;
-            }
-          } else if (targetType == 'spot') {
-            dimensionUpdates['recommendation_accuracy'] = 0.03;
-            dimensionUpdates['location_intelligence'] = 0.02;
-          }
-          break;
-
-        case 'list_view_duration':
-        case 'spot_view_duration':
-          // Longer dwell time indicates interest
-          final duration = parameters['duration_ms'] as int? ?? 0;
-          if (duration > 30000) {
-            // 30 seconds
-            dimensionUpdates['user_preference_understanding'] = 0.04;
-            dimensionUpdates['recommendation_accuracy'] = 0.02;
-          }
-          break;
-
-        case 'scroll_depth':
-          // Deep scrolling indicates engagement
-          final depth = parameters['depth_percentage'] as double? ?? 0.0;
-          if (depth > 0.8) {
-            dimensionUpdates['user_preference_understanding'] = 0.03;
-          }
-          break;
-
-        case 'spot_visited':
-        case 'spot_tap':
-          // Visiting a spot indicates recommendation success
-          dimensionUpdates['recommendation_accuracy'] = 0.05;
-          dimensionUpdates['location_intelligence'] = 0.03;
-          break;
-
-        case 'dwell_time':
-          // Long dwell time on spot details indicates interest
-          final duration = parameters['duration_ms'] as int? ?? 0;
-          if (duration > 60000) {
-            // 1 minute
-            dimensionUpdates['user_preference_understanding'] = 0.04;
-            dimensionUpdates['recommendation_accuracy'] = 0.03;
-          }
-          break;
-
-        case 'search_performed':
-          // Searching indicates exploration
-          final resultsCount = parameters['results_count'] as int? ?? 0;
-          if (resultsCount > 0) {
-            dimensionUpdates['user_preference_understanding'] = 0.02;
-          }
-          break;
-
-        case 'event_attended':
-          // Attending events indicates community engagement
-          dimensionUpdates['community_evolution'] = 0.08;
-          dimensionUpdates['social_dynamics'] = 0.05;
-          break;
-      }
-
-      // Apply context modifiers
-      final timeOfDay = context['time_of_day'] as String?;
-      final location = context['location'] as Map<String, dynamic>?;
-      final weather = context['weather'] as Map<String, dynamic>?;
-
-      // Time-based learning (e.g., morning coffee preferences)
-      if (timeOfDay == 'morning' &&
-          (eventType == 'spot_visited' || eventType == 'spot_tap')) {
-        dimensionUpdates['temporal_patterns'] =
-            (dimensionUpdates['temporal_patterns'] ?? 0.0) + 0.02;
-      }
-
-      // Location-based learning
-      if (location != null) {
-        dimensionUpdates['location_intelligence'] =
-            (dimensionUpdates['location_intelligence'] ?? 0.0) + 0.01;
-      }
-
-      // Weather-based learning
-      if (weather != null) {
-        final conditions = weather['conditions'] as String?;
-        if (conditions == 'Rain' &&
-            (eventType == 'spot_visited' || eventType == 'spot_tap')) {
-          dimensionUpdates['temporal_patterns'] =
-              (dimensionUpdates['temporal_patterns'] ?? 0.0) + 0.01;
-        }
-      }
+      final dimensionUpdates = InteractionDimensionMapper.mapBaseUpdates(
+        eventType: eventType,
+        parameters: parameters,
+      );
+      InteractionDimensionMapper.applyContextModifiers(
+        updates: dimensionUpdates,
+        eventType: eventType,
+        context: context,
+      );
 
       // ========================================
       // SAFEGUARD 4: Dimension Delta Threshold (22% minimum for AI2AI)
       // ========================================
       // For AI2AI learning, only apply updates if delta >= 22%
       if (source == 'ai2ai') {
-        dimensionUpdates.removeWhere((key, value) => value.abs() < 0.22);
-
-        if (dimensionUpdates.isEmpty) {
+        final hasSignificantDeltas =
+            InteractionDimensionMapper.enforceAi2AiDeltaThreshold(
+          dimensionUpdates,
+        );
+        if (!hasSignificantDeltas) {
           developer.log(
             'AI2AI learning rejected: no dimension deltas >= 22% threshold',
             name: _logName,
@@ -363,43 +203,11 @@ class ContinuousLearningSystem {
       if (source == 'ai2ai') {
         final peerId = payload['peer_id'] as String?;
         if (peerId != null) {
-          try {
-            if (GetIt.instance.isRegistered<AtomicClockService>()) {
-              final atomicClock = GetIt.instance<AtomicClockService>();
-              _lastAi2AiLearningAtByPeerId[peerId] =
-                  await atomicClock.getAtomicTimestamp();
-            } else {
-              // Fallback: create AtomicTimestamp from DateTime.now()
-              final now = DateTime.now();
-              _lastAi2AiLearningAtByPeerId[peerId] = AtomicTimestamp.now(
-                precision: TimePrecision.millisecond,
-                serverTime: now,
-                localTime: now.toLocal(),
-                timezoneId: 'UTC',
-                offset: Duration.zero,
-                isSynchronized: false,
-              );
-            }
-            developer.log(
-              'Recorded AI2AI learning time for peer: $peerId',
-              name: _logName,
-            );
-          } catch (e) {
-            developer.log(
-              'Error recording AI2AI learning time: $e, using fallback',
-              name: _logName,
-            );
-            // Fallback: create AtomicTimestamp from DateTime.now()
-            final now = DateTime.now();
-            _lastAi2AiLearningAtByPeerId[peerId] = AtomicTimestamp.now(
-              precision: TimePrecision.millisecond,
-              serverTime: now,
-              localTime: now.toLocal(),
-              timezoneId: 'UTC',
-              offset: Duration.zero,
-              isSynchronized: false,
-            );
-          }
+          await Ai2AiLearningSafeguard.recordLearningTime(
+            peerId: peerId,
+            lastLearningByPeer: _lastAi2AiLearningAtByPeerId,
+            logName: _logName,
+          );
         }
       }
 
@@ -673,66 +481,12 @@ class ContinuousLearningSystem {
   /// Calculate dimension updates from an event
   Future<Map<String, double>> _calculateDimensionUpdates(
       Map<String, dynamic> event) async {
-    // Extract dimension updates (simplified - full logic in processUserInteraction)
-    final dimensionUpdates = <String, double>{};
     final eventType = event['event_type'] as String? ?? '';
     final parameters = event['parameters'] as Map<String, dynamic>? ?? {};
-
-    switch (eventType) {
-      case 'respect_tap':
-        final targetType = parameters['target_type'] as String?;
-        if (targetType == 'list') {
-          dimensionUpdates['community_evolution'] = 0.05;
-          dimensionUpdates['personalization_depth'] = 0.03;
-        } else if (targetType == 'spot') {
-          dimensionUpdates['recommendation_accuracy'] = 0.03;
-          dimensionUpdates['location_intelligence'] = 0.02;
-        }
-        break;
-      case 'spot_visited':
-      case 'spot_tap':
-        dimensionUpdates['recommendation_accuracy'] = 0.05;
-        dimensionUpdates['location_intelligence'] = 0.03;
-        break;
-      case 'list_view_duration':
-      case 'spot_view_duration':
-        final duration = parameters['duration_ms'] as int? ?? 0;
-        if (duration > 30000) {
-          dimensionUpdates['user_preference_understanding'] = 0.04;
-          dimensionUpdates['recommendation_accuracy'] = 0.02;
-        }
-        break;
-      case 'event_attended':
-        dimensionUpdates['community_evolution'] = 0.08;
-        dimensionUpdates['social_dynamics'] = 0.05;
-        break;
-      case 'organic_spot_discovered':
-        // User's behavior revealed a new meaningful location not in any
-        // database. This is a strong location intelligence signal and
-        // indicates the user is an explorer who finds hidden gems.
-        dimensionUpdates['location_intelligence'] = 0.08;
-        dimensionUpdates['user_preference_understanding'] = 0.05;
-        dimensionUpdates['personalization_depth'] = 0.04;
-        break;
-      case 'organic_spot_created':
-        // User confirmed a discovered location and created a full Spot.
-        // Strong signal for location intelligence, community evolution
-        // (they're curating for others), and recommendation accuracy
-        // (we correctly identified a meaningful place).
-        dimensionUpdates['location_intelligence'] = 0.10;
-        dimensionUpdates['recommendation_accuracy'] = 0.08;
-        dimensionUpdates['community_evolution'] = 0.06;
-        dimensionUpdates['personalization_depth'] = 0.05;
-        break;
-      case 'organic_spot_dismissed':
-        // User rejected a discovered location suggestion. We learn that
-        // this type of unmatched visit pattern isn't meaningful to them.
-        // Small negative signal for recommendation accuracy.
-        dimensionUpdates['recommendation_accuracy'] = -0.02;
-        break;
-    }
-
-    return dimensionUpdates;
+    return InteractionDimensionMapper.mapBaseUpdates(
+      eventType: eventType,
+      parameters: parameters,
+    );
   }
 
   Future<double> evaluateModel(dynamic data) async {

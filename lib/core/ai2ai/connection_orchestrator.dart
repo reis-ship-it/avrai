@@ -26,6 +26,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
+import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -3125,8 +3126,7 @@ class VibeConnectionOrchestrator {
 
   /// Check if device has active connectivity
   bool _isConnected(List<ConnectivityResult> result) {
-    return result
-        .any((connectivity) => connectivity != ConnectivityResult.none);
+    return ConnectionRoutingPolicy.isConnected(result);
   }
 
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
@@ -3593,33 +3593,32 @@ class VibeConnectionOrchestrator {
   }
 
   bool _isInCooldown(String nodeId) {
-    final cooldownEnd = _connectionCooldowns[nodeId];
-    if (cooldownEnd == null) return false;
-
-    return DateTime.now().isBefore(cooldownEnd);
+    return ConnectionRoutingPolicy.isInCooldown(
+      cooldowns: _connectionCooldowns,
+      nodeId: nodeId,
+    );
   }
 
   void _setCooldown(String nodeId) {
-    _connectionCooldowns[nodeId] = DateTime.now()
-        .add(const Duration(seconds: VibeConstants.connectionCooldownSeconds));
+    ConnectionRoutingPolicy.setCooldown(
+      cooldowns: _connectionCooldowns,
+      nodeId: nodeId,
+    );
   }
 
   /// Determine if a connection is worthy based on compatibility thresholds
   bool _isConnectionWorthy(VibeCompatibilityResult compatibility) {
-    final isWorthy = compatibility.basicCompatibility >=
-            VibeConstants.minimumCompatibilityThreshold &&
-        compatibility.aiPleasurePotential >= VibeConstants.minAIPleasureScore &&
-        compatibility.learningOpportunities.isNotEmpty;
+    final result = ConnectionRoutingPolicy.evaluateWorthiness(compatibility);
 
     // #region agent log
-    if (!isWorthy) {
+    if (!result.isWorthy) {
       _logger.debug(
-          'Connection not worthy: compat=${(compatibility.basicCompatibility * 100).round()}% (min=${(VibeConstants.minimumCompatibilityThreshold * 100).round()}%), pleasure=${(compatibility.aiPleasurePotential * 100).round()}% (min=${(VibeConstants.minAIPleasureScore * 100).round()}%), opportunities=${compatibility.learningOpportunities.length}',
+          'Connection not worthy: ${result.reason}; opportunities=${compatibility.learningOpportunities.length}',
           tag: _logName);
     }
     // #endregion
 
-    return isWorthy;
+    return result.isWorthy;
   }
 
   Future<ConnectionMetrics?> _performConnectionEstablishment(

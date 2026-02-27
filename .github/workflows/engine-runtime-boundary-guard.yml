@@ -25,3 +25,11 @@ jobs:
       - name: Validate engine/runtime boundary imports
         run: |
           python3 scripts/ci/check_engine_runtime_boundary.py
+
+      - name: Validate 3-prong boundary imports
+        run: |
+          python3 scripts/ci/check_three_prong_boundaries.py
+
+      - name: Validate runtime capability contracts
+        run: |
+          python3 scripts/ci/check_runtime_capability_contracts.py

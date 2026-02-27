@@ -308,6 +308,14 @@ rules: list[Rule] = [
         "confidence": "high",
         "rationale": "Composition roots and app entrypoint are required integration anchors."
     }),
+    (r"^lib/bootstrap/", {
+        "domain": "bootstrap-boundary",
+        "disposition": "keep_update",
+        "phase_refs": "10.10.3,10.7",
+        "action": "keep+update",
+        "confidence": "high",
+        "rationale": "Runtime/engine/app bootstrap boundary wrappers are required for 3-prong composition clarity."
+    }),
     (r"^lib/supabase_.*\.dart$", {
         "domain": "supabase-integration-entrypoints",
         "disposition": "keep_update",
