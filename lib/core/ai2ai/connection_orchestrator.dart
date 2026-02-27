@@ -39,6 +39,7 @@ import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
+import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
@@ -2219,7 +2220,7 @@ class VibeConnectionOrchestrator {
       final messageTypeStr = payload['message_type'] as String?;
       final createdAtStr = payload['created_at'] as String?;
 
-      if (_hasMissingRequiredFields(<Object?>[
+      if (IncomingChatPayloadHelpers.hasMissingRequiredFields(<Object?>[
         messageId,
         conversationId,
         senderTypeStr,
@@ -2229,7 +2230,11 @@ class VibeConnectionOrchestrator {
         content,
         createdAtStr,
       ])) {
-        _warnIncompleteChatPayload('business-expert');
+        IncomingChatPayloadHelpers.warnIncompleteChatPayload(
+          chatType: 'business-expert',
+          logger: _logger,
+          logName: _logName,
+        );
         return;
       }
       final resolvedMessageId = messageId!;
@@ -2242,32 +2247,38 @@ class VibeConnectionOrchestrator {
       final resolvedCreatedAtStr = createdAtStr!;
 
       // Parse enums
-      final senderType = _parseEnumByName(
+      final senderType = IncomingChatPayloadHelpers.parseEnumByName(
         values: chat_models.MessageSenderType.values,
         name: resolvedSenderTypeStr,
         fallback: chat_models.MessageSenderType.business,
       );
-      final recipientType = _parseEnumByName(
+      final recipientType = IncomingChatPayloadHelpers.parseEnumByName(
         values: chat_models.MessageRecipientType.values,
         name: resolvedRecipientTypeStr,
         fallback: chat_models.MessageRecipientType.expert,
       );
-      final encryptionType = _parseEnumByName(
+      final encryptionType = IncomingChatPayloadHelpers.parseEnumByName(
         values: EncryptionType.values,
         name: encryptionTypeStr,
         fallback: EncryptionType.aes256gcm,
       );
-      final messageType = _parseEnumByName(
+      final messageType = IncomingChatPayloadHelpers.parseEnumByName(
         values: chat_models.MessageType.values,
         name: messageTypeStr,
         fallback: chat_models.MessageType.text,
       );
 
-      final encryptedContent = _decodeEncryptedContentOrNull(
-        encryptedContentStr,
+      final encryptedContent = IncomingChatPayloadHelpers.decodeEncryptedContentOrNull(
+        encryptedContentStr: encryptedContentStr,
+        logger: _logger,
+        logName: _logName,
       );
 
-      final createdAt = _parseCreatedAtOrNull(resolvedCreatedAtStr);
+      final createdAt = IncomingChatPayloadHelpers.parseCreatedAtOrNull(
+        createdAtStr: resolvedCreatedAtStr,
+        logger: _logger,
+        logName: _logName,
+      );
       if (createdAt == null) return;
 
       // Create message object
@@ -2325,7 +2336,7 @@ class VibeConnectionOrchestrator {
       final messageTypeStr = payload['message_type'] as String?;
       final createdAtStr = payload['created_at'] as String?;
 
-      if (_hasMissingRequiredFields(<Object?>[
+      if (IncomingChatPayloadHelpers.hasMissingRequiredFields(<Object?>[
         messageId,
         conversationId,
         senderBusinessId,
@@ -2333,7 +2344,11 @@ class VibeConnectionOrchestrator {
         content,
         createdAtStr,
       ])) {
-        _warnIncompleteChatPayload('business-business');
+        IncomingChatPayloadHelpers.warnIncompleteChatPayload(
+          chatType: 'business-business',
+          logger: _logger,
+          logName: _logName,
+        );
         return;
       }
       final resolvedMessageId = messageId!;
@@ -2344,22 +2359,28 @@ class VibeConnectionOrchestrator {
       final resolvedCreatedAtStr = createdAtStr!;
 
       // Parse enums
-      final encryptionType = _parseEnumByName(
+      final encryptionType = IncomingChatPayloadHelpers.parseEnumByName(
         values: EncryptionType.values,
         name: encryptionTypeStr,
         fallback: EncryptionType.aes256gcm,
       );
-      final messageType = _parseEnumByName(
+      final messageType = IncomingChatPayloadHelpers.parseEnumByName(
         values: chat_models.BusinessBusinessMessageType.values,
         name: messageTypeStr,
         fallback: chat_models.BusinessBusinessMessageType.text,
       );
 
-      final encryptedContent = _decodeEncryptedContentOrNull(
-        encryptedContentStr,
+      final encryptedContent = IncomingChatPayloadHelpers.decodeEncryptedContentOrNull(
+        encryptedContentStr: encryptedContentStr,
+        logger: _logger,
+        logName: _logName,
       );
 
-      final createdAt = _parseCreatedAtOrNull(resolvedCreatedAtStr);
+      final createdAt = IncomingChatPayloadHelpers.parseCreatedAtOrNull(
+        createdAtStr: resolvedCreatedAtStr,
+        logger: _logger,
+        logName: _logName,
+      );
       if (createdAt == null) return;
 
       // Create message object
@@ -2439,56 +2460,6 @@ class VibeConnectionOrchestrator {
     final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
     existing.add(messageJson);
     await box.write(key, existing);
-  }
-
-  Uint8List? _decodeEncryptedContentOrNull(String? encryptedContentStr) {
-    if (encryptedContentStr == null || encryptedContentStr.isEmpty) return null;
-    try {
-      return base64Decode(encryptedContentStr);
-    } catch (e) {
-      _logger.warn(
-        'Failed to decode encrypted content: $e',
-        tag: _logName,
-      );
-      return null;
-    }
-  }
-
-  DateTime? _parseCreatedAtOrNull(String createdAtStr) {
-    final createdAt = DateTime.tryParse(createdAtStr);
-    if (createdAt == null) {
-      _logger.warn(
-        'Failed to parse created_at timestamp: $createdAtStr',
-        tag: _logName,
-      );
-    }
-    return createdAt;
-  }
-
-  bool _hasMissingRequiredFields(List<Object?> values) {
-    for (final value in values) {
-      if (value == null) return true;
-    }
-    return false;
-  }
-
-  void _warnIncompleteChatPayload(String chatType) {
-    _logger.warn(
-      'Received incomplete $chatType chat message: missing required fields',
-      tag: _logName,
-    );
-  }
-
-  T _parseEnumByName<T extends Enum>({
-    required List<T> values,
-    required String? name,
-    required T fallback,
-  }) {
-    if (name == null || name.isEmpty) return fallback;
-    for (final value in values) {
-      if (value.name == name) return value;
-    }
-    return fallback;
   }
 
   // Private helper methods
