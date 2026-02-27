@@ -35,9 +35,9 @@ import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
-import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
+import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
@@ -1661,30 +1661,13 @@ class VibeConnectionOrchestrator {
   /// determined from the unencrypted binary packet header (MessageType.userChat),
   /// allowing routing before decryption.
   Future<void> _handleIncomingUserChat(ProtocolMessage message) async {
-    try {
-      final payload = message.payload;
-      switch (IncomingUserChatRouter.resolveRoute(
-        payload: payload,
-        logger: _logger,
-        logName: _logName,
-      )) {
-        case IncomingUserChatRoute.businessExpert:
-          await _handleIncomingBusinessExpertChat(message, payload);
-          break;
-        case IncomingUserChatRoute.businessBusiness:
-          await _handleIncomingBusinessBusinessChat(message, payload);
-          break;
-        case IncomingUserChatRoute.unknown:
-          break;
-      }
-    } catch (e, st) {
-      _logger.error(
-        'Error handling incoming user chat message: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await IncomingUserChatProcessingLane.handle(
+      message: message,
+      handleIncomingBusinessExpertChat: _handleIncomingBusinessExpertChat,
+      handleIncomingBusinessBusinessChat: _handleIncomingBusinessBusinessChat,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Handle incoming business-expert chat message
