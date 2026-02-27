@@ -4,13 +4,13 @@ import 'package:avrai/core/models/social_media/social_media_connection.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/core/services/social_media/social_media_insight_service.dart';
 import 'package:avrai/core/config/oauth_config.dart';
 import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart';
 import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_router.dart';
 import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
+import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
@@ -18,7 +18,6 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:get_it/get_it.dart';
 
 /// Social Media Connection Service
 ///
@@ -303,37 +302,12 @@ class SocialMediaConnectionService {
   /// the connection flow. Errors are logged but do not affect the connection.
   /// Uses GetIt lazy access to avoid circular dependency.
   void _triggerInsightAnalysis(String agentId, String userId) {
-    // Use unawaited to fire-and-forget
-    unawaited(_triggerInsightAnalysisAsync(agentId, userId));
-  }
-
-  Future<void> _triggerInsightAnalysisAsync(
-      String agentId, String userId) async {
-    try {
-      // Lazy-load insight service via GetIt to avoid circular dependency
-      // SocialMediaInsightService depends on SocialMediaConnectionService,
-      // so we can't inject it in constructor, but we can access it lazily here
-      if (!GetIt.instance.isRegistered<SocialMediaInsightService>()) {
-        _logger.debug('Insight service not registered, skipping analysis',
-            tag: _logName);
-        return;
-      }
-
-      final insightService = GetIt.instance<SocialMediaInsightService>();
-
-      _logger.info(
-          '🔍 Triggering automatic insight analysis after connection...',
-          tag: _logName);
-      await insightService.analyzeAllPlatforms(
-        agentId: agentId,
-        userId: userId,
-      );
-      _logger.info('✅ Automatic insight analysis completed', tag: _logName);
-    } catch (e) {
-      _logger.warn('⚠️ Automatic insight analysis failed (non-blocking): $e',
-          tag: _logName);
-      // Non-blocking - don't throw
-    }
+    SocialInsightAnalysisTrigger.trigger(
+      logger: _logger,
+      logName: _logName,
+      agentId: agentId,
+      userId: userId,
+    );
   }
 
   /// Connect to Google using Google Sign-In
