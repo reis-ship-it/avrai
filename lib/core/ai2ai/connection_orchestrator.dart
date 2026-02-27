@@ -1179,8 +1179,6 @@ class VibeConnectionOrchestrator {
     final personalityLearning = _connectionManager.personalityLearning;
     if (personalityLearning == null) return;
 
-    final eventModeEnabled = _isEventModeEnabled();
-
     final now = DateTime.now();
     const minIntervalPerPeer = Duration(minutes: 20);
 
@@ -1225,44 +1223,18 @@ class VibeConnectionOrchestrator {
       );
 
       try {
-        if (eventModeEnabled) {
-          _bufferEventLearningInsight(EventModeBufferedLearningInsight(
-            source: 'passive',
-            insightId: null,
-            senderDeviceId: node.nodeId,
-            receivedAt: now,
-            learningQuality: learningQuality,
-            deltas: deltas,
-          ));
-          _lastAi2AiLearningAtByPeerId[node.nodeId] = now;
-          continue;
-        }
-
-        await personalityLearning.evolveFromAI2AILearning(
-          userId,
-          insight,
+        final applied = await _applyInsightForPeer(
+          userId: userId,
+          personalityLearning: personalityLearning,
+          peerId: node.nodeId,
+          insight: insight,
+          now: now,
+          source: 'passive',
+          insightId: null,
+          learningQuality: learningQuality,
+          deltas: deltas,
         );
-        _lastAi2AiLearningAtByPeerId[node.nodeId] = now;
-
-        // Phase 11 Enhancement: Integrate with ContinuousLearningSystem
-        // KEEP existing personalityLearning call above - this is ADDITIONAL integration
-        if (GetIt.instance.isRegistered<ContinuousLearningSystem>()) {
-          try {
-            final continuousLearningSystem =
-                GetIt.instance<ContinuousLearningSystem>();
-            unawaited(continuousLearningSystem.processAI2AILearningInsight(
-              userId: userId,
-              insight: insight,
-              peerId: node.nodeId,
-            ));
-          } catch (e) {
-            _logger.debug(
-              'Failed to process AI2AI learning insight in ContinuousLearningSystem: $e',
-              tag: _logName,
-            );
-            // Non-blocking - don't break existing flow
-          }
-        }
+        if (!applied) continue;
 
         // V1 "real" AI2AI learning exchange:
         // send the insight to the peer over the encrypted, ACK-confirmed BLE channel.
@@ -2143,41 +2115,17 @@ class VibeConnectionOrchestrator {
         timestamp: now,
       );
 
-      if (_isEventModeEnabled()) {
-        _bufferEventLearningInsight(EventModeBufferedLearningInsight(
-          source: 'inbox',
-          insightId: insightId,
-          senderDeviceId: sender,
-          receivedAt: now,
-          learningQuality: learningQuality,
-          deltas: deltas,
-        ));
-        _lastAi2AiLearningAtByPeerId[sender] = now;
-        return;
-      }
-
-      await personalityLearning.evolveFromAI2AILearning(userId, insight);
-      _lastAi2AiLearningAtByPeerId[sender] = now;
-
-      // Phase 11 Enhancement: Integrate with ContinuousLearningSystem
-      // KEEP existing personalityLearning call above - this is ADDITIONAL integration
-      if (GetIt.instance.isRegistered<ContinuousLearningSystem>()) {
-        try {
-          final continuousLearningSystem =
-              GetIt.instance<ContinuousLearningSystem>();
-          unawaited(continuousLearningSystem.processAI2AILearningInsight(
-            userId: userId,
-            insight: insight,
-            peerId: sender,
-          ));
-        } catch (e) {
-          _logger.debug(
-            'Failed to process AI2AI learning insight in ContinuousLearningSystem: $e',
-            tag: _logName,
-          );
-          // Non-blocking - don't break existing flow
-        }
-      }
+      await _applyInsightForPeer(
+        userId: userId,
+        personalityLearning: personalityLearning,
+        peerId: sender,
+        insight: insight,
+        now: now,
+        source: 'inbox',
+        insightId: insightId,
+        learningQuality: learningQuality,
+        deltas: deltas,
+      );
 
       if (LedgerAuditV0.isEnabled) {
         unawaited(LedgerAuditV0.tryAppend(
@@ -2555,6 +2503,53 @@ class VibeConnectionOrchestrator {
             error: e, tag: _logName);
       }
     });
+  }
+
+  Future<bool> _applyInsightForPeer({
+    required String userId,
+    required PersonalityLearning personalityLearning,
+    required String peerId,
+    required AI2AILearningInsight insight,
+    required DateTime now,
+    required String source,
+    required String? insightId,
+    required double learningQuality,
+    required Map<String, double> deltas,
+  }) async {
+    if (_isEventModeEnabled()) {
+      _bufferEventLearningInsight(EventModeBufferedLearningInsight(
+        source: source,
+        insightId: insightId,
+        senderDeviceId: peerId,
+        receivedAt: now,
+        learningQuality: learningQuality,
+        deltas: deltas,
+      ));
+      _lastAi2AiLearningAtByPeerId[peerId] = now;
+      return false;
+    }
+
+    await personalityLearning.evolveFromAI2AILearning(userId, insight);
+    _lastAi2AiLearningAtByPeerId[peerId] = now;
+
+    // Mirror into ContinuousLearningSystem without blocking the main path.
+    if (GetIt.instance.isRegistered<ContinuousLearningSystem>()) {
+      try {
+        final continuousLearningSystem = GetIt.instance<ContinuousLearningSystem>();
+        unawaited(continuousLearningSystem.processAI2AILearningInsight(
+          userId: userId,
+          insight: insight,
+          peerId: peerId,
+        ));
+      } catch (e) {
+        _logger.debug(
+          'Failed to process AI2AI learning insight in ContinuousLearningSystem: $e',
+          tag: _logName,
+        );
+      }
+    }
+
+    return true;
   }
 
   /// Manage Signal Protocol session lifecycle for AI2AI connections
