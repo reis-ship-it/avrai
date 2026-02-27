@@ -35,6 +35,7 @@ import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
+import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -2563,19 +2564,15 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Use adaptive hop limit instead of hardcoded 1-hop limit
-    if (_adaptiveMeshService != null) {
-      if (!_adaptiveMeshService!.shouldForwardMessage(
-        currentHop: hop,
-        priority: mesh_policy.MessagePriority.medium,
-        messageType: mesh_policy.MessageType.learningInsight,
-        geographicScope: scope,
-      )) {
-        return; // Adaptive policy says don't forward
-      }
-    } else {
-      // Fallback to old behavior if adaptive service not available
-      if (hop >= 1) return;
+    if (!AdaptiveHopGuard.shouldForward(
+      adaptiveMeshService: _adaptiveMeshService,
+      currentHop: hop,
+      priority: mesh_policy.MessagePriority.medium,
+      messageType: mesh_policy.MessageType.learningInsight,
+      geographicScope: scope,
+      fallbackMaxHopExclusive: 1,
+    )) {
+      return;
     }
 
     // Never forward our own-origin updates (it would just amplify duplicates).
@@ -4004,16 +4001,14 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Use adaptive mesh service to check hop limit (AFTER Bloom filter check)
-    if (_adaptiveMeshService != null) {
-      if (!_adaptiveMeshService!.shouldForwardMessage(
-        currentHop: hop,
-        priority: mesh_policy.MessagePriority.high,
-        messageType: mesh_policy.MessageType.localityAgentUpdate,
-        geographicScope: scope,
-      )) {
-        return; // Adaptive policy says don't forward
-      }
+    if (!AdaptiveHopGuard.shouldForward(
+      adaptiveMeshService: _adaptiveMeshService,
+      currentHop: hop,
+      priority: mesh_policy.MessagePriority.high,
+      messageType: mesh_policy.MessageType.localityAgentUpdate,
+      geographicScope: scope,
+    )) {
+      return;
     }
 
     // Never forward our own-origin updates
@@ -4246,19 +4241,15 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Use adaptive hop limit
-    if (_adaptiveMeshService != null) {
-      if (!_adaptiveMeshService!.shouldForwardMessage(
-        currentHop: hop,
-        priority: mesh_policy.MessagePriority.high,
-        messageType: mesh_policy.MessageType.localityAgentUpdate,
-        geographicScope: scope,
-      )) {
-        return; // Adaptive policy says don't forward
-      }
-    } else {
-      // Fallback: limit to 2 hops if adaptive service not available
-      if (hop >= 2) return;
+    if (!AdaptiveHopGuard.shouldForward(
+      adaptiveMeshService: _adaptiveMeshService,
+      currentHop: hop,
+      priority: mesh_policy.MessagePriority.high,
+      messageType: mesh_policy.MessageType.localityAgentUpdate,
+      geographicScope: scope,
+      fallbackMaxHopExclusive: 2,
+    )) {
+      return;
     }
 
     // Never forward our own-origin updates
