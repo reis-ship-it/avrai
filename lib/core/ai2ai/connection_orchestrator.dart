@@ -45,6 +45,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_bootstrap_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_initialization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
@@ -96,9 +97,6 @@ import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 
-/// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
-/// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
-/// Enhanced with Supabase Realtime for live AI2AI communication
 class VibeConnectionOrchestrator {
   static const String _logName = 'VibeConnectionOrchestrator';
   static const bool _allowBleSideEffectsInTests = bool.fromEnvironment(
@@ -176,10 +174,8 @@ class VibeConnectionOrchestrator {
   AdaptiveMeshNetworkingService? _adaptiveMeshService;
 
   // Quality-based key rotation tracking (AI2AI-specific)
-  /// Previous quality scores per agent ID (for detecting quality changes)
   final Map<String, double> _previousQualityScores = {};
 
-  /// Quality change threshold for triggering key rotation (AI2AI-specific)
   static const double _qualityChangeThreshold = 0.3; // 30% quality change
 
   Timer? _federatedCloudSyncTimer;
@@ -265,16 +261,11 @@ class VibeConnectionOrchestrator {
   // Testing hooks (no real BLE required)
   // ------------------------------------------------------------------------
 
-  /// Snapshot of currently known nearby AI nodes (for tests/debug tooling).
   @visibleForTesting
   List<AIPersonalityNode> debugDiscoveredNodesSnapshot() {
     return _discoveredNodes.values.toList();
   }
 
-  /// Deterministic, no-BLE simulation of the walk-by hot path.
-  ///
-  /// This bypasses platform BLE and uses `device.personalityData` only.
-  /// Intended for unit tests / CI validation when hardware isn’t available.
   @visibleForTesting
   Future<void> debugSimulateWalkByHotPath({
     required String userId,
@@ -360,14 +351,10 @@ class VibeConnectionOrchestrator {
             ? RealtimeCoordinator(realtimeService)
             : null;
 
-  /// Inject or update the realtime service after construction to avoid DI cycles
   void setRealtimeService(AI2AIBroadcastService service) {
     _realtimeService = service;
   }
 
-  /// Update personality advertising when personality evolves
-  /// Call this after personality profile is updated
-  /// This method is automatically called via PersonalityLearning callback
   Future<void> updatePersonalityAdvertising(
     String userId,
     PersonalityProfile updatedPersonality,
@@ -390,188 +377,191 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Set up automatic personality advertising updates
-  /// Call this to enable automatic updates when personality evolves
   void setupAutomaticAdvertisingUpdates() {
     // This will be called from injection container after PersonalityLearning is created
     // The callback will be set up there to avoid circular dependencies
   }
 
-  /// Initialize the AI2AI connection orchestration system
   Future<void> initializeOrchestration(
       String userId, PersonalityProfile personality) async {
-    if (_isInitialized) {
-      _logger.debug(
-          'Orchestration already initialized; skipping reinitialization',
-          tag: _logName);
-      return;
-    }
     try {
-      _logger.info('Initializing orchestration for user: $userId',
-          tag: _logName);
-
-      // Respect the user-controlled discovery switch.
-      // If disabled, do not start advertising, scanning, or background timers.
-      final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
-      if (!discoveryEnabled) {
-        _logger.info(
-          'AI2AI discovery is disabled by user setting; skipping orchestration init',
-          tag: _logName,
-        );
-        if (LedgerAuditV0.isEnabled) {
-          unawaited(LedgerAuditV0.tryAppend(
-            domain: LedgerDomainV0.deviceCapability,
-            eventType: 'ai2ai_orchestration_init_skipped',
-            occurredAt: DateTime.now(),
-            entityType: 'user',
-            entityId: userId,
-            payload: <String, Object?>{
-              'reason': 'discovery_disabled',
-            },
-          ));
-        }
-        return;
-      }
-
-      _currentUserId = userId;
-      _currentPersonality = personality;
-
-      // Ensure stable (rotating) offline BLE node id + load replay protection state.
-      final identity = await BleNodeIdentity.ensure(
-        prefs: _prefs,
-        prefsKeyNodeId: _prefsKeyBleNodeId,
-        prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
-      );
-      _localBleNodeId = identity.nodeId;
-      _localNodeTagKey = identity.nodeTagKey;
-      _loadSeenBleHashes();
-      LearningInsightSeenIdsPersistenceLane.load(
-        prefs: _prefs,
-        prefsKey: _prefsKeySeenLearningInsightIds,
-        seenLearningInsightIds: _seenLearningInsightIds,
-      );
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_orchestration_init_started',
-          occurredAt: DateTime.now(),
-          entityType: 'user',
-          entityId: userId,
-          payload: <String, Object?>{
-            'allow_ble_side_effects': _allowBleSideEffects,
-            'is_test_binding': _isTestBinding,
-            'is_web': kIsWeb,
-            'platform': defaultTargetPlatform.name,
-            'ble_node_id': _localBleNodeId,
-          },
-        ));
-      }
-
-      await OrchestrationBootstrapLane.bootstrap(
-        allowBleSideEffects: _allowBleSideEffects,
-        isWeb: kIsWeb,
-        isAndroid: defaultTargetPlatform == TargetPlatform.android,
-        startBleForegroundService: BleForegroundService.startService,
-        onBleForegroundServiceStarted: () {
+      await OrchestrationInitializationLane.run(
+        isInitialized: _isInitialized,
+        userId: userId,
+        personality: personality,
+        readDiscoveryEnabled: () =>
+            _prefs.getBool('discovery_enabled') ?? false,
+        onAlreadyInitialized: () {
+          _logger.debug(
+              'Orchestration already initialized; skipping reinitialization',
+              tag: _logName);
+        },
+        onDiscoveryDisabled: () {
           if (LedgerAuditV0.isEnabled) {
             unawaited(LedgerAuditV0.tryAppend(
               domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_ble_foreground_service_started',
+              eventType: 'ai2ai_orchestration_init_skipped',
               occurredAt: DateTime.now(),
+              entityType: 'user',
+              entityId: userId,
               payload: const <String, Object?>{
-                'platform': 'android',
+                'reason': 'discovery_disabled',
               },
             ));
           }
         },
-        onBleForegroundServiceFailed: () {
-          if (LedgerAuditV0.isEnabled) {
-            unawaited(LedgerAuditV0.tryAppend(
-              domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_ble_foreground_service_failed',
-              occurredAt: DateTime.now(),
-              payload: const <String, Object?>{
-                'platform': 'android',
-              },
-            ));
-          }
+        setCurrentContext: (nextUserId, nextPersonality) {
+          _currentUserId = nextUserId;
+          _currentPersonality = nextPersonality;
         },
-        publishPrekeyPayload: () {
-          return PrekeyPayloadPublishLane.publishIfAvailable(
-            signalKeyManager: _signalKeyManager,
-            localBleNodeId: _localBleNodeId,
-            logger: _logger,
-            logName: _logName,
-          );
-        },
-        initializeRealtime: _realtimeService?.initialize,
-        setupRealtimeListeners: _setupRealtimeListeners,
-        startAdvertising: () {
-          return PersonalityAdvertisingStartLane.startIfAllowed(
-            allowBleSideEffects: _allowBleSideEffects,
-            advertisingService: _advertisingService,
-            vibeAnalyzer: _vibeAnalyzer,
-            userId: userId,
-            personality: personality,
-            localBleNodeId: _localBleNodeId,
-            eventModeEnabled: _isEventModeEnabled(),
-            logger: _logger,
-            logName: _logName,
-          );
-        },
-        startDiscovery: () async {
-          final discoveryStart = await BleDiscoveryStartLane.startIfAllowed(
-            allowBleSideEffects: _allowBleSideEffects,
-            deviceDiscovery: _deviceDiscovery,
+        prepareIdentityAndCaches: () async {
+          final identity = await BleNodeIdentity.ensure(
             prefs: _prefs,
-            hotScanWindow: _hotScanWindow,
-            hotDeviceTimeout: _hotDeviceTimeout,
-            onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
-            existingBatteryScheduler: _batteryScheduler,
-            existingAdaptiveMeshService: _adaptiveMeshService,
+            prefsKeyNodeId: _prefsKeyBleNodeId,
+            prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
+          );
+          _localBleNodeId = identity.nodeId;
+          _localNodeTagKey = identity.nodeTagKey;
+          _loadSeenBleHashes();
+          LearningInsightSeenIdsPersistenceLane.load(
+            prefs: _prefs,
+            prefsKey: _prefsKeySeenLearningInsightIds,
+            seenLearningInsightIds: _seenLearningInsightIds,
+          );
+          return _localBleNodeId;
+        },
+        onInitStarted: (bleNodeId) {
+          if (LedgerAuditV0.isEnabled) {
+            unawaited(LedgerAuditV0.tryAppend(
+              domain: LedgerDomainV0.deviceCapability,
+              eventType: 'ai2ai_orchestration_init_started',
+              occurredAt: DateTime.now(),
+              entityType: 'user',
+              entityId: userId,
+              payload: <String, Object?>{
+                'allow_ble_side_effects': _allowBleSideEffects,
+                'is_test_binding': _isTestBinding,
+                'is_web': kIsWeb,
+                'platform': defaultTargetPlatform.name,
+                'ble_node_id': bleNodeId,
+              },
+            ));
+          }
+        },
+        bootstrap: () {
+          return OrchestrationBootstrapLane.bootstrap(
+            allowBleSideEffects: _allowBleSideEffects,
+            isWeb: kIsWeb,
+            isAndroid: defaultTargetPlatform == TargetPlatform.android,
+            startBleForegroundService: BleForegroundService.startService,
+            onBleForegroundServiceStarted: () {
+              if (LedgerAuditV0.isEnabled) {
+                unawaited(LedgerAuditV0.tryAppend(
+                  domain: LedgerDomainV0.deviceCapability,
+                  eventType: 'ai2ai_ble_foreground_service_started',
+                  occurredAt: DateTime.now(),
+                  payload: const <String, Object?>{
+                    'platform': 'android',
+                  },
+                ));
+              }
+            },
+            onBleForegroundServiceFailed: () {
+              if (LedgerAuditV0.isEnabled) {
+                unawaited(LedgerAuditV0.tryAppend(
+                  domain: LedgerDomainV0.deviceCapability,
+                  eventType: 'ai2ai_ble_foreground_service_failed',
+                  occurredAt: DateTime.now(),
+                  payload: const <String, Object?>{
+                    'platform': 'android',
+                  },
+                ));
+              }
+            },
+            publishPrekeyPayload: () {
+              return PrekeyPayloadPublishLane.publishIfAvailable(
+                signalKeyManager: _signalKeyManager,
+                localBleNodeId: _localBleNodeId,
+                logger: _logger,
+                logName: _logName,
+              );
+            },
+            initializeRealtime: _realtimeService?.initialize,
+            setupRealtimeListeners: _setupRealtimeListeners,
+            startAdvertising: () {
+              return PersonalityAdvertisingStartLane.startIfAllowed(
+                allowBleSideEffects: _allowBleSideEffects,
+                advertisingService: _advertisingService,
+                vibeAnalyzer: _vibeAnalyzer,
+                userId: userId,
+                personality: personality,
+                localBleNodeId: _localBleNodeId,
+                eventModeEnabled: _isEventModeEnabled(),
+                logger: _logger,
+                logName: _logName,
+              );
+            },
+            startDiscovery: () async {
+              final discoveryStart =
+                  await BleDiscoveryStartLane.startIfAllowed(
+                allowBleSideEffects: _allowBleSideEffects,
+                deviceDiscovery: _deviceDiscovery,
+                prefs: _prefs,
+                hotScanWindow: _hotScanWindow,
+                hotDeviceTimeout: _hotDeviceTimeout,
+                onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
+                existingBatteryScheduler: _batteryScheduler,
+                existingAdaptiveMeshService: _adaptiveMeshService,
+                logger: _logger,
+                logName: _logName,
+              );
+              _batteryScheduler = discoveryStart.batteryScheduler;
+              _adaptiveMeshService = discoveryStart.adaptiveMeshService;
+            },
+            startAi2AiDiscovery: () =>
+                _startAI2AIDiscovery(userId, personality),
+            startBleInboxProcessing: _startBleInboxProcessing,
+            startFederatedCloudSync: _startFederatedCloudSync,
+            startConnectionMaintenance: _startConnectionMaintenance,
             logger: _logger,
             logName: _logName,
           );
-          _batteryScheduler = discoveryStart.batteryScheduler;
-          _adaptiveMeshService = discoveryStart.adaptiveMeshService;
         },
-        startAi2AiDiscovery: () => _startAI2AIDiscovery(userId, personality),
-        startBleInboxProcessing: _startBleInboxProcessing,
-        startFederatedCloudSync: _startFederatedCloudSync,
-        startConnectionMaintenance: _startConnectionMaintenance,
+        onMarkInitialized: () {
+          _isInitialized = true;
+        },
+        onInitCompleted: () {
+          if (LedgerAuditV0.isEnabled) {
+            unawaited(LedgerAuditV0.tryAppend(
+              domain: LedgerDomainV0.deviceCapability,
+              eventType: 'ai2ai_orchestration_init_completed',
+              occurredAt: DateTime.now(),
+              entityType: 'user',
+              entityId: userId,
+              payload: const <String, Object?>{
+                'ok': true,
+              },
+            ));
+          }
+        },
+        onInitFailed: (error) {
+          if (LedgerAuditV0.isEnabled) {
+            unawaited(LedgerAuditV0.tryAppend(
+              domain: LedgerDomainV0.deviceCapability,
+              eventType: 'ai2ai_orchestration_init_failed',
+              occurredAt: DateTime.now(),
+              entityType: 'user',
+              entityId: userId,
+              payload: <String, Object?>{
+                'error': error.toString(),
+              },
+            ));
+          }
+        },
         logger: _logger,
         logName: _logName,
       );
-
-      _isInitialized = true;
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_orchestration_init_completed',
-          occurredAt: DateTime.now(),
-          entityType: 'user',
-          entityId: userId,
-          payload: const <String, Object?>{
-            'ok': true,
-          },
-        ));
-      }
-      _logger.info('Orchestration initialized successfully', tag: _logName);
     } catch (e) {
-      _logger.error('Error initializing AI2AI orchestration',
-          error: e, tag: _logName);
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_orchestration_init_failed',
-          occurredAt: DateTime.now(),
-          entityType: 'user',
-          entityId: userId,
-          payload: <String, Object?>{
-            'error': e.toString(),
-          },
-        ));
-      }
       throw AI2AIConnectionException('Failed to initialize orchestration: $e');
     }
   }
@@ -846,7 +836,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Discover nearby AI personalities for potential connections
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(
       String userId, PersonalityProfile personality,
       {bool throwOnError = false}) async {
@@ -861,25 +850,19 @@ class VibeConnectionOrchestrator {
     try {
       final connectivityResults = await _connectivity.checkConnectivity();
       if (!ConnectionRoutingPolicy.isConnected(connectivityResults)) {
-        // #region agent log
         _logger.info(
             'No connectivity available, proceeding with offline discovery',
             tag: _logName);
-        // #endregion
       }
     } catch (e) {
-      // #region agent log
       _logger.warn('Error checking connectivity: $e, proceeding with discovery',
           tag: _logName);
-      // #endregion
     }
 
     _isDiscovering = true;
 
     try {
-      // #region agent log
       _logger.info('Discovering nearby AI personalities', tag: _logName);
-      // #endregion
 
       final nodes = await _discoveryManager.discover(
           userId, personality, _performAI2AIDiscovery);
@@ -905,10 +888,8 @@ class VibeConnectionOrchestrator {
         logName: _logName,
       );
     } catch (e) {
-      // #region agent log
       _logger.error('Error discovering AI personalities',
           error: e, tag: _logName);
-      // #endregion
       if (throwOnError) {
         throw AI2AIConnectionException('Discovery failed: $e');
       }
@@ -918,7 +899,6 @@ class VibeConnectionOrchestrator {
     }
   }
 
-  /// Establish AI2AI connection based on vibe compatibility
   Future<ConnectionMetrics?> establishAI2AIConnection(
     String localUserId,
     PersonalityProfile localPersonality,
@@ -990,7 +970,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Manage active AI2AI connections for learning and quality
   Future<void> manageActiveConnections() async {
     await ActiveConnectionManagementLane.run(
       activeConnections: _activeConnections,
@@ -1002,12 +981,10 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Get count of active connections
   int getActiveConnectionCount() {
     return _activeConnections.length;
   }
 
-  /// Calculate AI pleasure score for connection quality
   Future<double> calculateAIPleasureScore(ConnectionMetrics connection) async {
     return AIPleasureScoreLane.calculate(
       connection: connection,
@@ -1017,7 +994,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Get active connection summaries for monitoring
   List<ConnectionSummary> getActiveConnectionSummaries() {
     return _activeConnections.values.map((connection) {
       return ConnectionSummary(
@@ -1034,13 +1010,10 @@ class VibeConnectionOrchestrator {
     }).toList();
   }
 
-  /// Get active connections for UI display
-  /// Returns list of ConnectionMetrics for active connections
   List<ConnectionMetrics> getActiveConnections() {
     return _activeConnections.values.toList();
   }
 
-  /// Cleanup and shutdown orchestration
   Future<void> shutdown() async {
     _logger.info('Shutting down orchestration', tag: _logName);
     _isInitialized = false;
@@ -1140,7 +1113,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Public API for [BackupSyncCoordinator] – flushes the federated cloud queue.
   Future<void> syncFederatedCloudQueue() => _syncFederatedCloudQueue();
 
   Future<void> _syncFederatedCloudQueue() async {
@@ -1172,12 +1144,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Handle incoming user-to-user chat message routed through AI2AI mesh
-  ///
-  /// Routes user chat messages (business-expert or business-business) to the
-  /// appropriate chat service for storage and UI display. The message type is
-  /// determined from the unencrypted binary packet header (MessageType.userChat),
-  /// allowing routing before decryption.
   Future<void> _handleIncomingUserChat(ProtocolMessage message) async {
     await IncomingUserChatProcessingLane.handle(
       message: message,
@@ -1188,7 +1154,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Handle incoming business-expert chat message
   Future<void> _handleIncomingBusinessExpertChat(
     ProtocolMessage _,
     Map<String, dynamic> payload,
@@ -1200,7 +1165,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Handle incoming business-business chat message
   Future<void> _handleIncomingBusinessBusinessChat(
     ProtocolMessage _,
     Map<String, dynamic> payload,
@@ -1305,12 +1269,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Manage Signal Protocol session lifecycle for AI2AI connections
-  ///
-  /// Implements AI2AI-specific session lifecycle management:
-  /// - Session expiration based on connection quality
-  /// - Automatic cleanup for inactive AI agents
-  /// - Session renewal for frequent/active connections
   Future<void> _manageSessionLifecycle() async {
     await SessionLifecycleLane.run(
       logger: _logger,
@@ -1322,12 +1280,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Manage prekey bundle rotation and refresh (Enhanced BLE distribution)
-  ///
-  /// Implements automatic prekey bundle management:
-  /// - Cleanup expired prekey bundles
-  /// - Proactive refresh of bundles expiring soon
-  /// - Distribution of fresh bundles via BLE to active connections
   Future<void> _managePreKeyBundleRotation() async {
     await PrekeyBundleRotationLane.run(
       signalKeyManager: _signalKeyManager,
@@ -1337,10 +1289,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Expire sessions based on connection quality (AI2AI-specific)
-  ///
-  /// Uses SignalSessionManager's quality-based methods to expire sessions
-  /// for connections with poor quality.
   Future<void> _expireSessionsBasedOnQuality(
       SignalSessionManager sessionManager) async {
     await SessionExpiryLane.run(
@@ -1352,11 +1300,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Clean up inactive sessions (no activity for extended period)
-  ///
-  /// Sessions are cleaned up if they haven't been used for a certain period
-  /// and don't have an active connection. High-quality connections are maintained
-  /// even if temporarily inactive.
   Future<void> _cleanupInactiveSessions(
       SignalSessionManager sessionManager) async {
     await InactiveSessionCleanupLane.run(
@@ -1368,10 +1311,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Renew sessions for frequent/active connections
-  ///
-  /// Uses SignalSessionManager's quality-based methods to renew sessions
-  /// for high-quality, active connections.
   Future<void> _renewActiveSessions(SignalSessionManager sessionManager) async {
     await SessionRenewalLane.run(
       sessionManager: sessionManager,
@@ -1381,16 +1320,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Rotate keys based on connection quality changes (AI2AI-specific)
-  ///
-  /// Implements automatic key rotation triggered by significant connection quality changes.
-  /// Rotates keys when quality improves significantly (fresh keys for high-value connections)
-  /// or degrades significantly (security rotation for compromised connections).
-  ///
-  /// **AI2AI-Specific:**
-  /// - Rotation triggered by quality change threshold (30%)
-  /// - Integrates with Signal Protocol re-keying
-  /// - Prevents excessive rotation (cooldown period)
   Future<void> _rotateKeysBasedOnQualityChanges(
     SignalSessionManager sessionManager,
   ) async {
@@ -1438,10 +1367,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Forward prekey bundle through mesh network (Phase 3.2: Mesh forwarding integration)
-  ///
-  /// Forwards prekey bundle to nearby devices for multi-hop key exchange.
-  /// This enables key exchange even without direct connection.
   Future<void> _forwardPreKeyBundleThroughMesh({
     required SignalPreKeyBundle bundle,
     required String recipientId,
@@ -1472,8 +1397,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Prioritize discovered nodes based on compatibility and trust
-  /// Note: DiscoveryManager already handles prioritization, this is reserved for future use
   // ignore: unused_element
   Future<List<AIPersonalityNode>> _prioritizeConnections(
     List<AIPersonalityNode> nodes,
@@ -1485,33 +1408,25 @@ class VibeConnectionOrchestrator {
       maxConnections: 5,
     );
 
-    // #region agent log
     _logger.debug(
         'Prioritized ${nodes.length} nodes to top ${prioritized.length} connections',
         tag: _logName);
-    // #endregion
 
     return prioritized;
   }
 
-  /// Determine if a connection is worthy based on compatibility thresholds
   bool _isConnectionWorthy(VibeCompatibilityResult compatibility) {
     final result = ConnectionRoutingPolicy.evaluateWorthiness(compatibility);
 
-    // #region agent log
     if (!result.isWorthy) {
       _logger.debug(
           'Connection not worthy: ${result.reason}; opportunities=${compatibility.learningOpportunities.length}',
           tag: _logName);
     }
-    // #endregion
 
     return result.isWorthy;
   }
 
-  /// Get current battery level (for rate limiting integration)
-  ///
-  /// Returns battery level (0-100) or null if battery scheduler not available.
   Future<int?> getBatteryLevel() async {
     if (_batteryScheduler != null) {
       try {
@@ -1527,9 +1442,6 @@ class VibeConnectionOrchestrator {
     return null;
   }
 
-  /// Get current network density (for rate limiting integration)
-  ///
-  /// Returns network density or null if adaptive mesh service not available.
   int? getNetworkDensity() {
     return _adaptiveMeshService?.networkDensity;
   }
@@ -1567,19 +1479,10 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Get current user vibe for AI2AI matching (stub; can be wired to cache)
   UserVibe? getCurrentVibe() {
     return null;
   }
 
-  /// Convert UnifiedUser to AnonymousUser for AI2AI transmission
-  ///
-  /// **CRITICAL:** This method ensures no personal data is transmitted in AI2AI network.
-  /// All user data must be converted to AnonymousUser before transmission.
-  ///
-  /// **Throws:**
-  /// - Exception if anonymizationService is not available
-  /// - Exception if conversion fails
   Future<AnonymousUser> anonymizeUserForTransmission(
     UnifiedUser user,
     String agentId,
@@ -1597,15 +1500,10 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Validate that no UnifiedUser is being sent directly in AI2AI network
-  ///
-  /// This is a safety check to prevent accidental personal data leaks.
-  /// All user data must be converted to AnonymousUser before transmission.
   void validateNoUnifiedUserInPayload(Map<String, dynamic> payload) {
     PayloadAnonymizationLane.validateNoUnifiedUserInPayload(payload);
   }
 
-  /// Set up realtime listeners for AI2AI communication (safe no-op if unavailable)
   Future<void> _setupRealtimeListeners() async {
     await RealtimeListenerCallbacksLane.setup(
       coordinator: _realtimeCoordinator,
@@ -1615,14 +1513,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Forward an organic spot discovery signal through the AI2AI mesh.
-  ///
-  /// When this user's AI detects an unregistered location pattern
-  /// (e.g., repeatedly visiting a park that's not in Google Places),
-  /// share an anonymized signal so other nearby AIs can boost their
-  /// confidence for the same location.
-  ///
-  /// Privacy: Only shares geohash + visit count. Never raw GPS or user ID.
   Future<void> forwardOrganicSpotDiscovery(
     Map<String, dynamic> signal,
   ) async {
@@ -1640,7 +1530,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// NEW: Forward locality agent update through mesh network
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
     await MeshOutboundForwardingLane.forwardLocalityAgentUpdate(
       allowBleSideEffects: _allowBleSideEffects,
@@ -1659,7 +1548,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// NEW: Handle incoming locality agent update from mesh
   Future<void> _handleIncomingLocalityAgentUpdate(
       ProtocolMessage message) async {
     await IncomingMeshSignalHandlersLane.handleLocalityAgentUpdate(
@@ -1672,14 +1560,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Handle incoming organic spot discovery signal from mesh.
-  ///
-  /// When another user's AI detects an unregistered location that people
-  /// keep visiting (parks, garages, hidden gems), it shares an anonymized
-  /// signal via the mesh. This boosts our confidence that the location is
-  /// meaningful and may surface it to our user as a "discovered spot."
-  ///
-  /// Privacy: Only receives geohash + visit count. Never raw GPS or user ID.
   Future<void> _handleIncomingOrganicSpotDiscovery(
       ProtocolMessage message) async {
     await IncomingMeshSignalHandlersLane.handleOrganicSpotDiscovery(
@@ -1690,7 +1570,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// NEW: Forward locality agent update gossip (similar to learning insight gossip)
   Future<void> _maybeForwardLocalityAgentUpdateGossip({
     required Map<String, dynamic> payload,
     required String originId,
@@ -1717,7 +1596,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Get or create Bloom filter for geographic scope (AI2AI-specific)
   OptimizedBloomFilter _getOrCreateBloomFilter(String scope) {
     return _bloomFilters.putIfAbsent(
       scope,
