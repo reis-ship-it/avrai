@@ -22,6 +22,7 @@ import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
+import 'package:avrai/core/ai2ai/discovery/deterministic_test_vibe_builder_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
@@ -48,7 +49,7 @@ import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_establishment_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
-import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
+import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
@@ -60,6 +61,7 @@ import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dar
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/event_mode_learning_buffer_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
@@ -279,7 +281,7 @@ class VibeConnectionOrchestrator {
     final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
     if (!discoveryEnabled) return;
 
-    final localVibe = _buildDeterministicUserVibeForTesting(
+    final localVibe = DeterministicTestVibeBuilderLane.build(
       userId: userId,
       personality: personality,
     );
@@ -305,45 +307,6 @@ class VibeConnectionOrchestrator {
 
       _updateDiscoveredNodes(<AIPersonalityNode>[node]);
     }
-  }
-
-  UserVibe _buildDeterministicUserVibeForTesting({
-    required String userId,
-    required PersonalityProfile personality,
-  }) {
-    // Use the personality dimensions directly, with missing dimensions defaulted.
-    final dims = <String, double>{};
-    for (final d in VibeConstants.coreDimensions) {
-      dims[d] =
-          (personality.dimensions[d] ?? VibeConstants.defaultDimensionValue)
-              .clamp(0.0, 1.0);
-    }
-
-    final energy = ((dims['exploration_eagerness'] ?? 0.5) +
-            (dims['temporal_flexibility'] ?? 0.5) +
-            (dims['location_adventurousness'] ?? 0.5)) /
-        3.0;
-    final social = ((dims['community_orientation'] ?? 0.5) +
-            (dims['social_discovery_style'] ?? 0.5) +
-            (dims['trust_network_reliance'] ?? 0.5)) /
-        3.0;
-    final exploration = ((dims['exploration_eagerness'] ?? 0.5) +
-            (dims['location_adventurousness'] ?? 0.5) +
-            (1.0 - (dims['authenticity_preference'] ?? 0.5))) /
-        3.0;
-
-    final now = DateTime.now();
-    return UserVibe(
-      hashedSignature: 'test_sig_$userId',
-      anonymizedDimensions: dims,
-      overallEnergy: energy.clamp(0.0, 1.0),
-      socialPreference: social.clamp(0.0, 1.0),
-      explorationTendency: exploration.clamp(0.0, 1.0),
-      createdAt: now,
-      expiresAt: now.add(const Duration(days: 1)),
-      privacyLevel: 1.0,
-      temporalContext: 'test',
-    );
   }
 
   // Dedupe learning insights: insightId -> expiresAtMs
@@ -507,9 +470,19 @@ class VibeConnectionOrchestrator {
       _currentPersonality = personality;
 
       // Ensure stable (rotating) offline BLE node id + load replay protection state.
-      await _ensureLocalBleNodeId();
+      final identity = await BleNodeIdentity.ensure(
+        prefs: _prefs,
+        prefsKeyNodeId: _prefsKeyBleNodeId,
+        prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
+      );
+      _localBleNodeId = identity.nodeId;
+      _localNodeTagKey = identity.nodeTagKey;
       _loadSeenBleHashes();
-      _loadSeenLearningInsightIds();
+      LearningInsightSeenIdsPersistenceLane.load(
+        prefs: _prefs,
+        prefsKey: _prefsKeySeenLearningInsightIds,
+        seenLearningInsightIds: _seenLearningInsightIds,
+      );
       if (LedgerAuditV0.isEnabled) {
         unawaited(LedgerAuditV0.tryAppend(
           domain: LedgerDomainV0.deviceCapability,
@@ -564,7 +537,12 @@ class VibeConnectionOrchestrator {
       // Publish Signal prekey payload for offline bootstrap (Mode 2).
       // This is best-effort: if Signal isn't initialized yet, advertising can still proceed.
       if (_allowBleSideEffects) {
-        await _publishSignalPreKeyPayloadIfAvailable();
+        await PrekeyPayloadPublishLane.publishIfAvailable(
+          signalKeyManager: _signalKeyManager,
+          localBleNodeId: _localBleNodeId,
+          logger: _logger,
+          logName: _logName,
+        );
       }
 
       // Initialize realtime service if available
@@ -744,8 +722,28 @@ class VibeConnectionOrchestrator {
       batteryScheduler: _batteryScheduler,
       roomCoherenceEngine: _roomCoherenceEngine,
       maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
-      eventModeMayInitiate: _eventModeMayInitiate,
-      pickEventModeTarget: _pickEventModeTarget,
+      eventModeMayInitiate: ({required int epoch}) {
+        return EventModeInitiatorPolicy.mayInitiate(
+          localBleNodeId: _localBleNodeId,
+          epoch: epoch,
+          eligibilityPercent: _eventInitiatorEligibilityPct,
+        );
+      },
+      pickEventModeTarget: ({
+        required List<EventModeCandidate> candidates,
+        required int nowMs,
+        required int epoch,
+      }) {
+        return EventModeTargetSelector.select(
+          candidates: candidates,
+          nowMs: nowMs,
+          epoch: epoch,
+          localNodeTagKey: _localNodeTagKey,
+          lastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
+          familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
+          perNodeDeepSyncCooldownMs: _eventPerNodeDeepSyncCooldownMs,
+        );
+      },
       eventEpochMs: _eventEpochMs,
       eventCheckInWindowMs: _eventCheckInWindowMs,
       eventMaxDeepSyncPerEvent: _eventMaxDeepSyncPerEvent,
@@ -763,7 +761,10 @@ class VibeConnectionOrchestrator {
       },
       eventModeLastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
       waitInitiatorJitter: ({required int epoch}) async {
-        final jitterMs = _eventModeJitterMs(epoch: epoch);
+        final jitterMs = EventModeInitiatorPolicy.jitterMs(
+          localBleNodeId: _localBleNodeId,
+          epoch: epoch,
+        );
         if (jitterMs > 0) {
           await Future<void>.delayed(Duration(milliseconds: jitterMs));
         }
@@ -804,47 +805,6 @@ class VibeConnectionOrchestrator {
     _lastAdvertisedEventModeEnabled = next.eventModeEnabled;
     _lastAdvertisedConnectOk = next.connectOk;
     _lastAdvertisedBrownout = next.brownout;
-  }
-
-  bool _eventModeMayInitiate({required int epoch}) {
-    return EventModeInitiatorPolicy.mayInitiate(
-      localBleNodeId: _localBleNodeId,
-      epoch: epoch,
-      eligibilityPercent: _eventInitiatorEligibilityPct,
-    );
-  }
-
-  int _eventModeJitterMs({required int epoch}) {
-    return EventModeInitiatorPolicy.jitterMs(
-      localBleNodeId: _localBleNodeId,
-      epoch: epoch,
-    );
-  }
-
-  EventModeCandidate? _pickEventModeTarget({
-    required List<EventModeCandidate> candidates,
-    required int nowMs,
-    required int epoch,
-  }) {
-    return EventModeTargetSelector.select(
-      candidates: candidates,
-      nowMs: nowMs,
-      epoch: epoch,
-      localNodeTagKey: _localNodeTagKey,
-      lastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
-      familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
-      perNodeDeepSyncCooldownMs: _eventPerNodeDeepSyncCooldownMs,
-    );
-  }
-
-  void _bufferEventLearningInsight(EventModeBufferedLearningInsight insight) {
-    // In-memory buffer only (v1). This prevents event-time personality writes,
-    // while still preserving observations for post-event consolidation.
-    const maxItems = 500;
-    if (_eventModeLearningBuffer.length >= maxItems) {
-      _eventModeLearningBuffer.removeAt(0);
-    }
-    _eventModeLearningBuffer.add(insight);
   }
 
   Future<void> _runHotWorker() async {
@@ -922,16 +882,6 @@ class VibeConnectionOrchestrator {
     return snapshot.toJson();
   }
 
-  Future<void> _ensureLocalBleNodeId() async {
-    final identity = await BleNodeIdentity.ensure(
-      prefs: _prefs,
-      prefsKeyNodeId: _prefsKeyBleNodeId,
-      prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
-    );
-    _localBleNodeId = identity.nodeId;
-    _localNodeTagKey = identity.nodeTagKey;
-  }
-
   void _loadSeenBleHashes() {
     BleSeenHashesPersistenceLane.load(
       prefs: _prefs,
@@ -996,15 +946,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  Future<void> _publishSignalPreKeyPayloadIfAvailable() async {
-    await PrekeyPayloadPublishLane.publishIfAvailable(
-      signalKeyManager: _signalKeyManager,
-      localBleNodeId: _localBleNodeId,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
   /// Discover nearby AI personalities for potential connections
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(
       String userId, PersonalityProfile personality,
@@ -1019,7 +960,7 @@ class VibeConnectionOrchestrator {
     // It only affects whether realtime/cloud discovery is viable.
     try {
       final connectivityResults = await _connectivity.checkConnectivity();
-      if (!_isConnected(connectivityResults)) {
+      if (!ConnectionRoutingPolicy.isConnected(connectivityResults)) {
         // #region agent log
         _logger.info(
             'No connectivity available, proceeding with offline discovery',
@@ -1090,7 +1031,10 @@ class VibeConnectionOrchestrator {
     }
 
     // Check connection cooldown
-    if (_isInCooldown(remoteNode.nodeId)) {
+    if (ConnectionRoutingPolicy.isInCooldown(
+      cooldowns: _connectionCooldowns,
+      nodeId: remoteNode.nodeId,
+    )) {
       _logger.debug('Connection to ${remoteNode.nodeId} is in cooldown period',
           tag: _logName);
       return null;
@@ -1109,7 +1053,12 @@ class VibeConnectionOrchestrator {
       localPersonality: localPersonality,
       remoteNode: remoteNode,
       isConnectionWorthy: _isConnectionWorthy,
-      setCooldown: _setCooldown,
+      setCooldown: (nodeId) {
+        ConnectionRoutingPolicy.setCooldown(
+          cooldowns: _connectionCooldowns,
+          nodeId: nodeId,
+        );
+      },
       logger: _logger,
       logName: _logName,
     );
@@ -1129,13 +1078,20 @@ class VibeConnectionOrchestrator {
         localUserId,
         localPersonality,
         remoteNode,
-        (localVibe, remote, comp, metrics) => _performConnectionEstablishment(
-          localVibe,
-          remote,
-          comp,
-          metrics,
-          localPersonality.agentId,
-          remoteNode.nodeId,
+        (localVibe, remote, comp, metrics) =>
+            ConnectionEstablishmentLane.establish(
+          protocol: _protocol,
+          signalKeyManager: _signalKeyManager,
+          knotWeavingService: _knotWeavingService,
+          knotStorageService: _knotStorageService,
+          localVibe: localVibe,
+          remoteNode: remote,
+          compatibility: comp,
+          initialMetrics: metrics,
+          localAgentId: localPersonality.agentId,
+          remoteAgentId: remoteNode.nodeId,
+          logger: _logger,
+          logName: _logName,
         ),
       );
 
@@ -1155,14 +1111,20 @@ class VibeConnectionOrchestrator {
         return establishedConnection;
       } else {
         _logger.warn('Failed to establish connection', tag: _logName);
-        _setCooldown(remoteNode.nodeId);
+        ConnectionRoutingPolicy.setCooldown(
+          cooldowns: _connectionCooldowns,
+          nodeId: remoteNode.nodeId,
+        );
         return null;
       }
     } catch (e) {
       // #region agent log
       _logger.error('Error establishing connection', error: e, tag: _logName);
       // #endregion
-      _setCooldown(remoteNode.nodeId);
+      ConnectionRoutingPolicy.setCooldown(
+        cooldowns: _connectionCooldowns,
+        nodeId: remoteNode.nodeId,
+      );
       return null;
     } finally {
       _isConnecting = false;
@@ -1288,7 +1250,15 @@ class VibeConnectionOrchestrator {
       handleIncomingLearningInsight: _handleIncomingLearningInsight,
       handleIncomingUserChat: _handleIncomingUserChat,
       persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
-      persistSeenLearningInsightIdsIfNeeded: _persistSeenLearningInsightIdsIfNeeded,
+      persistSeenLearningInsightIdsIfNeeded: () async {
+        _lastSeenInsightsPersistMs =
+            await LearningInsightSeenIdsPersistenceLane.persistIfNeeded(
+          prefs: _prefs,
+          prefsKey: _prefsKeySeenLearningInsightIds,
+          seenLearningInsightIds: _seenLearningInsightIds,
+          lastPersistMs: _lastSeenInsightsPersistMs,
+        );
+      },
       logger: _logger,
       logName: _logName,
     );
@@ -1339,27 +1309,6 @@ class VibeConnectionOrchestrator {
       prefsKeyQueue: _prefsKeyFederatedCloudQueue,
       logger: _logger,
       logName: _logName,
-    );
-  }
-
-  void _loadSeenLearningInsightIds() {
-    LearningInsightSeenCache.load(
-      prefs: _prefs,
-      prefsKey: _prefsKeySeenLearningInsightIds,
-      seenLearningInsightIds: _seenLearningInsightIds,
-      nowMs: DateTime.now().millisecondsSinceEpoch,
-    );
-  }
-
-  Future<void> _persistSeenLearningInsightIdsIfNeeded() async {
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    _lastSeenInsightsPersistMs =
-        await LearningInsightSeenCache.persistIfNeeded(
-      prefs: _prefs,
-      prefsKey: _prefsKeySeenLearningInsightIds,
-      seenLearningInsightIds: _seenLearningInsightIds,
-      nowMs: nowMs,
-      lastPersistMs: _lastSeenInsightsPersistMs,
     );
   }
 
@@ -1487,14 +1436,17 @@ class VibeConnectionOrchestrator {
       evolveFromAi2AiLearning: () =>
           personalityLearning.evolveFromAI2AILearning(userId, insight),
       onEventModeBuffer: () {
-        _bufferEventLearningInsight(EventModeBufferedLearningInsight(
-          source: source,
-          insightId: insightId,
-          senderDeviceId: peerId,
-          receivedAt: now,
-          learningQuality: learningQuality,
-          deltas: deltas,
-        ));
+        EventModeLearningBufferLane.buffer(
+          buffer: _eventModeLearningBuffer,
+          insight: EventModeBufferedLearningInsight(
+            source: source,
+            insightId: insightId,
+            senderDeviceId: peerId,
+            receivedAt: now,
+            learningQuality: learningQuality,
+            deltas: deltas,
+          ),
+        );
         _lastAi2AiLearningAtByPeerId[peerId] = now;
       },
       onApplied: () {
@@ -1609,11 +1561,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  /// Check if device has active connectivity
-  bool _isConnected(List<ConnectivityResult> result) {
-    return ConnectionRoutingPolicy.isConnected(result);
-  }
-
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
       AnonymizedVibeData localVibe) async {
     return AI2AIDiscoveryExecutionLane.discover(
@@ -1704,20 +1651,6 @@ class VibeConnectionOrchestrator {
     return prioritized;
   }
 
-  bool _isInCooldown(String nodeId) {
-    return ConnectionRoutingPolicy.isInCooldown(
-      cooldowns: _connectionCooldowns,
-      nodeId: nodeId,
-    );
-  }
-
-  void _setCooldown(String nodeId) {
-    ConnectionRoutingPolicy.setCooldown(
-      cooldowns: _connectionCooldowns,
-      nodeId: nodeId,
-    );
-  }
-
   /// Determine if a connection is worthy based on compatibility thresholds
   bool _isConnectionWorthy(VibeCompatibilityResult compatibility) {
     final result = ConnectionRoutingPolicy.evaluateWorthiness(compatibility);
@@ -1731,30 +1664,6 @@ class VibeConnectionOrchestrator {
     // #endregion
 
     return result.isWorthy;
-  }
-
-  Future<ConnectionMetrics?> _performConnectionEstablishment(
-    UserVibe localVibe,
-    AIPersonalityNode remoteNode,
-    VibeCompatibilityResult compatibility,
-    ConnectionMetrics initialMetrics,
-    String localAgentId,
-    String remoteAgentId,
-  ) async {
-    return ConnectionEstablishmentLane.establish(
-      protocol: _protocol,
-      signalKeyManager: _signalKeyManager,
-      knotWeavingService: _knotWeavingService,
-      knotStorageService: _knotStorageService,
-      localVibe: localVibe,
-      remoteNode: remoteNode,
-      compatibility: compatibility,
-      initialMetrics: initialMetrics,
-      localAgentId: localAgentId,
-      remoteAgentId: remoteAgentId,
-      logger: _logger,
-      logName: _logName,
-    );
   }
 
   /// Get current battery level (for rate limiting integration)
