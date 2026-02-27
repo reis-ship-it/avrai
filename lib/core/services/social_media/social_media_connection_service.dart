@@ -9,6 +9,7 @@ import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart'
 import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_router.dart';
 import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
+import 'package:avrai/core/services/social_media/fallbacks/social_placeholder_profile_builder.dart';
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
 import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
 import 'package:avrai/core/services/social_media/sync/social_request_throttle.dart';
@@ -2152,34 +2153,7 @@ class SocialMediaConnectionService {
   /// Get placeholder profile data (for development/testing)
   Map<String, dynamic> _getPlaceholderProfileData(
       SocialMediaConnection connection) {
-    switch (connection.platform) {
-      case 'google':
-        return {
-          'profile': {
-            'name': connection.platformUsername ?? 'Google User',
-            'email': 'user@example.com',
-          },
-          'savedPlaces': [],
-          'reviews': [],
-          'photos': [],
-          'locationHistory': null,
-        };
-      case 'instagram':
-      case 'facebook':
-      case 'twitter':
-      case 'tiktok':
-      case 'linkedin':
-      default:
-        return {
-          'profile': {
-            'name':
-                connection.platformUsername ?? '${connection.platform} User',
-            'username': connection.platformUsername,
-          },
-          'follows': [],
-          'posts': [],
-        };
-    }
+    return SocialPlaceholderProfileBuilder.build(connection);
   }
 
   /// Make authenticated HTTP request with rate limiting and retry logic
