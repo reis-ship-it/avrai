@@ -32,6 +32,7 @@ Validation commands:
 - `Backlog -> In Progress`: `M6-P3-1`
 - `Backlog -> In Progress`: `M6-P3-2`
 - `Backlog -> In Progress`: `M6-P3-3`
+- `Backlog -> Ready`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
 
@@ -57,7 +58,7 @@ Validation commands:
 | Checkpoint | Decision | Evidence | Notes |
 |------------|----------|----------|-------|
 | C1: Autonomy Enablement | Done | `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-2` | Lifecycle + runtime shadow gate + promotion eval governance lanes closed with generated evidence and passing gates |
-| C2: Federated Promotion | Pending | - | Waiting on M4/M5 chain |
+| C2: Federated Promotion | Ready | `M1-P8-1`, `M1-P8-2` | Wave 2 federated/advisory reliability slice opened and queued for execution |
 | C3: Broad Rollout | Pending | - | Not in rollout phase |
 | C4: Continuous Operation | Done | `M6-P3-1`, `M6-P3-3` | Self-healing routing and completion-audit package lanes closed with passing deterministic incident/gate readiness and sign-off evidence |
 
@@ -73,9 +74,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Monitor weekly regeneration jobs for drift across board/review/audit artifacts.
-2. Raise trust/lineage implemented coverage from `1/3` toward full rollout targets.
-3. Start next master-plan wave with fresh backlog sequencing after this completion gate.
+1. Start `M1-P7-2` controller/orchestrator reliability implementation and attach evidence.
+2. Start `M1-P8-1` federated cohort gating + canary/shadow pipeline implementation.
+3. Prepare and execute `M1-P8-2` advisory quarantine + rollback independence validation.
 
 ### 7) Evidence Links
 
