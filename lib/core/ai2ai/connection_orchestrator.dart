@@ -70,6 +70,7 @@ import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
@@ -1539,26 +1540,20 @@ class VibeConnectionOrchestrator {
       }
     }
 
-    // Complete all active connections
-    final activeConnectionIds = _activeConnections.keys.toList();
-    for (final connectionId in activeConnectionIds) {
-      final connection = _activeConnections[connectionId];
-      if (connection != null) {
-        await _completeConnection(connection, reason: 'system_shutdown');
-      }
-    }
-
-    // Clear all state
-    _activeConnections.clear();
-    _connectionCooldowns.clear();
-    _pendingConnections.clear();
-    _nearbyVibes.clear();
-    _discoveredNodes.clear();
-    // Update adaptive mesh service with network density
-    _adaptiveMeshService?.updateNetworkDensity(0);
-    _currentUserId = null;
-
-    _logger.info('Shutdown completed', tag: _logName);
+    await ConnectionShutdownCleanupLane.run(
+      activeConnections: _activeConnections,
+      connectionCooldowns: _connectionCooldowns,
+      pendingConnections: _pendingConnections,
+      nearbyVibes: _nearbyVibes,
+      discoveredNodes: _discoveredNodes,
+      completeConnection: _completeConnection,
+      onResetNetworkDensity: () => _adaptiveMeshService?.updateNetworkDensity(0),
+      onClearCurrentUser: () {
+        _currentUserId = null;
+      },
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   void _startBleInboxProcessing() {
