@@ -23,6 +23,7 @@ import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_lane.dart';
@@ -46,9 +47,9 @@ import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_establishment_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
+import 'package:avrai/core/ai2ai/resilience/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
@@ -776,27 +777,33 @@ class VibeConnectionOrchestrator {
     required bool connectOk,
     required bool brownout,
   }) async {
-    final userId = _currentUserId;
-    final personality = _currentPersonality;
-    final advertising = _advertisingService;
-    if (userId == null || personality == null || advertising == null) return;
-
-    if (_lastAdvertisedEventModeEnabled == eventModeEnabled &&
-        _lastAdvertisedConnectOk == connectOk &&
-        _lastAdvertisedBrownout == brownout) {
-      return;
-    }
-
-    _lastAdvertisedEventModeEnabled = eventModeEnabled;
-    _lastAdvertisedConnectOk = connectOk;
-    _lastAdvertisedBrownout = brownout;
-
-    await advertising.updateServiceDataFrameV1Flags(
-      nodeId: _localBleNodeId,
-      eventModeEnabled: eventModeEnabled,
-      connectOk: connectOk,
-      brownout: brownout,
+    final next = await EventModeBroadcastFlagsLane.maybeUpdate(
+      hasRequiredContext: _currentUserId != null &&
+          _currentPersonality != null &&
+          _advertisingService != null,
+      currentEventModeEnabled: _lastAdvertisedEventModeEnabled,
+      currentConnectOk: _lastAdvertisedConnectOk,
+      currentBrownout: _lastAdvertisedBrownout,
+      nextEventModeEnabled: eventModeEnabled,
+      nextConnectOk: connectOk,
+      nextBrownout: brownout,
+      updateServiceDataFrameV1Flags: ({
+        required bool eventModeEnabled,
+        required bool connectOk,
+        required bool brownout,
+      }) {
+        return _advertisingService!.updateServiceDataFrameV1Flags(
+          nodeId: _localBleNodeId,
+          eventModeEnabled: eventModeEnabled,
+          connectOk: connectOk,
+          brownout: brownout,
+        );
+      },
     );
+
+    _lastAdvertisedEventModeEnabled = next.eventModeEnabled;
+    _lastAdvertisedConnectOk = next.connectOk;
+    _lastAdvertisedBrownout = next.brownout;
   }
 
   bool _eventModeMayInitiate({required int epoch}) {
@@ -926,21 +933,19 @@ class VibeConnectionOrchestrator {
   }
 
   void _loadSeenBleHashes() {
-    BleReplayHashCache.load(
+    BleSeenHashesPersistenceLane.load(
       prefs: _prefs,
       prefsKey: _prefsKeySeenBleHashes,
       seenBleMessageHashes: _seenBleMessageHashes,
-      nowMs: DateTime.now().millisecondsSinceEpoch,
     );
   }
 
   Future<void> _persistSeenBleHashesIfNeeded() async {
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    _lastSeenHashesPersistMs = await BleReplayHashCache.persistIfNeeded(
+    _lastSeenHashesPersistMs =
+        await BleSeenHashesPersistenceLane.persistIfNeeded(
       prefs: _prefs,
       prefsKey: _prefsKeySeenBleHashes,
       seenBleMessageHashes: _seenBleMessageHashes,
-      nowMs: nowMs,
       lastPersistMs: _lastSeenHashesPersistMs,
     );
   }
