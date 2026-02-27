@@ -2567,10 +2567,7 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    final forwardingContext = MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-    );
+    final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
     await GossipLearningForwardingLane.forward(
@@ -2578,7 +2575,7 @@ class VibeConnectionOrchestrator {
       hop: hop,
       originId: originId,
       receivedFromDeviceId: receivedFromDeviceId,
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      discoveredNodeIds: _discoveredNodeIds,
       context: forwardingContext,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
@@ -3319,10 +3316,7 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    final forwardingContext = MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-    );
+    final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
     try {
@@ -3343,7 +3337,7 @@ class VibeConnectionOrchestrator {
 
       // Choose up to 2 nearby devices to forward to (best-effort)
       final candidates = MeshForwardingTargetSelector.excludingRecipientAndLocalNode(
-        discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+        discoveredNodeIds: _discoveredNodeIds,
         recipientId: recipientId,
         localNodeId: _localBleNodeId,
         maxCandidates: 2,
@@ -3873,15 +3867,12 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    final forwardingContext = MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-    );
+    final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to share with
     final candidates = MeshForwardingTargetSelector.select(
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      discoveredNodeIds: _discoveredNodeIds,
       maxCandidates: 2,
     );
 
@@ -3927,10 +3918,7 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    final forwardingContext = MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-    );
+    final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
     final hop = (message['hop'] as num?)?.toInt() ?? 0;
@@ -3964,7 +3952,7 @@ class VibeConnectionOrchestrator {
 
     // Choose up to 2 nearby devices to forward to (best-effort)
     final candidates = MeshForwardingTargetSelector.excludingOptionalOrigin(
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      discoveredNodeIds: _discoveredNodeIds,
       originId: originId,
       maxCandidates: 2,
     );
@@ -4180,10 +4168,7 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    final forwardingContext = MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-    );
+    final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
     await GossipLearningForwardingLane.forward(
@@ -4191,7 +4176,7 @@ class VibeConnectionOrchestrator {
       hop: hop,
       originId: originId,
       receivedFromDeviceId: receivedFromDeviceId,
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      discoveredNodeIds: _discoveredNodeIds,
       context: forwardingContext,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
@@ -4207,6 +4192,16 @@ class VibeConnectionOrchestrator {
     return _bloomFilters.putIfAbsent(
       scope,
       () => OptimizedBloomFilter(geographicScope: scope),
+    );
+  }
+
+  Iterable<String> get _discoveredNodeIds =>
+      _discoveredNodes.values.map((n) => n.nodeId);
+
+  MeshForwardingContext? _tryCreateMeshForwardingContext() {
+    return MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
     );
   }
 }
