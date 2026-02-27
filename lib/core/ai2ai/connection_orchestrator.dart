@@ -11,7 +11,6 @@ import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
-import 'package:avrai/core/crypto/signal/signal_protocol_service.dart';
 import 'package:avrai/core/crypto/signal/ai_agent_fingerprint_service.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai/core/services/recommendations/agent_happiness_service.dart';
@@ -59,6 +58,7 @@ import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
@@ -2708,96 +2708,14 @@ class VibeConnectionOrchestrator {
   Future<void> _rotateKeysBasedOnQualityChanges(
     SignalSessionManager sessionManager,
   ) async {
-    try {
-      final sl = GetIt.instance;
-      final signalProtocolService = sl.isRegistered<SignalProtocolService>()
-          ? sl<SignalProtocolService>()
-          : null;
-
-      if (signalProtocolService == null) {
-        return; // Signal Protocol not available
-      }
-
-      // Track quality changes for active connections
-      for (final connection in _activeConnections.values) {
-        if (connection.status != ConnectionStatus.active &&
-            connection.status != ConnectionStatus.learning) {
-          continue; // Skip inactive connections
-        }
-
-        final agentId = connection.remoteAISignature;
-        final currentQuality = connection.qualityScore;
-        final previousQuality = _previousQualityScores[agentId];
-
-        // Initialize previous quality if not tracked
-        if (previousQuality == null) {
-          _previousQualityScores[agentId] = currentQuality;
-          continue; // First time tracking, no change to detect
-        }
-
-        // Calculate quality change
-        final qualityChange = (currentQuality - previousQuality).abs();
-
-        // Check if quality change exceeds threshold
-        if (qualityChange >= _qualityChangeThreshold) {
-          _logger.info(
-            'Significant quality change detected for agent $agentId: '
-            '${previousQuality.toStringAsFixed(2)} → ${currentQuality.toStringAsFixed(2)} '
-            '(change: ${(qualityChange * 100).toStringAsFixed(1)}%)',
-            tag: _logName,
-          );
-
-          // Check if session exists
-          final session = await sessionManager.getSession(agentId);
-          if (session != null) {
-            // Trigger key rotation by marking session as needing re-keying
-            // This will cause re-keying on next message send/receive
-            _logger.info(
-              'Triggering key rotation for agent $agentId due to quality change',
-              tag: _logName,
-            );
-
-            // Force re-keying by resetting re-keying timestamp
-            // This ensures re-keying happens on next message
-            await sessionManager.markRekeyed(agentId);
-
-            // Also trigger immediate re-keying by checking needsRekeying
-            // and performing re-keying if needed
-            if (await sessionManager.needsRekeying(agentId)) {
-              // Perform re-keying immediately (for quality-based rotation)
-              // Re-keying will happen automatically on next encryptMessage/decryptMessage
-              // We've already marked it as needing re-keying above
-              _logger.debug(
-                'Key rotation triggered for agent $agentId (quality change: ${(qualityChange * 100).toStringAsFixed(1)}%)',
-                tag: _logName,
-              );
-            }
-          }
-
-          // Update previous quality score
-          _previousQualityScores[agentId] = currentQuality;
-        }
-      }
-
-      // Clean up quality scores for inactive connections
-      final activeAgentIds = _activeConnections.values
-          .where((c) =>
-              c.status == ConnectionStatus.active ||
-              c.status == ConnectionStatus.learning)
-          .map((c) => c.remoteAISignature)
-          .toSet();
-
-      _previousQualityScores.removeWhere(
-        (agentId, _) => !activeAgentIds.contains(agentId),
-      );
-    } catch (e, st) {
-      _logger.error(
-        'Error rotating keys based on quality changes: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await QualityChangeKeyRotationLane.run(
+      sessionManager: sessionManager,
+      activeConnections: _activeConnections.values,
+      previousQualityScores: _previousQualityScores,
+      qualityChangeThreshold: _qualityChangeThreshold,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Check if device has active connectivity
