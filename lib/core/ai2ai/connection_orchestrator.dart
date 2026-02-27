@@ -51,6 +51,7 @@ import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
+import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2489,37 +2490,14 @@ class VibeConnectionOrchestrator {
   /// - Automatic cleanup for inactive AI agents
   /// - Session renewal for frequent/active connections
   Future<void> _manageSessionLifecycle() async {
-    try {
-      // Check if Signal Protocol services are available
-      final sl = GetIt.instance;
-      if (!sl.isRegistered<SignalSessionManager>()) {
-        return; // Signal Protocol not available
-      }
-
-      final sessionManager = sl<SignalSessionManager>();
-
-      _logger.debug('Managing Signal Protocol session lifecycle',
-          tag: _logName);
-
-      // 1. Check for expired sessions based on connection quality
-      await _expireSessionsBasedOnQuality(sessionManager);
-
-      // 2. Clean up inactive sessions (no activity for extended period)
-      await _cleanupInactiveSessions(sessionManager);
-
-      // 3. Renew sessions for frequent/active connections
-      await _renewActiveSessions(sessionManager);
-
-      // 4. Rotate keys based on connection quality changes (AI2AI-specific)
-      await _rotateKeysBasedOnQualityChanges(sessionManager);
-    } catch (e, st) {
-      _logger.error(
-        'Error managing session lifecycle: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await SessionLifecycleLane.run(
+      logger: _logger,
+      logName: _logName,
+      expireSessionsBasedOnQuality: _expireSessionsBasedOnQuality,
+      cleanupInactiveSessions: _cleanupInactiveSessions,
+      renewActiveSessions: _renewActiveSessions,
+      rotateKeysBasedOnQualityChanges: _rotateKeysBasedOnQualityChanges,
+    );
   }
 
   /// Manage prekey bundle rotation and refresh (Enhanced BLE distribution)
