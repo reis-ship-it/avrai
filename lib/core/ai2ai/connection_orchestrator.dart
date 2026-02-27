@@ -20,7 +20,6 @@ import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/privacy_protection.dart';
-import 'package:avrai/core/ai/continuous_learning_system.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
@@ -41,6 +40,7 @@ import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
+import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -2526,22 +2526,13 @@ class VibeConnectionOrchestrator {
     await personalityLearning.evolveFromAI2AILearning(userId, insight);
     _lastAi2AiLearningAtByPeerId[peerId] = now;
 
-    // Mirror into ContinuousLearningSystem without blocking the main path.
-    if (GetIt.instance.isRegistered<ContinuousLearningSystem>()) {
-      try {
-        final continuousLearningSystem = GetIt.instance<ContinuousLearningSystem>();
-        unawaited(continuousLearningSystem.processAI2AILearningInsight(
-          userId: userId,
-          insight: insight,
-          peerId: peerId,
-        ));
-      } catch (e) {
-        _logger.debug(
-          'Failed to process AI2AI learning insight in ContinuousLearningSystem: $e',
-          tag: _logName,
-        );
-      }
-    }
+    ContinuousLearningMirror.mirrorInsight(
+      userId: userId,
+      insight: insight,
+      peerId: peerId,
+      logger: _logger,
+      logTag: _logName,
+    );
 
     return true;
   }
