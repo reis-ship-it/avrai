@@ -56,6 +56,7 @@ jobs:
           python3 scripts/runtime/generate_business_data_consent_governance_report.py --check
           python3 scripts/runtime/generate_integration_governance_contract_security_report.py --check
           python3 scripts/runtime/generate_split_pass_ci_guard_contract_hardening_report.py --check
+          python3 scripts/runtime/generate_production_readiness_cleanup_report.py --check
 
       - name: Validate deferred rename governance
         run: |

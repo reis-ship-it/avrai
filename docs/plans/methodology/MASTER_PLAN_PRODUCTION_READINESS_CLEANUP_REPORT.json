@@ -1,0 +1,27 @@
+{
+  "adaptive_path_placeholder_gate": {
+    "max_placeholder_violations": 0,
+    "observed_placeholder_violations": 0,
+    "paths_checked": 38,
+    "within_threshold": true
+  },
+  "ci_stability": {
+    "critical_flaky_failures": 0,
+    "observed_pass_rate_pct": 100.0,
+    "required_pass_rate_pct": 99.0,
+    "runs_evaluated": 64,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T22:05:00Z",
+  "readiness_checklist": {
+    "blocking_items_open": 0,
+    "checklist_items_evaluated": 18,
+    "observed_checklist_coverage_pct": 100.0,
+    "required_checklist_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/production_readiness_cleanup_enforcement_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

@@ -104,7 +104,7 @@ phase row + milestone row(s) + risk + gate criteria.
 <!-- EXECUTION_BOARD:MILESTONE_BOARD_START -->
 | Milestone | Phase | Wave | Scope | Change Type | Reopens | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |
 |----------|-------|------|-------|------------|---------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|
-| M0-P10-1 | 10 | 0 | Production readiness + cleanup enforcement | baseline | none | PRD-012, PRD-013, PRD-014, PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.1, 10.9.2, 10.9.4 | lib/_root | AP, REL | GOV | none | 16 | High | parallel baseline | Ready | - |
+| M0-P10-1 | 10 | 0 | Production readiness + cleanup enforcement | baseline | none | PRD-012, PRD-013, PRD-014, PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.1, 10.9.2, 10.9.4 | lib/_root | AP, REL | GOV | none | 16 | High | parallel baseline | Done | docs/plans/methodology/M0_P10_1_PRODUCTION_READINESS_CLEANUP_BASELINE.md, configs/runtime/production_readiness_cleanup_enforcement_controls.json, scripts/runtime/generate_production_readiness_cleanup_report.py, docs/plans/methodology/MASTER_PLAN_PRODUCTION_READINESS_CLEANUP_REPORT.json, docs/plans/methodology/MASTER_PLAN_PRODUCTION_READINESS_CLEANUP_REPORT.md |
 | M0-P10-2 | 10 | 0 | Reality Engine/Runtime OS/App remap docs + boundary policy package | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.8.1, 10.8.3, 10.10.1, 10.10.7 | docs/plans/architecture | AP, REL | GOV | M0-P10-1 | 12 | High | parallel baseline | Done | https://github.com/AVRA-CADAVRA/avrai/pull/172 |
 | M0-P10-3 | 10 | 0 | 3-prong split-pass wiring + CI guard/contracts hardening | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.10.1, 10.10.2, 10.10.3, 10.10.4, 10.10.5, 10.10.6, 10.10.8 | lib/_root | AP, REL | GOV | M0-P10-2 | 16 | High | parallel baseline | Done | docs/plans/methodology/M0_P10_3_SPLIT_PASS_CI_GUARD_CONTRACT_HARDENING_BASELINE.md, configs/runtime/split_pass_ci_guard_contract_hardening_controls.json, scripts/runtime/generate_split_pass_ci_guard_contract_hardening_report.py, docs/plans/methodology/MASTER_PLAN_SPLIT_PASS_CI_GUARD_CONTRACT_HARDENING_REPORT.json, docs/plans/methodology/MASTER_PLAN_SPLIT_PASS_CI_GUARD_CONTRACT_HARDENING_REPORT.md, https://github.com/AVRA-CADAVRA/avrai/pull/173 |
 | M0-P2-1 | 2 | 0 | Security + cryptographic assurance baseline | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 2.1.1, 2.2.1, 2.5.1 | lib/core/services/security | SEC | GOV | none | 20 | Critical | parallel baseline | Ready | - |
@@ -140,7 +140,7 @@ None
 
 ### Ready
 
-`M0-P10-1`, `M0-P2-1`, `M1-P7-1`
+`M0-P2-1`, `M1-P7-1`
 
 ### In Progress
 
@@ -152,7 +152,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M0-P10-3`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
+`M0-P10-1`, `M0-P10-2`, `M0-P10-3`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
