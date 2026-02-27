@@ -33,6 +33,7 @@ import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -3745,9 +3746,9 @@ class VibeConnectionOrchestrator {
       _logger.info('Completing AI2AI connection: ${connection.connectionId}',
           tag: _logName);
 
-      final completedConnection = connection.complete(
-        finalStatus: ConnectionStatus.completed,
-        completionReason: reason ?? 'natural_completion',
+      final completedConnection = ConnectionLifecycleLane.complete(
+        connection,
+        reason: reason,
       );
 
       // Log connection summary
@@ -3762,26 +3763,8 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _updateConnectionLearning(ConnectionMetrics connection) async {
-    // Simulate learning interactions
-    if (connection.interactionHistory.length < 10) {
-      final learningInteraction = InteractionEvent.success(
-        type: InteractionType.learningInsight,
-        data: {
-          'insight_type': 'dimension_evolution',
-          'learning_quality': 0.8,
-        },
-      );
-
-      _activeConnections[connection.connectionId] =
-          connection.updateDuringInteraction(
-        newInteraction: learningInteraction,
-        learningEffectiveness: 0.7,
-        additionalOutcomes: {
-          'successful_exchanges': 1,
-          'insights_gained': 1,
-        },
-      );
-    }
+    _activeConnections[connection.connectionId] =
+        ConnectionLifecycleLane.maybeApplyLearningUpdate(connection);
   }
 
   Future<void> _monitorConnectionHealth(ConnectionMetrics connection) async {
@@ -3789,7 +3772,8 @@ class VibeConnectionOrchestrator {
     final currentPleasure = await calculateAIPleasureScore(connection);
 
     _activeConnections[connection.connectionId] =
-        connection.updateDuringInteraction(
+        ConnectionLifecycleLane.applyHealthUpdate(
+      connection: connection,
       aiPleasureScore: currentPleasure,
     );
   }
