@@ -11,6 +11,7 @@ import 'package:avrai/core/services/social_media/mapping/social_platform_mapping
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
 import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
+import 'package:avrai/core/services/social_media/sync/social_request_throttle.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
@@ -49,6 +50,7 @@ class SocialMediaConnectionService {
   final SocialMediaServiceFactory? _serviceFactory;
   final SocialOAuthPlatformRouter _platformRouter;
   final SocialConnectionSyncLane _syncLane;
+  final SocialRequestThrottle _requestThrottle;
 
   // Storage keys are centralized via SocialConnectionSyncLane.
   static const Duration _profileCacheExpiry =
@@ -62,10 +64,12 @@ class SocialMediaConnectionService {
     FlutterSecureStorage? secureStorage,
     SocialOAuthPlatformRouter? platformRouter,
     SocialConnectionSyncLane? syncLane,
+    SocialRequestThrottle? requestThrottle,
   })  : _serviceFactory = serviceFactory,
         _secureStorage = secureStorage ?? const FlutterSecureStorage(),
         _platformRouter = platformRouter ?? SocialOAuthPlatformRouter(),
-        _syncLane = syncLane ?? const SocialConnectionSyncLane() {
+        _syncLane = syncLane ?? const SocialConnectionSyncLane(),
+        _requestThrottle = requestThrottle ?? SocialRequestThrottle() {
     // Start listening for OAuth deep links (for AppAuth flows)
     _deepLinkHandler.startListening();
     // Also check for initial deep link (if app was opened via deep link)
@@ -2178,15 +2182,6 @@ class SocialMediaConnectionService {
     }
   }
 
-  // Rate limiting and error handling
-
-  /// Rate limit tracking per platform
-  final Map<String, DateTime> _lastRequestTime = {};
-  final Map<String, int> _requestCount = {};
-  static const Duration _rateLimitWindow = Duration(minutes: 1);
-  static const int _maxRequestsPerWindow = 60; // Conservative limit
-  static const Duration _minRequestDelay = Duration(milliseconds: 100);
-
   /// Make authenticated HTTP request with rate limiting and retry logic
   Future<String?> _makeAuthenticatedRequest(
     String url,
@@ -2196,10 +2191,14 @@ class SocialMediaConnectionService {
     String? body,
     int maxRetries = 3,
   }) async {
-    final platform = _extractPlatformFromUrl(url);
+    final platform = _requestThrottle.extractPlatformFromUrl(url);
 
     // Rate limiting check
-    await _checkRateLimit(platform);
+    await _requestThrottle.checkRateLimit(
+      platform: platform,
+      logger: _logger,
+      logName: _logName,
+    );
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       try {
@@ -2231,7 +2230,7 @@ class SocialMediaConnectionService {
         }
 
         // Update rate limit tracking
-        _updateRateLimitTracking(platform);
+        _requestThrottle.updateRateLimitTracking(platform);
 
         // Handle response
         if (response.statusCode == 200) {
@@ -2293,54 +2292,6 @@ class SocialMediaConnectionService {
     }
 
     return null;
-  }
-
-  /// Check and enforce rate limits
-  Future<void> _checkRateLimit(String platform) async {
-    final now = DateTime.now();
-    final lastRequest = _lastRequestTime[platform];
-    final requestCount = _requestCount[platform] ?? 0;
-
-    // Reset counter if window expired
-    if (lastRequest == null || now.difference(lastRequest) > _rateLimitWindow) {
-      _requestCount[platform] = 0;
-      _lastRequestTime[platform] = now;
-      return;
-    }
-
-    // Check if we've exceeded the limit
-    if (requestCount >= _maxRequestsPerWindow) {
-      final waitTime = _rateLimitWindow - now.difference(lastRequest);
-      _logger.warn(
-        'Rate limit reached for $platform, waiting ${waitTime.inSeconds}s',
-        tag: _logName,
-      );
-      await Future.delayed(waitTime);
-      _requestCount[platform] = 0;
-      _lastRequestTime[platform] = DateTime.now();
-      return;
-    }
-
-    // Enforce minimum delay between requests
-    final timeSinceLastRequest = now.difference(lastRequest);
-    if (timeSinceLastRequest < _minRequestDelay) {
-      await Future.delayed(_minRequestDelay - timeSinceLastRequest);
-    }
-  }
-
-  /// Update rate limit tracking
-  void _updateRateLimitTracking(String platform) {
-    final now = DateTime.now();
-    _lastRequestTime[platform] = now;
-    _requestCount[platform] = (_requestCount[platform] ?? 0) + 1;
-  }
-
-  /// Extract platform from URL
-  String _extractPlatformFromUrl(String url) {
-    if (url.contains('googleapis.com')) return 'google';
-    if (url.contains('instagram.com')) return 'instagram';
-    if (url.contains('facebook.com')) return 'facebook';
-    return 'unknown';
   }
 
   /// Parse Retry-After header
