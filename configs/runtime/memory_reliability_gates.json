@@ -1,0 +1,26 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T17:45:00Z",
+  "memory_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T17:30:00Z"
+  },
+  "schema_consistency": {
+    "total_records": 1800,
+    "records_with_missing_required_fields": 6,
+    "max_missing_field_rate_pct": 0.5
+  },
+  "dedupe": {
+    "input_records": 1800,
+    "unique_records": 1788,
+    "duplicate_records": 12,
+    "max_duplicate_rate_pct": 1.0
+  },
+  "replay_validation": {
+    "scenarios_tested": 32,
+    "scenarios_passed": 32,
+    "max_allowed_failures": 0,
+    "deterministic_hash_match": true
+  }
+}
