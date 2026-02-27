@@ -55,6 +55,7 @@ import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
+import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
@@ -2507,74 +2508,12 @@ class VibeConnectionOrchestrator {
   /// - Proactive refresh of bundles expiring soon
   /// - Distribution of fresh bundles via BLE to active connections
   Future<void> _managePreKeyBundleRotation() async {
-    try {
-      final signalKeyManager = _signalKeyManager;
-      if (signalKeyManager == null) {
-        return; // Signal Protocol not available
-      }
-
-      // Cleanup expired prekey bundles
-      await signalKeyManager.cleanupExpiredPreKeyBundles();
-
-      // Get recipients needing refresh (expiring soon)
-      final recipientsNeedingRefresh =
-          signalKeyManager.getRecipientsNeedingRefresh();
-
-      // Proactively refresh bundles for active connections
-      for (final recipientId in recipientsNeedingRefresh) {
-        // Check if recipient has an active connection
-        final hasActiveConnection = _activeConnections.values.any(
-          (connection) =>
-              connection.remoteAISignature == recipientId &&
-              (connection.status == ConnectionStatus.active ||
-                  connection.status == ConnectionStatus.learning),
-        );
-
-        if (hasActiveConnection) {
-          _logger.debug(
-            'Proactively refreshing prekey bundle for active connection: $recipientId',
-            tag: _logName,
-          );
-
-          // Background refresh (non-blocking)
-          unawaited(
-            signalKeyManager.fetchPreKeyBundle(recipientId).then((bundle) {
-              _logger.debug(
-                'Successfully refreshed prekey bundle for recipient: $recipientId',
-                tag: _logName,
-              );
-              return bundle;
-            }).catchError((e) {
-              _logger.warn(
-                'Failed to refresh prekey bundle for $recipientId: $e',
-                tag: _logName,
-              );
-              // Return a dummy bundle to satisfy type checker (won't be used)
-              return SignalPreKeyBundle(
-                preKeyId: 'error',
-                signedPreKey: Uint8List(0),
-                signedPreKeyId: 0,
-                signature: Uint8List(0),
-                identityKey: Uint8List(0),
-                kyberPreKeyId: 0,
-                kyberPreKey: Uint8List(0),
-                kyberPreKeySignature: Uint8List(0),
-              );
-            }),
-          );
-        }
-      }
-
-      // Note: Prekey bundle distribution via BLE is handled by PersonalityAdvertisingService
-      // (advertising side serves bundles on stream 1). We just manage refresh/rotation here.
-    } catch (e, st) {
-      _logger.error(
-        'Error managing prekey bundle rotation: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await PrekeyBundleRotationLane.run(
+      signalKeyManager: _signalKeyManager,
+      activeConnections: _activeConnections.values,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Expire sessions based on connection quality (AI2AI-specific)
