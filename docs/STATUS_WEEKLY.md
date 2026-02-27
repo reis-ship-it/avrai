@@ -36,6 +36,7 @@ Validation commands:
 - `Ready -> In Progress`: `M1-P7-2`
 - `Ready -> In Progress`: `M1-P8-1`
 - `Ready -> In Progress`: `M1-P8-2`
+- `Ready -> In Progress`: `M2-P1-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -49,7 +50,7 @@ Validation commands:
 
 | Milestone | Owner | ETA | Risk | Notes |
 |-----------|-------|-----|------|-------|
-| - | - | - | - | - |
+| M2-P1-1 | AP;MLE | Week 5-6 | High (12) | Memory reliability lane active with deterministic schema consistency, dedupe, and replay gate report checks |
 
 ### 3) Blockers
 
@@ -78,8 +79,8 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M2-P1-1` memory reliability gates implementation and attach deterministic gate evidence.
-2. Prepare `M2-P3-1` state encoder consistency/freshness controls scope and baseline artifacts.
+1. Complete `M2-P1-1` memory reliability gates implementation and attach deterministic gate evidence.
+2. Start `M2-P3-1` state encoder consistency/freshness controls scope and baseline artifacts.
 3. Define `M2-P4-1` energy function safety/regression governance entry checklist for kickoff.
 
 ### 7) Evidence Links
@@ -118,6 +119,8 @@ Validation commands:
 - M1-P8-1 federated cohort config + report automation: `configs/runtime/federated_cohort_canary_shadow_pipeline.json`, `scripts/runtime/generate_federated_cohort_canary_shadow_report.py`, `docs/plans/methodology/MASTER_PLAN_FEDERATED_COHORT_CANARY_SHADOW_REPORT.md`
 - M1-P8-2 advisory quarantine baseline: `docs/plans/methodology/M1_P8_2_ADVISORY_QUARANTINE_ROLLBACK_BASELINE.md`
 - M1-P8-2 advisory quarantine config + report automation: `configs/runtime/advisory_quarantine_rollback_independence.json`, `scripts/runtime/generate_advisory_quarantine_rollback_report.py`, `docs/plans/methodology/MASTER_PLAN_ADVISORY_QUARANTINE_ROLLBACK_REPORT.md`
+- M2-P1-1 memory reliability baseline: `docs/plans/methodology/M2_P1_1_MEMORY_RELIABILITY_GATES_BASELINE.md`
+- M2-P1-1 memory reliability config + report automation: `configs/runtime/memory_reliability_gates.json`, `scripts/runtime/generate_memory_reliability_gates_report.py`, `docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.md`
 
 ---
 
