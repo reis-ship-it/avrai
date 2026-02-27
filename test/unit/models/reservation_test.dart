@@ -25,7 +25,9 @@ void main() {
     late AtomicTimestamp testAtomicTimestamp;
 
     setUp(() {
-      testDate = DateTime(2026, 1, 15, 18, 0);
+      // Keep fixture time safely in the future so business-logic expectations
+      // remain stable as calendar time advances.
+      testDate = DateTime.now().add(const Duration(days: 30));
       testAtomicTimestamp = AtomicTimestamp.now(
         precision: TimePrecision.millisecond,
         serverTime: testDate,
