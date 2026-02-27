@@ -25,6 +25,7 @@ import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
+import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
@@ -761,126 +762,49 @@ class VibeConnectionOrchestrator {
 
   Future<void> _handleEventModeScanWindow(
       List<DiscoveredDevice> devices) async {
-    if (!_allowBleSideEffects) return;
-
-    final userId = _currentUserId;
-    final personality = _currentPersonality;
-    if (userId == null || personality == null) return;
-
-    final now = DateTime.now();
-    final nowMs = now.millisecondsSinceEpoch;
-
-    // If Event Mode was just turned on, reset per-event budgets.
-    if (!_lastAdvertisedEventModeEnabled) {
-      _eventModeDeepSyncCount = 0;
-      _eventModeLastDeepSyncAtMsByNodeTag.clear();
-      _eventModeLastEpochAttempted = -1;
-      _eventModeCheckInRunning = false;
-    }
-
-    final frames = <RoomCoherenceFrame>[];
-    final candidates = <EventModeCandidate>[];
-
-    var sawHotCandidate = false;
-    for (final device in devices) {
-      if (device.type != DeviceType.bluetooth) continue;
-
-      final rssi = device.signalStrength;
-      if (rssi != null && rssi >= _hotRssiThresholdDbm) {
-        sawHotCandidate = true;
-      }
-
-      final frameMeta = device.metadata['spots_frame_v1'];
-      if (frameMeta is! Map) continue;
-
-      final nodeTagRaw = frameMeta['node_tag'];
-      final dimsQRaw = frameMeta['dims_q'];
-      if (nodeTagRaw is! List || dimsQRaw is! List) continue;
-
-      final nodeTag = nodeTagRaw.map((e) => (e as num).toInt()).toList();
-      final dimsQ = dimsQRaw.map((e) => (e as num).toInt()).toList();
-      if (nodeTag.length != 4 || dimsQ.length != 12) continue;
-
-      final nodeTagKey = BleNodeIdentity.nodeTagKeyFromBytes(nodeTag);
-      final remoteConnectOk = frameMeta['connect_ok'] == true;
-
-      frames.add(RoomCoherenceFrame(nodeTag: nodeTag, dimsQ: dimsQ));
-      candidates.add(EventModeCandidate(
-        device: device,
-        nodeTagKey: nodeTagKey,
-        remoteConnectOk: remoteConnectOk,
-      ));
-
-      final prev = _eventModeFamiliarityByNodeTag[nodeTagKey] ?? 0;
-      _eventModeFamiliarityByNodeTag[nodeTagKey] = (prev + 1).clamp(0, 10000);
-    }
-
-    _batteryScheduler?.notifyDiscoverySample(
-      discoveredCount: devices.length,
-      sawHotCandidate: sawHotCandidate,
+    await EventModeScanWindowLane.handle(
+      allowBleSideEffects: _allowBleSideEffects,
+      currentUserId: _currentUserId,
+      hasCurrentPersonality: _currentPersonality != null,
+      lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
+      onEventModeReset: () {
+        _eventModeDeepSyncCount = 0;
+        _eventModeLastDeepSyncAtMsByNodeTag.clear();
+        _eventModeLastEpochAttempted = -1;
+        _eventModeCheckInRunning = false;
+      },
+      devices: devices,
+      hotRssiThresholdDbm: _hotRssiThresholdDbm,
+      familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
+      batteryScheduler: _batteryScheduler,
+      roomCoherenceEngine: _roomCoherenceEngine,
+      maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
+      eventModeMayInitiate: _eventModeMayInitiate,
+      pickEventModeTarget: _pickEventModeTarget,
+      eventEpochMs: _eventEpochMs,
+      eventCheckInWindowMs: _eventCheckInWindowMs,
+      eventMaxDeepSyncPerEvent: _eventMaxDeepSyncPerEvent,
+      eventModeDeepSyncCount: _eventModeDeepSyncCount,
+      eventModeLastEpochAttempted: _eventModeLastEpochAttempted,
+      eventModeCheckInRunning: _eventModeCheckInRunning,
+      setEventModeLastEpochAttempted: (epoch) {
+        _eventModeLastEpochAttempted = epoch;
+      },
+      setEventModeCheckInRunning: (running) {
+        _eventModeCheckInRunning = running;
+      },
+      incrementEventModeDeepSyncCount: () {
+        _eventModeDeepSyncCount += 1;
+      },
+      eventModeLastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
+      waitInitiatorJitter: ({required int epoch}) async {
+        final jitterMs = _eventModeJitterMs(epoch: epoch);
+        if (jitterMs > 0) {
+          await Future<void>.delayed(Duration(milliseconds: jitterMs));
+        }
+      },
+      processHotDevice: _processHotDevice,
     );
-    if (sawHotCandidate) {
-      _batteryScheduler?.notifyHotOpportunity();
-    }
-
-    final room = _roomCoherenceEngine.observeWindowFrames(
-      observedAt: now,
-      frames: frames,
-    );
-
-    // Ambient dense behaves like brownout (no arming).
-    final brownout = room.densityClass == RoomDensityClass.ambientDense;
-
-    final inCheckInWindow = (nowMs % _eventEpochMs) < _eventCheckInWindowMs;
-    final connectOk = inCheckInWindow &&
-        room.linger &&
-        !brownout &&
-        _eventModeDeepSyncCount < _eventMaxDeepSyncPerEvent;
-
-    await _maybeUpdateEventModeBroadcastFlags(
-      eventModeEnabled: true,
-      connectOk: connectOk,
-      brownout: brownout,
-    );
-
-    if (!connectOk) return;
-    if (brownout) return;
-
-    // Only attempt one deep sync per epoch.
-    final epoch = nowMs ~/ _eventEpochMs;
-    if (_eventModeLastEpochAttempted == epoch) return;
-    if (_eventModeCheckInRunning) return;
-
-    // Deterministic initiator: only a small fraction may initiate in a window.
-    if (!_eventModeMayInitiate(epoch: epoch)) return;
-
-    final target = _pickEventModeTarget(
-      candidates: candidates,
-      nowMs: nowMs,
-      epoch: epoch,
-    );
-    if (target == null) return;
-
-    _eventModeLastEpochAttempted = epoch;
-    _eventModeCheckInRunning = true;
-    try {
-      final jitterMs = _eventModeJitterMs(epoch: epoch);
-      if (jitterMs > 0) {
-        await Future<void>.delayed(Duration(milliseconds: jitterMs));
-      }
-
-      // Ensure we still have time left in the window after jitter.
-      final postJitterMs = DateTime.now().millisecondsSinceEpoch;
-      if ((postJitterMs % _eventEpochMs) >= _eventCheckInWindowMs) {
-        return;
-      }
-
-      await _processHotDevice(target.device);
-      _eventModeDeepSyncCount += 1;
-      _eventModeLastDeepSyncAtMsByNodeTag[target.nodeTagKey] = postJitterMs;
-    } finally {
-      _eventModeCheckInRunning = false;
-    }
   }
 
   Future<void> _maybeUpdateEventModeBroadcastFlags({
