@@ -45,6 +45,7 @@ jobs:
           python3 scripts/runtime/generate_lineage_transparency_priority_flow_report.py --check
           python3 scripts/runtime/check_master_plan_signoff_registry.py
           python3 scripts/runtime/generate_master_plan_completion_audit_package.py --check
+          python3 scripts/runtime/generate_controller_orchestrator_reliability_report.py --check
 
       - name: Validate deferred rename governance
         run: |

@@ -33,6 +33,7 @@ Validation commands:
 - `Backlog -> In Progress`: `M6-P3-2`
 - `Backlog -> In Progress`: `M6-P3-3`
 - `Backlog -> Ready`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
+- `Ready -> In Progress`: `M1-P7-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
 
@@ -45,7 +46,7 @@ Validation commands:
 
 | Milestone | Owner | ETA | Risk | Notes |
 |-----------|-------|-----|------|-------|
-| - | - | - | - | No 3-prong tracked milestones remain in progress (`M4-P3-*` through `M6-P3-*` are `Done`) |
+| M1-P7-2 | AP | Week 2-3 | Critical (20) | Controller/orchestrator reliability lane active with deterministic dead-path + canary budget report checks |
 
 ### 3) Blockers
 
@@ -74,7 +75,7 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M1-P7-2` controller/orchestrator reliability implementation and attach evidence.
+1. Complete `M1-P7-2` controller/orchestrator reliability implementation and attach runtime evidence.
 2. Start `M1-P8-1` federated cohort gating + canary/shadow pipeline implementation.
 3. Prepare and execute `M1-P8-2` advisory quarantine + rollback independence validation.
 
@@ -108,6 +109,8 @@ Validation commands:
 - M6-P3-2 lineage transparency config + report automation: `configs/runtime/lineage_transparency_priority_flows.json`, `scripts/runtime/generate_lineage_transparency_priority_flow_report.py`, `docs/plans/methodology/MASTER_PLAN_3_PRONG_LINEAGE_TRANSPARENCY_PRIORITY_FLOW_REPORT.md`
 - M6-P3-3 completion audit baseline: `docs/plans/methodology/M6_P3_3_COMPLETION_AUDIT_SIGNOFF_BASELINE.md`
 - M6-P3-3 completion audit config + sign-off registry + report automation: `configs/runtime/master_plan_completion_audit_package.json`, `configs/runtime/master_plan_signoff_registry.json`, `scripts/runtime/check_master_plan_signoff_registry.py`, `scripts/runtime/update_master_plan_signoff_registry.py`, `scripts/runtime/generate_master_plan_completion_audit_package.py`, `docs/plans/methodology/MASTER_PLAN_3_PRONG_COMPLETION_AUDIT_PACKAGE.md`
+- M1-P7-2 reliability baseline: `docs/plans/methodology/M1_P7_2_CONTROLLER_ORCHESTRATOR_RELIABILITY_BASELINE.md`
+- M1-P7-2 reliability config + report automation: `configs/runtime/controller_orchestrator_reliability_canary.json`, `scripts/runtime/generate_controller_orchestrator_reliability_report.py`, `docs/plans/methodology/MASTER_PLAN_CONTROLLER_ORCHESTRATOR_RELIABILITY_REPORT.md`
 
 ---
 
