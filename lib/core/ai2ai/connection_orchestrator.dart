@@ -38,6 +38,7 @@ import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';
+import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
@@ -90,8 +91,6 @@ import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:avrai/core/models/business/business_expert_message.dart'
-    as chat_models;
 import 'package:avrai/core/models/business/business_business_message.dart'
     as chat_models;
 
@@ -1693,120 +1692,14 @@ class VibeConnectionOrchestrator {
 
   /// Handle incoming business-expert chat message
   Future<void> _handleIncomingBusinessExpertChat(
-    ProtocolMessage message,
+    ProtocolMessage _,
     Map<String, dynamic> payload,
   ) async {
-    try {
-      // Extract required fields
-      final messageId = payload['message_id'] as String?;
-      final conversationId = payload['conversation_id'] as String?;
-      final senderTypeStr = payload['sender_type'] as String?;
-      final senderId = payload['sender_id'] as String?;
-      final recipientTypeStr = payload['recipient_type'] as String?;
-      final recipientId = payload['recipient_id'] as String?;
-      final content = payload['content'] as String?;
-      final encryptedContentStr = payload['encrypted_content'] as String?;
-      final encryptionTypeStr = payload['encryption_type'] as String?;
-      final messageTypeStr = payload['message_type'] as String?;
-      final createdAtStr = payload['created_at'] as String?;
-
-      if (IncomingChatPayloadHelpers.hasMissingRequiredFields(<Object?>[
-        messageId,
-        conversationId,
-        senderTypeStr,
-        senderId,
-        recipientTypeStr,
-        recipientId,
-        content,
-        createdAtStr,
-      ])) {
-        IncomingChatPayloadHelpers.warnIncompleteChatPayload(
-          chatType: 'business-expert',
-          logger: _logger,
-          logName: _logName,
-        );
-        return;
-      }
-      final resolvedMessageId = messageId!;
-      final resolvedConversationId = conversationId!;
-      final resolvedSenderTypeStr = senderTypeStr!;
-      final resolvedSenderId = senderId!;
-      final resolvedRecipientTypeStr = recipientTypeStr!;
-      final resolvedRecipientId = recipientId!;
-      final resolvedContent = content!;
-      final resolvedCreatedAtStr = createdAtStr!;
-
-      // Parse enums
-      final senderType = IncomingChatPayloadHelpers.parseEnumByName(
-        values: chat_models.MessageSenderType.values,
-        name: resolvedSenderTypeStr,
-        fallback: chat_models.MessageSenderType.business,
-      );
-      final recipientType = IncomingChatPayloadHelpers.parseEnumByName(
-        values: chat_models.MessageRecipientType.values,
-        name: resolvedRecipientTypeStr,
-        fallback: chat_models.MessageRecipientType.expert,
-      );
-      final encryptionType = IncomingChatPayloadHelpers.parseEnumByName(
-        values: EncryptionType.values,
-        name: encryptionTypeStr,
-        fallback: EncryptionType.aes256gcm,
-      );
-      final messageType = IncomingChatPayloadHelpers.parseEnumByName(
-        values: chat_models.MessageType.values,
-        name: messageTypeStr,
-        fallback: chat_models.MessageType.text,
-      );
-
-      final encryptedContent = IncomingChatPayloadHelpers.decodeEncryptedContentOrNull(
-        encryptedContentStr: encryptedContentStr,
-        logger: _logger,
-        logName: _logName,
-      );
-
-      final createdAt = IncomingChatPayloadHelpers.parseCreatedAtOrNull(
-        createdAtStr: resolvedCreatedAtStr,
-        logger: _logger,
-        logName: _logName,
-      );
-      if (createdAt == null) return;
-
-      // Create message object
-      final chatMessage = chat_models.BusinessExpertMessage(
-        id: resolvedMessageId,
-        conversationId: resolvedConversationId,
-        senderType: senderType,
-        senderId: resolvedSenderId,
-        recipientType: recipientType,
-        recipientId: resolvedRecipientId,
-        content: resolvedContent,
-        encryptedContent: encryptedContent,
-        encryptionType: encryptionType,
-        type: messageType,
-        isRead: false,
-        readAt: null,
-        createdAt: createdAt,
-        updatedAt: DateTime.now(),
-      );
-
-      await ConversationStoreWriter.appendMessage(
-        boxName: 'business_expert_messages',
-        conversationId: chatMessage.conversationId,
-        messageJson: chatMessage.toJson(),
-      );
-
-      _logger.debug(
-        'Saved incoming business-expert chat message: $resolvedMessageId',
-        tag: _logName,
-      );
-    } catch (e, st) {
-      _logger.error(
-        'Error handling incoming business-expert chat: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await IncomingBusinessExpertChatLane.handle(
+      payload: payload,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Handle incoming business-business chat message
