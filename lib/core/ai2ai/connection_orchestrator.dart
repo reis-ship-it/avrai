@@ -41,6 +41,7 @@ import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_side_effects.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -2151,19 +2152,28 @@ class VibeConnectionOrchestrator {
         deltas: deltas,
       );
 
-      _emitIncomingLearningInsightSuccessSideEffects(
+      IncomingLearningInsightSideEffects.emitSuccess(
         insightId: insightId,
         sender: sender,
         originId: originId,
         hop: hop,
         learningQuality: learningQuality,
         deltaDimensionsCount: deltas.length,
-        payload: payload,
+        forwardGossip: () {
+          unawaited(_maybeForwardLearningInsightGossip(
+            payload: payload,
+            originId: originId,
+            hop: hop,
+            receivedFromDeviceId: sender,
+          ));
+        },
       );
     } catch (e) {
-      _emitIncomingLearningInsightFailureSideEffects(
+      IncomingLearningInsightSideEffects.emitFailure(
         error: e,
         senderDeviceId: message.senderId,
+        logger: _logger,
+        logTag: _logName,
       );
     }
   }
@@ -2535,60 +2545,6 @@ class VibeConnectionOrchestrator {
     );
 
     return true;
-  }
-
-  void _emitIncomingLearningInsightSuccessSideEffects({
-    required String insightId,
-    required String sender,
-    required String originId,
-    required int hop,
-    required double learningQuality,
-    required int deltaDimensionsCount,
-    required Map<String, dynamic> payload,
-  }) {
-    if (LedgerAuditV0.isEnabled) {
-      unawaited(LedgerAuditV0.tryAppend(
-        domain: LedgerDomainV0.deviceCapability,
-        eventType: 'ai2ai_learning_insight_received',
-        occurredAt: DateTime.now(),
-        payload: <String, Object?>{
-          'insight_id': insightId,
-          'sender_device_id': sender,
-          'origin_id': originId,
-          'hop': hop,
-          'schema_version': 1,
-          'learning_quality': learningQuality,
-          'delta_dimensions_count': deltaDimensionsCount,
-        },
-      ));
-    }
-
-    // BLE gossip forwarding (limited-hop) improves offline propagation.
-    unawaited(_maybeForwardLearningInsightGossip(
-      payload: payload,
-      originId: originId,
-      hop: hop,
-      receivedFromDeviceId: sender,
-    ));
-  }
-
-  void _emitIncomingLearningInsightFailureSideEffects({
-    required Object error,
-    required String senderDeviceId,
-  }) {
-    _logger.debug('Failed to apply incoming learning insight: $error',
-        tag: _logName);
-    if (!LedgerAuditV0.isEnabled) return;
-
-    unawaited(LedgerAuditV0.tryAppend(
-      domain: LedgerDomainV0.deviceCapability,
-      eventType: 'ai2ai_learning_insight_receive_failed',
-      occurredAt: DateTime.now(),
-      payload: <String, Object?>{
-        'sender_device_id': senderDeviceId,
-        'error': error.toString(),
-      },
-    ));
   }
 
   /// Manage Signal Protocol session lifecycle for AI2AI connections
