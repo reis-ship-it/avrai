@@ -38,8 +38,10 @@ Validation commands:
 - `Ready -> In Progress`: `M1-P8-2`
 - `Ready -> In Progress`: `M2-P1-1`
 - `Backlog -> In Progress`: `M2-P3-1`
+- `Backlog -> In Progress`: `M2-P4-1`
 - `In Progress -> Done`: `M2-P1-1`
 - `In Progress -> Done`: `M2-P3-1`
+- `In Progress -> Done`: `M2-P4-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -82,9 +84,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M2-P4-1` energy function safety/regression governance baseline wiring.
-2. Prepare `M2-P5-1` transition predictor drift/calibration controls baseline wiring.
-3. Queue `M2-P6-1` MPC safety envelope checks for the following execution slice.
+1. Start `M2-P5-1` transition predictor drift/calibration controls baseline wiring.
+2. Queue `M2-P6-1` MPC safety envelope checks for the following execution slice.
+3. Prepare `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
 
 ### 7) Evidence Links
 
@@ -130,6 +132,10 @@ Validation commands:
 - M2-P3-1 state encoder consistency/freshness config + report automation: `configs/runtime/state_encoder_consistency_freshness_controls.json`, `scripts/runtime/generate_state_encoder_consistency_freshness_report.py`, `docs/plans/methodology/MASTER_PLAN_STATE_ENCODER_CONSISTENCY_FRESHNESS_REPORT.md`
 - M2-P3-1 state encoder consistency contract + tests: `lib/core/models/state_encoder_consistency_contract.dart`, `test/unit/models/state_encoder_consistency_contract_test.dart`
 - M2-P3-1 test report: `flutter test test/unit/models/state_encoder_consistency_contract_test.dart` (pass)
+- M2-P4-1 energy safety/regression baseline: `docs/plans/methodology/M2_P4_1_ENERGY_FUNCTION_SAFETY_REGRESSION_BASELINE.md`
+- M2-P4-1 energy safety/regression config + report automation: `configs/runtime/energy_function_safety_regression_controls.json`, `scripts/runtime/generate_energy_function_safety_regression_report.py`, `docs/plans/methodology/MASTER_PLAN_ENERGY_FUNCTION_SAFETY_REGRESSION_REPORT.md`
+- M2-P4-1 energy safety contract + tests: `lib/core/ml/energy_function_safety_contract.dart`, `test/unit/ml/energy_function_safety_contract_test.dart`
+- M2-P4-1 test report: `flutter test test/unit/ml/energy_function_safety_contract_test.dart` (pass)
 
 ---
 

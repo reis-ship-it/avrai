@@ -1,0 +1,32 @@
+{
+  "asymmetric_loss_regression": {
+    "holdout_samples": 1600,
+    "max_regression_delta_pct": 0.8,
+    "observed_regression_delta_pct": 0.21,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T19:20:00Z",
+  "loss_weight_policy": {
+    "model_failure_weight": 3.0,
+    "negative_outcome_weight": 2.0,
+    "positive_outcome_weight": 1.0,
+    "within_threshold": true
+  },
+  "promotion_guardrails": {
+    "fail_closed_enabled": true,
+    "guardrail_audits": 12,
+    "rollback_readiness_passed": true,
+    "within_threshold": true
+  },
+  "safety_bounds": {
+    "evaluated_decisions": 2400,
+    "hard_bounds_passed": true,
+    "max_policy_violation_rate_pct": 0.25,
+    "observed_policy_violation_rate_pct": 0.03,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/energy_function_safety_regression_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}
