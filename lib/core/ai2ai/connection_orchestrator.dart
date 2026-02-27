@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
-import 'package:crypto/crypto.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
@@ -64,6 +63,7 @@ import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
@@ -1802,54 +1802,18 @@ class VibeConnectionOrchestrator {
   void _startBleInboxProcessing() {
     if (!_allowBleSideEffects) return;
     _bleInboxPoller?.cancel();
-    _bleInboxPoller = Timer.periodic(const Duration(seconds: 2), (_) async {
-      final protocol = _protocol;
-      if (protocol == null) return;
-
-      try {
-        final messages = await BleInbox.pollMessages(maxMessages: 50);
-        if (messages.isEmpty) return;
-
-        for (final msg in messages) {
-          // Replay protection: drop duplicates within a short window.
-          final hash = sha256.convert(msg.data).toString();
-          final nowMs = DateTime.now().millisecondsSinceEpoch;
-          final existingExpiry = _seenBleMessageHashes[hash];
-          if (existingExpiry != null && existingExpiry > nowMs) {
-            continue;
-          }
-          _seenBleMessageHashes[hash] =
-              nowMs + const Duration(minutes: 10).inMilliseconds;
-
-          // Decoding triggers Signal decrypt + session creation for PreKey messages.
-          final decoded = await protocol.decodeMessage(msg.data, msg.senderId);
-          if (decoded == null) continue;
-
-          // Route messages based on type (routing happens before payload decryption)
-          if (decoded.type == MessageType.learningInsight) {
-            // Check if this is a locality agent update, organic spot
-            // discovery signal, or general learning insight
-            final payload = decoded.payload;
-            final type = payload['type'] as String?;
-            if (type == 'locality_agent_update') {
-              await _handleIncomingLocalityAgentUpdate(decoded);
-            } else if (type == 'organic_spot_discovery') {
-              await _handleIncomingOrganicSpotDiscovery(decoded);
-            } else {
-              await _handleIncomingLearningInsight(decoded);
-            }
-          } else if (decoded.type == MessageType.userChat) {
-            // Route user-to-user chat messages to UI layer
-            await _handleIncomingUserChat(decoded);
-          }
-        }
-
-        await _persistSeenBleHashesIfNeeded();
-        await _persistSeenLearningInsightIdsIfNeeded();
-      } catch (e) {
-        _logger.warn('BLE inbox processing error: $e', tag: _logName);
-      }
-    });
+    _bleInboxPoller = BleInboxProcessingLane.start(
+      protocol: _protocol,
+      seenBleMessageHashes: _seenBleMessageHashes,
+      handleIncomingLocalityAgentUpdate: _handleIncomingLocalityAgentUpdate,
+      handleIncomingOrganicSpotDiscovery: _handleIncomingOrganicSpotDiscovery,
+      handleIncomingLearningInsight: _handleIncomingLearningInsight,
+      handleIncomingUserChat: _handleIncomingUserChat,
+      persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
+      persistSeenLearningInsightIdsIfNeeded: _persistSeenLearningInsightIdsIfNeeded,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   bool _isFederatedLearningParticipationEnabled() {
