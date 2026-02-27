@@ -13,6 +13,7 @@ import 'package:avrai/core/services/social_media/fallbacks/social_placeholder_pr
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
 import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
 import 'package:avrai/core/services/social_media/sync/social_request_throttle.dart';
+import 'package:avrai/core/services/social_media/sync/social_token_refresh_lane.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
@@ -2277,28 +2278,14 @@ class SocialMediaConnectionService {
   }
 
   /// Refresh token if needed
-  Future<bool> _refreshTokenIfNeeded(
-      String platform, String currentToken) async {
-    try {
-      // Get all connections to find the one for this platform
-      // Note: This is a simplified implementation - in production, we'd cache the agentId
-      final platforms = ['google', 'instagram', 'facebook'];
-      for (final p in platforms) {
-        // Try to find connection - this is a simplified approach
-        // In production, we'd have a better way to map platform to agentId
-        final connections = await _getAllConnectionsForPlatform(p);
-        for (final connection in connections) {
-          if (connection.platform == platform && connection.isActive) {
-            return await _refreshTokenForConnection(connection);
-          }
-        }
-      }
-
-      return false;
-    } catch (e) {
-      _logger.error('Failed to refresh token: $e', tag: _logName);
-      return false;
-    }
+  Future<bool> _refreshTokenIfNeeded(String platform, String _) async {
+    return SocialTokenRefreshLane.refreshIfNeeded(
+      platform: platform,
+      getAllConnectionsForPlatform: _getAllConnectionsForPlatform,
+      refreshForConnection: _refreshTokenForConnection,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Refresh token for a specific connection
@@ -2317,21 +2304,11 @@ class SocialMediaConnectionService {
         return false;
       }
 
-      // Check if token is expired or about to expire (within 5 minutes)
       final expiresAtStr = tokens['expires_at'] as String?;
-      if (expiresAtStr != null) {
-        try {
-          final expiresAt = DateTime.parse(expiresAtStr);
-          final now = DateTime.now();
-          final timeUntilExpiry = expiresAt.difference(now);
-
-          // Only refresh if expired or expiring within 5 minutes
-          if (timeUntilExpiry.inMinutes > 5) {
-            return false; // Token still valid
-          }
-        } catch (e) {
-          // If we can't parse expiration, assume it needs refresh
-        }
+      if (!SocialTokenRefreshLane.shouldRefreshToken(
+        expiresAtIso8601: expiresAtStr,
+      )) {
+        return false;
       }
 
       // Refresh token based on platform
