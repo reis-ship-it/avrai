@@ -25,6 +25,7 @@ import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
+import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
@@ -267,7 +268,7 @@ class VibeConnectionOrchestrator {
       final personalityData = device.personalityData;
       if (personalityData == null) continue;
 
-      final vibe = _createVibeFromAnonymizedData(personalityData);
+      final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
       final trustScore = device.proximityScore * 0.7 + 0.3;
 
       final node = AIPersonalityNode(
@@ -1015,7 +1016,7 @@ class VibeConnectionOrchestrator {
           await _deviceDiscovery?.extractPersonalityData(device);
       if (personalityData == null) return;
 
-      final vibe = _createVibeFromAnonymizedData(personalityData);
+      final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
 
       final proximityScore =
           _deviceDiscovery?.calculateProximity(device) ?? 0.5;
@@ -3164,7 +3165,7 @@ class VibeConnectionOrchestrator {
           }
 
           // Create vibe from anonymized data
-          final vibe = _createVibeFromAnonymizedData(personalityData);
+          final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
 
           // Calculate trust score based on proximity and signal strength
           final proximityScore = _deviceDiscovery.calculateProximity(device);
@@ -3460,25 +3461,6 @@ class VibeConnectionOrchestrator {
         tag: _logName,
       );
     }
-  }
-
-  /// Create UserVibe from AnonymizedVibeData
-  UserVibe _createVibeFromAnonymizedData(AnonymizedVibeData anonymizedData) {
-    // Extract metrics from anonymized data
-    final metrics = anonymizedData.anonymizedMetrics;
-
-    // Create UserVibe using anonymized dimensions and metrics
-    return UserVibe(
-      hashedSignature: anonymizedData.vibeSignature,
-      anonymizedDimensions: anonymizedData.noisyDimensions,
-      overallEnergy: metrics.energy,
-      socialPreference: metrics.social,
-      explorationTendency: metrics.exploration,
-      createdAt: anonymizedData.createdAt,
-      expiresAt: anonymizedData.expiresAt,
-      privacyLevel: anonymizedData.anonymizationQuality,
-      temporalContext: anonymizedData.temporalContextHash,
-    );
   }
 
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {
