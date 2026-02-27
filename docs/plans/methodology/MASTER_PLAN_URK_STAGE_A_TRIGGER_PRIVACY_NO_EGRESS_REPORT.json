@@ -1,0 +1,33 @@
+{
+  "errors": [],
+  "evaluation_window": {
+    "end": "2026-02-27T23:45:00Z",
+    "start": "2026-02-27T00:00:00Z"
+  },
+  "generated_at": "2026-02-27T23:55:00Z",
+  "no_egress_enforcement": {
+    "checks_executed": 180,
+    "max_no_egress_violations": 0,
+    "observed_local_sovereign_coverage_pct": 100.0,
+    "observed_no_egress_violations": 0,
+    "required_local_sovereign_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "privacy_mode_gating": {
+    "observed_consent_gate_coverage_pct": 100.0,
+    "observed_privacy_mode_policy_coverage_pct": 100.0,
+    "policy_checks_executed": 320,
+    "required_consent_gate_coverage_pct": 100.0,
+    "required_privacy_mode_policy_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_stage_a_trigger_privacy_no_egress_controls.json",
+  "trigger_coverage": {
+    "observed_trigger_class_coverage_pct": 100.0,
+    "required_trigger_class_coverage_pct": 100.0,
+    "trigger_classes_validated": 5,
+    "within_threshold": true
+  },
+  "verdict": "PASS",
+  "version": "v1"
+}

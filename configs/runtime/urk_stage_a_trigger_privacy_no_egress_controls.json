@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:55:00Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:45:00Z"
+  },
+  "trigger_coverage": {
+    "required_trigger_class_coverage_pct": 100.0,
+    "observed_trigger_class_coverage_pct": 100.0,
+    "trigger_classes_validated": 5
+  },
+  "privacy_mode_gating": {
+    "required_privacy_mode_policy_coverage_pct": 100.0,
+    "observed_privacy_mode_policy_coverage_pct": 100.0,
+    "required_consent_gate_coverage_pct": 100.0,
+    "observed_consent_gate_coverage_pct": 100.0,
+    "policy_checks_executed": 320
+  },
+  "no_egress_enforcement": {
+    "required_local_sovereign_coverage_pct": 100.0,
+    "observed_local_sovereign_coverage_pct": 100.0,
+    "max_no_egress_violations": 0,
+    "observed_no_egress_violations": 0,
+    "checks_executed": 180
+  }
+}
