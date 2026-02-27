@@ -40,6 +40,7 @@ import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/mesh_packet_forwarder.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -1059,56 +1060,45 @@ class VibeConnectionOrchestrator {
   void _maybeLogHotMetrics() {
     // Throttle logs so they’re useful, not noisy.
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    if (nowMs - _lastHotMetricsLogAtMs <
-        _hotMetricsLogInterval.inMilliseconds) {
+    if (!HotPathTelemetrySnapshotBuilder.shouldLog(
+      nowMs: nowMs,
+      lastLogAtMs: _lastHotMetricsLogAtMs,
+      minInterval: _hotMetricsLogInterval,
+    )) {
       return;
     }
     _lastHotMetricsLogAtMs = nowMs;
 
-    final total = _hotTotalMs.summary();
-    if (total.count == 0) return;
-
-    final q = _hotQueueWaitMs.summary();
-    final open = _hotSessionOpenMs.summary();
-    final vibe = _hotVibeReadMs.summary();
-    final compat = _hotCompatMs.summary();
-
-    _logger.debug(
-      'HotPath latency ms '
-      '(n=${total.count}) '
-      'queue(p50=${q.p50},p95=${q.p95}) '
-      'open(p50=${open.p50},p95=${open.p95}) '
-      'vibe(p50=${vibe.p50},p95=${vibe.p95}) '
-      'compat(p50=${compat.p50},p95=${compat.p95}) '
-      'total(p50=${total.p50},p95=${total.p95})',
-      tag: _logName,
+    final snapshot = HotPathTelemetrySnapshotBuilder.build(
+      queueWait: _hotQueueWaitMs,
+      sessionOpen: _hotSessionOpenMs,
+      vibeRead: _hotVibeReadMs,
+      compatibility: _hotCompatMs,
+      total: _hotTotalMs,
     );
+    if (snapshot.count == 0) return;
+
+    _logger.debug(snapshot.formatLogLine(), tag: _logName);
     if (LedgerAuditV0.isEnabled) {
       unawaited(LedgerAuditV0.tryAppend(
         domain: LedgerDomainV0.deviceCapability,
         eventType: 'ai2ai_hotpath_latency_summary',
         occurredAt: DateTime.now(),
-        payload: debugHotPathLatencySummary().cast<String, Object?>(),
+        payload: snapshot.toJson().cast<String, Object?>(),
       ));
     }
   }
 
   @visibleForTesting
   Map<String, dynamic> debugHotPathLatencySummary() {
-    final total = _hotTotalMs.summary();
-    final q = _hotQueueWaitMs.summary();
-    final open = _hotSessionOpenMs.summary();
-    final vibe = _hotVibeReadMs.summary();
-    final compat = _hotCompatMs.summary();
-
-    return <String, dynamic>{
-      'count': total.count,
-      'queue': q.toJson(),
-      'open': open.toJson(),
-      'vibe': vibe.toJson(),
-      'compat': compat.toJson(),
-      'total': total.toJson(),
-    };
+    final snapshot = HotPathTelemetrySnapshotBuilder.build(
+      queueWait: _hotQueueWaitMs,
+      sessionOpen: _hotSessionOpenMs,
+      vibeRead: _hotVibeReadMs,
+      compatibility: _hotCompatMs,
+      total: _hotTotalMs,
+    );
+    return snapshot.toJson();
   }
 
   Future<void> _ensureLocalBleNodeId() async {
