@@ -57,6 +57,7 @@ import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/braided_knot_connection_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_request_encoding_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2748,34 +2749,17 @@ class VibeConnectionOrchestrator {
     String remoteAgentId,
   ) async {
     try {
-      // Use protocol to encode initial connection message if available
-      if (_protocol != null) {
-        try {
-          // Encode connection establishment message via protocol
-          final connectionMessage = await _protocol.encodeMessage(
-            type: MessageType.connectionRequest,
-            payload: {
-              'local_vibe_archetype': localVibe.getVibeArchetype(),
-              'remote_vibe_archetype': remoteNode.vibe.getVibeArchetype(),
-              'initial_compatibility': compatibility.basicCompatibility,
-              'connection_id': initialMetrics.connectionId,
-            },
-            senderNodeId: initialMetrics.localAISignature,
-            recipientNodeId: remoteNode.nodeId,
-          );
-          // #region agent log
-          _logger.debug(
-              'Encoded connection message via protocol: type=${connectionMessage.type.name}, sender=${connectionMessage.senderId}',
-              tag: _logName);
-          // #endregion
-        } catch (e) {
-          // #region agent log
-          _logger.warn(
-              'Error encoding protocol message: $e, continuing without protocol',
-              tag: _logName);
-          // #endregion
-        }
-      }
+      await ConnectionRequestEncodingLane.maybeEncode(
+        protocol: _protocol,
+        localVibeArchetype: localVibe.getVibeArchetype(),
+        remoteVibeArchetype: remoteNode.vibe.getVibeArchetype(),
+        initialCompatibility: compatibility.basicCompatibility,
+        connectionId: initialMetrics.connectionId,
+        senderNodeId: initialMetrics.localAISignature,
+        recipientNodeId: remoteNode.nodeId,
+        logger: _logger,
+        logName: _logName,
+      );
 
       // Simulate connection establishment process
       await Future.delayed(const Duration(milliseconds: 200));
