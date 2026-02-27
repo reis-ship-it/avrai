@@ -41,6 +41,7 @@ import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
+import 'package:avrai/core/ai2ai/resilience/federated_gossip_forwarding_gate.dart';
 import 'package:avrai/core/ai2ai/resilience/gossip_fingerprint.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
@@ -2548,28 +2549,15 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final fingerprint = GossipFingerprint.fromPayload(payload);
-    final messageHash = fingerprint.messageHash;
-    final scope = fingerprint.scope;
-    final bloomFilter = _getOrCreateBloomFilter(scope);
-
-    if (!BloomLoopGuard.allowForward(
-      bloomFilter: bloomFilter,
-      messageHash: messageHash,
-      scope: scope,
+    if (!FederatedGossipForwardingGate.allow(
+      payload: payload,
+      hop: hop,
+      adaptiveMeshService: _adaptiveMeshService,
+      getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
       logName: _logName,
-    )) {
-      return;
-    }
-
-    if (!AdaptiveHopGuard.shouldForward(
-      adaptiveMeshService: _adaptiveMeshService,
-      currentHop: hop,
       priority: mesh_policy.MessagePriority.medium,
       messageType: mesh_policy.MessageType.learningInsight,
-      geographicScope: scope,
       fallbackMaxHopExclusive: 1,
     )) {
       return;
@@ -4188,30 +4176,17 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final fingerprint = GossipFingerprint.fromPayload(payload);
-    final messageHash = fingerprint.messageHash;
-    final scope = fingerprint.scope;
-    final bloomFilter = _getOrCreateBloomFilter(scope);
-
-    if (!BloomLoopGuard.allowForward(
-      bloomFilter: bloomFilter,
-      messageHash: messageHash,
-      scope: scope,
+    if (!FederatedGossipForwardingGate.allow(
+      payload: payload,
+      hop: hop,
+      adaptiveMeshService: _adaptiveMeshService,
+      getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
       logName: _logName,
-      duplicateLabel: 'locality agent update',
-    )) {
-      return;
-    }
-
-    if (!AdaptiveHopGuard.shouldForward(
-      adaptiveMeshService: _adaptiveMeshService,
-      currentHop: hop,
       priority: mesh_policy.MessagePriority.high,
       messageType: mesh_policy.MessageType.localityAgentUpdate,
-      geographicScope: scope,
       fallbackMaxHopExclusive: 2,
+      duplicateLabel: 'locality agent update',
     )) {
       return;
     }
