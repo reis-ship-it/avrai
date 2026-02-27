@@ -31,7 +31,6 @@ import 'package:avrai/core/ai2ai/routing/federated_gossip_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
-import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
@@ -56,6 +55,7 @@ import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
@@ -1933,24 +1933,17 @@ class VibeConnectionOrchestrator {
     required String recipientId,
     required DiscoveredDevice device,
   }) async {
-    if (!_allowBleSideEffects) {
-      return;
-    }
-
-    final forwardingContext = _tryCreateMeshForwardingContext();
-    if (forwardingContext == null) return;
-
-    await PrekeyBundleMeshForwardingLane.forward(
+    await PrekeyMeshForwardBridgeLane.forward(
+      allowBleSideEffects: _allowBleSideEffects,
+      tryCreateMeshForwardingContext: _tryCreateMeshForwardingContext,
       bundle: bundle,
       recipientId: recipientId,
       discoveredNodeIds: _discoveredNodeIds,
-      context: forwardingContext,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
       logger: _logger,
       logName: _logName,
-      maxCandidates: 2,
     );
   }
 
