@@ -41,11 +41,15 @@ Validation commands:
 - `Backlog -> In Progress`: `M2-P4-1`
 - `Backlog -> In Progress`: `M2-P5-1`
 - `Backlog -> In Progress`: `M2-P6-1`
+- `Backlog -> In Progress`: `M3-P9-1`
+- `Backlog -> In Progress`: `M3-P11-1`
 - `In Progress -> Done`: `M2-P1-1`
 - `In Progress -> Done`: `M2-P3-1`
 - `In Progress -> Done`: `M2-P4-1`
 - `In Progress -> Done`: `M2-P5-1`
 - `In Progress -> Done`: `M2-P6-1`
+- `In Progress -> Done`: `M3-P9-1`
+- `In Progress -> Done`: `M3-P11-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -88,9 +92,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
-2. Start `M3-P11-1` integration governance + contract security gates baseline wiring.
-3. Prepare M3 weekly closeout evidence package for governance review.
+1. Continue `M0-P10-3` split-pass wiring + CI guard/contracts hardening closeout.
+2. Prepare governance weekly closeout evidence package from M2/M3 milestone completions.
+3. Run final pass for branch-wide board/review sync and readiness handoff.
 
 ### 7) Evidence Links
 
@@ -148,6 +152,14 @@ Validation commands:
 - M2-P6-1 planner guardrail/rollback config + report automation: `configs/runtime/planner_guardrail_rollback_hardening_controls.json`, `scripts/runtime/generate_planner_guardrail_rollback_hardening_report.py`, `docs/plans/methodology/MASTER_PLAN_PLANNER_GUARDRAIL_ROLLBACK_HARDENING_REPORT.md`
 - M2-P6-1 planner guardrail/rollback contract + tests: `lib/core/ai/planner_guardrail_rollback_contract.dart`, `test/unit/ai/planner_guardrail_rollback_contract_test.dart`
 - M2-P6-1 test report: `flutter test test/unit/ai/planner_guardrail_rollback_contract_test.dart` (pass)
+- M3-P9-1 business consent/DP governance baseline: `docs/plans/methodology/M3_P9_1_BUSINESS_DATA_CONSENT_GOVERNANCE_BASELINE.md`
+- M3-P9-1 business consent/DP config + report automation: `configs/runtime/business_data_consent_governance_controls.json`, `scripts/runtime/generate_business_data_consent_governance_report.py`, `docs/plans/methodology/MASTER_PLAN_BUSINESS_DATA_CONSENT_GOVERNANCE_REPORT.md`
+- M3-P9-1 business consent/DP contract + tests: `lib/core/services/business/business_data_consent_governance_contract.dart`, `test/unit/services/business_data_consent_governance_contract_test.dart`
+- M3-P9-1 test report: `flutter test test/unit/services/business_data_consent_governance_contract_test.dart` (pass)
+- M3-P11-1 integration governance/security baseline: `docs/plans/methodology/M3_P11_1_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_BASELINE.md`
+- M3-P11-1 integration governance/security config + report automation: `configs/runtime/integration_governance_contract_security_controls.json`, `scripts/runtime/generate_integration_governance_contract_security_report.py`, `docs/plans/methodology/MASTER_PLAN_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_REPORT.md`
+- M3-P11-1 integration governance/security contract + tests: `lib/core/cloud/integration_governance_contract_security_contract.dart`, `test/unit/cloud/integration_governance_contract_security_contract_test.dart`
+- M3-P11-1 test report: `flutter test test/unit/cloud/integration_governance_contract_security_contract_test.dart` (pass)
 
 ---
 

@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T21:10:00Z",
+  "evaluation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T20:55:00Z"
+  },
+  "consent_coverage": {
+    "min_coverage_pct": 99.9,
+    "observed_coverage_pct": 100.0,
+    "unauthorized_processing_events": 0,
+    "evaluated_data_flows": 1250
+  },
+  "dp_enforcement": {
+    "max_dp_budget_usage_pct": 80.0,
+    "observed_dp_budget_usage_pct": 31.0,
+    "epsilon_budget_exceeded_events": 0,
+    "dp_checks_executed": 640
+  },
+  "audit_completeness": {
+    "required_completeness_pct": 100.0,
+    "observed_completeness_pct": 100.0,
+    "retention_policy_passed": true,
+    "audit_entries_verified": 1880
+  }
+}
