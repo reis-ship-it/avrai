@@ -46,6 +46,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_process
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -1141,31 +1142,23 @@ class VibeConnectionOrchestrator {
   }
 
   void _loadSeenBleHashes() {
-    if (_seenBleMessageHashes.isNotEmpty) return;
-    final list = _prefs.getStringList(_prefsKeySeenBleHashes) ?? const [];
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    for (final item in list) {
-      final parts = item.split(':');
-      if (parts.length != 2) continue;
-      final hash = parts[0];
-      final expiresAt = int.tryParse(parts[1]) ?? 0;
-      if (hash.isEmpty || expiresAt <= nowMs) continue;
-      _seenBleMessageHashes[hash] = expiresAt;
-    }
+    BleReplayHashCache.load(
+      prefs: _prefs,
+      prefsKey: _prefsKeySeenBleHashes,
+      seenBleMessageHashes: _seenBleMessageHashes,
+      nowMs: DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
   Future<void> _persistSeenBleHashesIfNeeded() async {
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    if (nowMs - _lastSeenHashesPersistMs < 15 * 1000) return;
-    _lastSeenHashesPersistMs = nowMs;
-
-    _seenBleMessageHashes.removeWhere((_, exp) => exp <= nowMs);
-    final entries = _seenBleMessageHashes.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final capped = entries.take(200).toList();
-
-    final list = capped.map((e) => '${e.key}:${e.value}').toList();
-    await _prefs.setStringList(_prefsKeySeenBleHashes, list);
+    _lastSeenHashesPersistMs = await BleReplayHashCache.persistIfNeeded(
+      prefs: _prefs,
+      prefsKey: _prefsKeySeenBleHashes,
+      seenBleMessageHashes: _seenBleMessageHashes,
+      nowMs: nowMs,
+      lastPersistMs: _lastSeenHashesPersistMs,
+    );
   }
 
   Future<void> _maybeApplyPassiveAi2AiLearning({
