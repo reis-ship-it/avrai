@@ -41,6 +41,7 @@ import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
+import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_side_effects.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
@@ -1155,7 +1156,11 @@ class VibeConnectionOrchestrator {
 
     final now = DateTime.now();
     for (final node in nodes) {
-      if (_isPeerLearningThrottled(peerId: node.nodeId, now: now)) {
+      if (LearningInsightFlowGate.isPeerLearningThrottled(
+        lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+        peerId: node.nodeId,
+        now: now,
+      )) {
         continue;
       }
 
@@ -2031,28 +2036,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  bool _markInsightSeenIfFresh({
-    required String insightId,
-    required int nowMs,
-    required int expiresAtMs,
-  }) {
-    final seenExpiry = _seenLearningInsightIds[insightId];
-    if (seenExpiry != null && seenExpiry > nowMs) {
-      return false;
-    }
-    _seenLearningInsightIds[insightId] = expiresAtMs;
-    return true;
-  }
-
-  bool _isPeerLearningThrottled({
-    required String peerId,
-    required DateTime now,
-    Duration minInterval = const Duration(minutes: 20),
-  }) {
-    final last = _lastAi2AiLearningAtByPeerId[peerId];
-    return last != null && now.difference(last) < minInterval;
-  }
-
   Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
     // Respect user setting.
     final learningEnabled =
@@ -2082,7 +2065,8 @@ class VibeConnectionOrchestrator {
       final deltas = parseResult.deltas;
 
       // Dedupe.
-      if (!_markInsightSeenIfFresh(
+      if (!LearningInsightFlowGate.markSeenIfFresh(
+        seenLearningInsightIds: _seenLearningInsightIds,
         insightId: insightId,
         nowMs: nowMs,
         expiresAtMs: expiresAtMs,
@@ -2093,7 +2077,11 @@ class VibeConnectionOrchestrator {
       // Throttle per sender.
       final now = DateTime.now();
       final sender = message.senderId;
-      if (_isPeerLearningThrottled(peerId: sender, now: now)) {
+      if (LearningInsightFlowGate.isPeerLearningThrottled(
+        lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+        peerId: sender,
+        now: now,
+      )) {
         return;
       }
 
