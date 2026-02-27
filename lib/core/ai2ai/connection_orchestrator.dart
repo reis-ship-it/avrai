@@ -70,6 +70,7 @@ import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -1448,45 +1449,14 @@ class VibeConnectionOrchestrator {
 
   /// Manage active AI2AI connections for learning and quality
   Future<void> manageActiveConnections() async {
-    if (_activeConnections.isEmpty) return;
-
-    _logger.debug('Managing ${_activeConnections.length} active connections',
-        tag: _logName);
-
-    final completedConnections = <String>[];
-
-    for (final connection in _activeConnections.values) {
-      try {
-        // Check if connection should continue
-        if (!connection.shouldContinue || connection.hasReachedMaxDuration) {
-          // Complete the connection
-          final completedConnection = await _completeConnection(connection);
-          if (completedConnection != null) {
-            completedConnections.add(completedConnection.connectionId);
-          }
-          continue;
-        }
-
-        // Update connection with new learning interactions
-        await _updateConnectionLearning(connection);
-
-        // Monitor connection health
-        await _monitorConnectionHealth(connection);
-      } catch (e) {
-        _logger.error('Error managing connection ${connection.connectionId}',
-            error: e, tag: _logName);
-        completedConnections.add(connection.connectionId);
-      }
-    }
-
-    // Remove completed connections
-    for (final connectionId in completedConnections) {
-      _activeConnections.remove(connectionId);
-    }
-
-    _logger.debug(
-        'Connection management completed. Active: ${_activeConnections.length}',
-        tag: _logName);
+    await ActiveConnectionManagementLane.run(
+      activeConnections: _activeConnections,
+      completeConnection: _completeConnection,
+      updateConnectionLearning: _updateConnectionLearning,
+      monitorConnectionHealth: _monitorConnectionHealth,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Get count of active connections
