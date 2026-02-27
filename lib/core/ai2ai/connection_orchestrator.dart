@@ -38,6 +38,7 @@ import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_l
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
@@ -2175,36 +2176,19 @@ class VibeConnectionOrchestrator {
   Future<void> _handleIncomingUserChat(ProtocolMessage message) async {
     try {
       final payload = message.payload;
-
-      // Optional: Validate message_category in payload (post-decryption validation/clarity)
-      final messageCategory = payload['message_category'] as String?;
-      if (messageCategory != null && messageCategory != 'user_chat') {
-        _logger.warn(
-          'Received userChat message with mismatched category: $messageCategory',
-          tag: _logName,
-        );
-        // Continue anyway - category is optional
-      }
-
-      // Determine chat type from payload structure
-      // Business-expert chats have: sender_type, business_id, expert_id
-      // Business-business chats have: sender_business_id, recipient_business_id
-      final hasBusinessExpertFields = payload.containsKey('sender_type') &&
-          (payload.containsKey('business_id') ||
-              payload.containsKey('expert_id'));
-      final hasBusinessBusinessFields =
-          payload.containsKey('sender_business_id') &&
-              payload.containsKey('recipient_business_id');
-
-      if (hasBusinessExpertFields) {
-        await _handleIncomingBusinessExpertChat(message, payload);
-      } else if (hasBusinessBusinessFields) {
-        await _handleIncomingBusinessBusinessChat(message, payload);
-      } else {
-        _logger.warn(
-          'Received userChat message with unrecognized payload structure: ${payload.keys}',
-          tag: _logName,
-        );
+      switch (IncomingUserChatRouter.resolveRoute(
+        payload: payload,
+        logger: _logger,
+        logName: _logName,
+      )) {
+        case IncomingUserChatRoute.businessExpert:
+          await _handleIncomingBusinessExpertChat(message, payload);
+          break;
+        case IncomingUserChatRoute.businessBusiness:
+          await _handleIncomingBusinessBusinessChat(message, payload);
+          break;
+        case IncomingUserChatRoute.unknown:
+          break;
       }
     } catch (e, st) {
       _logger.error(
