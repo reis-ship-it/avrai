@@ -21,12 +21,7 @@ class DebugHotPathSimulationLane {
     required bool Function(VibeCompatibilityResult compatibility)
         isConnectionWorthy,
     required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
-    required void Function(String userId) setCurrentUser,
-    required void Function(PersonalityProfile personality) setCurrentPersonality,
   }) async {
-    setCurrentUser(userId);
-    setCurrentPersonality(personality);
-
     final bool discoveryEnabled = prefs.getBool('discovery_enabled') ?? false;
     if (!discoveryEnabled) return;
 

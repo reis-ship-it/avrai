@@ -269,6 +269,8 @@ class VibeConnectionOrchestrator {
     required PersonalityProfile personality,
     required List<DiscoveredDevice> devices,
   }) async {
+    _currentUserId = userId;
+    _currentPersonality = personality;
     await DebugHotPathSimulationLane.run(
       userId: userId,
       personality: personality,
@@ -278,12 +280,6 @@ class VibeConnectionOrchestrator {
       hotRssiThresholdDbm: _hotRssiThresholdDbm,
       isConnectionWorthy: _isConnectionWorthy,
       updateDiscoveredNodes: _updateDiscoveredNodes,
-      setCurrentUser: (value) {
-        _currentUserId = value;
-      },
-      setCurrentPersonality: (value) {
-        _currentPersonality = value;
-      },
     );
   }
 
