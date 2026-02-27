@@ -48,6 +48,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_process
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2428,19 +2429,16 @@ class VibeConnectionOrchestrator {
   Future<void> _startConnectionMaintenance() async {
     _logger.info('Starting connection maintenance process', tag: _logName);
 
-    _connectionMaintenanceTimer =
-        Timer.periodic(const Duration(seconds: 30), (timer) async {
-      try {
-        await manageActiveConnections();
-        // NEW: Manage Signal Protocol session lifecycle (AI2AI-specific)
-        await _manageSessionLifecycle();
-        // NEW: Manage prekey bundle rotation and refresh (Enhanced BLE distribution)
-        await _managePreKeyBundleRotation();
-      } catch (e) {
-        _logger.error('Error in connection maintenance',
-            error: e, tag: _logName);
-      }
-    });
+    _connectionMaintenanceTimer = ConnectionMaintenanceLoop.start(
+      manageActiveConnections: manageActiveConnections,
+      manageSessionLifecycle: _manageSessionLifecycle,
+      managePreKeyBundleRotation: _managePreKeyBundleRotation,
+      onError: (error) => _logger.error(
+        'Error in connection maintenance',
+        error: error,
+        tag: _logName,
+      ),
+    );
   }
 
   Future<bool> _applyInsightForPeer({
