@@ -35,11 +35,10 @@ import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_precheck.dart';
 import 'package:avrai/core/ai2ai/routing/gossip_learning_forwarding_lane.dart';
-import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
 import 'package:avrai/core/ai2ai/routing/locality_agent_update_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_gossip_forwarding_gate.dart';
@@ -3317,72 +3316,18 @@ class VibeConnectionOrchestrator {
     final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
-    try {
-      // Only forward if mesh service says we should
-      if (_adaptiveMeshService == null) {
-        return;
-      }
-
-      // Check if mesh forwarding is allowed (1-hop limit for prekey bundles)
-      if (!_adaptiveMeshService!.shouldForwardMessage(
-        currentHop: 0,
-        priority: mesh_policy.MessagePriority.high,
-        messageType: mesh_policy.MessageType.learningInsight, // Reuse type
-        geographicScope: 'locality', // Prekey bundles are locality-scoped
-      )) {
-        return;
-      }
-
-      // Choose up to 2 nearby devices to forward to (best-effort)
-      final candidates = MeshForwardingTargetSelector.excludingRecipientAndLocalNode(
-        discoveredNodeIds: _discoveredNodeIds,
-        recipientId: recipientId,
-        localNodeId: _localBleNodeId,
-        maxCandidates: 2,
-      );
-
-      if (candidates.isEmpty) {
-        return;
-      }
-
-      // Create prekey bundle message for forwarding
-      final bundleJson = bundle.toJson();
-      final forwardPayload = <String, dynamic>{
-        'kind': 'prekey_bundle_forward',
-        'recipient_id': recipientId,
-        'prekey_bundle': bundleJson,
-        'hop': 1, // Starting at hop 1 (we received it at hop 0)
-        'origin_id': recipientId,
-        'scope': 'locality', // Prekey bundles are locality-scoped
-      };
-
-      await LearningInsightMeshForwarder.forward(
-        candidatePeerIds: candidates,
-        context: forwardingContext,
-        senderNodeId: _localBleNodeId,
-        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        payload: forwardPayload,
-        geographicScope: 'locality',
-        fireAndForgetSend: true,
-        onForwarded: (_, peerRecipientId) {
-          _logger.debug(
-            'Forwarded prekey bundle through mesh: $recipientId → $peerRecipientId',
-            tag: _logName,
-          );
-        },
-        onForwardFailed: (_, peerRecipientId, error) {
-          _logger.debug(
-            'Failed to forward prekey bundle to $peerRecipientId: $error',
-            tag: _logName,
-          );
-        },
-      );
-    } catch (e) {
-      _logger.debug(
-        'Error forwarding prekey bundle through mesh: $e',
-        tag: _logName,
-      );
-    }
+    await PrekeyBundleMeshForwardingLane.forward(
+      bundle: bundle,
+      recipientId: recipientId,
+      discoveredNodeIds: _discoveredNodeIds,
+      context: forwardingContext,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      adaptiveMeshService: _adaptiveMeshService,
+      logger: _logger,
+      logName: _logName,
+      maxCandidates: 2,
+    );
   }
 
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {
