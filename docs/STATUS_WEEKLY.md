@@ -40,10 +40,12 @@ Validation commands:
 - `Backlog -> In Progress`: `M2-P3-1`
 - `Backlog -> In Progress`: `M2-P4-1`
 - `Backlog -> In Progress`: `M2-P5-1`
+- `Backlog -> In Progress`: `M2-P6-1`
 - `In Progress -> Done`: `M2-P1-1`
 - `In Progress -> Done`: `M2-P3-1`
 - `In Progress -> Done`: `M2-P4-1`
 - `In Progress -> Done`: `M2-P5-1`
+- `In Progress -> Done`: `M2-P6-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -86,9 +88,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M2-P6-1` MPC safety envelope checks baseline wiring.
-2. Prepare `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
-3. Prepare `M3-P11-1` integration governance + contract security gates baseline wiring.
+1. Start `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
+2. Start `M3-P11-1` integration governance + contract security gates baseline wiring.
+3. Prepare M3 weekly closeout evidence package for governance review.
 
 ### 7) Evidence Links
 
@@ -142,6 +144,10 @@ Validation commands:
 - M2-P5-1 transition predictor drift/calibration config + report automation: `configs/runtime/transition_predictor_drift_calibration_controls.json`, `scripts/runtime/generate_transition_predictor_drift_calibration_report.py`, `docs/plans/methodology/MASTER_PLAN_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_REPORT.md`
 - M2-P5-1 transition predictor drift/calibration contract + tests: `lib/core/ml/transition_predictor_drift_calibration_contract.dart`, `test/unit/ml/transition_predictor_drift_calibration_contract_test.dart`
 - M2-P5-1 test report: `flutter test test/unit/ml/transition_predictor_drift_calibration_contract_test.dart` (pass)
+- M2-P6-1 planner guardrail/rollback baseline: `docs/plans/methodology/M2_P6_1_PLANNER_GUARDRAIL_ROLLBACK_HARDENING_BASELINE.md`
+- M2-P6-1 planner guardrail/rollback config + report automation: `configs/runtime/planner_guardrail_rollback_hardening_controls.json`, `scripts/runtime/generate_planner_guardrail_rollback_hardening_report.py`, `docs/plans/methodology/MASTER_PLAN_PLANNER_GUARDRAIL_ROLLBACK_HARDENING_REPORT.md`
+- M2-P6-1 planner guardrail/rollback contract + tests: `lib/core/ai/planner_guardrail_rollback_contract.dart`, `test/unit/ai/planner_guardrail_rollback_contract_test.dart`
+- M2-P6-1 test report: `flutter test test/unit/ai/planner_guardrail_rollback_contract_test.dart` (pass)
 
 ---
 

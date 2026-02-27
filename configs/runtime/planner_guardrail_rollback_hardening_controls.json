@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T20:45:00Z",
+  "evaluation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T20:30:00Z"
+  },
+  "planner_guardrails": {
+    "max_hard_constraint_violation_rate_pct": 0.2,
+    "observed_hard_constraint_violation_rate_pct": 0.01,
+    "planned_actions_evaluated": 2800,
+    "hard_constraint_envelope_passed": true
+  },
+  "rollback_drill": {
+    "required_success_rate_pct": 100.0,
+    "observed_success_rate_pct": 100.0,
+    "max_recovery_latency_seconds": 120,
+    "observed_p95_recovery_latency_seconds": 42,
+    "drills_executed": 14
+  },
+  "atomic_bundle_integrity": {
+    "soft_rollback_integrity_passed": true,
+    "hard_rollback_integrity_passed": true,
+    "provenance_log_completeness_passed": true,
+    "bundle_checks_executed": 28
+  }
+}
