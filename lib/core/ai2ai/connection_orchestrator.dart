@@ -70,6 +70,7 @@ import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_metrics_emit_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -880,7 +881,7 @@ class VibeConnectionOrchestrator {
 
   void _maybeLogHotMetrics() {
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    final nextLogAtMs = HotPathMetricsLane.maybeEmitSnapshot(
+    final nextLogAtMs = HotMetricsEmitLane.emit(
       nowMs: nowMs,
       lastLogAtMs: _lastHotMetricsLogAtMs,
       minInterval: _hotMetricsLogInterval,
@@ -889,17 +890,15 @@ class VibeConnectionOrchestrator {
       vibeRead: _hotVibeReadMs,
       compatibility: _hotCompatMs,
       total: _hotTotalMs,
-      onSnapshot: (snapshot) {
-        _logger.debug(snapshot.formatLogLine(), tag: _logName);
-        if (LedgerAuditV0.isEnabled) {
-          unawaited(LedgerAuditV0.tryAppend(
-            domain: LedgerDomainV0.deviceCapability,
-            eventType: 'ai2ai_hotpath_latency_summary',
-            occurredAt: DateTime.now(),
-            payload: snapshot.toJson().cast<String, Object?>(),
-          ));
-        }
-      },
+      onDebugLogLine: (line) => _logger.debug(line, tag: _logName),
+      onLedgerAppend: LedgerAuditV0.isEnabled
+          ? (payload) => LedgerAuditV0.tryAppend(
+                domain: LedgerDomainV0.deviceCapability,
+                eventType: 'ai2ai_hotpath_latency_summary',
+                occurredAt: DateTime.now(),
+                payload: payload,
+              )
+          : null,
     );
     _lastHotMetricsLogAtMs = nextLogAtMs;
   }
