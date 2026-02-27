@@ -28,6 +28,7 @@ import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_fallback_lane.dart';
+import 'package:avrai/core/ai2ai/discovery/discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/physical_layer_discovery_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
@@ -2595,15 +2596,13 @@ class VibeConnectionOrchestrator {
 
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
       AnonymizedVibeData localVibe) async {
-    // Phase 6: Use physical layer device discovery if available
-    if (_deviceDiscovery != null) {
-      try {
-        _logger.info('Using physical layer device discovery', tag: _logName);
-
-        // Get discovered devices from physical layer
-        final devices = _deviceDiscovery.getDiscoveredDevices();
-
-        final nodes = await PhysicalLayerDiscoveryLane.discoverNodes(
+    final discovery = _deviceDiscovery;
+    return DiscoveryOrchestrationLane.discover(
+      hasPhysicalLayer: discovery != null,
+      discoverPhysicalLayer: () async {
+        if (discovery == null) return const <AIPersonalityNode>[];
+        final devices = discovery.getDiscoveredDevices();
+        return PhysicalLayerDiscoveryLane.discoverNodes(
           devices: devices,
           allowBleSideEffects: _allowBleSideEffects,
           primeOfflineSignalPreKeyBundleInSession: (device, session) =>
@@ -2611,26 +2610,17 @@ class VibeConnectionOrchestrator {
             device: device,
             session: session,
           ),
-          extractPersonalityData: _deviceDiscovery.extractPersonalityData,
-          calculateProximity: _deviceDiscovery.calculateProximity,
+          extractPersonalityData: discovery.extractPersonalityData,
+          calculateProximity: discovery.calculateProximity,
           logger: _logger,
           logName: _logName,
         );
-
-        if (nodes.isNotEmpty) {
-          _logger.info(
-              'Discovered ${nodes.length} AI personalities via physical layer',
-              tag: _logName);
-          return nodes;
-        }
-      } catch (e) {
-        _logger.error('Error in physical layer discovery: $e', tag: _logName);
-        // Fall through to realtime discovery
-      }
-    }
-
-    return DiscoveryFallbackLane.fallback(
-      realtimeService: _realtimeService,
+      },
+      fallbackDiscovery: () => DiscoveryFallbackLane.fallback(
+        realtimeService: _realtimeService,
+        logger: _logger,
+        logName: _logName,
+      ),
       logger: _logger,
       logName: _logName,
     );
