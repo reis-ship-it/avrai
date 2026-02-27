@@ -1,0 +1,29 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-27T22:35:00Z",
+  "latency_slo": {
+    "max_p95_trigger_to_action_latency_ms": 250.0,
+    "observed_p95_trigger_to_action_latency_ms": 118.0,
+    "samples": 5200,
+    "within_threshold": true
+  },
+  "persistence_recovery": {
+    "idempotency_key_coverage_pct": 100.0,
+    "persistence_checks_executed": 780,
+    "replay_on_restart_passed": true,
+    "required_idempotency_key_coverage_pct": 100.0,
+    "unrecovered_state_records": 0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/trigger_orchestration_persistence_hardening_controls.json",
+  "trigger_reliability": {
+    "max_dropped_trigger_rate_pct": 0.1,
+    "max_duplicate_trigger_rate_pct": 0.2,
+    "observed_dropped_trigger_rate_pct": 0.02,
+    "observed_duplicate_trigger_rate_pct": 0.05,
+    "triggers_evaluated": 5200,
+    "within_threshold": true
+  },
+  "verdict": "PASS",
+  "version": "v1"
+}

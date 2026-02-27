@@ -53,6 +53,7 @@ Validation commands:
 - `In Progress -> Done`: `M2-P6-1`
 - `In Progress -> Done`: `M3-P9-1`
 - `In Progress -> Done`: `M3-P11-1`
+- `In Progress -> Done`: `M1-P7-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -131,6 +132,10 @@ Validation commands:
 - M6-P3-3 completion audit config + sign-off registry + report automation: `configs/runtime/master_plan_completion_audit_package.json`, `configs/runtime/master_plan_signoff_registry.json`, `scripts/runtime/check_master_plan_signoff_registry.py`, `scripts/runtime/update_master_plan_signoff_registry.py`, `scripts/runtime/generate_master_plan_completion_audit_package.py`, `docs/plans/methodology/MASTER_PLAN_3_PRONG_COMPLETION_AUDIT_PACKAGE.md`
 - M1-P7-2 reliability baseline: `docs/plans/methodology/M1_P7_2_CONTROLLER_ORCHESTRATOR_RELIABILITY_BASELINE.md`
 - M1-P7-2 reliability config + report automation: `configs/runtime/controller_orchestrator_reliability_canary.json`, `scripts/runtime/generate_controller_orchestrator_reliability_report.py`, `docs/plans/methodology/MASTER_PLAN_CONTROLLER_ORCHESTRATOR_RELIABILITY_REPORT.md`
+- M1-P7-1 trigger/orchestration persistence baseline: `docs/plans/methodology/M1_P7_1_TRIGGER_ORCHESTRATION_PERSISTENCE_BASELINE.md`
+- M1-P7-1 trigger/orchestration persistence config + report automation: `configs/runtime/trigger_orchestration_persistence_hardening_controls.json`, `scripts/runtime/generate_trigger_orchestration_persistence_report.py`, `docs/plans/methodology/MASTER_PLAN_TRIGGER_ORCHESTRATION_PERSISTENCE_REPORT.md`
+- M1-P7-1 trigger/orchestration persistence contract + tests: `lib/core/controllers/trigger_orchestration_persistence_contract.dart`, `test/unit/controllers/trigger_orchestration_persistence_contract_test.dart`
+- M1-P7-1 test report: `flutter test test/unit/controllers/trigger_orchestration_persistence_contract_test.dart` (pass)
 - M1-P8-1 federated cohort baseline: `docs/plans/methodology/M1_P8_1_FEDERATED_COHORT_CANARY_SHADOW_BASELINE.md`
 - M1-P8-1 federated cohort config + report automation: `configs/runtime/federated_cohort_canary_shadow_pipeline.json`, `scripts/runtime/generate_federated_cohort_canary_shadow_report.py`, `docs/plans/methodology/MASTER_PLAN_FEDERATED_COHORT_CANARY_SHADOW_REPORT.md`
 - M1-P8-2 advisory quarantine baseline: `docs/plans/methodology/M1_P8_2_ADVISORY_QUARANTINE_ROLLBACK_BASELINE.md`
