@@ -57,6 +57,7 @@ import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/braided_knot_connection_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -82,7 +83,6 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
-import 'package:avrai_knot/models/knot/braided_knot.dart';
 import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
@@ -2792,51 +2792,15 @@ class VibeConnectionOrchestrator {
       );
 
       // Phase 2: Create braided knot for connection
-      BraidedKnot? braidedKnot;
-      if (_knotWeavingService != null && _knotStorageService != null) {
-        try {
-          // Get personality knots for both agents
-          final localKnot = await _knotStorageService.loadKnot(localAgentId);
-          final remoteKnot = await _knotStorageService.loadKnot(remoteAgentId);
-
-          if (localKnot != null && remoteKnot != null) {
-            // Create braided knot (default to friendship relationship type)
-            braidedKnot = await _knotWeavingService.weaveKnots(
-              knotA: localKnot,
-              knotB: remoteKnot,
-              relationshipType: RelationshipType.friendship,
-            );
-
-            // Store braided knot
-            await _knotStorageService.saveBraidedKnot(
-              connectionId: initialMetrics.connectionId,
-              braidedKnot: braidedKnot,
-            );
-
-            // #region agent log
-            _logger.info(
-              'Braided knot created for connection: ${initialMetrics.connectionId}',
-              tag: _logName,
-            );
-            // #endregion
-          } else {
-            // #region agent log
-            _logger.debug(
-              'Knots not available for braiding (local: ${localKnot != null}, remote: ${remoteKnot != null})',
-              tag: _logName,
-            );
-            // #endregion
-          }
-        } catch (e) {
-          // #region agent log
-          _logger.warn(
-            'Error creating braided knot: $e, continuing without braided knot',
-            tag: _logName,
-          );
-          // #endregion
-          // Continue without braided knot - connection can still be established
-        }
-      }
+      final braidedKnot = await BraidedKnotConnectionLane.maybeCreate(
+        knotWeavingService: _knotWeavingService,
+        knotStorageService: _knotStorageService,
+        localAgentId: localAgentId,
+        remoteAgentId: remoteAgentId,
+        connectionId: initialMetrics.connectionId,
+        logger: _logger,
+        logName: _logName,
+      );
 
       // Extract handshake hash for channel binding (if Signal Protocol session exists)
       Uint8List? handshakeHash;
