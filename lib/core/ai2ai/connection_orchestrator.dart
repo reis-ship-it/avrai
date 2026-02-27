@@ -47,6 +47,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_proces
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
+import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -794,7 +795,7 @@ class VibeConnectionOrchestrator {
       final dimsQ = dimsQRaw.map((e) => (e as num).toInt()).toList();
       if (nodeTag.length != 4 || dimsQ.length != 12) continue;
 
-      final nodeTagKey = _nodeTagKeyFromBytes(nodeTag);
+      final nodeTagKey = BleNodeIdentity.nodeTagKeyFromBytes(nodeTag);
       final remoteConnectOk = frameMeta['connect_ok'] == true;
 
       frames.add(RoomCoherenceFrame(nodeTag: nodeTag, dimsQ: dimsQ));
@@ -1108,37 +1109,13 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _ensureLocalBleNodeId() async {
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    final storedId = _prefs.getString(_prefsKeyBleNodeId);
-    final expiresAtMs = _prefs.getInt(_prefsKeyBleNodeIdExpiresAtMs) ?? 0;
-
-    if (storedId != null && storedId.isNotEmpty && expiresAtMs > nowMs) {
-      _localBleNodeId = storedId;
-      _refreshLocalNodeTag();
-      return;
-    }
-
-    _localBleNodeId = const Uuid().v4();
-    final newExpiresAtMs =
-        DateTime.now().add(const Duration(hours: 24)).millisecondsSinceEpoch;
-    await _prefs.setString(_prefsKeyBleNodeId, _localBleNodeId);
-    await _prefs.setInt(_prefsKeyBleNodeIdExpiresAtMs, newExpiresAtMs);
-    _refreshLocalNodeTag();
-  }
-
-  void _refreshLocalNodeTag() {
-    _localNodeTagKey =
-        _nodeTagKeyFromBytes(_computeNodeTagBytes(_localBleNodeId));
-  }
-
-  static List<int> _computeNodeTagBytes(String nodeId) {
-    final digest = sha256.convert(utf8.encode(nodeId));
-    return digest.bytes.sublist(0, 4);
-  }
-
-  static String _nodeTagKeyFromBytes(List<int> bytes4) {
-    if (bytes4.length < 4) return bytes4.join(',');
-    return '${bytes4[0]}-${bytes4[1]}-${bytes4[2]}-${bytes4[3]}';
+    final identity = await BleNodeIdentity.ensure(
+      prefs: _prefs,
+      prefsKeyNodeId: _prefsKeyBleNodeId,
+      prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
+    );
+    _localBleNodeId = identity.nodeId;
+    _localNodeTagKey = identity.nodeTagKey;
   }
 
   void _loadSeenBleHashes() {
