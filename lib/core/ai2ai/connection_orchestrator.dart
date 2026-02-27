@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
-import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
@@ -52,7 +51,6 @@ import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_establishment_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_seen_hashes_persistence_lane.dart';
@@ -68,8 +66,7 @@ import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_learning_buffer_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_attempt_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_update_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
@@ -904,67 +901,22 @@ class VibeConnectionOrchestrator {
     PersonalityProfile localPersonality,
     AIPersonalityNode remoteNode,
   ) async {
-    return ConnectionAttemptLane.run(
+    return ConnectionAttemptOrchestrationLane.establish(
       isConnecting: _isConnecting,
-      isInCooldown: ConnectionRoutingPolicy.isInCooldown(
-        cooldowns: _connectionCooldowns,
-        nodeId: remoteNode.nodeId,
-      ),
-      hasReachedMaxConnections:
-          _activeConnections.length >= VibeConstants.maxSimultaneousConnections,
-      remoteNodeId: remoteNode.nodeId,
-      validateWorthiness: () async {
-        return ConnectionWorthinessValidationLane.validateOrCooldown(
-          vibeAnalyzer: _vibeAnalyzer,
-          localUserId: localUserId,
-          localPersonality: localPersonality,
-          remoteNode: remoteNode,
-          isConnectionWorthy: _isConnectionWorthy,
-          setCooldown: (nodeId) {
-            ConnectionRoutingPolicy.setCooldown(
-              cooldowns: _connectionCooldowns,
-              nodeId: nodeId,
-            );
-          },
-          logger: _logger,
-          logName: _logName,
-        );
-      },
-      setIsConnecting: (value) {
-        _isConnecting = value;
-      },
-      establishConnection: () {
-        return _connectionManager.establish(
-          localUserId,
-          localPersonality,
-          remoteNode,
-          (localVibe, remote, comp, metrics) =>
-              ConnectionEstablishmentLane.establish(
-            protocol: _protocol,
-            signalKeyManager: _signalKeyManager,
-            knotWeavingService: _knotWeavingService,
-            knotStorageService: _knotStorageService,
-            localVibe: localVibe,
-            remoteNode: remote,
-            compatibility: comp,
-            initialMetrics: metrics,
-            localAgentId: localPersonality.agentId,
-            remoteAgentId: remoteNode.nodeId,
-            logger: _logger,
-            logName: _logName,
-          ),
-        );
-      },
-      onEstablished: (connection) {
-        _activeConnections[connection.connectionId] = connection;
-        _scheduleConnectionManagement(connection);
-      },
-      setCooldown: (nodeId) {
-        ConnectionRoutingPolicy.setCooldown(
-          cooldowns: _connectionCooldowns,
-          nodeId: nodeId,
-        );
-      },
+      setIsConnecting: (value) => _isConnecting = value,
+      connectionCooldowns: _connectionCooldowns,
+      activeConnections: _activeConnections,
+      localUserId: localUserId,
+      localPersonality: localPersonality,
+      remoteNode: remoteNode,
+      vibeAnalyzer: _vibeAnalyzer,
+      connectionManager: _connectionManager,
+      isConnectionWorthy: _isConnectionWorthy,
+      protocol: _protocol,
+      signalKeyManager: _signalKeyManager,
+      knotWeavingService: _knotWeavingService,
+      knotStorageService: _knotStorageService,
+      scheduleConnectionManagement: _scheduleConnectionManagement,
       logger: _logger,
       logName: _logName,
     );
