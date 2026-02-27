@@ -67,6 +67,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dar
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -953,24 +954,15 @@ class VibeConnectionOrchestrator {
 
   Future<void> _runHotWorker() async {
     try {
-      while (_hotQueue.isNotEmpty) {
-        // Stop immediately if the switch is turned off mid-loop.
-        final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
-        if (!discoveryEnabled) return;
-
-        final device = _hotQueue.removeAt(0);
-        _hotQueuedDeviceIds.remove(device.deviceId);
-        _lastHotProcessedAtMsByDeviceId[device.deviceId] =
-            DateTime.now().millisecondsSinceEpoch;
-
-        final enqMs = _hotEnqueuedAtMsByDeviceId.remove(device.deviceId);
-        if (enqMs != null) {
-          final waitMs = DateTime.now().millisecondsSinceEpoch - enqMs;
-          _hotQueueWaitMs.add(waitMs);
-        }
-
-        await _processHotDevice(device);
-      }
+      await HotQueueWorkerLane.run(
+        hotQueue: _hotQueue,
+        hotQueuedDeviceIds: _hotQueuedDeviceIds,
+        lastHotProcessedAtMsByDeviceId: _lastHotProcessedAtMsByDeviceId,
+        hotEnqueuedAtMsByDeviceId: _hotEnqueuedAtMsByDeviceId,
+        onQueueWaitMs: _hotQueueWaitMs.add,
+        prefs: _prefs,
+        processHotDevice: _processHotDevice,
+      );
     } finally {
       _hotWorkerRunning = false;
     }
