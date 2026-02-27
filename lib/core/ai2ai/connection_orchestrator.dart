@@ -54,8 +54,7 @@ import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/braided_knot_connection_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_request_encoding_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_establishment_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -64,7 +63,6 @@ import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dar
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
@@ -2438,71 +2436,20 @@ class VibeConnectionOrchestrator {
     String localAgentId,
     String remoteAgentId,
   ) async {
-    try {
-      await ConnectionRequestEncodingLane.maybeEncode(
-        protocol: _protocol,
-        localVibeArchetype: localVibe.getVibeArchetype(),
-        remoteVibeArchetype: remoteNode.vibe.getVibeArchetype(),
-        initialCompatibility: compatibility.basicCompatibility,
-        connectionId: initialMetrics.connectionId,
-        senderNodeId: initialMetrics.localAISignature,
-        recipientNodeId: remoteNode.nodeId,
-        logger: _logger,
-        logName: _logName,
-      );
-
-      // Simulate connection establishment process
-      await Future.delayed(const Duration(milliseconds: 200));
-
-      // Create initial interaction event
-      final initialInteraction = InteractionEvent.success(
-        type: InteractionType.vibeExchange,
-        data: {
-          'local_vibe_archetype': localVibe.getVibeArchetype(),
-          'remote_vibe_archetype': remoteNode.vibe.getVibeArchetype(),
-          'initial_compatibility': compatibility.basicCompatibility,
-        },
-      );
-
-      // Phase 2: Create braided knot for connection
-      final braidedKnot = await BraidedKnotConnectionLane.maybeCreate(
-        knotWeavingService: _knotWeavingService,
-        knotStorageService: _knotStorageService,
-        localAgentId: localAgentId,
-        remoteAgentId: remoteAgentId,
-        connectionId: initialMetrics.connectionId,
-        logger: _logger,
-        logName: _logName,
-      );
-
-      final identityBinding = await ConnectionIdentityBindingLane.collect(
-        signalKeyManager: _signalKeyManager,
-        remoteAgentId: remoteAgentId,
-        connectionId: initialMetrics.connectionId,
-        logger: _logger,
-        logName: _logName,
-      );
-
-      // Update connection with initial interaction, fingerprints, and channel binding hash
-      final updatedMetrics = initialMetrics.updateDuringInteraction(
-        newInteraction: initialInteraction,
-        additionalOutcomes: {
-          'successful_exchanges': 1,
-          if (braidedKnot != null) 'braided_knot_id': braidedKnot.id,
-        },
-        handshakeHash: identityBinding.handshakeHash,
-        localAgentFingerprint: identityBinding.localAgentFingerprint,
-        remoteAgentFingerprint: identityBinding.remoteAgentFingerprint,
-      );
-
-      return updatedMetrics;
-    } catch (e) {
-      // #region agent log
-      _logger.error('Error in connection establishment',
-          error: e, tag: _logName);
-      // #endregion
-      return null;
-    }
+    return ConnectionEstablishmentLane.establish(
+      protocol: _protocol,
+      signalKeyManager: _signalKeyManager,
+      knotWeavingService: _knotWeavingService,
+      knotStorageService: _knotStorageService,
+      localVibe: localVibe,
+      remoteNode: remoteNode,
+      compatibility: compatibility,
+      initialMetrics: initialMetrics,
+      localAgentId: localAgentId,
+      remoteAgentId: remoteAgentId,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Get current battery level (for rate limiting integration)
