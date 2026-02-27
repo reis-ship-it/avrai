@@ -2159,19 +2159,10 @@ class VibeConnectionOrchestrator {
         payload: payload,
       );
     } catch (e) {
-      _logger.debug('Failed to apply incoming learning insight: $e',
-          tag: _logName);
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_learning_insight_receive_failed',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'sender_device_id': message.senderId,
-            'error': e.toString(),
-          },
-        ));
-      }
+      _emitIncomingLearningInsightFailureSideEffects(
+        error: e,
+        senderDeviceId: message.senderId,
+      );
     }
   }
 
@@ -2591,6 +2582,25 @@ class VibeConnectionOrchestrator {
       originId: originId,
       hop: hop,
       receivedFromDeviceId: sender,
+    ));
+  }
+
+  void _emitIncomingLearningInsightFailureSideEffects({
+    required Object error,
+    required String senderDeviceId,
+  }) {
+    _logger.debug('Failed to apply incoming learning insight: $error',
+        tag: _logName);
+    if (!LedgerAuditV0.isEnabled) return;
+
+    unawaited(LedgerAuditV0.tryAppend(
+      domain: LedgerDomainV0.deviceCapability,
+      eventType: 'ai2ai_learning_insight_receive_failed',
+      occurredAt: DateTime.now(),
+      payload: <String, Object?>{
+        'sender_device_id': senderDeviceId,
+        'error': error.toString(),
+      },
     ));
   }
 
