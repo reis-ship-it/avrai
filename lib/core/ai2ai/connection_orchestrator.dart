@@ -66,6 +66,7 @@ import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dar
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -2970,56 +2971,33 @@ class VibeConnectionOrchestrator {
 
   /// Set up realtime listeners for AI2AI communication (safe no-op if unavailable)
   Future<void> _setupRealtimeListeners() async {
-    final coordinator = _realtimeCoordinator;
-    if (coordinator == null) return;
-    try {
-      coordinator.setup(
-        onPersonality: (message) {
-          // #region agent log
-          _logger.debug(
-              'Received personality discovery message: ${message.type}, nodeId: ${message.metadata['node_id']}',
-              tag: _logName);
-          // #endregion
-          // Handle personality discovery messages - update discovered nodes cache
-          // In production, would process message and update _discoveredNodes
-          if (message.metadata.containsKey('node_id')) {
-            // Would create AIPersonalityNode from message metadata
-            // _updateDiscoveredNodes([nodeFromMessage]);
-          }
-        },
-        onLearning: (message) {
-          // #region agent log
-          _logger.debug(
-              'Received vibe learning message: ${message.type}, dimensions: ${message.metadata['dimension_updates']?.keys.length ?? 0}',
-              tag: _logName);
-          // #endregion
-          // Handle vibe learning messages - update active connections with learning insights
-          // In production, would process learning insights and update connection metrics
-          if (message.metadata.containsKey('dimension_updates')) {
-            // Would update active connections with new learning data
-          }
-        },
-        onAnonymous: (message) {
-          // #region agent log
-          _logger.debug(
-              'Received anonymous communication message: ${message.type}, payload_size: ${message.metadata.length}',
-              tag: _logName);
-          // #endregion
-          // Handle anonymous communication messages - process AI2AI network messages
-          // In production, would process anonymous messages and route to appropriate handlers
-          // Would validate payload doesn't contain UnifiedUser data
-          validateNoUnifiedUserInPayload(message.metadata);
-        },
-      );
-      // #region agent log
-      _logger.debug('Realtime listeners setup with active subscriptions',
-          tag: _logName);
-      // #endregion
-    } catch (e) {
-      // #region agent log
-      _logger.warn('Failed to setup realtime listeners: $e', tag: _logName);
-      // #endregion
-    }
+    await RealtimeListenersSetupLane.setup(
+      coordinator: _realtimeCoordinator,
+      onPersonality: (message) {
+        _logger.debug(
+            'Received personality discovery message: ${message.type}, nodeId: ${message.metadata['node_id']}',
+            tag: _logName);
+        if (message.metadata.containsKey('node_id')) {
+          // Placeholder for node update from realtime payload.
+        }
+      },
+      onLearning: (message) {
+        _logger.debug(
+            'Received vibe learning message: ${message.type}, dimensions: ${message.metadata['dimension_updates']?.keys.length ?? 0}',
+            tag: _logName);
+        if (message.metadata.containsKey('dimension_updates')) {
+          // Placeholder for learning insight ingestion from realtime payload.
+        }
+      },
+      onAnonymous: (message) {
+        _logger.debug(
+            'Received anonymous communication message: ${message.type}, payload_size: ${message.metadata.length}',
+            tag: _logName);
+        validateNoUnifiedUserInPayload(message.metadata);
+      },
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Forward an organic spot discovery signal through the AI2AI mesh.
