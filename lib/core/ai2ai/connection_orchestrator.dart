@@ -69,6 +69,7 @@ import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -697,64 +698,27 @@ class VibeConnectionOrchestrator {
   }
 
   void _onDevicesDiscoveredHotPath(List<DiscoveredDevice> devices) {
-    if (!_allowBleSideEffects) return;
-
-    // Respect the user-controlled discovery switch.
-    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
-    if (!discoveryEnabled) return;
-
-    final eventModeEnabled = _isEventModeEnabled();
-
-    // If Event Mode was disabled, clear advertised flags once (best-effort).
-    if (!eventModeEnabled && _lastAdvertisedEventModeEnabled) {
-      unawaited(_maybeUpdateEventModeBroadcastFlags(
-        eventModeEnabled: false,
-        connectOk: false,
-        brownout: false,
-      ));
-    }
-
-    // Event Mode: broadcast-first (no hot-path connections except check-ins).
-    if (eventModeEnabled) {
-      unawaited(_handleEventModeScanWindow(devices));
-      return;
-    }
-
-    // Hot path is BLE-only (walk-by capture). Other transports can be handled by
-    // the slower, general discovery pipeline.
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    var sawHotCandidate = false;
-    for (final device in devices) {
-      if (device.type != DeviceType.bluetooth) continue;
-
-      final rssi = device.signalStrength;
-      if (rssi == null || rssi < _hotRssiThresholdDbm) continue;
-      sawHotCandidate = true;
-
-      final lastMs = _lastHotProcessedAtMsByDeviceId[device.deviceId];
-      if (lastMs != null &&
-          nowMs - lastMs < _hotDeviceCooldown.inMilliseconds) {
-        continue;
-      }
-
-      if (_hotQueuedDeviceIds.add(device.deviceId)) {
-        _hotQueue.add(device);
-        _hotEnqueuedAtMsByDeviceId[device.deviceId] = nowMs;
-      }
-    }
-
-    // If we’re seeing strong RSSI results, temporarily boost scan cadence.
-    if (sawHotCandidate) {
-      _batteryScheduler?.notifyHotOpportunity();
-    }
-    _batteryScheduler?.notifyDiscoverySample(
-      discoveredCount: devices.length,
-      sawHotCandidate: sawHotCandidate,
+    HotDiscoveryEnqueueLane.handle(
+      allowBleSideEffects: _allowBleSideEffects,
+      prefs: _prefs,
+      eventModeEnabled: _isEventModeEnabled(),
+      lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
+      maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
+      handleEventModeScanWindow: _handleEventModeScanWindow,
+      devices: devices,
+      hotRssiThresholdDbm: _hotRssiThresholdDbm,
+      hotDeviceCooldown: _hotDeviceCooldown,
+      lastHotProcessedAtMsByDeviceId: _lastHotProcessedAtMsByDeviceId,
+      hotQueuedDeviceIds: _hotQueuedDeviceIds,
+      hotQueue: _hotQueue,
+      hotEnqueuedAtMsByDeviceId: _hotEnqueuedAtMsByDeviceId,
+      batteryScheduler: _batteryScheduler,
+      hotWorkerRunning: _hotWorkerRunning,
+      startHotWorker: () {
+        _hotWorkerRunning = true;
+        unawaited(_runHotWorker());
+      },
     );
-
-    if (_hotWorkerRunning || _hotQueue.isEmpty) return;
-    _hotWorkerRunning = true;
-    unawaited(_runHotWorker());
   }
 
   bool _isEventModeEnabled() =>
