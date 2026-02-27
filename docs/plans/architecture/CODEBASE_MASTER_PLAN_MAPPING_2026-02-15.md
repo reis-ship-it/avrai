@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2883
+**Total mapped files:** 2886
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,18 +10,18 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2515 |
-| keep_review | 342 |
+| keep_update | 2517 |
+| keep_review | 343 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 874 |
+| testing-quality | 875 |
 | presentation | 381 |
 | core-services-general | 373 |
-| tooling-ops | 292 |
+| tooling-ops | 293 |
 | package-modules | 207 |
 | core-models | 141 |
 | supabase-infra | 124 |
@@ -32,8 +32,8 @@
 | ai2ai-network | 24 |
 | native-modules | 24 |
 | ml-legacy-and-transition | 22 |
+| workflow-controllers | 22 |
 | security-signal-ffi | 21 |
-| workflow-controllers | 21 |
 | domain-layer | 19 |
 | config-and-theme | 15 |
 | security-signal | 14 |
@@ -77,14 +77,14 @@
 | lib/data/datasources | 26 |
 | lib/core/ai2ai | 24 |
 | test/core/services | 24 |
+| lib/core/controllers | 22 |
 | lib/core/ml | 22 |
-| lib/core/controllers | 21 |
 | test/unit/data | 20 |
 | test/integration/ai | 19 |
 | test/unit/ai2ai | 18 |
+| test/unit/controllers | 18 |
 | lib/core/crypto | 17 |
 | test/integration/controllers | 17 |
-| test/unit/controllers | 17 |
 | lib/domain/usecases | 15 |
 | native/knot_math/src | 15 |
 | test/unit/domain | 14 |
