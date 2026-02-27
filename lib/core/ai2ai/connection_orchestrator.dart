@@ -38,6 +38,7 @@ import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_l
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -2106,68 +2107,26 @@ class VibeConnectionOrchestrator {
 
     try {
       final payload = message.payload;
-      final schemaVersion = payload['schema_version'] as int?;
-      if (schemaVersion != 1) return;
-
-      final insightId = payload['insight_id'] as String?;
-      if (insightId == null || insightId.isEmpty) return;
-
-      final createdAtStr = payload['created_at'] as String?;
-      final ttlMs = (payload['ttl_ms'] as num?)?.toInt() ?? 0;
-      if (createdAtStr == null || ttlMs <= 0 || ttlMs > 6 * 60 * 60 * 1000) {
-        // Cap TTL to 6h.
-        return;
-      }
-
-      final createdAt = DateTime.tryParse(createdAtStr);
-      if (createdAt == null) return;
-      final expiresAtMs = createdAt.millisecondsSinceEpoch + ttlMs;
       final nowMs = DateTime.now().millisecondsSinceEpoch;
-      if (expiresAtMs <= nowMs) return;
+      final parseResult = IncomingLearningInsightParser.parse(
+        payload: payload,
+        senderId: message.senderId,
+        adaptiveMeshService: _adaptiveMeshService,
+        nowMs: nowMs,
+      );
+      if (parseResult == null) return;
+
+      final insightId = parseResult.insightId;
+      final expiresAtMs = parseResult.expiresAtMs;
+      final learningQuality = parseResult.learningQuality;
+      final originId = parseResult.originId;
+      final hop = parseResult.hop;
+      final deltas = parseResult.deltas;
 
       // Dedupe.
       final seenExpiry = _seenLearningInsightIds[insightId];
       if (seenExpiry != null && seenExpiry > nowMs) return;
       _seenLearningInsightIds[insightId] = expiresAtMs;
-
-      final learningQuality =
-          (payload['learning_quality'] as num?)?.toDouble() ?? 0.0;
-      if (learningQuality < 0.65) return;
-
-      final originId = payload['origin_id'] as String? ?? message.senderId;
-      final hop = (payload['hop'] as num?)?.toInt() ?? 0;
-      // Validate hop count
-      if (hop < 0) return; // Negative hops are invalid
-
-      // Use adaptive mesh service to check hop limit
-      if (_adaptiveMeshService != null) {
-        if (!_adaptiveMeshService!.shouldForwardMessage(
-          currentHop: hop,
-          priority: mesh_policy.MessagePriority.medium,
-          messageType: mesh_policy.MessageType.learningInsight,
-        )) {
-          // Adaptive policy says this hop is beyond limit
-          return;
-        }
-      } else {
-        // Fallback: limit to 2 hops if adaptive service not available
-        if (hop > 2) return;
-      }
-
-      final insightsRaw = payload['dimension_insights'];
-      if (insightsRaw is! Map) return;
-      final deltas = <String, double>{};
-      for (final entry in insightsRaw.entries) {
-        final k = entry.key;
-        final v = entry.value;
-        if (k is! String) continue;
-        if (!VibeConstants.coreDimensions.contains(k)) continue;
-        if (v is! num) continue;
-        final dv = v.toDouble();
-        if (dv.abs() > 0.35) continue; // hard cap
-        deltas[k] = dv;
-      }
-      if (deltas.isEmpty) return;
 
       // Throttle per sender.
       final now = DateTime.now();
