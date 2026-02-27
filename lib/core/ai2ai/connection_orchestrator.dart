@@ -26,11 +26,8 @@ import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
-import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
-import 'package:avrai/core/ai2ai/routing/federated_gossip_forwarding_lane.dart';
-import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
-import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
@@ -75,7 +72,6 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
 import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
 import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
@@ -1697,7 +1693,7 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    await FederatedGossipForwardingLane.forward(
+    await MeshOutboundForwardingLane.forwardLearningInsightGossip(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
@@ -1710,15 +1706,10 @@ class VibeConnectionOrchestrator {
       getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
       logName: _logName,
-      priority: mesh_policy.MessagePriority.medium,
-      messageType: mesh_policy.MessageType.learningInsight,
-      fallbackMaxHopExclusive: 1,
       discoveredNodeIds: _discoveredNodeIds,
       protocol: _protocol,
       discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      failureLabel: 'Learning insight gossip forward failed',
-      maxCandidates: 2,
     );
   }
 
@@ -2150,32 +2141,23 @@ class VibeConnectionOrchestrator {
   Future<void> forwardOrganicSpotDiscovery(
     Map<String, dynamic> signal,
   ) async {
-    if (!FederatedForwardingGuard.isEnabled(
+    await MeshOutboundForwardingLane.forwardOrganicSpotDiscovery(
+      signal: signal,
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
-    )) {
-      return;
-    }
-
-    final forwardingContext = _tryCreateMeshForwardingContext();
-    if (forwardingContext == null) return;
-
-    await OrganicSpotDiscoveryForwardingLane.forward(
-      signal: signal,
+      tryCreateMeshForwardingContext: _tryCreateMeshForwardingContext,
       discoveredNodeIds: _discoveredNodeIds,
-      context: forwardingContext,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       logger: _logger,
       logName: _logName,
-      maxCandidates: 2,
     );
   }
 
   /// NEW: Forward locality agent update through mesh network
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    await LocalityAgentUpdateMeshForwardingLane.forward(
+    await MeshOutboundForwardingLane.forwardLocalityAgentUpdate(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
@@ -2189,7 +2171,6 @@ class VibeConnectionOrchestrator {
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       logger: _logger,
       logName: _logName,
-      maxCandidates: 2,
     );
   }
 
@@ -2231,7 +2212,7 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    await FederatedGossipForwardingLane.forward(
+    await MeshOutboundForwardingLane.forwardLocalityAgentUpdateGossip(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
@@ -2244,16 +2225,10 @@ class VibeConnectionOrchestrator {
       getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
       logName: _logName,
-      priority: mesh_policy.MessagePriority.high,
-      messageType: mesh_policy.MessageType.localityAgentUpdate,
-      fallbackMaxHopExclusive: 2,
-      duplicateLabel: 'locality agent update',
       discoveredNodeIds: _discoveredNodeIds,
       protocol: _protocol,
       discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      failureLabel: 'Locality agent update gossip forward failed',
-      maxCandidates: 2,
     );
   }
 
