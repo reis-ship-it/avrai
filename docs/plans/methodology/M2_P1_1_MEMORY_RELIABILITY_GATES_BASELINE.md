@@ -8,6 +8,8 @@ Enforce deterministic memory reliability gates so schema consistency, dedupe, an
 - Memory reliability report generator/check: `scripts/runtime/generate_memory_reliability_gates_report.py`
 - Memory reliability report JSON: `docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.json`
 - Memory reliability report Markdown: `docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.md`
+- Memory reliability validator contract: `lib/core/ai/memory/memory_reliability_contract.dart`
+- Memory reliability unit tests: `test/unit/ai/memory_reliability_contract_test.dart`
 
 ## Pass Contract
 1. Config format valid (`version = v1`, deterministic `evaluation_at`, valid metric values).
