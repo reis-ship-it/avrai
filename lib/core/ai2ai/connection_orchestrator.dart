@@ -67,6 +67,7 @@ import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -1821,33 +1822,19 @@ class VibeConnectionOrchestrator {
   }
 
   void _startFederatedCloudSync() {
-    // Unit/widget tests shouldn't spin background timers/subscriptions; they
-    // create pending timers and flaky hangs in CI.
-    if (_isTestBinding) {
-      _logger.debug(
-        'Test binding detected; skipping federated cloud sync timers',
-        tag: _logName,
+    unawaited(() async {
+      final handles = await FederatedCloudSyncStartLane.start(
+        isTestBinding: _isTestBinding,
+        connectivity: _connectivity,
+        syncFederatedCloudQueue: _syncFederatedCloudQueue,
+        existingTimer: _federatedCloudSyncTimer,
+        existingSubscription: _federatedCloudConnectivitySub,
+        logger: _logger,
+        logName: _logName,
       );
-      return;
-    }
-
-    // Best-effort: no-op if not configured; safe to call multiple times.
-    _federatedCloudSyncTimer?.cancel();
-    unawaited(_federatedCloudConnectivitySub?.cancel());
-    _federatedCloudConnectivitySub = null;
-
-    _federatedCloudConnectivitySub =
-        _connectivity.onConnectivityChanged.listen((results) {
-      final isOnline = results.any((r) => r != ConnectivityResult.none);
-      if (!isOnline) return;
-      unawaited(_syncFederatedCloudQueue());
-    });
-
-    // Periodic retry, even if connectivity stream is noisy on some platforms.
-    _federatedCloudSyncTimer =
-        Timer.periodic(const Duration(minutes: 10), (_) async {
-      unawaited(_syncFederatedCloudQueue());
-    });
+      _federatedCloudSyncTimer = handles.timer;
+      _federatedCloudConnectivitySub = handles.subscription;
+    }());
   }
 
   Future<void> _enqueueFederatedDeltaForCloudFromInsightPayload(
