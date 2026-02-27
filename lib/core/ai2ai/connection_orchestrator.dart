@@ -28,6 +28,7 @@ import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
+import 'package:avrai/core/ai2ai/discovery/physical_layer_discovery_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
@@ -2813,69 +2814,19 @@ class VibeConnectionOrchestrator {
         // Get discovered devices from physical layer
         final devices = _deviceDiscovery.getDiscoveredDevices();
 
-        // Convert discovered devices to AI personality nodes
-        final nodes = <AIPersonalityNode>[];
-        for (final device in devices) {
-          // Prefer a single BLE "lease" per device (no interleaving) so we can:
-          // read vibe (stream 0), read prekey (stream 1), and send bootstrap in one session.
-          AnonymizedVibeData? personalityData = device.personalityData;
-          BleGattSession? session;
-          if (_allowBleSideEffects && device.type == DeviceType.bluetooth) {
-            try {
-              session = await BleConnectionPool.instance.openSession(
-                device: device,
-              );
-
-              if (personalityData == null) {
-                final vibeBytes =
-                    await session.readStreamPayload(streamId: 0); // vibe stream
-                if (vibeBytes != null && vibeBytes.isNotEmpty) {
-                  final jsonString = utf8.decode(vibeBytes);
-                  personalityData =
-                      PersonalityDataCodec.decodeFromJson(jsonString);
-                }
-              }
-
-              // Prime Signal prekeys + send silent bootstrap under the same lease.
-              await _primeOfflineSignalPreKeyBundleInSession(
-                device: device,
-                session: session,
-              );
-            } catch (e) {
-              // If session acquisition fails, fall back to legacy per-call behavior.
-              _logger.warn('BLE session failed for ${device.deviceId}: $e',
-                  tag: _logName);
-            } finally {
-              try {
-                await session?.close();
-              } catch (_) {
-                // Ignore.
-              }
-            }
-          }
-
-          // Fallback: original extraction path (may do its own BLE read).
-          personalityData ??=
-              await _deviceDiscovery.extractPersonalityData(device);
-          if (personalityData == null) {
-            // Even if we couldn't build a node, we may still have primed prekeys above.
-            continue;
-          }
-
-          // Create vibe from anonymized data
-          final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
-
-          // Calculate node trust score based on proximity signal.
-          final proximityScore = _deviceDiscovery.calculateProximity(device);
-          final node = TrustedNodeFactory.fromProximity(
-            nodeId: device.deviceId,
-            vibe: vibe,
-            lastSeen: device.discoveredAt,
-            proximityScore: proximityScore,
-          );
-
-          nodes.add(node);
-        }
+        final nodes = await PhysicalLayerDiscoveryLane.discoverNodes(
+          devices: devices,
+          allowBleSideEffects: _allowBleSideEffects,
+          primeOfflineSignalPreKeyBundleInSession: (device, session) =>
+              _primeOfflineSignalPreKeyBundleInSession(
+            device: device,
+            session: session,
+          ),
+          extractPersonalityData: _deviceDiscovery.extractPersonalityData,
+          calculateProximity: _deviceDiscovery.calculateProximity,
+          logger: _logger,
+          logName: _logName,
+        );
 
         if (nodes.isNotEmpty) {
           _logger.info(
