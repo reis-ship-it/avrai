@@ -33,15 +33,13 @@ import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
-import 'package:avrai/core/ai2ai/routing/federated_forwarding_precheck.dart';
 import 'package:avrai/core/ai2ai/routing/federated_gossip_forwarding_lane.dart';
-import 'package:avrai/core/ai2ai/routing/locality_agent_update_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/federated_gossip_forwarding_gate.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -3808,45 +3806,17 @@ class VibeConnectionOrchestrator {
 
   /// NEW: Forward locality agent update through mesh network
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    final originId =
-        message['origin_id'] as String? ?? message['agent_id'] as String?;
-
-    if (!FederatedForwardingPrecheck.allow(
+    await LocalityAgentUpdateMeshForwardingLane.forward(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
-      originId: originId,
       localNodeId: _localBleNodeId,
-    )) {
-      return;
-    }
-
-    final forwardingContext = _tryCreateMeshForwardingContext();
-    if (forwardingContext == null) return;
-
-    final hop = (message['hop'] as num?)?.toInt() ?? 0;
-
-    if (!FederatedGossipForwardingGate.allow(
-      payload: message,
-      hop: hop,
+      message: message,
       adaptiveMeshService: _adaptiveMeshService,
       getOrCreateBloomFilter: _getOrCreateBloomFilter,
-      logger: _logger,
-      logName: _logName,
-      priority: mesh_policy.MessagePriority.high,
-      messageType: mesh_policy.MessageType.localityAgentUpdate,
-      duplicateLabel: 'locality agent update',
-    )) {
-      return;
-    }
-
-    await LocalityAgentUpdateForwardingLane.forward(
-      message: message,
-      hop: hop,
-      originId: originId,
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
       discoveredNodeIds: _discoveredNodeIds,
-      context: forwardingContext,
-      localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       logger: _logger,
       logName: _logName,
