@@ -28,7 +28,6 @@ import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
-import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
@@ -37,6 +36,7 @@ import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_lane.dart';
+import 'package:avrai/core/ai2ai/locality/learning_insight_peer_dispatch_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
@@ -85,7 +85,6 @@ import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
-import 'package:uuid/uuid.dart';
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
 /// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
@@ -974,34 +973,18 @@ class VibeConnectionOrchestrator {
     required AI2AILearningInsight insight,
     required double learningQuality,
   }) async {
-    if (!_allowBleSideEffects) return;
-    if (_isEventModeEnabled()) return;
-    final protocol = _protocol;
-    if (protocol == null) return;
-
-    final device = _deviceDiscovery?.getDevice(peerId);
-    if (device == null) return;
-
-    // Only implemented over physical BLE transport in v1.
-    if (device.type != DeviceType.bluetooth) return;
-
-    // Respect user setting.
-    final learningEnabled =
-        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
-    if (!learningEnabled) return;
-
-    final recipientId =
-        _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-    final insightId = const Uuid().v4();
-    await LearningInsightPeerSendLane.send(
-      protocol: protocol,
-      device: device,
+    await LearningInsightPeerDispatchLane.send(
+      allowBleSideEffects: _allowBleSideEffects,
+      eventModeEnabled: _isEventModeEnabled(),
+      protocol: _protocol,
+      deviceDiscovery: _deviceDiscovery,
       peerId: peerId,
+      prefs: _prefs,
+      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       localBleNodeId: _localBleNodeId,
-      recipientId: recipientId,
-      insightId: insightId,
-      learningQuality: learningQuality,
       insight: insight,
+      learningQuality: learningQuality,
       enqueueFederatedDeltaForCloudFromInsightPayload:
           _enqueueFederatedDeltaForCloudFromInsightPayload,
       logger: _logger,
