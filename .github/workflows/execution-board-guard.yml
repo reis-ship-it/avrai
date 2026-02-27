@@ -33,6 +33,18 @@ jobs:
         run: |
           dart --version
           dart run tool/update_execution_board.dart --check
+          dart run tool/update_three_prong_reviews.dart --check
+          dart run tool/export_conviction_shadow_telemetry.dart --check
+          python3 scripts/ml/check_promotion_eval_manifest.py --check
+          python3 scripts/runtime/check_conviction_canary_rollout_config.py
+          python3 scripts/runtime/check_conviction_canary_dry_run_fixture.py
+          python3 scripts/runtime/generate_conviction_canary_rollback_drill_report.py --check
+          python3 scripts/runtime/generate_research_replication_sla_report.py --check
+          python3 scripts/runtime/generate_trust_ux_priority_flow_report.py --check
+          python3 scripts/runtime/generate_self_healing_incident_routing_report.py --check
+          python3 scripts/runtime/generate_lineage_transparency_priority_flow_report.py --check
+          python3 scripts/runtime/check_master_plan_signoff_registry.py
+          python3 scripts/runtime/generate_master_plan_completion_audit_package.py --check
 
       - name: Validate deferred rename governance
         run: |

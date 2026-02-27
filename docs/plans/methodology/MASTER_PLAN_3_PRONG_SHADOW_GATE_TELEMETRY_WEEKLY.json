@@ -1,0 +1,53 @@
+{
+  "source_input": "runtime_exports/conviction_gate_shadow_decisions.json",
+  "has_data": true,
+  "reason": null,
+  "total_decisions": 2,
+  "shadow_bypass_decisions": 0,
+  "shadow_bypass_rate": 0.0,
+  "enforce_decisions": 0,
+  "enforce_blocked_decisions": 0,
+  "enforce_block_rate": 0.0,
+  "high_impact_enforce_decisions": 0,
+  "high_impact_enforce_blocked_decisions": 0,
+  "high_impact_enforce_block_rate": 0.0,
+  "window_start": "2026-02-27T12:00:02.000Z",
+  "window_end": "2026-02-27T12:00:03.000Z",
+  "by_controller": {
+    "AIRecommendationController": 2
+  },
+  "by_mode": {
+    "shadow": 2
+  },
+  "by_reason": {},
+  "recent_decisions": [
+    {
+      "mode": "shadow",
+      "requestId": "req-3",
+      "controllerName": "AIRecommendationController",
+      "subjectId": "user-3",
+      "claimState": "canonical",
+      "isHighImpact": false,
+      "policyChecksPassed": true,
+      "wouldAllow": true,
+      "servingAllowed": true,
+      "shadowBypassApplied": false,
+      "reasonCodes": [],
+      "timestamp": "2026-02-27T12:00:03.000Z"
+    },
+    {
+      "mode": "shadow",
+      "requestId": "req-2",
+      "controllerName": "AIRecommendationController",
+      "subjectId": "user-2",
+      "claimState": "canonical",
+      "isHighImpact": false,
+      "policyChecksPassed": true,
+      "wouldAllow": true,
+      "servingAllowed": true,
+      "shadowBypassApplied": false,
+      "reasonCodes": [],
+      "timestamp": "2026-02-27T12:00:02.000Z"
+    }
+  ]
+}

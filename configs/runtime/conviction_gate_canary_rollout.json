@@ -1,0 +1,35 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "description": "Canary rollout profile for high-impact conviction gate enforcement",
+  "flags": {
+    "conviction_gate_production_enforcement": {
+      "enabled": true,
+      "rolloutPercentage": 100,
+      "targetUsers": [
+        "user-canary-1",
+        "user-canary-2"
+      ]
+    },
+    "conviction_gate_high_impact_enforcement": {
+      "enabled": true,
+      "rolloutPercentage": 100,
+      "targetUsers": [
+        "user-canary-1",
+        "user-canary-2"
+      ]
+    }
+  },
+  "rollback_profile": {
+    "conviction_gate_production_enforcement": {
+      "enabled": false,
+      "rolloutPercentage": 0,
+      "targetUsers": []
+    },
+    "conviction_gate_high_impact_enforcement": {
+      "enabled": false,
+      "rolloutPercentage": 0,
+      "targetUsers": []
+    }
+  }
+}

@@ -1,9 +1,13 @@
+// ignore_for_file: unused_field
+
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
+import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/conviction_shadow_gate.dart';
 import 'package:avrai/core/controllers/payment_processing_controller.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -20,11 +24,11 @@ import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 
 /// Checkout Controller
-/// 
+///
 /// Orchestrates the complete checkout workflow for event ticket purchases.
 /// Coordinates validation, tax calculation, waiver checking, payment processing,
 /// and receipt generation.
-/// 
+///
 /// **Responsibilities:**
 /// - Validate checkout data (quantity, event availability)
 /// - Check waiver acceptance status
@@ -33,13 +37,13 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 /// - Generate receipt (when ReceiptService available)
 /// - Send confirmation (when NotificationService available)
 /// - Return unified checkout result
-/// 
+///
 /// **Dependencies:**
 /// - `PaymentProcessingController` - Handles payment processing
 /// - `SalesTaxService` - Calculates sales tax
 /// - `LegalDocumentService` - Checks waiver acceptance
 /// - `ExpertiseEventService` - Validates event availability
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = CheckoutController();
@@ -49,7 +53,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 ///   quantity: 2,
 ///   requireWaiver: true,
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   // Checkout successful
 ///   final payment = result.payment!;
@@ -69,15 +73,16 @@ class CheckoutController
   final SalesTaxService _salesTaxService;
   final LegalDocumentService? _legalService;
   final ExpertiseEventService _eventService;
-  // ignore: unused_field
-  final AtomicClockService _atomicClock; // Reserved for future timestamp-based purchase tracking
-  
+  final AtomicClockService
+      _atomicClock; // Reserved for future timestamp-based purchase tracking
+
   // AVRAI Core System Integration (optional, graceful degradation)
   final KnotFabricService? _knotFabricService;
   final KnotWorldsheetService? _knotWorldsheetService;
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
   final QuantumMatchingAILearningService? _aiLearningService;
+  final ConvictionGateEvaluator _convictionGateEvaluator;
 
   CheckoutController({
     PaymentProcessingController? paymentController,
@@ -90,12 +95,11 @@ class CheckoutController
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
+    ConvictionGateEvaluator? convictionGateEvaluator,
   })  : _paymentController = paymentController,
-        _salesTaxService =
-            salesTaxService ?? GetIt.instance<SalesTaxService>(),
+        _salesTaxService = salesTaxService ?? GetIt.instance<SalesTaxService>(),
         _legalService = legalService,
-        _eventService =
-            eventService ?? GetIt.instance<ExpertiseEventService>(),
+        _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
         _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
         _knotFabricService = knotFabricService ??
             (GetIt.instance.isRegistered<KnotFabricService>()
@@ -116,7 +120,9 @@ class CheckoutController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
-                : null);
+                : null),
+        _convictionGateEvaluator =
+            convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
 
   PaymentProcessingController _resolvePaymentController() {
     return _paymentController ?? GetIt.instance<PaymentProcessingController>();
@@ -139,7 +145,7 @@ class CheckoutController
   }
 
   /// Process checkout
-  /// 
+  ///
   /// Orchestrates the complete checkout workflow:
   /// 1. Validate input
   /// 2. Validate event availability
@@ -149,13 +155,13 @@ class CheckoutController
   /// 6. Generate receipt (when ReceiptService available)
   /// 7. Send confirmation (when NotificationService available)
   /// 8. Return unified result
-  /// 
+  ///
   /// **Parameters:**
   /// - `event`: Event to purchase tickets for
   /// - `buyer`: User purchasing tickets
   /// - `quantity`: Number of tickets to purchase
   /// - `requireWaiver`: Whether waiver acceptance is required (default: true)
-  /// 
+  ///
   /// **Returns:**
   /// `CheckoutResult` with success/failure and checkout details
   Future<CheckoutResult> processCheckout({
@@ -163,12 +169,44 @@ class CheckoutController
     required UnifiedUser buyer,
     required int quantity,
     bool requireWaiver = true,
+    ClaimLifecycleState claimState = ClaimLifecycleState.canonical,
+    bool isHighImpactAction = true,
+    bool policyChecksPassed = true,
+    String? convictionRequestId,
   }) async {
+    ConvictionGateDecision? convictionGateDecision;
     try {
       developer.log(
         'Processing checkout: eventId=${event.id}, buyerId=${buyer.id}, quantity=$quantity',
         name: _logName,
       );
+
+      convictionGateDecision = await _convictionGateEvaluator.evaluate(
+        ConvictionGateRequest(
+          controllerName: 'CheckoutController',
+          requestId: convictionRequestId ??
+              'checkout-${buyer.id}-${DateTime.now().millisecondsSinceEpoch}',
+          claimState: claimState,
+          isHighImpact: isHighImpactAction,
+          policyChecksPassed: policyChecksPassed,
+          subjectId: buyer.id,
+        ),
+      );
+
+      if (convictionGateDecision.shadowBypassApplied) {
+        developer.log(
+          '⚠️ Conviction gate shadow bypass applied: ${convictionGateDecision.reasonCodes.join(",")}',
+          name: _logName,
+        );
+      }
+
+      if (!convictionGateDecision.servingAllowed) {
+        return CheckoutResult.failure(
+          error: 'Conviction gate blocked request',
+          errorCode: 'CONVICTION_GATE_BLOCKED',
+          convictionGateDecision: convictionGateDecision,
+        );
+      }
 
       // Step 1: Validate input
       final input = CheckoutInput(
@@ -176,6 +214,10 @@ class CheckoutController
         buyer: buyer,
         quantity: quantity,
         requireWaiver: requireWaiver,
+        claimState: claimState,
+        isHighImpactAction: isHighImpactAction,
+        policyChecksPassed: policyChecksPassed,
+        convictionRequestId: convictionRequestId,
       );
 
       final validationResult = validate(input);
@@ -183,6 +225,7 @@ class CheckoutController
         return CheckoutResult.failure(
           error: validationResult.allErrors.join(', '),
           errorCode: 'VALIDATION_ERROR',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -192,15 +235,19 @@ class CheckoutController
         return CheckoutResult.failure(
           error: 'Event not found',
           errorCode: 'EVENT_NOT_FOUND',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
       // Check capacity
-      final availableTickets = updatedEvent.maxAttendees - updatedEvent.attendeeCount;
+      final availableTickets =
+          updatedEvent.maxAttendees - updatedEvent.attendeeCount;
       if (quantity > availableTickets) {
         return CheckoutResult.failure(
-          error: 'Insufficient tickets available. Only $availableTickets tickets remaining.',
+          error:
+              'Insufficient tickets available. Only $availableTickets tickets remaining.',
           errorCode: 'INSUFFICIENT_CAPACITY',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -209,6 +256,7 @@ class CheckoutController
         return CheckoutResult.failure(
           error: 'Event has already started',
           errorCode: 'EVENT_STARTED',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -219,6 +267,7 @@ class CheckoutController
           return CheckoutResult.failure(
             error: 'Legal service unavailable',
             errorCode: 'LEGAL_SERVICE_UNAVAILABLE',
+            convictionGateDecision: convictionGateDecision,
           );
         }
 
@@ -230,6 +279,7 @@ class CheckoutController
           return CheckoutResult.failure(
             error: 'Event waiver must be accepted before checkout',
             errorCode: 'WAIVER_NOT_ACCEPTED',
+            convictionGateDecision: convictionGateDecision,
           );
         }
       }
@@ -265,29 +315,36 @@ class CheckoutController
       }
 
       // Step 5: Process payment via PaymentProcessingController
-      final paymentResult = await _resolvePaymentController().processEventPayment(
+      final paymentResult =
+          await _resolvePaymentController().processEventPayment(
         event: updatedEvent,
         buyer: buyer,
         quantity: quantity,
+        claimState: claimState,
+        isHighImpactAction: isHighImpactAction,
+        policyChecksPassed: policyChecksPassed,
+        convictionRequestId: convictionRequestId,
       );
 
       if (!paymentResult.isSuccess) {
         return CheckoutResult.failure(
           error: paymentResult.error ?? 'Payment processing failed',
           errorCode: paymentResult.errorCode ?? 'PAYMENT_FAILED',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
       // Step 6: AVRAI Core System Integration (optional, graceful degradation)
-      
+
       // 6.1: Calculate quantum compatibility (if purchasing event/spot)
-      if (_quantumEntanglementService != null && _locationTimingService != null) {
+      if (_quantumEntanglementService != null &&
+          _locationTimingService != null) {
         try {
           developer.log(
             '🔬 Calculating quantum compatibility for checkout',
             name: _logName,
           );
-          
+
           // Note: Full implementation would use QuantumMatchingController
           // This is a placeholder for future quantum compatibility calculation
           developer.log(
@@ -303,9 +360,11 @@ class CheckoutController
           // Continue - quantum compatibility is optional
         }
       }
-      
+
       // 6.2: Create 4D quantum state if location-aware purchase
-      if (_locationTimingService != null && updatedEvent.latitude != null && updatedEvent.longitude != null) {
+      if (_locationTimingService != null &&
+          updatedEvent.latitude != null &&
+          updatedEvent.longitude != null) {
         try {
           final locationData = UnifiedLocationData(
             latitude: updatedEvent.latitude!,
@@ -313,19 +372,20 @@ class CheckoutController
             city: updatedEvent.cityCode,
             address: updatedEvent.location,
           );
-          
-          final locationQuantumState = await _locationTimingService.createLocationQuantumState(
+
+          final locationQuantumState =
+              await _locationTimingService.createLocationQuantumState(
             location: locationData,
             locationType: 0.7,
             accessibilityScore: null,
             vibeLocationMatch: null,
           );
-          
+
           developer.log(
             '✅ 4D quantum location state created for checkout',
             name: _logName,
           );
-          
+
           // ignore: unused_local_variable
           final _ = locationQuantumState;
         } catch (e) {
@@ -337,7 +397,7 @@ class CheckoutController
           // Continue - quantum state creation is optional
         }
       }
-      
+
       // 6.3: Create/update fabric if group purchase (quantity > 1)
       if (_knotFabricService != null && quantity > 1) {
         try {
@@ -345,7 +405,7 @@ class CheckoutController
             '🧵 Creating fabric for group purchase (quantity: $quantity)',
             name: _logName,
           );
-          
+
           // Note: Full implementation would create fabric from buyer and other attendees
           // This is a placeholder for future fabric creation on group purchase
           developer.log(
@@ -361,7 +421,7 @@ class CheckoutController
           // Continue - fabric creation is optional
         }
       }
-      
+
       // 6.4: Create worldsheet if group tracking needed
       if (_knotWorldsheetService != null && quantity > 1) {
         try {
@@ -379,7 +439,7 @@ class CheckoutController
           // Continue - worldsheet creation is optional
         }
       }
-      
+
       // 6.5: Learn from purchase via AI2AI mesh (optional, fire-and-forget)
       if (_aiLearningService != null) {
         try {
@@ -397,7 +457,7 @@ class CheckoutController
           // Continue - AI2AI learning is optional and non-blocking
         }
       }
-      
+
       // Step 7: Generate receipt (when ReceiptService available)
       // TODO(Phase 8.12): Implement receipt generation when ReceiptService is available
       // For now, receipt generation is handled by UI (PaymentSuccessPage)
@@ -417,6 +477,7 @@ class CheckoutController
         totalAmount: totalAmount,
         quantity: quantity,
         event: paymentResult.event ?? updatedEvent,
+        convictionGateDecision: convictionGateDecision,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -428,19 +489,20 @@ class CheckoutController
       return CheckoutResult.failure(
         error: 'Unexpected error: $e',
         errorCode: 'UNEXPECTED_ERROR',
+        convictionGateDecision: convictionGateDecision,
       );
     }
   }
 
   /// Calculate checkout totals
-  /// 
+  ///
   /// Calculates subtotal, tax, and total for a checkout without processing payment.
   /// Useful for displaying totals before checkout.
-  /// 
+  ///
   /// **Parameters:**
   /// - `event`: Event to calculate totals for
   /// - `quantity`: Number of tickets
-  /// 
+  ///
   /// **Returns:**
   /// `CheckoutTotals` with subtotal, tax, and total
   Future<CheckoutTotals> calculateTotals({
@@ -498,6 +560,10 @@ class CheckoutController
       buyer: input.buyer,
       quantity: input.quantity,
       requireWaiver: input.requireWaiver,
+      claimState: input.claimState,
+      isHighImpactAction: input.isHighImpactAction,
+      policyChecksPassed: input.policyChecksPassed,
+      convictionRequestId: input.convictionRequestId,
     );
   }
 
@@ -559,24 +625,32 @@ class CheckoutController
 }
 
 /// Checkout Input
-/// 
+///
 /// Input data for checkout
 class CheckoutInput {
   final ExpertiseEvent event;
   final UnifiedUser buyer;
   final int quantity;
   final bool requireWaiver;
+  final ClaimLifecycleState claimState;
+  final bool isHighImpactAction;
+  final bool policyChecksPassed;
+  final String? convictionRequestId;
 
   CheckoutInput({
     required this.event,
     required this.buyer,
     required this.quantity,
     this.requireWaiver = true,
+    this.claimState = ClaimLifecycleState.canonical,
+    this.isHighImpactAction = true,
+    this.policyChecksPassed = true,
+    this.convictionRequestId,
   });
 }
 
 /// Checkout Totals
-/// 
+///
 /// Calculated totals for checkout (before payment processing)
 class CheckoutTotals {
   final double subtotal;
@@ -593,7 +667,7 @@ class CheckoutTotals {
 }
 
 /// Checkout Result
-/// 
+///
 /// Unified result for checkout operations
 class CheckoutResult extends ControllerResult {
   final Payment? payment;
@@ -602,6 +676,7 @@ class CheckoutResult extends ControllerResult {
   final double totalAmount;
   final int quantity;
   final ExpertiseEvent? event;
+  final ConvictionGateDecision? convictionGateDecision;
 
   const CheckoutResult._({
     required super.success,
@@ -613,6 +688,7 @@ class CheckoutResult extends ControllerResult {
     this.totalAmount = 0.0,
     this.quantity = 0,
     this.event,
+    this.convictionGateDecision,
   });
 
   factory CheckoutResult.success({
@@ -622,6 +698,7 @@ class CheckoutResult extends ControllerResult {
     required double totalAmount,
     required int quantity,
     required ExpertiseEvent event,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return CheckoutResult._(
       success: true,
@@ -633,18 +710,20 @@ class CheckoutResult extends ControllerResult {
       totalAmount: totalAmount,
       quantity: quantity,
       event: event,
+      convictionGateDecision: convictionGateDecision,
     );
   }
 
   factory CheckoutResult.failure({
     required String error,
     required String errorCode,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return CheckoutResult._(
       success: false,
       error: error,
       errorCode: errorCode,
+      convictionGateDecision: convictionGateDecision,
     );
   }
 }
-

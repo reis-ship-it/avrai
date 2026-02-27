@@ -1,0 +1,48 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "signoffs": [
+    {
+      "role": "Product",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending implementation completion and UAT evidence"
+    },
+    {
+      "role": "Platform/OS Engineering",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending final reliability runbook verification"
+    },
+    {
+      "role": "ML Research",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending replication and calibration sign-off package"
+    },
+    {
+      "role": "Reliability/SRE",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending incident drill closure"
+    },
+    {
+      "role": "Security/Compliance",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending final audit review"
+    },
+    {
+      "role": "Governance/Executive",
+      "approved": true,
+      "approved_by": "reisgordon",
+      "approved_at": "2026-02-27T04:07:52Z",
+      "notes": "Pending full gate completion"
+    }
+  ]
+}

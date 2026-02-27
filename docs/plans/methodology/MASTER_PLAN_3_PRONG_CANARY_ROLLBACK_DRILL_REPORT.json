@@ -1,0 +1,14 @@
+{
+  "rollback_profile_errors": [],
+  "rollback_profile_fail_closed": true,
+  "rollback_required_incidents": 1,
+  "source": {
+    "canary_config": "configs/runtime/conviction_gate_canary_rollout.json",
+    "drill_fixture": "configs/runtime/conviction_gate_canary_rollback_drill_fixture.json"
+  },
+  "total_incidents": 2,
+  "verdict": "PASS",
+  "version": "v1",
+  "window_end": "2026-02-27T11:15:00Z",
+  "window_start": "2026-02-27T11:00:00Z"
+}

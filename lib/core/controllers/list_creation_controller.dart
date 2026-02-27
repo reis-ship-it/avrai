@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/conviction_shadow_gate.dart';
+import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
 import 'package:avrai/core/models/misc/list.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/domain/repositories/lists_repository.dart';
@@ -15,10 +17,10 @@ import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart
 import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service.dart';
 
 /// List Creation Controller
-/// 
+///
 /// Orchestrates the complete list creation workflow. Coordinates validation,
 /// permissions, list creation, spot addition, and optional AI suggestions.
-/// 
+///
 /// **Responsibilities:**
 /// - Validate list data
 /// - Check user permissions (via repository)
@@ -26,11 +28,11 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 /// - Add initial spots (if provided)
 /// - Generate AI suggestions (optional, when service available)
 /// - Return unified result with errors
-/// 
+///
 /// **Dependencies:**
 /// - `ListsRepository` - Create lists and check permissions
 /// - `AtomicClockService` - Mandatory for timestamps (Phase 8.3+)
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = ListCreationController();
@@ -44,7 +46,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 ///   curator: user,
 ///   initialSpotIds: ['spot1', 'spot2'],
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   // List created successfully
 /// } else {
@@ -57,13 +59,14 @@ class ListCreationController
 
   final ListsRepository _listsRepository;
   final AtomicClockService _atomicClock;
-  
+
   // AVRAI Core System Integration (optional, graceful degradation)
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
   final CrossEntityCompatibilityService? _knotCompatibilityService;
   final IntegratedKnotRecommendationEngine? _knotEngine;
   final QuantumMatchingAILearningService? _aiLearningService;
+  final ConvictionGateEvaluator _convictionGateEvaluator;
 
   ListCreationController({
     ListsRepository? listsRepository,
@@ -73,8 +76,8 @@ class ListCreationController
     CrossEntityCompatibilityService? knotCompatibilityService,
     IntegratedKnotRecommendationEngine? knotEngine,
     QuantumMatchingAILearningService? aiLearningService,
-  })  : _listsRepository =
-            listsRepository ?? GetIt.instance<ListsRepository>(),
+    ConvictionGateEvaluator? convictionGateEvaluator,
+  })  : _listsRepository = listsRepository ?? GetIt.instance<ListsRepository>(),
         _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
         _locationTimingService = locationTimingService ??
             (GetIt.instance.isRegistered<LocationTimingQuantumStateService>()
@@ -95,10 +98,12 @@ class ListCreationController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
-                : null);
+                : null),
+        _convictionGateEvaluator =
+            convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
 
   /// Create a list
-  /// 
+  ///
   /// Orchestrates the complete list creation workflow:
   /// 1. Validate input
   /// 2. Check user permissions
@@ -106,13 +111,13 @@ class ListCreationController
   /// 4. Add initial spots (if provided)
   /// 5. Generate AI suggestions (optional, when service available)
   /// 6. Return unified result
-  /// 
+  ///
   /// **Parameters:**
   /// - `data`: List form data (title, description, category, etc.)
   /// - `curator`: User creating the list
   /// - `initialSpotIds`: Optional list of spot IDs to add initially
   /// - `generateAISuggestions`: Whether to generate AI suggestions (default: false)
-  /// 
+  ///
   /// **Returns:**
   /// `ListCreationResult` with success/failure and error details
   Future<ListCreationResult> createList({
@@ -136,16 +141,45 @@ class ListCreationController
         );
       }
 
-      // Step 2: Check user permissions
+      // Step 2: Conviction/policy gate evaluation (shadow mode by default)
+      final convictionGateDecision = await _convictionGateEvaluator.evaluate(
+        ConvictionGateRequest(
+          controllerName: 'ListCreationController',
+          requestId: data.convictionRequestId ??
+              'list-${curator.id}-${DateTime.now().millisecondsSinceEpoch}',
+          claimState: data.claimState,
+          isHighImpact: data.isHighImpactAction,
+          policyChecksPassed: data.policyChecksPassed,
+          subjectId: curator.id,
+        ),
+      );
+
+      if (convictionGateDecision.shadowBypassApplied) {
+        developer.log(
+          '⚠️ Conviction gate shadow bypass applied: ${convictionGateDecision.reasonCodes.join(",")}',
+          name: _logName,
+        );
+      }
+
+      if (!convictionGateDecision.servingAllowed) {
+        return ListCreationResult.failure(
+          error: 'Conviction gate blocked request',
+          errorCode: 'CONVICTION_GATE_BLOCKED',
+          convictionGateDecision: convictionGateDecision,
+        );
+      }
+
+      // Step 3: Check user permissions
       final canCreate = await _listsRepository.canUserCreateList(curator.id);
       if (!canCreate) {
         return ListCreationResult.failure(
           error: 'User does not have permission to create lists',
           errorCode: 'PERMISSION_DENIED',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
-      // Step 3: Create list with atomic timestamps
+      // Step 4: Create list with atomic timestamps
       final atomicTimestamp = await _atomicClock.getAtomicTimestamp();
       final now = atomicTimestamp.serverTime;
       final list = SpotList(
@@ -169,7 +203,7 @@ class ListCreationController
         name: _logName,
       );
 
-      // Step 4: Initial spots are included in list creation (spotIds field)
+      // Step 5: Initial spots are included in list creation (spotIds field)
       // Note: Spots are referenced by ID, actual Spot objects are loaded separately
       // If additional spot validation or linking is needed, it can be done via
       // ListsRepository.updateList() after creation
@@ -180,16 +214,18 @@ class ListCreationController
         );
       }
 
-      // Step 5: AVRAI Core System Integration (optional, graceful degradation)
-      
+      // Step 6: AVRAI Core System Integration (optional, graceful degradation)
+
       // 5.1: Create 4D quantum states for spots in list (if spots provided)
-      if (_locationTimingService != null && initialSpotIds != null && initialSpotIds.isNotEmpty) {
+      if (_locationTimingService != null &&
+          initialSpotIds != null &&
+          initialSpotIds.isNotEmpty) {
         try {
           developer.log(
             '🌐 Creating 4D quantum states for ${initialSpotIds.length} spots in list',
             name: _logName,
           );
-          
+
           // Note: Full implementation would load Spot objects and create quantum states
           // This is a placeholder for future 4D quantum state creation for list spots
           developer.log(
@@ -205,9 +241,11 @@ class ListCreationController
           // Continue - quantum state creation is optional
         }
       }
-      
+
       // 5.2: Calculate quantum compatibility (user ↔ spots)
-      if (_quantumEntanglementService != null && initialSpotIds != null && initialSpotIds.isNotEmpty) {
+      if (_quantumEntanglementService != null &&
+          initialSpotIds != null &&
+          initialSpotIds.isNotEmpty) {
         try {
           developer.log(
             '🔬 Quantum compatibility calculation deferred (requires Spot objects and user profile)',
@@ -223,7 +261,7 @@ class ListCreationController
           // Continue - quantum compatibility is optional
         }
       }
-      
+
       // 5.3: Calculate knot compatibility for recommendations
       if (_knotCompatibilityService != null) {
         try {
@@ -241,7 +279,7 @@ class ListCreationController
           // Continue - knot compatibility is optional
         }
       }
-      
+
       // 5.4: Use knot-based recommendations (if available)
       if (_knotEngine != null && generateAISuggestions) {
         try {
@@ -260,7 +298,7 @@ class ListCreationController
           // Continue - knot recommendations are optional
         }
       }
-      
+
       // 5.5: Learn from list creation via AI2AI mesh (optional, fire-and-forget)
       if (_aiLearningService != null) {
         try {
@@ -278,8 +316,8 @@ class ListCreationController
           // Continue - AI2AI learning is optional and non-blocking
         }
       }
-      
-      // Step 6: Generate AI suggestions (optional, when service available)
+
+      // Step 7: Generate AI suggestions (optional, when service available)
       // TODO(Phase 8.12): Implement AI list generation when AIListGeneratorService is available
       if (generateAISuggestions) {
         developer.log(
@@ -293,6 +331,7 @@ class ListCreationController
       return ListCreationResult.success(
         list: createdList,
         spotsAdded: initialSpotIds?.length ?? 0,
+        convictionGateDecision: convictionGateDecision,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -374,7 +413,7 @@ class ListCreationController
 }
 
 /// List Form Data
-/// 
+///
 /// Input data for list creation
 class ListFormData {
   final String title;
@@ -385,6 +424,10 @@ class ListFormData {
   final UnifiedUser? curator;
   final List<String>? initialSpotIds;
   final bool generateAISuggestions;
+  final ClaimLifecycleState claimState;
+  final bool isHighImpactAction;
+  final bool policyChecksPassed;
+  final String? convictionRequestId;
 
   ListFormData({
     required this.title,
@@ -395,16 +438,21 @@ class ListFormData {
     this.curator,
     this.initialSpotIds,
     this.generateAISuggestions = false,
+    this.claimState = ClaimLifecycleState.canonical,
+    this.isHighImpactAction = false,
+    this.policyChecksPassed = true,
+    this.convictionRequestId,
   });
 }
 
 /// List Creation Result
-/// 
+///
 /// Unified result for list creation operations
 class ListCreationResult extends ControllerResult {
   final SpotList? list;
   final int? spotsAdded;
   final String? warning;
+  final ConvictionGateDecision? convictionGateDecision;
 
   const ListCreationResult._({
     required super.success,
@@ -413,12 +461,14 @@ class ListCreationResult extends ControllerResult {
     this.list,
     this.spotsAdded,
     this.warning,
+    this.convictionGateDecision,
   });
 
   factory ListCreationResult.success({
     required SpotList list,
     int spotsAdded = 0,
     String? warning,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return ListCreationResult._(
       success: true,
@@ -427,12 +477,14 @@ class ListCreationResult extends ControllerResult {
       list: list,
       spotsAdded: spotsAdded,
       warning: warning,
+      convictionGateDecision: convictionGateDecision,
     );
   }
 
   factory ListCreationResult.failure({
     required String error,
     required String errorCode,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return ListCreationResult._(
       success: false,
@@ -441,7 +493,7 @@ class ListCreationResult extends ControllerResult {
       list: null,
       spotsAdded: null,
       warning: null,
+      convictionGateDecision: convictionGateDecision,
     );
   }
 }
-

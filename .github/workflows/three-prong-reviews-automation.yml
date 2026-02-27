@@ -1,0 +1,114 @@
+name: 3-Prong Reviews Automation
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/EXECUTION_BOARD.csv'
+      - 'tool/update_execution_board.dart'
+      - 'tool/update_three_prong_reviews.dart'
+      - 'tool/export_conviction_shadow_telemetry.dart'
+      - 'configs/runtime/conviction_gate_canary_rollout.json'
+      - 'configs/runtime/conviction_gate_canary_dry_run_fixture.json'
+      - 'configs/runtime/conviction_gate_canary_rollback_drill_fixture.json'
+      - 'scripts/runtime/check_conviction_canary_rollout_config.py'
+      - 'scripts/runtime/check_conviction_canary_dry_run_fixture.py'
+      - 'scripts/runtime/generate_conviction_canary_rollback_drill_report.py'
+      - 'configs/runtime/research_replication_queue.json'
+      - 'scripts/runtime/generate_research_replication_sla_report.py'
+      - 'configs/runtime/trust_ux_priority_flows.json'
+      - 'scripts/runtime/generate_trust_ux_priority_flow_report.py'
+      - 'configs/runtime/self_healing_incident_routing_queue.json'
+      - 'scripts/runtime/generate_self_healing_incident_routing_report.py'
+      - 'configs/runtime/lineage_transparency_priority_flows.json'
+      - 'scripts/runtime/generate_lineage_transparency_priority_flow_report.py'
+      - 'configs/runtime/master_plan_completion_audit_package.json'
+      - 'configs/runtime/master_plan_signoff_registry.json'
+      - 'scripts/runtime/check_master_plan_signoff_registry.py'
+      - 'scripts/runtime/update_master_plan_signoff_registry.py'
+      - 'scripts/runtime/generate_master_plan_completion_audit_package.py'
+      - '.github/workflows/three-prong-reviews-automation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-three-prong-reviews:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Resolve Flutter dependencies
+        run: flutter pub get
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Regenerate board + review artifacts
+        run: |
+          python3 scripts/runtime/check_conviction_canary_rollout_config.py
+          python3 scripts/runtime/check_conviction_canary_dry_run_fixture.py
+          python3 scripts/runtime/generate_conviction_canary_rollback_drill_report.py
+          python3 scripts/runtime/generate_research_replication_sla_report.py
+          python3 scripts/runtime/generate_trust_ux_priority_flow_report.py
+          python3 scripts/runtime/generate_self_healing_incident_routing_report.py
+          python3 scripts/runtime/generate_lineage_transparency_priority_flow_report.py
+          python3 scripts/runtime/check_master_plan_signoff_registry.py
+          dart run tool/update_execution_board.dart
+          dart run tool/update_three_prong_reviews.dart
+          dart run tool/export_conviction_shadow_telemetry.dart
+          dart run tool/export_conviction_shadow_telemetry.dart \
+            --input configs/runtime/conviction_gate_canary_dry_run_fixture.json \
+            --output docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_CANARY_DRY_RUN.md \
+            --summary-out docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_CANARY_DRY_RUN.json
+          python3 scripts/runtime/generate_master_plan_completion_audit_package.py
+
+      - name: Commit generated updates
+        run: |
+          if git diff --quiet; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/EXECUTION_BOARD.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_READINESS_SCORECARD.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_WEEKLY_REVIEW.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_FINAL_REVIEW.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_CANARY_ROLLBACK_DRILL_REPORT.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_CANARY_ROLLBACK_DRILL_REPORT.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_RESEARCH_REPLICATION_SLA_REPORT.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_RESEARCH_REPLICATION_SLA_REPORT.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_TRUST_UX_PRIORITY_FLOW_REPORT.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_TRUST_UX_PRIORITY_FLOW_REPORT.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SELF_HEALING_INCIDENT_ROUTING_REPORT.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SELF_HEALING_INCIDENT_ROUTING_REPORT.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_LINEAGE_TRANSPARENCY_PRIORITY_FLOW_REPORT.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_LINEAGE_TRANSPARENCY_PRIORITY_FLOW_REPORT.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_COMPLETION_AUDIT_PACKAGE.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_COMPLETION_AUDIT_PACKAGE.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_CANARY_DRY_RUN.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_CANARY_DRY_RUN.json \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.md \
+            docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json
+          git commit -m "chore(reviews): auto-refresh 3-prong weekly/final artifacts"
+          git push

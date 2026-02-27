@@ -1,0 +1,34 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T15:00:00Z",
+  "required_gate_reports": [
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_CANARY_ROLLBACK_DRILL_REPORT.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_RESEARCH_REPLICATION_SLA_REPORT.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_TRUST_UX_PRIORITY_FLOW_REPORT.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_SELF_HEALING_INCIDENT_ROUTING_REPORT.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_LINEAGE_TRANSPARENCY_PRIORITY_FLOW_REPORT.json"
+  ],
+  "required_documents": [
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_READINESS_SCORECARD.md",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_WEEKLY_REVIEW.md",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_FINAL_REVIEW.md"
+  ],
+  "required_signoff_roles": [
+    "Product",
+    "Platform/OS Engineering",
+    "ML Research",
+    "Reliability/SRE",
+    "Security/Compliance",
+    "Governance/Executive"
+  ],
+  "signoff_registry": "configs/runtime/master_plan_signoff_registry.json",
+  "verdict_keys": {
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_CANARY_ROLLBACK_DRILL_REPORT.json": "verdict",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_RESEARCH_REPLICATION_SLA_REPORT.json": "verdict",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_TRUST_UX_PRIORITY_FLOW_REPORT.json": "verdict",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_SELF_HEALING_INCIDENT_ROUTING_REPORT.json": "verdict",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_LINEAGE_TRANSPARENCY_PRIORITY_FLOW_REPORT.json": "verdict"
+  }
+}
