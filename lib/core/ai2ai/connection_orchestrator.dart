@@ -52,6 +52,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/active_connection_metrics_index.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2523,17 +2524,8 @@ class VibeConnectionOrchestrator {
   Future<void> _expireSessionsBasedOnQuality(
       SignalSessionManager sessionManager) async {
     try {
-      // Build map of agent ID to ConnectionMetrics for active connections
-      final metricsByAgentId = <String, ConnectionMetrics>{};
-      for (final connection in _activeConnections.values) {
-        // Skip if connection is not active
-        if (connection.status != ConnectionStatus.active &&
-            connection.status != ConnectionStatus.learning) {
-          continue;
-        }
-
-        metricsByAgentId[connection.remoteAISignature] = connection;
-      }
+      final metricsByAgentId =
+          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
 
       // Get sessions to close using SignalSessionManager's quality-based method
       final sessionsToClose =
@@ -2582,14 +2574,8 @@ class VibeConnectionOrchestrator {
       const inactivityThreshold = Duration(hours: 24); // 24 hours of inactivity
       final now = DateTime.now();
 
-      // Build map of agent ID to ConnectionMetrics for active connections
-      final metricsByAgentId = <String, ConnectionMetrics>{};
-      for (final connection in _activeConnections.values) {
-        if (connection.status == ConnectionStatus.active ||
-            connection.status == ConnectionStatus.learning) {
-          metricsByAgentId[connection.remoteAISignature] = connection;
-        }
-      }
+      final metricsByAgentId =
+          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
 
       // Get sessions that should be maintained (high-quality connections)
       final sessionsToMaintain =
@@ -2671,17 +2657,8 @@ class VibeConnectionOrchestrator {
   /// for high-quality, active connections.
   Future<void> _renewActiveSessions(SignalSessionManager sessionManager) async {
     try {
-      // Build map of agent ID to ConnectionMetrics for active connections
-      final metricsByAgentId = <String, ConnectionMetrics>{};
-      for (final connection in _activeConnections.values) {
-        // Skip if connection is not active
-        if (connection.status != ConnectionStatus.active &&
-            connection.status != ConnectionStatus.learning) {
-          continue;
-        }
-
-        metricsByAgentId[connection.remoteAISignature] = connection;
-      }
+      final metricsByAgentId =
+          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
 
       // Get sessions to renew using SignalSessionManager's quality-based method
       final sessionsToRenew =
