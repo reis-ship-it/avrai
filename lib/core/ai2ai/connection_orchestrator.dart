@@ -42,8 +42,7 @@ import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
@@ -2290,32 +2289,14 @@ class VibeConnectionOrchestrator {
   /// NEW: Handle incoming locality agent update from mesh
   Future<void> _handleIncomingLocalityAgentUpdate(
       ProtocolMessage message) async {
-    try {
-      final payload = message.payload;
-      final ingestionResult = await IncomingLocalityAgentUpdateProcessor.process(
-        payload: payload,
-        senderId: message.senderId,
-        adaptiveMeshService: _adaptiveMeshService,
-        logger: _logger,
-        logName: _logName,
-      );
-      if (ingestionResult == null) return;
-
-      // Forward through mesh if within limits
-      await _maybeForwardLocalityAgentUpdateGossip(
-        payload: payload,
-        originId: ingestionResult.originId,
-        hop: ingestionResult.hop,
-        receivedFromDeviceId: message.senderId,
-      );
-    } catch (e, st) {
-      _logger.error(
-        'Failed to handle incoming locality agent update: $e',
-        error: e,
-        stackTrace: st,
-        tag: _logName,
-      );
-    }
+    await IncomingMeshSignalHandlersLane.handleLocalityAgentUpdate(
+      message: message,
+      adaptiveMeshService: _adaptiveMeshService,
+      maybeForwardLocalityAgentUpdateGossip:
+          _maybeForwardLocalityAgentUpdateGossip,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Handle incoming organic spot discovery signal from mesh.
@@ -2328,21 +2309,12 @@ class VibeConnectionOrchestrator {
   /// Privacy: Only receives geohash + visit count. Never raw GPS or user ID.
   Future<void> _handleIncomingOrganicSpotDiscovery(
       ProtocolMessage message) async {
-    try {
-      await IncomingOrganicSpotDiscoveryProcessor.process(
-        payload: message.payload,
-        currentUserId: _currentUserId,
-        logger: _logger,
-        logName: _logName,
-      );
-    } catch (e, st) {
-      _logger.error(
-        'Failed to handle incoming organic spot discovery: $e',
-        error: e,
-        stackTrace: st,
-        tag: _logName,
-      );
-    }
+    await IncomingMeshSignalHandlersLane.handleOrganicSpotDiscovery(
+      message: message,
+      currentUserId: _currentUserId,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// NEW: Forward locality agent update gossip (similar to learning insight gossip)
