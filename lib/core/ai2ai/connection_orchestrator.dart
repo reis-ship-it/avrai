@@ -34,6 +34,7 @@ import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
+import 'package:avrai/core/ai2ai/routing/gossip_learning_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
@@ -2572,34 +2573,20 @@ class VibeConnectionOrchestrator {
     );
     if (forwardingContext == null) return;
 
-    // Choose up to 2 nearby devices to forward to (best-effort).
-    final candidates = MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-      receivedFromDeviceId: receivedFromDeviceId,
+    await GossipLearningForwardingLane.forward(
+      payload: payload,
+      hop: hop,
       originId: originId,
+      receivedFromDeviceId: receivedFromDeviceId,
+      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      context: forwardingContext,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      logger: _logger,
+      logName: _logName,
+      failureLabel: 'Learning insight gossip forward failed',
       maxCandidates: 2,
     );
-
-    if (candidates.isEmpty) return;
-
-    try {
-      final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
-        source: payload,
-        hop: hop,
-        originId: originId,
-      );
-
-      await LearningInsightMeshForwarder.forward(
-        candidatePeerIds: candidates,
-        context: forwardingContext,
-        senderNodeId: _localBleNodeId,
-        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        payload: forwardedPayload,
-      );
-    } catch (e) {
-      _logger.debug('Learning insight gossip forward failed: $e',
-          tag: _logName);
-    }
   }
 
   // Private helper methods
@@ -4200,34 +4187,20 @@ class VibeConnectionOrchestrator {
     );
     if (forwardingContext == null) return;
 
-    // Choose up to 2 nearby devices to forward to (best-effort)
-    final candidates = MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
-      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-      receivedFromDeviceId: receivedFromDeviceId,
+    await GossipLearningForwardingLane.forward(
+      payload: payload,
+      hop: hop,
       originId: originId,
+      receivedFromDeviceId: receivedFromDeviceId,
+      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      context: forwardingContext,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      logger: _logger,
+      logName: _logName,
+      failureLabel: 'Locality agent update gossip forward failed',
       maxCandidates: 2,
     );
-
-    if (candidates.isEmpty) return;
-
-    try {
-      final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
-        source: payload,
-        hop: hop,
-        originId: originId,
-      );
-
-      await LearningInsightMeshForwarder.forward(
-        candidatePeerIds: candidates,
-        context: forwardingContext,
-        senderNodeId: _localBleNodeId,
-        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        payload: forwardedPayload,
-      );
-    } catch (e) {
-      _logger.debug('Locality agent update gossip forward failed: $e',
-          tag: _logName);
-    }
   }
 
   /// Get or create Bloom filter for geographic scope (AI2AI-specific)
