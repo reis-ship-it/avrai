@@ -69,6 +69,7 @@ import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -2476,24 +2477,12 @@ class VibeConnectionOrchestrator {
 
   Future<ConnectionMetrics?> _completeConnection(ConnectionMetrics connection,
       {String? reason}) async {
-    try {
-      _logger.info('Completing AI2AI connection: ${connection.connectionId}',
-          tag: _logName);
-
-      final completedConnection = ConnectionLifecycleLane.complete(
-        connection,
-        reason: reason,
-      );
-
-      // Log connection summary
-      final summary = completedConnection.getSummary();
-      _logger.info('Connection completed: $summary', tag: _logName);
-
-      return completedConnection;
-    } catch (e) {
-      _logger.error('Error completing connection', error: e, tag: _logName);
-      return null;
-    }
+    return ConnectionCompletionLane.complete(
+      connection: connection,
+      reason: reason,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<void> _updateConnectionLearning(ConnectionMetrics connection) async {
