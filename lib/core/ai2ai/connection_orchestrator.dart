@@ -1180,11 +1180,8 @@ class VibeConnectionOrchestrator {
     if (personalityLearning == null) return;
 
     final now = DateTime.now();
-    const minIntervalPerPeer = Duration(minutes: 20);
-
     for (final node in nodes) {
-      final last = _lastAi2AiLearningAtByPeerId[node.nodeId];
-      if (last != null && now.difference(last) < minIntervalPerPeer) {
+      if (_isPeerLearningThrottled(peerId: node.nodeId, now: now)) {
         continue;
       }
 
@@ -2067,6 +2064,28 @@ class VibeConnectionOrchestrator {
     await _prefs.setStringList(_prefsKeySeenLearningInsightIds, list);
   }
 
+  bool _markInsightSeenIfFresh({
+    required String insightId,
+    required int nowMs,
+    required int expiresAtMs,
+  }) {
+    final seenExpiry = _seenLearningInsightIds[insightId];
+    if (seenExpiry != null && seenExpiry > nowMs) {
+      return false;
+    }
+    _seenLearningInsightIds[insightId] = expiresAtMs;
+    return true;
+  }
+
+  bool _isPeerLearningThrottled({
+    required String peerId,
+    required DateTime now,
+    Duration minInterval = const Duration(minutes: 20),
+  }) {
+    final last = _lastAi2AiLearningAtByPeerId[peerId];
+    return last != null && now.difference(last) < minInterval;
+  }
+
   Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
     // Respect user setting.
     final learningEnabled =
@@ -2096,15 +2115,18 @@ class VibeConnectionOrchestrator {
       final deltas = parseResult.deltas;
 
       // Dedupe.
-      final seenExpiry = _seenLearningInsightIds[insightId];
-      if (seenExpiry != null && seenExpiry > nowMs) return;
-      _seenLearningInsightIds[insightId] = expiresAtMs;
+      if (!_markInsightSeenIfFresh(
+        insightId: insightId,
+        nowMs: nowMs,
+        expiresAtMs: expiresAtMs,
+      )) {
+        return;
+      }
 
       // Throttle per sender.
       final now = DateTime.now();
       final sender = message.senderId;
-      final last = _lastAi2AiLearningAtByPeerId[sender];
-      if (last != null && now.difference(last) < const Duration(minutes: 20)) {
+      if (_isPeerLearningThrottled(peerId: sender, now: now)) {
         return;
       }
 
