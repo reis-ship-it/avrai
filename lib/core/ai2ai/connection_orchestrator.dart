@@ -2219,31 +2219,37 @@ class VibeConnectionOrchestrator {
       final messageTypeStr = payload['message_type'] as String?;
       final createdAtStr = payload['created_at'] as String?;
 
-      // Validate required fields
-      if (messageId == null ||
-          conversationId == null ||
-          senderTypeStr == null ||
-          senderId == null ||
-          recipientTypeStr == null ||
-          recipientId == null ||
-          content == null ||
-          createdAtStr == null) {
-        _logger.warn(
-          'Received incomplete business-expert chat message: missing required fields',
-          tag: _logName,
-        );
+      if (_hasMissingRequiredFields(<Object?>[
+        messageId,
+        conversationId,
+        senderTypeStr,
+        senderId,
+        recipientTypeStr,
+        recipientId,
+        content,
+        createdAtStr,
+      ])) {
+        _warnIncompleteChatPayload('business-expert');
         return;
       }
+      final resolvedMessageId = messageId!;
+      final resolvedConversationId = conversationId!;
+      final resolvedSenderTypeStr = senderTypeStr!;
+      final resolvedSenderId = senderId!;
+      final resolvedRecipientTypeStr = recipientTypeStr!;
+      final resolvedRecipientId = recipientId!;
+      final resolvedContent = content!;
+      final resolvedCreatedAtStr = createdAtStr!;
 
       // Parse enums
       final senderType = _parseEnumByName(
         values: chat_models.MessageSenderType.values,
-        name: senderTypeStr,
+        name: resolvedSenderTypeStr,
         fallback: chat_models.MessageSenderType.business,
       );
       final recipientType = _parseEnumByName(
         values: chat_models.MessageRecipientType.values,
-        name: recipientTypeStr,
+        name: resolvedRecipientTypeStr,
         fallback: chat_models.MessageRecipientType.expert,
       );
       final encryptionType = _parseEnumByName(
@@ -2261,18 +2267,18 @@ class VibeConnectionOrchestrator {
         encryptedContentStr,
       );
 
-      final createdAt = _parseCreatedAtOrNull(createdAtStr);
+      final createdAt = _parseCreatedAtOrNull(resolvedCreatedAtStr);
       if (createdAt == null) return;
 
       // Create message object
       final chatMessage = chat_models.BusinessExpertMessage(
-        id: messageId,
-        conversationId: conversationId,
+        id: resolvedMessageId,
+        conversationId: resolvedConversationId,
         senderType: senderType,
-        senderId: senderId,
+        senderId: resolvedSenderId,
         recipientType: recipientType,
-        recipientId: recipientId,
-        content: content,
+        recipientId: resolvedRecipientId,
+        content: resolvedContent,
         encryptedContent: encryptedContent,
         encryptionType: encryptionType,
         type: messageType,
@@ -2289,7 +2295,7 @@ class VibeConnectionOrchestrator {
       );
 
       _logger.debug(
-        'Saved incoming business-expert chat message: $messageId',
+        'Saved incoming business-expert chat message: $resolvedMessageId',
         tag: _logName,
       );
     } catch (e, st) {
@@ -2319,19 +2325,23 @@ class VibeConnectionOrchestrator {
       final messageTypeStr = payload['message_type'] as String?;
       final createdAtStr = payload['created_at'] as String?;
 
-      // Validate required fields
-      if (messageId == null ||
-          conversationId == null ||
-          senderBusinessId == null ||
-          recipientBusinessId == null ||
-          content == null ||
-          createdAtStr == null) {
-        _logger.warn(
-          'Received incomplete business-business chat message: missing required fields',
-          tag: _logName,
-        );
+      if (_hasMissingRequiredFields(<Object?>[
+        messageId,
+        conversationId,
+        senderBusinessId,
+        recipientBusinessId,
+        content,
+        createdAtStr,
+      ])) {
+        _warnIncompleteChatPayload('business-business');
         return;
       }
+      final resolvedMessageId = messageId!;
+      final resolvedConversationId = conversationId!;
+      final resolvedSenderBusinessId = senderBusinessId!;
+      final resolvedRecipientBusinessId = recipientBusinessId!;
+      final resolvedContent = content!;
+      final resolvedCreatedAtStr = createdAtStr!;
 
       // Parse enums
       final encryptionType = _parseEnumByName(
@@ -2349,16 +2359,16 @@ class VibeConnectionOrchestrator {
         encryptedContentStr,
       );
 
-      final createdAt = _parseCreatedAtOrNull(createdAtStr);
+      final createdAt = _parseCreatedAtOrNull(resolvedCreatedAtStr);
       if (createdAt == null) return;
 
       // Create message object
       final chatMessage = chat_models.BusinessBusinessMessage(
-        id: messageId,
-        conversationId: conversationId,
-        senderBusinessId: senderBusinessId,
-        recipientBusinessId: recipientBusinessId,
-        content: content,
+        id: resolvedMessageId,
+        conversationId: resolvedConversationId,
+        senderBusinessId: resolvedSenderBusinessId,
+        recipientBusinessId: resolvedRecipientBusinessId,
+        content: resolvedContent,
         encryptedContent: encryptedContent,
         encryptionType: encryptionType,
         type: messageType,
@@ -2375,7 +2385,7 @@ class VibeConnectionOrchestrator {
       );
 
       _logger.debug(
-        'Saved incoming business-business chat message: $messageId',
+        'Saved incoming business-business chat message: $resolvedMessageId',
         tag: _logName,
       );
     } catch (e, st) {
@@ -2453,6 +2463,20 @@ class VibeConnectionOrchestrator {
       );
     }
     return createdAt;
+  }
+
+  bool _hasMissingRequiredFields(List<Object?> values) {
+    for (final value in values) {
+      if (value == null) return true;
+    }
+    return false;
+  }
+
+  void _warnIncompleteChatPayload(String chatType) {
+    _logger.warn(
+      'Received incomplete $chatType chat message: missing required fields',
+      tag: _logName,
+    );
   }
 
   T _parseEnumByName<T extends Enum>({
