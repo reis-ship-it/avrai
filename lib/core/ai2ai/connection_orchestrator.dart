@@ -22,9 +22,7 @@ import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/discovery_fallback_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/discovery_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/physical_layer_discovery_lane.dart';
+import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
@@ -1894,31 +1892,12 @@ class VibeConnectionOrchestrator {
 
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
       AnonymizedVibeData localVibe) async {
-    final discovery = _deviceDiscovery;
-    return DiscoveryOrchestrationLane.discover(
-      hasPhysicalLayer: discovery != null,
-      discoverPhysicalLayer: () async {
-        if (discovery == null) return const <AIPersonalityNode>[];
-        final devices = discovery.getDiscoveredDevices();
-        return PhysicalLayerDiscoveryLane.discoverNodes(
-          devices: devices,
-          allowBleSideEffects: _allowBleSideEffects,
-          primeOfflineSignalPreKeyBundleInSession: (device, session) =>
-              _primeOfflineSignalPreKeyBundleInSession(
-            device: device,
-            session: session,
-          ),
-          extractPersonalityData: discovery.extractPersonalityData,
-          calculateProximity: discovery.calculateProximity,
-          logger: _logger,
-          logName: _logName,
-        );
-      },
-      fallbackDiscovery: () => DiscoveryFallbackLane.fallback(
-        realtimeService: _realtimeService,
-        logger: _logger,
-        logName: _logName,
-      ),
+    return AI2AIDiscoveryExecutionLane.discover(
+      deviceDiscovery: _deviceDiscovery,
+      allowBleSideEffects: _allowBleSideEffects,
+      primeOfflineSignalPreKeyBundleInSession:
+          _primeOfflineSignalPreKeyBundleInSession,
+      realtimeService: _realtimeService,
       logger: _logger,
       logName: _logName,
     );
