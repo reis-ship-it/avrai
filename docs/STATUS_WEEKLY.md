@@ -24,6 +24,7 @@ Validation commands:
 - `Ready -> In Progress`:
 - `In Progress -> Done`: `M0-P2-1`
 - `In Progress -> Done`: `M1-P7-1`
+- `In Progress -> Done`: `M2-P1-1`
 - `Any -> Blocked`:
 
 ### 1B) Reopen-By-New-Milestone Events
@@ -72,6 +73,9 @@ Validation commands:
 - M1-P7-1 trigger/orchestration persistence baseline: `docs/plans/methodology/M1_P7_1_TRIGGER_ORCHESTRATION_PERSISTENCE_BASELINE.md`
 - M1-P7-1 trigger/orchestration persistence config + report automation: `configs/runtime/trigger_orchestration_persistence_hardening_controls.json`, `scripts/runtime/generate_trigger_orchestration_persistence_report.py`, `docs/plans/methodology/MASTER_PLAN_TRIGGER_ORCHESTRATION_PERSISTENCE_REPORT.md`
 - M1-P7-1 trigger/orchestration persistence contract + tests: `lib/core/controllers/trigger_orchestration_persistence_contract.dart`, `test/unit/controllers/trigger_orchestration_persistence_contract_test.dart`
+- M2-P1-1 memory reliability baseline: `docs/plans/methodology/M2_P1_1_MEMORY_RELIABILITY_GATES_BASELINE.md`
+- M2-P1-1 memory reliability config + report automation: `configs/runtime/memory_reliability_gates.json`, `scripts/runtime/generate_memory_reliability_gates_report.py`, `docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.md`
+- M2-P1-1 memory reliability contract + tests: `lib/core/ai/memory/memory_reliability_contract.dart`, `test/unit/ai/memory_reliability_contract_test.dart`
 
 ---
 

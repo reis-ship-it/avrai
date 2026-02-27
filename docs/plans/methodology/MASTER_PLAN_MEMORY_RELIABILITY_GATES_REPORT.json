@@ -1,0 +1,30 @@
+{
+  "dedupe": {
+    "duplicate_records": 12,
+    "input_records": 1800,
+    "max_duplicate_rate_pct": 1.0,
+    "observed_duplicate_rate_pct": 0.6667,
+    "unique_records": 1788,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T17:45:00Z",
+  "replay_validation": {
+    "deterministic_hash_match": true,
+    "max_allowed_failures": 0,
+    "scenario_failures": 0,
+    "scenarios_passed": 32,
+    "scenarios_tested": 32,
+    "within_threshold": true
+  },
+  "schema_consistency": {
+    "max_missing_field_rate_pct": 0.5,
+    "missing_field_rate_pct": 0.3333,
+    "records_with_missing_required_fields": 6,
+    "total_records": 1800,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/memory_reliability_gates.json",
+  "verdict": "PASS",
+  "version": "v1"
+}
