@@ -34,6 +34,7 @@ import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -2552,23 +2553,14 @@ class VibeConnectionOrchestrator {
         payload['scope'] as String? ?? 'locality'; // Default to locality
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
-    // Check if message might already be in filter (loop prevention)
-    if (bloomFilter.mightContain(messageHash)) {
-      _logger.debug(
-        'Bloom filter: message might be duplicate, skipping forward (scope: $scope)',
-        tag: _logName,
-      );
-      return; // Might be a loop, don't forward
-    }
-
-    // Add message to filter
-    if (!bloomFilter.add(messageHash)) {
-      _logger.debug(
-        'Bloom filter full, clearing and retrying (scope: $scope)',
-        tag: _logName,
-      );
-      bloomFilter.clear();
-      bloomFilter.add(messageHash);
+    if (!BloomLoopGuard.allowForward(
+      bloomFilter: bloomFilter,
+      messageHash: messageHash,
+      scope: scope,
+      logger: _logger,
+      logName: _logName,
+    )) {
+      return;
     }
 
     // Use adaptive hop limit instead of hardcoded 1-hop limit
@@ -4001,23 +3993,15 @@ class VibeConnectionOrchestrator {
         message['scope'] as String? ?? 'locality'; // Default to locality
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
-    // Check if message might already be in filter (loop prevention)
-    if (bloomFilter.mightContain(messageHash)) {
-      _logger.debug(
-        'Bloom filter: locality agent update might be duplicate, skipping forward (scope: $scope)',
-        tag: _logName,
-      );
-      return; // Might be a loop, don't forward
-    }
-
-    // Add message to filter
-    if (!bloomFilter.add(messageHash)) {
-      _logger.debug(
-        'Bloom filter full, clearing and retrying (scope: $scope)',
-        tag: _logName,
-      );
-      bloomFilter.clear();
-      bloomFilter.add(messageHash);
+    if (!BloomLoopGuard.allowForward(
+      bloomFilter: bloomFilter,
+      messageHash: messageHash,
+      scope: scope,
+      logger: _logger,
+      logName: _logName,
+      duplicateLabel: 'locality agent update',
+    )) {
+      return;
     }
 
     // Use adaptive mesh service to check hop limit (AFTER Bloom filter check)
@@ -4251,23 +4235,15 @@ class VibeConnectionOrchestrator {
         payload['scope'] as String? ?? 'locality'; // Default to locality
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
-    // Check if message might already be in filter (loop prevention)
-    if (bloomFilter.mightContain(messageHash)) {
-      _logger.debug(
-        'Bloom filter: locality agent update might be duplicate, skipping forward (scope: $scope)',
-        tag: _logName,
-      );
-      return; // Might be a loop, don't forward
-    }
-
-    // Add message to filter
-    if (!bloomFilter.add(messageHash)) {
-      _logger.debug(
-        'Bloom filter full, clearing and retrying (scope: $scope)',
-        tag: _logName,
-      );
-      bloomFilter.clear();
-      bloomFilter.add(messageHash);
+    if (!BloomLoopGuard.allowForward(
+      bloomFilter: bloomFilter,
+      messageHash: messageHash,
+      scope: scope,
+      logger: _logger,
+      logName: _logName,
+      duplicateLabel: 'locality agent update',
+    )) {
+      return;
     }
 
     // Use adaptive hop limit
