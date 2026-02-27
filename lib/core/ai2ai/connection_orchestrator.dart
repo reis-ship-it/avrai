@@ -39,6 +39,7 @@ import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
+import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
@@ -79,7 +80,6 @@ import 'package:avrai/core/models/business/business_expert_message.dart'
     as chat_models;
 import 'package:avrai/core/models/business/business_business_message.dart'
     as chat_models;
-import 'package:get_storage/get_storage.dart';
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
 /// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
@@ -2255,7 +2255,7 @@ class VibeConnectionOrchestrator {
         updatedAt: DateTime.now(),
       );
 
-      await _appendMessageToConversationStore(
+      await ConversationStoreWriter.appendMessage(
         boxName: 'business_expert_messages',
         conversationId: chatMessage.conversationId,
         messageJson: chatMessage.toJson(),
@@ -2355,7 +2355,7 @@ class VibeConnectionOrchestrator {
         updatedAt: DateTime.now(),
       );
 
-      await _appendMessageToConversationStore(
+      await ConversationStoreWriter.appendMessage(
         boxName: 'business_business_messages',
         conversationId: chatMessage.conversationId,
         messageJson: chatMessage.toJson(),
@@ -2404,18 +2404,6 @@ class VibeConnectionOrchestrator {
       failureLabel: 'Learning insight gossip forward failed',
       maxCandidates: 2,
     );
-  }
-
-  Future<void> _appendMessageToConversationStore({
-    required String boxName,
-    required String conversationId,
-    required Map<String, dynamic> messageJson,
-  }) async {
-    final box = GetStorage(boxName);
-    final key = 'messages_$conversationId';
-    final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
-    existing.add(messageJson);
-    await box.write(key, existing);
   }
 
   // Private helper methods
