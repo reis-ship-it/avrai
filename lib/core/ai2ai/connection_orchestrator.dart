@@ -9,7 +9,6 @@ import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
-import 'package:avrai/core/services/recommendations/agent_happiness_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
@@ -73,6 +72,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -1466,56 +1466,12 @@ class VibeConnectionOrchestrator {
 
   /// Calculate AI pleasure score for connection quality
   Future<double> calculateAIPleasureScore(ConnectionMetrics connection) async {
-    try {
-      _logger.debug(
-          'Calculating AI pleasure score for ${connection.connectionId}',
-          tag: _logName);
-
-      // Base pleasure from compatibility
-      var pleasureScore = connection.currentCompatibility * 0.4;
-
-      // Add pleasure from learning effectiveness
-      pleasureScore += connection.learningEffectiveness * 0.3;
-
-      // Add pleasure from successful interactions
-      final successfulExchanges =
-          connection.learningOutcomes['successful_exchanges'] as int? ?? 0;
-      final totalExchanges = connection.interactionHistory.length;
-      final successRate =
-          totalExchanges > 0 ? successfulExchanges / totalExchanges : 0.0;
-      pleasureScore += successRate * 0.2;
-
-      // Add pleasure from dimension evolution
-      final dimensionEvolutionCount = connection.dimensionEvolution.keys.length;
-      final evolutionBonus =
-          (dimensionEvolutionCount / VibeConstants.coreDimensions.length) * 0.1;
-      pleasureScore += evolutionBonus;
-
-      final finalScore = pleasureScore.clamp(0.0, 1.0);
-
-      _logger.debug('AI pleasure score: ${(finalScore * 100).round()}%',
-          tag: _logName);
-
-      // Feed agent happiness (used to prioritize on-device training and guard
-      // against upstream regressions).
-      try {
-        final happiness = AgentHappinessService(prefs: _prefs);
-        await happiness.recordSignal(
-          source: 'ai2ai_pleasure',
-          score: finalScore,
-          metadata: <String, dynamic>{
-            'connection_id': connection.connectionId,
-          },
-        );
-      } catch (_) {
-        // Ignore.
-      }
-      return finalScore;
-    } catch (e) {
-      _logger.error('Error calculating AI pleasure score',
-          error: e, tag: _logName);
-      return 0.5; // Neutral pleasure on error
-    }
+    return AIPleasureScoreLane.calculate(
+      connection: connection,
+      prefs: _prefs,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Get active connection summaries for monitoring
