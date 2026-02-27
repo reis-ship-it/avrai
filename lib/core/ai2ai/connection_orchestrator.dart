@@ -54,6 +54,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_metrics_index.dart';
+import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2658,41 +2659,12 @@ class VibeConnectionOrchestrator {
   /// Uses SignalSessionManager's quality-based methods to renew sessions
   /// for high-quality, active connections.
   Future<void> _renewActiveSessions(SignalSessionManager sessionManager) async {
-    try {
-      final metricsByAgentId =
-          ActiveConnectionMetricsIndex.byAgentId(_activeConnections.values);
-
-      // Get sessions to renew using SignalSessionManager's quality-based method
-      final sessionsToRenew =
-          await sessionManager.getSessionsToRenew(metricsByAgentId);
-
-      // Renew sessions
-      for (final agentId in sessionsToRenew) {
-        _logger.info(
-          'Renewing session for agent $agentId based on connection quality',
-          tag: _logName,
-        );
-
-        // Trigger re-keying by checking needsRekeying and marking as rekeyed
-        // The actual re-keying will happen on next message send/receive
-        if (await sessionManager.needsRekeying(agentId)) {
-          // Mark as rekeyed (will trigger actual re-keying on next use)
-          await sessionManager.markRekeyed(agentId);
-
-          _logger.debug(
-            'Session renewal triggered for agent $agentId',
-            tag: _logName,
-          );
-        }
-      }
-    } catch (e, st) {
-      _logger.error(
-        'Error renewing active sessions: $e',
-        tag: _logName,
-        error: e,
-        stackTrace: st,
-      );
-    }
+    await SessionRenewalLane.run(
+      sessionManager: sessionManager,
+      activeConnections: _activeConnections.values,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Rotate keys based on connection quality changes (AI2AI-specific)
