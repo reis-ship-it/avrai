@@ -19,7 +19,7 @@ class FederatedGossipForwardingGate {
     required String logName,
     required mesh_policy.MessagePriority priority,
     required mesh_policy.MessageType messageType,
-    required int fallbackMaxHopExclusive,
+    int? fallbackMaxHopExclusive,
     String duplicateLabel = 'message',
   }) {
     final fingerprint = GossipFingerprint.fromPayload(payload);

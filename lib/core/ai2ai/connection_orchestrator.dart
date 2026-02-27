@@ -41,10 +41,7 @@ import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
-import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_gossip_forwarding_gate.dart';
-import 'package:avrai/core/ai2ai/resilience/gossip_fingerprint.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -3923,29 +3920,16 @@ class VibeConnectionOrchestrator {
 
     final hop = (message['hop'] as num?)?.toInt() ?? 0;
 
-    // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final fingerprint = GossipFingerprint.fromPayload(message);
-    final messageHash = fingerprint.messageHash;
-    final scope = fingerprint.scope;
-    final bloomFilter = _getOrCreateBloomFilter(scope);
-
-    if (!BloomLoopGuard.allowForward(
-      bloomFilter: bloomFilter,
-      messageHash: messageHash,
-      scope: scope,
+    if (!FederatedGossipForwardingGate.allow(
+      payload: message,
+      hop: hop,
+      adaptiveMeshService: _adaptiveMeshService,
+      getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
       logName: _logName,
-      duplicateLabel: 'locality agent update',
-    )) {
-      return;
-    }
-
-    if (!AdaptiveHopGuard.shouldForward(
-      adaptiveMeshService: _adaptiveMeshService,
-      currentHop: hop,
       priority: mesh_policy.MessagePriority.high,
       messageType: mesh_policy.MessageType.localityAgentUpdate,
-      geographicScope: scope,
+      duplicateLabel: 'locality agent update',
     )) {
       return;
     }
