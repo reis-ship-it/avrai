@@ -35,6 +35,7 @@ Validation commands:
 - `Backlog -> Ready`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `Ready -> In Progress`: `M1-P7-2`
 - `Ready -> In Progress`: `M1-P8-1`
+- `Ready -> In Progress`: `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
 
@@ -49,6 +50,7 @@ Validation commands:
 |-----------|-------|-----|------|-------|
 | M1-P7-2 | AP | Week 2-3 | Critical (20) | Controller/orchestrator reliability lane active with deterministic dead-path + canary budget report checks |
 | M1-P8-1 | FED;MLE | Week 3-4 | Critical (20) | Federated cohort canary/shadow lane active with deterministic cohort no-regression + promotion policy checks |
+| M1-P8-2 | LOC | Week 4-5 | High (16) | Advisory quarantine lane active with deterministic rollback-independence policy checks |
 
 ### 3) Blockers
 
@@ -61,7 +63,7 @@ Validation commands:
 | Checkpoint | Decision | Evidence | Notes |
 |------------|----------|----------|-------|
 | C1: Autonomy Enablement | Done | `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-2` | Lifecycle + runtime shadow gate + promotion eval governance lanes closed with generated evidence and passing gates |
-| C2: Federated Promotion | In Progress | `M1-P8-1`, `M1-P8-2` | Federated canary/shadow gating implementation started; advisory quarantine lane remains queued |
+| C2: Federated Promotion | In Progress | `M1-P8-1`, `M1-P8-2` | Federated canary/shadow and advisory quarantine lanes active with deterministic promotion/rollback governance checks |
 | C3: Broad Rollout | Pending | - | Not in rollout phase |
 | C4: Continuous Operation | Done | `M6-P3-1`, `M6-P3-3` | Self-healing routing and completion-audit package lanes closed with passing deterministic incident/gate readiness and sign-off evidence |
 
@@ -79,7 +81,7 @@ Validation commands:
 
 1. Complete `M1-P7-2` controller/orchestrator reliability implementation and attach runtime evidence.
 2. Continue `M1-P8-1` federated cohort gating + canary/shadow pipeline implementation and attach cohort evidence.
-3. Prepare and execute `M1-P8-2` advisory quarantine + rollback independence validation.
+3. Continue `M1-P8-2` advisory quarantine + rollback independence implementation and attach advisory source evidence.
 
 ### 7) Evidence Links
 
@@ -115,6 +117,8 @@ Validation commands:
 - M1-P7-2 reliability config + report automation: `configs/runtime/controller_orchestrator_reliability_canary.json`, `scripts/runtime/generate_controller_orchestrator_reliability_report.py`, `docs/plans/methodology/MASTER_PLAN_CONTROLLER_ORCHESTRATOR_RELIABILITY_REPORT.md`
 - M1-P8-1 federated cohort baseline: `docs/plans/methodology/M1_P8_1_FEDERATED_COHORT_CANARY_SHADOW_BASELINE.md`
 - M1-P8-1 federated cohort config + report automation: `configs/runtime/federated_cohort_canary_shadow_pipeline.json`, `scripts/runtime/generate_federated_cohort_canary_shadow_report.py`, `docs/plans/methodology/MASTER_PLAN_FEDERATED_COHORT_CANARY_SHADOW_REPORT.md`
+- M1-P8-2 advisory quarantine baseline: `docs/plans/methodology/M1_P8_2_ADVISORY_QUARANTINE_ROLLBACK_BASELINE.md`
+- M1-P8-2 advisory quarantine config + report automation: `configs/runtime/advisory_quarantine_rollback_independence.json`, `scripts/runtime/generate_advisory_quarantine_rollback_report.py`, `docs/plans/methodology/MASTER_PLAN_ADVISORY_QUARANTINE_ROLLBACK_REPORT.md`
 
 ---
 

@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-27T17:30:00Z",
+  "independent_rollbacks": 3,
+  "quarantine_policy_passed": true,
+  "rollback_independence_passed": true,
+  "source": "configs/runtime/advisory_quarantine_rollback_independence.json",
+  "sources_checked": 3,
+  "sources_in_shadow_or_quarantine": 3,
+  "verdict": "PASS",
+  "version": "v1"
+}
