@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
@@ -68,6 +67,7 @@ import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -969,96 +969,26 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _processHotDevice(DiscoveredDevice device) async {
-    final userId = _currentUserId;
-    final personality = _currentPersonality;
-    if (userId == null || personality == null) return;
-
-    final totalSw = Stopwatch()..start();
-    try {
-      final localVibe =
-          await _vibeAnalyzer.compileUserVibe(userId, personality);
-
-      AnonymizedVibeData? personalityData = device.personalityData;
-
-      BleGattSession? session;
-      if (_allowBleSideEffects && device.type == DeviceType.bluetooth) {
-        try {
-          final openSw = Stopwatch()..start();
-          session =
-              await BleConnectionPool.instance.openSession(device: device);
-          openSw.stop();
-          _hotSessionOpenMs.add(openSw.elapsedMilliseconds);
-
-          if (personalityData == null) {
-            final vibeReadSw = Stopwatch()..start();
-            final vibeBytes = await session.readStreamPayload(streamId: 0);
-            vibeReadSw.stop();
-            _hotVibeReadMs.add(vibeReadSw.elapsedMilliseconds);
-            if (vibeBytes != null && vibeBytes.isNotEmpty) {
-              final jsonString = utf8.decode(vibeBytes);
-              personalityData = PersonalityDataCodec.decodeFromJson(jsonString);
-            }
-          }
-
-          // Prime prekeys + send silent bootstrap under the same lease.
-          await _primeOfflineSignalPreKeyBundleInSession(
-            device: device,
-            session: session,
-          );
-        } catch (e) {
-          _logger.debug(
-              'Hot-path BLE session failed for ${device.deviceId}: $e',
-              tag: _logName);
-        } finally {
-          try {
-            await session?.close();
-          } catch (_) {
-            // Ignore.
-          }
-        }
-      }
-
-      // If we still don't have vibe, do a best-effort follow-up read.
-      // (May connect again; keep this best-effort and bounded by cooldown.)
-      personalityData ??=
-          await _deviceDiscovery?.extractPersonalityData(device);
-      if (personalityData == null) return;
-
-      final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
-
-      final proximityScore = _deviceDiscovery?.calculateProximity(device) ?? 0.5;
-      final node = TrustedNodeFactory.fromProximity(
-        nodeId: device.deviceId,
-        vibe: vibe,
-        lastSeen: device.discoveredAt,
-        proximityScore: proximityScore,
-      );
-
-      final compatSw = Stopwatch()..start();
-      final compatibility =
-          await _vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
-      compatSw.stop();
-      _hotCompatMs.add(compatSw.elapsedMilliseconds);
-      if (!_isConnectionWorthy(compatibility)) return;
-
-      _updateDiscoveredNodes(<AIPersonalityNode>[node]);
-
-      unawaited(_maybeApplyPassiveAi2AiLearning(
-        userId: userId,
-        localPersonality: personality,
-        nodes: <AIPersonalityNode>[node],
-        compatibilityByNodeId: <String, VibeCompatibilityResult>{
-          node.nodeId: compatibility,
-        },
-      ));
-    } catch (e) {
-      _logger.debug('Hot-path processing failed for ${device.deviceId}: $e',
-          tag: _logName);
-    } finally {
-      totalSw.stop();
-      _hotTotalMs.add(totalSw.elapsedMilliseconds);
-      _maybeLogHotMetrics();
-    }
+    await HotDeviceProcessingLane.process(
+      device: device,
+      currentUserId: _currentUserId,
+      currentPersonality: _currentPersonality,
+      vibeAnalyzer: _vibeAnalyzer,
+      allowBleSideEffects: _allowBleSideEffects,
+      deviceDiscovery: _deviceDiscovery,
+      primeOfflineSignalPreKeyBundleInSession:
+          _primeOfflineSignalPreKeyBundleInSession,
+      isConnectionWorthy: _isConnectionWorthy,
+      updateDiscoveredNodes: _updateDiscoveredNodes,
+      maybeApplyPassiveAi2AiLearning: _maybeApplyPassiveAi2AiLearning,
+      logger: _logger,
+      logName: _logName,
+      onSessionOpenMs: _hotSessionOpenMs.add,
+      onVibeReadMs: _hotVibeReadMs.add,
+      onCompatMs: _hotCompatMs.add,
+      onTotalMs: _hotTotalMs.add,
+      maybeLogHotMetrics: _maybeLogHotMetrics,
+    );
   }
 
   void _maybeLogHotMetrics() {
