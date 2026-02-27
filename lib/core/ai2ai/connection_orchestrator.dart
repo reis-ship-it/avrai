@@ -68,6 +68,7 @@ import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -1377,30 +1378,19 @@ class VibeConnectionOrchestrator {
       return null;
     }
 
-    // Verify connection is worthy before attempting
-    try {
-      final localVibe =
-          await _vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-      final compatibility = await _vibeAnalyzer.analyzeVibeCompatibility(
-        localVibe,
-        remoteNode.vibe,
-      );
-
-      if (!_isConnectionWorthy(compatibility)) {
-        // #region agent log
-        _logger.debug(
-            'Connection to ${remoteNode.nodeId} not worthy (compatibility: ${(compatibility.basicCompatibility * 100).round()}%, pleasure: ${(compatibility.aiPleasurePotential * 100).round()}%)',
-            tag: _logName);
-        // #endregion
-        _setCooldown(remoteNode.nodeId);
-        return null;
-      }
-    } catch (e) {
-      // #region agent log
-      _logger.warn(
-          'Error checking connection worthiness: $e, proceeding anyway',
-          tag: _logName);
-      // #endregion
+    final shouldAttemptConnection =
+        await ConnectionWorthinessValidationLane.validateOrCooldown(
+      vibeAnalyzer: _vibeAnalyzer,
+      localUserId: localUserId,
+      localPersonality: localPersonality,
+      remoteNode: remoteNode,
+      isConnectionWorthy: _isConnectionWorthy,
+      setCooldown: _setCooldown,
+      logger: _logger,
+      logName: _logName,
+    );
+    if (!shouldAttemptConnection) {
+      return null;
     }
 
     _isConnecting = true;
