@@ -7,7 +7,6 @@
 // Core reservation management service with quantum integration.
 
 import 'dart:developer' as developer;
-import 'dart:convert';
 import 'package:avrai/core/models/misc/reservation.dart';
 // AtomicTimestamp import removed - only used in model, not directly in service
 import 'package:avrai_core/services/atomic_clock_service.dart';
@@ -19,6 +18,9 @@ import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/services/payment/refund_service.dart';
 import 'package:avrai/core/services/reservation/reservation_cancellation_policy_service.dart';
 import 'package:avrai/core/services/reservation/reservation_analytics_service.dart';
+import 'package:avrai/core/services/reservation/reservation_orchestrator.dart';
+import 'package:avrai/core/services/reservation/reservation_policy.dart';
+import 'package:avrai/core/services/reservation/reservation_repository_adapter.dart';
 import 'package:avrai/core/ai/event_logger.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,13 +52,10 @@ class ModificationCheckResult {
 /// Uses agentId (not userId) for privacy-protected internal tracking.
 class ReservationService {
   static const String _logName = 'ReservationService';
-  static const String _storageKeyPrefix = 'reservation_';
-  static const String _supabaseTable = 'reservations';
 
   final AtomicClockService _atomicClock;
   final ReservationQuantumService _quantumService;
   final AgentIdService _agentIdService;
-  final StorageService _storageService;
   final SupabaseService _supabaseService;
   final PaymentService? _paymentService;
   final RefundService? _refundService;
@@ -64,6 +63,9 @@ class ReservationService {
   // Phase 7.1: Analytics Integration
   final ReservationAnalyticsService? _analyticsService;
   final EventLogger? _eventLogger;
+  final ReservationPolicy _reservationPolicy;
+  final ReservationOrchestrator _reservationOrchestrator;
+  final ReservationRepositoryAdapter _reservationRepositoryAdapter;
   final Uuid _uuid = const Uuid();
 
   ReservationService({
@@ -78,16 +80,23 @@ class ReservationService {
     // Phase 7.1: Analytics Integration
     ReservationAnalyticsService? analyticsService,
     EventLogger? eventLogger,
+    ReservationPolicy? reservationPolicy,
+    ReservationOrchestrator? reservationOrchestrator,
+    ReservationRepositoryAdapter? reservationRepositoryAdapter,
   })  : _atomicClock = atomicClock,
         _quantumService = quantumService,
         _agentIdService = agentIdService,
-        _storageService = storageService,
         _supabaseService = supabaseService,
         _paymentService = paymentService,
         _refundService = refundService,
         _cancellationPolicyService = cancellationPolicyService,
         _analyticsService = analyticsService,
-        _eventLogger = eventLogger;
+        _eventLogger = eventLogger,
+        _reservationPolicy = reservationPolicy ?? const ReservationPolicy(),
+        _reservationOrchestrator =
+            reservationOrchestrator ?? const ReservationOrchestrator(),
+        _reservationRepositoryAdapter = reservationRepositoryAdapter ??
+            ReservationRepositoryAdapter(storageService: storageService);
 
   /// Create reservation (free by default, business can require fee)
   ///
@@ -170,8 +179,7 @@ class ReservationService {
             name: _logName,
           );
 
-          final paymentResult =
-              await _paymentService.processReservationPayment(
+          final paymentResult = await _paymentService.processReservationPayment(
             reservationId: reservation.id,
             reservationType: type,
             userId: userId,
@@ -387,21 +395,19 @@ class ReservationService {
       }
 
       // Check if can modify
-      if (!existing.canModify()) {
+      if (!_reservationPolicy.canModify(existing)) {
         throw Exception(
             'Reservation cannot be modified (max 3 modifications or too close to reservation time)');
       }
 
       // Update reservation
-      final updated = existing.copyWith(
-        reservationTime: reservationTime ?? existing.reservationTime,
-        partySize: partySize ?? existing.partySize,
-        ticketCount: ticketCount ?? existing.ticketCount,
-        specialRequests: specialRequests ?? existing.specialRequests,
-        calendarEventId: calendarEventId ?? existing.calendarEventId,
-        modificationCount: existing.modificationCount + 1,
-        lastModifiedAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+      final updated = _reservationOrchestrator.applyUserUpdate(
+        existing: existing,
+        reservationTime: reservationTime,
+        partySize: partySize,
+        ticketCount: ticketCount,
+        specialRequests: specialRequests,
+        calendarEventId: calendarEventId,
       );
 
       // Store locally
@@ -591,18 +597,10 @@ class ReservationService {
       }
 
       // Check using model's canModify method
-      if (!reservation.canModify()) {
-        String reason;
-        if (reservation.modificationCount >= 3) {
-          reason = 'Maximum modifications (3) reached';
-        } else if (reservation.reservationTime
-                .difference(DateTime.now())
-                .inHours <
-            1) {
-          reason = 'Cannot modify within 1 hour of reservation time';
-        } else {
-          reason = 'Reservation cannot be modified';
-        }
+      if (!_reservationPolicy.canModify(reservation)) {
+        final reason =
+            _reservationPolicy.modificationBlockReason(reservation) ??
+                'Reservation cannot be modified';
         return ModificationCheckResult(
           canModify: false,
           reason: reason,
@@ -683,15 +681,12 @@ class ReservationService {
       }
 
       // Check if can cancel
-      if (!existing.canCancel()) {
+      if (!_reservationPolicy.canCancel(existing)) {
         throw Exception('Reservation cannot be cancelled');
       }
 
       final cancellationTime = DateTime.now();
-      var updated = existing.copyWith(
-        status: ReservationStatus.cancelled,
-        updatedAt: cancellationTime,
-      );
+      var updated = _reservationOrchestrator.markCancelled(existing);
 
       // Process refund if policy applies and services are available
       if (applyPolicy &&
@@ -1049,30 +1044,38 @@ class ReservationService {
           // Phase 4: No-show fee configuration - get from reservation metadata or business settings
           double? configuredNoShowFeePercentage;
           double? configuredNoShowFeeMinimum;
-          
+
           // Check reservation metadata for business-specific no-show fee configuration
           if (reservation.metadata.containsKey('noShowFeePercentage')) {
-            configuredNoShowFeePercentage = (reservation.metadata['noShowFeePercentage'] as num?)?.toDouble();
+            configuredNoShowFeePercentage =
+                (reservation.metadata['noShowFeePercentage'] as num?)
+                    ?.toDouble();
           }
           if (reservation.metadata.containsKey('noShowFeeMinimum')) {
-            configuredNoShowFeeMinimum = (reservation.metadata['noShowFeeMinimum'] as num?)?.toDouble();
+            configuredNoShowFeeMinimum =
+                (reservation.metadata['noShowFeeMinimum'] as num?)?.toDouble();
           }
-          
+
           // Use configured values or defaults
-          final feePercentage = configuredNoShowFeePercentage ?? 0.20; // Default: 20%
-          final feeMinimum = configuredNoShowFeeMinimum ?? 10.0; // Default: $10 minimum
-          
-          final baseFee = reservation.ticketPrice != null && reservation.ticketPrice! > 0
-              ? reservation.ticketPrice! * feePercentage
-              : feeMinimum;
+          final feePercentage =
+              configuredNoShowFeePercentage ?? 0.20; // Default: 20%
+          final feeMinimum =
+              configuredNoShowFeeMinimum ?? 10.0; // Default: $10 minimum
+
+          final baseFee =
+              reservation.ticketPrice != null && reservation.ticketPrice! > 0
+                  ? reservation.ticketPrice! * feePercentage
+                  : feeMinimum;
           noShowFeeAmount = baseFee;
 
           // Get userId from reservation metadata or use agentId lookup
           // TODO(Phase 4): Get userId from agentId lookup when available
-          final userId = reservation.metadata['userId'] as String? ?? reservation.agentId;
+          final userId =
+              reservation.metadata['userId'] as String? ?? reservation.agentId;
 
           // Create payment for no-show fee
-          final noShowPaymentResult = await _paymentService.processReservationPayment(
+          final noShowPaymentResult =
+              await _paymentService.processReservationPayment(
             reservationId: reservation.id,
             reservationType: reservation.type,
             userId: userId,
@@ -1081,7 +1084,8 @@ class ReservationService {
             depositAmount: null,
           );
 
-          if (noShowPaymentResult.isSuccess && noShowPaymentResult.payment != null) {
+          if (noShowPaymentResult.isSuccess &&
+              noShowPaymentResult.payment != null) {
             noShowFeePaymentId = noShowPaymentResult.payment!.id;
             developer.log(
               '✅ No-show fee charged: reservation=$reservationId, fee=\$${noShowFeeAmount.toStringAsFixed(2)}, payment=$noShowFeePaymentId',
@@ -1125,7 +1129,7 @@ class ReservationService {
             agentId: reservation.agentId, // Use agentId for privacy
           );
         }
-        
+
         developer.log(
           '✅ No-show expertise impact tracked: reservation=$reservationId, agentId=${reservation.agentId}',
           name: _logName,
@@ -1258,9 +1262,7 @@ class ReservationService {
 
   /// Store reservation locally (offline-first)
   Future<void> _storeReservationLocally(Reservation reservation) async {
-    final key = '$_storageKeyPrefix${reservation.id}';
-    final jsonStr = jsonEncode(reservation.toJson());
-    await _storageService.setString(key, jsonStr);
+    await _reservationRepositoryAdapter.storeLocal(reservation);
   }
 
   /// Get reservation by ID (public method for check-in service)
@@ -1272,20 +1274,7 @@ class ReservationService {
 
   /// Get reservation by ID (private implementation)
   Future<Reservation?> _getReservationById(String reservationId) async {
-    final key = '$_storageKeyPrefix$reservationId';
-    final jsonStr = _storageService.getString(key);
-    if (jsonStr == null) return null;
-
-    try {
-      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
-      return Reservation.fromJson(json);
-    } catch (e) {
-      developer.log(
-        'Error parsing reservation JSON: $e',
-        name: _logName,
-      );
-      return null;
-    }
+    return _reservationRepositoryAdapter.getById(reservationId);
   }
 
   /// Get reservations from local storage
@@ -1295,54 +1284,12 @@ class ReservationService {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    try {
-      final allKeys = _storageService.getKeys();
-      final reservationKeys =
-          allKeys.where((key) => key.startsWith(_storageKeyPrefix)).toList();
-
-      final reservations = <Reservation>[];
-
-      for (final key in reservationKeys) {
-        try {
-          final jsonStr = _storageService.getString(key);
-          if (jsonStr == null) continue;
-
-          final json = jsonDecode(jsonStr) as Map<String, dynamic>;
-          final reservation = Reservation.fromJson(json);
-
-          // Filter by agentId if provided
-          if (agentId != null && reservation.agentId != agentId) continue;
-
-          // Filter by status if provided
-          if (status != null && reservation.status != status) continue;
-
-          // Filter by date range if provided
-          if (startDate != null &&
-              reservation.reservationTime.isBefore(startDate)) {
-            continue;
-          }
-          if (endDate != null && reservation.reservationTime.isAfter(endDate)) {
-            continue;
-          }
-
-          reservations.add(reservation);
-        } catch (e) {
-          developer.log(
-            'Error parsing reservation from local storage: $e',
-            name: _logName,
-          );
-          // Continue with next reservation
-        }
-      }
-
-      return reservations;
-    } catch (e) {
-      developer.log(
-        'Error getting reservations from local storage: $e',
-        name: _logName,
-      );
-      return [];
-    }
+    return _reservationRepositoryAdapter.getLocal(
+      agentId: agentId,
+      status: status,
+      startDate: startDate,
+      endDate: endDate,
+    );
   }
 
   /// Get reservations from cloud
@@ -1352,57 +1299,13 @@ class ReservationService {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    if (!_supabaseService.isAvailable) {
-      return [];
-    }
-
-    try {
-      final client = _supabaseService.client;
-      var query = client.from(_supabaseTable).select();
-
-      if (agentId != null) {
-        query = query.eq('agent_id', agentId);
-      }
-
-      if (status != null) {
-        query = query.eq('status', status.name);
-      }
-
-      if (startDate != null) {
-        query = query.gte('reservation_time', startDate.toIso8601String());
-      }
-
-      if (endDate != null) {
-        query = query.lte('reservation_time', endDate.toIso8601String());
-      }
-
-      final response = await query;
-
-      if (response.isEmpty) return [];
-
-      final reservations = <Reservation>[];
-      for (final row in response) {
-        try {
-          final reservation =
-              Reservation.fromJson(Map<String, dynamic>.from(row));
-          reservations.add(reservation);
-        } catch (e) {
-          developer.log(
-            'Error parsing reservation from cloud: $e',
-            name: _logName,
-          );
-          // Continue with next reservation
-        }
-      }
-
-      return reservations;
-    } catch (e) {
-      developer.log(
-        'Error getting reservations from cloud: $e',
-        name: _logName,
-      );
-      return [];
-    }
+    return _reservationRepositoryAdapter.getCloud(
+      supabaseService: _supabaseService,
+      agentId: agentId,
+      status: status,
+      startDate: startDate,
+      endDate: endDate,
+    );
   }
 
   /// Track reservation event for analytics
@@ -1476,46 +1379,10 @@ class ReservationService {
 
   /// Sync reservation to cloud
   Future<void> _syncReservationToCloud(Reservation reservation) async {
-    if (!_supabaseService.isAvailable) {
-      return;
-    }
-
-    try {
-      final client = _supabaseService.client;
-      await client.from(_supabaseTable).upsert({
-        'id': reservation.id,
-        'agent_id': reservation.agentId,
-        'user_data': reservation.userData,
-        'type': reservation.type.name,
-        'target_id': reservation.targetId,
-        'reservation_time': reservation.reservationTime.toIso8601String(),
-        'party_size': reservation.partySize,
-        'ticket_count': reservation.ticketCount,
-        'special_requests': reservation.specialRequests,
-        'status': reservation.status.name,
-        'ticket_price': reservation.ticketPrice,
-        'deposit_amount': reservation.depositAmount,
-        'seat_id': reservation.seatId,
-        'cancellation_policy': reservation.cancellationPolicy?.toJson(),
-        'modification_count': reservation.modificationCount,
-        'last_modified_at': reservation.lastModifiedAt?.toIso8601String(),
-        'dispute_status': reservation.disputeStatus.name,
-        'dispute_reason': reservation.disputeReason?.name,
-        'dispute_description': reservation.disputeDescription,
-        'atomic_timestamp': reservation.atomicTimestamp?.toJson(),
-        'quantum_state': reservation.quantumState?.toJson(),
-        'calendar_event_id': reservation.calendarEventId,
-        'metadata': reservation.metadata,
-        'created_at': reservation.createdAt.toIso8601String(),
-        'updated_at': reservation.updatedAt.toIso8601String(),
-      });
-    } catch (e) {
-      developer.log(
-        'Error syncing reservation to cloud: $e',
-        name: _logName,
-      );
-      rethrow;
-    }
+    await _reservationRepositoryAdapter.syncToCloud(
+      supabaseService: _supabaseService,
+      reservation: reservation,
+    );
   }
 
   /// Merge local and cloud reservations (prefer newer)

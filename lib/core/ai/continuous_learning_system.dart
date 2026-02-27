@@ -11,6 +11,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
+import 'package:avrai/core/ai/continuous_learning/policy/learning_dimension_policy.dart';
 import 'package:avrai_network/network/rate_limiter.dart';
 import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
@@ -24,59 +25,17 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 class ContinuousLearningSystem {
   static const String _logName = 'ContinuousLearningSystem';
 
-  // Learning dimensions that the AI continuously improves
-  static const List<String> _learningDimensions = [
-    'user_preference_understanding',
-    'location_intelligence',
-    'temporal_patterns',
-    'social_dynamics',
-    'authenticity_detection',
-    'community_evolution',
-    'recommendation_accuracy',
-    'personalization_depth',
-    'trend_prediction',
-    'collaboration_effectiveness',
-  ];
-
-  // Data sources for continuous learning
-  static const List<String> _dataSources = [
-    'user_actions',
-    'location_data',
-    'weather_conditions',
-    'time_patterns',
-    'social_connections',
-    'age_demographics',
-    'app_usage_patterns',
-    'community_interactions',
-    'ai2ai_communications',
-    'external_context',
-  ];
-
-  // Learning rates for different dimensions
-  static const Map<String, double> _learningRates = {
-    'user_preference_understanding': 0.15,
-    'location_intelligence': 0.12,
-    'temporal_patterns': 0.10,
-    'social_dynamics': 0.13,
-    'authenticity_detection': 0.20,
-    'community_evolution': 0.11,
-    'recommendation_accuracy': 0.18,
-    'personalization_depth': 0.16,
-    'trend_prediction': 0.14,
-    'collaboration_effectiveness': 0.17,
-  };
-
   // Phase 1.4: Refactored to use orchestrator
   ContinuousLearningOrchestrator? _orchestrator;
   bool _orchestratorInitialized = false;
   final AgentIdService _agentIdService;
   SupabaseClient? _supabase;
-  
+
   // AI2AI Learning Safeguards (Phase 11 Enhancement)
   // Track last AI2AI learning per peer to enforce 20-minute interval
   // Phase 11.8.6: Use atomic time for quantum formula compatibility
   final Map<String, AtomicTimestamp> _lastAi2AiLearningAtByPeerId = {};
-  
+
   // Optional rate limiter for AI2AI learning (integrated from connection_orchestrator)
   RateLimiter? _rateLimiter;
 
@@ -118,7 +77,7 @@ class ContinuousLearningSystem {
             name: _logName);
       }
     }
-    
+
     // Try to get RateLimiter from DI if not provided
     if (_rateLimiter == null) {
       try {
@@ -126,8 +85,7 @@ class ContinuousLearningSystem {
           _rateLimiter = GetIt.instance<RateLimiter>();
         }
       } catch (e) {
-        developer.log(
-            'RateLimiter not available in DI, rate limiting disabled',
+        developer.log('RateLimiter not available in DI, rate limiting disabled',
             name: _logName);
       }
     }
@@ -172,7 +130,7 @@ class ContinuousLearningSystem {
       final eventType = payload['event_type'] as String? ?? '';
       final parameters = payload['parameters'] as Map<String, dynamic>? ?? {};
       final context = payload['context'] as Map<String, dynamic>? ?? {};
-      
+
       // ========================================
       // AI2AI LEARNING SAFEGUARDS (Phase 11 Enhancement)
       // ========================================
@@ -180,7 +138,7 @@ class ContinuousLearningSystem {
       final source = payload['source'] as String?;
       if (source == 'ai2ai') {
         final peerId = payload['peer_id'] as String?;
-        
+
         // SAFEGUARD 1: Check 20-minute interval per peer
         // Phase 11.8.6: Use atomic time for quantum formula compatibility
         if (peerId != null) {
@@ -201,7 +159,8 @@ class ContinuousLearningSystem {
                 }
               } else {
                 // Fallback to DateTime if AtomicClockService not available
-                final timeSinceLastLearning = DateTime.now().difference(last.deviceTime);
+                final timeSinceLastLearning =
+                    DateTime.now().difference(last.deviceTime);
                 if (timeSinceLastLearning < const Duration(minutes: 20)) {
                   developer.log(
                     'AI2AI learning throttled: 20-min interval not met for peer $peerId',
@@ -216,14 +175,15 @@ class ContinuousLearningSystem {
                 name: _logName,
               );
               // Fallback to DateTime check
-              final timeSinceLastLearning = DateTime.now().difference(last.deviceTime);
+              final timeSinceLastLearning =
+                  DateTime.now().difference(last.deviceTime);
               if (timeSinceLastLearning < const Duration(minutes: 20)) {
                 return;
               }
             }
           }
         }
-        
+
         // SAFEGUARD 2: Check learning quality threshold (65% minimum)
         final learningQuality = payload['learning_quality'] as double? ?? 0.0;
         if (learningQuality < 0.65) {
@@ -234,7 +194,7 @@ class ContinuousLearningSystem {
           );
           return; // Skip learning (low quality)
         }
-        
+
         // SAFEGUARD 3: Check rate limit (if rate limiter available)
         if (peerId != null && _rateLimiter != null) {
           final allowed = await _rateLimiter!.checkRateLimit(
@@ -242,7 +202,7 @@ class ContinuousLearningSystem {
             limitType: RateLimitType.message,
             messageType: MessageType.learningInsight,
           );
-          
+
           if (!allowed) {
             developer.log(
               'AI2AI learning rate limited for peer: $peerId',
@@ -252,7 +212,7 @@ class ContinuousLearningSystem {
           }
         }
       }
-      
+
       // Map event to learning dimensions
       final dimensionUpdates = <String, double>{};
 
@@ -360,7 +320,7 @@ class ContinuousLearningSystem {
       // For AI2AI learning, only apply updates if delta >= 22%
       if (source == 'ai2ai') {
         dimensionUpdates.removeWhere((key, value) => value.abs() < 0.22);
-        
+
         if (dimensionUpdates.isEmpty) {
           developer.log(
             'AI2AI learning rejected: no dimension deltas >= 22% threshold',
@@ -368,22 +328,19 @@ class ContinuousLearningSystem {
           );
           return; // Skip learning (no significant changes)
         }
-        
+
         developer.log(
           'AI2AI learning passed delta threshold: ${dimensionUpdates.length} dimensions',
           name: _logName,
         );
       }
-      
+
       // Update dimension weights in learning state via orchestrator
       await _ensureOrchestrator();
       if (_orchestrator != null) {
         // Apply learning rates to dimension updates before passing to orchestrator
-        final adjustedUpdates = <String, double>{};
-        for (final entry in dimensionUpdates.entries) {
-          final learningRate = _learningRates[entry.key] ?? 0.1;
-          adjustedUpdates[entry.key] = entry.value * learningRate;
-        }
+        final adjustedUpdates =
+            LearningDimensionPolicy.applyLearningRates(dimensionUpdates);
         _orchestrator!.processInteractionDimensionUpdates(
           adjustedUpdates,
           LearningData.empty(), // Will be enriched in next cycle
@@ -398,7 +355,7 @@ class ContinuousLearningSystem {
           context: context,
         ));
       }
-      
+
       // ========================================
       // Record AI2AI learning time (after successful processing)
       // ========================================
@@ -409,7 +366,8 @@ class ContinuousLearningSystem {
           try {
             if (GetIt.instance.isRegistered<AtomicClockService>()) {
               final atomicClock = GetIt.instance<AtomicClockService>();
-              _lastAi2AiLearningAtByPeerId[peerId] = await atomicClock.getAtomicTimestamp();
+              _lastAi2AiLearningAtByPeerId[peerId] =
+                  await atomicClock.getAtomicTimestamp();
             } else {
               // Fallback: create AtomicTimestamp from DateTime.now()
               final now = DateTime.now();
@@ -655,7 +613,8 @@ class ContinuousLearningSystem {
         if (_orchestrator != null) {
           final learningState = _orchestrator!.currentLearningState;
           final current = learningState[dimension] ?? 0.5;
-          final learningRate = _learningRates[dimension] ?? 0.1;
+          final learningRate =
+              LearningDimensionPolicy.learningRates[dimension] ?? 0.1;
 
           // Update via orchestrator's processInteractionDimensionUpdates
           _orchestrator!.processInteractionDimensionUpdates(
@@ -804,7 +763,7 @@ class ContinuousLearningSystem {
       final personalityLearning = GetIt.instance<PersonalityLearning>();
       final currentProfile =
           await personalityLearning.getCurrentPersonality(currentUser.id);
-      
+
       // ========================================
       // DRIFT PREVENTION SAFEGUARD (Phase 11 Enhancement)
       // ========================================
@@ -814,41 +773,41 @@ class ContinuousLearningSystem {
         // Maximum drift: 30% from original personality (contextual layer)
         // Core personality should be completely stable
         final maxDrift = 0.30;
-        
+
         // Get original profile for drift checking
         // Note: We check evolution timeline first entry as "original"
         final originalDimensions = currentProfile.evolutionTimeline.isNotEmpty
             ? currentProfile.evolutionTimeline.first.corePersonality
             : currentProfile.dimensions;
-        
+
         // Check each dimension update against drift limit
-        final dimensionUpdates = payload['dimension_updates'] 
-            as Map<String, double>? ?? {};
-        
+        final dimensionUpdates =
+            payload['dimension_updates'] as Map<String, double>? ?? {};
+
         for (final entry in dimensionUpdates.entries) {
           final dimension = entry.key;
           final proposedChange = entry.value;
           final currentValue = currentProfile.dimensions[dimension] ?? 0.5;
           final originalValue = originalDimensions[dimension] ?? currentValue;
           final proposedValue = currentValue + proposedChange;
-          
+
           // Calculate drift from original
           final drift = (proposedValue - originalValue).abs();
-          
+
           if (drift > maxDrift) {
             developer.log(
               'Drift limit exceeded for $dimension: drift ${(drift * 100).toStringAsFixed(1)}% '
               'exceeds max ${(maxDrift * 100).toStringAsFixed(1)}% - clamping to max drift',
               name: _logName,
             );
-            
+
             // Clamp to max drift
-            final clampedValue = originalValue + 
+            final clampedValue = originalValue +
                 (proposedValue > originalValue ? maxDrift : -maxDrift);
             dimensionUpdates[dimension] = clampedValue - currentValue;
           }
         }
-        
+
         // Update payload with clamped values
         if (dimensionUpdates.isNotEmpty) {
           payload = Map<String, dynamic>.from(payload);
@@ -951,8 +910,8 @@ class ContinuousLearningSystem {
           totalImprovements: 0.0,
           averageProgress: 0.0,
           topImprovingDimensions: [],
-          dimensionsCount: _learningDimensions.length,
-          dataSourcesCount: _dataSources.length,
+          dimensionsCount: LearningDimensionPolicy.learningDimensions.length,
+          dataSourcesCount: LearningDimensionPolicy.dataSources.length,
         );
       }
 
@@ -976,8 +935,8 @@ class ContinuousLearningSystem {
         averageProgress: averageProgress,
         topImprovingDimensions:
             topDimensions.take(5).map((e) => e.key).toList(),
-        dimensionsCount: _learningDimensions.length,
-        dataSourcesCount: _dataSources.length,
+        dimensionsCount: LearningDimensionPolicy.learningDimensions.length,
+        dataSourcesCount: LearningDimensionPolicy.dataSources.length,
       );
     } catch (e) {
       developer.log('Error getting learning metrics: $e', name: _logName);
@@ -998,7 +957,7 @@ class ContinuousLearningSystem {
 
       if (_orchestrator == null) {
         // Return empty status if orchestrator not initialized
-        for (final source in _dataSources) {
+        for (final source in LearningDimensionPolicy.dataSources) {
           sourceStatuses[source] = DataSourceStatus(
             isActive: false,
             dataVolume: 0,
@@ -1016,7 +975,7 @@ class ContinuousLearningSystem {
       await _ensureOrchestrator();
       final learningHistory = _orchestrator!.learningHistory;
 
-      for (final source in _dataSources) {
+      for (final source in LearningDimensionPolicy.dataSources) {
         // Check if source has contributed to recent learning
         bool isActive = false;
         int eventCount = 0;
@@ -1269,10 +1228,10 @@ class ContinuousLearningSystem {
   }
 
   /// Process AI2AI mesh learning insights
-  /// 
+  ///
   /// Converts AI2AI learning insights into interaction events for processing
   /// through the continuous learning pipeline.
-  /// 
+  ///
   /// Phase 11 Enhancement: AI2AI Mesh Integration
   Future<void> processAI2AILearningInsight({
     required String userId,
@@ -1284,7 +1243,7 @@ class ContinuousLearningSystem {
         'Processing AI2AI mesh learning insight from peer: $peerId',
         name: _logName,
       );
-      
+
       // Convert AI2AI learning insight to interaction event payload
       final payload = {
         'event_type': 'ai2ai_learning_insight',
@@ -1301,13 +1260,13 @@ class ContinuousLearningSystem {
           'learning_quality': insight.learningQuality,
         },
       };
-      
+
       // Process through existing learning pipeline (includes safeguards)
       await processUserInteraction(
         userId: userId,
         payload: payload,
       );
-      
+
       // Also update ONNX biases directly from mesh insights (real-time)
       await _updateOnnxFromMeshInsight(insight);
     } catch (e, stackTrace) {
@@ -1322,7 +1281,7 @@ class ContinuousLearningSystem {
   }
 
   /// Update ONNX biases from AI2AI mesh learning insight (real-time)
-  /// 
+  ///
   /// Phase 11 Enhancement: Real-time ONNX Updates from Mesh
   Future<void> _updateOnnxFromMeshInsight(AI2AILearningInsight insight) async {
     try {
@@ -1341,12 +1300,12 @@ class ContinuousLearningSystem {
           },
         );
       }).toList();
-      
+
       // Update ONNX scorer directly (non-blocking)
       if (GetIt.instance.isRegistered<OnnxDimensionScorer>()) {
         final onnxScorer = GetIt.instance<OnnxDimensionScorer>();
         await onnxScorer.updateWithDeltas(deltas);
-        
+
         developer.log(
           'Updated ONNX biases from mesh insight: ${deltas.length} dimensions',
           name: _logName,
@@ -1362,7 +1321,7 @@ class ContinuousLearningSystem {
   }
 
   /// Update ONNX biases directly from user interaction events
-  /// 
+  ///
   /// Phase 11 Enhancement: Real-time ONNX Updates from Interactions
   Future<void> _updateOnnxBiasesFromInteraction({
     required Map<String, double> dimensionUpdates,
@@ -1376,7 +1335,8 @@ class ContinuousLearningSystem {
         if (GetIt.instance.isRegistered<AtomicClockService>()) {
           final atomicClock = GetIt.instance<AtomicClockService>();
           final atomicTime = await atomicClock.getAtomicTimestamp();
-          timestamp = atomicTime.deviceTime; // Use atomic time for quantum compatibility
+          timestamp = atomicTime
+              .deviceTime; // Use atomic time for quantum compatibility
         } else {
           timestamp = DateTime.now(); // Fallback
         }
@@ -1398,12 +1358,12 @@ class ContinuousLearningSystem {
           },
         );
       }).toList();
-      
+
       // Update ONNX scorer with deltas
       if (GetIt.instance.isRegistered<OnnxDimensionScorer>()) {
         final onnxScorer = GetIt.instance<OnnxDimensionScorer>();
         await onnxScorer.updateWithDeltas(deltas);
-        
+
         developer.log(
           'Updated ONNX biases from ${deltas.length} interaction dimensions',
           name: _logName,
@@ -1419,10 +1379,10 @@ class ContinuousLearningSystem {
   }
 
   /// Process AI2AI chat conversation for continuous learning
-  /// 
+  ///
   /// Converts AI2AI chat analysis results into interaction events for processing
   /// through the continuous learning pipeline.
-  /// 
+  ///
   /// Phase 11 Enhancement: Conversation-Based Learning
   Future<void> processAI2AIChatConversation({
     required String userId,
@@ -1437,22 +1397,22 @@ class ContinuousLearningSystem {
         );
         return;
       }
-      
+
       // Extract dimension insights from conversation analysis
       // Calculate proposed change from direction and magnitude
       final dimensionInsights = <String, double>{};
       for (final rec in chatAnalysis.evolutionRecommendations) {
-        final change = rec.direction == 'increase' 
-            ? rec.magnitude 
-            : -rec.magnitude;
+        final change =
+            rec.direction == 'increase' ? rec.magnitude : -rec.magnitude;
         dimensionInsights[rec.dimension] = change;
       }
-      
+
       if (dimensionInsights.isEmpty) {
-        developer.log('No dimension insights from chat conversation', name: _logName);
+        developer.log('No dimension insights from chat conversation',
+            name: _logName);
         return;
       }
-      
+
       // Convert to interaction event format
       final payload = {
         'event_type': 'ai2ai_chat_conversation',
@@ -1461,15 +1421,20 @@ class ContinuousLearningSystem {
           'chat_type': chatAnalysis.chatEvent.messageType.toString(),
           'analysis_confidence': chatAnalysis.analysisConfidence,
           'shared_insights_count': chatAnalysis.sharedInsights.length,
-          'learning_opportunities_count': chatAnalysis.learningOpportunities.length,
+          'learning_opportunities_count':
+              chatAnalysis.learningOpportunities.length,
         },
         'context': {
           'source': 'ai2ai_chat',
           'conversation_patterns': {
-            'exchange_frequency': chatAnalysis.conversationPatterns.exchangeFrequency,
-            'response_latency': chatAnalysis.conversationPatterns.responseLatency,
-            'conversation_depth': chatAnalysis.conversationPatterns.conversationDepth,
-            'topic_consistency': chatAnalysis.conversationPatterns.topicConsistency,
+            'exchange_frequency':
+                chatAnalysis.conversationPatterns.exchangeFrequency,
+            'response_latency':
+                chatAnalysis.conversationPatterns.responseLatency,
+            'conversation_depth':
+                chatAnalysis.conversationPatterns.conversationDepth,
+            'topic_consistency':
+                chatAnalysis.conversationPatterns.topicConsistency,
           },
           'trust_metrics': {
             'trust_building': chatAnalysis.trustMetrics.trustBuilding,
@@ -1479,13 +1444,13 @@ class ContinuousLearningSystem {
         },
         'dimension_updates': dimensionInsights,
       };
-      
+
       // Process through learning pipeline
       await processUserInteraction(
         userId: userId,
         payload: payload,
       );
-      
+
       developer.log(
         'Processed AI2AI chat conversation: ${dimensionInsights.length} dimensions updated',
         name: _logName,
@@ -1501,7 +1466,7 @@ class ContinuousLearningSystem {
   }
 
   /// Propagate learning insights to AI2AI mesh for collective learning
-  /// 
+  ///
   /// Phase 11 Enhancement: Complete Learning Pipeline
   /// Sends significant dimension updates to mesh for propagation to nearby devices
   Future<void> _propagateLearningToMesh({
@@ -1517,7 +1482,7 @@ class ContinuousLearningSystem {
           significantUpdates[entry.key] = entry.value;
         }
       }
-      
+
       if (significantUpdates.isEmpty) {
         developer.log(
           'No significant dimension updates to propagate to mesh',
@@ -1525,7 +1490,7 @@ class ContinuousLearningSystem {
         );
         return;
       }
-      
+
       // Phase 11.8.6: Use atomic time for quantum formula compatibility
       DateTime timestamp;
       try {
@@ -1550,7 +1515,7 @@ class ContinuousLearningSystem {
         learningQuality: 0.8, // High quality for direct user interactions
         timestamp: timestamp,
       );
-      
+
       // Propagate through mesh (via ConnectionOrchestrator)
       // Note: ConnectionOrchestrator has _sendLearningInsightToPeer() method
       // but it's private. For now, we'll log that propagation is prepared.
