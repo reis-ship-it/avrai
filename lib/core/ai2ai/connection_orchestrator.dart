@@ -2253,28 +2253,12 @@ class VibeConnectionOrchestrator {
         orElse: () => chat_models.MessageType.text,
       );
 
-      // Parse encrypted content if present
-      Uint8List? encryptedContent;
-      if (encryptedContentStr != null && encryptedContentStr.isNotEmpty) {
-        try {
-          encryptedContent = base64Decode(encryptedContentStr);
-        } catch (e) {
-          _logger.warn(
-            'Failed to decode encrypted content: $e',
-            tag: _logName,
-          );
-        }
-      }
+      final encryptedContent = _decodeEncryptedContentOrNull(
+        encryptedContentStr,
+      );
 
-      // Parse timestamp
-      final createdAt = DateTime.tryParse(createdAtStr);
-      if (createdAt == null) {
-        _logger.warn(
-          'Failed to parse created_at timestamp: $createdAtStr',
-          tag: _logName,
-        );
-        return;
-      }
+      final createdAt = _parseCreatedAtOrNull(createdAtStr);
+      if (createdAt == null) return;
 
       // Create message object
       final chatMessage = chat_models.BusinessExpertMessage(
@@ -2356,28 +2340,12 @@ class VibeConnectionOrchestrator {
         orElse: () => chat_models.BusinessBusinessMessageType.text,
       );
 
-      // Parse encrypted content if present
-      Uint8List? encryptedContent;
-      if (encryptedContentStr != null && encryptedContentStr.isNotEmpty) {
-        try {
-          encryptedContent = base64Decode(encryptedContentStr);
-        } catch (e) {
-          _logger.warn(
-            'Failed to decode encrypted content: $e',
-            tag: _logName,
-          );
-        }
-      }
+      final encryptedContent = _decodeEncryptedContentOrNull(
+        encryptedContentStr,
+      );
 
-      // Parse timestamp
-      final createdAt = DateTime.tryParse(createdAtStr);
-      if (createdAt == null) {
-        _logger.warn(
-          'Failed to parse created_at timestamp: $createdAtStr',
-          tag: _logName,
-        );
-        return;
-      }
+      final createdAt = _parseCreatedAtOrNull(createdAtStr);
+      if (createdAt == null) return;
 
       // Create message object
       final chatMessage = chat_models.BusinessBusinessMessage(
@@ -2456,6 +2424,30 @@ class VibeConnectionOrchestrator {
     final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
     existing.add(messageJson);
     await box.write(key, existing);
+  }
+
+  Uint8List? _decodeEncryptedContentOrNull(String? encryptedContentStr) {
+    if (encryptedContentStr == null || encryptedContentStr.isEmpty) return null;
+    try {
+      return base64Decode(encryptedContentStr);
+    } catch (e) {
+      _logger.warn(
+        'Failed to decode encrypted content: $e',
+        tag: _logName,
+      );
+      return null;
+    }
+  }
+
+  DateTime? _parseCreatedAtOrNull(String createdAtStr) {
+    final createdAt = DateTime.tryParse(createdAtStr);
+    if (createdAt == null) {
+      _logger.warn(
+        'Failed to parse created_at timestamp: $createdAtStr',
+        tag: _logName,
+      );
+    }
+    return createdAt;
   }
 
   // Private helper methods
