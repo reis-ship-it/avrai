@@ -32,6 +32,7 @@ import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
+import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
@@ -2570,11 +2571,11 @@ class VibeConnectionOrchestrator {
     // Never forward our own-origin updates (it would just amplify duplicates).
     if (originId == _localBleNodeId) return;
 
-    final protocol = _protocol;
-    if (protocol == null) return;
-
-    final discovery = _deviceDiscovery;
-    if (discovery == null) return;
+    final forwardingContext = MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+    );
+    if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort).
     final candidates = MeshForwardingTargetSelector.select(
@@ -2592,8 +2593,8 @@ class VibeConnectionOrchestrator {
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
-        discovery: discovery,
-        protocol: protocol,
+        discovery: forwardingContext.discovery,
+        protocol: forwardingContext.protocol,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
         messageType: MessageType.learningInsight,
@@ -3331,11 +3332,15 @@ class VibeConnectionOrchestrator {
     required String recipientId,
     required DiscoveredDevice device,
   }) async {
-    if (!_allowBleSideEffects ||
-        _deviceDiscovery == null ||
-        _protocol == null) {
+    if (!_allowBleSideEffects) {
       return;
     }
+
+    final forwardingContext = MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+    );
+    if (forwardingContext == null) return;
 
     try {
       // Only forward if mesh service says we should
@@ -3377,8 +3382,8 @@ class VibeConnectionOrchestrator {
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
-        discovery: _deviceDiscovery,
-        protocol: _protocol,
+        discovery: forwardingContext.discovery,
+        protocol: forwardingContext.protocol,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
         messageType: MessageType.learningInsight,
@@ -3881,11 +3886,11 @@ class VibeConnectionOrchestrator {
     if (!_allowBleSideEffects) return;
     if (!_isFederatedLearningParticipationEnabled()) return;
 
-    final protocol = _protocol;
-    if (protocol == null) return;
-
-    final discovery = _deviceDiscovery;
-    if (discovery == null) return;
+    final forwardingContext = MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+    );
+    if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to share with
     final candidates = MeshForwardingTargetSelector.select(
@@ -3901,8 +3906,8 @@ class VibeConnectionOrchestrator {
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
-        discovery: discovery,
-        protocol: protocol,
+        discovery: forwardingContext.discovery,
+        protocol: forwardingContext.protocol,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
         messageType: MessageType.learningInsight,
@@ -3927,11 +3932,11 @@ class VibeConnectionOrchestrator {
     if (!_allowBleSideEffects) return;
     if (!_isFederatedLearningParticipationEnabled()) return;
 
-    final protocol = _protocol;
-    if (protocol == null) return;
-
-    final discovery = _deviceDiscovery;
-    if (discovery == null) return;
+    final forwardingContext = MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+    );
+    if (forwardingContext == null) return;
 
     final hop = (message['hop'] as num?)?.toInt() ?? 0;
     final originId =
@@ -3987,8 +3992,8 @@ class VibeConnectionOrchestrator {
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
-        discovery: discovery,
-        protocol: protocol,
+        discovery: forwardingContext.discovery,
+        protocol: forwardingContext.protocol,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
         messageType: MessageType.learningInsight,
@@ -4198,11 +4203,11 @@ class VibeConnectionOrchestrator {
     // Never forward our own-origin updates
     if (originId == _localBleNodeId) return;
 
-    final protocol = _protocol;
-    if (protocol == null) return;
-
-    final discovery = _deviceDiscovery;
-    if (discovery == null) return;
+    final forwardingContext = MeshForwardingContext.tryCreate(
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+    );
+    if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
     final candidates = MeshForwardingTargetSelector.select(
@@ -4220,8 +4225,8 @@ class VibeConnectionOrchestrator {
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
-        discovery: discovery,
-        protocol: protocol,
+        discovery: forwardingContext.discovery,
+        protocol: forwardingContext.protocol,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
         messageType: MessageType.learningInsight,
