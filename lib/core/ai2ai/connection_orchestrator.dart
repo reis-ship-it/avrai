@@ -33,6 +33,7 @@ import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
+import 'package:avrai/core/ai2ai/routing/federated_forwarding_precheck.dart';
 import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
 import 'package:avrai/core/ai2ai/routing/gossip_learning_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
@@ -2542,10 +2543,12 @@ class VibeConnectionOrchestrator {
     required String receivedFromDeviceId,
   }) async {
     // Forwarding is *optional* federated behavior (distinct from direct AI2AI learning).
-    if (!FederatedForwardingGuard.isEnabled(
+    if (!FederatedForwardingPrecheck.allow(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
+      originId: originId,
+      localNodeId: _localBleNodeId,
     )) {
       return;
     }
@@ -2563,9 +2566,6 @@ class VibeConnectionOrchestrator {
     )) {
       return;
     }
-
-    // Never forward our own-origin updates (it would just amplify duplicates).
-    if (originId == _localBleNodeId) return;
 
     final forwardingContext = MeshForwardingContext.tryCreate(
       protocol: _protocol,
@@ -3914,10 +3914,15 @@ class VibeConnectionOrchestrator {
 
   /// NEW: Forward locality agent update through mesh network
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    if (!FederatedForwardingGuard.isEnabled(
+    final originId =
+        message['origin_id'] as String? ?? message['agent_id'] as String?;
+
+    if (!FederatedForwardingPrecheck.allow(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
+      originId: originId,
+      localNodeId: _localBleNodeId,
     )) {
       return;
     }
@@ -3929,8 +3934,6 @@ class VibeConnectionOrchestrator {
     if (forwardingContext == null) return;
 
     final hop = (message['hop'] as num?)?.toInt() ?? 0;
-    final originId =
-        message['origin_id'] as String? ?? message['agent_id'] as String?;
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
     final fingerprint = GossipFingerprint.fromPayload(message);
@@ -3958,9 +3961,6 @@ class VibeConnectionOrchestrator {
     )) {
       return;
     }
-
-    // Never forward our own-origin updates
-    if (originId == _localBleNodeId) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
     final candidates = MeshForwardingTargetSelector.excludingOptionalOrigin(
@@ -4155,10 +4155,12 @@ class VibeConnectionOrchestrator {
     required String receivedFromDeviceId,
   }) async {
     // Forwarding is *optional* federated behavior
-    if (!FederatedForwardingGuard.isEnabled(
+    if (!FederatedForwardingPrecheck.allow(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
+      originId: originId,
+      localNodeId: _localBleNodeId,
     )) {
       return;
     }
@@ -4177,9 +4179,6 @@ class VibeConnectionOrchestrator {
     )) {
       return;
     }
-
-    // Never forward our own-origin updates
-    if (originId == _localBleNodeId) return;
 
     final forwardingContext = MeshForwardingContext.tryCreate(
       protocol: _protocol,
