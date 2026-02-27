@@ -52,7 +52,7 @@ import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -1067,40 +1067,34 @@ class VibeConnectionOrchestrator {
   }
 
   void _maybeLogHotMetrics() {
-    // Throttle logs so they’re useful, not noisy.
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    if (!HotPathTelemetrySnapshotBuilder.shouldLog(
+    final nextLogAtMs = HotPathMetricsLane.maybeEmitSnapshot(
       nowMs: nowMs,
       lastLogAtMs: _lastHotMetricsLogAtMs,
       minInterval: _hotMetricsLogInterval,
-    )) {
-      return;
-    }
-    _lastHotMetricsLogAtMs = nowMs;
-
-    final snapshot = HotPathTelemetrySnapshotBuilder.build(
       queueWait: _hotQueueWaitMs,
       sessionOpen: _hotSessionOpenMs,
       vibeRead: _hotVibeReadMs,
       compatibility: _hotCompatMs,
       total: _hotTotalMs,
+      onSnapshot: (snapshot) {
+        _logger.debug(snapshot.formatLogLine(), tag: _logName);
+        if (LedgerAuditV0.isEnabled) {
+          unawaited(LedgerAuditV0.tryAppend(
+            domain: LedgerDomainV0.deviceCapability,
+            eventType: 'ai2ai_hotpath_latency_summary',
+            occurredAt: DateTime.now(),
+            payload: snapshot.toJson().cast<String, Object?>(),
+          ));
+        }
+      },
     );
-    if (snapshot.count == 0) return;
-
-    _logger.debug(snapshot.formatLogLine(), tag: _logName);
-    if (LedgerAuditV0.isEnabled) {
-      unawaited(LedgerAuditV0.tryAppend(
-        domain: LedgerDomainV0.deviceCapability,
-        eventType: 'ai2ai_hotpath_latency_summary',
-        occurredAt: DateTime.now(),
-        payload: snapshot.toJson().cast<String, Object?>(),
-      ));
-    }
+    _lastHotMetricsLogAtMs = nextLogAtMs;
   }
 
   @visibleForTesting
   Map<String, dynamic> debugHotPathLatencySummary() {
-    final snapshot = HotPathTelemetrySnapshotBuilder.build(
+    final snapshot = HotPathMetricsLane.buildSnapshot(
       queueWait: _hotQueueWaitMs,
       sessionOpen: _hotSessionOpenMs,
       vibeRead: _hotVibeReadMs,
