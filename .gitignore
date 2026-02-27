@@ -81,6 +81,7 @@ android/app/src/main/assets/models/
 logs/
 tmp/
 temp/
+runtime_exports/
 Pods/
 coverage/
 *.lock
