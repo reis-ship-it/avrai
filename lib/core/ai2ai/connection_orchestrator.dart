@@ -38,11 +38,10 @@ import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_side_effects.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -1643,97 +1642,20 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
-    // Respect user setting.
-    final learningEnabled =
-        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
-    if (!learningEnabled) return;
-
-    final userId = _currentUserId;
-    final personalityLearning = _connectionManager.personalityLearning;
-    if (userId == null || personalityLearning == null) return;
-
-    try {
-      final payload = message.payload;
-      final nowMs = DateTime.now().millisecondsSinceEpoch;
-      final parseResult = IncomingLearningInsightParser.parse(
-        payload: payload,
-        senderId: message.senderId,
-        adaptiveMeshService: _adaptiveMeshService,
-        nowMs: nowMs,
-      );
-      if (parseResult == null) return;
-
-      final insightId = parseResult.insightId;
-      final expiresAtMs = parseResult.expiresAtMs;
-      final learningQuality = parseResult.learningQuality;
-      final originId = parseResult.originId;
-      final hop = parseResult.hop;
-      final deltas = parseResult.deltas;
-
-      // Dedupe.
-      if (!LearningInsightFlowGate.markSeenIfFresh(
-        seenLearningInsightIds: _seenLearningInsightIds,
-        insightId: insightId,
-        nowMs: nowMs,
-        expiresAtMs: expiresAtMs,
-      )) {
-        return;
-      }
-
-      // Throttle per sender.
-      final now = DateTime.now();
-      final sender = message.senderId;
-      if (LearningInsightFlowGate.isPeerLearningThrottled(
-        lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
-        peerId: sender,
-        now: now,
-      )) {
-        return;
-      }
-
-      final insight = AI2AILearningInsight(
-        type: AI2AIInsightType.dimensionDiscovery,
-        dimensionInsights: deltas,
-        learningQuality: learningQuality,
-        timestamp: now,
-      );
-
-      await _applyInsightForPeer(
-        userId: userId,
-        personalityLearning: personalityLearning,
-        peerId: sender,
-        insight: insight,
-        now: now,
-        source: 'inbox',
-        insightId: insightId,
-        learningQuality: learningQuality,
-        deltas: deltas,
-      );
-
-      IncomingLearningInsightSideEffects.emitSuccess(
-        insightId: insightId,
-        sender: sender,
-        originId: originId,
-        hop: hop,
-        learningQuality: learningQuality,
-        deltaDimensionsCount: deltas.length,
-        forwardGossip: () {
-          unawaited(_maybeForwardLearningInsightGossip(
-            payload: payload,
-            originId: originId,
-            hop: hop,
-            receivedFromDeviceId: sender,
-          ));
-        },
-      );
-    } catch (e) {
-      IncomingLearningInsightSideEffects.emitFailure(
-        error: e,
-        senderDeviceId: message.senderId,
-        logger: _logger,
-        logTag: _logName,
-      );
-    }
+    await IncomingLearningInsightProcessingLane.handle(
+      message: message,
+      prefs: _prefs,
+      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+      currentUserId: _currentUserId,
+      personalityLearning: _connectionManager.personalityLearning,
+      adaptiveMeshService: _adaptiveMeshService,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+      applyInsightForPeer: _applyInsightForPeer,
+      maybeForwardLearningInsightGossip: _maybeForwardLearningInsightGossip,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Handle incoming user-to-user chat message routed through AI2AI mesh
