@@ -68,6 +68,7 @@ import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight
 import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -77,7 +78,6 @@ import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
 import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
 import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
-import 'package:avrai/core/ai2ai/federated_learning_codec.dart';
 import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
@@ -1841,37 +1841,13 @@ class VibeConnectionOrchestrator {
     Map<String, dynamic> payload,
   ) async {
     if (!_isFederatedLearningParticipationEnabled()) return;
-
-    try {
-      final entry =
-          buildCloudDeltaEntryFromLearningInsightPayload(payload: payload);
-      if (entry == null) return;
-      final insightId = entry['id'] as String?;
-      if (insightId == null || insightId.isEmpty) return;
-
-      final existing =
-          _prefs.getStringList(_prefsKeyFederatedCloudQueue) ?? const [];
-      final next = <String>[];
-      var seenId = false;
-      for (final s in existing) {
-        // Basic dedupe by `id` without needing to decode everything.
-        if (cloudDeltaEntryContainsId(jsonString: s, id: insightId)) {
-          seenId = true;
-        }
-        next.add(s);
-      }
-      if (!seenId) {
-        next.add(jsonEncode(entry));
-      }
-
-      // Cap queue size (FIFO) to keep storage bounded.
-      final capped =
-          next.length <= 200 ? next : next.sublist(next.length - 200);
-      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, capped);
-    } catch (e) {
-      _logger.debug('Failed to enqueue federated delta for cloud: $e',
-          tag: _logName);
-    }
+    await FederatedCloudQueueLane.enqueueFromLearningInsightPayload(
+      prefs: _prefs,
+      prefsKeyQueue: _prefsKeyFederatedCloudQueue,
+      payload: payload,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Public API for [BackupSyncCoordinator] – flushes the federated cloud queue.
