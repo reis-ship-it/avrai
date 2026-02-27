@@ -32,6 +32,7 @@ import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
+import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
@@ -2539,8 +2540,13 @@ class VibeConnectionOrchestrator {
     required String receivedFromDeviceId,
   }) async {
     // Forwarding is *optional* federated behavior (distinct from direct AI2AI learning).
-    if (!_allowBleSideEffects) return;
-    if (!_isFederatedLearningParticipationEnabled()) return;
+    if (!FederatedForwardingGuard.isEnabled(
+      allowBleSideEffects: _allowBleSideEffects,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+    )) {
+      return;
+    }
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
     final fingerprint = GossipFingerprint.fromPayload(payload);
@@ -3886,8 +3892,13 @@ class VibeConnectionOrchestrator {
   Future<void> forwardOrganicSpotDiscovery(
     Map<String, dynamic> signal,
   ) async {
-    if (!_allowBleSideEffects) return;
-    if (!_isFederatedLearningParticipationEnabled()) return;
+    if (!FederatedForwardingGuard.isEnabled(
+      allowBleSideEffects: _allowBleSideEffects,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+    )) {
+      return;
+    }
 
     final forwardingContext = MeshForwardingContext.tryCreate(
       protocol: _protocol,
@@ -3932,8 +3943,13 @@ class VibeConnectionOrchestrator {
 
   /// NEW: Forward locality agent update through mesh network
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    if (!_allowBleSideEffects) return;
-    if (!_isFederatedLearningParticipationEnabled()) return;
+    if (!FederatedForwardingGuard.isEnabled(
+      allowBleSideEffects: _allowBleSideEffects,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+    )) {
+      return;
+    }
 
     final forwardingContext = MeshForwardingContext.tryCreate(
       protocol: _protocol,
@@ -4174,8 +4190,13 @@ class VibeConnectionOrchestrator {
     required String receivedFromDeviceId,
   }) async {
     // Forwarding is *optional* federated behavior
-    if (!_allowBleSideEffects) return;
-    if (!_isFederatedLearningParticipationEnabled()) return;
+    if (!FederatedForwardingGuard.isEnabled(
+      allowBleSideEffects: _allowBleSideEffects,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+    )) {
+      return;
+    }
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
     final fingerprint = GossipFingerprint.fromPayload(payload);
