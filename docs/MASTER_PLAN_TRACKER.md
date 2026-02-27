@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 20, 2026 (v26: added topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings across `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, and `10.9`. Previous: v25 added offline/online transfer continuity addendum (`arXiv 2602.17632`) and explicit cross-phase wiring to `5.2`, `7.7`, `7.9`, `8.1`, and `10.9.22`)
+**Last Updated:** February 26, 2026 (v27: added full boundary conversion kit for Reality Engine + Runtime OS + AVRAI App separation, including architecture remap, governance updates, cutover runbook, and Phase 1 continuation gate. Previous: v26 added topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings across `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, and `10.9`.)
 
 ---
 
@@ -43,6 +43,8 @@
 
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
+| **Reality Engine + Runtime OS Boundary Conversion Kit** | 2026-02-26 | 🟢 Active | **CRITICAL** | Immediate conversion execution sequence + CI guard activation + cutover runbook for continuous Phase 1 delivery | [`../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/README.md`](../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/README.md) |
+| **Reality Model + AVRAI Separation Recommendation Report** | 2026-02-26 | 🟢 Active | **CRITICAL** | 30/60/90-day separation lane; boundary guards + runtime extraction + host adapter contracts | [`plans/architecture/REALITY_MODEL_AVRAI_SEPARATION_RECOMMENDATION_2026-02-26.md`](./plans/architecture/REALITY_MODEL_AVRAI_SEPARATION_RECOMMENDATION_2026-02-26.md) |
 | **Rename Candidates Register (deferred naming governance)** | 2026-02-16 | 🟢 Active | HIGH | Continuous; enforce categorized, architecture-anchored, phase-close rename governance via checker | [`architecture/RENAME_CANDIDATES.md`](./architecture/RENAME_CANDIDATES.md) |
 | **Services Marketplace Implementation** | 2026-01-06 | 🟢 Active | P1 Revenue | 6-8 weeks | [`plans/services_marketplace/SERVICES_MARKETPLACE_IMPLEMENTATION_PLAN.md`](./plans/services_marketplace/SERVICES_MARKETPLACE_IMPLEMENTATION_PLAN.md) |
 | **Comprehensive Patent Integration Plan** | 2026-01-03 | 🟢 Active | **CRITICAL** | ~18 days (parallel execution) | [`plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md`](./plans/patent_integration/COMPREHENSIVE_PATENT_INTEGRATION_PLAN.md) |

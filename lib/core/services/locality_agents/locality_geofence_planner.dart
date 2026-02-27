@@ -1,8 +1,10 @@
 import 'dart:developer' as developer;
+import 'dart:math' as math;
 
 import 'package:avrai/core/services/places/geohash_service.dart';
 import 'package:avrai/core/services/locality_agents/os_geofence_registrar.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
+import 'package:avrai/core/services/infrastructure/runtime/runtime_capability_profile.dart';
 
 /// Locality geofence planner (v1)
 ///
@@ -25,24 +27,37 @@ class LocalityGeofencePlannerV1 {
     required String agentId,
     required double latitude,
     required double longitude,
+    RuntimeCapabilityProfile? capabilityProfile,
     int precision = 7,
     int maxGeofences = 12,
   }) async {
+    final effectivePrecision = capabilityProfile == null
+        ? precision
+        : math.min(precision, capabilityProfile.geohashPrecisionCap);
+    final effectiveMaxGeofences = capabilityProfile == null
+        ? maxGeofences
+        : math.min(maxGeofences, capabilityProfile.maxConcurrentGeofences);
+
     final geohash = GeohashService.encode(
       latitude: latitude,
       longitude: longitude,
-      precision: precision,
+      precision: effectivePrecision,
     );
 
-    final candidates = <String>{geohash, ...GeohashService.neighbors(geohash: geohash)};
+    final candidates = <String>{
+      geohash,
+      ...GeohashService.neighbors(geohash: geohash)
+    };
 
     // Add a coarser “parent” geohash to keep a broader anchor region.
-    if (precision >= 6) {
+    if (effectivePrecision >= 6) {
       candidates.add(geohash.substring(0, 5));
     }
 
-    final chosen = candidates.take(maxGeofences).toList(growable: false);
-    final planned = chosen.map((gh) => _toOsGeofence(gh)).toList(growable: false);
+    final chosen =
+        candidates.take(effectiveMaxGeofences).toList(growable: false);
+    final planned =
+        chosen.map((gh) => _toOsGeofence(gh)).toList(growable: false);
 
     // Persist planned set (best-effort) for debugging/inspection.
     try {
@@ -68,7 +83,8 @@ class LocalityGeofencePlannerV1 {
     await _registrar.registerGeofences(planned);
 
     developer.log(
-      'Planned OS geofences: ${planned.length} (precision=$precision)',
+      'Planned OS geofences: ${planned.length} (precision=$effectivePrecision, '
+      'max=$effectiveMaxGeofences, tier=${capabilityProfile?.tier.name ?? 'none'})',
       name: _logName,
     );
     return planned;
@@ -105,4 +121,3 @@ class LocalityGeofencePlannerV1 {
     return r.toDouble();
   }
 }
-

@@ -9,7 +9,7 @@ import 'package:avrai/core/ai/event_queue.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 
@@ -39,7 +39,7 @@ class EventLogger {
     SupabaseService? supabaseService,
     EventQueue? eventQueue,
     ContinuousLearningSystem? learningSystem,
-  })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+  })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _supabaseService = supabaseService ?? SupabaseService(),
         _eventQueue = eventQueue ?? EventQueue(),
         _learningSystem = learningSystem;
@@ -113,8 +113,8 @@ class EventLogger {
       // Create event with atomic timestamp
       AtomicTimestamp? atomicTimestamp;
       try {
-        if (di.sl.isRegistered<AtomicClockService>()) {
-          final atomicClock = di.sl<AtomicClockService>();
+        if (GetIt.instance.isRegistered<AtomicClockService>()) {
+          final atomicClock = GetIt.instance<AtomicClockService>();
           atomicTimestamp = await atomicClock.getAtomicTimestamp();
         }
       } catch (e) {

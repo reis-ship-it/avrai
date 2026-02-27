@@ -35,6 +35,8 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 ## Core Architecture Guardrails
 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
+- **Reality model vs host separation recommendation (2026-02-26):** [`REALITY_MODEL_AVRAI_SEPARATION_RECOMMENDATION_2026-02-26.md`](./REALITY_MODEL_AVRAI_SEPARATION_RECOMMENDATION_2026-02-26.md)
+- **Full boundary conversion kit (Reality Engine + Runtime OS + App):** [`REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/README.md`](../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/README.md)
 - **Continuous-learning modular boundary plan (Phase 1.4.24-1.4.29):** [`docs/MASTER_PLAN.md` section `1.4 Feedback Collection UX`](../../MASTER_PLAN.md)
 - **Universal self-healing contract (all subsystems):** [`docs/MASTER_PLAN.md` section `Universal Self-Healing Contract` + task `10.9.12`](../../MASTER_PLAN.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)

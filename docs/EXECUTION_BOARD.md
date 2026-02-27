@@ -8,7 +8,7 @@ Source references:
 - `docs/MASTER_PLAN.md` (Phase definitions)
 - `docs/MASTER_PLAN.md` section `10.9A-10.9I` (governance, milestones, risk)
 
-Last updated: 2026-02-24
+Last updated: 2026-02-26
 
 ## Usage
 
@@ -93,7 +93,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | 7 | Orchestrator Restructuring & System Integration | Full | AP, MOB | REL | 25 | Critical | Ready | Trigger reliability + orchestration persistence gates pass |
 | 8 | Ecosystem Intelligence AI2AI World Model | Full | FED, LOC | AP | 20 | Critical | Backlog | Federated cohort no-regression + advisory quarantine pass |
 | 9 | Business Operations & Monetization | Hybrid | Business Platform, AP | GOV | 12 | High | Backlog | Data-sharing consent + revenue attribution integrity pass |
-| 10 | Feature Completion Codebase Reorganization & Polish | Hybrid | AP, REL | GOV | 16 | High | Ready | Placeholder elimination + reorg import/CI stability pass |
+| 10 | Feature Completion Codebase Reorganization & Polish | Hybrid | AP, REL | GOV | 16 | High | Ready | Placeholder elimination + reorg import/CI stability pass + engine/runtime/app boundary checks green |
 | 11 | Industry Integrations & Platform Expansion | Hybrid | Integrations Platform | GOV | 15 | High | Backlog | Integration contract/security conformance pass |
 <!-- EXECUTION_BOARD:PHASE_PORTFOLIO_END -->
 
@@ -103,6 +103,9 @@ phase row + milestone row(s) + risk + gate criteria.
 | Milestone | Phase | Wave | Scope | Change Type | Reopens | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |
 |----------|-------|------|-------|------------|---------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|
 | M0-P10-1 | 10 | 0 | Production readiness + cleanup enforcement | baseline | none | PRD-012, PRD-013, PRD-014, PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.1, 10.9.2, 10.9.4 | lib/_root | AP, REL | GOV | none | 16 | High | parallel baseline | Ready | - |
+| M0-P10-2 | 10 | 0 | Reality Engine Runtime boundary guard enablement | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034, PRD-035 | 10.10.1, 10.9.1 | lib/core/ai | AP, REL | GOV | M0-P10-1 | 20 | Critical | parallel baseline | Ready | - |
+| M0-P10-3 | 10 | 0 | Runtime/host contract conformance and headless engine gate | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034, PRD-035, PRD-036 | 10.10.2, 10.10.7, 10.10.8 | lib/core/ai | AP, REL | GOV | M0-P10-2 | 20 | Critical | Week 2-3 | Backlog | - |
+| M0-P10-4 | 10 | 0 | Cross-OS capability matrix + degraded-mode planner hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034, PRD-035 | 10.10.4, 10.10.5, 10.9.8 | lib/core/ai2ai | AP, MOB | GOV | M0-P10-3 | 16 | High | Week 3-5 | Backlog | - |
 | M0-P2-1 | 2 | 0 | Security + cryptographic assurance baseline | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 2.1.1, 2.2.1, 2.5.1 | lib/core/services/security | SEC | GOV | none | 20 | Critical | parallel baseline | Ready | - |
 | M1-P7-1 | 7 | 1 | Trigger + orchestration persistence hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.2, 10.9.1, 10.9.4 | lib/core/controllers | AP, MOB | REL | none | 25 | Critical | Week 1-2 | Ready | - |
 | M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.4.4, 10.9.4 | lib/core/controllers | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
@@ -123,11 +126,11 @@ phase row + milestone row(s) + risk + gate criteria.
 <!-- EXECUTION_BOARD:KANBAN_START -->
 ### Backlog
 
-`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
+`M0-P10-3`, `M0-P10-4`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
 
 ### Ready
 
-`M0-P10-1`, `M0-P2-1`, `M1-P7-1`
+`M0-P10-1`, `M0-P10-2`, `M0-P2-1`, `M1-P7-1`
 
 ### In Progress
 

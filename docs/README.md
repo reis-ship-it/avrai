@@ -17,11 +17,14 @@ Execution board commands:
 GitHub automation:
 - Workflow: `.github/workflows/execution-board-guard.yml` (runs board sync/coverage + architecture placement validation on PRs)
 - Workflow: `.github/workflows/prd-traceability-guard.yml` (requires PRD IDs + exactly one execution milestone ID + `X.Y.Z` refs, and validates commit boundary metadata)
+- Workflow: `.github/workflows/engine-runtime-boundary-guard.yml` (enforces engine/runtime/app boundary constraints)
+- Workflow: `.github/workflows/headless-engine-smoke-guard.yml` (verifies core engine loop runs without app boot)
 
 ### **Organized Documentation**
 
 - **Architecture**
   - 📚 **Start here:** `plans/architecture/ARCHITECTURE_INDEX.md` - Central index for all architecture docs
+  - Reality Engine + Runtime OS boundary conversion pack: `../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/`
   - Online/Offline Strategy: `plans/architecture/ONLINE_OFFLINE_STRATEGY.md` - Feature-by-feature strategy (83% offline-first)
   - Offline Cloud AI: `plans/architecture/OFFLINE_CLOUD_AI_ARCHITECTURE.md` - AI/LLM offline architecture
   - ai2ai, ML, Federated: `plans/architecture/architecture_ai_federated_p2p.md` (ai2ai terminology)

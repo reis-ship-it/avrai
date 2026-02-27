@@ -11,7 +11,7 @@ import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
 import 'package:avrai/core/services/partnerships/partnership_service.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -51,7 +51,7 @@ class BusinessExpertChatServiceAI2AI {
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _partnershipService = partnershipService,
         _businessService = businessService,
-        _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+        _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _episodicMemoryStore = episodicMemoryStore,
         _outcomeTaxonomy = outcomeTaxonomy,
         _messageStorage = messageStorage,
@@ -59,8 +59,8 @@ class BusinessExpertChatServiceAI2AI {
 
   static ai2ai.AnonymousCommunicationProtocol _createDefaultProtocol() {
     // Try to get from DI - protocol must be registered
-    if (di.sl.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
-      return di.sl<ai2ai.AnonymousCommunicationProtocol>();
+    if (GetIt.instance.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
+      return GetIt.instance<ai2ai.AnonymousCommunicationProtocol>();
     }
 
     // If not registered, throw error - protocol must be provided via DI

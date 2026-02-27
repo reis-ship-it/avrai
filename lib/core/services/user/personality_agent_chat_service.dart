@@ -11,7 +11,6 @@ import 'package:avrai/core/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai/core/ai/personality_learning.dart' as pl;
 import 'package:avrai/core/ai/facts_index.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/data/repositories/hybrid_search_repository.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -50,7 +49,7 @@ class PersonalityAgentChatService {
     EpisodicMemoryStore? episodicMemoryStore,
     OutcomeTaxonomy outcomeTaxonomy = const OutcomeTaxonomy(),
     GetStorage? chatStorage,
-  })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+  })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _languageLearningService =
             languageLearningService ?? LanguagePatternLearningService(),

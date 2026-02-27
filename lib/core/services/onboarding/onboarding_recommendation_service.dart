@@ -1,30 +1,30 @@
 import 'dart:developer' as developer;
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 
 /// OnboardingRecommendationService
-/// 
+///
 /// Recommends lists and accounts to follow based on onboarding data
 /// and personality dimensions.
-/// 
+///
 /// Uses agentId internally for privacy protection per Master Plan Phase 7.3.
 /// Accepts userId in public API but converts to agentId internally.
 class OnboardingRecommendationService {
   static const String _logName = 'OnboardingRecommendationService';
-  
+
   final AgentIdService _agentIdService;
-  
+
   OnboardingRecommendationService({
     AgentIdService? agentIdService,
-  }) : _agentIdService = agentIdService ?? di.sl<AgentIdService>();
-  
+  }) : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>();
+
   /// Get recommended lists to follow based on onboarding
-  /// 
+  ///
   /// [userId] - Authenticated user ID from UI layer
   /// [onboardingData] - User's onboarding data
   /// [personalityDimensions] - User's personality dimensions
   /// [maxRecommendations] - Maximum number of recommendations
-  /// 
+  ///
   /// Returns list of recommended lists
   Future<List<ListRecommendation>> getRecommendedLists({
     required String userId,
@@ -37,14 +37,14 @@ class OnboardingRecommendationService {
         'Getting recommended lists for user: $userId',
         name: _logName,
       );
-      
+
       // Convert userId → agentId for privacy-protected operations
       // agentId reserved for future privacy-protected matching operations
       // ignore: unused_local_variable
       final agentId = await _agentIdService.getUserAgentId(userId);
-      
+
       final recommendations = <ListRecommendation>[];
-      
+
       // Find lists by preferences
       final prefLists = _findListsByPreferences(
         onboardingData,
@@ -52,7 +52,7 @@ class OnboardingRecommendationService {
         maxRecommendations: maxRecommendations ~/ 3,
       );
       recommendations.addAll(prefLists);
-      
+
       // Find lists by homebase
       if (recommendations.length < maxRecommendations) {
         final homebaseLists = _findListsByHomebase(
@@ -62,7 +62,7 @@ class OnboardingRecommendationService {
         );
         recommendations.addAll(homebaseLists);
       }
-      
+
       // Find lists by archetype
       if (recommendations.length < maxRecommendations) {
         final archetypeLists = _findListsByArchetype(
@@ -71,15 +71,16 @@ class OnboardingRecommendationService {
         );
         recommendations.addAll(archetypeLists);
       }
-      
+
       // Sort by compatibility score
-      recommendations.sort((a, b) => b.compatibilityScore.compareTo(a.compatibilityScore));
-      
+      recommendations
+          .sort((a, b) => b.compatibilityScore.compareTo(a.compatibilityScore));
+
       developer.log(
         '✅ Found ${recommendations.length} list recommendations',
         name: _logName,
       );
-      
+
       return recommendations.take(maxRecommendations).toList();
     } catch (e, stackTrace) {
       developer.log(
@@ -91,14 +92,14 @@ class OnboardingRecommendationService {
       return [];
     }
   }
-  
+
   /// Get recommended accounts to follow based on onboarding
-  /// 
+  ///
   /// [userId] - Authenticated user ID from UI layer
   /// [onboardingData] - User's onboarding data
   /// [personalityDimensions] - User's personality dimensions
   /// [maxRecommendations] - Maximum number of recommendations
-  /// 
+  ///
   /// Returns list of recommended accounts
   Future<List<AccountRecommendation>> getRecommendedAccounts({
     required String userId,
@@ -111,14 +112,14 @@ class OnboardingRecommendationService {
         'Getting recommended accounts for user: $userId',
         name: _logName,
       );
-      
+
       // Convert userId → agentId for privacy-protected operations
       // agentId reserved for future privacy-protected matching operations
       // ignore: unused_local_variable
       final agentId = await _agentIdService.getUserAgentId(userId);
-      
+
       final recommendations = <AccountRecommendation>[];
-      
+
       // Find accounts by interests
       final interestAccounts = _findAccountsByInterests(
         onboardingData,
@@ -126,7 +127,7 @@ class OnboardingRecommendationService {
         maxRecommendations: maxRecommendations ~/ 2,
       );
       recommendations.addAll(interestAccounts);
-      
+
       // Find accounts by location
       if (recommendations.length < maxRecommendations) {
         final locationAccounts = _findAccountsByLocation(
@@ -136,15 +137,16 @@ class OnboardingRecommendationService {
         );
         recommendations.addAll(locationAccounts);
       }
-      
+
       // Sort by compatibility score
-      recommendations.sort((a, b) => b.compatibilityScore.compareTo(a.compatibilityScore));
-      
+      recommendations
+          .sort((a, b) => b.compatibilityScore.compareTo(a.compatibilityScore));
+
       developer.log(
         '✅ Found ${recommendations.length} account recommendations',
         name: _logName,
       );
-      
+
       return recommendations.take(maxRecommendations).toList();
     } catch (e, stackTrace) {
       developer.log(
@@ -156,12 +158,12 @@ class OnboardingRecommendationService {
       return [];
     }
   }
-  
+
   /// Calculate compatibility score between user and list/account
-  /// 
+  ///
   /// [userDimensions] - User's personality dimensions
   /// [listDimensions] - List/account's personality dimensions
-  /// 
+  ///
   /// Returns compatibility score (0.0-1.0)
   double calculateCompatibility({
     required Map<String, double> userDimensions,
@@ -170,30 +172,30 @@ class OnboardingRecommendationService {
     if (userDimensions.isEmpty || listDimensions.isEmpty) {
       return 0.0;
     }
-    
+
     // Calculate cosine similarity or simple average difference
     double totalSimilarity = 0.0;
     int matchingDimensions = 0;
-    
+
     for (final dimension in userDimensions.keys) {
       if (listDimensions.containsKey(dimension)) {
         final userValue = userDimensions[dimension] ?? 0.0;
         final listValue = listDimensions[dimension] ?? 0.0;
-        
+
         // Calculate similarity (1.0 - absolute difference)
         final similarity = 1.0 - (userValue - listValue).abs();
         totalSimilarity += similarity;
         matchingDimensions++;
       }
     }
-    
+
     if (matchingDimensions == 0) {
       return 0.0;
     }
-    
+
     return (totalSimilarity / matchingDimensions).clamp(0.0, 1.0);
   }
-  
+
   /// Find lists by preferences
   List<ListRecommendation> _findListsByPreferences(
     Map<String, dynamic> onboardingData,
@@ -205,7 +207,7 @@ class OnboardingRecommendationService {
     // This can be implemented when list data source is available
     return [];
   }
-  
+
   /// Find lists by homebase
   List<ListRecommendation> _findListsByHomebase(
     Map<String, dynamic> onboardingData,
@@ -216,7 +218,7 @@ class OnboardingRecommendationService {
     // For now, return empty list
     return [];
   }
-  
+
   /// Find lists by archetype
   List<ListRecommendation> _findListsByArchetype(
     Map<String, double> personalityDimensions, {
@@ -226,7 +228,7 @@ class OnboardingRecommendationService {
     // For now, return empty list
     return [];
   }
-  
+
   /// Find accounts by interests
   List<AccountRecommendation> _findAccountsByInterests(
     Map<String, dynamic> onboardingData,
@@ -237,7 +239,7 @@ class OnboardingRecommendationService {
     // For now, return empty list
     return [];
   }
-  
+
   /// Find accounts by location
   List<AccountRecommendation> _findAccountsByLocation(
     Map<String, dynamic> onboardingData,
@@ -251,7 +253,7 @@ class OnboardingRecommendationService {
 }
 
 /// List Recommendation
-/// 
+///
 /// Represents a recommended list to follow
 class ListRecommendation {
   final String listId;
@@ -261,7 +263,7 @@ class ListRecommendation {
   final double compatibilityScore; // 0.0-1.0
   final List<String> matchingReasons; // Why this list matches
   final Map<String, dynamic> metadata;
-  
+
   ListRecommendation({
     required this.listId,
     required this.listName,
@@ -271,7 +273,7 @@ class ListRecommendation {
     required this.matchingReasons,
     required this.metadata,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'listId': listId,
@@ -286,7 +288,7 @@ class ListRecommendation {
 }
 
 /// Account Recommendation
-/// 
+///
 /// Represents a recommended account to follow
 class AccountRecommendation {
   final String accountId;
@@ -296,7 +298,7 @@ class AccountRecommendation {
   final double compatibilityScore; // 0.0-1.0
   final List<String> matchingReasons; // Why this account matches
   final Map<String, dynamic> metadata;
-  
+
   AccountRecommendation({
     required this.accountId,
     required this.accountName,
@@ -306,7 +308,7 @@ class AccountRecommendation {
     required this.matchingReasons,
     required this.metadata,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'accountId': accountId,
@@ -319,4 +321,3 @@ class AccountRecommendation {
     };
   }
 }
-

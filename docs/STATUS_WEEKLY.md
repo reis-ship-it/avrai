@@ -69,7 +69,15 @@ Validation commands:
 - CI/test report:
 - Monitoring dashboard snapshot:
 
-### 8) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
+### 8) Boundary Conversion Progress (Reality Engine / Runtime OS / App)
+
+| Milestone | Status Delta | Evidence | Notes |
+|-----------|--------------|----------|-------|
+| M0-P10-2 | - | - | Boundary guard enablement |
+| M0-P10-3 | - | - | Contract conformance + headless engine |
+| M0-P10-4 | - | - | Cross-OS capability + degraded-mode planner |
+
+### 9) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
 
 | Rename ID | Category | Phase Close Target | Decision | Owner | Target Milestone | Notes |
 |-----------|----------|--------------------|----------|-------|------------------|-------|
@@ -120,7 +128,14 @@ Validation commands:
 - CI/test report:
 - Monitoring dashboard snapshot:
 
-### 8) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
+### 8) Boundary Conversion Progress (Reality Engine / Runtime OS / App)
+| Milestone | Status Delta | Evidence | Notes |
+|-----------|--------------|----------|-------|
+| M0-P10-2 | - | - | Boundary guard enablement |
+| M0-P10-3 | - | - | Contract conformance + headless engine |
+| M0-P10-4 | - | - | Cross-OS capability + degraded-mode planner |
+
+### 9) Deferred Rename Notes (from `docs/architecture/RENAME_CANDIDATES.md`)
 | Rename ID | Category | Phase Close Target | Decision | Owner | Target Milestone | Notes |
 |-----------|----------|--------------------|----------|-------|------------------|-------|
 ```

@@ -6,12 +6,17 @@
 
 ---
 
-## 1) Architecture boundary rule (packages must not import the app)
+## 1) Architecture boundary rules
 
-**Rule:** any Dart file under `packages/` must **not** `import` or `export`:
-- `package:spots/...`
+**Rule A (package -> app ban):** any Dart file under `packages/` must **not** `import` or `export`:
+- `package:avrai/...`
 
-**Why:** `packages/*` should be reusable DAG nodes. If a package depends on the app, we can’t test or version packages independently, and boundaries rot fast.
+**Rule B (engine/runtime/app layering):**
+- Engine packages must not import runtime or app composition/presentation layers.
+- Runtime packages must not import app composition/presentation layers.
+- App may consume runtime and engine contracts, but must not bypass runtime contracts to call engine internals directly.
+
+**Why:** packages and layers must remain independently testable and releasable. Boundary leaks lock us into monolith coupling and break migration safety.
 
 **Enforcement:**
 - Script: `scripts/ci/check_architecture.dart`
@@ -22,7 +27,7 @@
 ### Baseline (incremental cleanup)
 
 Today there are existing violations. To avoid “red CI forever”, the guard supports a baseline allowlist:
-- Baseline file: `scripts/ci/baselines/spots_app_imports_baseline.json`
+- Baseline file: `scripts/ci/baselines/avrai_app_imports_baseline.json`
 - CI fails **only** if **new** violations are introduced.
 
 Update baseline (temporary; prefer fixing imports instead):
@@ -58,4 +63,3 @@ Once package boundary leaks are fixed, we should:
 - Flip the architecture guard to **strict mode** (no baseline)
 
 This keeps the “store-ready repo” posture stable long-term.
-

@@ -7,7 +7,7 @@ import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 
 /// AI2AI Learning Service
 ///
@@ -132,7 +132,7 @@ class AI2AILearning {
 
       // Get current personality profile using PersonalityLearning service
       // Phase 8.3: Use agentId for privacy protection
-      final agentIdService = di.sl<AgentIdService>();
+      final agentIdService = GetIt.instance<AgentIdService>();
       final agentId = await agentIdService.getUserAgentId(userId);
 
       // Try to get existing profile, otherwise create default

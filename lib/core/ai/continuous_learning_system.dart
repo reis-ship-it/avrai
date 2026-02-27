@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/interaction_events.dart';
 import 'package:avrai/core/ai/implicit_feedback_signals.dart';
@@ -12,6 +11,7 @@ import 'package:avrai/core/ai/facts_index.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_memory_store.dart';
 import 'package:avrai/core/ai/memory/episodic/episodic_tuple.dart';
 import 'package:avrai/core/ai/memory/episodic/outcome_taxonomy.dart';
+import 'package:avrai/core/ai/memory/journal/first_occurrence_issue_ledger.dart';
 import 'package:avrai/core/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai/core/ai/continuous_learning/data_collector.dart';
 import 'package:avrai/core/ai/continuous_learning/data_processor.dart';
@@ -74,6 +74,9 @@ class ContinuousLearningSystem {
   static const double _categoryConfidenceDecayFactor = 0.8;
   static const int _reexplorationNegativeStreakThreshold = 3;
   static const double _modelFailureTrainingWeight = 3.0;
+  static const String _firstOccurrencePhaseRef = '1.4.17';
+  static const double _highSeveritySignalWeightThreshold = 4.0;
+  static const String _selfHealingQueueTarget = 'self_healing_queue';
   static const Set<String> _negativeOutcomeAmplifiedEvents = {
     'recommendation_rejected',
     'recommendation_post_view_abandonment',
@@ -91,6 +94,7 @@ class ContinuousLearningSystem {
   final AgentIdService _agentIdService;
   final EpisodicMemoryStore? _episodicMemoryStore;
   final OutcomeTaxonomy _outcomeTaxonomy;
+  final FirstOccurrenceIssueLedger _firstOccurrenceIssueLedger;
   final ImplicitFeedbackSignals _implicitFeedbackSignals;
   SupabaseClient? _supabase;
 
@@ -113,8 +117,8 @@ class ContinuousLearningSystem {
       return agentIdService;
     }
     try {
-      if (di.sl.isRegistered<AgentIdService>()) {
-        return di.sl<AgentIdService>();
+      if (GetIt.instance.isRegistered<AgentIdService>()) {
+        return GetIt.instance<AgentIdService>();
       }
     } catch (e) {
       developer.log(
@@ -133,8 +137,8 @@ class ContinuousLearningSystem {
       return episodicMemoryStore;
     }
     try {
-      if (di.sl.isRegistered<EpisodicMemoryStore>()) {
-        return di.sl<EpisodicMemoryStore>();
+      if (GetIt.instance.isRegistered<EpisodicMemoryStore>()) {
+        return GetIt.instance<EpisodicMemoryStore>();
       }
     } catch (e) {
       developer.log(
@@ -151,11 +155,14 @@ class ContinuousLearningSystem {
     SupabaseClient? supabase,
     AgentIdService? agentIdService,
     EpisodicMemoryStore? episodicMemoryStore,
+    FirstOccurrenceIssueLedger? firstOccurrenceIssueLedger,
     ContinuousLearningOrchestrator? orchestrator,
     RateLimiter? rateLimiter,
   })  : _agentIdService = _resolveAgentIdService(agentIdService),
         _episodicMemoryStore = _resolveEpisodicMemoryStore(episodicMemoryStore),
         _outcomeTaxonomy = const OutcomeTaxonomy(),
+        _firstOccurrenceIssueLedger =
+            firstOccurrenceIssueLedger ?? FirstOccurrenceIssueLedger(),
         _implicitFeedbackSignals = const ImplicitFeedbackSignals(),
         _supabase = supabase,
         _orchestrator = orchestrator,
@@ -207,6 +214,9 @@ class ContinuousLearningSystem {
   bool get isLearningActive {
     return _orchestrator?.isLearningActive ?? false;
   }
+
+  List<FirstOccurrenceIssueEntry> get firstOccurrenceIssueEntries =>
+      _firstOccurrenceIssueLedger.snapshot();
 
   Future<void> initialize() async {
     await _ensureOrchestrator();
@@ -602,6 +612,14 @@ class ContinuousLearningSystem {
         adjustedDimensionUpdates: adjustedUpdates,
         observedAt: now,
       );
+      await _recordFirstOccurrencePainSignalIfApplicable(
+        userId: userId,
+        source: sourceType,
+        eventType: eventType,
+        parameters: parameters,
+        context: context,
+        observedAt: now,
+      );
       await _recordPhysiologyOutcomeTupleIfApplicable(
         userId: userId,
         source: sourceType,
@@ -818,7 +836,7 @@ class ContinuousLearningSystem {
   Future<void> _extractAndIndexFactsAsync(
       String userId, InteractionEvent event) async {
     try {
-      // Get dependencies from GetIt (services must be registered in injection_container.dart)
+      // Get dependencies from GetIt (services must be registered at startup)
       if (!GetIt.instance.isRegistered<StructuredFactsExtractor>() ||
           !GetIt.instance.isRegistered<FactsIndex>()) {
         developer.log(
@@ -953,6 +971,158 @@ class ContinuousLearningSystem {
         name: _logName,
       );
     }
+  }
+
+  Future<void> _recordFirstOccurrencePainSignalIfApplicable({
+    required String userId,
+    required String source,
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> context,
+    required DateTime observedAt,
+  }) async {
+    final outcome = _outcomeTaxonomy.classify(
+      eventType: eventType,
+      parameters: {
+        ...parameters,
+        'source': source,
+      },
+    );
+    if (!_isNegativeOutcomeSignal(outcome)) return;
+
+    final severity = _resolveIssueSeverity(parameters, outcome);
+    if (severity != IssueSeverity.high && severity != IssueSeverity.critical) {
+      return;
+    }
+
+    final issueSignature = _resolveFailureSignature(
+      eventType: eventType,
+      parameters: parameters,
+      outcome: outcome,
+    );
+    if (_firstOccurrenceIssueLedger.hasSeen(issueSignature)) return;
+
+    final impactRadius = _resolveIssueImpactRadius(parameters);
+    final entry = _firstOccurrenceIssueLedger.recordFirstSeen(
+      issueSignature: issueSignature,
+      severity: severity,
+      impactRadius: impactRadius,
+      detectedAt: observedAt,
+      subsystem: 'continuous_learning_system',
+      metadata: {
+        'phase_ref': _firstOccurrencePhaseRef,
+        'event_type': eventType,
+        'source': source,
+      },
+    );
+
+    final episodicStore = _episodicMemoryStore;
+    if (episodicStore == null) return;
+    final agentId = await _agentIdService.getUserAgentId(userId);
+    await episodicStore.writeTuple(
+      EpisodicTuple(
+        agentId: agentId,
+        stateBefore: {
+          ..._buildStateSnapshot(
+            userId: userId,
+            source: source,
+            eventType: eventType,
+            context: context,
+            observedAt: observedAt,
+          ),
+          'phase_ref': _firstOccurrencePhaseRef,
+          'issue_signature': issueSignature,
+          'severity': entry.severity.name,
+        },
+        actionType: 'first_occurrence_alert',
+        actionPayload: {
+          'issue_signature': issueSignature,
+          'severity': entry.severity.name,
+          'impact_radius': entry.impactRadius.name,
+          'next_action': entry.nextAction.name,
+          'queue_target': _selfHealingQueueTarget,
+        },
+        nextState: {
+          'triage_priority_boosted': true,
+          'self_healing_queue_intake': true,
+        },
+        outcome: _outcomeTaxonomy.classify(
+          eventType: 'first_occurrence_alert',
+          parameters: {
+            ...parameters,
+            'source': source,
+            'signal_weight': 8.0,
+            'negative_outcome': true,
+            'phase_ref': _firstOccurrencePhaseRef,
+          },
+        ),
+        recordedAt: observedAt,
+        metadata: {
+          'pipeline': 'continuous_learning_system',
+          'phase_ref': _firstOccurrencePhaseRef,
+          'first_occurrence_alert': true,
+        },
+      ),
+    );
+  }
+
+  IssueSeverity _resolveIssueSeverity(
+    Map<String, dynamic> parameters,
+    OutcomeSignal outcome,
+  ) {
+    final explicit = parameters['severity']?.toString().trim().toLowerCase();
+    switch (explicit) {
+      case 'critical':
+        return IssueSeverity.critical;
+      case 'high':
+        return IssueSeverity.high;
+      case 'medium':
+        return IssueSeverity.medium;
+      case 'low':
+        return IssueSeverity.low;
+    }
+
+    final effectiveWeight =
+        (outcome.metadata['effective_training_weight'] as num?)?.toDouble() ??
+            (parameters['signal_weight'] as num?)?.toDouble() ??
+            1.0;
+    if (effectiveWeight >= 8.0) return IssueSeverity.critical;
+    if (effectiveWeight >= _highSeveritySignalWeightThreshold) {
+      return IssueSeverity.high;
+    }
+    if (effectiveWeight >= 2.0) return IssueSeverity.medium;
+    return IssueSeverity.low;
+  }
+
+  IssueImpactRadius _resolveIssueImpactRadius(Map<String, dynamic> parameters) {
+    final raw = parameters['impact_radius']?.toString().trim().toLowerCase();
+    switch (raw) {
+      case 'global':
+        return IssueImpactRadius.global;
+      case 'subsystem':
+        return IssueImpactRadius.subsystem;
+      case 'cohort':
+        return IssueImpactRadius.cohort;
+      case 'singleuser':
+      case 'single_user':
+        return IssueImpactRadius.singleUser;
+      default:
+        return IssueImpactRadius.subsystem;
+    }
+  }
+
+  String _resolveFailureSignature({
+    required String eventType,
+    required Map<String, dynamic> parameters,
+    required OutcomeSignal outcome,
+  }) {
+    final explicit =
+        parameters['failure_signature']?.toString().trim().toLowerCase();
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+    final category = _extractRecommendationCategory(parameters) ?? 'unknown';
+    final entityType =
+        parameters['entity_type']?.toString().trim().toLowerCase() ?? 'unknown';
+    return '$eventType|$entityType|$category|${outcome.type}';
   }
 
   Future<void> _recordNegativeOutcomeConfidenceDecayIfApplicable({
