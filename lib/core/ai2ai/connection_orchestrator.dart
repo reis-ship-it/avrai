@@ -34,9 +34,9 @@ import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_precheck.dart';
-import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
 import 'package:avrai/core/ai2ai/routing/gossip_learning_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
+import 'package:avrai/core/ai2ai/routing/locality_agent_update_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -3934,35 +3934,18 @@ class VibeConnectionOrchestrator {
       return;
     }
 
-    // Choose up to 2 nearby devices to forward to (best-effort)
-    final candidates = MeshForwardingTargetSelector.excludingOptionalOrigin(
-      discoveredNodeIds: _discoveredNodeIds,
+    await LocalityAgentUpdateForwardingLane.forward(
+      message: message,
+      hop: hop,
       originId: originId,
+      discoveredNodeIds: _discoveredNodeIds,
+      context: forwardingContext,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      logger: _logger,
+      logName: _logName,
       maxCandidates: 2,
     );
-
-    if (candidates.isEmpty) return;
-
-    try {
-      final forwardedMessage = ForwardedPayloadBuilder.withHopAndOrigin(
-        source: message,
-        hop: hop,
-        originId: originId,
-      );
-
-      await LearningInsightMeshForwarder.forward(
-        candidatePeerIds: candidates,
-        context: forwardingContext,
-        senderNodeId: _localBleNodeId,
-        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        payload: forwardedMessage,
-      );
-
-      _logger.debug('Forwarded locality agent update through mesh',
-          tag: _logName);
-    } catch (e) {
-      _logger.debug('Locality agent update forward failed: $e', tag: _logName);
-    }
   }
 
   /// NEW: Handle incoming locality agent update from mesh
