@@ -39,6 +39,7 @@ import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
 import 'package:avrai/core/ai2ai/routing/locality_agent_update_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
+import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_gossip_forwarding_gate.dart';
@@ -3867,37 +3868,16 @@ class VibeConnectionOrchestrator {
     final forwardingContext = _tryCreateMeshForwardingContext();
     if (forwardingContext == null) return;
 
-    // Choose up to 2 nearby devices to share with
-    final candidates = MeshForwardingTargetSelector.select(
+    await OrganicSpotDiscoveryForwardingLane.forward(
+      signal: signal,
       discoveredNodeIds: _discoveredNodeIds,
+      context: forwardingContext,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      logger: _logger,
+      logName: _logName,
       maxCandidates: 2,
     );
-
-    if (candidates.isEmpty) return;
-
-    try {
-      final payload = Map<String, dynamic>.from(signal);
-      payload['origin_id'] = _localBleNodeId;
-
-      await LearningInsightMeshForwarder.forward(
-        candidatePeerIds: candidates,
-        context: forwardingContext,
-        senderNodeId: _localBleNodeId,
-        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        payload: payload,
-      );
-
-      _logger.debug(
-        'Shared organic spot discovery through mesh: '
-        '${signal['geohash']}',
-        tag: _logName,
-      );
-    } catch (e) {
-      _logger.debug(
-        'Organic spot discovery forward failed: $e',
-        tag: _logName,
-      );
-    }
   }
 
   /// NEW: Forward locality agent update through mesh network
