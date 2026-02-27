@@ -11,7 +11,6 @@ import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
-import 'package:avrai/core/crypto/signal/ai_agent_fingerprint_service.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai/core/services/recommendations/agent_happiness_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -65,6 +64,7 @@ import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -79,7 +79,6 @@ import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
 import 'package:avrai/core/services/user/user_anonymization_service.dart';
-import 'package:get_it/get_it.dart';
 import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
@@ -2802,77 +2801,13 @@ class VibeConnectionOrchestrator {
         logName: _logName,
       );
 
-      // Extract handshake hash for channel binding (if Signal Protocol session exists)
-      Uint8List? handshakeHash;
-      String? localAgentFingerprint;
-      String? remoteAgentFingerprint;
-
-      try {
-        final sl = GetIt.instance;
-        final signalKeyManager = _signalKeyManager;
-
-        // Generate local agent fingerprint (from our identity key)
-        if (signalKeyManager != null) {
-          try {
-            final localIdentityKeyPair =
-                await signalKeyManager.getOrGenerateIdentityKeyPair();
-            final localFingerprint =
-                AIAgentFingerprintService.generateFingerprintFromKeyPair(
-                    localIdentityKeyPair);
-            localAgentFingerprint = localFingerprint.hexString;
-
-            _logger.debug(
-              'Generated local AI agent fingerprint: ${localFingerprint.displayFormat.substring(0, 20)}...',
-              tag: _logName,
-            );
-          } catch (e) {
-            _logger.debug(
-              'Failed to generate local fingerprint: $e',
-              tag: _logName,
-            );
-          }
-
-          // Generate remote agent fingerprint (from remote prekey bundle)
-          try {
-            final remotePreKeyBundle =
-                await signalKeyManager.fetchPreKeyBundle(remoteAgentId);
-            final remoteFingerprint =
-                AIAgentFingerprintService.generateFingerprintFromBundle(
-                    remotePreKeyBundle);
-            remoteAgentFingerprint = remoteFingerprint.hexString;
-
-            _logger.debug(
-              'Generated remote AI agent fingerprint: ${remoteFingerprint.displayFormat.substring(0, 20)}...',
-              tag: _logName,
-            );
-          } catch (e) {
-            _logger.debug(
-              'Failed to generate remote fingerprint: $e (will be set on first message)',
-              tag: _logName,
-            );
-          }
-        }
-
-        // Extract channel binding hash
-        if (sl.isRegistered<SignalSessionManager>()) {
-          final sessionManager = sl<SignalSessionManager>();
-          handshakeHash =
-              await sessionManager.getChannelBindingHash(remoteAgentId);
-
-          if (handshakeHash != null) {
-            _logger.debug(
-              'Channel binding hash extracted for connection: ${initialMetrics.connectionId}',
-              tag: _logName,
-            );
-          }
-        }
-      } catch (e) {
-        // Non-fatal: continue without fingerprints/hash
-        _logger.debug(
-          'Failed to extract fingerprints/channel binding hash: $e (will be set on first message)',
-          tag: _logName,
-        );
-      }
+      final identityBinding = await ConnectionIdentityBindingLane.collect(
+        signalKeyManager: _signalKeyManager,
+        remoteAgentId: remoteAgentId,
+        connectionId: initialMetrics.connectionId,
+        logger: _logger,
+        logName: _logName,
+      );
 
       // Update connection with initial interaction, fingerprints, and channel binding hash
       final updatedMetrics = initialMetrics.updateDuringInteraction(
@@ -2881,9 +2816,9 @@ class VibeConnectionOrchestrator {
           'successful_exchanges': 1,
           if (braidedKnot != null) 'braided_knot_id': braidedKnot.id,
         },
-        handshakeHash: handshakeHash,
-        localAgentFingerprint: localAgentFingerprint,
-        remoteAgentFingerprint: remoteAgentFingerprint,
+        handshakeHash: identityBinding.handshakeHash,
+        localAgentFingerprint: identityBinding.localAgentFingerprint,
+        remoteAgentFingerprint: identityBinding.remoteAgentFingerprint,
       );
 
       return updatedMetrics;
