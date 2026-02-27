@@ -4,16 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/ai/facts_local_store.dart';
 import 'package:avrai/core/ai/structured_facts.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 
 /// Facts Index
-/// 
+///
 /// Indexes and retrieves structured facts from Supabase database.
 /// Provides methods to store and retrieve facts for LLM context preparation.
 /// Phase 11 Section 5: Retrieval + LLM Fusion
 class FactsIndex {
   static const String _logName = 'FactsIndex';
-  
+
   final SupabaseClient supabase;
   final AgentIdService _agentIdService;
 
@@ -25,16 +25,16 @@ class FactsIndex {
   /// Optional connectivity checker for offline-first behavior.
   /// When provided with [_localStore], enables offline indexing/retrieval.
   final Connectivity? _connectivity;
-  
+
   FactsIndex({
     required this.supabase,
     AgentIdService? agentIdService,
     FactsLocalStore? localStore,
     Connectivity? connectivity,
-  }) : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
-       _localStore = localStore,
-       _connectivity = connectivity;
-  
+  })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
+        _localStore = localStore,
+        _connectivity = connectivity;
+
   /// Whether the device is currently offline.
   ///
   /// Returns `false` when no [Connectivity] was provided (assumes online).
@@ -45,7 +45,7 @@ class FactsIndex {
   }
 
   /// Index structured facts for a user (by userId, converts to agentId internally)
-  /// 
+  ///
   /// [userId] - Authenticated user ID
   /// [facts] - StructuredFacts to index
   /// Merges with existing facts if they exist.
@@ -57,7 +57,7 @@ class FactsIndex {
   }) async {
     try {
       developer.log('Indexing facts for user: $userId', name: _logName);
-      
+
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
 
@@ -80,24 +80,21 @@ class FactsIndex {
       // --- Cloud path (online or no local store) ---
       // Get existing facts (if any)
       final existingFacts = await _getExistingFacts(agentId);
-      
+
       // Merge with existing facts
-      final mergedFacts = existingFacts != null
-          ? existingFacts.merge(facts)
-          : facts;
-      
+      final mergedFacts =
+          existingFacts != null ? existingFacts.merge(facts) : facts;
+
       // Upsert merged facts
-      await supabase
-          .from('structured_facts')
-          .upsert({
-            'agent_id': agentId,
-            'traits': mergedFacts.traits,
-            'places': mergedFacts.places,
-            'social_graph': mergedFacts.socialGraph,
-            'timestamp': mergedFacts.timestamp.toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          }, onConflict: 'agent_id');
-      
+      await supabase.from('structured_facts').upsert({
+        'agent_id': agentId,
+        'traits': mergedFacts.traits,
+        'places': mergedFacts.places,
+        'social_graph': mergedFacts.socialGraph,
+        'timestamp': mergedFacts.timestamp.toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'agent_id');
+
       developer.log(
         '✅ Facts indexed: ${mergedFacts.traits.length} traits, ${mergedFacts.places.length} places, ${mergedFacts.socialGraph.length} social connections',
         name: _logName,
@@ -112,16 +109,16 @@ class FactsIndex {
       rethrow;
     }
   }
-  
+
   /// Retrieve indexed facts for LLM context (by userId, converts to agentId internally)
-  /// 
+  ///
   /// [userId] - Authenticated user ID
   /// Returns StructuredFacts if found, empty facts otherwise.
   /// Prefers local store when available and offline.
   Future<StructuredFacts> retrieveFacts({required String userId}) async {
     try {
       developer.log('Retrieving facts for user: $userId', name: _logName);
-      
+
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
 
@@ -136,7 +133,8 @@ class FactsIndex {
           return local;
         }
         if (await _isOffline()) {
-          developer.log('No local facts for user: $userId (offline)', name: _logName);
+          developer.log('No local facts for user: $userId (offline)',
+              name: _logName);
           return StructuredFacts.empty();
         }
       }
@@ -149,24 +147,24 @@ class FactsIndex {
           .order('updated_at', ascending: false)
           .limit(1)
           .maybeSingle();
-      
+
       if (result == null) {
         developer.log('No facts found for user: $userId', name: _logName);
         return StructuredFacts.empty();
       }
-      
+
       final facts = StructuredFacts(
         traits: List<String>.from(result['traits'] ?? []),
         places: List<String>.from(result['places'] ?? []),
         socialGraph: List<String>.from(result['social_graph'] ?? []),
         timestamp: DateTime.parse(result['timestamp'] as String),
       );
-      
+
       developer.log(
         '✅ Facts retrieved: ${facts.traits.length} traits, ${facts.places.length} places, ${facts.socialGraph.length} social connections',
         name: _logName,
       );
-      
+
       return facts;
     } catch (e, stackTrace) {
       developer.log(
@@ -179,7 +177,7 @@ class FactsIndex {
       return StructuredFacts.empty();
     }
   }
-  
+
   /// Get existing facts from database (internal helper)
   Future<StructuredFacts?> _getExistingFacts(String agentId) async {
     try {
@@ -188,11 +186,11 @@ class FactsIndex {
           .select('*')
           .eq('agent_id', agentId)
           .maybeSingle();
-      
+
       if (result == null) {
         return null;
       }
-      
+
       return StructuredFacts(
         traits: List<String>.from(result['traits'] ?? []),
         places: List<String>.from(result['places'] ?? []),
@@ -204,15 +202,15 @@ class FactsIndex {
       return null;
     }
   }
-  
+
   /// Clear facts for a user (by userId, converts to agentId internally)
-  /// 
+  ///
   /// [userId] - Authenticated user ID
   /// Also removes local store data and pending sync entry when available.
   Future<void> clearFacts({required String userId}) async {
     try {
       developer.log('Clearing facts for user: $userId', name: _logName);
-      
+
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
 
@@ -223,16 +221,14 @@ class FactsIndex {
       }
 
       if (await _isOffline()) {
-        developer.log('✅ Facts cleared locally for user: $userId (offline)', name: _logName);
+        developer.log('✅ Facts cleared locally for user: $userId (offline)',
+            name: _logName);
         return;
       }
 
       // --- Clear cloud ---
-      await supabase
-          .from('structured_facts')
-          .delete()
-          .eq('agent_id', agentId);
-      
+      await supabase.from('structured_facts').delete().eq('agent_id', agentId);
+
       developer.log('✅ Facts cleared for user: $userId', name: _logName);
     } catch (e, stackTrace) {
       developer.log(
@@ -259,7 +255,8 @@ class FactsIndex {
     final pending = _localStore.getPending();
     if (pending.isEmpty) return;
 
-    developer.log('Syncing ${pending.length} pending facts to cloud', name: _logName);
+    developer.log('Syncing ${pending.length} pending facts to cloud',
+        name: _logName);
 
     for (final agentId in List<String>.from(pending)) {
       try {
@@ -269,16 +266,14 @@ class FactsIndex {
           continue;
         }
 
-        await supabase
-            .from('structured_facts')
-            .upsert({
-              'agent_id': agentId,
-              'traits': facts.traits,
-              'places': facts.places,
-              'social_graph': facts.socialGraph,
-              'timestamp': facts.timestamp.toIso8601String(),
-              'updated_at': DateTime.now().toIso8601String(),
-            }, onConflict: 'agent_id');
+        await supabase.from('structured_facts').upsert({
+          'agent_id': agentId,
+          'traits': facts.traits,
+          'places': facts.places,
+          'social_graph': facts.socialGraph,
+          'timestamp': facts.timestamp.toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        }, onConflict: 'agent_id');
 
         await _localStore.removePending(agentId);
         developer.log('✅ Synced facts for agent: $agentId', name: _logName);

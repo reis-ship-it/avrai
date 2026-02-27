@@ -1,7 +1,4 @@
 [
-  "lib/core/ai/continuous_learning_system.dart|package:avrai/injection_container.dart",
-  "lib/core/ai/event_logger.dart|package:avrai/injection_container.dart",
-  "lib/core/ai/facts_index.dart|package:avrai/injection_container.dart",
   "lib/core/services/ai_infrastructure/ai2ai_learning_service.dart|package:avrai/injection_container.dart",
   "lib/core/services/ai_infrastructure/language_pattern_learning_service.dart|package:avrai/injection_container.dart",
   "lib/core/services/business/business_business_chat_service_ai2ai.dart|package:avrai/injection_container.dart",

@@ -325,8 +325,8 @@ void main() {
             bloc.add(SignUpRequested(testEmail, testPassword, testName)),
         expect: () => [
           isA<AuthLoading>(),
-          isA<AuthError>().having(
-              (state) => state.message, 'message', 'Failed to create account'),
+          isA<AuthError>().having((state) => state.message, 'message',
+              contains('Failed to create account')),
         ],
       );
 

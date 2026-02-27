@@ -21,6 +21,7 @@ This package provides a practical, optimized working structure and the docs need
 - `05_IMPLEMENTATION_ROADMAP_AND_MILESTONES.md`
 - `06_GLOSSARY_AND_BOUNDARY_RULES.md`
 - `26_CODE_SPLIT_AND_CROSS_OS_COMPATIBILITY_QUICK_GUIDE.md`
+- `27_LARGE_FILE_SPLIT_BACKLOG_AND_QUEUE.md`
 
 ## Canonical Truth
 

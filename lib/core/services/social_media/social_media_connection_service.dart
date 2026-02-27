@@ -7,6 +7,10 @@ import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/social_media/social_media_insight_service.dart';
 import 'package:avrai/core/config/oauth_config.dart';
 import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_router.dart';
+import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
+import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
+import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
@@ -44,12 +48,10 @@ class SocialMediaConnectionService {
   /// (avoids platform channel dependencies / MissingPluginException).
   final FlutterSecureStorage _secureStorage;
   final SocialMediaServiceFactory? _serviceFactory;
+  final SocialOAuthPlatformRouter _platformRouter;
+  final SocialConnectionSyncLane _syncLane;
 
-  // Storage keys
-  static const String _connectionsKeyPrefix = 'social_media_connections_';
-  static const String _tokensKeyPrefix =
-      'social_media_tokens_'; // Encrypted in production
-  static const String _profileCacheKeyPrefix = 'social_media_profile_cache_';
+  // Storage keys are centralized via SocialConnectionSyncLane.
   static const Duration _profileCacheExpiry =
       Duration(days: 7); // Cache profiles for 7 days
 
@@ -59,8 +61,12 @@ class SocialMediaConnectionService {
     this._deepLinkHandler, {
     SocialMediaServiceFactory? serviceFactory,
     FlutterSecureStorage? secureStorage,
+    SocialOAuthPlatformRouter? platformRouter,
+    SocialConnectionSyncLane? syncLane,
   })  : _serviceFactory = serviceFactory,
-        _secureStorage = secureStorage ?? const FlutterSecureStorage() {
+        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+        _platformRouter = platformRouter ?? SocialOAuthPlatformRouter(),
+        _syncLane = syncLane ?? const SocialConnectionSyncLane() {
     // Start listening for OAuth deep links (for AppAuth flows)
     _deepLinkHandler.startListening();
     // Also check for initial deep link (if app was opened via deep link)
@@ -157,154 +163,36 @@ class SocialMediaConnectionService {
       );
 
       // Normalize platform name
-      final normalizedPlatform = platform.toLowerCase();
+      final normalizedPlatform = SocialPlatformMapping.normalize(platform);
 
       // In widget/integration tests, never attempt real OAuth flows.
       // Plugin-backed auth can hang under `flutter test`, and we only need placeholder
       // connection records to validate data flow + privacy (agentId usage).
-      if (_isWidgetTestBinding) {
+      if (SocialOAuthFallback.shouldUsePlaceholderInTests(
+        isWidgetTestBinding: _isWidgetTestBinding,
+      )) {
         return await _connectPlaceholder(agentId, normalizedPlatform);
       }
 
-      // Route to appropriate OAuth flow or placeholder
-      SocialMediaConnection connection;
-
-      switch (normalizedPlatform) {
-        case 'google':
-          if (OAuthConfig.isGoogleConfigured) {
-            // Try to use platform service if factory is available
-            final platformService = _serviceFactory?.getService('google');
-            if (platformService != null) {
-              connection = await platformService.connect(
-                agentId: agentId,
-                userId: userId,
-              );
-            } else {
-              // Fallback to legacy implementation
-              connection = await _connectGoogle(agentId, userId);
-            }
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'instagram':
-          if (OAuthConfig.isInstagramConfigured) {
-            final platformService = _serviceFactory?.getService('instagram');
-            if (platformService != null) {
-              connection = await platformService.connect(
-                agentId: agentId,
-                userId: userId,
-              );
-            } else {
-              connection = await _connectInstagram(agentId, userId);
-            }
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'facebook':
-          if (OAuthConfig.isFacebookConfigured) {
-            final platformService = _serviceFactory?.getService('facebook');
-            if (platformService != null) {
-              connection = await platformService.connect(
-                agentId: agentId,
-                userId: userId,
-              );
-            } else {
-              connection = await _connectFacebook(agentId, userId);
-            }
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'twitter':
-          if (OAuthConfig.isTwitterConfigured) {
-            final platformService = _serviceFactory?.getService('twitter');
-            if (platformService != null) {
-              connection = await platformService.connect(
-                agentId: agentId,
-                userId: userId,
-              );
-            } else {
-              connection = await _connectTwitter(agentId, userId);
-            }
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'reddit':
-          if (OAuthConfig.isRedditConfigured) {
-            connection = await _connectReddit(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'tiktok':
-          if (OAuthConfig.isTikTokConfigured) {
-            connection = await _connectTikTok(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'tumblr':
-          if (OAuthConfig.isTumblrConfigured) {
-            connection = await _connectTumblr(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'youtube':
-          // YouTube uses Google OAuth
-          if (OAuthConfig.isGoogleConfigured) {
-            connection = await _connectYouTube(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'pinterest':
-          if (OAuthConfig.isPinterestConfigured) {
-            connection = await _connectPinterest(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'arena':
-        case 'are.na':
-          if (OAuthConfig.isArenaConfigured) {
-            connection = await _connectArena(agentId, userId);
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        case 'linkedin':
-          if (OAuthConfig.isLinkedInConfigured) {
-            final platformService = _serviceFactory?.getService('linkedin');
-            if (platformService != null) {
-              connection = await platformService.connect(
-                agentId: agentId,
-                userId: userId,
-              );
-            } else {
-              connection = await _connectLinkedIn(agentId, userId);
-            }
-          } else {
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
-          }
-          break;
-        default:
-          // Generic OAuth for any platform (Uber Eats, Lyft, Airbnb, etc.)
+      final connection = await _platformRouter.route(
+        platform: normalizedPlatform == 'are.na' ? 'arena' : normalizedPlatform,
+        handlers: _buildPlatformHandlers(
+          agentId: agentId,
+          userId: userId,
+          normalizedPlatform: normalizedPlatform,
+        ),
+        fallback: () async {
           if (customOAuthConfig != null) {
-            connection = await _connectGenericOAuth(
+            return _connectGenericOAuth(
               agentId,
               userId,
               normalizedPlatform,
               customOAuthConfig,
             );
-          } else {
-            // Use placeholder for unsupported platforms
-            connection = await _connectPlaceholder(agentId, normalizedPlatform);
           }
-      }
+          return _connectPlaceholder(agentId, normalizedPlatform);
+        },
+      );
 
       _logger.info('✅ Connected to $platform successfully', tag: _logName);
 
@@ -317,6 +205,86 @@ class SocialMediaConnectionService {
           error: e, stackTrace: stackTrace, tag: _logName);
       rethrow;
     }
+  }
+
+  Map<String, SocialConnectionFactory> _buildPlatformHandlers({
+    required String agentId,
+    required String userId,
+    required String normalizedPlatform,
+  }) {
+    SocialConnectionFactory placeholder() =>
+        () => _connectPlaceholder(agentId, normalizedPlatform);
+
+    return <String, SocialConnectionFactory>{
+      'google': OAuthConfig.isGoogleConfigured
+          ? () async {
+              final platformService = _serviceFactory?.getService('google');
+              if (platformService != null) {
+                return platformService.connect(
+                    agentId: agentId, userId: userId);
+              }
+              return _connectGoogle(agentId, userId);
+            }
+          : placeholder(),
+      'instagram': OAuthConfig.isInstagramConfigured
+          ? () async {
+              final platformService = _serviceFactory?.getService('instagram');
+              if (platformService != null) {
+                return platformService.connect(
+                    agentId: agentId, userId: userId);
+              }
+              return _connectInstagram(agentId, userId);
+            }
+          : placeholder(),
+      'facebook': OAuthConfig.isFacebookConfigured
+          ? () async {
+              final platformService = _serviceFactory?.getService('facebook');
+              if (platformService != null) {
+                return platformService.connect(
+                    agentId: agentId, userId: userId);
+              }
+              return _connectFacebook(agentId, userId);
+            }
+          : placeholder(),
+      'twitter': OAuthConfig.isTwitterConfigured
+          ? () async {
+              final platformService = _serviceFactory?.getService('twitter');
+              if (platformService != null) {
+                return platformService.connect(
+                    agentId: agentId, userId: userId);
+              }
+              return _connectTwitter(agentId, userId);
+            }
+          : placeholder(),
+      'reddit': OAuthConfig.isRedditConfigured
+          ? () => _connectReddit(agentId, userId)
+          : placeholder(),
+      'tiktok': OAuthConfig.isTikTokConfigured
+          ? () => _connectTikTok(agentId, userId)
+          : placeholder(),
+      'tumblr': OAuthConfig.isTumblrConfigured
+          ? () => _connectTumblr(agentId, userId)
+          : placeholder(),
+      'youtube': OAuthConfig.isGoogleConfigured
+          ? () => _connectYouTube(agentId, userId)
+          : placeholder(),
+      'pinterest': OAuthConfig.isPinterestConfigured
+          ? () => _connectPinterest(agentId, userId)
+          : placeholder(),
+      'arena': OAuthConfig.isArenaConfigured
+          ? () => _connectArena(agentId, userId)
+          : placeholder(),
+      'linkedin': OAuthConfig.isLinkedInConfigured
+          ? () async {
+              final platformService = _serviceFactory?.getService('linkedin');
+              if (platformService != null) {
+                return platformService.connect(
+                    agentId: agentId, userId: userId);
+              }
+              return _connectLinkedIn(agentId, userId);
+            }
+          : placeholder(),
+    };
   }
 
   bool get _isWidgetTestBinding {
@@ -1587,7 +1555,10 @@ class SocialMediaConnectionService {
   ) async {
     try {
       // Check cache first
-      final cacheKey = '$_profileCacheKeyPrefix${connection.agentId}_instagram';
+      final cacheKey = _syncLane.profileCacheKey(
+        agentId: connection.agentId,
+        platform: 'instagram',
+      );
       final cachedData = await _getCachedProfileData(cacheKey);
       if (cachedData != null) {
         _logger.info('📦 Using cached Instagram profile data', tag: _logName);
@@ -2649,14 +2620,14 @@ class SocialMediaConnectionService {
   /// Save connection to storage
   Future<void> _saveConnection(
       String agentId, String platform, SocialMediaConnection connection) async {
-    final key = '$_connectionsKeyPrefix${agentId}_$platform';
+    final key = _syncLane.connectionKey(agentId: agentId, platform: platform);
     await _storageService.setObject(key, connection.toJson());
   }
 
   /// Get connection from storage
   Future<SocialMediaConnection?> _getConnection(
       String agentId, String platform) async {
-    final key = '$_connectionsKeyPrefix${agentId}_$platform';
+    final key = _syncLane.connectionKey(agentId: agentId, platform: platform);
     final data = _storageService.getObject<Map<String, dynamic>>(key);
     if (data == null) return null;
     return SocialMediaConnection.fromJson(data);
@@ -2689,7 +2660,7 @@ class SocialMediaConnectionService {
   /// Store OAuth tokens (encrypted using flutter_secure_storage)
   Future<void> _storeTokens(
       String agentId, String platform, Map<String, dynamic> tokens) async {
-    final key = '$_tokensKeyPrefix${agentId}_$platform';
+    final key = _syncLane.tokenKey(agentId: agentId, platform: platform);
     final tokensJson = jsonEncode(tokens);
     // In widget tests, platform channels for FlutterSecureStorage are not available and
     // can hang tests. Fall back to normal StorageService for deterministic testing.
@@ -2753,7 +2724,7 @@ class SocialMediaConnectionService {
   /// Get OAuth tokens (decrypted from flutter_secure_storage)
   Future<Map<String, dynamic>?> _getTokens(
       String agentId, String platform) async {
-    final key = '$_tokensKeyPrefix${agentId}_$platform';
+    final key = _syncLane.tokenKey(agentId: agentId, platform: platform);
     String? tokensJson;
     if (_isWidgetTestBinding) {
       tokensJson = _storageService.getString(key);
@@ -2772,7 +2743,7 @@ class SocialMediaConnectionService {
 
   /// Remove OAuth tokens
   Future<void> _removeTokens(String agentId, String platform) async {
-    final key = '$_tokensKeyPrefix${agentId}_$platform';
+    final key = _syncLane.tokenKey(agentId: agentId, platform: platform);
     if (_isWidgetTestBinding) {
       await _storageService.remove(key);
       return;

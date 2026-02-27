@@ -85,6 +85,10 @@ Use these when changing world-model training/planning behavior or model lifecycl
 - **Runtime/OS remap pack (including large-file split guide):**
   [`REALITY_ENGINE_RUNTIME_OS_REMAP_2026-02-26/README.md`](./REALITY_ENGINE_RUNTIME_OS_REMAP_2026-02-26/README.md)
   and [`../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/26_CODE_SPLIT_AND_CROSS_OS_COMPATIBILITY_QUICK_GUIDE.md`](../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/26_CODE_SPLIT_AND_CROSS_OS_COMPATIBILITY_QUICK_GUIDE.md)
+  and [`../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/27_LARGE_FILE_SPLIT_BACKLOG_AND_QUEUE.md`](../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/27_LARGE_FILE_SPLIT_BACKLOG_AND_QUEUE.md)
+- **3-prong boundary guard (build-enforced):** [`scripts/ci/check_three_prong_boundaries.py`](../../../scripts/ci/check_three_prong_boundaries.py)
+- **Cross-OS runtime capability contracts:** `configs/runtime/capabilities/*.json`
+- **Runtime capability contract validator:** [`scripts/ci/check_runtime_capability_contracts.py`](../../../scripts/ci/check_runtime_capability_contracts.py)
 
 Note: the historical filename `architecture_ai_federated_p2p.md` remains in use, but current architecture principle is **ai2ai-only (never p2p)** as defined in `docs/MASTER_PLAN.md`.
 

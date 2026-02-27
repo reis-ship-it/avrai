@@ -14,10 +14,11 @@ Last updated: 2026-02-27
 
 1. Edit `docs/EXECUTION_BOARD.csv` as the source of truth.
 2. Run `dart run tool/update_execution_board.dart` to sync this board.
-3. For milestone rows, always maintain `prd_ids`, `master_plan_refs`, `architecture_spot`, `change_type`, and `reopens_milestone`.
-4. Keep evidence links (PRs, test reports, docs) in CSV `evidence`.
-5. Copy weekly summary into `docs/STATUS_WEEKLY.md`.
-6. Use `dart run tool/update_execution_board.dart --check` before merge.
+3. Run `dart run tool/update_three_prong_reviews.dart` to refresh 3-prong weekly/final review artifacts.
+4. For milestone rows, always maintain `prd_ids`, `master_plan_refs`, `architecture_spot`, `change_type`, and `reopens_milestone`.
+5. Keep evidence links (PRs, test reports, docs) in CSV `evidence`.
+6. Copy weekly summary into `docs/STATUS_WEEKLY.md`.
+7. Use `dart run tool/update_execution_board.dart --check` and `dart run tool/update_three_prong_reviews.dart --check` before merge.
 
 ## AI Execution Loop (Required)
 
@@ -26,6 +27,7 @@ Last updated: 2026-02-27
 3. Implement only that scoped unit; do not start a second milestone in the same PR.
 4. Run local guards before each commit and before PR update:
    - `dart run tool/update_execution_board.dart --check`
+   - `dart run tool/update_three_prong_reviews.dart --check`
    - `python3 scripts/validate_architecture_placement.py`
    - `python3 scripts/validate_rename_candidates.py`
    - `python3 scripts/validate_pr_traceability.py --title "PRD-123 M1-P7-1 <summary>" --body "Refs: 7.4.2" --require-execution-id --require-single-milestone --require-master-plan-ref`
@@ -103,6 +105,8 @@ phase row + milestone row(s) + risk + gate criteria.
 | Milestone | Phase | Wave | Scope | Change Type | Reopens | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |
 |----------|-------|------|-------|------------|---------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|
 | M0-P10-1 | 10 | 0 | Production readiness + cleanup enforcement | baseline | none | PRD-012, PRD-013, PRD-014, PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.1, 10.9.2, 10.9.4 | lib/_root | AP, REL | GOV | none | 16 | High | parallel baseline | Ready | - |
+| M0-P10-2 | 10 | 0 | Reality Engine/Runtime OS/App remap docs + boundary policy package | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.8.1, 10.8.3, 10.10.1, 10.10.7 | docs/plans/architecture | AP, REL | GOV | M0-P10-1 | 12 | High | parallel baseline | Done | https://github.com/AVRA-CADAVRA/avrai/pull/172 |
+| M0-P10-3 | 10 | 0 | 3-prong split-pass wiring + CI guard/contracts hardening | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.10.1, 10.10.2, 10.10.3, 10.10.4, 10.10.5, 10.10.6, 10.10.8 | lib/_root | AP, REL | GOV | M0-P10-2 | 16 | High | parallel baseline | In Progress | https://github.com/AVRA-CADAVRA/avrai/pull/173 |
 | M0-P2-1 | 2 | 0 | Security + cryptographic assurance baseline | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 2.1.1, 2.2.1, 2.5.1 | lib/core/services/security | SEC | GOV | none | 20 | Critical | parallel baseline | Ready | - |
 | M1-P7-1 | 7 | 1 | Trigger + orchestration persistence hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.2, 10.9.1, 10.9.4 | lib/core/controllers | AP, MOB | REL | none | 25 | Critical | Week 1-2 | Ready | - |
 | M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.4.4, 10.9.4 | lib/core/controllers | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
@@ -115,6 +119,16 @@ phase row + milestone row(s) + risk + gate criteria.
 | M2-P6-1 | 6 | 2 | Planner guardrail and rollback-hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 6.2.1, 6.2.9, 6.2.10 | lib/core/ai | AP, MLE | AP | M2-P5-1 | 20 | Critical | Week 9-10 | Backlog | - |
 | M3-P11-1 | 11 | 3 | Integration governance + contract security gates | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 11.1.1, 11.2.1, 11.4.1 | lib/core/cloud | Integrations Platform | GOV | M3-P9-1 | 15 | High | Week 11-12 | Backlog | - |
 | M3-P9-1 | 9 | 3 | Business data/consent governance hardening | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 9.2.6, 9.3.1, 9.3.3 | lib/core/services/business | Business Platform, AP | GOV | M2-P6-1 | 12 | High | Week 10-11 | Backlog | - |
+| M4-P3-1 | 1 | 4 | 3-prong claim lifecycle schema + API contracts | baseline | none | PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.1.2, 7.7.1 | lib/core/ai | AP, MLE | AP | M2-P1-1 | 20 | Critical | Day 0-30 | Backlog | - |
+| M4-P3-2 | 7 | 4 | Conviction gate shadow mode in serving runtime | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 6.2.21, 7.7.4, 7.7.3 | lib/core/controllers | AP, REL | REL | M4-P3-1 | 20 | Critical | Day 0-30 | Backlog | - |
+| M4-P3-3 | 7 | 4 | Promotion contracts + mandatory eval suite automation | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 5.2.21, 7.7.3, 7.9.6 | lib/core/ml | MLE | AP | M4-P3-1 | 20 | Critical | Day 0-30 | Backlog | - |
+| M5-P3-1 | 6 | 5 | High-impact conviction gate enforcement (production) | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 6.2.21, 6.2.22, 7.7.5 | lib/core/ai | AP, REL | REL | M4-P3-2 | 25 | Critical | Day 31-60 | Backlog | - |
+| M5-P3-2 | 7 | 5 | Operational canary + rollback automation for conviction promotions | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.7.4, 7.7.5, 10.9.21 | lib/core/controllers | REL | REL | M5-P3-1 | 25 | Critical | Day 31-60 | Backlog | - |
+| M5-P3-3 | 7 | 5 | Research replication queue + SLA instrumentation | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 1.4.14, 7.9.8, 7.9.10 | docs/plans/architecture | MLE | AP | M4-P3-3 | 15 | High | Day 31-60 | Backlog | - |
+| M5-P3-4 | 10 | 5 | Trust UX v1: confidence + provenance surfaces on priority flows | baseline | none | PRD-012, PRD-013, PRD-014, PRD-033 | 1.4.13, 7.7.5, 10.9.9 | lib/presentation | Product, AP | Product | M5-P3-1 | 12 | High | Day 31-60 | Backlog | - |
+| M6-P3-1 | 7 | 6 | Cross-domain self-healing automation + incident routing hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.3.4, 8.1.1, 10.9.12 | lib/core/services | REL | REL | M5-P3-2 | 25 | Critical | Day 61-90 | Backlog | - |
+| M6-P3-2 | 10 | 6 | Lineage explorer + \what changed\ transparency feed | baseline | none | PRD-012, PRD-013, PRD-014, PRD-033 | 7.7.5, 7.7.6, 10.9.9 | lib/presentation | Product, AP | Product | M5-P3-4 | 12 | High | Day 61-90 | Backlog | - |
+| M6-P3-3 | 10 | 6 | Master-plan completion readiness audit + sign-off package | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.21, 10.10.8 | docs | AP, REL | GOV | M6-P3-1, M6-P3-2 | 20 | Critical | Day 61-90 | Backlog | - |
 <!-- EXECUTION_BOARD:MILESTONE_BOARD_END -->
 
 ## Kanban Snapshot
@@ -122,7 +136,7 @@ phase row + milestone row(s) + risk + gate criteria.
 <!-- EXECUTION_BOARD:KANBAN_START -->
 ### Backlog
 
-`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
+`M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 
 ### Ready
 
@@ -130,7 +144,7 @@ phase row + milestone row(s) + risk + gate criteria.
 
 ### In Progress
 
-None
+`M0-P10-3`
 
 ### Blocked
 
@@ -138,7 +152,7 @@ None
 
 ### Done
 
-None
+`M0-P10-2`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)

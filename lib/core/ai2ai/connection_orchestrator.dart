@@ -25,6 +25,10 @@ import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
+import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
+import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -49,97 +53,12 @@ import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:avrai/core/models/business/business_expert_message.dart' as chat_models;
+import 'package:avrai/core/models/business/business_expert_message.dart'
+    as chat_models;
 import 'package:avrai/core/models/business/business_business_message.dart'
     as chat_models;
 import 'package:get_storage/get_storage.dart';
 import 'package:avrai/core/services/places/organic_spot_discovery_service.dart';
-
-class _HotLatencySummary {
-  final int count;
-  final int p50;
-  final int p95;
-
-  const _HotLatencySummary({
-    required this.count,
-    required this.p50,
-    required this.p95,
-  });
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'count': count,
-        'p50_ms': p50,
-        'p95_ms': p95,
-      };
-}
-
-/// Minimal ring-buffer latency collector.
-///
-/// Keeps the last N samples and computes p50/p95 on demand.
-class _HotLatencyWindow {
-  final int maxSamples;
-  final List<int> _samples = <int>[];
-  int _cursor = 0;
-
-  _HotLatencyWindow({required this.maxSamples});
-
-  void add(int ms) {
-    if (ms < 0) return;
-    if (_samples.length < maxSamples) {
-      _samples.add(ms);
-      return;
-    }
-    _samples[_cursor] = ms;
-    _cursor = (_cursor + 1) % maxSamples;
-  }
-
-  _HotLatencySummary summary() {
-    if (_samples.isEmpty) {
-      return const _HotLatencySummary(count: 0, p50: 0, p95: 0);
-    }
-    final sorted = List<int>.from(_samples)..sort();
-    int pick(double q) {
-      final idx = ((sorted.length - 1) * q).round().clamp(0, sorted.length - 1);
-      return sorted[idx];
-    }
-
-    return _HotLatencySummary(
-      count: sorted.length,
-      p50: pick(0.50),
-      p95: pick(0.95),
-    );
-  }
-}
-
-class _EventModeCandidate {
-  final DiscoveredDevice device;
-  final String nodeTagKey;
-  final bool remoteConnectOk;
-
-  const _EventModeCandidate({
-    required this.device,
-    required this.nodeTagKey,
-    required this.remoteConnectOk,
-  });
-}
-
-class _EventModeBufferedLearningInsight {
-  final String source; // "passive" | "inbox"
-  final String? insightId;
-  final String senderDeviceId;
-  final DateTime receivedAt;
-  final double learningQuality;
-  final Map<String, double> deltas;
-
-  const _EventModeBufferedLearningInsight({
-    required this.source,
-    required this.insightId,
-    required this.senderDeviceId,
-    required this.receivedAt,
-    required this.learningQuality,
-    required this.deltas,
-  });
-}
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
 /// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
@@ -265,8 +184,8 @@ class VibeConnectionOrchestrator {
   int _eventModeDeepSyncCount = 0;
   final Map<String, int> _eventModeLastDeepSyncAtMsByNodeTag = <String, int>{};
   final Map<String, int> _eventModeFamiliarityByNodeTag = <String, int>{};
-  final List<_EventModeBufferedLearningInsight> _eventModeLearningBuffer =
-      <_EventModeBufferedLearningInsight>[];
+  final List<EventModeBufferedLearningInsight> _eventModeLearningBuffer =
+      <EventModeBufferedLearningInsight>[];
   bool _lastAdvertisedEventModeEnabled = false;
   bool _lastAdvertisedConnectOk = false;
   bool _lastAdvertisedBrownout = false;
@@ -294,16 +213,16 @@ class VibeConnectionOrchestrator {
   // Hot-path latency metrics (lightweight, in-memory ring buffers).
   static const int _hotMetricsWindowSize = 120;
   static const Duration _hotMetricsLogInterval = Duration(seconds: 30);
-  final _HotLatencyWindow _hotQueueWaitMs =
-      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
-  final _HotLatencyWindow _hotTotalMs =
-      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
-  final _HotLatencyWindow _hotSessionOpenMs =
-      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
-  final _HotLatencyWindow _hotVibeReadMs =
-      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
-  final _HotLatencyWindow _hotCompatMs =
-      _HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final HotLatencyWindow _hotQueueWaitMs =
+      HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final HotLatencyWindow _hotTotalMs =
+      HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final HotLatencyWindow _hotSessionOpenMs =
+      HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final HotLatencyWindow _hotVibeReadMs =
+      HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
+  final HotLatencyWindow _hotCompatMs =
+      HotLatencyWindow(maxSamples: _hotMetricsWindowSize);
   int _lastHotMetricsLogAtMs = 0;
 
   // ------------------------------------------------------------------------
@@ -838,7 +757,7 @@ class VibeConnectionOrchestrator {
     }
 
     final frames = <RoomCoherenceFrame>[];
-    final candidates = <_EventModeCandidate>[];
+    final candidates = <EventModeCandidate>[];
 
     var sawHotCandidate = false;
     for (final device in devices) {
@@ -864,7 +783,7 @@ class VibeConnectionOrchestrator {
       final remoteConnectOk = frameMeta['connect_ok'] == true;
 
       frames.add(RoomCoherenceFrame(nodeTag: nodeTag, dimsQ: dimsQ));
-      candidates.add(_EventModeCandidate(
+      candidates.add(EventModeCandidate(
         device: device,
         nodeTagKey: nodeTagKey,
         remoteConnectOk: remoteConnectOk,
@@ -994,8 +913,8 @@ class VibeConnectionOrchestrator {
     return v % mod;
   }
 
-  _EventModeCandidate? _pickEventModeTarget({
-    required List<_EventModeCandidate> candidates,
+  EventModeCandidate? _pickEventModeTarget({
+    required List<EventModeCandidate> candidates,
     required int nowMs,
     required int epoch,
   }) {
@@ -1033,7 +952,7 @@ class VibeConnectionOrchestrator {
     return localFirst < remoteFirst;
   }
 
-  void _bufferEventLearningInsight(_EventModeBufferedLearningInsight insight) {
+  void _bufferEventLearningInsight(EventModeBufferedLearningInsight insight) {
     // In-memory buffer only (v1). This prevents event-time personality writes,
     // while still preserving observations for post-event consolidation.
     const maxItems = 500;
@@ -1343,7 +1262,7 @@ class VibeConnectionOrchestrator {
 
       try {
         if (eventModeEnabled) {
-          _bufferEventLearningInsight(_EventModeBufferedLearningInsight(
+          _bufferEventLearningInsight(EventModeBufferedLearningInsight(
             source: 'passive',
             insightId: null,
             senderDeviceId: node.nodeId,
@@ -2300,7 +2219,7 @@ class VibeConnectionOrchestrator {
       );
 
       if (_isEventModeEnabled()) {
-        _bufferEventLearningInsight(_EventModeBufferedLearningInsight(
+        _bufferEventLearningInsight(EventModeBufferedLearningInsight(
           source: 'inbox',
           insightId: insightId,
           senderDeviceId: sender,
@@ -3207,8 +3126,7 @@ class VibeConnectionOrchestrator {
 
   /// Check if device has active connectivity
   bool _isConnected(List<ConnectivityResult> result) {
-    return result
-        .any((connectivity) => connectivity != ConnectivityResult.none);
+    return ConnectionRoutingPolicy.isConnected(result);
   }
 
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
@@ -3349,14 +3267,15 @@ class VibeConnectionOrchestrator {
 
       // Phase 3.2: Enhanced offline-first prekey bundle exchange
       // Check if bundle needs refresh (automatic refresh logic)
-      final needsRefresh = signalKeyManager.getRecipientsNeedingRefresh().contains(recipientId);
-      
+      final needsRefresh =
+          signalKeyManager.getRecipientsNeedingRefresh().contains(recipientId);
+
       if (needsRefresh) {
         _logger.debug(
           'Prekey bundle for $recipientId needs refresh - attempting background refresh',
           tag: _logName,
         );
-        
+
         // Background refresh (non-blocking) - try to fetch fresh bundle from Supabase
         unawaited(
           signalKeyManager.fetchPreKeyBundle(recipientId).then((freshBundle) {
@@ -3389,7 +3308,8 @@ class VibeConnectionOrchestrator {
 
       // Phase 3.2: Mesh forwarding integration
       // Forward prekey bundle through mesh network if mesh service is available
-      if (_adaptiveMeshService != null && _isFederatedLearningParticipationEnabled()) {
+      if (_adaptiveMeshService != null &&
+          _isFederatedLearningParticipationEnabled()) {
         await _forwardPreKeyBundleThroughMesh(
           bundle: bundle,
           recipientId: recipientId,
@@ -3475,7 +3395,9 @@ class VibeConnectionOrchestrator {
     required String recipientId,
     required DiscoveredDevice device,
   }) async {
-    if (!_allowBleSideEffects || _deviceDiscovery == null || _protocol == null) {
+    if (!_allowBleSideEffects ||
+        _deviceDiscovery == null ||
+        _protocol == null) {
       return;
     }
 
@@ -3524,11 +3446,13 @@ class VibeConnectionOrchestrator {
           continue;
         }
 
-        final peerRecipientId = _peerNodeIdByDeviceId[peerDevice.deviceId] ?? peerDevice.deviceId;
+        final peerRecipientId =
+            _peerNodeIdByDeviceId[peerDevice.deviceId] ?? peerDevice.deviceId;
 
         try {
           final packetBytes = await _protocol.encodePacketBytes(
-            type: MessageType.learningInsight, // Reuse learning insight type for prekey forwarding
+            type: MessageType
+                .learningInsight, // Reuse learning insight type for prekey forwarding
             payload: forwardPayload,
             senderNodeId: _localBleNodeId,
             recipientNodeId: peerRecipientId,
@@ -3669,33 +3593,32 @@ class VibeConnectionOrchestrator {
   }
 
   bool _isInCooldown(String nodeId) {
-    final cooldownEnd = _connectionCooldowns[nodeId];
-    if (cooldownEnd == null) return false;
-
-    return DateTime.now().isBefore(cooldownEnd);
+    return ConnectionRoutingPolicy.isInCooldown(
+      cooldowns: _connectionCooldowns,
+      nodeId: nodeId,
+    );
   }
 
   void _setCooldown(String nodeId) {
-    _connectionCooldowns[nodeId] = DateTime.now()
-        .add(const Duration(seconds: VibeConstants.connectionCooldownSeconds));
+    ConnectionRoutingPolicy.setCooldown(
+      cooldowns: _connectionCooldowns,
+      nodeId: nodeId,
+    );
   }
 
   /// Determine if a connection is worthy based on compatibility thresholds
   bool _isConnectionWorthy(VibeCompatibilityResult compatibility) {
-    final isWorthy = compatibility.basicCompatibility >=
-            VibeConstants.minimumCompatibilityThreshold &&
-        compatibility.aiPleasurePotential >= VibeConstants.minAIPleasureScore &&
-        compatibility.learningOpportunities.isNotEmpty;
+    final result = ConnectionRoutingPolicy.evaluateWorthiness(compatibility);
 
     // #region agent log
-    if (!isWorthy) {
+    if (!result.isWorthy) {
       _logger.debug(
-          'Connection not worthy: compat=${(compatibility.basicCompatibility * 100).round()}% (min=${(VibeConstants.minimumCompatibilityThreshold * 100).round()}%), pleasure=${(compatibility.aiPleasurePotential * 100).round()}% (min=${(VibeConstants.minAIPleasureScore * 100).round()}%), opportunities=${compatibility.learningOpportunities.length}',
+          'Connection not worthy: ${result.reason}; opportunities=${compatibility.learningOpportunities.length}',
           tag: _logName);
     }
     // #endregion
 
-    return isWorthy;
+    return result.isWorthy;
   }
 
   Future<ConnectionMetrics?> _performConnectionEstablishment(
@@ -4135,10 +4058,8 @@ class VibeConnectionOrchestrator {
     if (discovery == null) return;
 
     // Choose up to 2 nearby devices to share with
-    final candidates = _discoveredNodes.values
-        .map((n) => n.nodeId)
-        .take(2)
-        .toList();
+    final candidates =
+        _discoveredNodes.values.map((n) => n.nodeId).take(2).toList();
 
     if (candidates.isEmpty) return;
 

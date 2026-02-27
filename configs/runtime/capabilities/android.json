@@ -1,0 +1,16 @@
+{
+  "os": "android",
+  "coexisting_runtime_os": true,
+  "contract_version": "1.0.0",
+  "degradation_tier": "full",
+  "capabilities": {
+    "ble": true,
+    "wifi_direct": true,
+    "p2p_mesh": true,
+    "background_execution": "full",
+    "local_model_inference": true,
+    "secure_storage": true,
+    "notifications": true,
+    "deep_linking": true
+  }
+}

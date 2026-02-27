@@ -1,5 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:avrai/bootstrap/runtime_bootstrap.dart';
+import 'package:avrai/bootstrap/engine_bootstrap.dart';
+import 'package:avrai/bootstrap/app_bootstrap.dart';
 import 'package:avrai/injection_container_core.dart';
 import 'package:avrai/injection_container_payment.dart';
 import 'package:avrai/injection_container_admin.dart';
@@ -269,15 +272,16 @@ Future<void> init() async {
   // StorageService, FeatureFlagService, Geographic services, CommunityValidationService,
   // AtomicClockService, PerformanceMonitor, SecurityValidator, DeploymentValidator,
   // SearchCacheService, AISearchSuggestionsService, UserVibeAnalyzer, and SharedPreferencesCompat
-  await registerCoreServices(sl);
+  await RuntimeBootstrap.initialize(
+    sl: sl,
+    registerRuntimeServices: () => registerCoreServices(sl),
+  );
   logger.debug('✅ [DI] Core services registered');
 
   // Data Sources - Local (Offline-First)
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthDriftDataSource());
-  sl.registerLazySingleton<SpotsLocalDataSource>(
-      () => SpotsDriftDataSource());
-  sl.registerLazySingleton<ListsLocalDataSource>(
-      () => ListsDriftDataSource());
+  sl.registerLazySingleton<SpotsLocalDataSource>(() => SpotsDriftDataSource());
+  sl.registerLazySingleton<ListsLocalDataSource>(() => ListsDriftDataSource());
 
   // Data Sources - Remote (Optional, for online features)
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -541,7 +545,10 @@ Future<void> init() async {
   // See PHASE_1_7_REFACTORING_PLAN.md for details
 
   // 1. Knot Services (no domain dependencies)
-  await registerKnotServices(sl);
+  await EngineBootstrap.initialize(
+    sl: sl,
+    registerEngineServices: () => registerKnotServices(sl),
+  );
   logger.debug('✅ [DI] Knot services registered');
 
   // Community repository (local-first, optional Supabase sync behind feature flag).
@@ -599,7 +606,10 @@ Future<void> init() async {
       '✅ [DI] EventSuccessAnalysisService registered (shared, after Payment module)');
 
   // 3. Quantum Services (depends on Knot services, EventSuccessAnalysisService)
-  await registerQuantumServices(sl);
+  await EngineBootstrap.initialize(
+    sl: sl,
+    registerEngineServices: () => registerQuantumServices(sl),
+  );
   logger.debug('✅ [DI] Quantum services registered');
 
   // Message Encryption Service (Phase 14.4: Signal Protocol Integration)
@@ -640,7 +650,10 @@ Future<void> init() async {
   logger.debug('✅ [DI] MessageEncryptionService registered');
 
   // 4. AI Services (depends on Knot, Quantum, and Payment services via PartnershipService)
-  await registerAIServices(sl);
+  await EngineBootstrap.initialize(
+    sl: sl,
+    registerEngineServices: () => registerAIServices(sl),
+  );
   logger.debug('✅ [DI] AI services registered');
 
   // 5. Admin Services (depends on BusinessAccountService, may depend on AI services)
@@ -648,7 +661,10 @@ Future<void> init() async {
   logger.debug('✅ [DI] Admin services registered');
 
   // 6. Predictive Outreach Services (depends on AI, Knot, Quantum services)
-  await registerPredictiveOutreachServices(sl);
+  await AppBootstrap.initialize(
+    sl: sl,
+    registerAppServices: () => registerPredictiveOutreachServices(sl),
+  );
   logger.debug('✅ [DI] Predictive outreach services registered');
 
   // ============================================================================
