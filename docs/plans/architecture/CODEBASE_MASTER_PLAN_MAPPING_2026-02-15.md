@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2858
+**Total mapped files:** 2860
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -11,7 +11,7 @@
 | Disposition | File Count |
 |---|---:|
 | keep_update | 2496 |
-| keep_review | 336 |
+| keep_review | 338 |
 | refactor_planned | 26 |
 
 ## Domain Summary
@@ -28,7 +28,7 @@
 | world-model-ai-core | 108 |
 | platform-runtime | 62 |
 | data-layer | 55 |
-| assets | 24 |
+| assets | 26 |
 | native-modules | 24 |
 | ml-legacy-and-transition | 22 |
 | security-signal-ffi | 21 |
