@@ -33,9 +33,9 @@ import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart'
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
-import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
+import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_lane.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
@@ -1065,84 +1065,20 @@ class VibeConnectionOrchestrator {
     required List<AIPersonalityNode> nodes,
     required Map<String, VibeCompatibilityResult> compatibilityByNodeId,
   }) async {
-    // Gate behind explicit user preference (default: enabled).
-    final learningEnabled =
-        _prefs.getBool(_prefsKeyAi2AiLearningEnabled) ?? true;
-    if (!learningEnabled) return;
-
-    final personalityLearning = _connectionManager.personalityLearning;
-    if (personalityLearning == null) return;
-
-    final now = DateTime.now();
-    for (final node in nodes) {
-      if (LearningInsightFlowGate.isPeerLearningThrottled(
-        lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
-        peerId: node.nodeId,
-        now: now,
-      )) {
-        continue;
-      }
-
-      final remoteDims = node.vibe.anonymizedDimensions;
-      final localDims = localPersonality.dimensions;
-      final deltas = <String, double>{};
-
-      // Conservative: only learn from strong, repeated signals (anonymized data is noisy).
-      for (final dimension in VibeConstants.coreDimensions) {
-        final localValue =
-            localDims[dimension] ?? VibeConstants.defaultDimensionValue;
-        final remoteValue = remoteDims[dimension];
-        if (remoteValue == null) continue;
-
-        final diff = remoteValue - localValue;
-        if (diff.abs() < 0.22) continue;
-        deltas[dimension] = diff;
-      }
-
-      if (deltas.isEmpty) continue;
-
-      final compat = compatibilityByNodeId[node.nodeId];
-      final learningQuality = compat != null
-          ? (compat.basicCompatibility * 0.6 + compat.aiPleasurePotential * 0.4)
-              .clamp(0.0, 1.0)
-          : 0.5;
-
-      // If the match itself isn't strong, skip learning to prevent drift.
-      if (learningQuality < 0.65) continue;
-
-      final insight = AI2AILearningInsight(
-        type: AI2AIInsightType.dimensionDiscovery,
-        dimensionInsights: deltas,
-        learningQuality: learningQuality,
-        timestamp: now,
-      );
-
-      try {
-        final applied = await _applyInsightForPeer(
-          userId: userId,
-          personalityLearning: personalityLearning,
-          peerId: node.nodeId,
-          insight: insight,
-          now: now,
-          source: 'passive',
-          insightId: null,
-          learningQuality: learningQuality,
-          deltas: deltas,
-        );
-        if (!applied) continue;
-
-        // V1 "real" AI2AI learning exchange:
-        // send the insight to the peer over the encrypted, ACK-confirmed BLE channel.
-        await _sendLearningInsightToPeer(
-          peerId: node.nodeId,
-          insight: insight,
-          learningQuality: learningQuality,
-        );
-      } catch (e) {
-        _logger.debug('AI2AI passive learning skipped for ${node.nodeId}: $e',
-            tag: _logName);
-      }
-    }
+    await PassiveAi2AiLearningLane.apply(
+      prefs: _prefs,
+      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+      personalityLearning: _connectionManager.personalityLearning,
+      userId: userId,
+      localPersonality: localPersonality,
+      nodes: nodes,
+      compatibilityByNodeId: compatibilityByNodeId,
+      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+      applyInsightForPeer: _applyInsightForPeer,
+      sendLearningInsightToPeer: _sendLearningInsightToPeer,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<void> _sendLearningInsightToPeer({
