@@ -48,6 +48,7 @@ import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
+import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -2010,31 +2011,24 @@ class VibeConnectionOrchestrator {
   }
 
   void _loadSeenLearningInsightIds() {
-    if (_seenLearningInsightIds.isNotEmpty) return;
-    final list =
-        _prefs.getStringList(_prefsKeySeenLearningInsightIds) ?? const [];
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    for (final item in list) {
-      final parts = item.split(':');
-      if (parts.length != 2) continue;
-      final id = parts[0];
-      final expiresAt = int.tryParse(parts[1]) ?? 0;
-      if (id.isEmpty || expiresAt <= nowMs) continue;
-      _seenLearningInsightIds[id] = expiresAt;
-    }
+    LearningInsightSeenCache.load(
+      prefs: _prefs,
+      prefsKey: _prefsKeySeenLearningInsightIds,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      nowMs: DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
   Future<void> _persistSeenLearningInsightIdsIfNeeded() async {
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    if (nowMs - _lastSeenInsightsPersistMs < 15 * 1000) return;
-    _lastSeenInsightsPersistMs = nowMs;
-
-    _seenLearningInsightIds.removeWhere((_, exp) => exp <= nowMs);
-    final entries = _seenLearningInsightIds.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final capped = entries.take(200).toList();
-    final list = capped.map((e) => '${e.key}:${e.value}').toList();
-    await _prefs.setStringList(_prefsKeySeenLearningInsightIds, list);
+    _lastSeenInsightsPersistMs =
+        await LearningInsightSeenCache.persistIfNeeded(
+      prefs: _prefs,
+      prefsKey: _prefsKeySeenLearningInsightIds,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      nowMs: nowMs,
+      lastPersistMs: _lastSeenInsightsPersistMs,
+    );
   }
 
   bool _markInsightSeenIfFresh({
