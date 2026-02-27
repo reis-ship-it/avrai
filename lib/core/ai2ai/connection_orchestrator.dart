@@ -34,7 +34,7 @@ import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_precheck.dart';
-import 'package:avrai/core/ai2ai/routing/gossip_learning_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/routing/federated_gossip_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/locality_agent_update_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
@@ -2539,20 +2539,15 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    // Forwarding is *optional* federated behavior (distinct from direct AI2AI learning).
-    if (!FederatedForwardingPrecheck.allow(
+    await FederatedGossipForwardingLane.forward(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
       originId: originId,
       localNodeId: _localBleNodeId,
-    )) {
-      return;
-    }
-
-    if (!FederatedGossipForwardingGate.allow(
       payload: payload,
       hop: hop,
+      receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
       getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
@@ -2560,24 +2555,10 @@ class VibeConnectionOrchestrator {
       priority: mesh_policy.MessagePriority.medium,
       messageType: mesh_policy.MessageType.learningInsight,
       fallbackMaxHopExclusive: 1,
-    )) {
-      return;
-    }
-
-    final forwardingContext = _tryCreateMeshForwardingContext();
-    if (forwardingContext == null) return;
-
-    await GossipLearningForwardingLane.forward(
-      payload: payload,
-      hop: hop,
-      originId: originId,
-      receivedFromDeviceId: receivedFromDeviceId,
       discoveredNodeIds: _discoveredNodeIds,
-      context: forwardingContext,
-      localNodeId: _localBleNodeId,
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      logger: _logger,
-      logName: _logName,
       failureLabel: 'Learning insight gossip forward failed',
       maxCandidates: 2,
     );
@@ -4034,20 +4015,15 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    // Forwarding is *optional* federated behavior
-    if (!FederatedForwardingPrecheck.allow(
+    await FederatedGossipForwardingLane.forward(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
       originId: originId,
       localNodeId: _localBleNodeId,
-    )) {
-      return;
-    }
-
-    if (!FederatedGossipForwardingGate.allow(
       payload: payload,
       hop: hop,
+      receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
       getOrCreateBloomFilter: _getOrCreateBloomFilter,
       logger: _logger,
@@ -4056,24 +4032,10 @@ class VibeConnectionOrchestrator {
       messageType: mesh_policy.MessageType.localityAgentUpdate,
       fallbackMaxHopExclusive: 2,
       duplicateLabel: 'locality agent update',
-    )) {
-      return;
-    }
-
-    final forwardingContext = _tryCreateMeshForwardingContext();
-    if (forwardingContext == null) return;
-
-    await GossipLearningForwardingLane.forward(
-      payload: payload,
-      hop: hop,
-      originId: originId,
-      receivedFromDeviceId: receivedFromDeviceId,
       discoveredNodeIds: _discoveredNodeIds,
-      context: forwardingContext,
-      localNodeId: _localBleNodeId,
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      logger: _logger,
-      logName: _logName,
       failureLabel: 'Locality agent update gossip forward failed',
       maxCandidates: 2,
     );
