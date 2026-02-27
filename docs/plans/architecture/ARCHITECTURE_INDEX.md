@@ -82,6 +82,9 @@ Use these when changing world-model training/planning behavior or model lifecycl
 - **Offline cloud AI architecture:** [`OFFLINE_CLOUD_AI_ARCHITECTURE.md`](./OFFLINE_CLOUD_AI_ARCHITECTURE.md)
 - **AI2AI federated architecture:** [`architecture_ai_federated_p2p.md`](./architecture_ai_federated_p2p.md)
 - **Offline AI2AI docs:** [`docs/plans/offline_ai2ai/`](../offline_ai2ai/)
+- **Runtime/OS remap pack (including large-file split guide):**
+  [`REALITY_ENGINE_RUNTIME_OS_REMAP_2026-02-26/README.md`](./REALITY_ENGINE_RUNTIME_OS_REMAP_2026-02-26/README.md)
+  and [`../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/26_CODE_SPLIT_AND_CROSS_OS_COMPATIBILITY_QUICK_GUIDE.md`](../../../REALITY_ENGINE_RUNTIME_OS_BOUNDARY_REMAP_2026-02-26/26_CODE_SPLIT_AND_CROSS_OS_COMPATIBILITY_QUICK_GUIDE.md)
 
 Note: the historical filename `architecture_ai_federated_p2p.md` remains in use, but current architecture principle is **ai2ai-only (never p2p)** as defined in `docs/MASTER_PLAN.md`.
 
