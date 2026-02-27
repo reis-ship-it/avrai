@@ -15,6 +15,9 @@ import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/ai2ai/pending_connection.dart';
+import 'package:avrai/core/ai2ai/connection_summary.dart';
+import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
@@ -1731,70 +1734,4 @@ class VibeConnectionOrchestrator {
       discovery: _deviceDiscovery,
     );
   }
-}
-
-// Supporting classes for AI2AI connection orchestration
-// moved to core/ai2ai/aipersonality_node.dart
-
-class PendingConnection {
-  final String localUserId;
-  final AIPersonalityNode remoteNode;
-  final VibeCompatibilityResult compatibility;
-  final DateTime requestedAt;
-
-  PendingConnection({
-    required this.localUserId,
-    required this.remoteNode,
-    required this.compatibility,
-    required this.requestedAt,
-  });
-
-  bool get isExpired => DateTime.now().difference(requestedAt).inMinutes > 2;
-}
-
-class ConnectionSummary {
-  final String connectionId;
-  final Duration duration;
-  final double compatibility;
-  final double learningEffectiveness;
-  final double aiPleasureScore;
-  final String qualityRating;
-  final ConnectionStatus status;
-  final int interactionCount;
-  final int dimensionsEvolved;
-
-  ConnectionSummary({
-    required this.connectionId,
-    required this.duration,
-    required this.compatibility,
-    required this.learningEffectiveness,
-    required this.aiPleasureScore,
-    required this.qualityRating,
-    required this.status,
-    required this.interactionCount,
-    required this.dimensionsEvolved,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'connection_id': connectionId.substring(0, 8),
-      'duration_seconds': duration.inSeconds,
-      'compatibility': (compatibility * 100).round(),
-      'learning_effectiveness': (learningEffectiveness * 100).round(),
-      'ai_pleasure_score': (aiPleasureScore * 100).round(),
-      'quality_rating': qualityRating,
-      'status': status.toString().split('.').last,
-      'interaction_count': interactionCount,
-      'dimensions_evolved': dimensionsEvolved,
-    };
-  }
-}
-
-class AI2AIConnectionException implements Exception {
-  final String message;
-
-  AI2AIConnectionException(this.message);
-
-  @override
-  String toString() => 'AI2AIConnectionException: $message';
 }
