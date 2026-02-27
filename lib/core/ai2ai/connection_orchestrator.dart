@@ -49,6 +49,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_proces
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
+import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_replay_hash_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
@@ -2412,14 +2413,14 @@ class VibeConnectionOrchestrator {
       String userId, PersonalityProfile personality) async {
     _logger.info('Starting AI2AI discovery process', tag: _logName);
 
-    // Start periodic discovery
-    _discoveryTimer = Timer.periodic(const Duration(minutes: 2), (timer) async {
-      try {
-        await discoverNearbyAIPersonalities(userId, personality);
-      } catch (e) {
-        _logger.error('Error in periodic discovery', error: e, tag: _logName);
-      }
-    });
+    _discoveryTimer = DiscoveryLoop.start(
+      discoverNearby: () => discoverNearbyAIPersonalities(userId, personality),
+      onError: (error) => _logger.error(
+        'Error in periodic discovery',
+        error: error,
+        tag: _logName,
+      ),
+    );
 
     // Perform initial discovery
     await discoverNearbyAIPersonalities(userId, personality,
