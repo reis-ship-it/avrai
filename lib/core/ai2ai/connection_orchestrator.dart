@@ -62,6 +62,7 @@ import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_cache.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
@@ -2630,148 +2631,21 @@ class VibeConnectionOrchestrator {
     required DiscoveredDevice device,
     required BleGattSession session,
   }) async {
-    if (!_allowBleSideEffects) return;
-    final signalKeyManager = _signalKeyManager;
-    final protocol = _protocol;
-    if (signalKeyManager == null || protocol == null) return;
-
-    try {
-      // Stream 1 = Signal prekey payload.
-      final bytes = await session.readStreamPayload(streamId: 1);
-      if (bytes == null || bytes.isEmpty) return;
-
-      final decoded = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-      final peerNodeId = decoded['node_id'] as String?;
-      final bundleJson = decoded['prekey_bundle'] as Map<String, dynamic>?;
-      if (bundleJson == null) return;
-
-      final bundle = SignalPreKeyBundle.fromJson(bundleJson);
-      final recipientId = (peerNodeId != null && peerNodeId.isNotEmpty)
-          ? peerNodeId
-          : device.deviceId;
-      if (peerNodeId != null && peerNodeId.isNotEmpty) {
-        _peerNodeIdByDeviceId[device.deviceId] = peerNodeId;
-      }
-
-      // Phase 3.2: Enhanced offline-first prekey bundle exchange
-      // Check if bundle needs refresh (automatic refresh logic)
-      final needsRefresh =
-          signalKeyManager.getRecipientsNeedingRefresh().contains(recipientId);
-
-      if (needsRefresh) {
-        _logger.debug(
-          'Prekey bundle for $recipientId needs refresh - attempting background refresh',
-          tag: _logName,
-        );
-
-        // Background refresh (non-blocking) - try to fetch fresh bundle from Supabase
-        unawaited(
-          signalKeyManager.fetchPreKeyBundle(recipientId).then((freshBundle) {
-            _logger.debug(
-              'Successfully refreshed prekey bundle for recipient: $recipientId',
-              tag: _logName,
-            );
-            // Fresh bundle is automatically cached by fetchPreKeyBundle
-          }).catchError((e) {
-            _logger.debug(
-              'Background refresh failed for $recipientId, using BLE bundle: $e',
-              tag: _logName,
-            );
-            // Continue with BLE bundle if refresh fails
-          }),
-        );
-      }
-
-      // Validate and cache prekey bundle (with automatic validation)
-      // This validates PQXDH requirements, signatures, expiration, etc.
-      await signalKeyManager.cacheRemotePreKeyBundle(
-        recipientId: recipientId,
-        preKeyBundle: bundle,
-      );
-
-      _logger.debug(
-        'Cached and validated prekey bundle for recipient: $recipientId (PQXDH enabled)',
-        tag: _logName,
-      );
-
-      // Phase 3.2: Mesh forwarding integration
-      // Forward prekey bundle through mesh network if mesh service is available
-      if (_adaptiveMeshService != null &&
-          _isFederatedLearningParticipationEnabled()) {
-        await _forwardPreKeyBundleThroughMesh(
-          bundle: bundle,
-          recipientId: recipientId,
-          device: device,
-        );
-      }
-
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_signal_prekey_cached_from_peer',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'device_id': device.deviceId,
-            'peer_node_id': peerNodeId ?? '',
-            'recipient_id': recipientId,
-            'stream_id': 1,
-            'bytes_len': bytes.length,
-          },
-        ));
-      }
-
-      // Send a tiny encrypted message to force the receiver to establish
-      // a Signal session by decrypting a PreKey message (Mode 2).
-      final packetBytes = await protocol.encodePacketBytes(
-        type: MessageType.heartbeat,
-        payload: <String, dynamic>{
-          't': DateTime.now().toUtc().toIso8601String(),
-          'kind': 'silent_signal_bootstrap',
-        },
-        senderNodeId: _localBleNodeId,
-        recipientNodeId: recipientId,
-      );
-
-      final results = await session.sendPacketsBatch(
-        senderId: _localBleNodeId,
-        packetBytesList: <Uint8List>[packetBytes],
-      );
-      final ok = results.isNotEmpty && results.first;
-      if (ok) {
-        _logger.debug(
-          'Sent silent Signal bootstrap packet (session) to ${device.deviceId}',
-          tag: _logName,
-        );
-      }
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_silent_bootstrap_sent',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'ok': ok,
-            'device_id': device.deviceId,
-            'recipient_id': recipientId,
-            'message_type': 'heartbeat',
-            'kind': 'silent_signal_bootstrap',
-          },
-        ));
-      }
-    } catch (e) {
-      _logger.warn('Failed to prime offline Signal in session: $e',
-          tag: _logName);
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_offline_signal_prime_failed',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'device_id': device.deviceId,
-            'error': e.toString(),
-          },
-        ));
-      }
-    }
+    await PrekeySessionPrimeLane.run(
+      allowBleSideEffects: _allowBleSideEffects,
+      signalKeyManager: _signalKeyManager,
+      protocol: _protocol,
+      device: device,
+      session: session,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      federatedLearningParticipationEnabled:
+          _adaptiveMeshService != null &&
+          _isFederatedLearningParticipationEnabled(),
+      forwardPreKeyBundleThroughMesh: _forwardPreKeyBundleThroughMesh,
+      localBleNodeId: _localBleNodeId,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Forward prekey bundle through mesh network (Phase 3.2: Mesh forwarding integration)
