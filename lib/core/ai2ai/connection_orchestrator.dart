@@ -58,7 +58,7 @@ import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
-import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
@@ -2131,30 +2131,9 @@ class VibeConnectionOrchestrator {
 
   /// Set up realtime listeners for AI2AI communication (safe no-op if unavailable)
   Future<void> _setupRealtimeListeners() async {
-    await RealtimeListenersSetupLane.setup(
+    await RealtimeListenerCallbacksLane.setup(
       coordinator: _realtimeCoordinator,
-      onPersonality: (message) {
-        _logger.debug(
-            'Received personality discovery message: ${message.type}, nodeId: ${message.metadata['node_id']}',
-            tag: _logName);
-        if (message.metadata.containsKey('node_id')) {
-          // Placeholder for node update from realtime payload.
-        }
-      },
-      onLearning: (message) {
-        _logger.debug(
-            'Received vibe learning message: ${message.type}, dimensions: ${message.metadata['dimension_updates']?.keys.length ?? 0}',
-            tag: _logName);
-        if (message.metadata.containsKey('dimension_updates')) {
-          // Placeholder for learning insight ingestion from realtime payload.
-        }
-      },
-      onAnonymous: (message) {
-        _logger.debug(
-            'Received anonymous communication message: ${message.type}, payload_size: ${message.metadata.length}',
-            tag: _logName);
-        validateNoUnifiedUserInPayload(message.metadata);
-      },
+      validateNoUnifiedUserInPayload: validateNoUnifiedUserInPayload,
       logger: _logger,
       logName: _logName,
     );
