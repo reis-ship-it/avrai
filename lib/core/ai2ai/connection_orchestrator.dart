@@ -2236,21 +2236,25 @@ class VibeConnectionOrchestrator {
       }
 
       // Parse enums
-      final senderType = chat_models.MessageSenderType.values.firstWhere(
-        (e) => e.name == senderTypeStr,
-        orElse: () => chat_models.MessageSenderType.business,
+      final senderType = _parseEnumByName(
+        values: chat_models.MessageSenderType.values,
+        name: senderTypeStr,
+        fallback: chat_models.MessageSenderType.business,
       );
-      final recipientType = chat_models.MessageRecipientType.values.firstWhere(
-        (e) => e.name == recipientTypeStr,
-        orElse: () => chat_models.MessageRecipientType.expert,
+      final recipientType = _parseEnumByName(
+        values: chat_models.MessageRecipientType.values,
+        name: recipientTypeStr,
+        fallback: chat_models.MessageRecipientType.expert,
       );
-      final encryptionType = EncryptionType.values.firstWhere(
-        (e) => e.name == encryptionTypeStr,
-        orElse: () => EncryptionType.aes256gcm,
+      final encryptionType = _parseEnumByName(
+        values: EncryptionType.values,
+        name: encryptionTypeStr,
+        fallback: EncryptionType.aes256gcm,
       );
-      final messageType = chat_models.MessageType.values.firstWhere(
-        (e) => e.name == messageTypeStr,
-        orElse: () => chat_models.MessageType.text,
+      final messageType = _parseEnumByName(
+        values: chat_models.MessageType.values,
+        name: messageTypeStr,
+        fallback: chat_models.MessageType.text,
       );
 
       final encryptedContent = _decodeEncryptedContentOrNull(
@@ -2330,14 +2334,15 @@ class VibeConnectionOrchestrator {
       }
 
       // Parse enums
-      final encryptionType = EncryptionType.values.firstWhere(
-        (e) => e.name == encryptionTypeStr,
-        orElse: () => EncryptionType.aes256gcm,
+      final encryptionType = _parseEnumByName(
+        values: EncryptionType.values,
+        name: encryptionTypeStr,
+        fallback: EncryptionType.aes256gcm,
       );
-      final messageType =
-          chat_models.BusinessBusinessMessageType.values.firstWhere(
-        (e) => e.name == messageTypeStr,
-        orElse: () => chat_models.BusinessBusinessMessageType.text,
+      final messageType = _parseEnumByName(
+        values: chat_models.BusinessBusinessMessageType.values,
+        name: messageTypeStr,
+        fallback: chat_models.BusinessBusinessMessageType.text,
       );
 
       final encryptedContent = _decodeEncryptedContentOrNull(
@@ -2448,6 +2453,18 @@ class VibeConnectionOrchestrator {
       );
     }
     return createdAt;
+  }
+
+  T _parseEnumByName<T extends Enum>({
+    required List<T> values,
+    required String? name,
+    required T fallback,
+  }) {
+    if (name == null || name.isEmpty) return fallback;
+    for (final value in values) {
+      if (value.name == name) return value;
+    }
+    return fallback;
   }
 
   // Private helper methods
