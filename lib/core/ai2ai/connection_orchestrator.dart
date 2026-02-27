@@ -34,6 +34,7 @@ import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/routing/federated_forwarding_guard.dart';
 import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
+import 'package:avrai/core/ai2ai/routing/learning_insight_mesh_forwarder.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -41,7 +42,6 @@ import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/gossip_fingerprint.dart';
-import 'package:avrai/core/ai2ai/resilience/mesh_packet_forwarder.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_telemetry_snapshot.dart';
@@ -2601,13 +2601,11 @@ class VibeConnectionOrchestrator {
         originId: originId,
       );
 
-      await MeshPacketForwarder.forwardToCandidates(
+      await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
-        discovery: forwardingContext.discovery,
-        protocol: forwardingContext.protocol,
+        context: forwardingContext,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        messageType: MessageType.learningInsight,
         payload: forwardedPayload,
       );
     } catch (e) {
@@ -3391,13 +3389,11 @@ class VibeConnectionOrchestrator {
         'scope': 'locality', // Prekey bundles are locality-scoped
       };
 
-      await MeshPacketForwarder.forwardToCandidates(
+      await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
-        discovery: forwardingContext.discovery,
-        protocol: forwardingContext.protocol,
+        context: forwardingContext,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        messageType: MessageType.learningInsight,
         payload: forwardPayload,
         geographicScope: 'locality',
         fireAndForgetSend: true,
@@ -3920,13 +3916,11 @@ class VibeConnectionOrchestrator {
       final payload = Map<String, dynamic>.from(signal);
       payload['origin_id'] = _localBleNodeId;
 
-      await MeshPacketForwarder.forwardToCandidates(
+      await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
-        discovery: forwardingContext.discovery,
-        protocol: forwardingContext.protocol,
+        context: forwardingContext,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        messageType: MessageType.learningInsight,
         payload: payload,
       );
 
@@ -4009,13 +4003,11 @@ class VibeConnectionOrchestrator {
         originId: originId,
       );
 
-      await MeshPacketForwarder.forwardToCandidates(
+      await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
-        discovery: forwardingContext.discovery,
-        protocol: forwardingContext.protocol,
+        context: forwardingContext,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        messageType: MessageType.learningInsight,
         payload: forwardedMessage,
       );
 
@@ -4250,13 +4242,11 @@ class VibeConnectionOrchestrator {
         originId: originId,
       );
 
-      await MeshPacketForwarder.forwardToCandidates(
+      await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
-        discovery: forwardingContext.discovery,
-        protocol: forwardingContext.protocol,
+        context: forwardingContext,
         senderNodeId: _localBleNodeId,
         peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-        messageType: MessageType.learningInsight,
         payload: forwardedPayload,
       );
     } catch (e) {
