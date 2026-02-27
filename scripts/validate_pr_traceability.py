@@ -10,6 +10,22 @@ MILESTONE_PATTERN = re.compile(r"\bM\d+-P\d+-\d+\b")
 MASTER_PLAN_REF_PATTERN = re.compile(r"\b\d+\.\d+\.\d+\b")
 TITLE_FORMAT_PATTERN = re.compile(r"^PRD-\d{3}\s+M\d+-P\d+-\d+\s+.+$")
 COMMIT_SUBJECT_FORMAT_TEMPLATE = "M#-P#-# X.Y.Z <type(scope)>: <summary>"
+LAYER_IMPACT_PATTERN = re.compile(
+    r"layer impact\s*:\s*(engine|runtime|app|cross-layer)\b",
+    re.IGNORECASE,
+)
+CONTRACT_CHANGE_PATTERN = re.compile(
+    r"contract change\s*:\s*(none|backward-compatible|breaking)\b",
+    re.IGNORECASE,
+)
+COMPATIBILITY_IMPACT_PATTERN = re.compile(
+    r"compatibility impact\s*:\s*.+",
+    re.IGNORECASE,
+)
+ROLLBACK_IMPACT_PATTERN = re.compile(
+    r"rollback impact\s*:\s*.+",
+    re.IGNORECASE,
+)
 
 
 def fail(msg: str) -> None:
@@ -139,6 +155,14 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--require-layer-metadata",
+        action="store_true",
+        help=(
+            "Require PR body metadata lines: layer impact, contract change, "
+            "compatibility impact, rollback impact."
+        ),
+    )
+    parser.add_argument(
         "--base-sha",
         default=os.getenv("PR_BASE_SHA", ""),
         help="PR base commit SHA (required for --validate-commit-boundaries).",
@@ -199,6 +223,28 @@ def main() -> None:
             required_milestone=milestone_ids_in_title[0],
         )
 
+    if args.require_layer_metadata:
+        if not LAYER_IMPACT_PATTERN.search(text):
+            fail(
+                "Missing layer impact metadata. "
+                "Expected: 'Layer impact: engine|runtime|app|cross-layer'."
+            )
+        if not CONTRACT_CHANGE_PATTERN.search(text):
+            fail(
+                "Missing contract change metadata. "
+                "Expected: 'Contract change: none|backward-compatible|breaking'."
+            )
+        if not COMPATIBILITY_IMPACT_PATTERN.search(text):
+            fail(
+                "Missing compatibility impact metadata. "
+                "Expected: 'Compatibility impact: <summary>'."
+            )
+        if not ROLLBACK_IMPACT_PATTERN.search(text):
+            fail(
+                "Missing rollback impact metadata. "
+                "Expected: 'Rollback impact: <summary>'."
+            )
+
     print("Traceability check passed.")
     print("Found PRD IDs:", ", ".join(prd_ids))
     if milestone_ids_in_title:
@@ -207,6 +253,12 @@ def main() -> None:
         print("Found PR Body Milestone IDs:", ", ".join(milestone_ids_in_body))
     if master_plan_refs:
         print("Found Master Plan Refs:", ", ".join(master_plan_refs))
+    layer_impact_match = LAYER_IMPACT_PATTERN.search(text)
+    contract_change_match = CONTRACT_CHANGE_PATTERN.search(text)
+    if layer_impact_match:
+        print("Found Layer Impact:", layer_impact_match.group(1).lower())
+    if contract_change_match:
+        print("Found Contract Change:", contract_change_match.group(1).lower())
     print("Required commit subject format:", COMMIT_SUBJECT_FORMAT_TEMPLATE)
 
 

@@ -7,7 +7,7 @@ import 'package:avrai/core/ai/semantic_memory_local_store.dart';
 import 'package:avrai/core/ai/semantic_memory_schema.dart';
 import 'package:avrai/core/ai/structured_facts.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 
 /// Facts Index
 ///
@@ -38,7 +38,7 @@ class FactsIndex {
     FactsLocalStore? localStore,
     Connectivity? connectivity,
     SemanticMemoryLocalStore? semanticLocalStore,
-  })  : _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+  })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _localStore = localStore,
         _connectivity = connectivity,
         _semanticLocalStore = semanticLocalStore;

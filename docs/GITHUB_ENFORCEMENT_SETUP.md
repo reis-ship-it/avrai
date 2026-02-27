@@ -55,6 +55,20 @@ Ensure these workflows exist and are green on pull requests:
      - model/simulation registries stay synced with generated docs (`python3 scripts/generate_ml_training_checklist.py --check`)
      - training/simulation run records are append-only and traceable
 
+5. `Engine Runtime Boundary Guard` (new for 3-layer architecture)
+   - File: `.github/workflows/engine-runtime-boundary-guard.yml`
+   - Check name: `Engine Runtime Boundary Guard / engine-runtime-boundary`
+   - Enforces:
+     - protected engine/runtime paths do not import app composition or presentation roots
+     - no new boundary regressions vs. baseline while migration is active
+
+6. `Headless Engine Smoke Guard` (new for runtime/host separation)
+   - File: `.github/workflows/headless-engine-smoke-guard.yml`
+   - Check name: `Headless Engine Smoke Guard / headless-engine-smoke`
+   - Enforces:
+     - perceive -> plan -> learn core loop executes without app boot
+     - baseline runtime contract wiring remains valid in CI
+
 Execution board schema expectations (enforced by `tool/update_execution_board.dart`):
 - Milestone rows must include:
   - `prd_ids` (one or more `PRD-###`)
@@ -67,7 +81,7 @@ Execution board schema expectations (enforced by `tool/update_execution_board.da
 - Reopen milestones must reference a prior `Done` milestone and be recorded in `docs/STATUS_WEEKLY.md`
 
 Optional PR quality workflow:
-5. `Quick Tests`
+7. `Quick Tests`
    - File: `.github/workflows/quick-tests.yml`
    - Use as required check only if you want stricter merge quality gates.
 
@@ -108,6 +122,8 @@ Repository settings:
    - `PRD Traceability Guard / traceability`
    - `Experiment Registry Guard / experiment-registry`
    - `ML Training Governance Guard / ml-training-governance`
+   - `Engine Runtime Boundary Guard / engine-runtime-boundary`
+   - `Headless Engine Smoke Guard / headless-engine-smoke`
 5. Optional required checks:
    - `Quick Tests / quick-unit-tests`
 6. Optional but recommended:
@@ -129,6 +145,7 @@ Every PR touching plan-derived work must:
 5. Update evidence links for milestones moved to `Done`
 6. Pass `Execution Board Guard` and `PRD Traceability Guard`
 7. If the PR touches experiments or model training docs/scripts, pass `Experiment Registry Guard` and `ML Training Governance Guard`
+8. If the PR touches engine/runtime/app boundaries, include layer impact + compatibility/rollback metadata and pass boundary guards
 
 Template:
 - `.github/pull_request_template.md` already includes these fields.
@@ -159,18 +176,20 @@ python3 scripts/ml/build_training_dataset.py \
   --source-id <source_tag>
 python3 scripts/validate_pr_traceability.py \
   --title "PRD-123 M1-P7-1" \
-  --body "phase/task refs: 7.4.2, 10.9.1" \
+  --body "phase/task refs: 7.4.2, 10.9.1\nLayer impact: engine\nContract change: backward-compatible\nCompatibility impact: runtime adapters unchanged\nRollback impact: revert milestone patch + boundary guard config" \
   --require-execution-id \
   --require-single-milestone \
-  --require-master-plan-ref
+  --require-master-plan-ref \
+  --require-layer-metadata
 
 # Optional full boundary check against current branch:
 python3 scripts/validate_pr_traceability.py \
   --title "PRD-123 M1-P7-1" \
-  --body "phase/task refs: 7.4.2, 10.9.1" \
+  --body "phase/task refs: 7.4.2, 10.9.1\nLayer impact: engine\nContract change: backward-compatible\nCompatibility impact: runtime adapters unchanged\nRollback impact: revert milestone patch + boundary guard config" \
   --require-execution-id \
   --require-single-milestone \
   --require-master-plan-ref \
+  --require-layer-metadata \
   --validate-commit-boundaries \
   --base-sha origin/main \
   --head-sha HEAD
@@ -197,6 +216,8 @@ phase row + milestone row(s) + risk + gate criteria.
 16. Any PR that touches adaptive, federated, world-model, experiment, or training logic must satisfy Universal Self-Healing Contract behavior (`docs/MASTER_PLAN.md`, `10.9.12`) by ensuring break classes are detectable, recoverable, and fed back into learning metrics.
 17. Break-to-learning queue integrity must pass (`python3 scripts/ml/auto_recover_learning_cycles.py --check`) with no unresolved schema or deterministic-linkage errors.
 18. Security/privacy/autonomy-critical PRs must update or reference `docs/security/RED_TEAM_TEST_MATRIX.md` evidence lanes and must not merge when any mapped critical lane is red without explicit governance override.
+19. Every PR must declare layer impact (`engine`, `runtime`, `app`, or `cross-layer`) and include boundary-check evidence links.
+20. Every PR must declare contract change, compatibility impact, and rollback impact in PR metadata.
 
 ## 6) Troubleshooting
 

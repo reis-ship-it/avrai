@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/interaction_events.dart';
 import 'package:avrai/core/ai/implicit_feedback_signals.dart';
@@ -118,8 +117,8 @@ class ContinuousLearningSystem {
       return agentIdService;
     }
     try {
-      if (di.sl.isRegistered<AgentIdService>()) {
-        return di.sl<AgentIdService>();
+      if (GetIt.instance.isRegistered<AgentIdService>()) {
+        return GetIt.instance<AgentIdService>();
       }
     } catch (e) {
       developer.log(
@@ -138,8 +137,8 @@ class ContinuousLearningSystem {
       return episodicMemoryStore;
     }
     try {
-      if (di.sl.isRegistered<EpisodicMemoryStore>()) {
-        return di.sl<EpisodicMemoryStore>();
+      if (GetIt.instance.isRegistered<EpisodicMemoryStore>()) {
+        return GetIt.instance<EpisodicMemoryStore>();
       }
     } catch (e) {
       developer.log(
@@ -837,7 +836,7 @@ class ContinuousLearningSystem {
   Future<void> _extractAndIndexFactsAsync(
       String userId, InteractionEvent event) async {
     try {
-      // Get dependencies from GetIt (services must be registered in injection_container.dart)
+      // Get dependencies from GetIt (services must be registered at startup)
       if (!GetIt.instance.isRegistered<StructuredFactsExtractor>() ||
           !GetIt.instance.isRegistered<FactsIndex>()) {
         developer.log(

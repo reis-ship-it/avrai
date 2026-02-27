@@ -5,7 +5,6 @@ import 'package:avrai/core/models/user/onboarding_data.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/network/edge_function_service.dart';
 import 'package:avrai/core/services/onboarding/onboarding_dimension_mapper.dart';
-import 'package:avrai/injection_container.dart' as di;
 
 /// Service for syncing aggregated onboarding data to an edge function.
 ///
@@ -26,7 +25,7 @@ class OnboardingAggregationService {
     OnboardingDimensionMapper? dimensionMapper,
   })  : _edgeFunctionService =
             edgeFunctionService ?? GetIt.instance<EdgeFunctionService>(),
-        _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
+        _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _dimensionMapper = dimensionMapper ?? OnboardingDimensionMapper();
 
   /// Sync onboarding aggregation via edge function.

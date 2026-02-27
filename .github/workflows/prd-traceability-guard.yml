@@ -28,4 +28,5 @@ jobs:
             --require-execution-id \
             --require-single-milestone \
             --require-master-plan-ref \
+            --require-layer-metadata \
             --validate-commit-boundaries

@@ -1802,7 +1802,7 @@ Triage the remaining ~130 flat service files into new domain groupings. These fi
 | 10.7.2l | User identity | `user_anonymization_service.dart`, `user_business_matching_service.dart`, `user_name_resolution_service.dart`, `user_preference_learning_service.dart`, `agent_id_service.dart`, `agent_id_migration_service.dart`, `permissions_persistence_service.dart` | `services/user/` (create) |
 | 10.7.2m | Remaining uncategorized | Any files not captured above: `cancellation_service.dart`, `legal_document_service.dart`, `dm_message_store.dart`, `friend_chat_service.dart`, `friend_qr_service.dart`, `search_cache_service.dart`, `oauth_deep_link_handler.dart`, etc. | Review individually — place in closest domain or `services/misc/` as last resort |
 
-> **Import update strategy:** After each batch of file moves, run `dart fix --apply` for automatic import updates where possible. For remaining broken imports, use project-wide find-and-replace: `import 'package:spots/core/services/old_file.dart'` → `import 'package:spots/core/services/new_subdirectory/old_file.dart'`. Verify with `flutter analyze`.
+> **Import update strategy:** After each batch of file moves, run `dart fix --apply` for automatic import updates where possible. For remaining broken imports, use project-wide find-and-replace: `import 'package:avrai/core/services/old_file.dart'` -> `import 'package:avrai/core/services/new_subdirectory/old_file.dart'`. Verify with `flutter analyze`.
 
 > **Barrel file strategy:** After organizing each subdirectory, create a barrel file (e.g., `services/business/business.dart`) that re-exports all public APIs. This stabilizes import paths for consumers -- future reorganization within a subdirectory only requires updating the barrel file, not all consumers.
 
@@ -1900,6 +1900,34 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.20 | **System hijack red-team gate.** Maintain and execute canonical red-team matrix across auth/session, backend authorization, secrets/CI, federated/advisory channels, encryption lifecycle, BLE discovery metadata, third-party exports, autonomy governance, logging, supply chain, and operator controls. Critical lanes block autonomous scope expansion when red | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 |
 | 10.9.21 | **Dream-conviction hierarchy safety gate.** Enforce immutable belief-tier precedence, no dream override of proven convictions, dual-key evidence requirement for tier elevation, simulator-exploit containment, and fail-closed dream promotion control | 1.1E.20, 1.1E.21, 5.2.23, 5.2.26, 7.7.16, 8.1.19 |
 | 10.9.22 | **TGTBT skepticism mismatch reliability gate.** Detect and heal repeated high-upside recommendation skepticism (`too_good_to_be_true`) with low adoption or delayed regret signatures. Require translation recalibration, pilot-mode rerouting, and confidence dampening before autonomy restoration | 1.4.22, 5.1.17, 6.2.28, 6.2.30, 7.7A.12 |
+
+### 10.10 Reality Engine / Runtime OS / Host Separation Contract
+
+To reflect the current architecture truth and avoid recurrent coupling debt, AVRAI is treated as a 3-layer system:
+
+1. **Reality Engine:** product-agnostic cognition layer (memory, prediction, planning, calibration, adaptation).
+2. **AVRAI Runtime OS:** downloadable coexisting runtime over native device OS constraints (transport, identity, policy, scheduling, security, capability negotiation).
+3. **AVRAI Product App:** host UX/workflow layer (users, business, third-party and operator surfaces).
+
+**Non-negotiable boundary rule:** the Reality Engine must be independent of product UX/workflow code, but may depend on Runtime OS contracts. Runtime OS is the sole bridge to native OS capabilities and constraints.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 10.10.1 | **Boundary rule codification + CI enforcement.** Add explicit forbidden-import matrix for Engine/Runtime/App paths and fail CI on new violations (`engine -> app` disallowed; product privileged ops must route through runtime) | 10.7, 10.8, 10.9.1 |
+| 10.10.2 | **Runtime contract registry + version policy.** Define versioned Runtime OS contracts (identity, transport, policy, scheduler, storage, telemetry, capabilities) with `N/N-1` compatibility guarantees | 7.7, 10.9.4, 10.9.13 |
+| 10.10.3 | **Engine host-neutral schema contract.** Formalize `state/event/action/outcome` contracts so product-native semantics remain adapter-level, not engine primitives | 1.1D, 1.1E, 1.4.24-1.4.29 |
+| 10.10.4 | **Capability-profile-aware planning.** Runtime publishes capability tier/profile; planner must degrade safely when BLE/Wi-Fi/P2P/AI2AI capabilities are reduced | 6.1, 6.2, 7.5, 10.9.8 |
+| 10.10.5 | **Cross-OS adapter conformance matrix.** Certify runtime adapters for iOS/Android/macOS/Windows/Linux against shared runtime contracts and degraded-mode behaviors | 7.5, 8.1, 10.9.19, 10.9.20 |
+| 10.10.6 | **Independent runtime/app artifact lifecycle.** Split engine/runtime/app versioning, promotion, and rollback policy; require coordinated rollback path only for explicit compatibility breaks | 7.7, 10.9.4, 10.9.7 |
+| 10.10.7 | **Headless engine validation gate.** Add CI lane proving perceive -> plan -> learn loop runs without product app boot (mocked runtime allowed) | 10.9.1, 10.9.11 |
+| 10.10.8 | **Host adapter conformance gate.** AVRAI host mappings to runtime/engine contracts must pass contract tests before merge | 7.2, 10.2, 10.9.9 |
+
+**Separation acceptance criteria (release gate):**
+1. Engine protected paths have zero app-composition imports.
+2. Runtime capability profile is wired into planner guardrail decisions.
+3. Cross-OS adapter contract tests are green for supported platforms.
+4. Runtime and app rollback paths are independently drill-tested with evidence.
+5. Headless engine validation lane is green in CI.
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 

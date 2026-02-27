@@ -7,7 +7,7 @@ import 'package:avrai_network/network/message_encryption_service.dart';
 import 'package:avrai/core/models/business/business_business_message.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/injection_container.dart' as di;
+import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/user/user_anonymization_service.dart';
 import 'package:avrai/core/services/security/location_obfuscation_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
@@ -30,7 +30,8 @@ class BusinessBusinessChatServiceAI2AI {
 
   // Local storage container names
   static const String _messagesStoreName = 'business_business_messages';
-  static const String _conversationsStoreName = 'business_business_conversations';
+  static const String _conversationsStoreName =
+      'business_business_conversations';
 
   BusinessBusinessChatServiceAI2AI({
     ai2ai.AnonymousCommunicationProtocol? ai2aiProtocol,
@@ -40,13 +41,13 @@ class BusinessBusinessChatServiceAI2AI {
   })  : _ai2aiProtocol = ai2aiProtocol ?? _createDefaultProtocol(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _businessService = businessService,
-        _agentIdService = agentIdService ?? di.sl<AgentIdService>();
+        _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>();
 
   static ai2ai.AnonymousCommunicationProtocol _createDefaultProtocol() {
     try {
       // Try to get from DI first
-      if (di.sl.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
-        return di.sl<ai2ai.AnonymousCommunicationProtocol>();
+      if (GetIt.instance.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
+        return GetIt.instance<ai2ai.AnonymousCommunicationProtocol>();
       }
     } catch (_) {
       // Fallback to creating with defaults
@@ -55,20 +56,22 @@ class BusinessBusinessChatServiceAI2AI {
     // Fallback: create with default dependencies
     try {
       return ai2ai.AnonymousCommunicationProtocol(
-        encryptionService: di.sl.isRegistered<MessageEncryptionService>()
-            ? di.sl<MessageEncryptionService>()
-            : AES256GCMEncryptionService(),
-        supabase: di.sl.isRegistered<SupabaseClient>()
-            ? di.sl<SupabaseClient>()
+        encryptionService:
+            GetIt.instance.isRegistered<MessageEncryptionService>()
+                ? GetIt.instance<MessageEncryptionService>()
+                : AES256GCMEncryptionService(),
+        supabase: GetIt.instance.isRegistered<SupabaseClient>()
+            ? GetIt.instance<SupabaseClient>()
             : Supabase.instance.client,
-        atomicClock: di.sl.isRegistered<AtomicClockService>()
-            ? di.sl<AtomicClockService>()
+        atomicClock: GetIt.instance.isRegistered<AtomicClockService>()
+            ? GetIt.instance<AtomicClockService>()
             : AtomicClockService(),
-        anonymizationService: di.sl.isRegistered<UserAnonymizationService>()
-            ? di.sl<UserAnonymizationService>()
-            : UserAnonymizationService(
-                locationObfuscationService: LocationObfuscationService(),
-              ),
+        anonymizationService:
+            GetIt.instance.isRegistered<UserAnonymizationService>()
+                ? GetIt.instance<UserAnonymizationService>()
+                : UserAnonymizationService(
+                    locationObfuscationService: LocationObfuscationService(),
+                  ),
       );
     } catch (_) {
       // Last resort: create with minimal defaults
@@ -197,7 +200,8 @@ class BusinessBusinessChatServiceAI2AI {
     try {
       final box = GetStorage(_conversationsStoreName);
       final conversationId = _generateConversationId(business1Id, business2Id);
-      final data = box.read<Map<String, dynamic>>('conversation_$conversationId');
+      final data =
+          box.read<Map<String, dynamic>>('conversation_$conversationId');
       return data;
     } catch (e) {
       developer.log('Error getting conversation: $e', name: _logName);
@@ -210,7 +214,8 @@ class BusinessBusinessChatServiceAI2AI {
       String businessId) async {
     try {
       final box = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
+      final List<dynamic> allConvs =
+          box.read<List<dynamic>>('all_conversations') ?? [];
 
       final filtered = allConvs
           .map((e) => Map<String, dynamic>.from(e as Map))
@@ -289,7 +294,8 @@ class BusinessBusinessChatServiceAI2AI {
     await box.write('conversation_$conversationId', conversationData);
 
     // Also maintain a list of all conversations for filtering
-    final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
+    final List<dynamic> allConvs =
+        box.read<List<dynamic>>('all_conversations') ?? [];
     allConvs.add(conversationData);
     await box.write('all_conversations', allConvs);
 
@@ -304,10 +310,12 @@ class BusinessBusinessChatServiceAI2AI {
   }) async {
     try {
       final box = GetStorage(_messagesStoreName);
-      final List<dynamic> raw = box.read<List<dynamic>>('messages_$conversationId') ?? [];
+      final List<dynamic> raw =
+          box.read<List<dynamic>>('messages_$conversationId') ?? [];
 
       final allMessages = raw
-          .map((e) => BusinessBusinessMessage.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) => BusinessBusinessMessage.fromJson(
+              Map<String, dynamic>.from(e as Map)))
           .toList();
 
       // Sort newest first
@@ -359,7 +367,8 @@ class BusinessBusinessChatServiceAI2AI {
     try {
       final box = GetStorage(_messagesStoreName);
       final convBox = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = convBox.read<List<dynamic>>('all_conversations') ?? [];
+      final List<dynamic> allConvs =
+          convBox.read<List<dynamic>>('all_conversations') ?? [];
 
       for (final conv in allConvs) {
         final convId = (conv as Map)['id'] as String?;
@@ -394,14 +403,16 @@ class BusinessBusinessChatServiceAI2AI {
     try {
       final box = GetStorage(_messagesStoreName);
       final convBox = GetStorage(_conversationsStoreName);
-      final List<dynamic> allConvs = convBox.read<List<dynamic>>('all_conversations') ?? [];
+      final List<dynamic> allConvs =
+          convBox.read<List<dynamic>>('all_conversations') ?? [];
 
       int count = 0;
       for (final conv in allConvs) {
         final convId = (conv as Map)['id'] as String?;
         if (convId == null) continue;
 
-        final List<dynamic> messages = box.read<List<dynamic>>('messages_$convId') ?? [];
+        final List<dynamic> messages =
+            box.read<List<dynamic>>('messages_$convId') ?? [];
         count += messages.where((e) {
           final map = e as Map;
           return map['is_read'] == false &&
@@ -467,7 +478,8 @@ class BusinessBusinessChatServiceAI2AI {
   Future<void> _updateConversationLastMessage(String conversationId) async {
     try {
       final box = GetStorage(_conversationsStoreName);
-      final data = box.read<Map<String, dynamic>>('conversation_$conversationId');
+      final data =
+          box.read<Map<String, dynamic>>('conversation_$conversationId');
       if (data != null) {
         final updated = Map<String, dynamic>.from(data)
           ..['last_message_at'] = DateTime.now().toIso8601String()
@@ -475,8 +487,10 @@ class BusinessBusinessChatServiceAI2AI {
         await box.write('conversation_$conversationId', updated);
 
         // Update in all_conversations list too
-        final List<dynamic> allConvs = box.read<List<dynamic>>('all_conversations') ?? [];
-        final idx = allConvs.indexWhere((c) => (c as Map)['id'] == conversationId);
+        final List<dynamic> allConvs =
+            box.read<List<dynamic>>('all_conversations') ?? [];
+        final idx =
+            allConvs.indexWhere((c) => (c as Map)['id'] == conversationId);
         if (idx >= 0) {
           allConvs[idx] = updated;
           await box.write('all_conversations', allConvs);

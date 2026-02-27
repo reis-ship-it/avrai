@@ -22,9 +22,15 @@ A clear and concise description of what this PR does.
 - PRD Requirement IDs impacted (required): `PRD-###`
 - Execution Board Milestone ID impacted (required, exactly one; place in PR title): `M#-P#-#`
 - Master Plan subsection references impacted (required): `X.Y.Z`
+- Layer impact (required): `engine | runtime | app | cross-layer`
+- Contract change (required): `none | backward-compatible | breaking`
+- Compatibility impact (required): `<summary>`
+- Rollback impact (required): `<summary>`
+- Boundary evidence links (required): `<CI run / test / proof links>`
 - [ ] I confirmed this PR is traceable to `docs/PRD.md` requirement IDs
 - [ ] I confirmed this PR maps to `docs/MASTER_PLAN.md` phase/task ownership
 - [ ] I confirmed this PR maps to `docs/EXECUTION_BOARD.csv` milestone IDs
+- [ ] I declared layer/contract/compatibility/rollback metadata and attached boundary evidence
 
 ## 🧪 Testing
 - [ ] Unit tests added/updated

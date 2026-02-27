@@ -30,6 +30,10 @@ Every PR must include in title/body:
 - At least one `PRD-###`
 - Exactly one `M#-P#-#`
 - At least one `X.Y.Z`
+- Layer impact tag: `engine`, `runtime`, `app`, or `cross-layer`
+- Contract change flag: `none`, `backward-compatible`, or `breaking`
+- Compatibility + rollback notes for boundary-touching changes
+- Boundary evidence links when engine/runtime/app contracts are touched
 
 CI enforcement:
 
@@ -39,6 +43,8 @@ CI enforcement:
 - `scripts/validate_experiment_registry.py`
 - `.github/workflows/ml-training-governance-guard.yml`
 - `scripts/generate_ml_training_checklist.py --check`
+- `.github/workflows/engine-runtime-boundary-guard.yml`
+- `.github/workflows/headless-engine-smoke-guard.yml`
 
 Universal self-healing authority:
 - `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` and task `10.9.12`.
@@ -52,6 +58,8 @@ Universal self-healing authority:
 4. Pass CI guards:
    - Execution Board Guard
    - PRD Traceability Guard
+   - Engine Runtime Boundary Guard (when layer boundaries or contracts are touched)
+   - Headless Engine Smoke Guard (when engine or runtime behavior is touched)
    - Experiment Registry Guard (when experiment files/docs are touched)
    - ML Training Governance Guard (when model-training or simulation files/docs are touched)
 5. Move milestone to `Done` only when PR merged and acceptance criteria are met with evidence links.

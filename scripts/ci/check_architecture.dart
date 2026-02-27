@@ -16,7 +16,7 @@ import 'dart:io';
 /// - `dart run scripts/ci/check_architecture.dart --baseline=path/to/file.json`
 Future<void> main(List<String> args) async {
   final baselinePath = _argValue(args, '--baseline=') ??
-      'scripts/ci/baselines/spots_app_imports_baseline.json';
+      'scripts/ci/baselines/avrai_app_imports_baseline.json';
   final updateBaseline = args.contains('--update-baseline');
 
   final root = Directory.current.path;
@@ -27,7 +27,7 @@ Future<void> main(List<String> args) async {
     return;
   }
 
-  final currentViolations = await _findSpotsImports(rootPath: root);
+  final currentViolations = await _findPackageToAppImports(rootPath: root);
 
   if (updateBaseline) {
     await _writeBaseline(baselinePath, currentViolations);
@@ -78,14 +78,14 @@ String? _argValue(List<String> args, String prefix) {
   return null;
 }
 
-Future<Set<String>> _findSpotsImports({required String rootPath}) async {
+Future<Set<String>> _findPackageToAppImports({required String rootPath}) async {
   final violations = <String>{};
   final importRe = RegExp(
     r'''^\s*(import|export)\s+(['"])(package:avrai/[^'"]+)\2''',
   );
 
-  await for (final entity in Directory('packages')
-      .list(recursive: true, followLinks: false)) {
+  await for (final entity
+      in Directory('packages').list(recursive: true, followLinks: false)) {
     if (entity is! File) continue;
     if (!entity.path.endsWith('.dart')) continue;
 

@@ -15,12 +15,14 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai/core/services/local_llm/local_llm_auto_install_service.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_connectivity_listener.dart';
 import 'package:avrai/core/services/infrastructure/deferred_initialization_service.dart';
+import 'package:avrai/core/services/infrastructure/runtime/runtime_bootstrap_guard.dart';
+import 'package:avrai/core/services/infrastructure/runtime/runtime_contract_registry.dart';
 import 'dart:async';
 
 void main() async {
   // Performance tracking: Start measuring startup time
   final startupStartTime = DateTime.now();
-  
+
   WidgetsFlutterBinding.ensureInitialized();
   const logger = AppLogger(defaultTag: 'MAIN', minimumLevel: LogLevel.debug);
 
@@ -33,7 +35,8 @@ void main() async {
       // Check for existing user data via StorageService
       final storageService = di.sl<StorageService>();
       final currentUser = storageService.getString('currentUser');
-      logger.debug('Current user check: ${currentUser != null ? "found" : "not found"}');
+      logger.debug(
+          'Current user check: ${currentUser != null ? "found" : "not found"}');
       return currentUser != null;
     } catch (e) {
       logger.error('Error checking data', error: e);
@@ -46,7 +49,7 @@ void main() async {
     // PHASE 1: CRITICAL INITIALIZATION (Must complete before UI)
     // ============================================================
     final criticalStartTime = DateTime.now();
-    
+
     // Initialize Firebase (mobile and desktop; web via options)
     // Firebase is required for some core features, so we keep it in critical path
     try {
@@ -66,12 +69,19 @@ void main() async {
     await di.init();
     logger.info('✅ [MAIN] Dependency injection initialized.');
 
+    // Validate runtime/host contract compatibility before app boot.
+    // Fail closed if host/runtime contracts are incompatible.
+    final contractReport = RuntimeBootstrapGuard.validateOrThrow();
+    logger.info(
+        '✅ [MAIN] Runtime contract compatibility: ${contractReport.reason}');
+
     // Note: AppDatabase (Drift) is initialized via DI in injection_container_device_sync.dart
     // Sembast was fully removed in Phase 26 migration.
 
     final criticalEndTime = DateTime.now();
     final criticalDuration = criticalEndTime.difference(criticalStartTime);
-    logger.info('⏱️ [MAIN] Critical initialization completed in ${criticalDuration.inMilliseconds}ms');
+    logger.info(
+        '⏱️ [MAIN] Critical initialization completed in ${criticalDuration.inMilliseconds}ms');
 
     // ============================================================
     // PHASE 2: SHOW UI IMMEDIATELY
@@ -79,12 +89,13 @@ void main() async {
     final uiStartTime = DateTime.now();
     logger.info('🎬 [MAIN] Launching app UI...');
     runApp(const SpotsApp());
-    
+
     final uiEndTime = DateTime.now();
     final uiDuration = uiEndTime.difference(uiStartTime);
     final timeToFirstFrame = uiEndTime.difference(startupStartTime);
     logger.info('⏱️ [MAIN] UI launched in ${uiDuration.inMilliseconds}ms');
-    logger.info('⏱️ [MAIN] Time to first frame: ${timeToFirstFrame.inMilliseconds}ms');
+    logger.info(
+        '⏱️ [MAIN] Time to first frame: ${timeToFirstFrame.inMilliseconds}ms');
 
     // ============================================================
     // PHASE 3: DEFERRED INITIALIZATION (Background, non-blocking)
@@ -92,7 +103,12 @@ void main() async {
     unawaited(_initializeDeferredServices(logger, checkIfDataExists));
 
     final totalStartupTime = DateTime.now().difference(startupStartTime);
-    logger.info('✅ [MAIN] App startup sequence completed. Total time: ${totalStartupTime.inMilliseconds}ms');
+    logger.info(
+        '✅ [MAIN] App startup sequence completed. Total time: ${totalStartupTime.inMilliseconds}ms');
+  } on RuntimeContractIncompatibilityException catch (e, stackTrace) {
+    logger.error('❌ [MAIN] Runtime contract compatibility failed', error: e);
+    logger.debug('Stack trace: $stackTrace');
+    _runRuntimeContractBlockedApp(e.reason);
   } catch (e, stackTrace) {
     logger.error('❌ [MAIN] Error during app initialization', error: e);
     logger.debug('Stack trace: $stackTrace');
@@ -100,6 +116,41 @@ void main() async {
     logger.info('🔄 [MAIN] Attempting to run app despite errors...');
     runApp(const SpotsApp());
   }
+}
+
+void _runRuntimeContractBlockedApp(String reason) {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Runtime Contract Incompatible',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  reason,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Update AVRAI Runtime or host adapter to continue.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Initialize non-critical services in the background after UI has rendered.
@@ -225,16 +276,19 @@ Future<void> _initializeDeferredServices(
     initializer: () async {
       try {
         if (di.sl.isRegistered<QuantumMatchingConnectivityListener>()) {
-          final connectivityListener = di.sl<QuantumMatchingConnectivityListener>();
+          final connectivityListener =
+              di.sl<QuantumMatchingConnectivityListener>();
           await connectivityListener.start();
-          logger.info('✅ [MAIN] Quantum matching connectivity listener started');
+          logger
+              .info('✅ [MAIN] Quantum matching connectivity listener started');
         } else {
           logger.debug(
             'ℹ️ [MAIN] QuantumMatchingConnectivityListener not registered, skipping',
           );
         }
       } catch (e, stackTrace) {
-        logger.warn('⚠️ [MAIN] Connectivity listener init failed (non-fatal): $e');
+        logger.warn(
+            '⚠️ [MAIN] Connectivity listener init failed (non-fatal): $e');
         logger.debug('Stack trace: $stackTrace');
         rethrow;
       }
@@ -249,7 +303,8 @@ Future<void> _initializeDeferredServices(
       try {
         logger.info('🧹 [MAIN] Clearing demo user cache and data...');
         OnboardingCompletionService.clearAllCache();
-        await OnboardingCompletionService.resetOnboardingCompletion('demo-user-1');
+        await OnboardingCompletionService.resetOnboardingCompletion(
+            'demo-user-1');
 
         // Clear demo user via StorageService (Phase 26: Sembast removed)
         try {
@@ -277,7 +332,8 @@ Future<void> _initializeDeferredServices(
         logger.info('🔍 [MAIN] Checking if data exists...');
         final hasData = await checkIfDataExists();
         if (!hasData) {
-          logger.info('🌱 [MAIN] No existing data found. Seeding skipped (Sembast seeder removed in Phase 26).');
+          logger.info(
+              '🌱 [MAIN] No existing data found. Seeding skipped (Sembast seeder removed in Phase 26).');
           // TODO(Phase 1.1): Implement Drift-based seeder if demo data is needed
         } else {
           logger.info('ℹ️ [MAIN] Data already exists, skipping seeding.');
