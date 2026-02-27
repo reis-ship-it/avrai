@@ -22,7 +22,7 @@ import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
-import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
+import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_fallback_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/physical_layer_discovery_lane.dart';
@@ -1320,51 +1320,26 @@ class VibeConnectionOrchestrator {
       final nodes = await _discoveryManager.discover(
           userId, personality, _performAI2AIDiscovery);
 
-      // DiscoveryManager already handles compatibility analysis and prioritization
-      // Additional filtering: ensure all nodes are connection-worthy
-      if (nodes.isNotEmpty) {
-        final localVibe =
-            await _vibeAnalyzer.compileUserVibe(userId, personality);
-        final compatibilityResults = await NodeCompatibilityAnalyzer.analyze(
-          vibeAnalyzer: _vibeAnalyzer,
-          localVibe: localVibe,
-          nodes: nodes,
-        );
-
-        // Filter to only connection-worthy nodes (DiscoveryManager already prioritized)
-        final worthyNodes = nodes.where((node) {
-          final compatibility = compatibilityResults[node.nodeId];
-          return compatibility != null && _isConnectionWorthy(compatibility);
-        }).toList();
-
-        // #region agent log
-        _logger.info(
-            'Discovered ${nodes.length} nodes, ${worthyNodes.length} connection-worthy after filtering',
-            tag: _logName);
-        // #endregion
-
-        _updateDiscoveredNodes(worthyNodes);
-
-        // Passive, on-device AI2AI learning from nearby compatible peers.
-        // Fire-and-forget: discovery should not block on learning updates.
-        Future<void>(() async {
-          await _maybeApplyPassiveAi2AiLearning(
+      return DiscoveryPostprocessLane.process(
+        nodes: nodes,
+        userId: userId,
+        personality: personality,
+        vibeAnalyzer: _vibeAnalyzer,
+        isConnectionWorthy: _isConnectionWorthy,
+        updateDiscoveredNodes: _updateDiscoveredNodes,
+        onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
+          // Passive, on-device AI2AI learning from nearby compatible peers.
+          // Fire-and-forget: discovery should not block on learning updates.
+          unawaited(_maybeApplyPassiveAi2AiLearning(
             userId: userId,
             localPersonality: personality,
             nodes: worthyNodes,
-            compatibilityByNodeId: compatibilityResults,
-          );
-        });
-
-        return worthyNodes;
-      }
-
-      _updateDiscoveredNodes(nodes);
-      // #region agent log
-      _logger.info('Discovered ${nodes.length} compatible AI personalities',
-          tag: _logName);
-      // #endregion
-      return nodes;
+            compatibilityByNodeId: compatibilityByNodeId,
+          ));
+        },
+        logger: _logger,
+        logName: _logName,
+      );
     } catch (e) {
       // #region agent log
       _logger.error('Error discovering AI personalities',
