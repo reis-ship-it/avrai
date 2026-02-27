@@ -36,6 +36,7 @@ Validation commands:
 - `Ready -> In Progress`: `M1-P7-2`
 - `Ready -> In Progress`: `M1-P8-1`
 - `Ready -> In Progress`: `M1-P8-2`
+- `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
 
@@ -48,9 +49,7 @@ Validation commands:
 
 | Milestone | Owner | ETA | Risk | Notes |
 |-----------|-------|-----|------|-------|
-| M1-P7-2 | AP | Week 2-3 | Critical (20) | Controller/orchestrator reliability lane active with deterministic dead-path + canary budget report checks |
-| M1-P8-1 | FED;MLE | Week 3-4 | Critical (20) | Federated cohort canary/shadow lane active with deterministic cohort no-regression + promotion policy checks |
-| M1-P8-2 | LOC | Week 4-5 | High (16) | Advisory quarantine lane active with deterministic rollback-independence policy checks |
+| - | - | - | - | - |
 
 ### 3) Blockers
 
@@ -63,7 +62,7 @@ Validation commands:
 | Checkpoint | Decision | Evidence | Notes |
 |------------|----------|----------|-------|
 | C1: Autonomy Enablement | Done | `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-2` | Lifecycle + runtime shadow gate + promotion eval governance lanes closed with generated evidence and passing gates |
-| C2: Federated Promotion | In Progress | `M1-P8-1`, `M1-P8-2` | Federated canary/shadow and advisory quarantine lanes active with deterministic promotion/rollback governance checks |
+| C2: Federated Promotion | Done | `M1-P8-1`, `M1-P8-2` | Federated canary/shadow and advisory quarantine lanes completed with deterministic promotion/rollback governance checks |
 | C3: Broad Rollout | Pending | - | Not in rollout phase |
 | C4: Continuous Operation | Done | `M6-P3-1`, `M6-P3-3` | Self-healing routing and completion-audit package lanes closed with passing deterministic incident/gate readiness and sign-off evidence |
 
@@ -79,9 +78,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Complete `M1-P7-2` controller/orchestrator reliability implementation and attach runtime evidence.
-2. Continue `M1-P8-1` federated cohort gating + canary/shadow pipeline implementation and attach cohort evidence.
-3. Continue `M1-P8-2` advisory quarantine + rollback independence implementation and attach advisory source evidence.
+1. Start `M2-P1-1` memory reliability gates implementation and attach deterministic gate evidence.
+2. Prepare `M2-P3-1` state encoder consistency/freshness controls scope and baseline artifacts.
+3. Define `M2-P4-1` energy function safety/regression governance entry checklist for kickoff.
 
 ### 7) Evidence Links
 
