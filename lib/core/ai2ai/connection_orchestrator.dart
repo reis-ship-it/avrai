@@ -26,7 +26,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
+import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
+import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
+import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -890,27 +894,18 @@ class VibeConnectionOrchestrator {
   }
 
   bool _eventModeMayInitiate({required int epoch}) {
-    // eligibility = hash(node_id + epoch) % 100
-    final v = _hashMod(
-      '$_localBleNodeId:$epoch',
-      mod: 100,
+    return EventModeInitiatorPolicy.mayInitiate(
+      localBleNodeId: _localBleNodeId,
+      epoch: epoch,
+      eligibilityPercent: _eventInitiatorEligibilityPct,
     );
-    return v < _eventInitiatorEligibilityPct;
   }
 
   int _eventModeJitterMs({required int epoch}) {
-    // jitter_ms = hash(node_id + epoch) % 1500
-    return _hashMod('$_localBleNodeId:$epoch', mod: 1500);
-  }
-
-  int _hashU32(String input) {
-    final bytes = sha256.convert(utf8.encode(input)).bytes;
-    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
-  }
-
-  int _hashMod(String input, {required int mod}) {
-    final v = _hashU32(input) & 0x7FFFFFFF;
-    return v % mod;
+    return EventModeInitiatorPolicy.jitterMs(
+      localBleNodeId: _localBleNodeId,
+      epoch: epoch,
+    );
   }
 
   EventModeCandidate? _pickEventModeTarget({
@@ -918,38 +913,15 @@ class VibeConnectionOrchestrator {
     required int nowMs,
     required int epoch,
   }) {
-    // Must be two-sided opt-in.
-    final eligible = candidates
-        .where((c) => c.remoteConnectOk)
-        .where((c) => _eventModeIsTieBreakInitiator(
-              remoteNodeTagKey: c.nodeTagKey,
-              epoch: epoch,
-            ))
-        .where((c) {
-      final last = _eventModeLastDeepSyncAtMsByNodeTag[c.nodeTagKey];
-      if (last == null) return true;
-      return (nowMs - last) >= _eventPerNodeDeepSyncCooldownMs;
-    }).toList();
-    if (eligible.isEmpty) return null;
-
-    eligible.sort((a, b) {
-      final fa = _eventModeFamiliarityByNodeTag[a.nodeTagKey] ?? 0;
-      final fb = _eventModeFamiliarityByNodeTag[b.nodeTagKey] ?? 0;
-      return fb.compareTo(fa);
-    });
-
-    return eligible.first;
-  }
-
-  bool _eventModeIsTieBreakInitiator({
-    required String remoteNodeTagKey,
-    required int epoch,
-  }) {
-    // Symmetric tie-break: each side compares
-    // hash(local + remote + epoch) vs hash(remote + local + epoch).
-    final localFirst = _hashU32('$_localNodeTagKey:$remoteNodeTagKey:$epoch');
-    final remoteFirst = _hashU32('$remoteNodeTagKey:$_localNodeTagKey:$epoch');
-    return localFirst < remoteFirst;
+    return EventModeTargetSelector.select(
+      candidates: candidates,
+      nowMs: nowMs,
+      epoch: epoch,
+      localNodeTagKey: _localNodeTagKey,
+      lastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
+      familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
+      perNodeDeepSyncCooldownMs: _eventPerNodeDeepSyncCooldownMs,
+    );
   }
 
   void _bufferEventLearningInsight(EventModeBufferedLearningInsight insight) {
@@ -1534,8 +1506,11 @@ class VibeConnectionOrchestrator {
       if (nodes.isNotEmpty) {
         final localVibe =
             await _vibeAnalyzer.compileUserVibe(userId, personality);
-        final compatibilityResults =
-            await _analyzeNodeCompatibility(localVibe, nodes);
+        final compatibilityResults = await NodeCompatibilityAnalyzer.analyze(
+          vibeAnalyzer: _vibeAnalyzer,
+          localVibe: localVibe,
+          nodes: nodes,
+        );
 
         // Filter to only connection-worthy nodes (DiscoveryManager already prioritized)
         final worthyNodes = nodes.where((node) {
@@ -3507,49 +3482,14 @@ class VibeConnectionOrchestrator {
   }
 
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {
-    for (final node in nodes) {
-      _discoveredNodes[node.nodeId] = node;
-      // Update adaptive mesh service with network density
-      _adaptiveMeshService?.updateNetworkDensity(_discoveredNodes.length);
-      _nearbyVibes[node.nodeId] = node.vibe;
-    }
-
-    // Clean up old discovered nodes (older than 10 minutes)
-    final cutoff = DateTime.now().subtract(const Duration(minutes: 10));
-    final expiredNodes = _discoveredNodes.entries
-        .where((entry) => entry.value.lastSeen.isBefore(cutoff))
-        .map((entry) => entry.key)
-        .toList();
-
-    for (final nodeId in expiredNodes) {
-      _discoveredNodes.remove(nodeId);
-      // Update adaptive mesh service with network density
-      _adaptiveMeshService?.updateNetworkDensity(_discoveredNodes.length);
-      _nearbyVibes.remove(nodeId);
-    }
-  }
-
-  /// Analyze compatibility for all discovered nodes
-  Future<Map<String, VibeCompatibilityResult>> _analyzeNodeCompatibility(
-    UserVibe localVibe,
-    List<AIPersonalityNode> nodes,
-  ) async {
-    final compatibilityResults = <String, VibeCompatibilityResult>{};
-
-    for (final node in nodes) {
-      final compatibility = await _vibeAnalyzer.analyzeVibeCompatibility(
-        localVibe,
-        node.vibe,
-      );
-      compatibilityResults[node.nodeId] = compatibility;
-    }
-
-    // #region agent log
-    _logger.debug('Analyzed compatibility for ${nodes.length} nodes',
-        tag: _logName);
-    // #endregion
-
-    return compatibilityResults;
+    DiscoveredNodeRegistry.mergeAndPrune(
+      incomingNodes: nodes,
+      discoveredNodes: _discoveredNodes,
+      nearbyVibes: _nearbyVibes,
+      onDensityChanged: (density) {
+        _adaptiveMeshService?.updateNetworkDensity(density);
+      },
+    );
   }
 
   /// Prioritize discovered nodes based on compatibility and trust
@@ -3559,21 +3499,11 @@ class VibeConnectionOrchestrator {
     List<AIPersonalityNode> nodes,
     Map<String, VibeCompatibilityResult> compatibilityResults,
   ) async {
-    // Sort nodes by connection priority
-    nodes.sort((a, b) {
-      final aResult = compatibilityResults[a.nodeId];
-      final bResult = compatibilityResults[b.nodeId];
-
-      if (aResult == null || bResult == null) return 0;
-
-      final aPriority = _calculateConnectionPriority(aResult, a.trustScore);
-      final bPriority = _calculateConnectionPriority(bResult, b.trustScore);
-
-      return bPriority.compareTo(aPriority); // Descending order
-    });
-
-    final prioritized =
-        nodes.take(5).toList(); // Return top 5 prioritized nodes
+    final prioritized = DiscoveredNodeRegistry.prioritizeConnections(
+      nodes: nodes,
+      compatibilityResults: compatibilityResults,
+      maxConnections: 5,
+    );
 
     // #region agent log
     _logger.debug(
@@ -3582,14 +3512,6 @@ class VibeConnectionOrchestrator {
     // #endregion
 
     return prioritized;
-  }
-
-  double _calculateConnectionPriority(
-      VibeCompatibilityResult compatibility, double trustScore) {
-    return (compatibility.basicCompatibility * 0.4) +
-        (compatibility.aiPleasurePotential * 0.3) +
-        (compatibility.learningOpportunities.length / 8.0 * 0.2) +
-        (trustScore * 0.1);
   }
 
   bool _isInCooldown(String nodeId) {
