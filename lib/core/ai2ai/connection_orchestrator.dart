@@ -32,6 +32,7 @@ import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
+import 'package:avrai/core/ai2ai/routing/forwarded_payload_builder.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_target_selector.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
@@ -2587,9 +2588,11 @@ class VibeConnectionOrchestrator {
     if (candidates.isEmpty) return;
 
     try {
-      final forwardedPayload = Map<String, dynamic>.from(payload);
-      forwardedPayload['hop'] = hop + 1;
-      forwardedPayload['origin_id'] = originId;
+      final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
+        source: payload,
+        hop: hop,
+        originId: originId,
+      );
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
@@ -3986,9 +3989,11 @@ class VibeConnectionOrchestrator {
     if (candidates.isEmpty) return;
 
     try {
-      final forwardedMessage = Map<String, dynamic>.from(message);
-      forwardedMessage['hop'] = hop + 1;
-      forwardedMessage['origin_id'] = originId;
+      final forwardedMessage = ForwardedPayloadBuilder.withHopAndOrigin(
+        source: message,
+        hop: hop,
+        originId: originId,
+      );
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
@@ -4219,9 +4224,11 @@ class VibeConnectionOrchestrator {
     if (candidates.isEmpty) return;
 
     try {
-      final forwardedPayload = Map<String, dynamic>.from(payload);
-      forwardedPayload['hop'] = hop + 1;
-      forwardedPayload['origin_id'] = originId;
+      final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
+        source: payload,
+        hop: hop,
+        originId: originId,
+      );
 
       await MeshPacketForwarder.forwardToCandidates(
         candidatePeerIds: candidates,
