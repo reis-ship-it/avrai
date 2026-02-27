@@ -22,7 +22,7 @@ Validation commands:
 ### 1) Milestones Moved
 
 - `Ready -> In Progress`:
-- `In Progress -> Done`:
+- `In Progress -> Done`: `M0-P2-1`
 - `Any -> Blocked`:
 
 ### 1B) Reopen-By-New-Milestone Events
@@ -63,8 +63,11 @@ Validation commands:
 ### 7) Evidence Links
 
 - Board update commit:
-- CI/test report:
+- CI/test report: `flutter test test/unit/services/security_cryptographic_assurance_contract_test.dart` (pass)
 - Monitoring dashboard snapshot:
+- M0-P2-1 security/cryptographic assurance baseline: `docs/plans/methodology/M0_P2_1_SECURITY_CRYPTOGRAPHIC_ASSURANCE_BASELINE.md`
+- M0-P2-1 security/cryptographic assurance config + report automation: `configs/runtime/security_cryptographic_assurance_controls.json`, `scripts/runtime/generate_security_cryptographic_assurance_report.py`, `docs/plans/methodology/MASTER_PLAN_SECURITY_CRYPTOGRAPHIC_ASSURANCE_REPORT.md`
+- M0-P2-1 security/cryptographic assurance contract + tests: `lib/core/services/security/security_cryptographic_assurance_contract.dart`, `test/unit/services/security_cryptographic_assurance_contract_test.dart`
 
 ---
 

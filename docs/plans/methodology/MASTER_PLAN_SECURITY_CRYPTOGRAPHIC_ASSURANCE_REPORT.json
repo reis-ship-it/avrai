@@ -1,0 +1,28 @@
+{
+  "attestation_integrity": {
+    "attestation_checks_executed": 640,
+    "observed_attested_channel_coverage_pct": 100.0,
+    "required_attested_channel_coverage_pct": 100.0,
+    "unsigned_update_events_detected": 0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T23:35:00Z",
+  "kill_switch_readiness": {
+    "drills_executed": 42,
+    "max_kill_switch_activation_latency_ms": 300.0,
+    "observed_kill_switch_activation_latency_ms": 185.0,
+    "observed_kill_switch_drill_pass_rate_pct": 100.0,
+    "required_kill_switch_drill_pass_rate_pct": 100.0,
+    "within_threshold": true
+  },
+  "post_quantum_hardening": {
+    "critical_paths_evaluated": 64,
+    "observed_critical_path_coverage_pct": 100.0,
+    "required_critical_path_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/security_cryptographic_assurance_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

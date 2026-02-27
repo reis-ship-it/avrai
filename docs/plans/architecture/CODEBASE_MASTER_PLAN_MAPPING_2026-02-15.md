@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2880
+**Total mapped files:** 2883
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,18 +10,18 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2513 |
-| keep_review | 341 |
+| keep_update | 2515 |
+| keep_review | 342 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 873 |
+| testing-quality | 874 |
 | presentation | 381 |
 | core-services-general | 373 |
-| tooling-ops | 291 |
+| tooling-ops | 292 |
 | package-modules | 207 |
 | core-models | 141 |
 | supabase-infra | 124 |
@@ -38,7 +38,7 @@
 | config-and-theme | 15 |
 | security-signal | 14 |
 | app-composition-root | 13 |
-| security-services | 11 |
+| security-services | 12 |
 | monitoring-observability | 9 |
 | quantum-package | 7 |
 | data-platform-sql | 6 |
@@ -59,9 +59,9 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 385 |
+| lib/core/services | 386 |
 | lib/presentation/widgets | 204 |
-| test/unit/services | 188 |
+| test/unit/services | 189 |
 | lib/presentation/pages | 173 |
 | lib/core/models | 141 |
 | lib/core/ai | 111 |
