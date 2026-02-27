@@ -1,0 +1,26 @@
+import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
+import 'package:avrai/core/services/infrastructure/logger.dart';
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+
+class DiscoveryFallbackLane {
+  const DiscoveryFallbackLane._();
+
+  static Future<List<AIPersonalityNode>> fallback({
+    required AI2AIBroadcastService? realtimeService,
+    required AppLogger logger,
+    required String logName,
+  }) async {
+    if (realtimeService != null) {
+      try {
+        logger.info('Using realtime discovery', tag: logName);
+        return [];
+      } catch (e) {
+        logger.error('Error in realtime discovery: $e', tag: logName);
+      }
+    }
+
+    logger.warn('No discovery method available, returning empty list',
+        tag: logName);
+    return [];
+  }
+}

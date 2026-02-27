@@ -28,6 +28,7 @@ import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
+import 'package:avrai/core/ai2ai/discovery/discovery_fallback_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/physical_layer_discovery_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
@@ -2840,23 +2841,11 @@ class VibeConnectionOrchestrator {
       }
     }
 
-    // Fallback to realtime discovery (Supabase Realtime)
-    // This is the existing implementation
-    if (_realtimeService != null) {
-      try {
-        _logger.info('Using realtime discovery', tag: _logName);
-        // Realtime discovery would happen here
-        // For now, return empty list if physical layer fails
-        return [];
-      } catch (e) {
-        _logger.error('Error in realtime discovery: $e', tag: _logName);
-      }
-    }
-
-    // Final fallback: return empty list
-    _logger.warn('No discovery method available, returning empty list',
-        tag: _logName);
-    return [];
+    return DiscoveryFallbackLane.fallback(
+      realtimeService: _realtimeService,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<void> _primeOfflineSignalPreKeyBundleInSession({
