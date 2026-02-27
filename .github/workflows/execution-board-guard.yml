@@ -33,6 +33,7 @@ jobs:
         run: |
           dart --version
           dart run tool/update_execution_board.dart --check
+          dart run tool/update_three_prong_reviews.dart --check
           python3 scripts/runtime/generate_security_cryptographic_assurance_report.py --check
           python3 scripts/runtime/generate_trigger_orchestration_persistence_report.py --check
           python3 scripts/runtime/generate_memory_reliability_gates_report.py --check
