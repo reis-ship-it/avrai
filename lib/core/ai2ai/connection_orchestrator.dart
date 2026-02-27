@@ -46,8 +46,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_process
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_maintenance_loop.dart';
-import 'package:avrai/core/ai2ai/resilience/discovery_loop.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
@@ -1728,34 +1727,25 @@ class VibeConnectionOrchestrator {
   // Private helper methods
   Future<void> _startAI2AIDiscovery(
       String userId, PersonalityProfile personality) async {
-    _logger.info('Starting AI2AI discovery process', tag: _logName);
-
-    _discoveryTimer = DiscoveryLoop.start(
-      discoverNearby: () => discoverNearbyAIPersonalities(userId, personality),
-      onError: (error) => _logger.error(
-        'Error in periodic discovery',
-        error: error,
-        tag: _logName,
+    _discoveryTimer = await OrchestrationStartupLane.startDiscovery(
+      discoverNearby: () => discoverNearbyAIPersonalities(
+        userId,
+        personality,
+        throwOnError: true,
       ),
+      logger: _logger,
+      logName: _logName,
     );
-
-    // Perform initial discovery
-    await discoverNearbyAIPersonalities(userId, personality,
-        throwOnError: true);
   }
 
   Future<void> _startConnectionMaintenance() async {
-    _logger.info('Starting connection maintenance process', tag: _logName);
-
-    _connectionMaintenanceTimer = ConnectionMaintenanceLoop.start(
+    _connectionMaintenanceTimer =
+        OrchestrationStartupLane.startConnectionMaintenance(
       manageActiveConnections: manageActiveConnections,
       manageSessionLifecycle: _manageSessionLifecycle,
       managePreKeyBundleRotation: _managePreKeyBundleRotation,
-      onError: (error) => _logger.error(
-        'Error in connection maintenance',
-        error: error,
-        tag: _logName,
-      ),
+      logger: _logger,
+      logName: _logName,
     );
   }
 
