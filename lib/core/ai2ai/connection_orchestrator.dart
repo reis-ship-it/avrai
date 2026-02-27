@@ -37,6 +37,7 @@ import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/bloom_loop_guard.dart';
 import 'package:avrai/core/ai2ai/resilience/adaptive_hop_guard.dart';
+import 'package:avrai/core/ai2ai/resilience/gossip_fingerprint.dart';
 import 'package:avrai/core/ai2ai/resilience/mesh_packet_forwarder.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
@@ -2540,10 +2541,9 @@ class VibeConnectionOrchestrator {
     if (!_isFederatedLearningParticipationEnabled()) return;
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final messageHash =
-        sha256.convert(utf8.encode(jsonEncode(payload))).toString();
-    final scope =
-        payload['scope'] as String? ?? 'locality'; // Default to locality
+    final fingerprint = GossipFingerprint.fromPayload(payload);
+    final messageHash = fingerprint.messageHash;
+    final scope = fingerprint.scope;
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
     if (!BloomLoopGuard.allowForward(
@@ -3947,10 +3947,9 @@ class VibeConnectionOrchestrator {
         message['origin_id'] as String? ?? message['agent_id'] as String?;
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final messageHash =
-        sha256.convert(utf8.encode(jsonEncode(message))).toString();
-    final scope =
-        message['scope'] as String? ?? 'locality'; // Default to locality
+    final fingerprint = GossipFingerprint.fromPayload(message);
+    final messageHash = fingerprint.messageHash;
+    final scope = fingerprint.scope;
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
     if (!BloomLoopGuard.allowForward(
@@ -4178,10 +4177,9 @@ class VibeConnectionOrchestrator {
     if (!_isFederatedLearningParticipationEnabled()) return;
 
     // Bloom filter check (BEFORE adaptive hop limits) - AI2AI-specific
-    final messageHash =
-        sha256.convert(utf8.encode(jsonEncode(payload))).toString();
-    final scope =
-        payload['scope'] as String? ?? 'locality'; // Default to locality
+    final fingerprint = GossipFingerprint.fromPayload(payload);
+    final messageHash = fingerprint.messageHash;
+    final scope = fingerprint.scope;
     final bloomFilter = _getOrCreateBloomFilter(scope);
 
     if (!BloomLoopGuard.allowForward(
