@@ -39,6 +39,7 @@ import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
@@ -71,7 +72,6 @@ import 'package:avrai/core/models/business/business_expert_message.dart'
 import 'package:avrai/core/models/business/business_business_message.dart'
     as chat_models;
 import 'package:get_storage/get_storage.dart';
-import 'package:avrai/core/services/places/organic_spot_discovery_service.dart';
 
 /// OUR_GUTS.md: "AI2AI vibe-based connections that enable cross-personality learning while preserving privacy"
 /// Comprehensive connection orchestrator that manages AI2AI personality matching and learning
@@ -3865,44 +3865,12 @@ class VibeConnectionOrchestrator {
   Future<void> _handleIncomingOrganicSpotDiscovery(
       ProtocolMessage message) async {
     try {
-      final payload = message.payload;
-      final type = payload['type'] as String?;
-      if (type != 'organic_spot_discovery') return;
-
-      final geohash = payload['geohash'] as String?;
-      final visitCount = (payload['visitCount'] as num?)?.toInt() ?? 0;
-      final centroidLat = (payload['centroidLatitude'] as num?)?.toDouble();
-      final centroidLon = (payload['centroidLongitude'] as num?)?.toDouble();
-
-      if (geohash == null || centroidLat == null || centroidLon == null) return;
-      if (visitCount < 2) return; // Ignore noise
-
-      // Forward to organic spot discovery service
-      final sl = GetIt.instance;
-      if (sl.isRegistered<OrganicSpotDiscoveryService>()) {
-        try {
-          final discoveryService = sl<OrganicSpotDiscoveryService>();
-          final userId = _currentUserId;
-          if (userId == null) return;
-          await discoveryService.processMeshDiscoverySignal(
-            userId: userId,
-            geohash: geohash,
-            reportedVisitCount: visitCount,
-            centroidLatitude: centroidLat,
-            centroidLongitude: centroidLon,
-          );
-          _logger.debug(
-            'Processed organic spot discovery signal: $geohash '
-            '($visitCount visits reported)',
-            tag: _logName,
-          );
-        } catch (e) {
-          _logger.debug(
-            'Failed to process organic spot discovery signal: $e',
-            tag: _logName,
-          );
-        }
-      }
+      await IncomingOrganicSpotDiscoveryProcessor.process(
+        payload: message.payload,
+        currentUserId: _currentUserId,
+        logger: _logger,
+        logName: _logName,
+      );
     } catch (e, st) {
       _logger.error(
         'Failed to handle incoming organic spot discovery: $e',
