@@ -2585,9 +2585,10 @@ class VibeConnectionOrchestrator {
     if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort).
-    final candidates = MeshForwardingTargetSelector.select(
+    final candidates = MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
       discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-      excludedNodeIds: <String>{receivedFromDeviceId, originId},
+      receivedFromDeviceId: receivedFromDeviceId,
+      originId: originId,
       maxCandidates: 2,
     );
 
@@ -3368,9 +3369,10 @@ class VibeConnectionOrchestrator {
       }
 
       // Choose up to 2 nearby devices to forward to (best-effort)
-      final candidates = MeshForwardingTargetSelector.select(
+      final candidates = MeshForwardingTargetSelector.excludingRecipientAndLocalNode(
         discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-        excludedNodeIds: <String>{recipientId, _localBleNodeId},
+        recipientId: recipientId,
+        localNodeId: _localBleNodeId,
         maxCandidates: 2,
       );
 
@@ -3992,13 +3994,9 @@ class VibeConnectionOrchestrator {
     if (originId == _localBleNodeId) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
-    final excludedNodeIds = <String>{};
-    if (originId != null) {
-      excludedNodeIds.add(originId);
-    }
-    final candidates = MeshForwardingTargetSelector.select(
+    final candidates = MeshForwardingTargetSelector.excludingOptionalOrigin(
       discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-      excludedNodeIds: excludedNodeIds,
+      originId: originId,
       maxCandidates: 2,
     );
 
@@ -4236,9 +4234,10 @@ class VibeConnectionOrchestrator {
     if (forwardingContext == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
-    final candidates = MeshForwardingTargetSelector.select(
+    final candidates = MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
       discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
-      excludedNodeIds: <String>{receivedFromDeviceId, originId},
+      receivedFromDeviceId: receivedFromDeviceId,
+      originId: originId,
       maxCandidates: 2,
     );
 

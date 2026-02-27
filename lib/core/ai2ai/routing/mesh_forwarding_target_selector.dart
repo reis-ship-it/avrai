@@ -14,4 +14,46 @@ class MeshForwardingTargetSelector {
       maxCandidates: maxCandidates,
     );
   }
+
+  static List<String> excludingReceivedFromAndOrigin({
+    required Iterable<String> discoveredNodeIds,
+    required String receivedFromDeviceId,
+    required String originId,
+    int maxCandidates = 2,
+  }) {
+    return select(
+      discoveredNodeIds: discoveredNodeIds,
+      excludedNodeIds: <String>{receivedFromDeviceId, originId},
+      maxCandidates: maxCandidates,
+    );
+  }
+
+  static List<String> excludingRecipientAndLocalNode({
+    required Iterable<String> discoveredNodeIds,
+    required String recipientId,
+    required String localNodeId,
+    int maxCandidates = 2,
+  }) {
+    return select(
+      discoveredNodeIds: discoveredNodeIds,
+      excludedNodeIds: <String>{recipientId, localNodeId},
+      maxCandidates: maxCandidates,
+    );
+  }
+
+  static List<String> excludingOptionalOrigin({
+    required Iterable<String> discoveredNodeIds,
+    required String? originId,
+    int maxCandidates = 2,
+  }) {
+    final excludedNodeIds = <String>{};
+    if (originId != null) {
+      excludedNodeIds.add(originId);
+    }
+    return select(
+      discoveredNodeIds: discoveredNodeIds,
+      excludedNodeIds: excludedNodeIds,
+      maxCandidates: maxCandidates,
+    );
+  }
 }
