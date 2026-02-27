@@ -36,6 +36,7 @@ import 'package:avrai/core/ai2ai/routing/locality_agent_update_mesh_forwarding_l
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/routing/prekey_bundle_mesh_forwarding_lane.dart';
+import 'package:avrai/core/ai2ai/routing/learning_insight_peer_send_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_router.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';
@@ -1256,78 +1257,20 @@ class VibeConnectionOrchestrator {
     final recipientId =
         _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
     final insightId = const Uuid().v4();
-    const ttlMs = 60 * 60 * 1000; // 1 hour
-
-    // Payload schema v1 (kept intentionally small and bounded).
-    final payload = <String, dynamic>{
-      'schema_version': 1,
-      'insight_id': insightId,
-      'created_at': DateTime.now().toUtc().toIso8601String(),
-      'ttl_ms': ttlMs,
-      'learning_quality': learningQuality,
-      'insight_type': insight.type.name,
-      // Gossip fields (optional; ignored by older builds).
-      'origin_id': _localBleNodeId,
-      'hop': 0,
-      'dimension_insights': insight.dimensionInsights.map(
-        (k, v) => MapEntry(k, v.clamp(-0.35, 0.35)),
-      ),
-    };
-
-    try {
-      // Pattern 2: queue for optional cloud aggregation.
-      await _enqueueFederatedDeltaForCloudFromInsightPayload(payload);
-
-      final packetBytes = await protocol.encodePacketBytes(
-        type: MessageType.learningInsight,
-        payload: payload,
-        senderNodeId: _localBleNodeId,
-        recipientNodeId: recipientId,
-      );
-
-      // Best-effort, acked send (batch API uses ACK stream).
-      final results = await sendBlePacketsBatch(
-        device: device,
-        senderId: _localBleNodeId,
-        packetBytesList: <Uint8List>[packetBytes],
-      );
-      final ok = results.isNotEmpty && results.first;
-      if (ok) {
-        _logger.debug('Sent learning insight to $peerId', tag: _logName);
-      }
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_learning_insight_sent',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'ok': ok,
-            'peer_id': peerId,
-            'recipient_id': recipientId,
-            'insight_id': insightId,
-            'schema_version': 1,
-            'learning_quality': learningQuality,
-            'delta_dimensions_count': insight.dimensionInsights.length,
-          },
-        ));
-      }
-    } catch (e) {
-      _logger.debug('Failed to send learning insight to $peerId: $e',
-          tag: _logName);
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_learning_insight_send_failed',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'peer_id': peerId,
-            'recipient_id': recipientId,
-            'insight_id': insightId,
-            'error': e.toString(),
-          },
-        ));
-      }
-    }
+    await LearningInsightPeerSendLane.send(
+      protocol: protocol,
+      device: device,
+      peerId: peerId,
+      localBleNodeId: _localBleNodeId,
+      recipientId: recipientId,
+      insightId: insightId,
+      learningQuality: learningQuality,
+      insight: insight,
+      enqueueFederatedDeltaForCloudFromInsightPayload:
+          _enqueueFederatedDeltaForCloudFromInsightPayload,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<void> _publishSignalPreKeyPayloadIfAvailable() async {
