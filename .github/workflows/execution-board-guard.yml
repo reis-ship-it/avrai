@@ -51,6 +51,7 @@ jobs:
           python3 scripts/runtime/generate_memory_reliability_gates_report.py --check
           python3 scripts/runtime/generate_state_encoder_consistency_freshness_report.py --check
           python3 scripts/runtime/generate_energy_function_safety_regression_report.py --check
+          python3 scripts/runtime/generate_transition_predictor_drift_calibration_report.py --check
 
       - name: Validate deferred rename governance
         run: |

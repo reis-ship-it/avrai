@@ -39,9 +39,11 @@ Validation commands:
 - `Ready -> In Progress`: `M2-P1-1`
 - `Backlog -> In Progress`: `M2-P3-1`
 - `Backlog -> In Progress`: `M2-P4-1`
+- `Backlog -> In Progress`: `M2-P5-1`
 - `In Progress -> Done`: `M2-P1-1`
 - `In Progress -> Done`: `M2-P3-1`
 - `In Progress -> Done`: `M2-P4-1`
+- `In Progress -> Done`: `M2-P5-1`
 - `In Progress -> Done`: `M1-P7-2`, `M1-P8-1`, `M1-P8-2`
 - `In Progress -> Done`: `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 - `Any -> Blocked`:
@@ -84,9 +86,9 @@ Validation commands:
 
 ### 6) Next Week Plan
 
-1. Start `M2-P5-1` transition predictor drift/calibration controls baseline wiring.
-2. Queue `M2-P6-1` MPC safety envelope checks for the following execution slice.
-3. Prepare `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
+1. Start `M2-P6-1` MPC safety envelope checks baseline wiring.
+2. Prepare `M3-P9-1` federated advisory source weighting + quarantine metrics baseline.
+3. Prepare `M3-P11-1` integration governance + contract security gates baseline wiring.
 
 ### 7) Evidence Links
 
@@ -136,6 +138,10 @@ Validation commands:
 - M2-P4-1 energy safety/regression config + report automation: `configs/runtime/energy_function_safety_regression_controls.json`, `scripts/runtime/generate_energy_function_safety_regression_report.py`, `docs/plans/methodology/MASTER_PLAN_ENERGY_FUNCTION_SAFETY_REGRESSION_REPORT.md`
 - M2-P4-1 energy safety contract + tests: `lib/core/ml/energy_function_safety_contract.dart`, `test/unit/ml/energy_function_safety_contract_test.dart`
 - M2-P4-1 test report: `flutter test test/unit/ml/energy_function_safety_contract_test.dart` (pass)
+- M2-P5-1 transition predictor drift/calibration baseline: `docs/plans/methodology/M2_P5_1_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_BASELINE.md`
+- M2-P5-1 transition predictor drift/calibration config + report automation: `configs/runtime/transition_predictor_drift_calibration_controls.json`, `scripts/runtime/generate_transition_predictor_drift_calibration_report.py`, `docs/plans/methodology/MASTER_PLAN_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_REPORT.md`
+- M2-P5-1 transition predictor drift/calibration contract + tests: `lib/core/ml/transition_predictor_drift_calibration_contract.dart`, `test/unit/ml/transition_predictor_drift_calibration_contract_test.dart`
+- M2-P5-1 test report: `flutter test test/unit/ml/transition_predictor_drift_calibration_contract_test.dart` (pass)
 
 ---
 

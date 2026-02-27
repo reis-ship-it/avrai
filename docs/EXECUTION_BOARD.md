@@ -115,7 +115,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M2-P1-1 | 1 | 2 | Memory reliability gates | baseline | none | PRD-001, PRD-002, PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.2.12, 1.3.1 | lib/core/ai | AP, MLE | AP | none | 12 | High | Week 5-6 | Done | docs/plans/methodology/M2_P1_1_MEMORY_RELIABILITY_GATES_BASELINE.md, configs/runtime/memory_reliability_gates.json, scripts/runtime/generate_memory_reliability_gates_report.py, docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.json, docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.md, lib/core/ai/memory/memory_reliability_contract.dart, test/unit/ai/memory_reliability_contract_test.dart |
 | M2-P3-1 | 3 | 2 | State encoder consistency/freshness controls | baseline | none | PRD-010, PRD-011, PRD-033, PRD-034 | 3.1.1, 3.1.4, 3.2.1 | lib/core/models | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Done | docs/plans/methodology/M2_P3_1_STATE_ENCODER_CONSISTENCY_FRESHNESS_BASELINE.md, configs/runtime/state_encoder_consistency_freshness_controls.json, scripts/runtime/generate_state_encoder_consistency_freshness_report.py, docs/plans/methodology/MASTER_PLAN_STATE_ENCODER_CONSISTENCY_FRESHNESS_REPORT.json, docs/plans/methodology/MASTER_PLAN_STATE_ENCODER_CONSISTENCY_FRESHNESS_REPORT.md, lib/core/models/state_encoder_consistency_contract.dart, test/unit/models/state_encoder_consistency_contract_test.dart |
 | M2-P4-1 | 4 | 2 | Energy function safety and regression governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 4.1.3, 4.1.7, 4.5.7 | lib/core/ml | MLE | AP | M2-P3-1 | 20 | Critical | Week 7-8 | Done | docs/plans/methodology/M2_P4_1_ENERGY_FUNCTION_SAFETY_REGRESSION_BASELINE.md, configs/runtime/energy_function_safety_regression_controls.json, scripts/runtime/generate_energy_function_safety_regression_report.py, docs/plans/methodology/MASTER_PLAN_ENERGY_FUNCTION_SAFETY_REGRESSION_REPORT.json, docs/plans/methodology/MASTER_PLAN_ENERGY_FUNCTION_SAFETY_REGRESSION_REPORT.md, lib/core/ml/energy_function_safety_contract.dart, test/unit/ml/energy_function_safety_contract_test.dart |
-| M2-P5-1 | 5 | 2 | Transition predictor drift/calibration controls | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 5.1.3, 5.1.9, 5.2.1 | lib/core/ml | MLE | AP | M2-P4-1 | 20 | Critical | Week 8-9 | Backlog | - |
+| M2-P5-1 | 5 | 2 | Transition predictor drift/calibration controls | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 5.1.3, 5.1.9, 5.2.1 | lib/core/ml | MLE | AP | M2-P4-1 | 20 | Critical | Week 8-9 | Done | docs/plans/methodology/M2_P5_1_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_BASELINE.md, configs/runtime/transition_predictor_drift_calibration_controls.json, scripts/runtime/generate_transition_predictor_drift_calibration_report.py, docs/plans/methodology/MASTER_PLAN_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_REPORT.json, docs/plans/methodology/MASTER_PLAN_TRANSITION_PREDICTOR_DRIFT_CALIBRATION_REPORT.md, lib/core/ml/transition_predictor_drift_calibration_contract.dart, test/unit/ml/transition_predictor_drift_calibration_contract_test.dart |
 | M2-P6-1 | 6 | 2 | Planner guardrail and rollback-hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 6.2.1, 6.2.9, 6.2.10 | lib/core/ai | AP, MLE | AP | M2-P5-1 | 20 | Critical | Week 9-10 | Backlog | - |
 | M3-P11-1 | 11 | 3 | Integration governance + contract security gates | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 11.1.1, 11.2.1, 11.4.1 | lib/core/cloud | Integrations Platform | GOV | M3-P9-1 | 15 | High | Week 11-12 | Backlog | - |
 | M3-P9-1 | 9 | 3 | Business data/consent governance hardening | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 9.2.6, 9.3.1, 9.3.3 | lib/core/services/business | Business Platform, AP | GOV | M2-P6-1 | 12 | High | Week 10-11 | Backlog | - |
@@ -136,7 +136,7 @@ phase row + milestone row(s) + risk + gate criteria.
 <!-- EXECUTION_BOARD:KANBAN_START -->
 ### Backlog
 
-`M2-P5-1`, `M2-P6-1`, `M3-P11-1`, `M3-P9-1`
+`M2-P6-1`, `M3-P11-1`, `M3-P9-1`
 
 ### Ready
 
@@ -152,7 +152,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
+`M0-P10-2`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
