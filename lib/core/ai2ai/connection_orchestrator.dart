@@ -2294,13 +2294,11 @@ class VibeConnectionOrchestrator {
         updatedAt: DateTime.now(),
       );
 
-      // Save to GetStorage (same store as BusinessExpertChatServiceAI2AI uses)
-      final box = GetStorage('business_expert_messages');
-      final convId = chatMessage.conversationId;
-      final key = 'messages_$convId';
-      final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
-      existing.add(chatMessage.toJson());
-      await box.write(key, existing);
+      await _appendMessageToConversationStore(
+        boxName: 'business_expert_messages',
+        conversationId: chatMessage.conversationId,
+        messageJson: chatMessage.toJson(),
+      );
 
       _logger.debug(
         'Saved incoming business-expert chat message: $messageId',
@@ -2397,13 +2395,11 @@ class VibeConnectionOrchestrator {
         updatedAt: DateTime.now(),
       );
 
-      // Save to GetStorage (same store as BusinessBusinessChatServiceAI2AI uses)
-      final box = GetStorage('business_business_messages');
-      final convId = chatMessage.conversationId;
-      final key = 'messages_$convId';
-      final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
-      existing.add(chatMessage.toJson());
-      await box.write(key, existing);
+      await _appendMessageToConversationStore(
+        boxName: 'business_business_messages',
+        conversationId: chatMessage.conversationId,
+        messageJson: chatMessage.toJson(),
+      );
 
       _logger.debug(
         'Saved incoming business-business chat message: $messageId',
@@ -2448,6 +2444,18 @@ class VibeConnectionOrchestrator {
       failureLabel: 'Learning insight gossip forward failed',
       maxCandidates: 2,
     );
+  }
+
+  Future<void> _appendMessageToConversationStore({
+    required String boxName,
+    required String conversationId,
+    required Map<String, dynamic> messageJson,
+  }) async {
+    final box = GetStorage(boxName);
+    final key = 'messages_$conversationId';
+    final List<dynamic> existing = box.read<List<dynamic>>(key) ?? [];
+    existing.add(messageJson);
+    await box.write(key, existing);
   }
 
   // Private helper methods
