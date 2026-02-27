@@ -12,17 +12,15 @@ import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
-import 'package:avrai/core/ai/privacy_protection.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
-import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/deterministic_test_vibe_builder_lane.dart';
+import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
@@ -39,10 +37,13 @@ import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_l
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_peer_dispatch_lane.dart';
-import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_bootstrap_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
@@ -64,6 +65,8 @@ import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_learning_buffer_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_worthiness_validation_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_attempt_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/personality_advertising_update_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dart';
@@ -275,38 +278,22 @@ class VibeConnectionOrchestrator {
     required PersonalityProfile personality,
     required List<DiscoveredDevice> devices,
   }) async {
-    _currentUserId = userId;
-    _currentPersonality = personality;
-
-    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
-    if (!discoveryEnabled) return;
-
-    final localVibe = DeterministicTestVibeBuilderLane.build(
+    await DebugHotPathSimulationLane.run(
       userId: userId,
       personality: personality,
+      devices: devices,
+      prefs: _prefs,
+      vibeAnalyzer: _vibeAnalyzer,
+      hotRssiThresholdDbm: _hotRssiThresholdDbm,
+      isConnectionWorthy: _isConnectionWorthy,
+      updateDiscoveredNodes: _updateDiscoveredNodes,
+      setCurrentUser: (value) {
+        _currentUserId = value;
+      },
+      setCurrentPersonality: (value) {
+        _currentPersonality = value;
+      },
     );
-
-    for (final device in devices) {
-      if (device.type != DeviceType.bluetooth) continue;
-      final rssi = device.signalStrength;
-      if (rssi == null || rssi < _hotRssiThresholdDbm) continue;
-      final personalityData = device.personalityData;
-      if (personalityData == null) continue;
-
-      final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
-      final node = TrustedNodeFactory.fromProximity(
-        nodeId: device.deviceId,
-        vibe: vibe,
-        lastSeen: device.discoveredAt,
-        proximityScore: device.proximityScore,
-      );
-
-      final compatibility =
-          await _vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
-      if (!_isConnectionWorthy(compatibility)) continue;
-
-      _updateDiscoveredNodes(<AIPersonalityNode>[node]);
-    }
   }
 
   // Dedupe learning insights: insightId -> expiresAtMs
@@ -382,45 +369,22 @@ class VibeConnectionOrchestrator {
     String userId,
     PersonalityProfile updatedPersonality,
   ) async {
-    if (_advertisingService == null) {
-      return;
-    }
-
-    // Respect the user-controlled discovery switch.
-    final discoveryEnabled = _prefs.getBool('discovery_enabled') ?? false;
-    if (!discoveryEnabled) return;
-
-    // Keep a current reference for fast-path compatibility checks.
-    _currentPersonality = updatedPersonality;
-
-    try {
-      _logger.info(
-          'Updating personality advertising after evolution (generation ${updatedPersonality.evolutionGeneration})',
-          tag: _logName);
-
-      final eventModeEnabled = _isEventModeEnabled();
-      final vibe =
-          await _vibeAnalyzer.compileUserVibe(userId, updatedPersonality);
-      final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
-
-      final success = await _advertisingService.updatePersonalityData(
-        personalityData: anonymized,
-        nodeId: _localBleNodeId,
-        eventModeEnabled: eventModeEnabled,
-        connectOk: _lastAdvertisedConnectOk,
-        brownout: _lastAdvertisedBrownout,
-      );
-
-      if (success) {
-        _logger.info('Personality advertising updated successfully',
-            tag: _logName);
-      } else {
-        _logger.warn('Failed to update personality advertising', tag: _logName);
-      }
-    } catch (e) {
-      _logger.error('Error updating personality advertising',
-          error: e, tag: _logName);
-    }
+    await PersonalityAdvertisingUpdateLane.update(
+      userId: userId,
+      updatedPersonality: updatedPersonality,
+      advertisingService: _advertisingService,
+      prefs: _prefs,
+      vibeAnalyzer: _vibeAnalyzer,
+      localBleNodeId: () => _localBleNodeId,
+      eventModeEnabled: _isEventModeEnabled(),
+      lastAdvertisedConnectOk: _lastAdvertisedConnectOk,
+      lastAdvertisedBrownout: _lastAdvertisedBrownout,
+      setCurrentPersonality: (profile) {
+        _currentPersonality = profile;
+      },
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Set up automatic personality advertising updates
@@ -500,14 +464,12 @@ class VibeConnectionOrchestrator {
         ));
       }
 
-      // Android-only: keep BLE work alive in the background.
-      // Note: Android requires a foreground service notification; cannot be truly "silent".
-      if (_allowBleSideEffects &&
-          !kIsWeb &&
-          defaultTargetPlatform == TargetPlatform.android) {
-        final started = await BleForegroundService.startService();
-        if (started) {
-          _logger.info('Android BLE foreground service started', tag: _logName);
+      await OrchestrationBootstrapLane.bootstrap(
+        allowBleSideEffects: _allowBleSideEffects,
+        isWeb: kIsWeb,
+        isAndroid: defaultTargetPlatform == TargetPlatform.android,
+        startBleForegroundService: BleForegroundService.startService,
+        onBleForegroundServiceStarted: () {
           if (LedgerAuditV0.isEnabled) {
             unawaited(LedgerAuditV0.tryAppend(
               domain: LedgerDomainV0.deviceCapability,
@@ -518,9 +480,8 @@ class VibeConnectionOrchestrator {
               },
             ));
           }
-        } else {
-          _logger.warn('Android BLE foreground service failed to start',
-              tag: _logName);
+        },
+        onBleForegroundServiceFailed: () {
           if (LedgerAuditV0.isEnabled) {
             unawaited(LedgerAuditV0.tryAppend(
               domain: LedgerDomainV0.deviceCapability,
@@ -531,117 +492,53 @@ class VibeConnectionOrchestrator {
               },
             ));
           }
-        }
-      }
-
-      // Publish Signal prekey payload for offline bootstrap (Mode 2).
-      // This is best-effort: if Signal isn't initialized yet, advertising can still proceed.
-      if (_allowBleSideEffects) {
-        await PrekeyPayloadPublishLane.publishIfAvailable(
-          signalKeyManager: _signalKeyManager,
-          localBleNodeId: _localBleNodeId,
-          logger: _logger,
-          logName: _logName,
-        );
-      }
-
-      // Initialize realtime service if available
-      if (_realtimeService != null) {
-        final realtimeInitialized = await _realtimeService!.initialize();
-        if (realtimeInitialized) {
-          _logger.info('Realtime Service initialized', tag: _logName);
-          await _setupRealtimeListeners();
-        } else {
-          _logger.warn('Realtime Service failed to initialize', tag: _logName);
-        }
-      }
-
-      // Start personality advertising (make this device discoverable).
-      // BLE side-effects are disabled by default on iOS (simulator safety).
-      if (_allowBleSideEffects && _advertisingService != null) {
-        final eventModeEnabled = _isEventModeEnabled();
-        final vibe = await _vibeAnalyzer.compileUserVibe(userId, personality);
-        final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
-
-        final advertisingStarted = await _advertisingService.startAdvertising(
-          personalityData: anonymized,
-          nodeId: _localBleNodeId,
-          eventModeEnabled: eventModeEnabled,
-          connectOk: false,
-          brownout: false,
-        );
-        if (advertisingStarted) {
-          _logger.info('Personality advertising started', tag: _logName);
-        } else {
-          _logger.warn('Personality advertising failed to start',
-              tag: _logName);
-        }
-      }
-
-      // Start device discovery (find other devices).
-      // Performance optimization: Add throttling delays between BLE operations
-      // to reduce context switching and improve battery life.
-      if (_allowBleSideEffects && _deviceDiscovery != null) {
-        // Continuous scanning: back-to-back scan windows (walk-by capture).
-        _deviceDiscovery.onDevicesDiscovered(_onDevicesDiscoveredHotPath);
-        await _deviceDiscovery.startDiscovery(
-          scanInterval: Duration.zero,
-          scanWindow: _hotScanWindow,
-          deviceTimeout: _hotDeviceTimeout,
-        );
-        _logger.info('Device discovery started', tag: _logName);
-
-        // Throttle: Add delay before starting battery scheduler to reduce context switching
-        await Future.delayed(const Duration(milliseconds: 300));
-
-        // Battery-adaptive scan scheduling (best-effort).
-        _batteryScheduler?.stop();
-        _batteryScheduler = BatteryAdaptiveBleScheduler(
-          discovery: _deviceDiscovery,
-          prefs: _prefs,
-        );
-        await _batteryScheduler!.start();
-
-        // Throttle: Add delay before starting adaptive mesh service
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        // Initialize adaptive mesh networking service
-        _adaptiveMeshService?.stop();
-        _adaptiveMeshService = AdaptiveMeshNetworkingService(
-          batteryScheduler: _batteryScheduler!,
-          discovery: _deviceDiscovery,
-        );
-        await _adaptiveMeshService!.start();
-      }
-
-      // Throttle: Add delay before starting AI2AI discovery to batch BLE operations
-      if (_allowBleSideEffects) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        await _startAI2AIDiscovery(userId, personality);
-      } else {
-        _logger.info(
-          'BLE side-effects disabled; skipping AI2AI discovery timers',
-          tag: _logName,
-        );
-      }
-
-      // Start processing incoming BLE inbox messages (silent background).
-      // This is non-blocking, so no delay needed here.
-      if (_allowBleSideEffects) {
-        _startBleInboxProcessing();
-      }
-
-      // Start federated (hybrid) sync:
-      // - Pattern 1: BLE gossip happens opportunistically via learningInsight messages
-      // - Pattern 2: Optional cloud aggregation when online (edge function)
-      // This is non-blocking, so no delay needed here.
-      _startFederatedCloudSync();
-
-      // Throttle: Add delay before connection maintenance to allow BLE operations to stabilize
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      // Begin connection maintenance
-      await _startConnectionMaintenance();
+        },
+        publishPrekeyPayload: () {
+          return PrekeyPayloadPublishLane.publishIfAvailable(
+            signalKeyManager: _signalKeyManager,
+            localBleNodeId: _localBleNodeId,
+            logger: _logger,
+            logName: _logName,
+          );
+        },
+        initializeRealtime: _realtimeService?.initialize,
+        setupRealtimeListeners: _setupRealtimeListeners,
+        startAdvertising: () {
+          return PersonalityAdvertisingStartLane.startIfAllowed(
+            allowBleSideEffects: _allowBleSideEffects,
+            advertisingService: _advertisingService,
+            vibeAnalyzer: _vibeAnalyzer,
+            userId: userId,
+            personality: personality,
+            localBleNodeId: _localBleNodeId,
+            eventModeEnabled: _isEventModeEnabled(),
+            logger: _logger,
+            logName: _logName,
+          );
+        },
+        startDiscovery: () async {
+          final discoveryStart = await BleDiscoveryStartLane.startIfAllowed(
+            allowBleSideEffects: _allowBleSideEffects,
+            deviceDiscovery: _deviceDiscovery,
+            prefs: _prefs,
+            hotScanWindow: _hotScanWindow,
+            hotDeviceTimeout: _hotDeviceTimeout,
+            onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
+            existingBatteryScheduler: _batteryScheduler,
+            existingAdaptiveMeshService: _adaptiveMeshService,
+            logger: _logger,
+            logName: _logName,
+          );
+          _batteryScheduler = discoveryStart.batteryScheduler;
+          _adaptiveMeshService = discoveryStart.adaptiveMeshService;
+        },
+        startAi2AiDiscovery: () => _startAI2AIDiscovery(userId, personality),
+        startBleInboxProcessing: _startBleInboxProcessing,
+        startFederatedCloudSync: _startFederatedCloudSync,
+        startConnectionMaintenance: _startConnectionMaintenance,
+        logger: _logger,
+        logName: _logName,
+      );
 
       _isInitialized = true;
       if (LedgerAuditV0.isEnabled) {
@@ -1024,35 +921,61 @@ class VibeConnectionOrchestrator {
     PersonalityProfile localPersonality,
     AIPersonalityNode remoteNode,
   ) async {
-    if (_isConnecting) {
-      _logger.debug('Connection establishment already in progress',
-          tag: _logName);
-      return null;
-    }
-
-    // Check connection cooldown
-    if (ConnectionRoutingPolicy.isInCooldown(
-      cooldowns: _connectionCooldowns,
-      nodeId: remoteNode.nodeId,
-    )) {
-      _logger.debug('Connection to ${remoteNode.nodeId} is in cooldown period',
-          tag: _logName);
-      return null;
-    }
-
-    // Check active connection limits
-    if (_activeConnections.length >= VibeConstants.maxSimultaneousConnections) {
-      _logger.warn('Maximum simultaneous connections reached', tag: _logName);
-      return null;
-    }
-
-    final shouldAttemptConnection =
-        await ConnectionWorthinessValidationLane.validateOrCooldown(
-      vibeAnalyzer: _vibeAnalyzer,
-      localUserId: localUserId,
-      localPersonality: localPersonality,
-      remoteNode: remoteNode,
-      isConnectionWorthy: _isConnectionWorthy,
+    return ConnectionAttemptLane.run(
+      isConnecting: _isConnecting,
+      isInCooldown: ConnectionRoutingPolicy.isInCooldown(
+        cooldowns: _connectionCooldowns,
+        nodeId: remoteNode.nodeId,
+      ),
+      hasReachedMaxConnections:
+          _activeConnections.length >= VibeConstants.maxSimultaneousConnections,
+      remoteNodeId: remoteNode.nodeId,
+      validateWorthiness: () async {
+        return ConnectionWorthinessValidationLane.validateOrCooldown(
+          vibeAnalyzer: _vibeAnalyzer,
+          localUserId: localUserId,
+          localPersonality: localPersonality,
+          remoteNode: remoteNode,
+          isConnectionWorthy: _isConnectionWorthy,
+          setCooldown: (nodeId) {
+            ConnectionRoutingPolicy.setCooldown(
+              cooldowns: _connectionCooldowns,
+              nodeId: nodeId,
+            );
+          },
+          logger: _logger,
+          logName: _logName,
+        );
+      },
+      setIsConnecting: (value) {
+        _isConnecting = value;
+      },
+      establishConnection: () {
+        return _connectionManager.establish(
+          localUserId,
+          localPersonality,
+          remoteNode,
+          (localVibe, remote, comp, metrics) =>
+              ConnectionEstablishmentLane.establish(
+            protocol: _protocol,
+            signalKeyManager: _signalKeyManager,
+            knotWeavingService: _knotWeavingService,
+            knotStorageService: _knotStorageService,
+            localVibe: localVibe,
+            remoteNode: remote,
+            compatibility: comp,
+            initialMetrics: metrics,
+            localAgentId: localPersonality.agentId,
+            remoteAgentId: remoteNode.nodeId,
+            logger: _logger,
+            logName: _logName,
+          ),
+        );
+      },
+      onEstablished: (connection) {
+        _activeConnections[connection.connectionId] = connection;
+        _scheduleConnectionManagement(connection);
+      },
       setCooldown: (nodeId) {
         ConnectionRoutingPolicy.setCooldown(
           cooldowns: _connectionCooldowns,
@@ -1062,73 +985,6 @@ class VibeConnectionOrchestrator {
       logger: _logger,
       logName: _logName,
     );
-    if (!shouldAttemptConnection) {
-      return null;
-    }
-
-    _isConnecting = true;
-
-    try {
-      // #region agent log
-      _logger.info('Establishing connection with node: ${remoteNode.nodeId}',
-          tag: _logName);
-      // #endregion
-
-      final establishedConnection = await _connectionManager.establish(
-        localUserId,
-        localPersonality,
-        remoteNode,
-        (localVibe, remote, comp, metrics) =>
-            ConnectionEstablishmentLane.establish(
-          protocol: _protocol,
-          signalKeyManager: _signalKeyManager,
-          knotWeavingService: _knotWeavingService,
-          knotStorageService: _knotStorageService,
-          localVibe: localVibe,
-          remoteNode: remote,
-          compatibility: comp,
-          initialMetrics: metrics,
-          localAgentId: localPersonality.agentId,
-          remoteAgentId: remoteNode.nodeId,
-          logger: _logger,
-          logName: _logName,
-        ),
-      );
-
-      if (establishedConnection != null) {
-        // Store active connection
-        _activeConnections[establishedConnection.connectionId] =
-            establishedConnection;
-
-        // Schedule connection management
-        _scheduleConnectionManagement(establishedConnection);
-
-        // #region agent log
-        _logger.info(
-            'Connection established (ID: ${establishedConnection.connectionId})',
-            tag: _logName);
-        // #endregion
-        return establishedConnection;
-      } else {
-        _logger.warn('Failed to establish connection', tag: _logName);
-        ConnectionRoutingPolicy.setCooldown(
-          cooldowns: _connectionCooldowns,
-          nodeId: remoteNode.nodeId,
-        );
-        return null;
-      }
-    } catch (e) {
-      // #region agent log
-      _logger.error('Error establishing connection', error: e, tag: _logName);
-      // #endregion
-      ConnectionRoutingPolicy.setCooldown(
-        cooldowns: _connectionCooldowns,
-        nodeId: remoteNode.nodeId,
-      );
-      return null;
-    } finally {
-      _isConnecting = false;
-    }
   }
 
   /// Manage active AI2AI connections for learning and quality
@@ -1186,42 +1042,26 @@ class VibeConnectionOrchestrator {
     _logger.info('Shutting down orchestration', tag: _logName);
     _isInitialized = false;
 
-    // Cancel timers
-    _discoveryTimer?.cancel();
-    _connectionMaintenanceTimer?.cancel();
-    _bleInboxPoller?.cancel();
-    _federatedCloudSyncTimer?.cancel();
-    await _federatedCloudConnectivitySub?.cancel();
+    await OrchestrationShutdownLane.stopRuntime(
+      discoveryTimer: _discoveryTimer,
+      connectionMaintenanceTimer: _connectionMaintenanceTimer,
+      bleInboxPoller: _bleInboxPoller,
+      federatedCloudSyncTimer: _federatedCloudSyncTimer,
+      federatedCloudConnectivitySub: _federatedCloudConnectivitySub,
+      batteryScheduler: _batteryScheduler,
+      adaptiveMeshService: _adaptiveMeshService,
+      deviceDiscovery: _deviceDiscovery,
+      advertisingService: _advertisingService,
+      allowBleSideEffects: _allowBleSideEffects,
+      isWeb: kIsWeb,
+      isAndroid: defaultTargetPlatform == TargetPlatform.android,
+      stopBleForegroundService: BleForegroundService.stopService,
+      logger: _logger,
+      logName: _logName,
+    );
     _federatedCloudConnectivitySub = null;
-    await _batteryScheduler?.stop();
     _batteryScheduler = null;
-    await _adaptiveMeshService?.stop();
     _adaptiveMeshService = null;
-
-    // Stop discovery + advertising (best-effort).
-    try {
-      _deviceDiscovery?.stopDiscovery();
-    } catch (e) {
-      _logger.debug('Error stopping device discovery: $e', tag: _logName);
-    }
-    try {
-      await _advertisingService?.stopAdvertising();
-    } catch (e) {
-      _logger.debug('Error stopping personality advertising: $e',
-          tag: _logName);
-    }
-
-    // Android-only: stop BLE foreground runtime if we started it.
-    if (_allowBleSideEffects &&
-        !kIsWeb &&
-        defaultTargetPlatform == TargetPlatform.android) {
-      try {
-        await BleForegroundService.stopService();
-      } catch (e) {
-        _logger.debug('Error stopping Android BLE foreground service: $e',
-            tag: _logName);
-      }
-    }
 
     await ConnectionShutdownCleanupLane.run(
       activeConnections: _activeConnections,
