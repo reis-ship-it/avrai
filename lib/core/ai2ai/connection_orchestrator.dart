@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
-import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
@@ -69,6 +68,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_identity_binding_lane.dar
 import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -77,12 +77,10 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
 import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart' as mesh_policy;
-import 'package:avrai/core/ai2ai/embedding_delta_collector.dart';
 import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
 import 'package:avrai/core/services/user/user_anonymization_service.dart';
-import 'package:avrai/core/ml/onnx_dimension_scorer.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
@@ -1854,99 +1852,15 @@ class VibeConnectionOrchestrator {
   Future<void> syncFederatedCloudQueue() => _syncFederatedCloudQueue();
 
   Future<void> _syncFederatedCloudQueue() async {
-    if (!_isFederatedLearningParticipationEnabled()) return;
-
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    // Avoid spamming edge function if multiple triggers happen at once.
-    if (nowMs - _lastFederatedCloudSyncAttemptMs < 30 * 1000) return;
-    _lastFederatedCloudSyncAttemptMs = nowMs;
-
-    final supabase = SupabaseService();
-    if (!supabase.isAvailable) return;
-    final user = supabase.currentUser;
-    if (user == null) return;
-
-    final list = _prefs.getStringList(_prefsKeyFederatedCloudQueue) ?? const [];
-    if (list.isEmpty) return;
-
-    final batch = <Map<String, dynamic>>[];
-    final remaining = <String>[];
-
-    // Upload up to 50 entries at a time.
-    for (final s in list) {
-      if (batch.length >= 50) {
-        remaining.add(s);
-        continue;
-      }
-      try {
-        final decoded = jsonDecode(s) as Map<String, dynamic>;
-        batch.add(decoded);
-      } catch (_) {
-        // Drop unparseable entries.
-      }
-    }
-
-    if (batch.isEmpty) {
-      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, remaining);
-      return;
-    }
-
-    try {
-      final res = await supabase.client.functions.invoke(
-        'federated-sync',
-        body: <String, dynamic>{
-          'schema_version': 1,
-          'source': 'ai2ai_ble',
-          'deltas': batch,
-        },
-      );
-
-      final status = res.status;
-      if (status != 200) {
-        _logger.debug('Federated sync failed: HTTP $status', tag: _logName);
-        return;
-      }
-
-      // Optional: apply returned global average deltas as a lightweight "prior"
-      // to on-device scoring. This makes the cloud aggregation path real without
-      // requiring full model weight updates.
-      try {
-        final decoded =
-            res.data is String ? jsonDecode(res.data as String) : res.data;
-        if (decoded is Map) {
-          final global = decoded['global_average_deltas'];
-          if (global is Map) {
-            final priors = <EmbeddingDelta>[];
-            for (final entry in global.entries) {
-              final category = entry.key?.toString() ?? 'general';
-              final value = entry.value;
-              if (value is! List) continue;
-              final vec = value
-                  .whereType<num>()
-                  .map((n) => n.toDouble().clamp(-0.35, 0.35))
-                  .toList();
-              if (vec.isEmpty) continue;
-              priors.add(EmbeddingDelta(
-                delta: vec,
-                timestamp: DateTime.now(),
-                category: category,
-              ));
-            }
-            if (priors.isNotEmpty) {
-              await OnnxDimensionScorer().updateWithDeltas(priors);
-            }
-          }
-        }
-      } catch (e) {
-        _logger.debug('Federated priors apply failed (non-blocking): $e',
-            tag: _logName);
-      }
-
-      // Success: remove the uploaded batch from the queue.
-      await _prefs.setStringList(_prefsKeyFederatedCloudQueue, remaining);
-    } catch (e) {
-      _logger.debug('Federated sync exception: $e', tag: _logName);
-    }
+    _lastFederatedCloudSyncAttemptMs = await FederatedCloudSyncLane.run(
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+      lastFederatedCloudSyncAttemptMs: _lastFederatedCloudSyncAttemptMs,
+      prefs: _prefs,
+      prefsKeyQueue: _prefsKeyFederatedCloudQueue,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   void _loadSeenLearningInsightIds() {
