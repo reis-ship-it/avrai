@@ -32,6 +32,7 @@ import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
+import 'package:avrai/core/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -269,14 +270,11 @@ class VibeConnectionOrchestrator {
       if (personalityData == null) continue;
 
       final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
-      final trustScore = device.proximityScore * 0.7 + 0.3;
-
-      final node = AIPersonalityNode(
+      final node = TrustedNodeFactory.fromProximity(
         nodeId: device.deviceId,
         vibe: vibe,
         lastSeen: device.discoveredAt,
-        trustScore: trustScore,
-        learningHistory: {},
+        proximityScore: device.proximityScore,
       );
 
       final compatibility =
@@ -1018,16 +1016,12 @@ class VibeConnectionOrchestrator {
 
       final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
 
-      final proximityScore =
-          _deviceDiscovery?.calculateProximity(device) ?? 0.5;
-      final trustScore = proximityScore * 0.7 + 0.3;
-
-      final node = AIPersonalityNode(
+      final proximityScore = _deviceDiscovery?.calculateProximity(device) ?? 0.5;
+      final node = TrustedNodeFactory.fromProximity(
         nodeId: device.deviceId,
         vibe: vibe,
         lastSeen: device.discoveredAt,
-        trustScore: trustScore,
-        learningHistory: {},
+        proximityScore: proximityScore,
       );
 
       final compatSw = Stopwatch()..start();
@@ -3167,17 +3161,13 @@ class VibeConnectionOrchestrator {
           // Create vibe from anonymized data
           final vibe = AnonymizedVibeMapper.toUserVibe(personalityData);
 
-          // Calculate trust score based on proximity and signal strength
+          // Calculate node trust score based on proximity signal.
           final proximityScore = _deviceDiscovery.calculateProximity(device);
-          final trustScore =
-              proximityScore * 0.7 + 0.3; // Base trust + proximity
-
-          final node = AIPersonalityNode(
+          final node = TrustedNodeFactory.fromProximity(
             nodeId: device.deviceId,
             vibe: vibe,
             lastSeen: device.discoveredAt,
-            trustScore: trustScore,
-            learningHistory: {},
+            proximityScore: proximityScore,
           );
 
           nodes.add(node);
