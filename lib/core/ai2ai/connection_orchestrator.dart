@@ -42,6 +42,7 @@ import 'package:avrai/core/ai2ai/chat/incoming_chat_payload_helpers.dart';
 import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
+import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_side_effects.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
@@ -2453,31 +2454,32 @@ class VibeConnectionOrchestrator {
     required double learningQuality,
     required Map<String, double> deltas,
   }) async {
-    if (_isEventModeEnabled()) {
-      _bufferEventLearningInsight(EventModeBufferedLearningInsight(
-        source: source,
-        insightId: insightId,
-        senderDeviceId: peerId,
-        receivedAt: now,
-        learningQuality: learningQuality,
-        deltas: deltas,
-      ));
-      _lastAi2AiLearningAtByPeerId[peerId] = now;
-      return false;
-    }
-
-    await personalityLearning.evolveFromAI2AILearning(userId, insight);
-    _lastAi2AiLearningAtByPeerId[peerId] = now;
-
-    ContinuousLearningMirror.mirrorInsight(
-      userId: userId,
-      insight: insight,
-      peerId: peerId,
-      logger: _logger,
-      logTag: _logName,
+    return LearningInsightApplicationLane.apply(
+      eventModeEnabled: _isEventModeEnabled(),
+      evolveFromAi2AiLearning: () =>
+          personalityLearning.evolveFromAI2AILearning(userId, insight),
+      onEventModeBuffer: () {
+        _bufferEventLearningInsight(EventModeBufferedLearningInsight(
+          source: source,
+          insightId: insightId,
+          senderDeviceId: peerId,
+          receivedAt: now,
+          learningQuality: learningQuality,
+          deltas: deltas,
+        ));
+        _lastAi2AiLearningAtByPeerId[peerId] = now;
+      },
+      onApplied: () {
+        _lastAi2AiLearningAtByPeerId[peerId] = now;
+        ContinuousLearningMirror.mirrorInsight(
+          userId: userId,
+          insight: insight,
+          peerId: peerId,
+          logger: _logger,
+          logTag: _logName,
+        );
+      },
     );
-
-    return true;
   }
 
   /// Manage Signal Protocol session lifecycle for AI2AI connections
