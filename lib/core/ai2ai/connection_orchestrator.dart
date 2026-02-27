@@ -29,6 +29,7 @@ import 'package:avrai/core/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/node_compatibility_analyzer.dart';
+import 'package:avrai/core/ai2ai/discovery/peer_candidate_selector.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
@@ -2585,11 +2586,11 @@ class VibeConnectionOrchestrator {
     if (discovery == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort).
-    final candidates = _discoveredNodes.values
-        .map((n) => n.nodeId)
-        .where((id) => id != receivedFromDeviceId && id != originId)
-        .take(2)
-        .toList();
+    final candidates = PeerCandidateSelector.select(
+      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      excludedNodeIds: <String>{receivedFromDeviceId, originId},
+      maxCandidates: 2,
+    );
 
     if (candidates.isEmpty) return;
 
@@ -3374,11 +3375,11 @@ class VibeConnectionOrchestrator {
       }
 
       // Choose up to 2 nearby devices to forward to (best-effort)
-      final candidates = _discoveredNodes.values
-          .map((n) => n.nodeId)
-          .where((id) => id != recipientId && id != _localBleNodeId)
-          .take(2)
-          .toList();
+      final candidates = PeerCandidateSelector.select(
+        discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+        excludedNodeIds: <String>{recipientId, _localBleNodeId},
+        maxCandidates: 2,
+      );
 
       if (candidates.isEmpty) {
         return;
@@ -4015,11 +4016,15 @@ class VibeConnectionOrchestrator {
     if (originId == _localBleNodeId) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
-    final candidates = _discoveredNodes.values
-        .map((n) => n.nodeId)
-        .where((id) => id != originId)
-        .take(2)
-        .toList();
+    final excludedNodeIds = <String>{};
+    if (originId != null) {
+      excludedNodeIds.add(originId);
+    }
+    final candidates = PeerCandidateSelector.select(
+      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      excludedNodeIds: excludedNodeIds,
+      maxCandidates: 2,
+    );
 
     if (candidates.isEmpty) return;
 
@@ -4262,11 +4267,11 @@ class VibeConnectionOrchestrator {
     if (discovery == null) return;
 
     // Choose up to 2 nearby devices to forward to (best-effort)
-    final candidates = _discoveredNodes.values
-        .map((n) => n.nodeId)
-        .where((id) => id != receivedFromDeviceId && id != originId)
-        .take(2)
-        .toList();
+    final candidates = PeerCandidateSelector.select(
+      discoveredNodeIds: _discoveredNodes.values.map((n) => n.nodeId),
+      excludedNodeIds: <String>{receivedFromDeviceId, originId},
+      maxCandidates: 2,
+    );
 
     if (candidates.isEmpty) return;
 
