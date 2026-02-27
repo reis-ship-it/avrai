@@ -3899,26 +3899,15 @@ class VibeConnectionOrchestrator {
       final payload = Map<String, dynamic>.from(signal);
       payload['origin_id'] = _localBleNodeId;
 
-      for (final peerId in candidates) {
-        final device = discovery.getDevice(peerId);
-        if (device == null) continue;
-        if (device.type != DeviceType.bluetooth) continue;
-
-        final recipientId =
-            _peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-        final packetBytes = await protocol.encodePacketBytes(
-          type: MessageType.learningInsight,
-          payload: payload,
-          senderNodeId: _localBleNodeId,
-          recipientNodeId: recipientId,
-        );
-
-        await sendBlePacketsBatch(
-          device: device,
-          senderId: _localBleNodeId,
-          packetBytesList: <Uint8List>[packetBytes],
-        );
-      }
+      await MeshPacketForwarder.forwardToCandidates(
+        candidatePeerIds: candidates,
+        discovery: discovery,
+        protocol: protocol,
+        senderNodeId: _localBleNodeId,
+        peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+        messageType: MessageType.learningInsight,
+        payload: payload,
+      );
 
       _logger.debug(
         'Shared organic spot discovery through mesh: '
