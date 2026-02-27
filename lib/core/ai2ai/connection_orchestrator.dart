@@ -2149,30 +2149,15 @@ class VibeConnectionOrchestrator {
         deltas: deltas,
       );
 
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_learning_insight_received',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'insight_id': insightId,
-            'sender_device_id': sender,
-            'origin_id': originId,
-            'hop': hop,
-            'schema_version': 1,
-            'learning_quality': learningQuality,
-            'delta_dimensions_count': deltas.length,
-          },
-        ));
-      }
-
-      // Pattern 1: BLE gossip forwarding (limited-hop) to improve offline propagation.
-      unawaited(_maybeForwardLearningInsightGossip(
-        payload: payload,
+      _emitIncomingLearningInsightSuccessSideEffects(
+        insightId: insightId,
+        sender: sender,
         originId: originId,
         hop: hop,
-        receivedFromDeviceId: sender,
-      ));
+        learningQuality: learningQuality,
+        deltaDimensionsCount: deltas.length,
+        payload: payload,
+      );
     } catch (e) {
       _logger.debug('Failed to apply incoming learning insight: $e',
           tag: _logName);
@@ -2572,6 +2557,41 @@ class VibeConnectionOrchestrator {
     }
 
     return true;
+  }
+
+  void _emitIncomingLearningInsightSuccessSideEffects({
+    required String insightId,
+    required String sender,
+    required String originId,
+    required int hop,
+    required double learningQuality,
+    required int deltaDimensionsCount,
+    required Map<String, dynamic> payload,
+  }) {
+    if (LedgerAuditV0.isEnabled) {
+      unawaited(LedgerAuditV0.tryAppend(
+        domain: LedgerDomainV0.deviceCapability,
+        eventType: 'ai2ai_learning_insight_received',
+        occurredAt: DateTime.now(),
+        payload: <String, Object?>{
+          'insight_id': insightId,
+          'sender_device_id': sender,
+          'origin_id': originId,
+          'hop': hop,
+          'schema_version': 1,
+          'learning_quality': learningQuality,
+          'delta_dimensions_count': deltaDimensionsCount,
+        },
+      ));
+    }
+
+    // BLE gossip forwarding (limited-hop) improves offline propagation.
+    unawaited(_maybeForwardLearningInsightGossip(
+      payload: payload,
+      originId: originId,
+      hop: hop,
+      receivedFromDeviceId: sender,
+    ));
   }
 
   /// Manage Signal Protocol session lifecycle for AI2AI connections
