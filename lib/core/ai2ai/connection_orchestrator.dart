@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
@@ -70,6 +69,7 @@ import 'package:avrai/core/ai2ai/resilience/realtime_listeners_setup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -1274,82 +1274,12 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _publishSignalPreKeyPayloadIfAvailable() async {
-    // Avoid relying on field promotion (some packages still compile with
-    // language versions where it isn't available).
-    final signalKeyManager = _signalKeyManager;
-    if (signalKeyManager == null) return;
-    try {
-      final bundle = await signalKeyManager.generatePreKeyBundle();
-      final payloadJson = <String, dynamic>{
-        'version': 1,
-        'created_at': DateTime.now().toUtc().toIso8601String(),
-        'node_id': _localBleNodeId,
-        'prekey_bundle': _signalPreKeyBundleToJson(bundle),
-      };
-      final bytes = Uint8List.fromList(utf8.encode(jsonEncode(payloadJson)));
-      final ok = await BlePeripheral.updatePreKeyPayload(payload: bytes);
-      if (ok) {
-        _logger.info('Published Signal prekey payload over BLE', tag: _logName);
-        if (LedgerAuditV0.isEnabled) {
-          unawaited(LedgerAuditV0.tryAppend(
-            domain: LedgerDomainV0.deviceCapability,
-            eventType: 'ai2ai_ble_prekey_payload_published',
-            occurredAt: DateTime.now(),
-            payload: <String, Object?>{
-              'ok': true,
-              'bytes_len': bytes.length,
-              'schema_version': 1,
-            },
-          ));
-        }
-      } else {
-        _logger.warn('Failed to publish Signal prekey payload over BLE',
-            tag: _logName);
-        if (LedgerAuditV0.isEnabled) {
-          unawaited(LedgerAuditV0.tryAppend(
-            domain: LedgerDomainV0.deviceCapability,
-            eventType: 'ai2ai_ble_prekey_payload_publish_failed',
-            occurredAt: DateTime.now(),
-            payload: <String, Object?>{
-              'ok': false,
-              'bytes_len': bytes.length,
-              'schema_version': 1,
-            },
-          ));
-        }
-      }
-    } catch (e) {
-      _logger.warn('Error publishing Signal prekey payload over BLE: $e',
-          tag: _logName);
-      if (LedgerAuditV0.isEnabled) {
-        unawaited(LedgerAuditV0.tryAppend(
-          domain: LedgerDomainV0.deviceCapability,
-          eventType: 'ai2ai_ble_prekey_payload_publish_error',
-          occurredAt: DateTime.now(),
-          payload: <String, Object?>{
-            'error': e.toString(),
-          },
-        ));
-      }
-    }
-  }
-
-  Map<String, dynamic> _signalPreKeyBundleToJson(SignalPreKeyBundle bundle) {
-    // Ensure JSON-encodable output (Uint8List -> List<int>).
-    return <String, dynamic>{
-      'preKeyId': bundle.preKeyId,
-      'signedPreKey': bundle.signedPreKey.toList(),
-      'signedPreKeyId': bundle.signedPreKeyId,
-      'signature': bundle.signature.toList(),
-      'identityKey': bundle.identityKey.toList(),
-      'oneTimePreKey': bundle.oneTimePreKey?.toList(),
-      'oneTimePreKeyId': bundle.oneTimePreKeyId,
-      'registrationId': bundle.registrationId,
-      'deviceId': bundle.deviceId,
-      'kyberPreKeyId': bundle.kyberPreKeyId,
-      'kyberPreKey': bundle.kyberPreKey?.toList(),
-      'kyberPreKeySignature': bundle.kyberPreKeySignature?.toList(),
-    };
+    await PrekeyPayloadPublishLane.publishIfAvailable(
+      signalKeyManager: _signalKeyManager,
+      localBleNodeId: _localBleNodeId,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Discover nearby AI personalities for potential connections
