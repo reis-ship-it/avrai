@@ -4,14 +4,13 @@ set -euo pipefail
 echo "Running core unit tests (excluding legacy)..."
 
 # Target common stable directories explicitly to avoid legacy/noisy suites
+# Keep this lane unit-focused; integration/widget suites run in dedicated jobs.
 paths=(
   test/unit/ai2ai
   test/unit/models
   test/unit/repositories
   test/unit/usecases
   test/unit/blocs
-  test/integration
-  test/widget
 )
 
 found_any=false
@@ -29,5 +28,4 @@ if [[ "$found_any" == false ]]; then
 fi
 
 echo "✅ Core tests completed"
-
 
