@@ -23,6 +23,7 @@ Validation commands:
 
 - `Ready -> In Progress`:
 - `In Progress -> Done`: `M0-P2-1`
+- `In Progress -> Done`: `M1-P7-1`
 - `Any -> Blocked`:
 
 ### 1B) Reopen-By-New-Milestone Events
@@ -68,6 +69,9 @@ Validation commands:
 - M0-P2-1 security/cryptographic assurance baseline: `docs/plans/methodology/M0_P2_1_SECURITY_CRYPTOGRAPHIC_ASSURANCE_BASELINE.md`
 - M0-P2-1 security/cryptographic assurance config + report automation: `configs/runtime/security_cryptographic_assurance_controls.json`, `scripts/runtime/generate_security_cryptographic_assurance_report.py`, `docs/plans/methodology/MASTER_PLAN_SECURITY_CRYPTOGRAPHIC_ASSURANCE_REPORT.md`
 - M0-P2-1 security/cryptographic assurance contract + tests: `lib/core/services/security/security_cryptographic_assurance_contract.dart`, `test/unit/services/security_cryptographic_assurance_contract_test.dart`
+- M1-P7-1 trigger/orchestration persistence baseline: `docs/plans/methodology/M1_P7_1_TRIGGER_ORCHESTRATION_PERSISTENCE_BASELINE.md`
+- M1-P7-1 trigger/orchestration persistence config + report automation: `configs/runtime/trigger_orchestration_persistence_hardening_controls.json`, `scripts/runtime/generate_trigger_orchestration_persistence_report.py`, `docs/plans/methodology/MASTER_PLAN_TRIGGER_ORCHESTRATION_PERSISTENCE_REPORT.md`
+- M1-P7-1 trigger/orchestration persistence contract + tests: `lib/core/controllers/trigger_orchestration_persistence_contract.dart`, `test/unit/controllers/trigger_orchestration_persistence_contract_test.dart`
 
 ---
 

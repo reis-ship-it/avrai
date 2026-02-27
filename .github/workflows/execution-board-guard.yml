@@ -34,6 +34,7 @@ jobs:
           dart --version
           dart run tool/update_execution_board.dart --check
           python3 scripts/runtime/generate_security_cryptographic_assurance_report.py --check
+          python3 scripts/runtime/generate_trigger_orchestration_persistence_report.py --check
 
       - name: Validate deferred rename governance
         run: |

@@ -108,7 +108,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M0-P10-2 | 10 | 0 | Reality Engine/Runtime OS/App remap docs + boundary policy package | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.8.1, 10.8.3, 10.10.1, 10.10.7 | docs/plans/architecture | AP, REL | GOV | M0-P10-1 | 12 | High | parallel baseline | Done | https://github.com/AVRA-CADAVRA/avrai/pull/172 |
 | M0-P10-3 | 10 | 0 | 3-prong split-pass wiring + CI guard/contracts hardening | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.10.1, 10.10.2, 10.10.3, 10.10.4, 10.10.5, 10.10.6, 10.10.8 | lib/_root | AP, REL | GOV | M0-P10-2 | 16 | High | parallel baseline | In Progress | https://github.com/AVRA-CADAVRA/avrai/pull/173 |
 | M0-P2-1 | 2 | 0 | Security + cryptographic assurance baseline | baseline | none | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 2.1.1, 2.2.1, 2.5.1 | lib/core/services/security | SEC | GOV | none | 20 | Critical | parallel baseline | Done | docs/plans/methodology/M0_P2_1_SECURITY_CRYPTOGRAPHIC_ASSURANCE_BASELINE.md, configs/runtime/security_cryptographic_assurance_controls.json, scripts/runtime/generate_security_cryptographic_assurance_report.py, docs/plans/methodology/MASTER_PLAN_SECURITY_CRYPTOGRAPHIC_ASSURANCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_SECURITY_CRYPTOGRAPHIC_ASSURANCE_REPORT.md, lib/core/services/security/security_cryptographic_assurance_contract.dart, test/unit/services/security_cryptographic_assurance_contract_test.dart |
-| M1-P7-1 | 7 | 1 | Trigger + orchestration persistence hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.2, 10.9.1, 10.9.4 | lib/core/controllers | AP, MOB | REL | none | 25 | Critical | Week 1-2 | Ready | - |
+| M1-P7-1 | 7 | 1 | Trigger + orchestration persistence hardening | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.2, 10.9.1, 10.9.4 | lib/core/controllers | AP, MOB | REL | none | 25 | Critical | Week 1-2 | Done | docs/plans/methodology/M1_P7_1_TRIGGER_ORCHESTRATION_PERSISTENCE_BASELINE.md, configs/runtime/trigger_orchestration_persistence_hardening_controls.json, scripts/runtime/generate_trigger_orchestration_persistence_report.py, docs/plans/methodology/MASTER_PLAN_TRIGGER_ORCHESTRATION_PERSISTENCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_TRIGGER_ORCHESTRATION_PERSISTENCE_REPORT.md, lib/core/controllers/trigger_orchestration_persistence_contract.dart, test/unit/controllers/trigger_orchestration_persistence_contract_test.dart |
 | M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.4.4, 10.9.4 | lib/core/controllers | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
 | M1-P8-1 | 8 | 1 | Federated cohort gating + canary/shadow pipeline | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.1.3, 8.1.4, 8.1.5 | lib/core/ai2ai | FED, MLE | AP | M1-P7-1 | 20 | Critical | Week 3-4 | Backlog | - |
 | M1-P8-2 | 8 | 1 | Advisory quarantine + rollback independence | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.9.2, 8.9.4, 8.9.5 | lib/core/services/locality_agents | LOC | AP | M1-P8-1 | 16 | High | Week 4-5 | Backlog | - |
@@ -140,7 +140,7 @@ phase row + milestone row(s) + risk + gate criteria.
 
 ### Ready
 
-`M0-P10-1`, `M1-P7-1`, `M2-P1-1`
+`M0-P10-1`, `M2-P1-1`
 
 ### In Progress
 
@@ -152,7 +152,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M0-P2-1`
+`M0-P10-2`, `M0-P2-1`, `M1-P7-1`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
