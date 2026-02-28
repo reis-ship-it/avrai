@@ -702,31 +702,29 @@ class VibeConnectionOrchestrator {
       compatibilityByNodeId: compatibilityByNodeId,
       lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
       applyInsightForPeer: _applyInsightForPeer,
-      sendLearningInsightToPeer: _sendLearningInsightToPeer,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _sendLearningInsightToPeer({
-    required String peerId,
-    required AI2AILearningInsight insight,
-    required double learningQuality,
-  }) async {
-    await LearningInsightPeerDispatchLane.send(
-      allowBleSideEffects: _allowBleSideEffects,
-      eventModeEnabled: _isEventModeEnabled(),
-      protocol: _protocol,
-      deviceDiscovery: _deviceDiscovery,
-      peerId: peerId,
-      prefs: _prefs,
-      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
-      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      localBleNodeId: _localBleNodeId,
-      insight: insight,
-      learningQuality: learningQuality,
-      enqueueFederatedDeltaForCloudFromInsightPayload:
-          _enqueueFederatedDeltaForCloudFromInsightPayload,
+      sendLearningInsightToPeer: ({
+        required String peerId,
+        required AI2AILearningInsight insight,
+        required double learningQuality,
+      }) async {
+        await LearningInsightPeerDispatchLane.send(
+          allowBleSideEffects: _allowBleSideEffects,
+          eventModeEnabled: _isEventModeEnabled(),
+          protocol: _protocol,
+          deviceDiscovery: _deviceDiscovery,
+          peerId: peerId,
+          prefs: _prefs,
+          prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+          peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+          localBleNodeId: _localBleNodeId,
+          insight: insight,
+          learningQuality: learningQuality,
+          enqueueFederatedDeltaForCloudFromInsightPayload:
+              _enqueueFederatedDeltaForCloudFromInsightPayload,
+          logger: _logger,
+          logName: _logName,
+        );
+      },
       logger: _logger,
       logName: _logName,
     );
