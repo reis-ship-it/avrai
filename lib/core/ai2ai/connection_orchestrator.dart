@@ -51,9 +51,8 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_path_orchestration_flow_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -580,23 +579,22 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _runHotWorker() async {
-    try {
-      await HotQueueWorkerLane.run(
-        hotQueue: _hotQueue,
-        hotQueuedDeviceIds: _hotQueuedDeviceIds,
-        lastHotProcessedAtMsByDeviceId: _lastHotProcessedAtMsByDeviceId,
-        hotEnqueuedAtMsByDeviceId: _hotEnqueuedAtMsByDeviceId,
-        onQueueWaitMs: _hotQueueWaitMs.add,
-        prefs: _prefs,
-        processHotDevice: _processHotDevice,
-      );
-    } finally {
-      _hotWorkerRunning = false;
-    }
+    await HotPathOrchestrationFlowLane.runWorkerForOrchestratorWithMetrics(
+      hotQueue: _hotQueue,
+      hotQueuedDeviceIds: _hotQueuedDeviceIds,
+      lastHotProcessedAtMsByDeviceId: _lastHotProcessedAtMsByDeviceId,
+      hotEnqueuedAtMsByDeviceId: _hotEnqueuedAtMsByDeviceId,
+      prefs: _prefs,
+      onQueueWaitMs: _hotQueueWaitMs.add,
+      processHotDevice: _processHotDevice,
+      onWorkerStopped: () {
+        _hotWorkerRunning = false;
+      },
+    );
   }
 
   Future<void> _processHotDevice(DiscoveredDevice device) async {
-    await HotDeviceProcessingLane.process(
+    await HotPathOrchestrationFlowLane.processHotDevice(
       device: device,
       currentUserId: _currentUserId,
       currentPersonality: _currentPersonality,

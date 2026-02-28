@@ -87,4 +87,47 @@ class HotPathOrchestrationFlowLane {
       maybeLogHotMetrics: maybeLogHotMetrics,
     );
   }
+
+  static Future<void> runWorkerForOrchestrator({
+    required List<DiscoveredDevice> hotQueue,
+    required Set<String> hotQueuedDeviceIds,
+    required Map<String, int> lastHotProcessedAtMsByDeviceId,
+    required Map<String, int> hotEnqueuedAtMsByDeviceId,
+    required SharedPreferencesCompat prefs,
+    required Future<void> Function(DiscoveredDevice device) processHotDevice,
+    required void Function() onWorkerStopped,
+  }) {
+    return runWorker(
+      hotQueue: hotQueue,
+      hotQueuedDeviceIds: hotQueuedDeviceIds,
+      lastHotProcessedAtMsByDeviceId: lastHotProcessedAtMsByDeviceId,
+      hotEnqueuedAtMsByDeviceId: hotEnqueuedAtMsByDeviceId,
+      onQueueWaitMs: (_) {},
+      prefs: prefs,
+      processHotDevice: processHotDevice,
+      onFinally: onWorkerStopped,
+    );
+  }
+
+  static Future<void> runWorkerForOrchestratorWithMetrics({
+    required List<DiscoveredDevice> hotQueue,
+    required Set<String> hotQueuedDeviceIds,
+    required Map<String, int> lastHotProcessedAtMsByDeviceId,
+    required Map<String, int> hotEnqueuedAtMsByDeviceId,
+    required SharedPreferencesCompat prefs,
+    required void Function(int value) onQueueWaitMs,
+    required Future<void> Function(DiscoveredDevice device) processHotDevice,
+    required void Function() onWorkerStopped,
+  }) {
+    return runWorker(
+      hotQueue: hotQueue,
+      hotQueuedDeviceIds: hotQueuedDeviceIds,
+      lastHotProcessedAtMsByDeviceId: lastHotProcessedAtMsByDeviceId,
+      hotEnqueuedAtMsByDeviceId: hotEnqueuedAtMsByDeviceId,
+      onQueueWaitMs: onQueueWaitMs,
+      prefs: prefs,
+      processHotDevice: processHotDevice,
+      onFinally: onWorkerStopped,
+    );
+  }
 }
