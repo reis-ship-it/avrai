@@ -66,12 +66,11 @@ import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_metrics_emit_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
@@ -84,8 +83,6 @@ import 'package:avrai/core/models/user/anonymous_user.dart';
 import 'package:avrai/core/services/user/user_anonymization_service.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
-import 'package:avrai/core/services/ledgers/ledger_audit_v0.dart';
-import 'package:avrai/core/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 
@@ -622,9 +619,7 @@ class VibeConnectionOrchestrator {
   }
 
   void _maybeLogHotMetrics() {
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-    final nextLogAtMs = HotMetricsEmitLane.emit(
-      nowMs: nowMs,
+    _lastHotMetricsLogAtMs = HotPathMetricsOrchestrationLane.maybeLog(
       lastLogAtMs: _lastHotMetricsLogAtMs,
       minInterval: _hotMetricsLogInterval,
       queueWait: _hotQueueWaitMs,
@@ -632,29 +627,20 @@ class VibeConnectionOrchestrator {
       vibeRead: _hotVibeReadMs,
       compatibility: _hotCompatMs,
       total: _hotTotalMs,
-      onDebugLogLine: (line) => _logger.debug(line, tag: _logName),
-      onLedgerAppend: LedgerAuditV0.isEnabled
-          ? (payload) => LedgerAuditV0.tryAppend(
-                domain: LedgerDomainV0.deviceCapability,
-                eventType: 'ai2ai_hotpath_latency_summary',
-                occurredAt: DateTime.now(),
-                payload: payload,
-              )
-          : null,
+      logger: _logger,
+      logName: _logName,
     );
-    _lastHotMetricsLogAtMs = nextLogAtMs;
   }
 
   @visibleForTesting
   Map<String, dynamic> debugHotPathLatencySummary() {
-    final snapshot = HotPathMetricsLane.buildSnapshot(
+    return HotPathMetricsOrchestrationLane.summarySnapshotJson(
       queueWait: _hotQueueWaitMs,
       sessionOpen: _hotSessionOpenMs,
       vibeRead: _hotVibeReadMs,
       compatibility: _hotCompatMs,
       total: _hotTotalMs,
     );
-    return snapshot.toJson();
   }
 
   void _loadSeenBleHashes() {
