@@ -37,7 +37,7 @@ import 'package:avrai/core/services/matching/preferences_profile_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/network/enhanced_connectivity_service.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_connectivity_listener.dart';
 import 'package:avrai/core/services/quantum/quantum_matching_production_service.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';

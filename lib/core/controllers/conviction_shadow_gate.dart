@@ -1,11 +1,13 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -13,13 +15,6 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 enum ConvictionGateMode {
   shadow,
   enforce,
-}
-
-enum ClaimLifecycleState {
-  hypothesis,
-  observed,
-  operational,
-  canonical,
 }
 
 class ConvictionGateFeatureFlags {

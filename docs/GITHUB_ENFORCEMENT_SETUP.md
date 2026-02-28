@@ -3,6 +3,7 @@
 Purpose: make execution-governance rules automatic for all plan-derived work.
 
 Primary workflow runbook (human + AI): `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md` (`Wiring Map` + `Operator Runbook` sections).
+Canonical cross-doc wiring map: `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`.
 
 Universal resilience authority:
 - `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` + task `10.9.12`
@@ -14,6 +15,11 @@ Applies to:
 - `docs/EXECUTION_BOARD.csv`
 - `docs/EXECUTION_BOARD.md`
 - `docs/STATUS_WEEKLY.md`
+- `docs/plans/architecture/UNIFIED_RUNTIME_KERNEL_BLUEPRINT_2026-02-27.md`
+- `docs/plans/architecture/URK_INTERFACE_CONTRACTS_2026-02-27.md`
+- `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`
+- `configs/runtime/kernel_registry.json`
+- `docs/admin/URK_KERNEL_CATALOG.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/ML_MODEL_TRAINING_CHECKLIST.md`
 - `docs/ML_SIMULATION_EXPERIMENT_LOG.md`
@@ -27,6 +33,25 @@ Ensure these workflows exist and are green on pull requests:
    - Check name: `Execution Board Guard / execution-board-check`
    - Enforces:
      - board sync validity (`dart run tool/update_execution_board.dart --check`)
+     - URK board metadata quality (`python3 scripts/validate_execution_board_urk_quality.py`)
+     - URK Stage A trigger/privacy/no-egress baseline report check (`python3 scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py --check`)
+     - URK Stage B Event Ops shadow runtime report check (`python3 scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py --check`)
+     - URK Stage C private-mesh policy conformance report check (`python3 scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py --check`)
+     - URK Stage D business runtime replication report check (`python3 scripts/runtime/generate_urk_stage_d_business_runtime_replication_report.py --check`)
+     - URK Stage D expert runtime replication report check (`python3 scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py --check`)
+     - URK Stage E cross-runtime conformance report check (`python3 scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py --check`)
+     - URK kernel promotion lifecycle report check (`python3 scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py --check`)
+     - URK learning update governance report check (`python3 scripts/runtime/generate_urk_learning_update_governance_report.py --check`)
+     - URK reality world-state coherence report check (`python3 scripts/runtime/generate_urk_reality_world_state_coherence_report.py --check`)
+     - URK reality temporal truth report check (`python3 scripts/runtime/generate_urk_reality_temporal_truth_report.py --check`)
+     - URK self-learning governance report check (`python3 scripts/runtime/generate_urk_self_learning_governance_report.py --check`)
+     - URK self-healing recovery report check (`python3 scripts/runtime/generate_urk_self_healing_recovery_report.py --check`)
+     - URK learning-healing bridge report check (`python3 scripts/runtime/generate_urk_learning_healing_bridge_report.py --check`)
+     - URK kernel activation engine report check (`python3 scripts/runtime/generate_urk_kernel_activation_engine_report.py --check`)
+     - URK kernel control-plane report check (`python3 scripts/runtime/generate_urk_kernel_control_plane_report.py --check`)
+     - URK runtime activation receipt dispatch report check (`python3 scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py --check`)
+     - URK kernel registry completeness check (`python3 scripts/runtime/check_urk_kernel_registry.py`)
+     - URK kernel catalog sync check (`python3 scripts/runtime/generate_urk_kernel_catalog.py --check`)
      - phase coverage parity with `docs/MASTER_PLAN.md`
      - architecture mapping + spot registry validity (`scripts/validate_architecture_placement.py`)
      - generated architecture artifacts are committed
@@ -55,6 +80,31 @@ Ensure these workflows exist and are green on pull requests:
      - model/simulation registries stay synced with generated docs (`python3 scripts/generate_ml_training_checklist.py --check`)
      - training/simulation run records are append-only and traceable
 
+5. `Legacy Path Guard`
+   - File: `.github/workflows/legacy-path-guard.yml`
+   - Check name: `Legacy Path Guard / legacy-path-guard`
+   - Enforces:
+     - new/changed legacy-path files (`lib/core/**`, `lib/domain/**`, `lib/data/**`, `lib/di/**`, `lib/presentation/**`) must either:
+       - move to target roots (`apps/`, `runtime/`, `engine/`, `shared/`), or
+       - include temporary shim marker (`MIGRATION_SHIM:`), or
+       - be explicitly listed in `configs/runtime/legacy_path_guard.json` allowlist.
+
+6. `Consumer App CI/CD`
+   - File: `.github/workflows/consumer-app-ci-cd.yml`
+   - Check name: `Consumer App CI/CD / Consumer Quality`
+   - Enforces:
+     - `apps/consumer_app` dependency resolution
+     - `flutter analyze`
+     - `flutter test`
+
+7. `Admin App CI/CD`
+   - File: `.github/workflows/admin-app-ci-cd.yml`
+   - Check name: `Admin App CI/CD / Admin Quality`
+   - Enforces:
+     - `apps/admin_app` dependency resolution
+     - `flutter analyze`
+     - `flutter test`
+
 Execution board schema expectations (enforced by `tool/update_execution_board.dart`):
 - Milestone rows must include:
   - `prd_ids` (one or more `PRD-###`)
@@ -62,12 +112,16 @@ Execution board schema expectations (enforced by `tool/update_execution_board.da
   - `architecture_spot` (registered spot key)
   - `change_type` (`baseline` or `reopen`)
   - `reopens_milestone` (`none` for baseline; required milestone ID for reopen)
+  - `urk_runtime_type` (`user_runtime|event_ops_runtime|business_ops_runtime|expert_services_runtime|shared`)
+  - `urk_prong` (`model_core|runtime_core|governance_core|cross_prong`)
+  - `privacy_mode_impact` (`local_sovereign|private_mesh|federated_cloud|multi_mode`)
+  - `impact_tier_max` (`L1|L2|L3|L4`)
 - Milestone dependencies must be milestone IDs (`M#-P#-#`) or `none`
 - A phase marked `Ready` must have at least one active milestone (`Ready`/`In Progress`/`Done`)
 - Reopen milestones must reference a prior `Done` milestone and be recorded in `docs/STATUS_WEEKLY.md`
 
 Optional PR quality workflow:
-5. `Quick Tests`
+6. `Quick Tests`
    - File: `.github/workflows/quick-tests.yml`
    - Use as required check only if you want stricter merge quality gates.
 
@@ -89,6 +143,9 @@ PR-triggered workflows (automatic):
 - `PRD Traceability Guard`
 - `Experiment Registry Guard`
 - `ML Training Governance Guard`
+- `Legacy Path Guard`
+- `Consumer App CI/CD`
+- `Admin App CI/CD`
 - `Architecture Placement Guard`
 - `Quick Tests` (PR path-filtered + manual)
 - `Test Coverage Report` (PR path-filtered + manual)
@@ -108,6 +165,9 @@ Repository settings:
    - `PRD Traceability Guard / traceability`
    - `Experiment Registry Guard / experiment-registry`
    - `ML Training Governance Guard / ml-training-governance`
+   - `Legacy Path Guard / legacy-path-guard`
+   - `Consumer App CI/CD / Consumer Quality`
+   - `Admin App CI/CD / Admin Quality`
 5. Optional required checks:
    - `Quick Tests / quick-unit-tests`
 6. Optional but recommended:
@@ -118,6 +178,7 @@ Repository settings:
 Notes:
 - You do not need to add `Architecture Placement Guard / architecture-placement` as a separate required check if `execution-board-check` is required, because architecture placement validation is now part of `execution-board-check`.
 - Keeping `Architecture Placement Guard` enabled is still useful for standalone troubleshooting visibility.
+- Admin app is internal-use only because it exposes privileged governance controls, sensitive telemetry/decision traces, and administrative mutation paths that are not consumer-safe; keep external distribution/release checks optional unless internal policy changes.
 
 ## 3) PR Author Checklist
 
@@ -125,10 +186,16 @@ Every PR touching plan-derived work must:
 1. Reference PRD IDs (`PRD-###`)
 2. Reference exactly one execution milestone ID (`M#-P#-#`) in the PR title
 3. Reference master plan subsection IDs (`X.Y.Z`)
-4. Ensure every non-merge commit message includes the same milestone ID + at least one `X.Y.Z` reference
-5. Update evidence links for milestones moved to `Done`
-6. Pass `Execution Board Guard` and `PRD Traceability Guard`
-7. If the PR touches experiments or model training docs/scripts, pass `Experiment Registry Guard` and `ML Training Governance Guard`
+4. Include URK tags in title/body:
+   - `URK-RUNTIME:<user_runtime|event_ops_runtime|business_ops_runtime|expert_services_runtime|shared>`
+   - `URK-PRONG:<model_core|runtime_core|governance_core|cross_prong>`
+   - `URK-MODE:<local_sovereign|private_mesh|federated_cloud|multi_mode>`
+   - `URK-IMPACT:<L1|L2|L3|L4>`
+5. Ensure every non-merge commit message includes the same milestone ID + at least one `X.Y.Z` reference
+6. Update evidence links for milestones moved to `Done`
+7. Pass `Execution Board Guard` and `PRD Traceability Guard`
+8. If the PR touches experiments or model training docs/scripts, pass `Experiment Registry Guard` and `ML Training Governance Guard`
+9. If the PR touches legacy paths, pass `Legacy Path Guard` using migration shim markers or target-path moves
 
 Template:
 - `.github/pull_request_template.md` already includes these fields.
@@ -143,6 +210,27 @@ dart run tool/update_execution_board.dart --check
 python3 scripts/generate_master_plan_file_mapping.py
 python3 scripts/generate_architecture_spots_registry.py
 python3 scripts/validate_architecture_placement.py
+python3 scripts/validate_execution_board_urk_quality.py
+python3 scripts/ci/check_legacy_path_guard.py --base-ref main
+python3 scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py --check
+python3 scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py --check
+python3 scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py --check
+python3 scripts/runtime/generate_urk_stage_d_business_runtime_replication_report.py --check
+python3 scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py --check
+python3 scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py --check
+python3 scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py --check
+python3 scripts/runtime/generate_urk_learning_update_governance_report.py --check
+python3 scripts/runtime/generate_urk_reality_world_state_coherence_report.py --check
+python3 scripts/runtime/generate_urk_reality_temporal_truth_report.py --check
+python3 scripts/runtime/generate_urk_self_learning_governance_report.py --check
+python3 scripts/runtime/generate_urk_self_healing_recovery_report.py --check
+python3 scripts/runtime/generate_urk_learning_healing_bridge_report.py --check
+python3 scripts/runtime/generate_urk_kernel_activation_engine_report.py --check
+python3 scripts/runtime/generate_urk_kernel_control_plane_report.py --check
+python3 scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py --check
+python3 scripts/runtime/generate_urk_user_runtime_learning_intake_report.py --check
+python3 scripts/runtime/check_urk_kernel_registry.py
+python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 python3 scripts/generate_experiment_registry.py
 python3 scripts/generate_experiment_registry.py --check
 python3 scripts/validate_experiment_registry.py
@@ -159,18 +247,20 @@ python3 scripts/ml/build_training_dataset.py \
   --source-id <source_tag>
 python3 scripts/validate_pr_traceability.py \
   --title "PRD-123 M1-P7-1" \
-  --body "phase/task refs: 7.4.2, 10.9.1" \
+  --body "phase/task refs: 7.4.2, 10.9.1 URK-RUNTIME:shared URK-PRONG:cross_prong URK-MODE:multi_mode URK-IMPACT:L2" \
   --require-execution-id \
   --require-single-milestone \
-  --require-master-plan-ref
+  --require-master-plan-ref \
+  --require-urk-tags
 
 # Optional full boundary check against current branch:
 python3 scripts/validate_pr_traceability.py \
   --title "PRD-123 M1-P7-1" \
-  --body "phase/task refs: 7.4.2, 10.9.1" \
+  --body "phase/task refs: 7.4.2, 10.9.1 URK-RUNTIME:shared URK-PRONG:cross_prong URK-MODE:multi_mode URK-IMPACT:L2" \
   --require-execution-id \
   --require-single-milestone \
   --require-master-plan-ref \
+  --require-urk-tags \
   --validate-commit-boundaries \
   --base-sha origin/main \
   --head-sha HEAD
@@ -183,7 +273,7 @@ python3 scripts/validate_pr_traceability.py \
 3. No plan-derived work merges without exactly one milestone mapping per PR.
 4. Every non-merge commit must include milestone ID + `X.Y.Z` subsection reference.
 5. No milestone transitions to `Done` without evidence.
-6. Milestone metadata columns are mandatory: `prd_ids`, `master_plan_refs`, `architecture_spot`.
+6. Milestone metadata columns are mandatory: `prd_ids`, `master_plan_refs`, `architecture_spot`, `urk_runtime_type`, `urk_prong`, `privacy_mode_impact`, `impact_tier_max`.
 7. Reopen tracking columns are mandatory: `change_type`, `reopens_milestone`.
 8. Reopen events must create a new milestone (`change_type=reopen`) and reference a prior `Done` milestone.
 9. Reopen events must be logged in `docs/STATUS_WEEKLY.md` (`1B) Reopen-By-New-Milestone Events`) and reflected in `docs/agents/status/status_tracker.md`.
@@ -211,6 +301,7 @@ phase row + milestone row(s) + risk + gate criteria.
 3. Traceability check fails:
    - Add `PRD-###` and exactly one `M#-P#-#` ID to PR title/body
    - Add at least one `X.Y.Z` reference to PR title/body
+   - Add URK tags: `URK-RUNTIME`, `URK-PRONG`, `URK-MODE`, `URK-IMPACT`
    - Ensure each non-merge commit message contains the same milestone + an `X.Y.Z` reference
    - Keep formatting exact
 

@@ -1,0 +1,48 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T14:00:00Z",
+  "slo_hours": {
+    "detect": 2,
+    "contain": 8,
+    "recover": 24
+  },
+  "incidents": [
+    {
+      "incident_id": "inc-reality-001",
+      "domain": "reality_system",
+      "severity": "p1",
+      "status": "contained",
+      "opened_at": "2026-02-27T08:00:00Z",
+      "detect_at": "2026-02-27T08:20:00Z",
+      "contain_at": "2026-02-27T10:30:00Z",
+      "recover_at": null,
+      "route": "reliability_oncall",
+      "auto_route_enabled": true
+    },
+    {
+      "incident_id": "inc-os-002",
+      "domain": "avrai_os",
+      "severity": "p1",
+      "status": "recovered",
+      "opened_at": "2026-02-26T11:00:00Z",
+      "detect_at": "2026-02-26T11:10:00Z",
+      "contain_at": "2026-02-26T12:10:00Z",
+      "recover_at": "2026-02-26T20:30:00Z",
+      "route": "runtime_incident_lane",
+      "auto_route_enabled": true
+    },
+    {
+      "incident_id": "inc-product-003",
+      "domain": "avrai_product",
+      "severity": "p2",
+      "status": "open",
+      "opened_at": "2026-02-27T12:00:00Z",
+      "detect_at": "2026-02-27T12:20:00Z",
+      "contain_at": null,
+      "recover_at": null,
+      "route": "product_support_ops",
+      "auto_route_enabled": true
+    }
+  ]
+}

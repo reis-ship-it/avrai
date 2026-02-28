@@ -1,0 +1,122 @@
+{
+  "source_input": "configs/runtime/conviction_gate_canary_dry_run_fixture.json",
+  "has_data": true,
+  "reason": null,
+  "total_decisions": 6,
+  "shadow_bypass_decisions": 1,
+  "shadow_bypass_rate": 0.16666666666666666,
+  "enforce_decisions": 3,
+  "enforce_blocked_decisions": 2,
+  "enforce_block_rate": 0.6666666666666666,
+  "high_impact_enforce_decisions": 3,
+  "high_impact_enforce_blocked_decisions": 2,
+  "high_impact_enforce_block_rate": 0.6666666666666666,
+  "window_start": "2026-02-27T10:00:00.000Z",
+  "window_end": "2026-02-27T10:05:00.000Z",
+  "by_controller": {
+    "CheckoutController": 2,
+    "PaymentProcessingController": 2,
+    "AIRecommendationController": 1,
+    "ListCreationController": 1
+  },
+  "by_mode": {
+    "shadow": 3,
+    "enforce": 3
+  },
+  "by_reason": {
+    "high_impact_requires_canonical_conviction": 2,
+    "policy_checks_failed": 1
+  },
+  "recent_decisions": [
+    {
+      "mode": "shadow",
+      "requestId": "dryrun-req-006",
+      "controllerName": "ListCreationController",
+      "subjectId": "user-control-3",
+      "claimState": "canonical",
+      "isHighImpact": false,
+      "policyChecksPassed": true,
+      "wouldAllow": true,
+      "servingAllowed": true,
+      "shadowBypassApplied": false,
+      "reasonCodes": [],
+      "timestamp": "2026-02-27T10:05:00Z"
+    },
+    {
+      "mode": "enforce",
+      "requestId": "dryrun-req-005",
+      "controllerName": "PaymentProcessingController",
+      "subjectId": "user-canary-2",
+      "claimState": "canonical",
+      "isHighImpact": true,
+      "policyChecksPassed": true,
+      "wouldAllow": true,
+      "servingAllowed": true,
+      "shadowBypassApplied": false,
+      "reasonCodes": [],
+      "timestamp": "2026-02-27T10:04:00Z"
+    },
+    {
+      "mode": "enforce",
+      "requestId": "dryrun-req-004",
+      "controllerName": "PaymentProcessingController",
+      "subjectId": "user-canary-1",
+      "claimState": "canonical",
+      "isHighImpact": true,
+      "policyChecksPassed": false,
+      "wouldAllow": false,
+      "servingAllowed": false,
+      "shadowBypassApplied": false,
+      "reasonCodes": [
+        "policy_checks_failed"
+      ],
+      "timestamp": "2026-02-27T10:03:00Z"
+    },
+    {
+      "mode": "enforce",
+      "requestId": "dryrun-req-003",
+      "controllerName": "CheckoutController",
+      "subjectId": "user-canary-1",
+      "claimState": "observed",
+      "isHighImpact": true,
+      "policyChecksPassed": true,
+      "wouldAllow": false,
+      "servingAllowed": false,
+      "shadowBypassApplied": false,
+      "reasonCodes": [
+        "high_impact_requires_canonical_conviction"
+      ],
+      "timestamp": "2026-02-27T10:02:00Z"
+    },
+    {
+      "mode": "shadow",
+      "requestId": "dryrun-req-002",
+      "controllerName": "CheckoutController",
+      "subjectId": "user-control-2",
+      "claimState": "observed",
+      "isHighImpact": true,
+      "policyChecksPassed": true,
+      "wouldAllow": false,
+      "servingAllowed": true,
+      "shadowBypassApplied": true,
+      "reasonCodes": [
+        "high_impact_requires_canonical_conviction"
+      ],
+      "timestamp": "2026-02-27T10:01:00Z"
+    },
+    {
+      "mode": "shadow",
+      "requestId": "dryrun-req-001",
+      "controllerName": "AIRecommendationController",
+      "subjectId": "user-control-1",
+      "claimState": "canonical",
+      "isHighImpact": false,
+      "policyChecksPassed": true,
+      "wouldAllow": true,
+      "servingAllowed": true,
+      "shadowBypassApplied": false,
+      "reasonCodes": [],
+      "timestamp": "2026-02-27T10:00:00Z"
+    }
+  ]
+}

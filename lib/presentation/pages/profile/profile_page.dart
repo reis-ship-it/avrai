@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:avrai/core/theme/colors.dart';
@@ -21,7 +22,7 @@ import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
 // Admin: God Mode Access
-import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
 import 'package:avrai/presentation/pages/profile/edit_profile_page.dart';
 import 'package:avrai/core/models/user/user.dart' show UserRole;
 // Phase 4: Dynamic Knots
@@ -640,6 +641,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.admin_panel_settings,
                     title: 'God Mode Admin',
                     subtitle: 'Access admin dashboard',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const GodModeLoginPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.hub_outlined,
+                    title: 'URK Kernel Console',
+                    subtitle: 'Kernel runtime governance and activation map',
                     onTap: () {
                       Navigator.push(
                         context,

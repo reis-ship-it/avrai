@@ -1,9 +1,10 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/business/business_verification.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_stage_d_business_runtime_replication_contract.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
-import 'package:avrai/core/services/business/urk_stage_d_business_runtime_replication_contract.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:uuid/uuid.dart';
 

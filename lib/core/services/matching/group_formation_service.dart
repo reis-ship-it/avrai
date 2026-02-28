@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Group Formation Service
 //
 // Implements group formation with proximity detection and manual friend selection
@@ -25,7 +26,7 @@ import 'package:avrai/core/models/quantum/group_session.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart' show VibeConnectionOrchestrator;
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 
 /// Discovered user from proximity detection
 class DiscoveredUser {

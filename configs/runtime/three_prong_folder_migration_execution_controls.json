@@ -1,0 +1,21 @@
+{
+  "milestone_id": "M10-P10-4",
+  "master_plan_refs": ["10.10.9"],
+  "objective": "apps-runtime-engine-shared migration execution governance",
+  "phase_order": [
+    "guardrails",
+    "shared_contracts",
+    "engine_extraction",
+    "runtime_extraction",
+    "app_cleanup",
+    "endpoint_validation",
+    "cutover"
+  ],
+  "required_checks": [
+    "python3 scripts/ci/check_three_prong_boundaries.py",
+    "python3 scripts/validate_architecture_placement.py",
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py"
+  ],
+  "authority_doc": "docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md"
+}

@@ -24,6 +24,8 @@ import 'package:avrai_core/models/quantum_entity_state.dart';
 import 'package:avrai_core/models/quantum_entity_type.dart';
 import 'package:avrai/core/services/reservation/reservation_analytics_service.dart';
 
+part 'reservation_recurrence_models.dart';
+
 /// Recurrence Pattern Type
 enum RecurrencePatternType {
   /// Daily recurrence
@@ -661,15 +663,4 @@ class ReservationRecurrenceService {
     // TODO(Phase 10.3): Implement instance skip
     return RecurrenceOperationResult.error('Not yet implemented');
   }
-}
-
-/// Cached recurrence calculation
-class _CachedRecurrenceCalculation {
-  final List<DateTime> instances;
-  final DateTime cachedAt;
-
-  _CachedRecurrenceCalculation({
-    required this.instances,
-    required this.cachedAt,
-  });
 }

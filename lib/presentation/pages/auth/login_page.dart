@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -5,12 +6,24 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({
+    super.key,
+    this.postAuthRoute = AppRouter.home,
+    this.signupRoute = AppRouter.signup,
+    this.requireInternalUseAgreement = false,
+    this.internalUseAgreementText =
+        'I agree this admin application is for internal use only.',
+  });
+
+  final String postAuthRoute;
+  final String signupRoute;
+  final bool requireInternalUseAgreement;
+  final String internalUseAgreementText;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -22,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isSubmitting = false;
+  bool _acceptedInternalUseAgreement = false;
 
   @override
   void dispose() {
@@ -40,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state is Authenticated) {
             final router = GoRouter.maybeOf(context);
-            router?.go(AppRouter.home);
+            router?.go(widget.postAuthRoute);
           } else if (state is AuthError) {
             if (mounted) {
               setState(() {
@@ -160,13 +174,45 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
 
+                      if (widget.requireInternalUseAgreement) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Checkbox(
+                              value: _acceptedInternalUseAgreement,
+                              onChanged: (value) {
+                                setState(() {
+                                  _acceptedInternalUseAgreement =
+                                      value ?? false;
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(
+                                  widget.internalUseAgreementText,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+
                       // Login Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
                           final isLoading =
                               state is AuthLoading || _isSubmitting;
+                          final requiresAgreement =
+                              widget.requireInternalUseAgreement &&
+                                  !_acceptedInternalUseAgreement;
                           return ElevatedButton(
-                            onPressed: isLoading ? null : _handleLogin,
+                            onPressed: (isLoading || requiresAgreement)
+                                ? null
+                                : _handleLogin,
                             child: isLoading
                                 ? const SizedBox(
                                     height: 20,
@@ -195,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextButton(
                             onPressed: () {
                               final router = GoRouter.maybeOf(context);
-                              router?.go(AppRouter.signup);
+                              router?.go(widget.signupRoute);
                             },
                             child: const Text('Sign Up'),
                           ),
@@ -264,6 +310,15 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleLogin() {
     if (_isSubmitting) return;
+    if (widget.requireInternalUseAgreement && !_acceptedInternalUseAgreement) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You must accept internal-use terms to continue.'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isSubmitting = true;
@@ -272,6 +327,10 @@ class _LoginPageState extends State<LoginPage> {
             SignInRequested(
               _emailController.text.trim(),
               _passwordController.text,
+              requireAdminInternalUseAgreement:
+                  widget.requireInternalUseAgreement,
+              adminInternalUseAgreementAccepted: _acceptedInternalUseAgreement,
+              adminInternalUseAgreementText: widget.internalUseAgreementText,
             ),
           );
     }

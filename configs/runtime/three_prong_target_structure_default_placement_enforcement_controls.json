@@ -1,0 +1,16 @@
+{
+  "milestone_id": "M10-P10-6",
+  "master_plan_refs": ["10.10.11"],
+  "objective": "default placement enforcement for all new code in target 3-prong structure",
+  "authority_docs": [
+    "docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md",
+    "docs/plans/architecture/FILE_PLACEMENT_POLICY.md",
+    "docs/MASTER_PLAN.md"
+  ],
+  "required_checks": [
+    "python3 scripts/ci/check_three_prong_boundaries.py",
+    "python3 scripts/validate_architecture_placement.py",
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py"
+  ]
+}

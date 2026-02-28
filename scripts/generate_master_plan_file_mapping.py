@@ -20,6 +20,30 @@ TRACK_PREFIXES = (
 Rule = tuple[str, dict]
 
 rules: list[Rule] = [
+    (r"^lib/apps/", {
+        "domain": "apps-prong",
+        "disposition": "keep_update",
+        "phase_refs": "10.10.9,10.10.11,10.10.12",
+        "action": "keep+update",
+        "confidence": "high",
+        "rationale": "App prong surfaces are active architecture lanes under 3-prong execution governance."
+    }),
+    (r"^lib/runtime/", {
+        "domain": "runtime-os-prong",
+        "disposition": "keep_update",
+        "phase_refs": "10.10.9,10.10.11,10.10.12",
+        "action": "keep+update",
+        "confidence": "high",
+        "rationale": "Runtime OS prong modules are active architecture lanes under boundary-enforced migration."
+    }),
+    (r"^lib/di/registrars/", {
+        "domain": "bootstrap-registrars",
+        "disposition": "keep_update",
+        "phase_refs": "10.10.3,10.10.9,10.10.12",
+        "action": "keep+update",
+        "confidence": "high",
+        "rationale": "Prong-specific service registrars are required bootstrap composition surfaces."
+    }),
     (r"^lib/core/services/places/.*_new\.dart$", {
         "domain": "places-location-intelligence",
         "disposition": "keep_update",

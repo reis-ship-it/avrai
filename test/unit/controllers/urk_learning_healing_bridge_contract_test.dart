@@ -1,4 +1,4 @@
-import 'package:avrai/core/controllers/urk_learning_healing_bridge_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_learning_healing_bridge_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

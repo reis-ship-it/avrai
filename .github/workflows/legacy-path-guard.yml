@@ -1,0 +1,23 @@
+name: Legacy Path Guard
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  legacy-path-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Enforce legacy-path migration guard
+        run: |
+          python3 scripts/ci/check_legacy_path_guard.py --base-ref "${{ github.base_ref || 'main' }}"

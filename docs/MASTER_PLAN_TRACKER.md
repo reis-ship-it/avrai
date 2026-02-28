@@ -4,7 +4,7 @@
 **Status:** 🎯 Active Master Registry  
 **Purpose:** Registry of all implementation plans (plan documents + locations)  
 **Cursor Rule:** **Automatically update this document whenever a plan is created**  
-**Last Updated:** February 20, 2026 (v26: added topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings across `5.2`, `6.1`, `7.7`, `7.9`, `8.1`, and `10.9`. Previous: v25 added offline/online transfer continuity addendum (`arXiv 2602.17632`) and explicit cross-phase wiring to `5.2`, `7.7`, `7.9`, `8.1`, and `10.9.22`)
+**Last Updated:** February 28, 2026 (v27: added explicit 3-prong concurrent execution governance set: one umbrella target-end-state authority plus isolated prong plans for Apps, Runtime OS, and Reality Model to support parallel build lanes without cross-prong interference. Previous: v26 topology-adaptive orchestration addendum (`arXiv 2602.16873`) with caution-gated online/offline + ai2ai mappings)
 
 ---
 
@@ -71,6 +71,11 @@
 |-----------|------|--------|----------|----------|-----------|
 | **Product Requirements Document (PRD)** | 2026-02-15 | 🟢 **Active** | **CRITICAL** | Ongoing authority for requirement IDs + drift prevention acceptance criteria | [`PRD.md`](./PRD.md) |
 | **Master Plan - Intelligence-First Architecture** | 2026-02-08 | 🟢 **Active** | **CRITICAL** | Ongoing (11 phases, 4 tiers) | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
+| **Master Plan 3-Prong Target End State (Umbrella Authority)** | 2026-02-28 | 🟢 **Active** | **CRITICAL** | Continuous; one umbrella plan governing concurrent prong execution boundaries/contracts | [`plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`](./plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md) |
+| **Admin Command Center Ideal Architecture (Reality/Universe/World Oversight + Mesh/Globe/Temporal Replay)** | 2026-02-28 | 🟢 **Active** | **CRITICAL** | Continuous; governs Phase `10.9.22`-`10.9.25` oversight surfaces, privacy-safe identity rendering, AI2AI health visualizations, and intervention controls | [`plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`](./plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md) |
+| ↳ Apps Prong Concurrent Execution Plan | 2026-02-28 | 🟢 **Active** | HIGH | Continuous; app-lane isolation and compatibility rules | [`plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md) |
+| ↳ Runtime OS Prong Concurrent Execution Plan | 2026-02-28 | 🟢 **Active** | HIGH | Continuous; runtime-lane isolation and contract compatibility rules | [`plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md) |
+| ↳ Reality Model Prong Concurrent Execution Plan | 2026-02-28 | 🟢 **Active** | HIGH | Continuous; model-lane isolation and deterministic interface rules | [`plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md) |
 | ↳ ML System Deep Analysis & Improvement Roadmap (Source of Truth) | 2026-02-08 | 📋 **Source of Truth** | - | - | [`agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`](./agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md) |
 | ↳ Master Plan - Legacy (Phases 1-31) | 2026-01-01 | ❌ **Defunct** | - | Superseded 2026-02-08 | [`MASTER_PLAN_LEGACY.md`](./MASTER_PLAN_LEGACY.md) |
 | ↳ Master Plan Appendix - Detailed Specs (Legacy) | 2026-01-01 | 📋 Reference (Historical) | - | - | [`MASTER_PLAN_APPENDIX.md`](./MASTER_PLAN_APPENDIX.md) |
@@ -185,6 +190,7 @@
 | Plan Name | Date | Status | Priority | Timeline | File Path |
 |-----------|------|--------|----------|----------|-----------|
 | Autonomous Research and Experimentation Engine | 2026-02-15 | 🟢 Active | **CRITICAL** | 3-5 weeks (initial platform lane) | [`plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md) |
+| Admin/Reality Shared Research Oversight Surface | 2026-02-28 | 🟢 Active | **CRITICAL** | Continuous; admin and reality model share governed visibility into active research, replication state, and promotion blockers | [`plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`](./plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md) |
 | Dream Training and Conviction Governance | 2026-02-20 | 🟢 Active | **CRITICAL** | Continuous governance; bounded dream simulation with fail-closed belief-tier enforcement and anti-delusion promotion controls | [`plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md) |
 | Experiment Registry (Canonical + Build-Enforced) | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all experiment scripts must be registry-tracked with deterministic canonical naming and target architecture space | [`EXPERIMENT_REGISTRY.md`](./EXPERIMENT_REGISTRY.md) |
 | ML Training Automation Governance | 2026-02-16 | 🟢 Active | **CRITICAL** | Continuous; all model training + staged simulations auto-recorded and checklist-generated | [`plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](./plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md) |

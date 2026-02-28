@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Reservation Check-In Service
 //
 // Phase 10.1: Multi-Layered Check-In System
@@ -22,7 +23,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 import 'package:avrai/core/services/security/hybrid_encryption_service.dart';
 import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai_knot/services/knot/knot_orchestrator_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
@@ -37,108 +38,7 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager_ndef/nfc_manager_ndef.dart';
 import 'package:ndef_record/ndef_record.dart';
 
-/// Check-In Result
-///
-/// Result of check-in validation and completion.
-class CheckInResult {
-  /// Whether check-in was successful
-  final bool success;
-
-  /// Error message if check-in failed
-  final String? error;
-
-  /// Updated reservation (if successful)
-  final Reservation? reservation;
-
-  /// Confidence score (0.0 to 1.0)
-  final double confidenceScore;
-
-  /// Validation layer results
-  final Map<String, bool> validationLayers;
-
-  const CheckInResult({
-    required this.success,
-    this.error,
-    this.reservation,
-    this.confidenceScore = 0.0,
-    this.validationLayers = const {},
-  });
-
-  /// Success result
-  factory CheckInResult.success({
-    required Reservation reservation,
-    required double confidenceScore,
-    required Map<String, bool> validationLayers,
-  }) {
-    return CheckInResult(
-      success: true,
-      reservation: reservation,
-      confidenceScore: confidenceScore,
-      validationLayers: validationLayers,
-    );
-  }
-
-  /// Error result
-  factory CheckInResult.error(String error) {
-    return CheckInResult(
-      success: false,
-      error: error,
-    );
-  }
-}
-
-/// NFC Payload
-///
-/// Payload structure for NFC tag (read/write).
-class NFCPayload {
-  /// Reservation ID
-  final String reservationId;
-
-  /// Spot ID
-  final String spotId;
-
-  /// Quantum state (JSON-serialized)
-  final Map<String, dynamic> quantumState;
-
-  /// Knot signature
-  final String knotSignature;
-
-  /// Timestamp
-  final DateTime timestamp;
-
-  const NFCPayload({
-    required this.reservationId,
-    required this.spotId,
-    required this.quantumState,
-    required this.knotSignature,
-    required this.timestamp,
-  });
-
-  /// Create from JSON
-  factory NFCPayload.fromJson(Map<String, dynamic> json) {
-    return NFCPayload(
-      reservationId: json['reservationId'] as String,
-      spotId: json['spotId'] as String,
-      quantumState: json['quantumState'] as Map<String, dynamic>,
-      knotSignature: json['knotSignature'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
-    );
-  }
-
-  /// Convert to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'reservationId': reservationId,
-      'spotId': spotId,
-      'quantumState': quantumState,
-      'knotSignature': knotSignature,
-      'timestamp': timestamp.toIso8601String(),
-    };
-  }
-
-  /// Convert to JSON string (for NFC tag)
-  String toJsonString() => jsonEncode(toJson());
-}
+part 'reservation_check_in_models.dart';
 
 /// Reservation Check-In Service
 ///
@@ -1287,26 +1187,4 @@ class ReservationCheckInService {
       cachedAt: DateTime.now(),
     );
   }
-}
-
-/// Cached knot signature (Phase 9.2: Performance optimization)
-class _CachedKnotSignature {
-  final String signature;
-  final DateTime cachedAt;
-
-  _CachedKnotSignature({
-    required this.signature,
-    required this.cachedAt,
-  });
-}
-
-/// Cached compatibility score (Phase 9.2: Performance optimization)
-class _CachedCompatibility {
-  final double score;
-  final DateTime cachedAt;
-
-  _CachedCompatibility({
-    required this.score,
-    required this.cachedAt,
-  });
 }

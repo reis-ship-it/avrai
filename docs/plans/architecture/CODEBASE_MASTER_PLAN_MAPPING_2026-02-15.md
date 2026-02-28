@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2952
+**Total mapped files:** 3171
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,41 +10,44 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2562 |
-| keep_review | 364 |
-| refactor_planned | 26 |
+| keep_update | 2749 |
+| keep_review | 393 |
+| refactor_planned | 29 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 898 |
-| presentation | 382 |
-| core-services-general | 381 |
-| tooling-ops | 313 |
+| testing-quality | 908 |
+| core-services-general | 400 |
+| presentation | 342 |
+| tooling-ops | 340 |
 | package-modules | 207 |
 | core-models | 142 |
-| supabase-infra | 124 |
-| world-model-ai-core | 114 |
+| supabase-infra | 126 |
+| world-model-ai-core | 118 |
+| runtime-os-prong | 111 |
 | platform-runtime | 62 |
+| ai2ai-network | 61 |
 | data-layer | 55 |
-| workflow-controllers | 30 |
-| assets | 26 |
-| ai2ai-network | 25 |
+| apps-prong | 47 |
+| assets | 27 |
+| ml-legacy-and-transition | 25 |
 | native-modules | 24 |
-| ml-legacy-and-transition | 22 |
+| workflow-controllers | 23 |
 | security-signal-ffi | 21 |
 | domain-layer | 19 |
 | config-and-theme | 15 |
+| app-composition-root | 14 |
 | security-signal | 14 |
-| app-composition-root | 13 |
 | security-services | 12 |
 | monitoring-observability | 9 |
 | quantum-package | 7 |
 | data-platform-sql | 6 |
-| cloud-integration | 4 |
-| tooling-dev | 4 |
+| cloud-integration | 5 |
+| tooling-dev | 5 |
 | bootstrap-boundary | 3 |
+| bootstrap-registrars | 3 |
 | crypto-core | 3 |
 | legal-domain | 3 |
 | search-retrieval | 3 |
@@ -59,27 +62,29 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 394 |
-| lib/presentation/widgets | 204 |
-| test/unit/services | 198 |
-| lib/presentation/pages | 174 |
+| lib/core/services | 413 |
+| test/unit/services | 202 |
+| lib/presentation/widgets | 188 |
+| lib/presentation/pages | 150 |
 | lib/core/models | 142 |
-| lib/core/ai | 114 |
-| test/widget/widgets | 101 |
+| lib/core/ai | 118 |
+| lib/runtime/avrai_runtime_os | 111 |
+| test/widget/widgets | 90 |
 | packages/avrai_knot/lib | 84 |
 | packages/avrai_network/lib | 67 |
-| test/unit/models | 56 |
-| test/widget/pages | 56 |
-| test/unit/ai | 52 |
+| lib/core/ai2ai | 61 |
+| test/unit/models | 57 |
+| test/widget/pages | 55 |
+| test/unit/ai | 54 |
+| lib/apps/admin_app | 40 |
 | packages/avrai_core/lib | 34 |
-| lib/core/controllers | 30 |
 | scripts/ecommerce_experiments/results | 28 |
 | android/app | 27 |
 | test/unit/controllers | 27 |
 | lib/data/datasources | 26 |
-| lib/core/ai2ai | 25 |
+| lib/core/ml | 25 |
 | test/core/services | 24 |
-| lib/core/ml | 22 |
+| lib/core/controllers | 23 |
 | test/unit/data | 20 |
 | test/integration/ai | 19 |
 | test/unit/ai2ai | 19 |
@@ -90,15 +95,13 @@
 | test/unit/domain | 14 |
 | lib/data/repositories | 13 |
 | test/core/crypto | 13 |
+| test/unit/ml | 13 |
 | test/integration/infrastructure | 12 |
 | test/integration/services | 12 |
 | assets/three_js/lib | 10 |
 | lib/core/theme | 10 |
 | lib/data/database | 10 |
-| test/unit/ml | 10 |
 | lib/core/monitoring | 9 |
-| test/integration/security | 9 |
-| test/integration/expertise | 8 |
 
 ## Delete Candidates
 

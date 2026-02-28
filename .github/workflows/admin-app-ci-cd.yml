@@ -1,0 +1,130 @@
+name: Admin App CI/CD
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/admin_app/**'
+      - 'lib/main_admin.dart'
+      - 'lib/apps/admin_app/**'
+      - 'lib/presentation/pages/admin/**'
+      - 'lib/presentation/pages/auth/**'
+      - 'lib/presentation/widgets/admin/**'
+      - 'lib/core/services/admin/**'
+      - 'lib/core/services/ai_infrastructure/**'
+      - 'packages/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'melos.yaml'
+      - '.github/workflows/admin-app-ci-cd.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/admin_app/**'
+      - 'lib/main_admin.dart'
+      - 'lib/apps/admin_app/**'
+      - 'lib/presentation/pages/admin/**'
+      - 'lib/presentation/pages/auth/**'
+      - 'lib/presentation/widgets/admin/**'
+      - 'lib/core/services/admin/**'
+      - 'lib/core/services/ai_infrastructure/**'
+      - 'packages/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'melos.yaml'
+      - '.github/workflows/admin-app-ci-cd.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: admin-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Admin Quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.6
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  build-android:
+    name: Admin Android Build
+    runs-on: ubuntu-latest
+    needs: quality
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.6
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-app-apk
+          path: apps/admin_app/build/app/outputs/flutter-apk/app-debug.apk
+
+  build-web:
+    name: Admin Web Build
+    runs-on: ubuntu-latest
+    needs: quality
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.6
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-app-web
+          path: apps/admin_app/build/web

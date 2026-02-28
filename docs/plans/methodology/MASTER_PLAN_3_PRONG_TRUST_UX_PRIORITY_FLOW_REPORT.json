@@ -1,0 +1,12 @@
+{
+  "contract_ok": true,
+  "errors": [],
+  "implemented_coverage_ratio": 0.3333333333333333,
+  "implemented_flows": 1,
+  "in_progress_flows": 1,
+  "planned_flows": 1,
+  "source": "configs/runtime/trust_ux_priority_flows.json",
+  "total_flows": 3,
+  "verdict": "PASS",
+  "version": "v1"
+}

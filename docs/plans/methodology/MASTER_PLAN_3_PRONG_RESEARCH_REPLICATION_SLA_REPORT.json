@@ -1,0 +1,19 @@
+{
+  "active_in_progress": 1,
+  "active_items": 2,
+  "active_open": 1,
+  "active_sla_compliant": true,
+  "errors": [],
+  "generated_at": "2026-02-27T13:00:00Z",
+  "overdue_items": 0,
+  "per_priority": {
+    "critical": 0,
+    "high": 1,
+    "low": 1,
+    "medium": 1
+  },
+  "source": "configs/runtime/research_replication_queue.json",
+  "total_items": 3,
+  "verdict": "PASS",
+  "version": "v1"
+}

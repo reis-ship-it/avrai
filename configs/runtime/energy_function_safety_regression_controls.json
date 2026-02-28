@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T19:20:00Z",
+  "evaluation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T19:00:00Z"
+  },
+  "safety_bounds": {
+    "max_policy_violation_rate_pct": 0.25,
+    "observed_policy_violation_rate_pct": 0.03,
+    "evaluated_decisions": 2400,
+    "hard_bounds_passed": true
+  },
+  "asymmetric_loss_regression": {
+    "max_regression_delta_pct": 0.8,
+    "observed_regression_delta_pct": 0.21,
+    "holdout_samples": 1600
+  },
+  "loss_weight_policy": {
+    "negative_outcome_weight": 2.0,
+    "positive_outcome_weight": 1.0,
+    "model_failure_weight": 3.0
+  },
+  "promotion_guardrails": {
+    "fail_closed_enabled": true,
+    "rollback_readiness_passed": true,
+    "guardrail_audits": 12
+  }
+}

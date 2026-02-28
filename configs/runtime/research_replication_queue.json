@@ -1,0 +1,38 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T13:00:00Z",
+  "default_sla_hours": 72,
+  "items": [
+    {
+      "claim_id": "claim-canary-001",
+      "priority": "high",
+      "opened_at": "2026-02-26T09:00:00Z",
+      "sla_hours": 48,
+      "status": "open",
+      "owner": "MLE",
+      "requires_independent_replication": true,
+      "notes": "High-impact conviction claim under canary review"
+    },
+    {
+      "claim_id": "claim-research-002",
+      "priority": "medium",
+      "opened_at": "2026-02-25T12:00:00Z",
+      "sla_hours": 72,
+      "status": "in_progress",
+      "owner": "MLE",
+      "requires_independent_replication": true,
+      "notes": "Replication run scheduled with independent reviewer"
+    },
+    {
+      "claim_id": "claim-archive-003",
+      "priority": "low",
+      "opened_at": "2026-02-20T10:00:00Z",
+      "sla_hours": 72,
+      "status": "closed",
+      "owner": "MLE",
+      "requires_independent_replication": true,
+      "notes": "Replication passed and claim promoted"
+    }
+  ]
+}

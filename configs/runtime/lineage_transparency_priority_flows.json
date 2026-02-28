@@ -1,0 +1,42 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "required_fields": [
+    "change_summary",
+    "lineage_ref",
+    "influencing_claims_count",
+    "last_changed_at"
+  ],
+  "priority_flows": [
+    {
+      "flow_id": "checkout_high_impact_recommendation",
+      "surface": "checkout",
+      "requires_change_summary": true,
+      "requires_lineage_ref": true,
+      "requires_influencing_claims_count": true,
+      "requires_last_changed_at": true,
+      "status": "implemented",
+      "owner": "Product"
+    },
+    {
+      "flow_id": "payment_high_impact_recommendation",
+      "surface": "payment",
+      "requires_change_summary": true,
+      "requires_lineage_ref": true,
+      "requires_influencing_claims_count": true,
+      "requires_last_changed_at": true,
+      "status": "in_progress",
+      "owner": "Product"
+    },
+    {
+      "flow_id": "list_creation_ai_recommendation",
+      "surface": "list_creation",
+      "requires_change_summary": true,
+      "requires_lineage_ref": true,
+      "requires_influencing_claims_count": true,
+      "requires_last_changed_at": true,
+      "status": "planned",
+      "owner": "Product"
+    }
+  ]
+}

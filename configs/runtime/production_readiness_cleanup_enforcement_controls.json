@@ -1,0 +1,26 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T22:05:00Z",
+  "evaluation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T21:50:00Z"
+  },
+  "adaptive_path_placeholder_gate": {
+    "max_placeholder_violations": 0,
+    "observed_placeholder_violations": 0,
+    "paths_checked": 38
+  },
+  "ci_stability": {
+    "required_pass_rate_pct": 99.0,
+    "observed_pass_rate_pct": 100.0,
+    "critical_flaky_failures": 0,
+    "runs_evaluated": 64
+  },
+  "readiness_checklist": {
+    "required_checklist_coverage_pct": 100.0,
+    "observed_checklist_coverage_pct": 100.0,
+    "blocking_items_open": 0,
+    "checklist_items_evaluated": 18
+  }
+}

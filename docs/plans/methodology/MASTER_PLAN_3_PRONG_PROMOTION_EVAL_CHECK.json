@@ -1,0 +1,27 @@
+{
+  "approvals_attempted": 1,
+  "candidate_summaries": [
+    {
+      "candidate_id": "baseline-contract-candidate",
+      "missing_required_suites": [],
+      "non_passing_required_suites": [
+        "contradiction_stress"
+      ],
+      "promotion_decision": "hold"
+    },
+    {
+      "candidate_id": "candidate-reality-v1-canary-a",
+      "missing_required_suites": [],
+      "non_passing_required_suites": [],
+      "promotion_decision": "approve"
+    }
+  ],
+  "errors": [],
+  "has_errors": false,
+  "manifest_version": "v1",
+  "required_suites": [
+    "offline_replay",
+    "adversarial_robustness",
+    "contradiction_stress"
+  ]
+}

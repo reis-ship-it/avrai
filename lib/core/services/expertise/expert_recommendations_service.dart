@@ -1,12 +1,13 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/models/expertise/multi_path_expertise.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/expertise/expertise_matching_service.dart';
 import 'package:avrai/core/services/expertise/golden_expert_ai_influence_service.dart';
-import 'package:avrai/core/services/expertise/urk_stage_d_expert_runtime_replication_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_stage_d_expert_runtime_replication_contract.dart';
 
 /// Expert Recommendations Service
 /// Provides recommendations based on expert preferences and validations
@@ -466,35 +467,29 @@ class ExpertRecommendationsService {
 
     const policy = UrkStageDExpertRuntimeReplicationPolicy(
       requiredPipelineCoveragePct: 100.0,
-      requiredPolicyGateCoveragePct: 100.0,
+      requiredExpertisePolicyGateCoveragePct: 100.0,
       requiredLineageCoveragePct: 100.0,
-      maxUnattributedActions: 0,
-      requiredProvenanceCoveragePct: 100.0,
-      maxUnverifiedOutputs: 0,
+      requiredProvenanceTagCoveragePct: 100.0,
+      maxUnverifiedExpertCommits: 0,
       requiredHighImpactReviewCoveragePct: 100.0,
-      maxUnreviewedHighImpactCommits: 0,
     );
 
     final snapshot = passing
         ? const UrkStageDExpertRuntimeReplicationSnapshot(
             observedPipelineCoveragePct: 100.0,
-            observedPolicyGateCoveragePct: 100.0,
+            observedExpertisePolicyGateCoveragePct: 100.0,
             observedLineageCoveragePct: 100.0,
-            observedUnattributedActions: 0,
-            observedProvenanceCoveragePct: 100.0,
-            observedUnverifiedOutputs: 0,
+            observedProvenanceTagCoveragePct: 100.0,
+            observedUnverifiedExpertCommits: 0,
             observedHighImpactReviewCoveragePct: 100.0,
-            observedUnreviewedHighImpactCommits: 0,
           )
         : UrkStageDExpertRuntimeReplicationSnapshot(
             observedPipelineCoveragePct: 100.0,
-            observedPolicyGateCoveragePct: 90.0,
+            observedExpertisePolicyGateCoveragePct: 90.0,
             observedLineageCoveragePct: 100.0,
-            observedUnattributedActions: 0,
-            observedProvenanceCoveragePct: 90.0,
-            observedUnverifiedOutputs: criticalFailure ? 1 : 0,
+            observedProvenanceTagCoveragePct: 90.0,
+            observedUnverifiedExpertCommits: criticalFailure ? 1 : 0,
             observedHighImpactReviewCoveragePct: 100.0,
-            observedUnreviewedHighImpactCommits: criticalFailure ? 1 : 0,
           );
 
     try {

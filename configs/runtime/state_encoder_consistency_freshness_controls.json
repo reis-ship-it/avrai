@@ -1,0 +1,24 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T18:40:00Z",
+  "observation_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T18:30:00Z"
+  },
+  "freshness_slo": {
+    "max_p95_feature_age_minutes": 60,
+    "observed_p95_feature_age_minutes": 24,
+    "sampled_snapshots": 720
+  },
+  "snapshot_consistency": {
+    "max_mismatch_rate_pct": 0.5,
+    "observed_mismatch_rate_pct": 0.14,
+    "checked_feature_groups": 96
+  },
+  "atomic_snapshot": {
+    "monotonic_sequence_passed": true,
+    "lineage_completeness_passed": true,
+    "checked_snapshots": 720
+  }
+}

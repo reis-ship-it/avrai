@@ -1,16 +1,21 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 import 'dart:convert';
 import 'package:avrai/core/models/social_media/social_media_connection.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
-import 'package:avrai/core/services/social_media/social_media_insight_service.dart';
 import 'package:avrai/core/config/oauth_config.dart';
-import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_runtime.dart';
 import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_router.dart';
 import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
+import 'package:avrai/core/services/social_media/fallbacks/social_placeholder_profile_builder.dart';
+import 'package:avrai/core/services/social_media/helpers/social_media_connection_parsers.dart';
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
+import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
+import 'package:avrai/core/services/social_media/sync/social_request_throttle.dart';
+import 'package:avrai/core/services/social_media/sync/social_token_refresh_lane.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai/core/services/social_media/google_sign_in_bootstrap.dart';
@@ -18,7 +23,6 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:get_it/get_it.dart';
 
 /// Social Media Connection Service
 ///
@@ -40,7 +44,7 @@ class SocialMediaConnectionService {
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS');
   final StorageService _storageService;
   final AgentIdService _agentIdService;
-  final OAuthDeepLinkHandler _deepLinkHandler;
+  final OAuthRuntime _oauthRuntime;
 
   /// Secure storage for OAuth tokens and sensitive data.
   ///
@@ -50,6 +54,7 @@ class SocialMediaConnectionService {
   final SocialMediaServiceFactory? _serviceFactory;
   final SocialOAuthPlatformRouter _platformRouter;
   final SocialConnectionSyncLane _syncLane;
+  final SocialRequestThrottle _requestThrottle;
 
   // Storage keys are centralized via SocialConnectionSyncLane.
   static const Duration _profileCacheExpiry =
@@ -58,20 +63,22 @@ class SocialMediaConnectionService {
   SocialMediaConnectionService(
     this._storageService,
     this._agentIdService,
-    this._deepLinkHandler, {
+    this._oauthRuntime, {
     SocialMediaServiceFactory? serviceFactory,
     FlutterSecureStorage? secureStorage,
     SocialOAuthPlatformRouter? platformRouter,
     SocialConnectionSyncLane? syncLane,
+    SocialRequestThrottle? requestThrottle,
   })  : _serviceFactory = serviceFactory,
         _secureStorage = secureStorage ?? const FlutterSecureStorage(),
         _platformRouter = platformRouter ?? SocialOAuthPlatformRouter(),
-        _syncLane = syncLane ?? const SocialConnectionSyncLane() {
+        _syncLane = syncLane ?? const SocialConnectionSyncLane(),
+        _requestThrottle = requestThrottle ?? SocialRequestThrottle() {
     // Start listening for OAuth deep links (for AppAuth flows)
-    _deepLinkHandler.startListening();
+    _oauthRuntime.startListening();
     // Also check for initial deep link (if app was opened via deep link)
     // Note: getInitialLink is async, but we call it here to start the check
-    _deepLinkHandler.getInitialLink().catchError((e) {
+    _oauthRuntime.getInitialLink().catchError((e) {
       _logger.warn('Failed to get initial deep link: $e', tag: _logName);
       return null;
     });
@@ -303,37 +310,12 @@ class SocialMediaConnectionService {
   /// the connection flow. Errors are logged but do not affect the connection.
   /// Uses GetIt lazy access to avoid circular dependency.
   void _triggerInsightAnalysis(String agentId, String userId) {
-    // Use unawaited to fire-and-forget
-    unawaited(_triggerInsightAnalysisAsync(agentId, userId));
-  }
-
-  Future<void> _triggerInsightAnalysisAsync(
-      String agentId, String userId) async {
-    try {
-      // Lazy-load insight service via GetIt to avoid circular dependency
-      // SocialMediaInsightService depends on SocialMediaConnectionService,
-      // so we can't inject it in constructor, but we can access it lazily here
-      if (!GetIt.instance.isRegistered<SocialMediaInsightService>()) {
-        _logger.debug('Insight service not registered, skipping analysis',
-            tag: _logName);
-        return;
-      }
-
-      final insightService = GetIt.instance<SocialMediaInsightService>();
-
-      _logger.info(
-          '🔍 Triggering automatic insight analysis after connection...',
-          tag: _logName);
-      await insightService.analyzeAllPlatforms(
-        agentId: agentId,
-        userId: userId,
-      );
-      _logger.info('✅ Automatic insight analysis completed', tag: _logName);
-    } catch (e) {
-      _logger.warn('⚠️ Automatic insight analysis failed (non-blocking): $e',
-          tag: _logName);
-      // Non-blocking - don't throw
-    }
+    SocialInsightAnalysisTrigger.trigger(
+      logger: _logger,
+      logName: _logName,
+      agentId: agentId,
+      userId: userId,
+    );
   }
 
   /// Connect to Google using Google Sign-In
@@ -1632,100 +1614,12 @@ class SocialMediaConnectionService {
   }
 
   /// Parse interests from Instagram media captions
-  List<String> _parseInstagramInterests(List<Map<String, dynamic>> media) {
-    final interests = <String>{};
-    final interestKeywords = {
-      'food': [
-        'food',
-        'restaurant',
-        'cafe',
-        'coffee',
-        'brunch',
-        'dinner',
-        'lunch',
-        'foodie',
-        'culinary'
-      ],
-      'travel': [
-        'travel',
-        'trip',
-        'vacation',
-        'explore',
-        'adventure',
-        'wanderlust',
-        'journey'
-      ],
-      'art': [
-        'art',
-        'gallery',
-        'museum',
-        'exhibition',
-        'artist',
-        'creative',
-        'design'
-      ],
-      'music': ['music', 'concert', 'live', 'gig', 'festival', 'dj', 'band'],
-      'fitness': [
-        'fitness',
-        'gym',
-        'workout',
-        'yoga',
-        'running',
-        'exercise',
-        'health'
-      ],
-      'nature': [
-        'nature',
-        'outdoor',
-        'hiking',
-        'camping',
-        'park',
-        'beach',
-        'mountain'
-      ],
-      'fashion': [
-        'fashion',
-        'style',
-        'outfit',
-        'clothing',
-        'shopping',
-        'boutique'
-      ],
-      'photography': [
-        'photography',
-        'photo',
-        'camera',
-        'shot',
-        'picture',
-        'photographer'
-      ],
-    };
-
-    for (final item in media) {
-      final caption = (item['caption'] as String? ?? '').toLowerCase();
-      for (final entry in interestKeywords.entries) {
-        if (entry.value.any((keyword) => caption.contains(keyword))) {
-          interests.add(entry.key);
-        }
-      }
-    }
-
-    return interests.toList();
-  }
+  List<String> _parseInstagramInterests(List<Map<String, dynamic>> media) =>
+      parseInstagramInterests(media);
 
   /// Parse communities from Instagram follows and media
-  List<String> _parseInstagramCommunities(List<Map<String, dynamic>> media) {
-    final communities = <String>{};
-    // Extract hashtags from captions as communities
-    for (final item in media) {
-      final caption = item['caption'] as String? ?? '';
-      final hashtags = RegExp(r'#(\w+)').allMatches(caption);
-      for (final match in hashtags) {
-        communities.add(match.group(1)!.toLowerCase());
-      }
-    }
-    return communities.toList();
-  }
+  List<String> _parseInstagramCommunities(List<Map<String, dynamic>> media) =>
+      parseInstagramCommunities(media);
 
   /// Fetch Facebook profile data from Facebook Graph API
   Future<Map<String, dynamic>> _fetchFacebookProfileData(
@@ -2174,44 +2068,8 @@ class SocialMediaConnectionService {
   /// Get placeholder profile data (for development/testing)
   Map<String, dynamic> _getPlaceholderProfileData(
       SocialMediaConnection connection) {
-    switch (connection.platform) {
-      case 'google':
-        return {
-          'profile': {
-            'name': connection.platformUsername ?? 'Google User',
-            'email': 'user@example.com',
-          },
-          'savedPlaces': [],
-          'reviews': [],
-          'photos': [],
-          'locationHistory': null,
-        };
-      case 'instagram':
-      case 'facebook':
-      case 'twitter':
-      case 'tiktok':
-      case 'linkedin':
-      default:
-        return {
-          'profile': {
-            'name':
-                connection.platformUsername ?? '${connection.platform} User',
-            'username': connection.platformUsername,
-          },
-          'follows': [],
-          'posts': [],
-        };
-    }
+    return SocialPlaceholderProfileBuilder.build(connection);
   }
-
-  // Rate limiting and error handling
-
-  /// Rate limit tracking per platform
-  final Map<String, DateTime> _lastRequestTime = {};
-  final Map<String, int> _requestCount = {};
-  static const Duration _rateLimitWindow = Duration(minutes: 1);
-  static const int _maxRequestsPerWindow = 60; // Conservative limit
-  static const Duration _minRequestDelay = Duration(milliseconds: 100);
 
   /// Make authenticated HTTP request with rate limiting and retry logic
   Future<String?> _makeAuthenticatedRequest(
@@ -2222,10 +2080,14 @@ class SocialMediaConnectionService {
     String? body,
     int maxRetries = 3,
   }) async {
-    final platform = _extractPlatformFromUrl(url);
+    final platform = _requestThrottle.extractPlatformFromUrl(url);
 
     // Rate limiting check
-    await _checkRateLimit(platform);
+    await _requestThrottle.checkRateLimit(
+      platform: platform,
+      logger: _logger,
+      logName: _logName,
+    );
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       try {
@@ -2257,7 +2119,7 @@ class SocialMediaConnectionService {
         }
 
         // Update rate limit tracking
-        _updateRateLimitTracking(platform);
+        _requestThrottle.updateRateLimitTracking(platform);
 
         // Handle response
         if (response.statusCode == 200) {
@@ -2321,85 +2183,19 @@ class SocialMediaConnectionService {
     return null;
   }
 
-  /// Check and enforce rate limits
-  Future<void> _checkRateLimit(String platform) async {
-    final now = DateTime.now();
-    final lastRequest = _lastRequestTime[platform];
-    final requestCount = _requestCount[platform] ?? 0;
-
-    // Reset counter if window expired
-    if (lastRequest == null || now.difference(lastRequest) > _rateLimitWindow) {
-      _requestCount[platform] = 0;
-      _lastRequestTime[platform] = now;
-      return;
-    }
-
-    // Check if we've exceeded the limit
-    if (requestCount >= _maxRequestsPerWindow) {
-      final waitTime = _rateLimitWindow - now.difference(lastRequest);
-      _logger.warn(
-        'Rate limit reached for $platform, waiting ${waitTime.inSeconds}s',
-        tag: _logName,
-      );
-      await Future.delayed(waitTime);
-      _requestCount[platform] = 0;
-      _lastRequestTime[platform] = DateTime.now();
-      return;
-    }
-
-    // Enforce minimum delay between requests
-    final timeSinceLastRequest = now.difference(lastRequest);
-    if (timeSinceLastRequest < _minRequestDelay) {
-      await Future.delayed(_minRequestDelay - timeSinceLastRequest);
-    }
-  }
-
-  /// Update rate limit tracking
-  void _updateRateLimitTracking(String platform) {
-    final now = DateTime.now();
-    _lastRequestTime[platform] = now;
-    _requestCount[platform] = (_requestCount[platform] ?? 0) + 1;
-  }
-
-  /// Extract platform from URL
-  String _extractPlatformFromUrl(String url) {
-    if (url.contains('googleapis.com')) return 'google';
-    if (url.contains('instagram.com')) return 'instagram';
-    if (url.contains('facebook.com')) return 'facebook';
-    return 'unknown';
-  }
-
   /// Parse Retry-After header
-  Duration _parseRetryAfter(String? retryAfter) {
-    if (retryAfter == null) return const Duration(seconds: 60);
-    final seconds = int.tryParse(retryAfter);
-    if (seconds != null) return Duration(seconds: seconds);
-    return const Duration(seconds: 60);
-  }
+  Duration _parseRetryAfter(String? retryAfter) =>
+      parseRetryAfterHeader(retryAfter);
 
   /// Refresh token if needed
-  Future<bool> _refreshTokenIfNeeded(
-      String platform, String currentToken) async {
-    try {
-      // Get all connections to find the one for this platform
-      // Note: This is a simplified implementation - in production, we'd cache the agentId
-      final platforms = ['google', 'instagram', 'facebook'];
-      for (final p in platforms) {
-        // Try to find connection - this is a simplified approach
-        // In production, we'd have a better way to map platform to agentId
-        final connections = await _getAllConnectionsForPlatform(p);
-        for (final connection in connections) {
-          if (connection.platform == platform && connection.isActive) {
-            return await _refreshTokenForConnection(connection);
-          }
-        }
-      }
-
-      return false;
-    } catch (e) {
-      _logger.error('Failed to refresh token: $e', tag: _logName);
-      return false;
-    }
+  Future<bool> _refreshTokenIfNeeded(String platform, String _) async {
+    return SocialTokenRefreshLane.refreshIfNeeded(
+      platform: platform,
+      getAllConnectionsForPlatform: _getAllConnectionsForPlatform,
+      refreshForConnection: _refreshTokenForConnection,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   /// Refresh token for a specific connection
@@ -2418,21 +2214,11 @@ class SocialMediaConnectionService {
         return false;
       }
 
-      // Check if token is expired or about to expire (within 5 minutes)
       final expiresAtStr = tokens['expires_at'] as String?;
-      if (expiresAtStr != null) {
-        try {
-          final expiresAt = DateTime.parse(expiresAtStr);
-          final now = DateTime.now();
-          final timeUntilExpiry = expiresAt.difference(now);
-
-          // Only refresh if expired or expiring within 5 minutes
-          if (timeUntilExpiry.inMinutes > 5) {
-            return false; // Token still valid
-          }
-        } catch (e) {
-          // If we can't parse expiration, assume it needs refresh
-        }
+      if (!SocialTokenRefreshLane.shouldRefreshToken(
+        expiresAtIso8601: expiresAtStr,
+      )) {
+        return false;
       }
 
       // Refresh token based on platform
@@ -2636,18 +2422,9 @@ class SocialMediaConnectionService {
   /// Get all connections for an agent
   Future<List<SocialMediaConnection>> _getAllConnections(String agentId) async {
     // TODO: Implement efficient storage query
-    // For now, we'll need to know all possible platforms
-    final platforms = [
-      'google',
-      'instagram',
-      'facebook',
-      'twitter',
-      'tiktok',
-      'linkedin'
-    ];
     final connections = <SocialMediaConnection>[];
 
-    for (final platform in platforms) {
+    for (final platform in socialConnectionKnownPlatforms) {
       final connection = await _getConnection(agentId, platform);
       if (connection != null) {
         connections.add(connection);

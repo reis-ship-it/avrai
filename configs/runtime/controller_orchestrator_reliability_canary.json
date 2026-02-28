@@ -1,0 +1,46 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T16:30:00Z",
+  "canary_window": {
+    "start": "2026-02-26T00:00:00Z",
+    "end": "2026-02-27T16:00:00Z"
+  },
+  "error_budget": {
+    "max_error_rate_pct": 1.5,
+    "observed_error_rate_pct": 0.4,
+    "sample_size": 420
+  },
+  "dead_path_assertions": [
+    {
+      "controller": "list_creation_controller",
+      "primary_orchestrator_path": "conviction_shadow_gate.evaluateForRecommendation",
+      "fallback_path": "allow_with_shadow_telemetry",
+      "dead_path_detected": false
+    },
+    {
+      "controller": "event_creation_controller",
+      "primary_orchestrator_path": "conviction_shadow_gate.evaluateForRecommendation",
+      "fallback_path": "allow_with_shadow_telemetry",
+      "dead_path_detected": false
+    },
+    {
+      "controller": "ai_recommendation_controller",
+      "primary_orchestrator_path": "conviction_shadow_gate.evaluateForRecommendation",
+      "fallback_path": "allow_with_shadow_telemetry",
+      "dead_path_detected": false
+    },
+    {
+      "controller": "checkout_controller",
+      "primary_orchestrator_path": "conviction_shadow_gate.evaluateForHighImpact",
+      "fallback_path": "allow_with_shadow_telemetry",
+      "dead_path_detected": false
+    },
+    {
+      "controller": "payment_processing_controller",
+      "primary_orchestrator_path": "conviction_shadow_gate.evaluateForHighImpact",
+      "fallback_path": "allow_with_shadow_telemetry",
+      "dead_path_detected": false
+    }
+  ]
+}

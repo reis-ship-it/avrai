@@ -1,0 +1,57 @@
+{
+  "manifest_version": "v1",
+  "generated_at": "2026-02-27",
+  "required_suites": [
+    "offline_replay",
+    "adversarial_robustness",
+    "contradiction_stress"
+  ],
+  "promotion_candidates": [
+    {
+      "candidate_id": "baseline-contract-candidate",
+      "model_id": "mdl-baseline-contract-v1",
+      "promotion_decision": "hold",
+      "decision_reason": "baseline_scaffold_no_live_promotion",
+      "suite_results": [
+        {
+          "suite": "offline_replay",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/offline_replay_baseline.json"
+        },
+        {
+          "suite": "adversarial_robustness",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/adversarial_baseline.json"
+        },
+        {
+          "suite": "contradiction_stress",
+          "status": "pending",
+          "artifact_uri": ""
+        }
+      ]
+    },
+    {
+      "candidate_id": "candidate-reality-v1-canary-a",
+      "model_id": "mdl-reality-policy-v1",
+      "promotion_decision": "approve",
+      "decision_reason": "all_mandatory_eval_suites_passed_with_attested_artifacts",
+      "suite_results": [
+        {
+          "suite": "offline_replay",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/offline_replay.json"
+        },
+        {
+          "suite": "adversarial_robustness",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/adversarial_robustness.json"
+        },
+        {
+          "suite": "contradiction_stress",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/contradiction_stress.json"
+        }
+      ]
+    }
+  ]
+}

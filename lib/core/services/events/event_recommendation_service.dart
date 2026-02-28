@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
@@ -9,11 +10,11 @@ import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/quantum_matching_controller.dart';
-import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
-import 'package:avrai/core/controllers/urk_stage_b_event_ops_shadow_runtime_contract.dart';
-import 'package:avrai/core/services/user/urk_user_runtime_learning_intake_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_stage_b_event_ops_shadow_runtime_contract.dart';
 import 'package:avrai/core/models/quantum/matching_input.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_user_runtime_learning_intake_contract.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
@@ -944,6 +945,14 @@ class EventRecommendationService {
   }
 }
 
+StorageService? resolveDefaultStorageService() {
+  final sl = GetIt.instance;
+  if (!sl.isRegistered<StorageService>()) {
+    return null;
+  }
+  return sl<StorageService>();
+}
+
 /// Event Recommendation Model
 class EventRecommendation {
   final ExpertiseEvent event;
@@ -955,12 +964,4 @@ class EventRecommendation {
     required this.relevanceScore,
     required this.recommendationReason,
   });
-}
-
-StorageService? resolveDefaultStorageService() {
-  final sl = GetIt.instance;
-  if (!sl.isRegistered<StorageService>()) {
-    return null;
-  }
-  return sl<StorageService>();
 }

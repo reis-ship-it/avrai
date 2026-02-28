@@ -1,0 +1,29 @@
+{
+  "atomic_bundle_integrity": {
+    "bundle_checks_executed": 28,
+    "hard_rollback_integrity_passed": true,
+    "provenance_log_completeness_passed": true,
+    "soft_rollback_integrity_passed": true,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T20:45:00Z",
+  "planner_guardrails": {
+    "hard_constraint_envelope_passed": true,
+    "max_hard_constraint_violation_rate_pct": 0.2,
+    "observed_hard_constraint_violation_rate_pct": 0.01,
+    "planned_actions_evaluated": 2800,
+    "within_threshold": true
+  },
+  "rollback_drill": {
+    "drills_executed": 14,
+    "max_recovery_latency_seconds": 120.0,
+    "observed_p95_recovery_latency_seconds": 42.0,
+    "observed_success_rate_pct": 100.0,
+    "required_success_rate_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/planner_guardrail_rollback_hardening_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

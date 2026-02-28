@@ -1,4 +1,4 @@
-import 'package:avrai/core/ai2ai/urk_stage_c_private_mesh_policy_conformance_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_stage_c_private_mesh_policy_conformance_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

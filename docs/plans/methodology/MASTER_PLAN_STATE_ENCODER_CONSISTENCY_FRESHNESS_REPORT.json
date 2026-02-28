@@ -1,0 +1,25 @@
+{
+  "atomic_snapshot": {
+    "checked_snapshots": 720,
+    "lineage_completeness_passed": true,
+    "monotonic_sequence_passed": true,
+    "within_threshold": true
+  },
+  "errors": [],
+  "freshness_slo": {
+    "max_p95_feature_age_minutes": 60.0,
+    "observed_p95_feature_age_minutes": 24.0,
+    "sampled_snapshots": 720,
+    "within_threshold": true
+  },
+  "generated_at": "2026-02-27T18:40:00Z",
+  "snapshot_consistency": {
+    "checked_feature_groups": 96,
+    "max_mismatch_rate_pct": 0.5,
+    "observed_mismatch_rate_pct": 0.14,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/state_encoder_consistency_freshness_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

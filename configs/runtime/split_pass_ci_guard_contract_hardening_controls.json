@@ -1,0 +1,20 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T21:45:00Z",
+  "workflow_path": ".github/workflows/execution-board-guard.yml",
+  "required_commands": [
+    "dart run tool/update_execution_board.dart --check",
+    "dart run tool/update_three_prong_reviews.dart --check",
+    "python3 scripts/runtime/generate_controller_orchestrator_reliability_report.py --check",
+    "python3 scripts/runtime/generate_federated_cohort_canary_shadow_report.py --check",
+    "python3 scripts/runtime/generate_advisory_quarantine_rollback_report.py --check",
+    "python3 scripts/runtime/generate_memory_reliability_gates_report.py --check",
+    "python3 scripts/runtime/generate_state_encoder_consistency_freshness_report.py --check",
+    "python3 scripts/runtime/generate_energy_function_safety_regression_report.py --check",
+    "python3 scripts/runtime/generate_transition_predictor_drift_calibration_report.py --check",
+    "python3 scripts/runtime/generate_planner_guardrail_rollback_hardening_report.py --check",
+    "python3 scripts/runtime/generate_business_data_consent_governance_report.py --check",
+    "python3 scripts/runtime/generate_integration_governance_contract_security_report.py --check"
+  ]
+}

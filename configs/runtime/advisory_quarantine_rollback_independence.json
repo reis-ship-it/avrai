@@ -1,0 +1,35 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T17:30:00Z",
+  "policy": {
+    "quarantine_mode_required": true,
+    "advisory_rollback_must_be_independent": true
+  },
+  "advisory_sources": [
+    {
+      "source_id": "locality_peer_group_a",
+      "credibility_score": 0.78,
+      "quarantine_status": "shadow",
+      "anomaly_detected": false,
+      "advisory_rollback_available": true,
+      "advisory_rollback_independent_of_model": true
+    },
+    {
+      "source_id": "locality_peer_group_b",
+      "credibility_score": 0.72,
+      "quarantine_status": "shadow",
+      "anomaly_detected": false,
+      "advisory_rollback_available": true,
+      "advisory_rollback_independent_of_model": true
+    },
+    {
+      "source_id": "global_advisory_fallback",
+      "credibility_score": 0.69,
+      "quarantine_status": "quarantine",
+      "anomaly_detected": false,
+      "advisory_rollback_available": true,
+      "advisory_rollback_independent_of_model": true
+    }
+  ]
+}
