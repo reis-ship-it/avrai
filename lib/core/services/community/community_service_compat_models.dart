@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 part of 'community_service.dart';
 
 /// Breakdown of a user's true compatibility with a community.
