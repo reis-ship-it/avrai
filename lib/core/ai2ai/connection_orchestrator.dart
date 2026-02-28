@@ -16,6 +16,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/pending_connection.dart';
 import 'package:avrai/core/ai2ai/connection_summary.dart';
+import 'package:avrai/core/ai2ai/connection_summary_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_node_orchestration_lane.dart';
@@ -23,8 +24,8 @@ import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
+import 'package:avrai/core/ai2ai/routing/mesh_public_forwarding_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_message_runtime_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
@@ -797,19 +798,9 @@ class VibeConnectionOrchestrator {
   }
 
   List<ConnectionSummary> getActiveConnectionSummaries() {
-    return _activeConnections.values.map((connection) {
-      return ConnectionSummary(
-        connectionId: connection.connectionId,
-        duration: connection.connectionDuration,
-        compatibility: connection.currentCompatibility,
-        learningEffectiveness: connection.learningEffectiveness,
-        aiPleasureScore: connection.aiPleasureScore,
-        qualityRating: connection.qualityRating,
-        status: connection.status,
-        interactionCount: connection.interactionHistory.length,
-        dimensionsEvolved: connection.dimensionEvolution.keys.length,
-      );
-    }).toList();
+    return ConnectionSummaryOrchestrationLane.fromActiveConnections(
+      _activeConnections.values,
+    );
   }
 
   List<ConnectionMetrics> getActiveConnections() {
@@ -1110,7 +1101,7 @@ class VibeConnectionOrchestrator {
   Future<void> forwardOrganicSpotDiscovery(
     Map<String, dynamic> signal,
   ) async {
-    await MeshForwardingOrchestrationLane.forwardOrganicSpotDiscovery(
+    await MeshPublicForwardingOrchestrationLane.forwardOrganicSpotDiscovery(
       signal: signal,
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
@@ -1126,7 +1117,7 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    await MeshForwardingOrchestrationLane.forwardLocalityAgentUpdate(
+    await MeshPublicForwardingOrchestrationLane.forwardLocalityAgentUpdate(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
