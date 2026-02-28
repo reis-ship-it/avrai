@@ -1,10 +1,13 @@
-// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/models/community/collaborative_activity_metrics.dart';
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
+import 'package:avrai/core/services/admin/reality_model_checkin_service.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/admin/realtime_agent_globe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -25,14 +28,18 @@ class RealitySystemOversightPage extends StatefulWidget {
       _RealitySystemOversightPageState();
 }
 
-class _RealitySystemOversightPageState
-    extends State<RealitySystemOversightPage> {
+class _RealitySystemOversightPageState extends State<RealitySystemOversightPage> {
   final TextEditingController _checkInController = TextEditingController();
   final List<_CheckInEntry> _checkIns = <_CheckInEntry>[];
+  final RealityModelCheckInService _checkInService =
+      RealityModelCheckInService();
 
   AdminRuntimeGovernanceService? _service;
+  SharedPreferencesCompat? _prefs;
 
   bool _isLoading = true;
+  bool _isCheckInBusy = false;
+  bool _isGeneratingGroups = false;
   String? _error;
 
   GodModeDashboardData? _dashboardData;
@@ -41,6 +48,10 @@ class _RealitySystemOversightPageState
   List<ClubCommunityData> _clubCommunityData = <ClubCommunityData>[];
   List<UserSearchResult> _users = <UserSearchResult>[];
   List<BusinessAccountData> _businesses = <BusinessAccountData>[];
+  List<ActiveAIAgentData> _activeAgents = <ActiveAIAgentData>[];
+
+  Set<String> _approvedGroupings = <String>{};
+  List<String> _proposedGroupings = <String>[];
 
   @override
   void initState() {
@@ -51,7 +62,10 @@ class _RealitySystemOversightPageState
   Future<void> _init() async {
     try {
       _service = GetIt.instance<AdminRuntimeGovernanceService>();
+      _prefs = await SharedPreferencesCompat.getInstance();
+      await _loadApprovedGroupings();
       await _load();
+      await _generateGroupingProposals();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -88,10 +102,14 @@ class _RealitySystemOversightPageState
           break;
 
         case OversightLayer.universe:
-          final clubs = await _service!.getAllClubsAndCommunities();
+          final results = await Future.wait<dynamic>([
+            _service!.getAllClubsAndCommunities(),
+            _service!.getAllActiveAIAgents(),
+          ]);
           if (!mounted) return;
           setState(() {
-            _clubCommunityData = clubs;
+            _clubCommunityData = results[0] as List<ClubCommunityData>;
+            _activeAgents = results[1] as List<ActiveAIAgentData>;
             _isLoading = false;
           });
           break;
@@ -101,12 +119,14 @@ class _RealitySystemOversightPageState
             _service!.getDashboardData(),
             _service!.searchUsers(),
             _service!.getAllBusinessAccounts(),
+            _service!.getAllActiveAIAgents(),
           ]);
           if (!mounted) return;
           setState(() {
             _dashboardData = results[0] as GodModeDashboardData;
             _users = results[1] as List<UserSearchResult>;
             _businesses = results[2] as List<BusinessAccountData>;
+            _activeAgents = results[3] as List<ActiveAIAgentData>;
             _isLoading = false;
           });
           break;
@@ -118,6 +138,58 @@ class _RealitySystemOversightPageState
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _loadApprovedGroupings() async {
+    final prefs = _prefs;
+    if (prefs == null) return;
+
+    final saved =
+        prefs.getStringList(_approvedGroupingKey(widget.layer)) ?? <String>[];
+
+    if (!mounted) return;
+    setState(() {
+      _approvedGroupings = saved.toSet();
+    });
+  }
+
+  Future<void> _persistApprovedGroupings() async {
+    final prefs = _prefs;
+    if (prefs == null) return;
+    await prefs.setStringList(
+      _approvedGroupingKey(widget.layer),
+      _approvedGroupings.toList()..sort(),
+    );
+  }
+
+  Future<void> _generateGroupingProposals() async {
+    if (!mounted) return;
+
+    final observed = _observedGroupingSignals();
+    if (observed.isEmpty) {
+      setState(() {
+        _proposedGroupings = <String>[];
+      });
+      return;
+    }
+
+    setState(() {
+      _isGeneratingGroups = true;
+    });
+
+    final proposed = await _checkInService.proposeGroupings(
+      layer: _layerKey(widget.layer),
+      observedTypes: observed,
+      approvedGroupings: _approvedGroupings.toList(),
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _proposedGroupings = proposed.where((group) {
+        return !_approvedGroupings.contains(group);
+      }).toList();
+      _isGeneratingGroups = false;
+    });
   }
 
   @override
@@ -132,7 +204,12 @@ class _RealitySystemOversightPageState
       title: '${_layerLabel(widget.layer)} Oversight',
       actions: [
         IconButton(
-          onPressed: _isLoading ? null : _load,
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  await _load();
+                  await _generateGroupingProposals();
+                },
           icon: const Icon(Icons.refresh),
           tooltip: 'Refresh',
         ),
@@ -157,7 +234,13 @@ class _RealitySystemOversightPageState
               const SizedBox(height: 12),
               Text(_error!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
-              ElevatedButton(onPressed: _load, child: const Text('Retry')),
+              ElevatedButton(
+                onPressed: () async {
+                  await _load();
+                  await _generateGroupingProposals();
+                },
+                child: const Text('Retry'),
+              ),
             ],
           ),
         ),
@@ -165,15 +248,30 @@ class _RealitySystemOversightPageState
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () async {
+        await _load();
+        await _generateGroupingProposals();
+      },
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _buildLayerSwitcher(),
           const SizedBox(height: 12),
+          _buildPrivacyNoticeCard(context),
+          const SizedBox(height: 12),
           _buildDirectionsCard(context),
           const SizedBox(height: 12),
           _buildLayerSnapshot(context),
+          if (widget.layer == OversightLayer.universe ||
+              widget.layer == OversightLayer.world) ...[
+            const SizedBox(height: 12),
+            RealtimeAgentGlobeWidget(
+              agents: _activeAgents,
+              title: '${_layerLabel(widget.layer)} Agent Globe (Live)',
+            ),
+          ],
+          const SizedBox(height: 12),
+          _buildGroupingCard(context),
           const SizedBox(height: 12),
           _buildModelCheckInCard(context),
           const SizedBox(height: 12),
@@ -227,6 +325,29 @@ class _RealitySystemOversightPageState
       onSelected: (_) => context.go(route),
       label: Text(_layerLabel(layer)),
       avatar: Icon(icon, size: 18),
+    );
+  }
+
+  Widget _buildPrivacyNoticeCard(BuildContext context) {
+    return Card(
+      color: AppColors.electricGreen.withValues(alpha: 0.08),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.privacy_tip, color: AppColors.electricGreen),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Privacy mode is enforced: only agent identity and aggregate telemetry are visible. '
+                'No names, emails, phone numbers, or home addresses are shown in this oversight surface.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -391,7 +512,7 @@ class _RealitySystemOversightPageState
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Latest user IDs: ${_users.take(5).map((u) => _safePrefix(u.userId, 8)).join(', ')}',
+                  'Latest agent signatures: ${_users.take(5).map((u) => _safePrefix(u.aiSignature, 10)).join(', ')}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -399,6 +520,115 @@ class _RealitySystemOversightPageState
           ),
         );
     }
+  }
+
+  Widget _buildGroupingCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Logical Groupings (Human Oversight)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Reality model learns from approved groupings and proposes new taxonomy clusters for easier understanding.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            if (_approvedGroupings.isEmpty)
+              const Text('No approved groupings yet.')
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _approvedGroupings.map(
+                  (grouping) {
+                    return InputChip(
+                      label: Text(grouping),
+                      selected: true,
+                      onDeleted: () async {
+                        setState(() {
+                          _approvedGroupings.remove(grouping);
+                        });
+                        await _persistApprovedGroupings();
+                      },
+                    );
+                  },
+                ).toList(),
+              ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _isGeneratingGroups
+                      ? null
+                      : () async {
+                          await _generateGroupingProposals();
+                        },
+                  icon: _isGeneratingGroups
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_awesome),
+                  label: const Text('Generate Proposals'),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Observed types: ${_observedGroupingSignals().length}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelSmall
+                      ?.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (_proposedGroupings.isEmpty)
+              const Text('No pending proposals.')
+            else
+              ..._proposedGroupings.map(
+                (grouping) => Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.grey300),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(grouping)),
+                      TextButton(
+                        onPressed: () async {
+                          setState(() {
+                            _approvedGroupings.add(grouping);
+                            _proposedGroupings.remove(grouping);
+                          });
+                          await _persistApprovedGroupings();
+                        },
+                        child: const Text('Approve'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _proposedGroupings.remove(grouping);
+                          });
+                        },
+                        child: const Text('Reject'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildModelCheckInCard(BuildContext context) {
@@ -414,7 +644,7 @@ class _RealitySystemOversightPageState
             ),
             const SizedBox(height: 8),
             Text(
-              'Use this to query what this model is tracking, planning, and preparing next.',
+              'Runtime-backed conversation with privacy-safe context (agent identity and aggregates only).',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
@@ -424,7 +654,7 @@ class _RealitySystemOversightPageState
                   child: TextField(
                     controller: _checkInController,
                     decoration: const InputDecoration(
-                      hintText: 'Ask: What are you planning next?',
+                      hintText: 'Ask: What are you planning and preparing next?',
                       border: OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _runCheckIn(),
@@ -432,8 +662,14 @@ class _RealitySystemOversightPageState
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _runCheckIn,
-                  child: const Text('Check In'),
+                  onPressed: _isCheckInBusy ? null : _runCheckIn,
+                  child: _isCheckInBusy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Check In'),
                 ),
               ],
             ),
@@ -441,7 +677,7 @@ class _RealitySystemOversightPageState
             if (_checkIns.isEmpty)
               const Text('No check-ins yet. Start a model conversation above.')
             else
-              ..._checkIns.reversed.take(4).map(
+              ..._checkIns.reversed.take(6).map(
                     (entry) => Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(10),
@@ -556,12 +792,25 @@ class _RealitySystemOversightPageState
     );
   }
 
-  void _runCheckIn() {
+  Future<void> _runCheckIn() async {
     final prompt = _checkInController.text.trim();
     if (prompt.isEmpty) return;
 
-    final response = _composeResponse(prompt);
+    setState(() {
+      _isCheckInBusy = true;
+    });
 
+    final context = _buildCheckInContext();
+    final globalGroupings = await _allApprovedGroupings();
+
+    final response = await _checkInService.checkIn(
+      layer: _layerKey(widget.layer),
+      prompt: prompt,
+      context: context,
+      approvedGroupings: globalGroupings,
+    );
+
+    if (!mounted) return;
     setState(() {
       _checkIns.add(_CheckInEntry(
         prompt: prompt,
@@ -569,47 +818,114 @@ class _RealitySystemOversightPageState
         createdAt: DateTime.now(),
       ));
       _checkInController.clear();
+      _isCheckInBusy = false;
     });
   }
 
-  String _composeResponse(String prompt) {
-    final lowerPrompt = prompt.toLowerCase();
-
+  Map<String, dynamic> _buildCheckInContext() {
     switch (widget.layer) {
       case OversightLayer.reality:
-        final health = ((_dashboardData?.systemHealth ?? 0) * 100).round();
-        final compliance =
-            ((_privacyMetrics?.meanComplianceRate ?? 0) * 100).round();
-        final planningSessions =
-            _collaborativeMetrics?.totalPlanningSessions ?? 0;
-
-        if (lowerPrompt.contains('plan') || lowerPrompt.contains('next')) {
-          return 'Current focus: stabilize knowledge integrity at $health% and push compliance to >95%. Next prep cycle is centered on $planningSessions planning sessions and tighter conviction checks.';
-        }
-
-        return 'Reality oversight status: convictions/compliance at $compliance%, knowledge/system health at $health%. Thought-layer coordination is being monitored through collaborative planning and communications flow.';
-
+        return <String, dynamic>{
+          'systemHealth': _dashboardData?.systemHealth ?? 0,
+          'privacyCompliance': _privacyMetrics?.meanComplianceRate ?? 0,
+          'collaborationRate': _collaborativeMetrics?.collaborationRate ?? 0,
+          'totalPlanningSessions':
+              _collaborativeMetrics?.totalPlanningSessions ?? 0,
+          'approvedGroupings': _approvedGroupings.toList()..sort(),
+          'proposedGroupings': _proposedGroupings,
+        };
       case OversightLayer.universe:
-        final count = _clubCommunityData.length;
-        final eventCount = _clubCommunityData.fold<int>(
-            0, (sum, item) => sum + item.eventCount);
-
-        if (lowerPrompt.contains('risk') || lowerPrompt.contains('issue')) {
-          return 'Universe risk scan: watch low-event communities and high-member/low-activity clusters. Current surface includes $count entities and $eventCount events needing continuity checks.';
-        }
-
-        return 'Universe status: monitoring clubs, communities, and events for coherence. Current active scope covers $count entities with $eventCount event records, with priority on healthy participation velocity.';
-
+        return <String, dynamic>{
+          'clubsCommunities': _clubCommunityData.length,
+          'events': _clubCommunityData.fold<int>(
+              0, (sum, item) => sum + item.eventCount),
+          'members': _clubCommunityData.fold<int>(
+              0, (sum, item) => sum + item.memberCount),
+          'activeAgentCount': _activeAgents.length,
+          'observedTypes': _observedGroupingSignals(),
+          'approvedGroupings': _approvedGroupings.toList()..sort(),
+        };
       case OversightLayer.world:
-        final users = _users.length;
-        final businesses = _businesses.length;
-        final activeUsers = _dashboardData?.activeUsers ?? 0;
+        return <String, dynamic>{
+          'users': _users.length,
+          'businesses': _businesses.length,
+          'verifiedBusinesses': _businesses.where((b) => b.isVerified).length,
+          'activeAgentCount': _activeAgents.length,
+          'serviceInteractions': _dashboardData?.totalCommunications ?? 0,
+          'observedTypes': _observedGroupingSignals(),
+          'approvedGroupings': _approvedGroupings.toList()..sort(),
+        };
+    }
+  }
 
-        if (lowerPrompt.contains('service')) {
-          return 'World service posture: $businesses business/service accounts tracked with cross-checks against user activity ($activeUsers active users). Next step is validating handoffs across user-business-service boundaries.';
-        }
+  List<String> _observedGroupingSignals() {
+    switch (widget.layer) {
+      case OversightLayer.reality:
+        return <String>[
+          if (_privacyMetrics != null)
+            'privacy-compliance:${(_privacyMetrics!.meanComplianceRate * 100).round()}%',
+          if (_dashboardData != null)
+            'system-health:${(_dashboardData!.systemHealth * 100).round()}%',
+          if (_collaborativeMetrics != null)
+            'planning-sessions:${_collaborativeMetrics!.totalPlanningSessions}',
+        ];
+      case OversightLayer.universe:
+        return _clubCommunityData
+            .map((item) {
+              final activityBand = item.eventCount >= 20
+                  ? 'high'
+                  : item.eventCount >= 5
+                      ? 'medium'
+                      : 'low';
+              return '${item.isClub ? 'club' : 'community'}:${item.category}:$activityBand';
+            })
+            .toSet()
+            .toList()
+          ..sort();
+      case OversightLayer.world:
+        final businessTypes = _businesses
+            .map(
+              (item) =>
+                  '${item.account.businessType}:${item.isVerified ? 'verified' : 'unverified'}',
+            )
+            .toSet();
+        final userStages = _activeAgents
+            .map((agent) => 'agent-stage:${agent.currentStage}')
+            .toSet();
+        return <String>{...businessTypes, ...userStages}.toList()..sort();
+    }
+  }
 
-        return 'World status: users ($users total), businesses/services ($businesses total), and active runtime participation ($activeUsers) are under oversight. Planning is focused on continuity and operational quality across created entities.';
+  Future<List<String>> _allApprovedGroupings() async {
+    final prefs = _prefs;
+    if (prefs == null) {
+      return _approvedGroupings.toList()..sort();
+    }
+
+    final all = <String>{};
+    for (final layer in OversightLayer.values) {
+      final key = _approvedGroupingKey(layer);
+      final groups = prefs.getStringList(key) ?? const <String>[];
+      all.addAll(groups);
+    }
+    if (all.isEmpty) {
+      all.addAll(_approvedGroupings);
+    }
+    return all.toList()..sort();
+  }
+
+  String _approvedGroupingKey(OversightLayer layer) {
+    return 'admin_reality_system_approved_groupings_${_layerKey(layer)}';
+  }
+
+  String _layerKey(OversightLayer layer) {
+    switch (layer) {
+      case OversightLayer.reality:
+        return 'reality';
+      case OversightLayer.universe:
+        return 'universe';
+      case OversightLayer.world:
+        return 'world';
     }
   }
 
@@ -630,19 +946,19 @@ class _RealitySystemOversightPageState
         return const [
           'Keep convictions, knowledge, and thought streams aligned before deployment shifts.',
           'Escalate if compliance or health drops below acceptable thresholds.',
-          'Record model check-ins so planning intent is auditable and explicit.',
+          'Ingest approved universe/world groupings and refine taxonomy proposals with human sign-off.',
         ];
       case OversightLayer.universe:
         return const [
           'Track club/community/event creation velocity and watch for inactive pockets.',
           'Validate member-to-event conversion and continuity of social momentum.',
-          'Use check-ins to confirm why each universe model is prioritizing its next actions.',
+          'Use 3D globe and model check-ins to understand where and how agent usage is concentrating.',
         ];
       case OversightLayer.world:
         return const [
           'Monitor all created users, businesses, and service surfaces for integrity.',
           'Prioritize verified operations and active participant continuity.',
-          'Run regular check-ins to ensure world models have clear prep and execution direction.',
+          'Maintain agent-only identity visibility while auditing usage and service handoffs globally.',
         ];
     }
   }
