@@ -24,7 +24,7 @@ ios/fix_xcode_cache.sh,1,platform-runtime,"7.5,11.2",active,architecture spot fo
 lib/_root,15,app-composition-root,"7,10.7",active,architecture spot for file placement
 lib/bootstrap,3,bootstrap-boundary,"10.10.3,10.7",active,architecture spot for file placement
 lib/core/advanced,2,legacy-advanced-services,"4.2,10.2",active,architecture spot for file placement
-lib/core/ai,113,world-model-ai-core,"1,3,4,5,6,7",active,architecture spot for file placement
+lib/core/ai,114,world-model-ai-core,"1,3,4,5,6,7",active,architecture spot for file placement
 lib/core/ai2ai,25,ai2ai-network,"3.7,8,7.4",active,architecture spot for file placement
 lib/core/cloud,4,cloud-integration,"7.7,8.1,9.2.6",active,architecture spot for file placement
 lib/core/config,3,config-and-theme,"7.5,10.3,10.4",active,architecture spot for file placement
@@ -121,7 +121,7 @@ scripts/patents,4,tooling-ops,"10.2,methodology",active,architecture spot for fi
 scripts/perf,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/personality_data,30,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/proof_run,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/runtime,15,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/runtime,16,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security_validation,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/smoke,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -173,7 +173,7 @@ test/performance/reports,1,testing-quality,"10.6,methodology",active,architectur
 test/performance/ui,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/presentation/pages,4,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/advanced,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
-test/unit/ai,51,testing-quality,"10.6,methodology",active,architecture spot for file placement
+test/unit/ai,52,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/ai2ai,19,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/audio,4,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/blocs,4,testing-quality,"10.6,methodology",active,architecture spot for file placement

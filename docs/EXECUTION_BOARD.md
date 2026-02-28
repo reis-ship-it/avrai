@@ -112,6 +112,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M1-P7-2 | 7 | 1 | Controller/orchestrator integration reliability | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.4.4, 10.9.4 | lib/core/controllers | AP | REL | M1-P7-1 | 20 | Critical | Week 2-3 | Backlog | - |
 | M1-P8-1 | 8 | 1 | Federated cohort gating + canary/shadow pipeline | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.1.3, 8.1.4, 8.1.5 | lib/core/ai2ai | FED, MLE | AP | M1-P7-1 | 20 | Critical | Week 3-4 | Backlog | - |
 | M1-P8-2 | 8 | 1 | Advisory quarantine + rollback independence | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.9.2, 8.9.4, 8.9.5 | lib/core/services/locality_agents | LOC | AP | M1-P8-1 | 16 | High | Week 4-5 | Backlog | - |
+| M10-P3-1 | 3 | 10 | URK Universal Kernel: self-learning governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 3.2.1, 7.9.6, 10.9.12 | lib/core/ai | AP, MLE | AP | M9-P3-2 | 20 | Critical | Week 21-22 | Done | docs/plans/methodology/M10_P3_1_URK_SELF_LEARNING_GOVERNANCE_KERNEL_BASELINE.md, configs/runtime/urk_self_learning_governance_controls.json, scripts/runtime/generate_urk_self_learning_governance_report.py, docs/plans/methodology/MASTER_PLAN_URK_SELF_LEARNING_GOVERNANCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_SELF_LEARNING_GOVERNANCE_REPORT.md, lib/core/ai/urk_self_learning_governance_contract.dart, test/unit/ai/urk_self_learning_governance_contract_test.dart |
 | M2-P1-1 | 1 | 2 | Memory reliability gates | baseline | none | PRD-001, PRD-002, PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.2.12, 1.3.1 | lib/core/ai | AP, MLE | AP | none | 12 | High | Week 5-6 | Done | docs/plans/methodology/M2_P1_1_MEMORY_RELIABILITY_GATES_BASELINE.md, configs/runtime/memory_reliability_gates.json, scripts/runtime/generate_memory_reliability_gates_report.py, docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.json, docs/plans/methodology/MASTER_PLAN_MEMORY_RELIABILITY_GATES_REPORT.md, lib/core/ai/memory/memory_reliability_contract.dart, test/unit/ai/memory_reliability_contract_test.dart |
 | M2-P3-1 | 3 | 2 | State encoder consistency/freshness controls | baseline | none | PRD-010, PRD-011, PRD-033, PRD-034 | 3.1.1, 3.1.4, 3.2.1 | lib/core/models | AP, MLE | AP | M2-P1-1 | 12 | High | Week 6-7 | Backlog | - |
 | M2-P4-1 | 4 | 2 | Energy function safety and regression governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 4.1.3, 4.1.7, 4.5.7 | lib/core/ml | MLE | AP | M2-P3-1 | 20 | Critical | Week 7-8 | Backlog | - |
@@ -163,7 +164,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`, `M9-P3-3`, `M9-P5-2`
+`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M10-P3-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`, `M9-P3-3`, `M9-P5-2`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)

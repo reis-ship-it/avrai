@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:59Z",
+  "learning_policy_coverage": {
+    "required_signal_validation_coverage_pct": 100.0,
+    "observed_signal_validation_coverage_pct": 100.0,
+    "required_approval_path_coverage_pct": 100.0,
+    "observed_approval_path_coverage_pct": 100.0,
+    "checks_executed": 620
+  },
+  "learning_safety": {
+    "max_unbounded_self_learning_updates": 0,
+    "observed_unbounded_self_learning_updates": 0,
+    "max_unverified_training_lineage_events": 0,
+    "observed_unverified_training_lineage_events": 0,
+    "checks_executed": 210
+  }
+}
