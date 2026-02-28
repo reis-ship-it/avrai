@@ -1,0 +1,278 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "kernels": [
+    {
+      "kernel_id": "urk_stage_a_trigger_privacy_no_egress",
+      "title": "URK Stage A Trigger + Privacy + No-Egress",
+      "purpose": "Enforce trigger coverage, privacy policy coverage, and local sovereign no-egress guarantees.",
+      "runtime_scope": [
+        "user_runtime",
+        "event_ops_runtime"
+      ],
+      "prong_scope": "runtime_core",
+      "privacy_modes": [
+        "multi_mode"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "device",
+        "mesh",
+        "cloud"
+      ],
+      "activation_triggers": [
+        "runtime_request_pre_plan"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M6-P3-3"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "AP;REL",
+      "approver": "REL",
+      "milestone_id": "M7-P7-3",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_a_trigger_privacy_no_egress_controls.json",
+        "contract": "lib/core/controllers/urk_stage_a_trigger_privacy_no_egress_contract.dart",
+        "test": "test/unit/controllers/urk_stage_a_trigger_privacy_no_egress_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_REPORT.md",
+        "baseline": "docs/plans/methodology/M7_P7_3_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_stage_b_event_ops_shadow_runtime",
+      "title": "URK Stage B Event Ops Shadow Runtime",
+      "purpose": "Run ingest-plan-gate-observe shadow path with lineage and high-impact block guarantees.",
+      "runtime_scope": [
+        "user_runtime",
+        "event_ops_runtime"
+      ],
+      "prong_scope": "runtime_core",
+      "privacy_modes": [
+        "multi_mode"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "device",
+        "mesh",
+        "cloud"
+      ],
+      "activation_triggers": [
+        "event_ops_shadow_execution"
+      ],
+      "authority_mode": "shadow",
+      "dependencies": [
+        "M7-P7-3"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "AP;MOB",
+      "approver": "REL",
+      "milestone_id": "M7-P7-4",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_b_event_ops_shadow_runtime_controls.json",
+        "contract": "lib/core/controllers/urk_stage_b_event_ops_shadow_runtime_contract.dart",
+        "test": "test/unit/controllers/urk_stage_b_event_ops_shadow_runtime_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_REPORT.md",
+        "baseline": "docs/plans/methodology/M7_P7_4_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_stage_c_private_mesh_policy_conformance",
+      "title": "URK Stage C Private Mesh Policy Conformance",
+      "purpose": "Enforce private-mesh payload minimization, encryption, lineage tags, and policy gating.",
+      "runtime_scope": [
+        "user_runtime",
+        "event_ops_runtime"
+      ],
+      "prong_scope": "governance_core",
+      "privacy_modes": [
+        "private_mesh"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "mesh"
+      ],
+      "activation_triggers": [
+        "ai2ai_private_mesh_sync"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M7-P7-4"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "FED;LOC",
+      "approver": "AP",
+      "milestone_id": "M7-P8-3",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_c_private_mesh_policy_conformance_controls.json",
+        "contract": "lib/core/ai2ai/urk_stage_c_private_mesh_policy_conformance_contract.dart",
+        "test": "test/unit/ai2ai/urk_stage_c_private_mesh_policy_conformance_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_REPORT.md",
+        "baseline": "docs/plans/methodology/M7_P8_3_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_stage_d_business_runtime_replication",
+      "title": "URK Stage D Business Runtime Replication",
+      "purpose": "Replicate URK request-policy-lineage-review invariants into business runtime.",
+      "runtime_scope": [
+        "business_ops_runtime"
+      ],
+      "prong_scope": "runtime_core",
+      "privacy_modes": [
+        "federated_cloud"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "cloud"
+      ],
+      "activation_triggers": [
+        "business_runtime_request"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M7-P8-3"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "Business Platform;AP",
+      "approver": "GOV",
+      "milestone_id": "M8-P9-2",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_d_business_runtime_replication_controls.json",
+        "contract": "lib/core/services/business/urk_stage_d_business_runtime_replication_contract.dart",
+        "test": "test/unit/services/urk_stage_d_business_runtime_replication_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_d_business_runtime_replication_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_D_BUSINESS_RUNTIME_REPLICATION_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_D_BUSINESS_RUNTIME_REPLICATION_REPORT.md",
+        "baseline": "docs/plans/methodology/M8_P9_2_URK_STAGE_D_BUSINESS_RUNTIME_REPLICATION_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_stage_d_expert_runtime_replication",
+      "title": "URK Stage D Expert Runtime Replication",
+      "purpose": "Replicate URK request-policy-lineage-provenance-review invariants into expert runtime.",
+      "runtime_scope": [
+        "expert_services_runtime"
+      ],
+      "prong_scope": "runtime_core",
+      "privacy_modes": [
+        "private_mesh"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "mesh",
+        "cloud"
+      ],
+      "activation_triggers": [
+        "expert_runtime_request"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M8-P9-2"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "Integrations Platform;AP",
+      "approver": "GOV",
+      "milestone_id": "M8-P11-2",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_d_expert_runtime_replication_controls.json",
+        "contract": "lib/core/services/expertise/urk_stage_d_expert_runtime_replication_contract.dart",
+        "test": "test/unit/services/urk_stage_d_expert_runtime_replication_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_D_EXPERT_RUNTIME_REPLICATION_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_D_EXPERT_RUNTIME_REPLICATION_REPORT.md",
+        "baseline": "docs/plans/methodology/M8_P11_2_URK_STAGE_D_EXPERT_RUNTIME_REPLICATION_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_stage_e_cross_runtime_conformance",
+      "title": "URK Stage E Cross-Runtime Conformance",
+      "purpose": "Prove cross-runtime invariant conformance and deterministic replay across Event/Business/Expert.",
+      "runtime_scope": [
+        "shared"
+      ],
+      "prong_scope": "cross_prong",
+      "privacy_modes": [
+        "multi_mode"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "device",
+        "mesh",
+        "cloud"
+      ],
+      "activation_triggers": [
+        "release_candidate_validation",
+        "weekly_conformance_sweep"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M8-P11-2"
+      ],
+      "lifecycle_state": "replicated",
+      "owner": "AP;REL",
+      "approver": "GOV",
+      "milestone_id": "M8-P10-4",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_stage_e_cross_runtime_conformance_controls.json",
+        "contract": "lib/core/controllers/urk_stage_e_cross_runtime_conformance_contract.dart",
+        "test": "test/unit/controllers/urk_stage_e_cross_runtime_conformance_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_E_CROSS_RUNTIME_CONFORMANCE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_STAGE_E_CROSS_RUNTIME_CONFORMANCE_REPORT.md",
+        "baseline": "docs/plans/methodology/M8_P10_4_URK_STAGE_E_CROSS_RUNTIME_CONFORMANCE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_kernel_promotion_lifecycle",
+      "title": "URK Kernel Promotion Lifecycle",
+      "purpose": "Govern kernel progression across draft, shadow, enforced, and replicated with approval chain coverage.",
+      "runtime_scope": [
+        "shared"
+      ],
+      "prong_scope": "governance_core",
+      "privacy_modes": [
+        "multi_mode"
+      ],
+      "impact_tier": "L3",
+      "locality_scope": [
+        "device",
+        "mesh",
+        "cloud"
+      ],
+      "activation_triggers": [
+        "kernel_state_change_request"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": [
+        "M8-P10-4"
+      ],
+      "lifecycle_state": "enforced",
+      "owner": "AP;REL",
+      "approver": "GOV",
+      "milestone_id": "M9-P10-1",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_kernel_promotion_lifecycle_controls.json",
+        "contract": "lib/core/controllers/urk_kernel_promotion_lifecycle_contract.dart",
+        "test": "test/unit/controllers/urk_kernel_promotion_lifecycle_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.md",
+        "baseline": "docs/plans/methodology/M9_P10_1_URK_KERNEL_PROMOTION_LIFECYCLE_BASELINE.md"
+      }
+    }
+  ]
+}
