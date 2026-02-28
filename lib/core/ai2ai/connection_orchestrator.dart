@@ -25,12 +25,11 @@ import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.d
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_message_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_startup_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_shutdown_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_init_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
@@ -39,13 +38,13 @@ import 'package:avrai/core/ai2ai/resilience/session_lifecycle_orchestration_flow
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ai2ai_discovery_prekey_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ai2ai_discovery_prekey_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
-import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/federated_cloud_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/realtime_listener_callbacks_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_cloud_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
@@ -948,10 +947,10 @@ class VibeConnectionOrchestrator {
       hop: hop,
       receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
-      getOrCreateBloomFilter: _getOrCreateBloomFilter,
+      bloomFilters: _bloomFilters,
       logger: _logger,
       logName: _logName,
-      discoveredNodeIds: _discoveredNodeIds,
+      discoveredNodes: _discoveredNodes,
       protocol: _protocol,
       discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
@@ -1074,10 +1073,11 @@ class VibeConnectionOrchestrator {
   }) async {
     await Ai2AiDiscoveryPrekeyOrchestrationLane.forwardPreKeyBundleThroughMesh(
       allowBleSideEffects: _allowBleSideEffects,
-      tryCreateMeshForwardingContext: _tryCreateMeshForwardingContext,
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
       bundle: bundle,
       recipientId: recipientId,
-      discoveredNodeIds: _discoveredNodeIds,
+      discoveredNodes: _discoveredNodes,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
@@ -1092,19 +1092,6 @@ class VibeConnectionOrchestrator {
       discoveredNodes: _discoveredNodes,
       nearbyVibes: _nearbyVibes,
       adaptiveMeshService: _adaptiveMeshService,
-    );
-  }
-
-  // ignore: unused_element
-  Future<List<AIPersonalityNode>> _prioritizeConnections(
-    List<AIPersonalityNode> nodes,
-    Map<String, VibeCompatibilityResult> compatibilityResults,
-  ) async {
-    return DiscoveryNodeOrchestrationLane.prioritizeConnections(
-      nodes: nodes,
-      compatibilityResults: compatibilityResults,
-      logger: _logger,
-      logName: _logName,
     );
   }
 
@@ -1214,8 +1201,9 @@ class VibeConnectionOrchestrator {
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
-      tryCreateMeshForwardingContext: _tryCreateMeshForwardingContext,
-      discoveredNodeIds: _discoveredNodeIds,
+      protocol: _protocol,
+      discovery: _deviceDiscovery,
+      discoveredNodes: _discoveredNodes,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       logger: _logger,
@@ -1231,10 +1219,10 @@ class VibeConnectionOrchestrator {
       localNodeId: _localBleNodeId,
       message: message,
       adaptiveMeshService: _adaptiveMeshService,
-      getOrCreateBloomFilter: _getOrCreateBloomFilter,
+      bloomFilters: _bloomFilters,
       protocol: _protocol,
       discovery: _deviceDiscovery,
-      discoveredNodeIds: _discoveredNodeIds,
+      discoveredNodes: _discoveredNodes,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       logger: _logger,
       logName: _logName,
@@ -1279,30 +1267,13 @@ class VibeConnectionOrchestrator {
       hop: hop,
       receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: _adaptiveMeshService,
-      getOrCreateBloomFilter: _getOrCreateBloomFilter,
+      bloomFilters: _bloomFilters,
       logger: _logger,
       logName: _logName,
-      discoveredNodeIds: _discoveredNodeIds,
+      discoveredNodes: _discoveredNodes,
       protocol: _protocol,
       discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-    );
-  }
-
-  OptimizedBloomFilter _getOrCreateBloomFilter(String scope) {
-    return _bloomFilters.putIfAbsent(
-      scope,
-      () => OptimizedBloomFilter(geographicScope: scope),
-    );
-  }
-
-  Iterable<String> get _discoveredNodeIds =>
-      _discoveredNodes.values.map((n) => n.nodeId);
-
-  MeshForwardingContext? _tryCreateMeshForwardingContext() {
-    return MeshForwardingContext.tryCreate(
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
     );
   }
 }

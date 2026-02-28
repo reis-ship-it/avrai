@@ -1,6 +1,7 @@
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context_orchestration_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
@@ -17,10 +18,10 @@ class MeshForwardingOrchestrationLane {
     required int hop,
     required String receivedFromDeviceId,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
-    required OptimizedBloomFilter Function(String scope) getOrCreateBloomFilter,
+    required Map<String, OptimizedBloomFilter> bloomFilters,
     required AppLogger logger,
     required String logName,
-    required Iterable<String> discoveredNodeIds,
+    required Map<String, AIPersonalityNode> discoveredNodes,
     required AI2AIProtocol? protocol,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
@@ -35,10 +36,16 @@ class MeshForwardingOrchestrationLane {
       hop: hop,
       receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: adaptiveMeshService,
-      getOrCreateBloomFilter: getOrCreateBloomFilter,
+      getOrCreateBloomFilter: (scope) {
+        return MeshForwardingContextOrchestrationLane.getOrCreateBloomFilter(
+          bloomFilters: bloomFilters,
+          scope: scope,
+        );
+      },
       logger: logger,
       logName: logName,
-      discoveredNodeIds: discoveredNodeIds,
+      discoveredNodeIds: MeshForwardingContextOrchestrationLane
+          .discoveredNodeIds(discoveredNodes: discoveredNodes),
       protocol: protocol,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
@@ -49,8 +56,9 @@ class MeshForwardingOrchestrationLane {
     required Map<String, dynamic> signal,
     required bool allowBleSideEffects,
     required bool federatedLearningParticipationEnabled,
-    required MeshForwardingContext? Function() tryCreateMeshForwardingContext,
-    required Iterable<String> discoveredNodeIds,
+    required AI2AIProtocol? protocol,
+    required DeviceDiscoveryService? discovery,
+    required Map<String, AIPersonalityNode> discoveredNodes,
     required String localNodeId,
     required Map<String, String> peerNodeIdByDeviceId,
     required AppLogger logger,
@@ -61,8 +69,14 @@ class MeshForwardingOrchestrationLane {
       allowBleSideEffects: allowBleSideEffects,
       federatedLearningParticipationEnabled:
           federatedLearningParticipationEnabled,
-      tryCreateMeshForwardingContext: tryCreateMeshForwardingContext,
-      discoveredNodeIds: discoveredNodeIds,
+      tryCreateMeshForwardingContext: () {
+        return MeshForwardingContextOrchestrationLane.tryCreate(
+          protocol: protocol,
+          discovery: discovery,
+        );
+      },
+      discoveredNodeIds: MeshForwardingContextOrchestrationLane
+          .discoveredNodeIds(discoveredNodes: discoveredNodes),
       localNodeId: localNodeId,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
       logger: logger,
@@ -76,10 +90,10 @@ class MeshForwardingOrchestrationLane {
     required String localNodeId,
     required Map<String, dynamic> message,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
-    required OptimizedBloomFilter Function(String scope) getOrCreateBloomFilter,
+    required Map<String, OptimizedBloomFilter> bloomFilters,
     required AI2AIProtocol? protocol,
     required DeviceDiscoveryService? discovery,
-    required Iterable<String> discoveredNodeIds,
+    required Map<String, AIPersonalityNode> discoveredNodes,
     required Map<String, String> peerNodeIdByDeviceId,
     required AppLogger logger,
     required String logName,
@@ -91,10 +105,16 @@ class MeshForwardingOrchestrationLane {
       localNodeId: localNodeId,
       message: message,
       adaptiveMeshService: adaptiveMeshService,
-      getOrCreateBloomFilter: getOrCreateBloomFilter,
+      getOrCreateBloomFilter: (scope) {
+        return MeshForwardingContextOrchestrationLane.getOrCreateBloomFilter(
+          bloomFilters: bloomFilters,
+          scope: scope,
+        );
+      },
       protocol: protocol,
       discovery: discovery,
-      discoveredNodeIds: discoveredNodeIds,
+      discoveredNodeIds: MeshForwardingContextOrchestrationLane
+          .discoveredNodeIds(discoveredNodes: discoveredNodes),
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
       logger: logger,
       logName: logName,
@@ -110,10 +130,10 @@ class MeshForwardingOrchestrationLane {
     required int hop,
     required String receivedFromDeviceId,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
-    required OptimizedBloomFilter Function(String scope) getOrCreateBloomFilter,
+    required Map<String, OptimizedBloomFilter> bloomFilters,
     required AppLogger logger,
     required String logName,
-    required Iterable<String> discoveredNodeIds,
+    required Map<String, AIPersonalityNode> discoveredNodes,
     required AI2AIProtocol? protocol,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
@@ -128,10 +148,16 @@ class MeshForwardingOrchestrationLane {
       hop: hop,
       receivedFromDeviceId: receivedFromDeviceId,
       adaptiveMeshService: adaptiveMeshService,
-      getOrCreateBloomFilter: getOrCreateBloomFilter,
+      getOrCreateBloomFilter: (scope) {
+        return MeshForwardingContextOrchestrationLane.getOrCreateBloomFilter(
+          bloomFilters: bloomFilters,
+          scope: scope,
+        );
+      },
       logger: logger,
       logName: logName,
-      discoveredNodeIds: discoveredNodeIds,
+      discoveredNodeIds: MeshForwardingContextOrchestrationLane
+          .discoveredNodeIds(discoveredNodes: discoveredNodes),
       protocol: protocol,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,

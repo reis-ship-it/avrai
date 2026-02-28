@@ -25,24 +25,6 @@ class DiscoveryNodeOrchestrationLane {
     );
   }
 
-  static Future<List<AIPersonalityNode>> prioritizeConnections({
-    required List<AIPersonalityNode> nodes,
-    required Map<String, VibeCompatibilityResult> compatibilityResults,
-    required AppLogger logger,
-    required String logName,
-  }) async {
-    final prioritized = DiscoveredNodeRegistry.prioritizeConnections(
-      nodes: nodes,
-      compatibilityResults: compatibilityResults,
-      maxConnections: 5,
-    );
-    logger.debug(
-      'Prioritized ${nodes.length} nodes to top ${prioritized.length} connections',
-      tag: logName,
-    );
-    return prioritized;
-  }
-
   static bool isConnectionWorthy({
     required VibeCompatibilityResult compatibility,
     required AppLogger logger,
