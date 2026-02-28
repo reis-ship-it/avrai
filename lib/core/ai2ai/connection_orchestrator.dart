@@ -344,8 +344,6 @@ class VibeConnectionOrchestrator {
   }
 
   void setupAutomaticAdvertisingUpdates() {
-    // This will be called from injection container after PersonalityLearning is created
-    // The callback will be set up there to avoid circular dependencies
   }
 
   Future<void> initializeOrchestration(
@@ -727,9 +725,7 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  int getActiveConnectionCount() {
-    return _activeConnections.length;
-  }
+  int getActiveConnectionCount() => _activeConnections.length;
 
   Future<double> calculateAIPleasureScore(ConnectionMetrics connection) async {
     return AIPleasureScoreLane.calculate(
@@ -746,9 +742,8 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  List<ConnectionMetrics> getActiveConnections() {
-    return _activeConnections.values.toList();
-  }
+  List<ConnectionMetrics> getActiveConnections() =>
+      _activeConnections.values.toList();
 
   Future<void> shutdown() async {
     _logger.info('Shutting down orchestration', tag: _logName);
@@ -971,9 +966,7 @@ class VibeConnectionOrchestrator {
     return null;
   }
 
-  int? getNetworkDensity() {
-    return _adaptiveMeshService?.networkDensity;
-  }
+  int? getNetworkDensity() => _adaptiveMeshService?.networkDensity;
 
   Future<ConnectionMetrics?> _completeConnection(ConnectionMetrics connection,
       {String? reason}) async {
@@ -985,9 +978,7 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  UserVibe? getCurrentVibe() {
-    return null;
-  }
+  UserVibe? getCurrentVibe() => null;
 
   Future<AnonymousUser> anonymizeUserForTransmission(
     UnifiedUser user,
