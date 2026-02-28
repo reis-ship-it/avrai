@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/theme/colors.dart';
+// MIGRATION_SHIM: Legacy presentation widget path is temporarily retained
+// while admin widget surfaces are promoted into app-prong UI modules.
 import 'package:avrai/apps/admin_app/ui/pages/connection_communication_detail_page.dart';
 
 /// Widget displaying list of active AI2AI connections
