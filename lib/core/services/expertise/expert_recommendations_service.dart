@@ -3,7 +3,7 @@ import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 import 'package:avrai/core/models/expertise/multi_path_expertise.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/expertise/expertise_matching_service.dart';
 import 'package:avrai/core/services/expertise/golden_expert_ai_influence_service.dart';

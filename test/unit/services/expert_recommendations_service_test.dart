@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/core/services/expertise/expert_recommendations_service.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
 import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
