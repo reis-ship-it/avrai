@@ -28,7 +28,7 @@ import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
@@ -53,7 +53,7 @@ import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
@@ -841,9 +841,9 @@ class VibeConnectionOrchestrator {
   }
 
   void _startBleInboxProcessing() {
-    if (!_allowBleSideEffects) return;
-    _bleInboxPoller?.cancel();
-    _bleInboxPoller = BleInboxProcessingLane.start(
+    _bleInboxPoller = BleInboxProcessingOrchestrationLane.start(
+      allowBleSideEffects: _allowBleSideEffects,
+      existingPoller: _bleInboxPoller,
       protocol: _protocol,
       seenBleMessageHashes: _seenBleMessageHashes,
       handleIncomingLocalityAgentUpdate: _handleIncomingLocalityAgentUpdate,
