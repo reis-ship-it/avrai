@@ -8,6 +8,8 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
 
+part 'model_safety_supervisor_models.dart';
+
 /// Guards model rollouts using user-facing quality signals ("agent happiness").
 ///
 /// This is the “protect from above” layer:
@@ -358,16 +360,4 @@ class ModelSafetySupervisor {
     }
     return _kernelGovernanceGate.evaluate(request);
   }
-}
-
-class _Avg {
-  final double avg;
-  final int count;
-  const _Avg({required this.avg, required this.count});
-}
-
-class _SignalEntry {
-  final int? tsMs;
-  final double? score;
-  const _SignalEntry({required this.tsMs, required this.score});
 }
