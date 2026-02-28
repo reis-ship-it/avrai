@@ -40,9 +40,8 @@ import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_bootstrap_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_initialization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_ledger_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
@@ -376,7 +375,7 @@ class VibeConnectionOrchestrator {
   Future<void> initializeOrchestration(
       String userId, PersonalityProfile personality) async {
     try {
-      await OrchestrationInitializationLane.run(
+      await OrchestrationInitFlowLane.run(
         isInitialized: _isInitialized,
         userId: userId,
         personality: personality,
@@ -420,67 +419,59 @@ class VibeConnectionOrchestrator {
             platform: defaultTargetPlatform.name,
           );
         },
-        bootstrap: () {
-          return OrchestrationBootstrapLane.bootstrap(
-            allowBleSideEffects: _allowBleSideEffects,
-            isWeb: kIsWeb,
-            isAndroid: defaultTargetPlatform == TargetPlatform.android,
-            startBleForegroundService: BleForegroundService.startService,
-            onBleForegroundServiceStarted: () {
-              OrchestrationInitLedgerLane.appendBleForegroundServiceStarted();
-            },
-            onBleForegroundServiceFailed: () {
-              OrchestrationInitLedgerLane.appendBleForegroundServiceFailed();
-            },
-            publishPrekeyPayload: () {
-              return PrekeyPayloadPublishLane.publishIfAvailable(
-                signalKeyManager: _signalKeyManager,
-                localBleNodeId: _localBleNodeId,
-                logger: _logger,
-                logName: _logName,
-              );
-            },
-            initializeRealtime: _realtimeService?.initialize,
-            setupRealtimeListeners: _setupRealtimeListeners,
-            startAdvertising: () {
-              return PersonalityAdvertisingStartLane.startIfAllowed(
-                allowBleSideEffects: _allowBleSideEffects,
-                advertisingService: _advertisingService,
-                vibeAnalyzer: _vibeAnalyzer,
-                userId: userId,
-                personality: personality,
-                localBleNodeId: _localBleNodeId,
-                eventModeEnabled: _isEventModeEnabled(),
-                logger: _logger,
-                logName: _logName,
-              );
-            },
-            startDiscovery: () async {
-              final discoveryStart =
-                  await BleDiscoveryStartLane.startIfAllowed(
-                allowBleSideEffects: _allowBleSideEffects,
-                deviceDiscovery: _deviceDiscovery,
-                prefs: _prefs,
-                hotScanWindow: _hotScanWindow,
-                hotDeviceTimeout: _hotDeviceTimeout,
-                onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
-                existingBatteryScheduler: _batteryScheduler,
-                existingAdaptiveMeshService: _adaptiveMeshService,
-                logger: _logger,
-                logName: _logName,
-              );
-              _batteryScheduler = discoveryStart.batteryScheduler;
-              _adaptiveMeshService = discoveryStart.adaptiveMeshService;
-            },
-            startAi2AiDiscovery: () =>
-                _startAI2AIDiscovery(userId, personality),
-            startBleInboxProcessing: _startBleInboxProcessing,
-            startFederatedCloudSync: _startFederatedCloudSync,
-            startConnectionMaintenance: _startConnectionMaintenance,
+        allowBleSideEffects: _allowBleSideEffects,
+        isWeb: kIsWeb,
+        isAndroid: defaultTargetPlatform == TargetPlatform.android,
+        startBleForegroundService: BleForegroundService.startService,
+        onBleForegroundServiceStarted: () {
+          OrchestrationInitLedgerLane.appendBleForegroundServiceStarted();
+        },
+        onBleForegroundServiceFailed: () {
+          OrchestrationInitLedgerLane.appendBleForegroundServiceFailed();
+        },
+        publishPrekeyPayload: () {
+          return PrekeyPayloadPublishLane.publishIfAvailable(
+            signalKeyManager: _signalKeyManager,
+            localBleNodeId: _localBleNodeId,
             logger: _logger,
             logName: _logName,
           );
         },
+        initializeRealtime: _realtimeService?.initialize,
+        setupRealtimeListeners: _setupRealtimeListeners,
+        startAdvertising: () {
+          return PersonalityAdvertisingStartLane.startIfAllowed(
+            allowBleSideEffects: _allowBleSideEffects,
+            advertisingService: _advertisingService,
+            vibeAnalyzer: _vibeAnalyzer,
+            userId: userId,
+            personality: personality,
+            localBleNodeId: _localBleNodeId,
+            eventModeEnabled: _isEventModeEnabled(),
+            logger: _logger,
+            logName: _logName,
+          );
+        },
+        startDiscovery: () async {
+          final discoveryStart = await BleDiscoveryStartLane.startIfAllowed(
+            allowBleSideEffects: _allowBleSideEffects,
+            deviceDiscovery: _deviceDiscovery,
+            prefs: _prefs,
+            hotScanWindow: _hotScanWindow,
+            hotDeviceTimeout: _hotDeviceTimeout,
+            onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
+            existingBatteryScheduler: _batteryScheduler,
+            existingAdaptiveMeshService: _adaptiveMeshService,
+            logger: _logger,
+            logName: _logName,
+          );
+          _batteryScheduler = discoveryStart.batteryScheduler;
+          _adaptiveMeshService = discoveryStart.adaptiveMeshService;
+        },
+        startAi2AiDiscovery: () => _startAI2AIDiscovery(userId, personality),
+        startBleInboxProcessing: _startBleInboxProcessing,
+        startFederatedCloudSync: _startFederatedCloudSync,
+        startConnectionMaintenance: _startConnectionMaintenance,
         onMarkInitialized: () {
           _isInitialized = true;
         },
