@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:math' as math;
 
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
+import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -10,15 +12,19 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/admin_collaborative_activity_widget.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/connections_list.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/learning_metrics_chart.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/network_3d_visualization_widget.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/network_health_gauge.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/performance_issues_list.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/privacy_compliance_card.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/ai2ai/connections_list.dart';
-import 'package:avrai/presentation/widgets/ai2ai/learning_metrics_chart.dart';
-import 'package:avrai/presentation/widgets/ai2ai/network_health_gauge.dart';
-import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
-import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vector_math/vector_math.dart' show Vector3;
 
 /// Admin Dashboard for AI2AI Network Monitoring
 /// Displays network health, connections, learning metrics, privacy, and performance.
@@ -33,12 +39,14 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
   NetworkAnalytics? _networkAnalytics;
   ConnectionMonitor? _connectionMonitor;
   AdminRuntimeGovernanceService? _runtimeGovernanceService;
+  AtomicClockService? _atomicClockService;
 
   StreamSubscription<NetworkHealthReport>? _healthReportSubscription;
   StreamSubscription<ActiveConnectionsOverview>? _connectionsSubscription;
   StreamSubscription<RealTimeMetrics>? _realTimeMetricsSubscription;
   StreamSubscription<CommunicationsSnapshot>? _communicationsSubscription;
   Timer? _agentRefreshTimer;
+  Timer? _meshTickTimer;
 
   NetworkHealthReport? _healthReport;
   ActiveConnectionsOverview? _connectionsOverview;
@@ -52,6 +60,15 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
   String? _errorMessage;
   DateTime? _lastUpdate;
   bool _isStreamConnected = false;
+  AtomicTimestamp? _latestAtomicTimestamp;
+  MeshTemporalState _meshTemporalState = MeshTemporalState.alignment;
+  double _meshTemporalProgress = 0.0;
+  // TODO(admin-backend): Move temporal state tracking/lockstep source-of-truth
+  // to internal backend service once available. Current implementation is
+  // client-side runtime state only (non-persistent).
+  String? _lastGlobeTemporalState;
+  double? _lastGlobeTemporalProgress;
+  DateTime? _lastGlobeTemporalRenderedAt;
 
   @override
   void initState() {
@@ -68,9 +85,13 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         _runtimeGovernanceService =
             GetIt.instance<AdminRuntimeGovernanceService>();
       }
+      if (GetIt.instance.isRegistered<AtomicClockService>()) {
+        _atomicClockService = GetIt.instance<AtomicClockService>();
+      }
       _setupStreams();
       await _refreshActiveAgents();
       _setupAgentRefreshTimer();
+      _setupMeshTickTimer();
     } catch (e) {
       developer.log('Error initializing services: $e',
           name: 'AI2AIAdminDashboard');
@@ -179,6 +200,44 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
         const Duration(seconds: 20), (_) => _refreshActiveAgents());
   }
 
+  void _setupMeshTickTimer() {
+    _meshTickTimer?.cancel();
+    _updateMeshTemporalState();
+    _meshTickTimer = Timer.periodic(
+        const Duration(seconds: 1), (_) => _updateMeshTemporalState());
+  }
+
+  Future<void> _updateMeshTemporalState() async {
+    final atomicClock = _atomicClockService;
+    if (atomicClock == null) {
+      return;
+    }
+
+    try {
+      final timestamp = await atomicClock.getAtomicTimestamp();
+      final temporalState = QuantumTemporalStateGenerator.generate(timestamp);
+      final phase = temporalState.phaseState;
+      if (phase.length < 2) {
+        return;
+      }
+
+      final angle = _normalizedAngle(phase[0], phase[1]);
+      final nextState = _stateForAngle(angle);
+      final stateStart = _stateStart(nextState);
+      final progress = ((angle - stateStart) / (math.pi / 2)).clamp(0.0, 1.0);
+
+      if (!mounted) return;
+      setState(() {
+        _latestAtomicTimestamp = timestamp;
+        _meshTemporalState = nextState;
+        _meshTemporalProgress = progress.toDouble();
+      });
+    } catch (e) {
+      developer.log('Error updating mesh temporal state: $e',
+          name: 'AI2AIAdminDashboard');
+    }
+  }
+
   Future<void> _refreshActiveAgents() async {
     final service = _runtimeGovernanceService;
     if (service == null) {
@@ -240,6 +299,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
     _realTimeMetricsSubscription?.cancel();
     _communicationsSubscription?.cancel();
     _agentRefreshTimer?.cancel();
+    _meshTickTimer?.cancel();
     _connectionMonitor?.disposeStreams();
     _networkAnalytics?.disposeStreams();
     super.dispose();
@@ -379,6 +439,18 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                 onTap: () => context.go('/admin/reality-system/reality'),
               ),
             ),
+            Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: ListTile(
+                leading: const Icon(Icons.science_outlined),
+                title: const Text('Research Center'),
+                subtitle: const Text(
+                  'Shared admin + reality-model research feed, status, and notes',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go('/admin/research-center'),
+              ),
+            ),
             if (_errorMessage != null)
               Container(
                 padding: const EdgeInsets.all(12),
@@ -409,6 +481,8 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                 ),
               ),
             _buildCommunicationVisualizerSection(),
+            const SizedBox(height: 24),
+            _buildLiveMeshSection(),
             const SizedBox(height: 24),
             if (_healthReport != null)
               NetworkHealthGauge(healthReport: _healthReport!)
@@ -522,6 +596,148 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
           agents: _activeAgents,
           title: 'AI2AI Agent Globe',
           links: _topologyLinks,
+          temporalState: GlobeTemporalStateView(
+            currentState: _meshTemporalState.label,
+            progress: _meshTemporalProgress,
+            states: MeshTemporalState.values
+                .map((state) => state.label)
+                .toList(growable: false),
+          ),
+          onTemporalStateRendered: (ack) {
+            if (!mounted) return;
+            setState(() {
+              _lastGlobeTemporalState = ack.state;
+              _lastGlobeTemporalProgress = ack.progress;
+              _lastGlobeTemporalRenderedAt = ack.renderedAt;
+            });
+          },
+        ),
+        const SizedBox(height: 8),
+        _buildTemporalLockstepIndicator(),
+      ],
+    );
+  }
+
+  Widget _buildLiveMeshSection() {
+    final nodes = _buildMeshNodes(_activeAgents);
+    final edges = _buildMeshEdges(nodes, _topologyLinks);
+    final density = _meshDensity(nodes.length, edges.length);
+    final avgDegree = _averageDegree(nodes.length, edges.length);
+    final timestamp = _latestAtomicTimestamp;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Live AI2AI Mesh (Universal Internal Time)',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Realtime mesh view with privacy-safe agent identities and quantum atomic timing states.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LinearProgressIndicator(
+                  value: _meshTemporalProgress,
+                  minHeight: 6,
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    Chip(
+                      label:
+                          Text('Temporal state: ${_meshTemporalState.label}'),
+                    ),
+                    Chip(
+                      label: Text('Nodes: ${nodes.length}'),
+                    ),
+                    Chip(
+                      label: Text('Edges: ${edges.length}'),
+                    ),
+                    Chip(
+                      label: Text(
+                          'Mesh density: ${(density * 100).toStringAsFixed(1)}%'),
+                    ),
+                    Chip(
+                      label:
+                          Text('Avg degree: ${avgDegree.toStringAsFixed(2)}'),
+                    ),
+                    Chip(
+                      label: Text(
+                        timestamp == null
+                            ? 'Atomic sync: pending'
+                            : 'Atomic sync: ${timestamp.isSynchronized ? 'synchronized' : 'device fallback'}',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: MeshTemporalState.values
+                      .map(
+                        (state) => Chip(
+                          avatar: Icon(
+                            state == _meshTemporalState
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                            size: 16,
+                          ),
+                          label: Text(state.label),
+                        ),
+                      )
+                      .toList(),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  timestamp == null
+                      ? 'Waiting for atomic timestamp stream.'
+                      : 'Universal internal time: ${timestamp.serverTime.toIso8601String()} (${timestamp.timezoneId}, ${timestamp.precision.name}).',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelSmall
+                      ?.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Network3DVisualizationWidget(
+              nodes: nodes,
+              edges: edges,
+              height: 360,
+              width: double.infinity,
+              showControls: true,
+              onNodeTapped: (agentId) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Agent mesh node: $agentId'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
@@ -601,6 +817,167 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
     return lat + lng;
   }
 
+  List<AI2AINetworkNode> _buildMeshNodes(List<ActiveAIAgentData> agents) {
+    if (agents.isEmpty) {
+      return const <AI2AINetworkNode>[];
+    }
+
+    return agents.asMap().entries.map((entry) {
+      final index = entry.key;
+      final agent = entry.value;
+      final position = _meshPositionForAgent(index, agents.length, agent);
+
+      return AI2AINetworkNode(
+        userId: _maskedIdentity(agent.aiSignature),
+        position: position,
+        isCenter: index == 0,
+      );
+    }).toList();
+  }
+
+  List<AI2AINetworkEdge> _buildMeshEdges(
+    List<AI2AINetworkNode> nodes,
+    List<GlobeConnectionLink> links,
+  ) {
+    if (nodes.length < 2) {
+      return const <AI2AINetworkEdge>[];
+    }
+
+    final indexById = <String, int>{};
+    for (int i = 0; i < _activeAgents.length && i < nodes.length; i++) {
+      indexById[_maskedIdentity(_activeAgents[i].aiSignature)] = i;
+    }
+
+    final edges = <AI2AINetworkEdge>[];
+    for (final link in links) {
+      final from = indexById[_maskedIdentity(link.fromAgentId)];
+      final to = indexById[_maskedIdentity(link.toAgentId)];
+      if (from == null || to == null || from == to) {
+        continue;
+      }
+      edges.add(
+        AI2AINetworkEdge(
+          fromIndex: from,
+          toIndex: to,
+          strength: link.strength,
+        ),
+      );
+    }
+
+    if (edges.isNotEmpty) {
+      return edges;
+    }
+
+    final fallback = <AI2AINetworkEdge>[];
+    for (int i = 0; i < nodes.length - 1; i++) {
+      fallback
+          .add(AI2AINetworkEdge(fromIndex: i, toIndex: i + 1, strength: 0.35));
+    }
+    return fallback;
+  }
+
+  Vector3 _meshPositionForAgent(
+    int index,
+    int total,
+    ActiveAIAgentData agent,
+  ) {
+    final normalizedLat = (agent.latitude.clamp(-90.0, 90.0) / 90.0);
+    final normalizedLng = (agent.longitude.clamp(-180.0, 180.0) / 180.0);
+    final angle = ((index + 1) / (total + 1)) * (2 * math.pi);
+
+    final radius = 2.5 + (agent.aiConnections.clamp(0, 12) / 12.0) * 1.5;
+    final x = radius * math.cos(angle) + normalizedLng * 0.9;
+    final y = radius * math.sin(angle) + normalizedLat * 0.9;
+    final z = (normalizedLat - normalizedLng) * 1.4;
+    return Vector3(x, y, z);
+  }
+
+  double _normalizedAngle(double cosValue, double sinValue) {
+    final angle = math.atan2(sinValue, cosValue);
+    return angle >= 0 ? angle : angle + (2 * math.pi);
+  }
+
+  MeshTemporalState _stateForAngle(double angle) {
+    if (angle < math.pi / 2) {
+      return MeshTemporalState.alignment;
+    }
+    if (angle < math.pi) {
+      return MeshTemporalState.expansion;
+    }
+    if (angle < 3 * math.pi / 2) {
+      return MeshTemporalState.stabilization;
+    }
+    return MeshTemporalState.reflection;
+  }
+
+  double _stateStart(MeshTemporalState state) {
+    switch (state) {
+      case MeshTemporalState.alignment:
+        return 0;
+      case MeshTemporalState.expansion:
+        return math.pi / 2;
+      case MeshTemporalState.stabilization:
+        return math.pi;
+      case MeshTemporalState.reflection:
+        return 3 * math.pi / 2;
+    }
+  }
+
+  double _meshDensity(int nodeCount, int edgeCount) {
+    if (nodeCount < 2) {
+      return 0.0;
+    }
+    final maxEdges = nodeCount * (nodeCount - 1) / 2;
+    return (edgeCount / maxEdges).clamp(0.0, 1.0).toDouble();
+  }
+
+  double _averageDegree(int nodeCount, int edgeCount) {
+    if (nodeCount == 0) {
+      return 0.0;
+    }
+    return (2 * edgeCount) / nodeCount;
+  }
+
+  String _maskedIdentity(String signature) {
+    if (signature.length <= 8) {
+      return signature;
+    }
+    return '${signature.substring(0, 4)}...${signature.substring(signature.length - 4)}';
+  }
+
+  Widget _buildTemporalLockstepIndicator() {
+    final isAligned = _isTemporalLockstepAligned();
+    final color = isAligned ? AppColors.success : AppColors.warning;
+    final icon = isAligned ? Icons.sync : Icons.sync_problem;
+    final label = isAligned
+        ? 'Globe/Mesh lockstep: healthy'
+        : 'Globe/Mesh lockstep: drift detected';
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Chip(
+        avatar: Icon(icon, color: color, size: 18),
+        label: Text(label),
+      ),
+    );
+  }
+
+  bool _isTemporalLockstepAligned() {
+    final renderedAt = _lastGlobeTemporalRenderedAt;
+    final progress = _lastGlobeTemporalProgress;
+    if (renderedAt == null ||
+        progress == null ||
+        _latestAtomicTimestamp == null) {
+      return false;
+    }
+
+    final freshness =
+        DateTime.now().difference(renderedAt) <= const Duration(seconds: 4);
+    final sameState = _lastGlobeTemporalState == _meshTemporalState.label;
+    final progressDelta = (progress - _meshTemporalProgress).abs();
+    return freshness && sameState && progressDelta <= 0.25;
+  }
+
   Widget _buildCollaborativeActivitySection() {
     AdminRuntimeGovernanceService? godModeService;
     try {
@@ -675,4 +1052,14 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
       return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
     }
   }
+}
+
+enum MeshTemporalState {
+  alignment('Alignment Window'),
+  expansion('Expansion Window'),
+  stabilization('Stabilization Window'),
+  reflection('Reflection Window');
+
+  const MeshTemporalState(this.label);
+  final String label;
 }
