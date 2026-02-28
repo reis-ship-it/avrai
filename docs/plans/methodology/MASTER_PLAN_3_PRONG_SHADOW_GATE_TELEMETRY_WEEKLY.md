@@ -1,36 +1,12 @@
 # 3-Prong Shadow Gate Telemetry Weekly Export
 
-**Source input:** `runtime_exports/conviction_gate_shadow_decisions.json`  
-**Export target:** `docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.md`  
-**Summary JSON:** `docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json`  
-**Total decisions:** 2  
-**Shadow bypass decisions:** 0  
-**Shadow bypass rate:** 0.00%  
-**Enforce decisions blocked:** 0/0 (0.00%)  
-**High-impact enforce blocked:** 0/0 (0.00%)  
-**Window:** 2026-02-27T12:00:02.000Z -> 2026-02-27T12:00:03.000Z  
+**Status:** No runtime export available yet.
+**Expected input:** `runtime_exports/conviction_gate_shadow_decisions.json`
+**Summary JSON:** `docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json`
+**Note:** Input file does not exist.
 
-## Mode Volume
+## How To Populate
 
-| Mode | Decisions |
-|------|-----------|
-| shadow | 2 |
-
-## Controller Volume
-
-| Controller | Decisions |
-|------------|-----------|
-| AIRecommendationController | 2 |
-
-## Top Reason Codes
-
-| Reason Code | Count |
-|-------------|-------|
-| _(none)_ | 0 |
-
-## Recent Decisions (Last 20)
-
-| Timestamp | Mode | Controller | Subject | Request | Claim State | Bypass | Allowed | Reasons |
-|-----------|------|------------|---------|---------|-------------|--------|---------|---------|
-| 2026-02-27T12:00:03.000Z | shadow | AIRecommendationController | user-3 | req-3 | canonical | false | true | - |
-| 2026-02-27T12:00:02.000Z | shadow | AIRecommendationController | user-2 | req-2 | canonical | false | true | - |
+1. Export persisted decisions from storage key `conviction_gate_shadow_decisions_v1` into JSON list format.
+2. Save to the expected input path or pass `--input <path>` when running the exporter.
+3. Run `dart run tool/export_conviction_shadow_telemetry.dart` to regenerate this report.

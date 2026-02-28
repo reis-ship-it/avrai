@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 3171
+**Total mapped files:** 3173
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,7 +10,7 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2749 |
+| keep_update | 2751 |
 | keep_review | 393 |
 | refactor_planned | 29 |
 
@@ -19,7 +19,7 @@
 | Domain | File Count |
 |---|---:|
 | testing-quality | 908 |
-| core-services-general | 400 |
+| core-services-general | 401 |
 | presentation | 342 |
 | tooling-ops | 340 |
 | package-modules | 207 |
@@ -41,7 +41,7 @@
 | app-composition-root | 14 |
 | security-signal | 14 |
 | security-services | 12 |
-| monitoring-observability | 9 |
+| monitoring-observability | 10 |
 | quantum-package | 7 |
 | data-platform-sql | 6 |
 | cloud-integration | 5 |
@@ -62,7 +62,7 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 413 |
+| lib/core/services | 414 |
 | test/unit/services | 202 |
 | lib/presentation/widgets | 188 |
 | lib/presentation/pages | 150 |
@@ -99,9 +99,9 @@
 | test/integration/infrastructure | 12 |
 | test/integration/services | 12 |
 | assets/three_js/lib | 10 |
+| lib/core/monitoring | 10 |
 | lib/core/theme | 10 |
 | lib/data/database | 10 |
-| lib/core/monitoring | 9 |
 
 ## Delete Candidates
 

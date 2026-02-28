@@ -5,16 +5,15 @@
 
 ## Verdict
 
-**GO**
+**HOLD**
 
 ## Shadow Telemetry Gate
 
 - Source: `docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json`
 - Bypass rate threshold: <= 2.0%
-- Current bypass rate: 0.00% (0/2)
-- Result: PASS
-- Enforce block rate (all): 0.00% (0/0)
-- Enforce block rate (high-impact): 0.00% (0/0)
+- Current bypass rate: No data
+- Result: FAIL (no telemetry data)
+- Note: Input file does not exist.
 
 ## Canary Rollback Drill Gate
 
