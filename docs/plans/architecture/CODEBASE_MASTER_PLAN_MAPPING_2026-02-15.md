@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2922
+**Total mapped files:** 2925
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,22 +10,22 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2539 |
-| keep_review | 357 |
+| keep_update | 2541 |
+| keep_review | 358 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 886 |
+| testing-quality | 887 |
 | presentation | 381 |
 | core-services-general | 376 |
-| tooling-ops | 306 |
+| tooling-ops | 307 |
 | package-modules | 207 |
 | core-models | 142 |
 | supabase-infra | 124 |
-| world-model-ai-core | 113 |
+| world-model-ai-core | 114 |
 | platform-runtime | 62 |
 | data-layer | 55 |
 | assets | 26 |
@@ -64,13 +64,13 @@
 | test/unit/services | 192 |
 | lib/presentation/pages | 173 |
 | lib/core/models | 142 |
-| lib/core/ai | 113 |
+| lib/core/ai | 114 |
 | test/widget/widgets | 101 |
 | packages/avrai_knot/lib | 84 |
 | packages/avrai_network/lib | 67 |
 | test/unit/models | 56 |
 | test/widget/pages | 56 |
-| test/unit/ai | 51 |
+| test/unit/ai | 52 |
 | packages/avrai_core/lib | 34 |
 | scripts/ecommerce_experiments/results | 28 |
 | android/app | 27 |
