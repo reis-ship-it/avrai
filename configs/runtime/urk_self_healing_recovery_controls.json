@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:59Z",
+  "recovery_pipeline_coverage": {
+    "required_detect_contain_recover_coverage_pct": 100.0,
+    "observed_detect_contain_recover_coverage_pct": 100.0,
+    "required_rollback_path_coverage_pct": 100.0,
+    "observed_rollback_path_coverage_pct": 100.0,
+    "checks_executed": 580
+  },
+  "recovery_safety": {
+    "max_uncontained_incident_events": 0,
+    "observed_uncontained_incident_events": 0,
+    "max_failed_recovery_events": 0,
+    "observed_failed_recovery_events": 0,
+    "checks_executed": 240
+  }
+}
