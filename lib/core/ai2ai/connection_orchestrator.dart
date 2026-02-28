@@ -45,6 +45,7 @@ import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_bootstrap_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_initialization_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/orchestration_init_ledger_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
@@ -390,18 +391,7 @@ class VibeConnectionOrchestrator {
               tag: _logName);
         },
         onDiscoveryDisabled: () {
-          if (LedgerAuditV0.isEnabled) {
-            unawaited(LedgerAuditV0.tryAppend(
-              domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_orchestration_init_skipped',
-              occurredAt: DateTime.now(),
-              entityType: 'user',
-              entityId: userId,
-              payload: const <String, Object?>{
-                'reason': 'discovery_disabled',
-              },
-            ));
-          }
+          OrchestrationInitLedgerLane.appendInitSkipped(userId);
         },
         setCurrentContext: (nextUserId, nextPersonality) {
           _currentUserId = nextUserId;
@@ -424,22 +414,14 @@ class VibeConnectionOrchestrator {
           return _localBleNodeId;
         },
         onInitStarted: (bleNodeId) {
-          if (LedgerAuditV0.isEnabled) {
-            unawaited(LedgerAuditV0.tryAppend(
-              domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_orchestration_init_started',
-              occurredAt: DateTime.now(),
-              entityType: 'user',
-              entityId: userId,
-              payload: <String, Object?>{
-                'allow_ble_side_effects': _allowBleSideEffects,
-                'is_test_binding': _isTestBinding,
-                'is_web': kIsWeb,
-                'platform': defaultTargetPlatform.name,
-                'ble_node_id': bleNodeId,
-              },
-            ));
-          }
+          OrchestrationInitLedgerLane.appendInitStarted(
+            userId: userId,
+            bleNodeId: bleNodeId,
+            allowBleSideEffects: _allowBleSideEffects,
+            isTestBinding: _isTestBinding,
+            isWeb: kIsWeb,
+            platform: defaultTargetPlatform.name,
+          );
         },
         bootstrap: () {
           return OrchestrationBootstrapLane.bootstrap(
@@ -448,28 +430,10 @@ class VibeConnectionOrchestrator {
             isAndroid: defaultTargetPlatform == TargetPlatform.android,
             startBleForegroundService: BleForegroundService.startService,
             onBleForegroundServiceStarted: () {
-              if (LedgerAuditV0.isEnabled) {
-                unawaited(LedgerAuditV0.tryAppend(
-                  domain: LedgerDomainV0.deviceCapability,
-                  eventType: 'ai2ai_ble_foreground_service_started',
-                  occurredAt: DateTime.now(),
-                  payload: const <String, Object?>{
-                    'platform': 'android',
-                  },
-                ));
-              }
+              OrchestrationInitLedgerLane.appendBleForegroundServiceStarted();
             },
             onBleForegroundServiceFailed: () {
-              if (LedgerAuditV0.isEnabled) {
-                unawaited(LedgerAuditV0.tryAppend(
-                  domain: LedgerDomainV0.deviceCapability,
-                  eventType: 'ai2ai_ble_foreground_service_failed',
-                  occurredAt: DateTime.now(),
-                  payload: const <String, Object?>{
-                    'platform': 'android',
-                  },
-                ));
-              }
+              OrchestrationInitLedgerLane.appendBleForegroundServiceFailed();
             },
             publishPrekeyPayload: () {
               return PrekeyPayloadPublishLane.publishIfAvailable(
@@ -524,32 +488,10 @@ class VibeConnectionOrchestrator {
           _isInitialized = true;
         },
         onInitCompleted: () {
-          if (LedgerAuditV0.isEnabled) {
-            unawaited(LedgerAuditV0.tryAppend(
-              domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_orchestration_init_completed',
-              occurredAt: DateTime.now(),
-              entityType: 'user',
-              entityId: userId,
-              payload: const <String, Object?>{
-                'ok': true,
-              },
-            ));
-          }
+          OrchestrationInitLedgerLane.appendInitCompleted(userId);
         },
         onInitFailed: (error) {
-          if (LedgerAuditV0.isEnabled) {
-            unawaited(LedgerAuditV0.tryAppend(
-              domain: LedgerDomainV0.deviceCapability,
-              eventType: 'ai2ai_orchestration_init_failed',
-              occurredAt: DateTime.now(),
-              entityType: 'user',
-              entityId: userId,
-              payload: <String, Object?>{
-                'error': error.toString(),
-              },
-            ));
-          }
+          OrchestrationInitLedgerLane.appendInitFailed(userId, error);
         },
         logger: _logger,
         logName: _logName,
