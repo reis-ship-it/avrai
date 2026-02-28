@@ -23,9 +23,9 @@ import 'package:avrai/core/ai2ai/discovery/discovery_node_orchestration_lane.dar
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_public_forwarding_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_broadcast_flags_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_public_forwarding_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_message_runtime_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
@@ -46,7 +46,6 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_pay
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_completion_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/active_connection_management_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_management_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
@@ -759,24 +758,10 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> manageActiveConnections() async {
-    await ActiveConnectionManagementLane.run(
+    await ConnectionManagementOrchestrationLane.runActiveManagement(
       activeConnections: _activeConnections,
       completeConnection: _completeConnection,
-      updateConnectionLearning: (connection) async {
-        ConnectionManagementOrchestrationLane.applyLearningUpdate(
-          activeConnections: _activeConnections,
-          connection: connection,
-        );
-      },
-      monitorConnectionHealth: (connection) async {
-        // Monitor connection health and update AI pleasure score.
-        final currentPleasure = await calculateAIPleasureScore(connection);
-        ConnectionManagementOrchestrationLane.applyHealthUpdate(
-          activeConnections: _activeConnections,
-          connection: connection,
-          aiPleasureScore: currentPleasure,
-        );
-      },
+      calculateAIPleasureScore: calculateAIPleasureScore,
       logger: _logger,
       logName: _logName,
     );

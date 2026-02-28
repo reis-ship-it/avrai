@@ -1,3 +1,4 @@
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/active_connection_management_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_lifecycle_lane.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
@@ -33,6 +34,37 @@ class ConnectionManagementOrchestrationLane {
         ConnectionLifecycleLane.applyHealthUpdate(
       connection: connection,
       aiPleasureScore: aiPleasureScore,
+    );
+  }
+
+  static Future<void> runActiveManagement({
+    required Map<String, ConnectionMetrics> activeConnections,
+    required Future<ConnectionMetrics?> Function(ConnectionMetrics connection)
+        completeConnection,
+    required Future<double> Function(ConnectionMetrics connection)
+        calculateAIPleasureScore,
+    required AppLogger logger,
+    required String logName,
+  }) {
+    return ActiveConnectionManagementLane.run(
+      activeConnections: activeConnections,
+      completeConnection: completeConnection,
+      updateConnectionLearning: (connection) async {
+        applyLearningUpdate(
+          activeConnections: activeConnections,
+          connection: connection,
+        );
+      },
+      monitorConnectionHealth: (connection) async {
+        final currentPleasure = await calculateAIPleasureScore(connection);
+        applyHealthUpdate(
+          activeConnections: activeConnections,
+          connection: connection,
+          aiPleasureScore: currentPleasure,
+        );
+      },
+      logger: logger,
+      logName: logName,
     );
   }
 }
