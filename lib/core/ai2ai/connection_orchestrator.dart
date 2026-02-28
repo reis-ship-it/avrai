@@ -24,7 +24,7 @@ import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_message_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
@@ -387,10 +387,29 @@ class VibeConnectionOrchestrator {
         setupRealtimeListeners: _setupRealtimeListeners,
         startAdvertising: () => _startAdvertising(userId, personality),
         startDiscovery: _startDiscovery,
-        startAi2AiDiscovery: () => _startAI2AIDiscovery(userId, personality),
+        startAi2AiDiscovery: () async {
+          _discoveryTimer = await OrchestrationStartupLane.startDiscovery(
+            discoverNearby: () => discoverNearbyAIPersonalities(
+              userId,
+              personality,
+              throwOnError: true,
+            ),
+            logger: _logger,
+            logName: _logName,
+          );
+        },
         startBleInboxProcessing: _startBleInboxProcessing,
         startFederatedCloudSync: _startFederatedCloudSync,
-        startConnectionMaintenance: _startConnectionMaintenance,
+        startConnectionMaintenance: () async {
+          _connectionMaintenanceTimer =
+              OrchestrationStartupLane.startConnectionMaintenance(
+            manageActiveConnections: manageActiveConnections,
+            manageSessionLifecycle: _manageSessionLifecycle,
+            managePreKeyBundleRotation: _managePreKeyBundleRotation,
+            logger: _logger,
+            logName: _logName,
+          );
+        },
         onAlreadyInitialized: () {
           _logger.debug(
             'Orchestration already initialized; skipping reinitialization',
@@ -712,7 +731,13 @@ class VibeConnectionOrchestrator {
       signalKeyManager: _signalKeyManager,
       knotWeavingService: _knotWeavingService,
       knotStorageService: _knotStorageService,
-      scheduleConnectionManagement: _scheduleConnectionManagement,
+      scheduleConnectionManagement: (connection) {
+        ConnectionManagementOrchestrationLane.schedule(
+          connection: connection,
+          logger: _logger,
+          logName: _logName,
+        );
+      },
       logger: _logger,
       logName: _logName,
     );
@@ -722,8 +747,21 @@ class VibeConnectionOrchestrator {
     await ActiveConnectionManagementLane.run(
       activeConnections: _activeConnections,
       completeConnection: _completeConnection,
-      updateConnectionLearning: _updateConnectionLearning,
-      monitorConnectionHealth: _monitorConnectionHealth,
+      updateConnectionLearning: (connection) async {
+        ConnectionManagementOrchestrationLane.applyLearningUpdate(
+          activeConnections: _activeConnections,
+          connection: connection,
+        );
+      },
+      monitorConnectionHealth: (connection) async {
+        // Monitor connection health and update AI pleasure score.
+        final currentPleasure = await calculateAIPleasureScore(connection);
+        ConnectionManagementOrchestrationLane.applyHealthUpdate(
+          activeConnections: _activeConnections,
+          connection: connection,
+          aiPleasureScore: currentPleasure,
+        );
+      },
       logger: _logger,
       logName: _logName,
     );
@@ -937,30 +975,6 @@ class VibeConnectionOrchestrator {
   }
 
   // Private helper methods
-  Future<void> _startAI2AIDiscovery(
-      String userId, PersonalityProfile personality) async {
-    _discoveryTimer = await OrchestrationStartupLane.startDiscovery(
-      discoverNearby: () => discoverNearbyAIPersonalities(
-        userId,
-        personality,
-        throwOnError: true,
-      ),
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _startConnectionMaintenance() async {
-    _connectionMaintenanceTimer =
-        OrchestrationStartupLane.startConnectionMaintenance(
-      manageActiveConnections: manageActiveConnections,
-      manageSessionLifecycle: _manageSessionLifecycle,
-      managePreKeyBundleRotation: _managePreKeyBundleRotation,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
   Future<bool> _applyInsightForPeer({
     required String userId,
     required PersonalityLearning personalityLearning,
@@ -1101,15 +1115,6 @@ class VibeConnectionOrchestrator {
     return _adaptiveMeshService?.networkDensity;
   }
 
-  void _scheduleConnectionManagement(ConnectionMetrics connection) {
-    // Connection-specific management is handled by the main maintenance timer.
-    ConnectionManagementOrchestrationLane.schedule(
-      connection: connection,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
   Future<ConnectionMetrics?> _completeConnection(ConnectionMetrics connection,
       {String? reason}) async {
     return ConnectionCompletionLane.complete(
@@ -1117,24 +1122,6 @@ class VibeConnectionOrchestrator {
       reason: reason,
       logger: _logger,
       logName: _logName,
-    );
-  }
-
-  Future<void> _updateConnectionLearning(ConnectionMetrics connection) async {
-    ConnectionManagementOrchestrationLane.applyLearningUpdate(
-      activeConnections: _activeConnections,
-      connection: connection,
-    );
-  }
-
-  Future<void> _monitorConnectionHealth(ConnectionMetrics connection) async {
-    // Monitor connection health and update AI pleasure score.
-    final currentPleasure = await calculateAIPleasureScore(connection);
-
-    ConnectionManagementOrchestrationLane.applyHealthUpdate(
-      activeConnections: _activeConnections,
-      connection: connection,
-      aiPleasureScore: currentPleasure,
     );
   }
 
