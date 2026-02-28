@@ -80,6 +80,10 @@ Use these when changing world-model training/planning behavior or model lifecycl
 ## AI2AI / Offline / Runtime Architecture
 
 - **Runtime transport migration status checkpoint (current):** [`MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md`](./MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md)
+- **3-prong target end-state umbrella authority:** [`MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`](./MASTER_PLAN_3_PRONG_TARGET_END_STATE.md)
+- **Apps prong concurrent execution plan:** [`PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
+- **Runtime OS prong concurrent execution plan:** [`PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
+- **Reality Model prong concurrent execution plan:** [`PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
 - **3-prong architecture visualization guide (external + internal + endpoint flows):** [`THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`](./THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md)
 - **Target codebase structure enforcement policy (default placement for new work):** [`TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`](./TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md)
 - **Refactor fast-lane playbook (slice-by-slice migration workflow):** [`REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md`](./REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md)

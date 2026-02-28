@@ -1,0 +1,25 @@
+{
+  "milestone_id": "M12-P10-2",
+  "master_plan_refs": ["10.10.12"],
+  "prong": "apps",
+  "rules": {
+    "forbid_apps_to_engine_direct_import": true,
+    "require_runtime_or_shared_contract_access": true,
+    "require_contract_overlap_compatibility": true,
+    "admin_internal_only_enforcement": true,
+    "admin_internal_use_reaccept_every_login": true
+  },
+  "authority_docs": [
+    "docs/plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md",
+    "docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md"
+  ],
+  "app_docs": [
+    "apps/consumer_app/README.md",
+    "apps/admin_app/README.md"
+  ],
+  "checks": [
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py",
+    "python3 scripts/ci/check_three_prong_boundaries.py"
+  ]
+}

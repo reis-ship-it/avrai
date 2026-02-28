@@ -10,8 +10,10 @@ Define one uniform workflow for all entity models (business, community, spot/pla
 Master authority alignment:
 - `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` and task `10.9.12` define mandatory break-to-learning behavior for any subsystem failure (not limited to ML).
 - This governance doc implements the ML/training/simulation slice of that universal contract.
+- Cross-doc synchronization authority: `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`.
 
 ## Canonical Sources
+- `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`
 - `configs/ml/model_training_registry.csv`
 - `configs/ml/feature_label_contracts.json`
 - `configs/ml/avrai_native_type_contracts.json`

@@ -1,0 +1,32 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:00Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:55:00Z"
+  },
+  "payload_minimization": {
+    "required_schema_conformance_pct": 100.0,
+    "observed_schema_conformance_pct": 100.0,
+    "max_direct_identifier_leaks": 0,
+    "observed_direct_identifier_leaks": 0,
+    "checks_executed": 520
+  },
+  "encryption_and_keying": {
+    "required_double_encryption_coverage_pct": 100.0,
+    "observed_double_encryption_coverage_pct": 100.0,
+    "required_key_rotation_coverage_pct": 100.0,
+    "observed_key_rotation_coverage_pct": 100.0,
+    "checks_executed": 320
+  },
+  "lineage_and_policy_gate": {
+    "required_lineage_tag_coverage_pct": 100.0,
+    "observed_lineage_tag_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "max_policy_bypass_events": 0,
+    "observed_policy_bypass_events": 0,
+    "checks_executed": 420
+  }
+}

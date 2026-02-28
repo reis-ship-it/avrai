@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 // ignore_for_file: unused_field
 
 import 'package:avrai/core/controllers/base/workflow_controller.dart';

@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +6,8 @@ import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -257,6 +260,7 @@ ConvictionGateEvaluator resolveDefaultConvictionGateEvaluator() {
     mode: ConvictionGateMode.shadow,
     modeResolver: resolveDefaultConvictionGateModeResolver(),
     telemetrySink: resolveDefaultConvictionGateTelemetrySink(),
+    urkActivationDispatcher: resolveDefaultUrkRuntimeActivationDispatcher(),
   );
 }
 
@@ -275,14 +279,17 @@ class ConvictionGateEvaluator {
     this.mode = ConvictionGateMode.shadow,
     ConvictionGateModeResolver? modeResolver,
     ConvictionGateTelemetrySink? telemetrySink,
+    UrkRuntimeActivationReceiptDispatcher? urkActivationDispatcher,
     DateTime Function()? now,
   })  : _telemetrySink = telemetrySink,
         _modeResolver = modeResolver,
+        _urkActivationDispatcher = urkActivationDispatcher,
         _now = now ?? DateTime.now;
 
   final ConvictionGateMode mode;
   final ConvictionGateModeResolver? _modeResolver;
   final ConvictionGateTelemetrySink? _telemetrySink;
+  final UrkRuntimeActivationReceiptDispatcher? _urkActivationDispatcher;
   final DateTime Function() _now;
 
   Future<ConvictionGateDecision> evaluate(ConvictionGateRequest request) async {
@@ -298,8 +305,9 @@ class ConvictionGateEvaluator {
       reasonCodes.add('policy_checks_failed');
     }
 
+    final modeResolver = _modeResolver;
     final effectiveMode =
-        _modeResolver != null ? await _modeResolver!(request) : mode;
+        modeResolver != null ? await modeResolver(request) : mode;
     final wouldAllow = reasonCodes.isEmpty;
     final servingAllowed =
         effectiveMode == ConvictionGateMode.shadow ? true : wouldAllow;
@@ -324,7 +332,34 @@ class ConvictionGateEvaluator {
     if (_telemetrySink != null) {
       await _telemetrySink.record(decision);
     }
+    if (_urkActivationDispatcher != null) {
+      final trigger = _mapDecisionToUrkTrigger(decision);
+      if (trigger != null) {
+        await _urkActivationDispatcher.dispatch(
+          requestId: decision.requestId,
+          trigger: trigger,
+          privacyMode: UrkPrivacyMode.multiMode,
+          actor: decision.controllerName,
+          reason: decision.reasonCodes.isEmpty
+              ? 'conviction_gate_decision'
+              : decision.reasonCodes.join(','),
+        );
+      }
+    }
 
     return decision;
+  }
+
+  String? _mapDecisionToUrkTrigger(ConvictionGateDecision decision) {
+    if (!decision.policyChecksPassed) {
+      return 'policy_violation_detected';
+    }
+    if (decision.isHighImpact && !decision.wouldAllow) {
+      return 'runtime_health_breach';
+    }
+    if (decision.isHighImpact && decision.wouldAllow) {
+      return 'release_candidate_validation';
+    }
+    return null;
   }
 }

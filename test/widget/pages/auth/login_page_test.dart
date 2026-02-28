@@ -39,7 +39,7 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.byIcon(Icons.location_on), findsOneWidget);
-      expect(find.text('SPOTS'), findsOneWidget);
+      expect(find.text('avrai'), findsOneWidget);
       expect(find.text('Discover meaningful places'), findsOneWidget);
       expect(find.byKey(const Key('email_field')), findsOneWidget);
       expect(find.byKey(const Key('password_field')), findsOneWidget);

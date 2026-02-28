@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';

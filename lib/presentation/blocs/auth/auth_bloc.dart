@@ -12,7 +12,10 @@ import 'package:avrai/core/services/matching/personality_sync_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
-import 'package:avrai/core/services/infrastructure/storage_service.dart' show StorageService;
+import 'package:avrai/core/services/admin/admin_internal_use_agreement_service.dart';
+import 'package:avrai/core/services/infrastructure/supabase_service.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show StorageService, SharedPreferencesCompat;
 import 'package:avrai/injection_container.dart' as di;
 
 // Events
@@ -21,8 +24,17 @@ abstract class AuthEvent {}
 class SignInRequested extends AuthEvent {
   final String email;
   final String password;
+  final bool requireAdminInternalUseAgreement;
+  final bool adminInternalUseAgreementAccepted;
+  final String adminInternalUseAgreementText;
 
-  SignInRequested(this.email, this.password);
+  SignInRequested(
+    this.email,
+    this.password, {
+    this.requireAdminInternalUseAgreement = false,
+    this.adminInternalUseAgreementAccepted = false,
+    this.adminInternalUseAgreementText = '',
+  });
 }
 
 class SignUpRequested extends AuthEvent {
@@ -131,6 +143,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           '🔐 AuthBloc: Sign in result - user: ${user?.email ?? 'null'}',
           tag: 'AuthBloc');
       if (user != null) {
+        if (event.requireAdminInternalUseAgreement) {
+          if (!event.adminInternalUseAgreementAccepted) {
+            await signOutUseCase();
+            emit(AuthError(
+                'Internal-use agreement is required for admin sign-in.'));
+            return;
+          }
+
+          final agreementOk = await _recordAdminInternalUseAgreement(
+            userId: user.id,
+            agreementText: event.adminInternalUseAgreementText,
+          );
+          if (!agreementOk) {
+            await signOutUseCase();
+            emit(AuthError(
+                'Admin internal-use agreement verification failed. Please try again.'));
+            return;
+          }
+        }
+
         final isOffline = user.isOnline == false;
         _logger.info('🔐 AuthBloc: User authenticated successfully',
             tag: 'AuthBloc');
@@ -161,6 +193,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(AuthError(msg));
       }
+    }
+  }
+
+  Future<bool> _recordAdminInternalUseAgreement({
+    required String userId,
+    required String agreementText,
+  }) async {
+    try {
+      final prefs = await SharedPreferencesCompat.getInstance();
+      final nonce =
+          'admin_login_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+      final service = AdminInternalUseAgreementService(
+        prefs: prefs,
+        supabaseService: SupabaseService(),
+      );
+      return service.recordAndVerifyCurrentLogin(
+        userId: userId,
+        sessionNonce: nonce,
+        agreementText: agreementText,
+      );
+    } catch (_) {
+      return false;
     }
   }
 
@@ -218,6 +272,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       await signOutUseCase();
+      try {
+        final prefs = await SharedPreferencesCompat.getInstance();
+        await AdminInternalUseAgreementService(
+          prefs: prefs,
+          supabaseService: SupabaseService(),
+        ).clearSessionAgreementState();
+      } catch (_) {
+        // Best effort.
+      }
 
       // Ensure AI2AI background work is stopped on sign out.
       try {

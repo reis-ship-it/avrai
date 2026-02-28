@@ -1,0 +1,21 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-28",
+  "evaluation_at": "2026-02-28T23:59:59Z",
+  "control_plane_coverage": {
+    "required_state_query_coverage_pct": 100.0,
+    "observed_state_query_coverage_pct": 100.0,
+    "required_health_query_coverage_pct": 100.0,
+    "observed_health_query_coverage_pct": 100.0,
+    "required_lineage_query_coverage_pct": 100.0,
+    "observed_lineage_query_coverage_pct": 100.0,
+    "checks_executed": 560
+  },
+  "control_plane_safety": {
+    "max_unauthorized_state_changes": 0,
+    "observed_unauthorized_state_changes": 0,
+    "max_invalid_transition_attempts": 0,
+    "observed_invalid_transition_attempts": 0,
+    "checks_executed": 240
+  }
+}

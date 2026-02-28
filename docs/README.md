@@ -22,6 +22,12 @@ GitHub automation:
 
 - **Architecture**
   - 📚 **Start here:** `plans/architecture/ARCHITECTURE_INDEX.md` - Central index for all architecture docs
+  - 3-prong umbrella authority: `plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` - One overarching execution authority with boundary + concurrency rules
+  - Apps prong plan: `plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated product-surface lane execution plan
+  - Runtime OS prong plan: `plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated runtime/orchestration/policy lane execution plan
+  - Reality Model prong plan: `plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated model-truth/learning/planning lane execution plan
+  - Target structure enforcement: `plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md` - Default placement rule for all new code (`apps -> runtime -> engine -> shared`)
+  - Refactor fast-lane playbook: `plans/architecture/REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md` - Practical slice-by-slice migration workflow + PR checklist
   - Online/Offline Strategy: `plans/architecture/ONLINE_OFFLINE_STRATEGY.md` - Feature-by-feature strategy (83% offline-first)
   - Offline Cloud AI: `plans/architecture/OFFLINE_CLOUD_AI_ARCHITECTURE.md` - AI/LLM offline architecture
   - ai2ai, ML, Federated: `plans/architecture/architecture_ai_federated_p2p.md` (ai2ai terminology)

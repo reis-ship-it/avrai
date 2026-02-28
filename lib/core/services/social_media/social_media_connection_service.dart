@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 import 'dart:convert';
 import 'package:avrai/core/models/social_media/social_media_connection.dart';

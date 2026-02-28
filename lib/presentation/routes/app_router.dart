@@ -26,6 +26,7 @@ import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/pages/supabase_test_page.dart';
 import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
 import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
+import 'package:avrai/presentation/pages/admin/urk_kernel_console_page.dart';
 // Phase 19.18: Quantum Group Matching System
 import 'package:avrai/presentation/pages/group/group_formation_page.dart';
 import 'package:avrai/presentation/pages/group/group_results_page.dart';
@@ -96,6 +97,10 @@ import 'package:avrai/presentation/pages/reservations/user_reservation_analytics
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai/core/models/misc/reservation.dart';
 import 'package:avrai/core/config/design_feature_flags.dart';
+import 'package:avrai/core/services/admin/admin_internal_use_agreement_service.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
+import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 class AppRouter {
@@ -500,9 +505,47 @@ class AppRouter {
                   return '/home';
                 }
 
+                final prefs = await SharedPreferencesCompat.getInstance();
+                final verified = await AdminInternalUseAgreementService(
+                  prefs: prefs,
+                  supabaseService: SupabaseService(),
+                ).verifyCurrentSessionAgreement();
+                if (!verified) {
+                  return '/login';
+                }
+
                 return null;
               },
               builder: (c, s) => const AI2AIAdminDashboard(),
+            ),
+            GoRoute(
+              path: 'admin/urk-kernels',
+              redirect: (context, state) async {
+                final authState = authBloc.state;
+
+                if (authState is! Authenticated) {
+                  return '/login';
+                }
+
+                if (authState.user.role != UserRole.admin) {
+                  return '/home';
+                }
+
+                final prefs = await SharedPreferencesCompat.getInstance();
+                final verified = await AdminInternalUseAgreementService(
+                  prefs: prefs,
+                  supabaseService: SupabaseService(),
+                ).verifyCurrentSessionAgreement();
+                if (!verified) {
+                  return '/login';
+                }
+
+                return null;
+              },
+              builder: (c, s) => UrkKernelConsolePage(
+                initialDecisionId: s.uri.queryParameters['decisionId'],
+                initialView: s.uri.queryParameters['view'],
+              ),
             ),
             GoRoute(
               path: 'admin/fraud-review/:eventId',

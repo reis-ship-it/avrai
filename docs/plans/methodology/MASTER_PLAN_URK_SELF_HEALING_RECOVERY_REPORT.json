@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "recovery_pipeline_coverage": {
+    "checks_executed": 580,
+    "observed_detect_contain_recover_coverage_pct": 100.0,
+    "observed_rollback_path_coverage_pct": 100.0,
+    "required_detect_contain_recover_coverage_pct": 100.0,
+    "required_rollback_path_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "recovery_safety": {
+    "checks_executed": 240,
+    "max_failed_recovery_events": 0,
+    "max_uncontained_incident_events": 0,
+    "observed_failed_recovery_events": 0,
+    "observed_uncontained_incident_events": 0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_self_healing_recovery_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

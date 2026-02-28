@@ -1,0 +1,24 @@
+{
+  "control_plane_coverage": {
+    "checks_executed": 560,
+    "observed_health_query_coverage_pct": 100.0,
+    "observed_lineage_query_coverage_pct": 100.0,
+    "observed_state_query_coverage_pct": 100.0,
+    "required_health_query_coverage_pct": 100.0,
+    "required_lineage_query_coverage_pct": 100.0,
+    "required_state_query_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "control_plane_safety": {
+    "checks_executed": 240,
+    "max_invalid_transition_attempts": 0,
+    "max_unauthorized_state_changes": 0,
+    "observed_invalid_transition_attempts": 0,
+    "observed_unauthorized_state_changes": 0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "source": "configs/runtime/urk_kernel_control_plane_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

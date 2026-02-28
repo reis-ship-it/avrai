@@ -33,6 +33,7 @@ jobs:
         run: |
           dart --version
           dart run tool/update_execution_board.dart --check
+          python3 scripts/validate_execution_board_urk_quality.py
           dart run tool/update_three_prong_reviews.dart --check
           dart run tool/export_conviction_shadow_telemetry.dart --check
           python3 scripts/ml/check_promotion_eval_manifest.py --check
@@ -59,6 +60,24 @@ jobs:
           python3 scripts/runtime/generate_integration_governance_contract_security_report.py --check
           python3 scripts/runtime/generate_split_pass_ci_guard_contract_hardening_report.py --check
           python3 scripts/runtime/generate_production_readiness_cleanup_report.py --check
+          python3 scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py --check
+          python3 scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py --check
+          python3 scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py --check
+          python3 scripts/runtime/generate_urk_stage_d_business_runtime_replication_report.py --check
+          python3 scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py --check
+          python3 scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py --check
+          python3 scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py --check
+          python3 scripts/runtime/generate_urk_learning_update_governance_report.py --check
+          python3 scripts/runtime/generate_urk_reality_world_state_coherence_report.py --check
+          python3 scripts/runtime/generate_urk_reality_temporal_truth_report.py --check
+          python3 scripts/runtime/generate_urk_self_learning_governance_report.py --check
+          python3 scripts/runtime/generate_urk_self_healing_recovery_report.py --check
+          python3 scripts/runtime/generate_urk_learning_healing_bridge_report.py --check
+          python3 scripts/runtime/generate_urk_kernel_activation_engine_report.py --check
+          python3 scripts/runtime/generate_urk_kernel_control_plane_report.py --check
+          python3 scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py --check
+          python3 scripts/runtime/check_urk_kernel_registry.py
+          python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 
       - name: Validate deferred rename governance
         run: |

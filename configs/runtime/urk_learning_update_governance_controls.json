@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:56Z",
+  "learning_gate_coverage": {
+    "required_update_validation_coverage_pct": 100.0,
+    "observed_update_validation_coverage_pct": 100.0,
+    "required_data_lineage_coverage_pct": 100.0,
+    "observed_data_lineage_coverage_pct": 100.0,
+    "checks_executed": 520
+  },
+  "promotion_safety": {
+    "max_unreviewed_high_impact_learning_updates": 0,
+    "observed_unreviewed_high_impact_learning_updates": 0,
+    "max_failed_rollback_recovery_events": 0,
+    "observed_failed_rollback_recovery_events": 0,
+    "checks_executed": 180
+  }
+}

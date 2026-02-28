@@ -1,0 +1,22 @@
+{
+  "bridge_coverage": {
+    "checks_executed": 420,
+    "observed_incident_to_learning_linkage_coverage_pct": 100.0,
+    "observed_lineage_reference_coverage_pct": 100.0,
+    "required_incident_to_learning_linkage_coverage_pct": 100.0,
+    "required_lineage_reference_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "bridge_safety": {
+    "checks_executed": 160,
+    "max_missing_recovery_linkbacks": 0,
+    "max_orphan_incident_learning_records": 0,
+    "observed_missing_recovery_linkbacks": 0,
+    "observed_orphan_incident_learning_records": 0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "source": "configs/runtime/urk_learning_healing_bridge_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

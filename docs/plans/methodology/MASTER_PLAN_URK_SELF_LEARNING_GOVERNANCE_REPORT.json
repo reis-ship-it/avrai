@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "learning_policy_coverage": {
+    "checks_executed": 620,
+    "observed_approval_path_coverage_pct": 100.0,
+    "observed_signal_validation_coverage_pct": 100.0,
+    "required_approval_path_coverage_pct": 100.0,
+    "required_signal_validation_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "learning_safety": {
+    "checks_executed": 210,
+    "max_unbounded_self_learning_updates": 0,
+    "max_unverified_training_lineage_events": 0,
+    "observed_unbounded_self_learning_updates": 0,
+    "observed_unverified_training_lineage_events": 0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_self_learning_governance_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

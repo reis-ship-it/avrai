@@ -1,0 +1,24 @@
+{
+  "activation_coverage": {
+    "checks_executed": 740,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "observed_receipt_coverage_pct": 100.0,
+    "observed_trigger_routing_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "required_receipt_coverage_pct": 100.0,
+    "required_trigger_routing_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "activation_safety": {
+    "checks_executed": 310,
+    "max_dependency_bypasses": 0,
+    "max_unauthorized_activations": 0,
+    "observed_dependency_bypasses": 0,
+    "observed_unauthorized_activations": 0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "source": "configs/runtime/urk_kernel_activation_engine_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

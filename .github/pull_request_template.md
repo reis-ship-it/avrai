@@ -22,6 +22,10 @@ A clear and concise description of what this PR does.
 - PRD Requirement IDs impacted (required): `PRD-###`
 - Execution Board Milestone ID impacted (required, exactly one; place in PR title): `M#-P#-#`
 - Master Plan subsection references impacted (required): `X.Y.Z`
+- URK runtime tag (required): `URK-RUNTIME:<event_ops_runtime|business_ops_runtime|expert_services_runtime|shared>`
+- URK prong tag (required): `URK-PRONG:<model_core|runtime_core|governance_core|cross_prong>`
+- URK privacy mode impact tag (required): `URK-MODE:<local_sovereign|private_mesh|federated_cloud|multi_mode>`
+- URK impact tier tag (required): `URK-IMPACT:<L1|L2|L3|L4>`
 - [ ] I confirmed this PR is traceable to `docs/PRD.md` requirement IDs
 - [ ] I confirmed this PR maps to `docs/MASTER_PLAN.md` phase/task ownership
 - [ ] I confirmed this PR maps to `docs/EXECUTION_BOARD.csv` milestone IDs

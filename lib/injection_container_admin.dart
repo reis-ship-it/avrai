@@ -4,15 +4,18 @@ import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/services/business/business_auth_service.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/services/admin/admin_communication_service.dart';
+import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
+import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/ml/predictive_analytics.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/services/expertise/expertise_service.dart';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
-import 'package:avrai/core/services/infrastructure/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 
 /// Admin Services Registration Module
-/// 
+///
 /// Registers all admin-related services.
 /// This includes:
 /// - Admin authentication services
@@ -20,7 +23,8 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart' show Sh
 /// - Admin god-mode services
 /// - Connection monitoring for admin
 Future<void> registerAdminServices(GetIt sl) async {
-  const logger = AppLogger(defaultTag: 'DI-Admin', minimumLevel: LogLevel.debug);
+  const logger =
+      AppLogger(defaultTag: 'DI-Admin', minimumLevel: LogLevel.debug);
   logger.debug('🔐 [DI-Admin] Registering admin services...');
 
   // Admin Services (God-Mode Admin System)
@@ -52,17 +56,34 @@ Future<void> registerAdminServices(GetIt sl) async {
         chatAnalyzer: null, // Optional - can be registered later if needed
       ));
 
-  // AdminGodModeService (orchestrator for admin operations)
-  sl.registerLazySingleton(() => AdminGodModeService(
-        authService: sl<AdminAuthService>(),
-        communicationService: sl<AdminCommunicationService>(),
-        businessService: sl<BusinessAccountService>(),
-        predictiveAnalytics: sl<PredictiveAnalytics>(),
-        connectionMonitor: sl<ConnectionMonitor>(),
-        chatAnalyzer: null, // Optional - can be registered later if needed
-        supabaseService: sl<SupabaseService>(),
-        expertiseService: ExpertiseService(),
-      ));
+  // AdminRuntimeGovernanceService (orchestrator for admin operations)
+  // Register underlying instance as AdminGodModeService for compatibility,
+  // while exposing AdminRuntimeGovernanceService as the primary interface.
+  // ignore: deprecated_member_use_from_same_package
+  sl.registerLazySingleton<AdminRuntimeGovernanceService>(
+      () => AdminGodModeService(
+            authService: sl<AdminAuthService>(),
+            communicationService: sl<AdminCommunicationService>(),
+            businessService: sl<BusinessAccountService>(),
+            predictiveAnalytics: sl<PredictiveAnalytics>(),
+            connectionMonitor: sl<ConnectionMonitor>(),
+            chatAnalyzer: null, // Optional - can be registered later if needed
+            supabaseService: sl<SupabaseService>(),
+            expertiseService: ExpertiseService(),
+          ));
+
+  // Backward compatibility alias for legacy callers still requesting AdminGodModeService.
+  // ignore: deprecated_member_use_from_same_package
+  sl.registerLazySingleton<AdminGodModeService>(
+      () => sl<AdminRuntimeGovernanceService>() as AdminGodModeService);
+
+  // URK kernel control-plane service (admin runtime operations).
+  sl.registerLazySingleton(
+    () => UrkKernelControlPlaneService(
+      prefs: sl<SharedPreferencesCompat>(),
+      registryService: const UrkKernelRegistryService(),
+    ),
+  );
 
   logger.debug('✅ [DI-Admin] Admin services registered');
 }

@@ -9,6 +9,16 @@ PRD_PATTERN = re.compile(r"\bPRD-\d{3}\b")
 MILESTONE_PATTERN = re.compile(r"\bM\d+-P\d+-\d+\b")
 MASTER_PLAN_REF_PATTERN = re.compile(r"\b\d+\.\d+\.\d+\b")
 TITLE_FORMAT_PATTERN = re.compile(r"^PRD-\d{3}\s+M\d+-P\d+-\d+\s+.+$")
+URK_RUNTIME_TAG_PATTERN = re.compile(
+    r"\bURK-RUNTIME:(user_runtime|event_ops_runtime|business_ops_runtime|expert_services_runtime|shared)\b"
+)
+URK_PRONG_TAG_PATTERN = re.compile(
+    r"\bURK-PRONG:(model_core|runtime_core|governance_core|cross_prong)\b"
+)
+URK_MODE_TAG_PATTERN = re.compile(
+    r"\bURK-MODE:(local_sovereign|private_mesh|federated_cloud|multi_mode)\b"
+)
+URK_IMPACT_TAG_PATTERN = re.compile(r"\bURK-IMPACT:(L1|L2|L3|L4)\b")
 COMMIT_SUBJECT_FORMAT_TEMPLATE = "M#-P#-# X.Y.Z <type(scope)>: <summary>"
 
 
@@ -131,6 +141,14 @@ def main() -> None:
         help="Require at least one Master Plan subsection reference (X.Y.Z).",
     )
     parser.add_argument(
+        "--require-urk-tags",
+        action="store_true",
+        help=(
+            "Require URK tags in PR title/body: URK-RUNTIME, URK-PRONG, "
+            "URK-MODE, URK-IMPACT."
+        ),
+    )
+    parser.add_argument(
         "--validate-commit-boundaries",
         action="store_true",
         help=(
@@ -186,6 +204,27 @@ def main() -> None:
 
     if args.require_master_plan_ref and not master_plan_refs:
         fail("Missing Master Plan subsection reference (expected format: X.Y.Z).")
+
+    if args.require_urk_tags:
+        if not URK_RUNTIME_TAG_PATTERN.search(text):
+            fail(
+                "Missing URK runtime tag (expected: "
+                "URK-RUNTIME:<user_runtime|event_ops_runtime|business_ops_runtime|expert_services_runtime|shared>)."
+            )
+        if not URK_PRONG_TAG_PATTERN.search(text):
+            fail(
+                "Missing URK prong tag (expected: "
+                "URK-PRONG:<model_core|runtime_core|governance_core|cross_prong>)."
+            )
+        if not URK_MODE_TAG_PATTERN.search(text):
+            fail(
+                "Missing URK mode tag (expected: "
+                "URK-MODE:<local_sovereign|private_mesh|federated_cloud|multi_mode>)."
+            )
+        if not URK_IMPACT_TAG_PATTERN.search(text):
+            fail(
+                "Missing URK impact tag (expected: URK-IMPACT:<L1|L2|L3|L4>)."
+            )
 
     if args.validate_commit_boundaries:
         if len(milestone_ids_in_title) != 1:

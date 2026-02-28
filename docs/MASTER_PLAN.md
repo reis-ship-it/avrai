@@ -7,9 +7,10 @@
 **Legacy Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)  
 **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
-**3-prong target end-state companion spec:** `docs/plans/methodology/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
+**3-prong target end-state companion spec:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
 **Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
 **Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
+**Canonical build-doc wiring index:** `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`  
 **Design rationale:** `docs/plans/rationale/` (WHY decisions were made -- read before each phase)  
 **Foundational decisions:** `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md`  
 **Cross-phase connections:** `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`
@@ -170,11 +171,19 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/EXTERNAL_RESEARCH_ADDENDUM_2026-02-15_GITHUB_NANOBOT.md`
 - `docs/plans/architecture/AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`
 - `docs/plans/architecture/DREAM_TRAINING_CONVICTION_GOVERNANCE.md`
+- `docs/plans/architecture/UNIFIED_RUNTIME_KERNEL_BLUEPRINT_2026-02-27.md`
+- `docs/plans/architecture/URK_INTERFACE_CONTRACTS_2026-02-27.md`
+- `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`
+- `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`
 - `docs/security/RED_TEAM_TEST_MATRIX.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
 - `docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`
-- `docs/plans/methodology/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`
+- `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`
+- `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`
+- `docs/plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`
+- `docs/plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`
+- `docs/plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`
 - `docs/GITHUB_ENFORCEMENT_SETUP.md`
 
 ---
@@ -2185,6 +2194,10 @@ Goal: enforce clean boundaries where the Reality Engine stays product-agnostic, 
 | 10.10.6 | Expand reservation/social large-file splits into policy/orchestrator/router/repository modules | Initial pass complete (2026-02-27): reservation and social-media services split with functional delegation |
 | 10.10.7 | Maintain architecture mapping and execution-board traceability for 3-prong conversions | Required for every PR touching boundary modules |
 | 10.10.8 | Continue LOC-priority split queue for remaining oversized files | Use a rolling split queue with explicit target module boundaries and non-regression gates |
+| 10.10.9 | Execute folder-by-folder migration toward target `apps -> runtime -> engine -> shared` layout | Active (2026-02-27): authority checklist published in `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`; enforce phase order (guardrails -> shared contracts -> engine extraction -> runtime extraction -> app cleanup -> endpoint validation -> cutover) |
+| 10.10.10 | Maintain canonical external/internal architecture visualization maps | Active (2026-02-27): authority diagrams and maintenance rules published in `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`; update with every boundary-impacting PR |
+| 10.10.11 | Enforce default placement for all new code toward target 3-prong structure | Active (2026-02-27): placement authority published in `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`; all new features route to target layer first, with legacy paths limited to migration shims |
+| 10.10.12 | Enforce concurrent 3-prong execution under one umbrella plan + three isolated prong plans | Active (2026-02-28): governance set published in `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` + per-prong execution plans (Apps, Runtime OS, Reality Model) with anti-collision ownership, boundary, and contract rules |
 
 ## Phase 11: Industry Integrations & Platform Expansion
 
@@ -2459,5 +2472,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** February 27, 2026 (v15 -- 3-Prong Boundary Hardening Update. Added Phase `10.10` for Reality Engine/Runtime OS/App separation execution, wired import-boundary CI for the 3-prong model, and introduced cross-OS runtime capability contracts with validator checks. Previous: v14 execution boundary hardening update)  
+**Last Updated:** February 28, 2026 (v18 -- 3-Prong Concurrent Plan Separation Update. Added umbrella 3-prong target-end-state authority plus dedicated prong plans for Apps, Runtime OS, and Reality Model; extended Phase `10.10` with concurrent-execution governance task (`10.10.12`). Previous: v17 new-code placement enforcement update)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

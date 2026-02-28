@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';

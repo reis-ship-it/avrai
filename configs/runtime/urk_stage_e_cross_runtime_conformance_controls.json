@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:50Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:59:00Z"
+  },
+  "runtime_set": {
+    "required_runtime_count": 4,
+    "observed_runtime_count": 4,
+    "runtimes": [
+      "user_runtime",
+      "event_ops_runtime",
+      "business_ops_runtime",
+      "expert_services_runtime"
+    ]
+  },
+  "invariant_conformance": {
+    "required_contract_coverage_pct": 100.0,
+    "observed_contract_coverage_pct": 100.0,
+    "required_replay_determinism_pct": 100.0,
+    "observed_replay_determinism_pct": 100.0,
+    "max_policy_divergence_events": 0,
+    "observed_policy_divergence_events": 0,
+    "checks_executed": 640
+  }
+}

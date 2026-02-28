@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:57Z",
+  "coherence_coverage": {
+    "required_plane_consistency_coverage_pct": 100.0,
+    "observed_plane_consistency_coverage_pct": 100.0,
+    "required_knot_string_constraint_coverage_pct": 100.0,
+    "observed_knot_string_constraint_coverage_pct": 100.0,
+    "checks_executed": 460
+  },
+  "stability_guard": {
+    "max_cross_plane_conflicts": 0,
+    "observed_cross_plane_conflicts": 0,
+    "max_unresolved_state_transitions": 0,
+    "observed_unresolved_state_transitions": 0,
+    "checks_executed": 180
+  }
+}

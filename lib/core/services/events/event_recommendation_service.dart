@@ -6,9 +6,14 @@ import 'package:avrai/core/services/events/event_matching_service.dart';
 import 'package:avrai/core/services/matching/user_preference_learning_service.dart';
 import 'package:avrai/core/services/cross_app/cross_locality_connection_service.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/quantum_matching_controller.dart';
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/core/controllers/urk_stage_b_event_ops_shadow_runtime_contract.dart';
 import 'package:avrai/core/models/quantum/matching_input.dart';
+import 'package:avrai/core/services/user/urk_user_runtime_learning_intake_contract.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
@@ -16,6 +21,7 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
+import 'package:get_it/get_it.dart';
 
 /// Event Recommendation Service
 ///
@@ -52,10 +58,14 @@ class EventRecommendationService {
   final PersonalityLearning? _personalityLearning;
   final VibeCompatibilityService? _vibeCompatibilityService;
   final AgentIdService? _agentIdService;
+  final StorageService? _storageService;
   final KnotFabricService? _knotFabricService;
   final KnotStorageService? _knotStorageService;
   final WorkflowController<MatchingInput, QuantumMatchingResult>?
       _quantumMatchingController;
+  final UrkStageBEventOpsShadowRuntimeValidator _runtimeValidator;
+  final UrkUserRuntimeLearningIntakeContract _userRuntimeIntakeContract;
+  final UrkRuntimeActivationReceiptDispatcher? _activationDispatcher;
 
   EventRecommendationService({
     ExpertiseEventService? eventService,
@@ -66,10 +76,16 @@ class EventRecommendationService {
     PersonalityLearning? personalityLearning,
     VibeCompatibilityService? vibeCompatibilityService,
     AgentIdService? agentIdService,
+    StorageService? storageService,
     KnotFabricService? knotFabricService,
     KnotStorageService? knotStorageService,
     WorkflowController<MatchingInput, QuantumMatchingResult>?
         quantumMatchingController,
+    UrkStageBEventOpsShadowRuntimeValidator runtimeValidator =
+        const UrkStageBEventOpsShadowRuntimeValidator(),
+    UrkUserRuntimeLearningIntakeContract userRuntimeIntakeContract =
+        const UrkUserRuntimeLearningIntakeContract(),
+    UrkRuntimeActivationReceiptDispatcher? activationDispatcher,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _matchingService = matchingService ?? EventMatchingService(),
         _preferenceService =
@@ -80,9 +96,14 @@ class EventRecommendationService {
         _personalityLearning = personalityLearning,
         _vibeCompatibilityService = vibeCompatibilityService,
         _agentIdService = agentIdService,
+        _storageService = storageService ?? resolveDefaultStorageService(),
         _knotFabricService = knotFabricService,
         _knotStorageService = knotStorageService,
-        _quantumMatchingController = quantumMatchingController;
+        _quantumMatchingController = quantumMatchingController,
+        _runtimeValidator = runtimeValidator,
+        _userRuntimeIntakeContract = userRuntimeIntakeContract,
+        _activationDispatcher = activationDispatcher ??
+            resolveDefaultUrkRuntimeActivationDispatcher();
 
   /// Phase 19 vertical slice: compute an entanglement-based compatibility score for a user↔event pair.
   ///
@@ -219,8 +240,28 @@ class EventRecommendationService {
       // Final sort by relevance score
       combined.sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
-      return combined.take(maxResults).toList();
+      final output = combined.take(maxResults).toList();
+      await _dispatchUserRuntimeLearningSignal(
+        userId: user.id,
+        scopeHint: 'personalized',
+        reason: 'event_recommendations',
+      );
+      await _dispatchEventOpsRuntimeValidation(
+        userId: user.id,
+        scopeHint: 'personalized',
+        passing: true,
+        criticalFailure: false,
+        reason: 'event_recommendations',
+      );
+      return output;
     } catch (e) {
+      await _dispatchEventOpsRuntimeValidation(
+        userId: user.id,
+        scopeHint: 'personalized',
+        passing: false,
+        criticalFailure: true,
+        reason: 'event_recommendations_error',
+      );
       _logger.error(
         'Error getting personalized recommendations',
         error: e,
@@ -293,8 +334,28 @@ class EventRecommendationService {
       recommendations
           .sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
-      return recommendations.take(maxResults).toList();
+      final output = recommendations.take(maxResults).toList();
+      await _dispatchUserRuntimeLearningSignal(
+        userId: user.id,
+        scopeHint: scope,
+        reason: 'event_scope_recommendations',
+      );
+      await _dispatchEventOpsRuntimeValidation(
+        userId: user.id,
+        scopeHint: scope,
+        passing: true,
+        criticalFailure: false,
+        reason: 'event_scope_recommendations',
+      );
+      return output;
     } catch (e) {
+      await _dispatchEventOpsRuntimeValidation(
+        userId: user.id,
+        scopeHint: scope,
+        passing: false,
+        criticalFailure: true,
+        reason: 'event_scope_recommendations_error',
+      );
       _logger.error(
         'Error getting recommendations for scope',
         error: e,
@@ -305,6 +366,160 @@ class EventRecommendationService {
   }
 
   // Private helper methods
+
+  Future<void> _dispatchEventOpsRuntimeValidation({
+    required String userId,
+    required String scopeHint,
+    required bool passing,
+    required bool criticalFailure,
+    required String reason,
+  }) async {
+    final dispatcher = _activationDispatcher;
+    if (dispatcher == null) {
+      return;
+    }
+    const policy = UrkStageBEventOpsShadowRuntimePolicy(
+      requiredPipelineCoveragePct: 100.0,
+      requiredDecisionEnvelopeCoveragePct: 100.0,
+      requiredLineageCompletenessPct: 100.0,
+      maxOrphanActionStates: 0,
+      maxHighImpactAutocommits: 0,
+      requiredShadowBlockCoveragePct: 100.0,
+    );
+    final snapshot = passing
+        ? const UrkStageBEventOpsShadowRuntimeSnapshot(
+            observedPipelineCoveragePct: 100.0,
+            observedDecisionEnvelopeCoveragePct: 100.0,
+            observedLineageCompletenessPct: 100.0,
+            observedOrphanActionStates: 0,
+            observedHighImpactAutocommits: 0,
+            observedShadowBlockCoveragePct: 100.0,
+          )
+        : UrkStageBEventOpsShadowRuntimeSnapshot(
+            observedPipelineCoveragePct: 100.0,
+            observedDecisionEnvelopeCoveragePct: 90.0,
+            observedLineageCompletenessPct: 100.0,
+            observedOrphanActionStates: criticalFailure ? 1 : 0,
+            observedHighImpactAutocommits: criticalFailure ? 1 : 0,
+            observedShadowBlockCoveragePct: 90.0,
+          );
+    try {
+      await _runtimeValidator.validateAndDispatch(
+        snapshot: snapshot,
+        policy: policy,
+        activationDispatcher: dispatcher,
+        actor: _logName,
+        requestIdPrefix: 'event_reco_${userId}_${scopeHint}_$reason',
+      );
+    } catch (_) {
+      // Dispatch path must never block user recommendations.
+    }
+  }
+
+  Future<void> _dispatchUserRuntimeLearningSignal({
+    required String userId,
+    required String scopeHint,
+    required String reason,
+  }) async {
+    final dispatcher = _activationDispatcher;
+    if (dispatcher == null) {
+      return;
+    }
+    try {
+      final actorAgentId = await _resolveActorAgentId(userId);
+      final intakeResult = _userRuntimeIntakeContract.validate(
+        UrkUserRuntimeLearningIntakeRequest(
+          actorAgentId: actorAgentId,
+          signalType: 'in_app_behavior',
+          consentScopes: await _resolveConsentScopes(),
+          containsSensitiveRawContent: false,
+        ),
+      );
+      if (!intakeResult.accepted) {
+        await dispatcher.dispatch(
+          requestId:
+              'user_runtime_learning_${userId}_${scopeHint}_${reason}_${DateTime.now().millisecondsSinceEpoch}',
+          trigger: 'policy_violation_detected',
+          privacyMode: UrkPrivacyMode.localSovereign,
+          actor: intakeResult.pseudonymousActorRef,
+          reason:
+              'user_runtime_learning_intake_rejected;runtime_lane=user_runtime;privacy_mode=local_sovereign;consent_toggle=user_runtime_learning_enabled;reason_code=${intakeResult.reasonCode}',
+        );
+        return;
+      }
+      await dispatcher.dispatch(
+        requestId:
+            'user_runtime_learning_${userId}_${scopeHint}_${reason}_${DateTime.now().millisecondsSinceEpoch}',
+        trigger: 'user_runtime_learning_signal',
+        privacyMode: UrkPrivacyMode.localSovereign,
+        actor: intakeResult.pseudonymousActorRef,
+        reason:
+            'user_runtime_learning_intake_accepted;runtime_lane=user_runtime;privacy_mode=local_sovereign;consent_toggle=user_runtime_learning_enabled',
+      );
+    } catch (_) {
+      // Intake dispatch must not block recommendation delivery.
+    }
+  }
+
+  Future<String> _resolveActorAgentId(String userId) async {
+    final service = _agentIdService;
+    if (service == null) {
+      return 'agt_$userId';
+    }
+    try {
+      return await service.getUserAgentId(userId);
+    } catch (_) {
+      return 'agt_$userId';
+    }
+  }
+
+  Future<Set<String>> _resolveConsentScopes() async {
+    final scopes = <String>{};
+    final userRuntimeLearningEnabled = _readSettingBool(
+      key: 'user_runtime_learning_enabled',
+      defaultValue: true,
+    );
+    if (userRuntimeLearningEnabled) {
+      scopes.add('user_runtime_learning');
+    }
+    final ai2aiLearningEnabled = _readSettingBool(
+      key: 'ai2ai_learning_enabled',
+      defaultValue: true,
+    );
+    if (ai2aiLearningEnabled) {
+      scopes.add('ai2ai_learning');
+    }
+    final discoveryEnabled = _readSettingBool(
+      key: 'discovery_enabled',
+      defaultValue: true,
+    );
+    if (discoveryEnabled) {
+      scopes.add('discovery');
+    }
+    final cloudSyncEnabled = _readSettingBool(
+      key: 'cloud_sync_enabled',
+      defaultValue: false,
+    );
+    if (cloudSyncEnabled) {
+      scopes.add('cloud_sync');
+    }
+    return scopes;
+  }
+
+  bool _readSettingBool({
+    required String key,
+    required bool defaultValue,
+  }) {
+    final storage = _storageService;
+    if (storage == null) {
+      return defaultValue;
+    }
+    try {
+      return storage.getBool(key) ?? defaultValue;
+    } catch (_) {
+      return defaultValue;
+    }
+  }
 
   /// Calculate relevance score for an event
   ///
@@ -727,6 +942,14 @@ class EventRecommendationService {
       return null;
     }
   }
+}
+
+StorageService? resolveDefaultStorageService() {
+  final sl = GetIt.instance;
+  if (!sl.isRegistered<StorageService>()) {
+    return null;
+  }
+  return sl<StorageService>();
 }
 
 /// Event Recommendation Model

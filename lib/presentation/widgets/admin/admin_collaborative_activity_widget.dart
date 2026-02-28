@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/models/community/collaborative_activity_metrics.dart';
-import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
+import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/theme/colors.dart';
 
 /// Widget displaying collaborative activity analytics
 /// Displays privacy-safe aggregate metrics on AI2AI collaborative patterns
 class AdminCollaborativeActivityWidget extends StatefulWidget {
-  final AdminGodModeService? godModeService;
+  final AdminRuntimeGovernanceService? godModeService;
 
   const AdminCollaborativeActivityWidget({
     super.key,

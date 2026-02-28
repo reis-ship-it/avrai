@@ -22,6 +22,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   // Privacy preferences - would normally be stored in user preferences
   bool _shareLocation = true;
   bool _ai2aiLearning = true;
+  bool _userRuntimeLearning = true;
   bool _communityRecommendations = true;
   bool _publicProfile = false;
   bool _publicLists = false;
@@ -63,6 +64,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     _syncController = di.sl<SyncController>();
     _loadCloudSyncSetting();
     _loadAi2AiLearningSetting();
+    _loadUserRuntimeLearningSetting();
   }
 
   void _loadAi2AiLearningSetting() {
@@ -80,6 +82,28 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     Future<void>(() async {
       try {
         await _storageService.setBool('ai2ai_learning_enabled', value);
+      } catch (_) {
+        // Ignore.
+      }
+    });
+  }
+
+  void _loadUserRuntimeLearningSetting() {
+    try {
+      final enabled =
+          _storageService.getBool('user_runtime_learning_enabled') ?? true;
+      _userRuntimeLearning = enabled;
+    } catch (_) {
+      // Default: enabled.
+      _userRuntimeLearning = true;
+    }
+  }
+
+  void _handleUserRuntimeLearningToggle(bool value) {
+    setState(() => _userRuntimeLearning = value);
+    Future<void>(() async {
+      try {
+        await _storageService.setBool('user_runtime_learning_enabled', value);
       } catch (_) {
         // Ignore.
       }
@@ -380,6 +404,14 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               _ai2aiLearning,
               _handleAi2AiLearningToggle,
               Icons.psychology,
+            ),
+
+            _buildSwitchTile(
+              'User Runtime Learning',
+              'Allow on-device user behavior to train your reality model runtime',
+              _userRuntimeLearning,
+              _handleUserRuntimeLearningToggle,
+              Icons.memory,
             ),
 
             _buildSwitchTile(
@@ -684,6 +716,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               setState(() {
                 _shareLocation = true;
                 _ai2aiLearning = true;
+                _userRuntimeLearning = true;
                 _communityRecommendations = true;
                 _publicProfile = false;
                 _publicLists = false;
@@ -694,6 +727,15 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 _dataRetention = '1 Year';
               });
               Navigator.pop(context);
+              Future<void>(() async {
+                try {
+                  await _storageService.setBool('ai2ai_learning_enabled', true);
+                  await _storageService.setBool(
+                      'user_runtime_learning_enabled', true);
+                } catch (_) {
+                  // Ignore.
+                }
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Privacy settings reset to defaults'),

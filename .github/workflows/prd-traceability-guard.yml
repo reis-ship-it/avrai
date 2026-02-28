@@ -28,4 +28,5 @@ jobs:
             --require-execution-id \
             --require-single-milestone \
             --require-master-plan-ref \
+            --require-urk-tags \
             --validate-commit-boundaries

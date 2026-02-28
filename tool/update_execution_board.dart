@@ -69,6 +69,10 @@ void main(List<String> args) {
     'architecture_spot',
     'change_type',
     'reopens_milestone',
+    'urk_runtime_type',
+    'urk_prong',
+    'privacy_mode_impact',
+    'impact_tier_max',
     'risk_probability',
     'risk_impact',
     'risk_score',
@@ -135,6 +139,12 @@ void main(List<String> args) {
   );
   nextMd = _replaceSection(
     nextMd,
+    startMarker: '<!-- EXECUTION_BOARD:URK_LANES_START -->',
+    endMarker: '<!-- EXECUTION_BOARD:URK_LANES_END -->',
+    replacement: _buildUrkLanesSection(milestoneRows),
+  );
+  nextMd = _replaceSection(
+    nextMd,
     startMarker: '<!-- EXECUTION_BOARD:KANBAN_START -->',
     endMarker: '<!-- EXECUTION_BOARD:KANBAN_END -->',
     replacement: generatedKanban,
@@ -179,6 +189,26 @@ void _validateRows({
   final prdPattern = RegExp(r'^PRD-\d{3}$');
   final masterRefPattern = RegExp(r'^\d+\.\d+\.\d+$');
   final allowedChangeTypes = <String>{'baseline', 'reopen'};
+  final allowedUrkRuntimeTypes = <String>{
+    'user_runtime',
+    'event_ops_runtime',
+    'business_ops_runtime',
+    'expert_services_runtime',
+    'shared',
+  };
+  final allowedUrkProngs = <String>{
+    'model_core',
+    'runtime_core',
+    'governance_core',
+    'cross_prong',
+  };
+  final allowedPrivacyModeImpact = <String>{
+    'local_sovereign',
+    'private_mesh',
+    'federated_cloud',
+    'multi_mode',
+  };
+  final allowedImpactTiers = <String>{'L1', 'L2', 'L3', 'L4'};
   final phaseNums = <int>{};
   final phaseIdSet = <String>{};
   final phaseStatusByNum = <int, String>{};
@@ -264,6 +294,35 @@ void _validateRows({
     final spot = row['architecture_spot']!.trim();
     if (spot.isEmpty || spot.toLowerCase() == 'none') {
       _fail('Milestone $id missing architecture_spot.');
+    }
+
+    final urkRuntimeType = row['urk_runtime_type']!.trim();
+    if (!allowedUrkRuntimeTypes.contains(urkRuntimeType)) {
+      _fail(
+        'Milestone $id has invalid urk_runtime_type "$urkRuntimeType". '
+        'Expected one of: ${allowedUrkRuntimeTypes.join(', ')}.',
+      );
+    }
+    final urkProng = row['urk_prong']!.trim();
+    if (!allowedUrkProngs.contains(urkProng)) {
+      _fail(
+        'Milestone $id has invalid urk_prong "$urkProng". '
+        'Expected one of: ${allowedUrkProngs.join(', ')}.',
+      );
+    }
+    final privacyModeImpact = row['privacy_mode_impact']!.trim();
+    if (!allowedPrivacyModeImpact.contains(privacyModeImpact)) {
+      _fail(
+        'Milestone $id has invalid privacy_mode_impact "$privacyModeImpact". '
+        'Expected one of: ${allowedPrivacyModeImpact.join(', ')}.',
+      );
+    }
+    final impactTierMax = row['impact_tier_max']!.trim();
+    if (!allowedImpactTiers.contains(impactTierMax)) {
+      _fail(
+        'Milestone $id has invalid impact_tier_max "$impactTierMax". '
+        'Expected one of: ${allowedImpactTiers.join(', ')}.',
+      );
     }
 
     final changeType = row['change_type']!.trim().toLowerCase();
@@ -406,15 +465,112 @@ String _buildPhaseTable(List<Map<String, String>> rows) {
 String _buildMilestoneTable(List<Map<String, String>> rows) {
   final sorted = [...rows]..sort((a, b) => a['id']!.compareTo(b['id']!));
   final lines = <String>[
-    '| Milestone | Phase | Wave | Scope | Change Type | Reopens | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |',
-    '|----------|-------|------|-------|------------|---------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|',
+    '| Milestone | Phase | Wave | Scope | Change Type | Reopens | URK Runtime | URK Prong | Mode Impact | Impact Tier | PRD IDs | Master Plan Refs | Architecture Spot | R | A | Dependencies | Risk | Priority | Target Window | Status | Evidence |',
+    '|----------|-------|------|-------|------------|---------|-------------|-----------|-------------|-------------|---------|------------------|-------------------|---|---|--------------|------|----------|---------------|--------|----------|',
   ];
   for (final r in sorted) {
     lines.add(
-      '| ${r['id']} | ${r['phase']} | ${r['wave']} | ${r['name_or_scope']} | ${_fmtOr(r['change_type']!, '-')} | ${_fmtOr(r['reopens_milestone']!, 'none')} | ${_fmtOr(r['prd_ids']!, '-')} | ${_fmtOr(r['master_plan_refs']!, '-')} | ${_fmtOr(r['architecture_spot']!, '-')} | ${_fmt(r['owner_r']!)} | ${_fmt(r['accountable_a']!)} | ${_fmtOr(r['dependencies']!, 'none')} | ${r['risk_score']} | ${r['priority']} | ${r['target_window']} | ${r['status']} | ${_fmtOr(r['evidence']!, '-')} |',
+      '| ${r['id']} | ${r['phase']} | ${r['wave']} | ${r['name_or_scope']} | ${_fmtOr(r['change_type']!, '-')} | ${_fmtOr(r['reopens_milestone']!, 'none')} | ${_fmtOr(r['urk_runtime_type']!, '-')} | ${_fmtOr(r['urk_prong']!, '-')} | ${_fmtOr(r['privacy_mode_impact']!, '-')} | ${_fmtOr(r['impact_tier_max']!, '-')} | ${_fmtOr(r['prd_ids']!, '-')} | ${_fmtOr(r['master_plan_refs']!, '-')} | ${_fmtOr(r['architecture_spot']!, '-')} | ${_fmt(r['owner_r']!)} | ${_fmt(r['accountable_a']!)} | ${_fmtOr(r['dependencies']!, 'none')} | ${r['risk_score']} | ${r['priority']} | ${r['target_window']} | ${r['status']} | ${_fmtOr(r['evidence']!, '-')} |',
     );
   }
   return lines.join('\n');
+}
+
+String _buildUrkLanesSection(List<Map<String, String>> rows) {
+  String makeTable({
+    required String title,
+    required List<String> keys,
+    required String Function(String key) labeler,
+    required String Function(Map<String, String> row) selector,
+  }) {
+    final counts = <String, int>{for (final k in keys) k: 0};
+    final statusCounts = <String, Map<String, int>>{
+      for (final k in keys)
+        k: <String, int>{
+          'Backlog': 0,
+          'Ready': 0,
+          'In Progress': 0,
+          'Blocked': 0,
+          'Done': 0,
+        },
+    };
+
+    for (final row in rows) {
+      final key = selector(row);
+      if (!counts.containsKey(key)) continue;
+      counts[key] = (counts[key] ?? 0) + 1;
+      final status = row['status']!.trim();
+      final bucket = statusCounts[key]!;
+      if (bucket.containsKey(status)) {
+        bucket[status] = (bucket[status] ?? 0) + 1;
+      }
+    }
+
+    final out = <String>[
+      '### $title',
+      '',
+      '| Lane | Total | Backlog | Ready | In Progress | Blocked | Done |',
+      '|------|------:|--------:|------:|------------:|--------:|-----:|',
+    ];
+    for (final key in keys) {
+      final bucket = statusCounts[key]!;
+      out.add(
+        '| ${labeler(key)} | ${counts[key]} | ${bucket['Backlog']} | ${bucket['Ready']} | ${bucket['In Progress']} | ${bucket['Blocked']} | ${bucket['Done']} |',
+      );
+    }
+    return out.join('\n');
+  }
+
+  final runtimeTypes = <String>[
+    'user_runtime',
+    'event_ops_runtime',
+    'business_ops_runtime',
+    'expert_services_runtime',
+    'shared',
+  ];
+  final prongs = <String>[
+    'model_core',
+    'runtime_core',
+    'governance_core',
+    'cross_prong',
+  ];
+  final modes = <String>[
+    'local_sovereign',
+    'private_mesh',
+    'federated_cloud',
+    'multi_mode',
+  ];
+  final impactTiers = <String>['L1', 'L2', 'L3', 'L4'];
+
+  return [
+    makeTable(
+      title: 'URK Runtime Type Lanes',
+      keys: runtimeTypes,
+      labeler: (k) => '`$k`',
+      selector: (row) => row['urk_runtime_type']!.trim(),
+    ),
+    '',
+    makeTable(
+      title: 'URK Prong Lanes',
+      keys: prongs,
+      labeler: (k) => '`$k`',
+      selector: (row) => row['urk_prong']!.trim(),
+    ),
+    '',
+    makeTable(
+      title: 'Privacy Mode Impact Lanes',
+      keys: modes,
+      labeler: (k) => '`$k`',
+      selector: (row) => row['privacy_mode_impact']!.trim(),
+    ),
+    '',
+    makeTable(
+      title: 'Impact Tier Lanes',
+      keys: impactTiers,
+      labeler: (k) => '`$k`',
+      selector: (row) => row['impact_tier_max']!.trim(),
+    ),
+  ].join('\n');
 }
 
 String _buildKanbanSection(List<Map<String, String>> rows) {

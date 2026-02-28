@@ -649,6 +649,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                   ),
+                  _buildSettingsItem(
+                    context,
+                    icon: Icons.hub_outlined,
+                    title: 'URK Kernel Console',
+                    subtitle: 'Kernel runtime governance and activation map',
+                    onTap: () {
+                      context.go('/admin/urk-kernels');
+                    },
+                  ),
                 ],
 
                 SizedBox(height: spacing.lg),

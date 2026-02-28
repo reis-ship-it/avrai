@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:avrai/core/services/ai_infrastructure/kernel_governance_gate.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/core/services/ai_infrastructure/model_safety_supervisor.dart';
@@ -30,9 +31,13 @@ class AgentHappinessService {
   static const int _maxSignals = 200;
 
   final SharedPreferencesCompat _prefs;
+  final KernelGovernanceGate? _kernelGovernanceGate;
 
-  AgentHappinessService({required SharedPreferencesCompat prefs})
-      : _prefs = prefs;
+  AgentHappinessService({
+    required SharedPreferencesCompat prefs,
+    KernelGovernanceGate? kernelGovernanceGate,
+  })  : _prefs = prefs,
+        _kernelGovernanceGate = kernelGovernanceGate;
 
   Future<void> recordSignal({
     required String source, // e.g. "chat_rating", "ai2ai_pleasure"
@@ -40,11 +45,35 @@ class AgentHappinessService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
+      final correlationId =
+          'ahs_signal_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+      final gateDecision = await _evaluateGovernance(
+        KernelGovernanceRequest(
+          action: KernelGovernanceAction.happinessSignalIngest,
+          correlationId: correlationId,
+          metadata: <String, dynamic>{
+            'source': source,
+            'raw_score': score,
+            if (metadata != null) 'meta': metadata,
+          },
+        ),
+      );
+      if (!gateDecision.servingAllowed) {
+        developer.log(
+          'Blocked happiness signal ingest by kernel governance: '
+          '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+          name: _logName,
+        );
+        return;
+      }
+
       final now = DateTime.now().toUtc();
       final entry = <String, dynamic>{
         'ts': now.toIso8601String(),
         'source': source,
         'score': score.clamp(0.0, 1.0),
+        'governance_decision_id': gateDecision.decisionId,
+        'governance_correlation_id': correlationId,
         if (metadata != null) 'meta': metadata,
       };
 
@@ -58,8 +87,10 @@ class AgentHappinessService {
       // After recording, evaluate any in-progress rollout candidates and
       // rollback if happiness dropped materially.
       try {
-        await ModelSafetySupervisor(prefs: _prefs)
-            .evaluateAndRollbackIfNeeded();
+        await ModelSafetySupervisor(
+          prefs: _prefs,
+          kernelGovernanceGate: _kernelGovernanceGate,
+        ).evaluateAndRollbackIfNeeded();
       } catch (_) {
         // Ignore.
       }
@@ -114,5 +145,24 @@ class AgentHappinessService {
       return const AgentHappinessSnapshot(
           score: 0.5, count: 0, p50: 50, p95: 50);
     }
+  }
+
+  Future<KernelGovernanceDecision> _evaluateGovernance(
+    KernelGovernanceRequest request,
+  ) async {
+    if (_kernelGovernanceGate == null) {
+      return KernelGovernanceDecision(
+        decisionId: 'kgd_none',
+        mode: KernelGovernanceMode.shadow,
+        wouldAllow: true,
+        servingAllowed: true,
+        shadowBypassApplied: false,
+        reasonCodes: const <String>['no_kernel_gate_configured'],
+        policyVersion: 'none',
+        timestamp: DateTime.now().toUtc(),
+        correlationId: request.correlationId,
+      );
+    }
+    return _kernelGovernanceGate.evaluate(request);
   }
 }

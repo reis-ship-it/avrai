@@ -11,11 +11,12 @@ import 'package:avrai/presentation/widgets/ai2ai/learning_metrics_chart.dart';
 import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
 import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
 import 'package:avrai/presentation/widgets/admin/admin_collaborative_activity_widget.dart';
-import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
+import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:go_router/go_router.dart';
 
 /// Admin Dashboard for AI2AI Network Monitoring
 /// Displays network health, connections, learning metrics, privacy, and performance
@@ -300,6 +301,19 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                 ),
               ),
 
+            Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: ListTile(
+                leading: const Icon(Icons.hub_outlined),
+                title: const Text('URK Kernel Console'),
+                subtitle: const Text(
+                  'Open kernel governance, activation triggers, and prong/mode coverage',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go('/admin/urk-kernels'),
+              ),
+            ),
+
             // Error banner if partial error
             if (_errorMessage != null)
               Container(
@@ -384,11 +398,11 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
 
   Widget _buildCollaborativeActivitySection() {
     // Try to get god mode service if available
-    AdminGodModeService? godModeService;
+    AdminRuntimeGovernanceService? godModeService;
     try {
-      godModeService = GetIt.instance<AdminGodModeService>();
+      godModeService = GetIt.instance<AdminRuntimeGovernanceService>();
     } catch (e) {
-      debugPrint('AdminGodModeService not available: $e');
+      debugPrint('AdminRuntimeGovernanceService not available: $e');
     }
 
     return Column(

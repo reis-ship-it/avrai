@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:avrai/core/ml/model_version_registry.dart';
-import 'package:avrai/core/services/infrastructure/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/ai_infrastructure/kernel_governance_gate.dart';
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 import 'package:avrai/core/services/local_llm/model_pack_manager.dart';
 
 /// Guards model rollouts using user-facing quality signals ("agent happiness").
@@ -14,7 +16,8 @@ class ModelSafetySupervisor {
   static const String _logName = 'ModelSafetySupervisor';
 
   static const String _prefsKeyHappinessSignals = 'agent_happiness_signals_v1';
-  static const String _prefsKeyRollbackEvents = 'model_rollout_rollback_events_v1';
+  static const String _prefsKeyRollbackEvents =
+      'model_rollout_rollback_events_v1';
   static const int _maxRollbackEvents = 50;
 
   // Conservative defaults (avoid flapping on sparse feedback).
@@ -24,8 +27,13 @@ class ModelSafetySupervisor {
   static const double _rollbackDelta = 0.12; // 12-point drop (0..1 scale)
 
   final SharedPreferencesCompat _prefs;
+  final KernelGovernanceGate? _kernelGovernanceGate;
 
-  ModelSafetySupervisor({required SharedPreferencesCompat prefs}) : _prefs = prefs;
+  ModelSafetySupervisor({
+    required SharedPreferencesCompat prefs,
+    KernelGovernanceGate? kernelGovernanceGate,
+  })  : _prefs = prefs,
+        _kernelGovernanceGate = kernelGovernanceGate;
 
   static String _candidateKeyForType(String modelType) {
     // Keep keys simple and stable.
@@ -40,6 +48,26 @@ class ModelSafetySupervisor {
   }) async {
     // Only track one candidate at a time (simple baseline).
     try {
+      final correlationId =
+          'mss_rollout_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+      final gateDecision = await _evaluateGovernance(
+        KernelGovernanceRequest(
+          action: KernelGovernanceAction.rolloutCandidateStart,
+          modelType: modelType,
+          fromVersion: fromVersion,
+          toVersion: toVersion,
+          correlationId: correlationId,
+        ),
+      );
+      if (!gateDecision.servingAllowed) {
+        developer.log(
+          'Blocked rollout candidate start for $modelType: '
+          '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+          name: _logName,
+        );
+        return;
+      }
+
       final nowMs = DateTime.now().millisecondsSinceEpoch;
       final baseline = _computeBaselineAvg(nowMs: nowMs);
 
@@ -53,11 +81,13 @@ class ModelSafetySupervisor {
         'min_post_n': _minPostSamples,
         'rollback_delta': _rollbackDelta,
       };
-      await _prefs.setString(_candidateKeyForType(modelType), jsonEncode(candidate));
+      await _prefs.setString(
+          _candidateKeyForType(modelType), jsonEncode(candidate));
 
       developer.log(
         'Rollout candidate started: $modelType $fromVersion → $toVersion '
-        '(baseline=${baseline.avg.toStringAsFixed(3)}, n=${baseline.count})',
+        '(baseline=${baseline.avg.toStringAsFixed(3)}, n=${baseline.count}) '
+        'decision_id=${gateDecision.decisionId} corr=$correlationId',
         name: _logName,
       );
     } catch (e, st) {
@@ -94,8 +124,10 @@ class ModelSafetySupervisor {
       final startedAtMs = (candidate['started_at_ms'] as num?)?.toInt();
       final baselineAvg = (candidate['baseline_avg'] as num?)?.toDouble();
       final baselineN = (candidate['baseline_n'] as num?)?.toInt() ?? 0;
-      final minPostN = (candidate['min_post_n'] as num?)?.toInt() ?? _minPostSamples;
-      final rollbackDelta = (candidate['rollback_delta'] as num?)?.toDouble() ?? _rollbackDelta;
+      final minPostN =
+          (candidate['min_post_n'] as num?)?.toInt() ?? _minPostSamples;
+      final rollbackDelta =
+          (candidate['rollback_delta'] as num?)?.toDouble() ?? _rollbackDelta;
 
       if (modelType.isEmpty ||
           fromVersion.isEmpty ||
@@ -111,7 +143,8 @@ class ModelSafetySupervisor {
         'calling_score' => ModelVersionRegistry.activeCallingScoreVersion,
         'outcome' => ModelVersionRegistry.activeOutcomeVersion,
         'chat_local_llm' =>
-          _prefs.getString(LocalLlmModelPackManager.prefsKeyActiveModelId) ?? '',
+          _prefs.getString(LocalLlmModelPackManager.prefsKeyActiveModelId) ??
+              '',
         _ => '',
       };
       if (current != toVersion) {
@@ -127,17 +160,43 @@ class ModelSafetySupervisor {
 
       final drop = baselineAvg - post.avg;
       if (drop >= rollbackDelta) {
+        final correlationId =
+            'mss_rollback_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+        final gateDecision = await _evaluateGovernance(
+          KernelGovernanceRequest(
+            action: KernelGovernanceAction.modelRollback,
+            modelType: modelType,
+            fromVersion: toVersion,
+            toVersion: fromVersion,
+            correlationId: correlationId,
+            metadata: <String, dynamic>{
+              'drop': drop,
+              'baseline_n': baselineN,
+              'post_n': post.count,
+            },
+          ),
+        );
+        if (!gateDecision.servingAllowed) {
+          developer.log(
+            'Blocked rollback for $modelType by kernel governance: '
+            '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+            name: _logName,
+          );
+          return;
+        }
+
         // Rollback immediately.
         final ok = switch (modelType) {
-          'calling_score' => ModelVersionRegistry.setActiveCallingScoreVersion(fromVersion),
-          'outcome' => ModelVersionRegistry.setActiveOutcomeVersion(fromVersion),
+          'calling_score' =>
+            ModelVersionRegistry.setActiveCallingScoreVersion(fromVersion),
+          'outcome' =>
+            ModelVersionRegistry.setActiveOutcomeVersion(fromVersion),
           'chat_local_llm' => true,
           _ => false,
         };
         if (modelType == 'chat_local_llm') {
           // Local model packs keep explicit last-good pointers; prefer those.
-          await LocalLlmModelPackManager().rollbackToLastGoodIfPresent()
-              ;
+          await LocalLlmModelPackManager().rollbackToLastGoodIfPresent();
         }
         if (ok) {
           await _recordRollbackEvent(
@@ -149,12 +208,15 @@ class ModelSafetySupervisor {
             postAvg: post.avg,
             postN: post.count,
             drop: drop,
+            governanceDecisionId: gateDecision.decisionId,
+            governanceCorrelationId: correlationId,
           );
         }
 
         await _prefs.remove(_candidateKeyForType(modelType));
         developer.log(
-          'Rolled back $modelType $toVersion → $fromVersion (drop=${drop.toStringAsFixed(3)})',
+          'Rolled back $modelType $toVersion → $fromVersion (drop=${drop.toStringAsFixed(3)}) '
+          'decision_id=${gateDecision.decisionId} corr=$correlationId',
           name: _logName,
         );
       }
@@ -170,7 +232,8 @@ class ModelSafetySupervisor {
 
   /// Lightweight list of recent rollback events for UI/debugging.
   List<Map<String, dynamic>> getRollbackEvents() {
-    final list = _prefs.getStringList(_prefsKeyRollbackEvents) ?? const <String>[];
+    final list =
+        _prefs.getStringList(_prefsKeyRollbackEvents) ?? const <String>[];
     final out = <Map<String, dynamic>>[];
     for (final s in list) {
       try {
@@ -216,7 +279,8 @@ class ModelSafetySupervisor {
   }
 
   List<_SignalEntry> _readSignals() {
-    final list = _prefs.getStringList(_prefsKeyHappinessSignals) ?? const <String>[];
+    final list =
+        _prefs.getStringList(_prefsKeyHappinessSignals) ?? const <String>[];
     final out = <_SignalEntry>[];
     for (final s in list) {
       try {
@@ -246,6 +310,8 @@ class ModelSafetySupervisor {
     required double postAvg,
     required int postN,
     required double drop,
+    String? governanceDecisionId,
+    String? governanceCorrelationId,
   }) async {
     final now = DateTime.now().toUtc().toIso8601String();
     final entry = <String, dynamic>{
@@ -258,12 +324,38 @@ class ModelSafetySupervisor {
       'post_avg': postAvg,
       'post_n': postN,
       'drop': drop,
+      if (governanceDecisionId != null)
+        'governance_decision_id': governanceDecisionId,
+      if (governanceCorrelationId != null)
+        'governance_correlation_id': governanceCorrelationId,
     };
 
-    final existing = _prefs.getStringList(_prefsKeyRollbackEvents) ?? const <String>[];
+    final existing =
+        _prefs.getStringList(_prefsKeyRollbackEvents) ?? const <String>[];
     final next = <String>[jsonEncode(entry), ...existing];
-    final capped = next.length <= _maxRollbackEvents ? next : next.sublist(0, _maxRollbackEvents);
+    final capped = next.length <= _maxRollbackEvents
+        ? next
+        : next.sublist(0, _maxRollbackEvents);
     await _prefs.setStringList(_prefsKeyRollbackEvents, capped);
+  }
+
+  Future<KernelGovernanceDecision> _evaluateGovernance(
+    KernelGovernanceRequest request,
+  ) async {
+    if (_kernelGovernanceGate == null) {
+      return KernelGovernanceDecision(
+        decisionId: 'kgd_none',
+        mode: KernelGovernanceMode.shadow,
+        wouldAllow: true,
+        servingAllowed: true,
+        shadowBypassApplied: false,
+        reasonCodes: const <String>['no_kernel_gate_configured'],
+        policyVersion: 'none',
+        timestamp: DateTime.now().toUtc(),
+        correlationId: request.correlationId,
+      );
+    }
+    return _kernelGovernanceGate.evaluate(request);
   }
 }
 
@@ -278,4 +370,3 @@ class _SignalEntry {
   final double? score;
   const _SignalEntry({required this.tsMs, required this.score});
 }
-

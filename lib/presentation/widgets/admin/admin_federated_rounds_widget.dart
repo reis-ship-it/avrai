@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
+import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/p2p/federated_learning.dart' as federated;
 import 'package:avrai/core/theme/colors.dart';
 
@@ -8,34 +8,36 @@ import 'package:avrai/core/theme/colors.dart';
 /// Shows active and completed rounds with participant details
 /// Updates automatically every 10 seconds
 class AdminFederatedRoundsWidget extends StatefulWidget {
-  final AdminGodModeService godModeService;
+  final AdminRuntimeGovernanceService godModeService;
   final Duration refreshInterval;
-  
+
   const AdminFederatedRoundsWidget({
     super.key,
     required this.godModeService,
     this.refreshInterval = const Duration(seconds: 10),
   });
-  
+
   @override
-  State<AdminFederatedRoundsWidget> createState() => _AdminFederatedRoundsWidgetState();
+  State<AdminFederatedRoundsWidget> createState() =>
+      _AdminFederatedRoundsWidgetState();
 }
 
-class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget> {
+class _AdminFederatedRoundsWidgetState
+    extends State<AdminFederatedRoundsWidget> {
   bool _showCompleted = true;
   List<GodModeFederatedRoundInfo>? _rounds;
   bool _isLoading = true;
   String? _error;
   Timer? _refreshTimer;
   DateTime? _lastUpdated;
-  
+
   @override
   void initState() {
     super.initState();
     _loadRounds();
     _startAutoRefresh();
   }
-  
+
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(widget.refreshInterval, (timer) {
       if (mounted) {
@@ -43,13 +45,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       }
     });
   }
-  
+
   @override
   void dispose() {
     _refreshTimer?.cancel();
     super.dispose();
   }
-  
+
   Future<void> _loadRounds({bool showLoading = true}) async {
     if (showLoading) {
       setState(() {
@@ -57,12 +59,12 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         _error = null;
       });
     }
-    
+
     try {
       final rounds = await widget.godModeService.getAllFederatedLearningRounds(
         includeCompleted: _showCompleted,
       );
-      
+
       if (mounted) {
         setState(() {
           _rounds = rounds;
@@ -80,7 +82,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -114,7 +116,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildHeader() {
     return Row(
       children: [
@@ -187,11 +189,11 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ],
     );
   }
-  
+
   String _formatTimeAgo(DateTime time) {
     final now = DateTime.now();
     final difference = now.difference(time);
-    
+
     if (difference.inSeconds < 10) {
       return 'just now';
     } else if (difference.inSeconds < 60) {
@@ -202,7 +204,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       return '${difference.inHours}h ago';
     }
   }
-  
+
   Widget _buildError() {
     return Center(
       child: Padding(
@@ -237,7 +239,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
     return const Center(
       child: Padding(
@@ -272,17 +274,18 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildRoundsList() {
     return Column(
-      children: _rounds!.map((roundInfo) => _buildRoundCard(roundInfo)).toList(),
+      children:
+          _rounds!.map((roundInfo) => _buildRoundCard(roundInfo)).toList(),
     );
   }
-  
+
   Widget _buildRoundCard(GodModeFederatedRoundInfo roundInfo) {
     final round = roundInfo.round;
     final statusColor = _getStatusColor(round.status);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -368,14 +371,14 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildRoundDetails(GodModeFederatedRoundInfo roundInfo) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Divider(),
         const SizedBox(height: 8),
-        
+
         // Learning Objective Section
         _buildDetailSection(
           'Learning Objective',
@@ -424,9 +427,9 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Performance Metrics Section
         _buildDetailSection(
           'Performance Metrics',
@@ -456,9 +459,9 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Participants Section
         _buildDetailSection(
           'AI Participants (${roundInfo.participants.length})',
@@ -472,7 +475,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ],
     );
   }
-  
+
   Widget _buildDetailSection(String title, IconData icon, Widget content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,10 +503,10 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ],
     );
   }
-  
+
   Widget _buildMetricRow(String label, double value, bool isRisk) {
     final color = _getMetricColor(value, isRisk);
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -538,7 +541,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildParticipantRow(RoundParticipant participant) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -553,14 +556,14 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen.withValues(alpha: 0.1)
                   : AppColors.grey200,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               Icons.android,
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen
                   : AppColors.textSecondary,
               size: 20,
@@ -616,7 +619,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: participant.isActive 
+              color: participant.isActive
                   ? AppColors.electricGreen
                   : AppColors.grey300,
               borderRadius: BorderRadius.circular(4),
@@ -626,7 +629,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildStatusBadge(federated.RoundStatus status, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -644,7 +647,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Widget _buildLearningTypeIcon(federated.LearningType type) {
     IconData icon;
     switch (type) {
@@ -661,7 +664,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         icon = Icons.trending_up;
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -675,7 +678,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
       ),
     );
   }
-  
+
   Color _getStatusColor(federated.RoundStatus status) {
     switch (status) {
       case federated.RoundStatus.initializing:
@@ -690,7 +693,7 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         return AppColors.error;
     }
   }
-  
+
   String _getStatusText(federated.RoundStatus status) {
     switch (status) {
       case federated.RoundStatus.initializing:
@@ -705,14 +708,13 @@ class _AdminFederatedRoundsWidgetState extends State<AdminFederatedRoundsWidget>
         return 'Failed';
     }
   }
-  
+
   Color _getMetricColor(double value, bool isRisk) {
     if (isRisk) value = 1.0 - value; // Invert for risk metrics
-    
+
     if (value >= 0.9) return AppColors.success;
     if (value >= 0.7) return AppColors.electricGreen;
     if (value >= 0.5) return AppColors.warning;
     return AppColors.error;
   }
 }
-

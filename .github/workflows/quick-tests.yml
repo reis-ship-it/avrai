@@ -97,6 +97,7 @@ jobs:
       run: |
         dart run scripts/ci/check_repo_hygiene.dart
         dart run scripts/ci/check_architecture.dart
+        python3 scripts/ci/check_kernel_governance_wiring.py
         bash scripts/check_no_spots_refs.sh
       
     - name: Run critical unit tests

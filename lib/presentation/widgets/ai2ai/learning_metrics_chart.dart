@@ -5,6 +5,7 @@ import 'package:avrai/core/theme/colors.dart';
 /// Widget displaying learning metrics as an enhanced interactive chart
 /// Features: Interactive features, multiple chart types, time range selectors
 enum ChartType { line, bar, area }
+
 enum TimeRange { hour, day, week, month }
 
 /// Widget displaying learning metrics as an interactive chart
@@ -59,12 +60,13 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
       final variation = (i % 3) * 0.05 - 0.075;
       dataPoints.add({
         'timestamp': timestamp.millisecondsSinceEpoch.toDouble(),
-        'matchingSuccessRate': (baseMetrics.matchingSuccessRate + variation)
-            .clamp(0.0, 1.0),
+        'matchingSuccessRate':
+            (baseMetrics.matchingSuccessRate + variation).clamp(0.0, 1.0),
         'learningConvergenceSpeed':
             (baseMetrics.learningConvergenceSpeed + variation).clamp(0.0, 1.0),
         'vibeSynchronizationQuality':
-            (baseMetrics.vibeSynchronizationQuality + variation).clamp(0.0, 1.0),
+            (baseMetrics.vibeSynchronizationQuality + variation)
+                .clamp(0.0, 1.0),
         'networkResponsiveness':
             (baseMetrics.networkResponsiveness + variation).clamp(0.0, 1.0),
       });
@@ -73,7 +75,8 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
     return dataPoints;
   }
 
-  void _showMetricDetails(BuildContext context, String metricName, double value) {
+  void _showMetricDetails(
+      BuildContext context, String metricName, double value) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -132,19 +135,42 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final title = Text(
                     'Learning Metrics',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
-                  ),
-                  // Time range selector
-                  _buildTimeRangeSelector(),
-                ],
+                  );
+                  final selector = Align(
+                    alignment: Alignment.centerRight,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: _buildTimeRangeSelector(),
+                    ),
+                  );
+
+                  if (constraints.maxWidth < 720) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        title,
+                        const SizedBox(height: 12),
+                        selector,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      title,
+                      selector,
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
               // Chart type selector
@@ -196,13 +222,15 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
   }
 
   Widget _buildChartTypeSelector() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      runAlignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
       children: [
         _buildChartTypeButton(ChartType.line, Icons.show_chart, 'Line'),
-        const SizedBox(width: 8),
         _buildChartTypeButton(ChartType.bar, Icons.bar_chart, 'Bar'),
-        const SizedBox(width: 8),
         _buildChartTypeButton(ChartType.area, Icons.area_chart, 'Area'),
       ],
     );
@@ -249,10 +277,10 @@ class _LearningMetricsChartState extends State<LearningMetricsChart> {
         // Calculate which data point was tapped
         // This is a simplified implementation
         if (historicalData.isNotEmpty) {
-          final index = ((localPosition.dx / box.size.width) *
-                  historicalData.length)
-              .floor()
-              .clamp(0, historicalData.length - 1);
+          final index =
+              ((localPosition.dx / box.size.width) * historicalData.length)
+                  .floor()
+                  .clamp(0, historicalData.length - 1);
           final dataPoint = historicalData[index];
           _showMetricDetails(
             context,
