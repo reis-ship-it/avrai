@@ -5,6 +5,8 @@ import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kern
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/kernel_governance_telemetry_service.dart';
 
+part 'kernel_governance_gate_models.dart';
+
 enum KernelGovernanceMode {
   shadow,
   enforce,
@@ -263,14 +265,4 @@ class KernelGovernanceGate {
       return null;
     }
   }
-}
-
-class _KernelValidationResult {
-  const _KernelValidationResult({
-    required this.isValid,
-    required this.reasonCodes,
-  });
-
-  final bool isValid;
-  final List<String> reasonCodes;
 }
