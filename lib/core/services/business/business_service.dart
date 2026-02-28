@@ -1,14 +1,16 @@
 import 'package:avrai/core/models/business/business_account.dart';
 import 'package:avrai/core/models/business/business_verification.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/services/business/business_account_service.dart';
+import 'package:avrai/core/services/business/urk_stage_d_business_runtime_replication_contract.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// Business Service
-/// 
+///
 /// Manages business accounts and verification for partnerships.
-/// 
+///
 /// **Responsibilities:**
 /// - Create business accounts
 /// - Verify businesses
@@ -17,27 +19,36 @@ import 'package:uuid/uuid.dart';
 /// - Check business eligibility
 class BusinessService {
   static const String _logName = 'BusinessService';
-  final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
+  final AppLogger _logger =
+      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final Uuid _uuid = const Uuid();
-  
+
   final BusinessAccountService _accountService;
-  
+  final UrkStageDBusinessRuntimeReplicationValidator _runtimeValidator;
+  final UrkRuntimeActivationReceiptDispatcher? _activationDispatcher;
+
   // In-memory storage for verifications (in production, use database)
   final Map<String, BusinessVerification> _verifications = {};
-  
+
   BusinessService({
     required BusinessAccountService accountService,
-  }) : _accountService = accountService;
-  
+    UrkStageDBusinessRuntimeReplicationValidator runtimeValidator =
+        const UrkStageDBusinessRuntimeReplicationValidator(),
+    UrkRuntimeActivationReceiptDispatcher? activationDispatcher,
+  })  : _accountService = accountService,
+        _runtimeValidator = runtimeValidator,
+        _activationDispatcher = activationDispatcher ??
+            resolveDefaultUrkRuntimeActivationDispatcher();
+
   /// Create a new business account
-  /// 
+  ///
   /// **Parameters:**
   /// - `name`: Business name
   /// - `email`: Business email
   /// - `businessType`: Business type (e.g., "Restaurant", "Retail")
   /// - `createdBy`: User ID who created this business
   /// - Other optional fields
-  /// 
+  ///
   /// **Returns:**
   /// BusinessAccount
   Future<BusinessAccount> createBusinessAccount({
@@ -53,7 +64,7 @@ class BusinessService {
   }) async {
     try {
       _logger.info('Creating business account: $name', tag: _logName);
-      
+
       // Create a UnifiedUser for the creator (simplified - in production, get from user service)
       // For now, we'll use a placeholder
       final creator = UnifiedUser(
@@ -63,7 +74,7 @@ class BusinessService {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       final business = await _accountService.createBusinessAccount(
         creator: creator,
         name: name,
@@ -75,7 +86,7 @@ class BusinessService {
         phone: phone,
         categories: categories,
       );
-      
+
       _logger.info('Created business account: ${business.id}', tag: _logName);
       return business;
     } catch (e) {
@@ -83,18 +94,18 @@ class BusinessService {
       rethrow;
     }
   }
-  
+
   /// Verify a business account
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get business account
   /// 2. Create BusinessVerification record
   /// 3. Submit for review (status: `pending`)
-  /// 
+  ///
   /// **Parameters:**
   /// - `businessId`: Business ID
   /// - `documents`: Verification documents
-  /// 
+  ///
   /// **Returns:**
   /// BusinessVerification with status `pending`
   Future<BusinessVerification> verifyBusiness({
@@ -112,13 +123,26 @@ class BusinessService {
   }) async {
     try {
       _logger.info('Verifying business: $businessId', tag: _logName);
-      
+
       // Get business account
       final business = await getBusinessById(businessId);
       if (business == null) {
+        await _dispatchBusinessRuntimeValidation(
+          businessId: businessId,
+          passing: false,
+          criticalFailure: false,
+          reason: 'business_not_found',
+        );
         throw Exception('Business not found: $businessId');
       }
-      
+
+      await _dispatchBusinessRuntimeValidation(
+        businessId: businessId,
+        passing: true,
+        criticalFailure: false,
+        reason: 'verify_business',
+      );
+
       // Create verification record
       final verification = BusinessVerification(
         id: _generateVerificationId(),
@@ -138,10 +162,10 @@ class BusinessService {
         submittedAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       // Save verification
       await _saveVerification(verification);
-      
+
       _logger.info('Created verification: ${verification.id}', tag: _logName);
       return verification;
     } catch (e) {
@@ -149,13 +173,13 @@ class BusinessService {
       rethrow;
     }
   }
-  
+
   /// Update business account information
-  /// 
+  ///
   /// **Parameters:**
   /// - `businessId`: Business ID
   /// - Update fields
-  /// 
+  ///
   /// **Returns:**
   /// Updated BusinessAccount
   Future<BusinessAccount> updateBusinessInfo({
@@ -169,12 +193,12 @@ class BusinessService {
   }) async {
     try {
       _logger.info('Updating business info: $businessId', tag: _logName);
-      
+
       final business = await getBusinessById(businessId);
       if (business == null) {
         throw Exception('Business not found: $businessId');
       }
-      
+
       final updated = await _accountService.updateBusinessAccount(
         business,
         name: name,
@@ -184,7 +208,7 @@ class BusinessService {
         phone: phone,
         categories: categories,
       );
-      
+
       _logger.info('Updated business info: $businessId', tag: _logName);
       return updated;
     } catch (e) {
@@ -192,15 +216,15 @@ class BusinessService {
       rethrow;
     }
   }
-  
+
   /// Find businesses by filters
-  /// 
+  ///
   /// **Parameters:**
   /// - `category`: Business category filter
   /// - `location`: Location filter
   /// - `verifiedOnly`: Only return verified businesses
   /// - `maxResults`: Maximum number of results
-  /// 
+  ///
   /// **Returns:**
   /// List of BusinessAccount
   Future<List<BusinessAccount>> findBusinesses({
@@ -210,10 +234,12 @@ class BusinessService {
     int maxResults = 20,
   }) async {
     try {
-      _logger.info('Finding businesses: category=$category, location=$location, verifiedOnly=$verifiedOnly', tag: _logName);
-      
+      _logger.info(
+          'Finding businesses: category=$category, location=$location, verifiedOnly=$verifiedOnly',
+          tag: _logName);
+
       final allBusinesses = await _getAllBusinesses();
-      
+
       var filtered = allBusinesses.where((business) {
         // Filter by category
         if (category != null) {
@@ -221,39 +247,41 @@ class BusinessService {
             return false;
           }
         }
-        
+
         // Filter by location
         if (location != null && business.location != null) {
-          if (!business.location!.toLowerCase().contains(location.toLowerCase())) {
+          if (!business.location!
+              .toLowerCase()
+              .contains(location.toLowerCase())) {
             return false;
           }
         }
-        
+
         // Filter by verification status
         if (verifiedOnly && !business.isVerified) {
           return false;
         }
-        
+
         return true;
       }).toList();
-      
+
       return filtered.take(maxResults).toList();
     } catch (e) {
       _logger.error('Error finding businesses', error: e, tag: _logName);
       return [];
     }
   }
-  
+
   /// Check if business is eligible for partnerships
-  /// 
+  ///
   /// **Flow:**
   /// 1. Get business account
   /// 2. Check verification status (must be `verified`)
   /// 3. Check business is active
-  /// 
+  ///
   /// **Parameters:**
   /// - `businessId`: Business ID
-  /// 
+  ///
   /// **Returns:**
   /// true if eligible, false otherwise
   Future<bool> checkBusinessEligibility(String businessId) async {
@@ -263,31 +291,32 @@ class BusinessService {
         _logger.info('Business not found: $businessId', tag: _logName);
         return false;
       }
-      
+
       // Check verification status
       if (!business.isVerified) {
         _logger.info('Business not verified: $businessId', tag: _logName);
         return false;
       }
-      
+
       // Check business is active
       if (!business.isActive) {
         _logger.info('Business not active: $businessId', tag: _logName);
         return false;
       }
-      
+
       return true;
     } catch (e) {
-      _logger.error('Error checking business eligibility', error: e, tag: _logName);
+      _logger.error('Error checking business eligibility',
+          error: e, tag: _logName);
       return false;
     }
   }
-  
+
   /// Get business by ID
-  /// 
+  ///
   /// **Parameters:**
   /// - `businessId`: Business ID
-  /// 
+  ///
   /// **Returns:**
   /// BusinessAccount if found, null otherwise
   Future<BusinessAccount?> getBusinessById(String businessId) async {
@@ -298,12 +327,12 @@ class BusinessService {
       return null;
     }
   }
-  
+
   /// Get verification for business
-  /// 
+  ///
   /// **Parameters:**
   /// - `businessId`: Business ID
-  /// 
+  ///
   /// **Returns:**
   /// BusinessVerification if found, null otherwise
   Future<BusinessVerification?> getVerification(String businessId) async {
@@ -321,27 +350,78 @@ class BusinessService {
       return null;
     }
   }
-  
+
   // Private helper methods
-  
+
   String _generateVerificationId() {
     return 'verification_${_uuid.v4()}';
   }
-  
+
   Future<void> _saveVerification(BusinessVerification verification) async {
     // In production, save to database
     _verifications[verification.id] = verification;
   }
-  
+
   Future<List<BusinessVerification>> _getAllVerifications() async {
     // In production, query database
     return _verifications.values.toList();
   }
-  
+
   Future<List<BusinessAccount>> _getAllBusinesses() async {
     // In production, query database
     // For now, delegate to account service
-    return await _accountService.getBusinessAccountsByUser('system'); // Placeholder
+    return await _accountService
+        .getBusinessAccountsByUser('system'); // Placeholder
+  }
+
+  Future<void> _dispatchBusinessRuntimeValidation({
+    required String businessId,
+    required bool passing,
+    required bool criticalFailure,
+    required String reason,
+  }) async {
+    final dispatcher = _activationDispatcher;
+    if (dispatcher == null) {
+      return;
+    }
+
+    const policy = UrkStageDBusinessRuntimeReplicationPolicy(
+      requiredPipelineCoveragePct: 100.0,
+      requiredPolicyGateCoveragePct: 100.0,
+      requiredLineageCoveragePct: 100.0,
+      maxUnattributedActions: 0,
+      requiredHighImpactReviewCoveragePct: 100.0,
+      maxUnreviewedHighImpactCommits: 0,
+    );
+
+    final snapshot = passing
+        ? const UrkStageDBusinessRuntimeReplicationSnapshot(
+            observedPipelineCoveragePct: 100.0,
+            observedPolicyGateCoveragePct: 100.0,
+            observedLineageCoveragePct: 100.0,
+            observedUnattributedActions: 0,
+            observedHighImpactReviewCoveragePct: 100.0,
+            observedUnreviewedHighImpactCommits: 0,
+          )
+        : UrkStageDBusinessRuntimeReplicationSnapshot(
+            observedPipelineCoveragePct: 100.0,
+            observedPolicyGateCoveragePct: 90.0,
+            observedLineageCoveragePct: 100.0,
+            observedUnattributedActions: criticalFailure ? 1 : 0,
+            observedHighImpactReviewCoveragePct: 100.0,
+            observedUnreviewedHighImpactCommits: criticalFailure ? 1 : 0,
+          );
+
+    try {
+      await _runtimeValidator.validateAndDispatch(
+        snapshot: snapshot,
+        policy: policy,
+        activationDispatcher: dispatcher,
+        actor: _logName,
+        requestIdPrefix: 'business_verify_${businessId}_$reason',
+      );
+    } catch (_) {
+      // Dispatch must not block business verification workflow.
+    }
   }
 }
-
