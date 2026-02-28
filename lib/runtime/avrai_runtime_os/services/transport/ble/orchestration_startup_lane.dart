@@ -1,8 +1,13 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
+import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
+import 'package:avrai/core/models/quantum/connection_metrics.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_maintenance_loop.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/discovery_loop.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_bundle_rotation_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 
 class OrchestrationStartupLane {
@@ -46,6 +51,47 @@ class OrchestrationStartupLane {
         error: error,
         tag: logName,
       ),
+    );
+  }
+
+  static Timer startConnectionMaintenanceForOrchestrator({
+    required Future<void> Function() manageActiveConnections,
+    required Map<String, ConnectionMetrics> activeConnectionsById,
+    required Iterable<AIPersonalityNode> discoveredNodes,
+    required Future<ConnectionMetrics?> Function(
+      ConnectionMetrics connection, {
+      String? reason,
+    })
+    completeConnection,
+    required Map<String, double> previousQualityScores,
+    required double qualityChangeThreshold,
+    required SignalKeyManager? signalKeyManager,
+    required AppLogger logger,
+    required String logName,
+  }) {
+    return startConnectionMaintenance(
+      manageActiveConnections: manageActiveConnections,
+      manageSessionLifecycle: () async {
+        await SessionLifecycleOrchestrationFlowLane.run(
+          activeConnectionsById: activeConnectionsById,
+          discoveredNodes: discoveredNodes,
+          completeConnection: completeConnection,
+          previousQualityScores: previousQualityScores,
+          qualityChangeThreshold: qualityChangeThreshold,
+          logger: logger,
+          logName: logName,
+        );
+      },
+      managePreKeyBundleRotation: () async {
+        await PrekeyBundleRotationLane.run(
+          signalKeyManager: signalKeyManager,
+          activeConnections: activeConnectionsById.values,
+          logger: logger,
+          logName: logName,
+        );
+      },
+      logger: logger,
+      logName: logName,
     );
   }
 }

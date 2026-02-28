@@ -32,10 +32,8 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestrat
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_init_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/learning_insight_seen_ids_persistence_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ai2ai_discovery_prekey_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_cloud_orchestration_lane.dart';
@@ -397,27 +395,14 @@ class VibeConnectionOrchestrator {
         startFederatedCloudSync: _startFederatedCloudSync,
         startConnectionMaintenance: () async {
           _connectionMaintenanceTimer =
-              OrchestrationStartupLane.startConnectionMaintenance(
+              OrchestrationStartupLane.startConnectionMaintenanceForOrchestrator(
             manageActiveConnections: manageActiveConnections,
-            manageSessionLifecycle: () async {
-              await SessionLifecycleOrchestrationFlowLane.run(
-                activeConnectionsById: _activeConnections,
-                discoveredNodes: _discoveredNodes.values,
-                completeConnection: _completeConnection,
-                previousQualityScores: _previousQualityScores,
-                qualityChangeThreshold: _qualityChangeThreshold,
-                logger: _logger,
-                logName: _logName,
-              );
-            },
-            managePreKeyBundleRotation: () async {
-              await PrekeyBundleRotationLane.run(
-                signalKeyManager: _signalKeyManager,
-                activeConnections: _activeConnections.values,
-                logger: _logger,
-                logName: _logName,
-              );
-            },
+            activeConnectionsById: _activeConnections,
+            discoveredNodes: _discoveredNodes.values,
+            completeConnection: _completeConnection,
+            previousQualityScores: _previousQualityScores,
+            qualityChangeThreshold: _qualityChangeThreshold,
+            signalKeyManager: _signalKeyManager,
             logger: _logger,
             logName: _logName,
           );
