@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 
+part 'admin_auth_service_models.dart';
+
 /// Admin Authentication Service
 /// Handles god-mode admin login and session management
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Admin access requires strict authentication
@@ -444,22 +446,5 @@ class AdminAuthResult {
   factory AdminAuthResult.error(String error) {
     return AdminAuthResult(success: false, error: error);
   }
-}
-
-/// Internal result class for credential verification
-class _VerifyResult {
-  final bool success;
-  final String? error;
-  final bool lockedOut;
-  final Duration? lockoutRemaining;
-  final int? remainingAttempts;
-
-  _VerifyResult({
-    required this.success,
-    this.error,
-    this.lockedOut = false,
-    this.lockoutRemaining,
-    this.remainingAttempts,
-  });
 }
 

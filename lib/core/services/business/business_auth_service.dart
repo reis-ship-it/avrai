@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 
+part 'business_auth_service_models.dart';
+
 /// Business Authentication Service
 /// Handles business login and session management
 /// Similar to AdminAuthService but for business accounts
@@ -320,24 +322,5 @@ class BusinessAuthResult {
   factory BusinessAuthResult.error(String error) {
     return BusinessAuthResult(success: false, error: error);
   }
-}
-
-/// Internal result class for credential verification
-class _VerifyResult {
-  final bool success;
-  final String? error;
-  final bool lockedOut;
-  final Duration? lockoutRemaining;
-  final int? remainingAttempts;
-  final String? businessId;
-
-  _VerifyResult({
-    required this.success,
-    this.error,
-    this.lockedOut = false,
-    this.lockoutRemaining,
-    this.remainingAttempts,
-    this.businessId,
-  });
 }
 
