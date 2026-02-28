@@ -13,10 +13,13 @@
     "shared/"
   ],
   "allowlisted_legacy_paths": [
+    "lib/presentation/widgets/ai2ai/ai_network_status_chip.dart",
     "lib/presentation/widgets/ai2ai/connections_list.dart",
+    "lib/presentation/widgets/ai2ai/connection_visualization_widget.dart",
     "lib/presentation/widgets/ai2ai/learning_metrics_chart.dart",
     "lib/presentation/widgets/ai2ai/network_3d_visualization_widget.dart",
     "lib/presentation/widgets/ai2ai/network_health_gauge.dart",
+    "lib/presentation/widgets/ai2ai/network_wisdom_feed_section.dart",
     "lib/presentation/widgets/ai2ai/performance_issues_list.dart",
     "lib/presentation/widgets/ai2ai/privacy_compliance_card.dart"
   ],
