@@ -70,7 +70,8 @@ import 'package:avrai/core/services/events/event_recommendation_service.dart'
 import 'package:avrai/core/services/events/event_matching_service.dart';
 import 'package:avrai/core/services/matching/spot_vibe_matching_service.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
-import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/infrastructure/auth/app_auth_service.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_deep_link_handler.dart';
 import 'package:avrai/core/services/social_media/social_media_connection_service.dart';
 import 'package:avrai/core/services/social_media/base/social_media_common_utils.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
@@ -519,6 +520,10 @@ Future<void> registerAIServices(GetIt sl) async {
   );
 
   // OAuth Deep Link Handler (Phase 8.2: OAuth Implementation)
+  sl.registerLazySingleton<AppAuthService>(
+    () => SupabaseAppAuthService(client: Supabase.instance.client),
+  );
+
   sl.registerLazySingleton<OAuthDeepLinkHandler>(
     () => OAuthDeepLinkHandler(),
   );

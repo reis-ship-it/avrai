@@ -8,6 +8,8 @@ export 'deferred_initialization_service.dart';
 export 'deployment_validator.dart';
 export 'feature_flag_service.dart';
 export 'logger.dart';
+export 'auth/auth.dart';
+export 'oauth/oauth.dart';
 export 'oauth_deep_link_handler.dart';
 export 'performance_monitor.dart';
 export 'search_cache_service.dart';
