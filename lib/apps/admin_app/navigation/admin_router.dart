@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai/core/services/admin/admin_internal_use_agreement_service.dart';
 import 'package:avrai/core/models/user/user.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
@@ -7,25 +8,30 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/apps/admin_app/ui/pages/ai2ai_admin_dashboard.dart';
+import 'package:avrai/apps/admin_app/ui/pages/admin_command_center_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/research_center_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/reality_system_oversight_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/urk_kernel_console_page.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/admin_navigation_shell.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 class AdminRouter {
-  static const String login = '/login';
-  static const String urkKernels = '/admin/urk-kernels';
-  static const String ai2ai = '/admin/ai2ai';
-  static const String researchCenter = '/admin/research-center';
-  static const String realitySystemReality = '/admin/reality-system/reality';
-  static const String realitySystemUniverse = '/admin/reality-system/universe';
-  static const String realitySystemWorld = '/admin/reality-system/world';
+  static const String login = AdminRoutePaths.login;
+  static const String commandCenter = AdminRoutePaths.commandCenter;
+  static const String urkKernels = AdminRoutePaths.urkKernels;
+  static const String ai2ai = AdminRoutePaths.ai2ai;
+  static const String researchCenter = AdminRoutePaths.researchCenter;
+  static const String realitySystemReality =
+      AdminRoutePaths.realitySystemReality;
+  static const String realitySystemUniverse =
+      AdminRoutePaths.realitySystemUniverse;
+  static const String realitySystemWorld = AdminRoutePaths.realitySystemWorld;
 
   static GoRouter build({required AuthBloc authBloc}) {
     return GoRouter(
-      initialLocation: urkKernels,
+      initialLocation: commandCenter,
       refreshListenable: _GoRouterRefreshStream(authBloc.stream),
       redirect: (context, state) async {
         final authState = authBloc.state;
@@ -50,7 +56,7 @@ class AdminRouter {
         }
 
         if (isLogin) {
-          return urkKernels;
+          return commandCenter;
         }
         return null;
       },
@@ -58,45 +64,59 @@ class AdminRouter {
         GoRoute(
           path: login,
           builder: (context, state) => const LoginPage(
-            postAuthRoute: urkKernels,
+            postAuthRoute: commandCenter,
             signupRoute: login,
             requireInternalUseAgreement: true,
             internalUseAgreementText:
                 'I agree this admin application is for internal use only and restricted to authorized operators.',
           ),
         ),
-        GoRoute(
-          path: urkKernels,
-          builder: (context, state) => UrkKernelConsolePage(
-            initialDecisionId: state.uri.queryParameters['decisionId'],
-            initialView: state.uri.queryParameters['view'],
-          ),
-        ),
-        GoRoute(
-          path: ai2ai,
-          builder: (context, state) => const AI2AIAdminDashboard(),
-        ),
-        GoRoute(
-          path: researchCenter,
-          builder: (context, state) => const ResearchCenterPage(),
-        ),
-        GoRoute(
-          path: realitySystemReality,
-          builder: (context, state) => const RealitySystemOversightPage(
-            layer: OversightLayer.reality,
-          ),
-        ),
-        GoRoute(
-          path: realitySystemUniverse,
-          builder: (context, state) => const RealitySystemOversightPage(
-            layer: OversightLayer.universe,
-          ),
-        ),
-        GoRoute(
-          path: realitySystemWorld,
-          builder: (context, state) => const RealitySystemOversightPage(
-            layer: OversightLayer.world,
-          ),
+        ShellRoute(
+          builder: (context, state, child) {
+            return AdminNavigationShell(
+              currentLocation: state.matchedLocation,
+              child: child,
+            );
+          },
+          routes: [
+            GoRoute(
+              path: commandCenter,
+              builder: (context, state) => const AdminCommandCenterPage(),
+            ),
+            GoRoute(
+              path: urkKernels,
+              builder: (context, state) => UrkKernelConsolePage(
+                initialDecisionId: state.uri.queryParameters['decisionId'],
+                initialView: state.uri.queryParameters['view'],
+              ),
+            ),
+            GoRoute(
+              path: ai2ai,
+              builder: (context, state) => const AI2AIAdminDashboard(),
+            ),
+            GoRoute(
+              path: researchCenter,
+              builder: (context, state) => const ResearchCenterPage(),
+            ),
+            GoRoute(
+              path: realitySystemReality,
+              builder: (context, state) => const RealitySystemOversightPage(
+                layer: OversightLayer.reality,
+              ),
+            ),
+            GoRoute(
+              path: realitySystemUniverse,
+              builder: (context, state) => const RealitySystemOversightPage(
+                layer: OversightLayer.universe,
+              ),
+            ),
+            GoRoute(
+              path: realitySystemWorld,
+              builder: (context, state) => const RealitySystemOversightPage(
+                layer: OversightLayer.world,
+              ),
+            ),
+          ],
         ),
       ],
     );
