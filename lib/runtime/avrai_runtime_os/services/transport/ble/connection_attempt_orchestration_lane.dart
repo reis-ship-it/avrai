@@ -4,8 +4,9 @@ import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_establishment_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_management_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_worthiness_validation_lane.dart';
-import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_routing_policy.dart';
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
@@ -34,8 +35,6 @@ class ConnectionAttemptOrchestrationLane {
     required SignalKeyManager? signalKeyManager,
     required KnotWeavingService? knotWeavingService,
     required KnotStorageService? knotStorageService,
-    required void Function(ConnectionMetrics connection)
-        scheduleConnectionManagement,
     required AppLogger logger,
     required String logName,
   }) async {
@@ -90,7 +89,11 @@ class ConnectionAttemptOrchestrationLane {
       },
       onEstablished: (connection) {
         activeConnections[connection.connectionId] = connection;
-        scheduleConnectionManagement(connection);
+        ConnectionManagementOrchestrationLane.schedule(
+          connection: connection,
+          logger: logger,
+          logName: logName,
+        );
       },
       setCooldown: (nodeId) {
         ConnectionRoutingPolicy.setCooldown(

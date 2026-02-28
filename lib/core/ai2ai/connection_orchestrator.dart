@@ -745,13 +745,6 @@ class VibeConnectionOrchestrator {
       signalKeyManager: _signalKeyManager,
       knotWeavingService: _knotWeavingService,
       knotStorageService: _knotStorageService,
-      scheduleConnectionManagement: (connection) {
-        ConnectionManagementOrchestrationLane.schedule(
-          connection: connection,
-          logger: _logger,
-          logName: _logName,
-        );
-      },
       logger: _logger,
       logName: _logName,
     );
