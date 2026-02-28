@@ -656,7 +656,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: 'URK Kernel Console',
                     subtitle: 'Kernel runtime governance and activation map',
                     onTap: () {
-                      context.go('/admin/urk-kernels');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const GodModeLoginPage(),
+                        ),
+                      );
                     },
                   ),
                 ],

@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Business Reservation Analytics Service
 //
 // Phase 7.2: Business Reservation Analytics

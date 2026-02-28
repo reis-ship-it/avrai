@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Extracted analytics models for business reservation analytics service.
 
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';

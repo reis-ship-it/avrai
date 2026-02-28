@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Extracted analytics models for reservation analytics service.
 
 import 'package:avrai/core/models/misc/reservation.dart';
