@@ -20,7 +20,6 @@ import 'package:avrai/core/ai2ai/connection_summary_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/discovery_node_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_broadcast_flags_lane.dart';
@@ -52,7 +51,7 @@ import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -670,32 +669,25 @@ class VibeConnectionOrchestrator {
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(
       String userId, PersonalityProfile personality,
       {bool throwOnError = false}) async {
-    return NearbyDiscoveryOrchestrationLane.run(
+    return NearbyDiscoveryOrchestrationLane.runForOrchestrator(
       isDiscovering: _isDiscovering,
       setIsDiscovering: (value) => _isDiscovering = value,
       getCachedNodes: () => _discoveredNodes.values.toList(),
       checkConnectivity: _connectivity.checkConnectivity,
-      performDiscovery: () async {
-        final nodes = await _discoveryManager.discover(
-            userId, personality, _performAI2AIDiscovery);
-        return DiscoveryPostprocessLane.process(
-          nodes: nodes,
+      performRawDiscovery: () =>
+          _discoveryManager.discover(userId, personality, _performAI2AIDiscovery),
+      userId: userId,
+      personality: personality,
+      vibeAnalyzer: _vibeAnalyzer,
+      isConnectionWorthy: _isConnectionWorthy,
+      updateDiscoveredNodes: _updateDiscoveredNodes,
+      onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
+        unawaited(_maybeApplyPassiveAi2AiLearning(
           userId: userId,
-          personality: personality,
-          vibeAnalyzer: _vibeAnalyzer,
-          isConnectionWorthy: _isConnectionWorthy,
-          updateDiscoveredNodes: _updateDiscoveredNodes,
-          onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
-            unawaited(_maybeApplyPassiveAi2AiLearning(
-              userId: userId,
-              localPersonality: personality,
-              nodes: worthyNodes,
-              compatibilityByNodeId: compatibilityByNodeId,
-            ));
-          },
-          logger: _logger,
-          logName: _logName,
-        );
+          localPersonality: personality,
+          nodes: worthyNodes,
+          compatibilityByNodeId: compatibilityByNodeId,
+        ));
       },
       throwOnError: throwOnError,
       buildDiscoveryException: (error) =>

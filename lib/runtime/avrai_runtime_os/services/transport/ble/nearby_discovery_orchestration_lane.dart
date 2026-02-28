@@ -1,7 +1,10 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
+import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_routing_policy.dart';
+import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
+import 'package:avrai_core/models/personality_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class NearbyDiscoveryOrchestrationLane {
@@ -48,5 +51,53 @@ class NearbyDiscoveryOrchestrationLane {
     } finally {
       setIsDiscovering(false);
     }
+  }
+
+  static Future<List<AIPersonalityNode>> runForOrchestrator({
+    required bool isDiscovering,
+    required void Function(bool value) setIsDiscovering,
+    required List<AIPersonalityNode> Function() getCachedNodes,
+    required Future<List<ConnectivityResult>> Function() checkConnectivity,
+    required Future<List<AIPersonalityNode>> Function() performRawDiscovery,
+    required String userId,
+    required PersonalityProfile personality,
+    required UserVibeAnalyzer vibeAnalyzer,
+    required bool Function(VibeCompatibilityResult compatibility)
+        isConnectionWorthy,
+    required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
+    required void Function(
+      List<AIPersonalityNode> worthyNodes,
+      Map<String, VibeCompatibilityResult> compatibilityByNodeId,
+    )
+    onWorthyNodes,
+    required bool throwOnError,
+    required Object Function(Object error) buildDiscoveryException,
+    required AppLogger logger,
+    required String logName,
+  }) {
+    return run(
+      isDiscovering: isDiscovering,
+      setIsDiscovering: setIsDiscovering,
+      getCachedNodes: getCachedNodes,
+      checkConnectivity: checkConnectivity,
+      performDiscovery: () async {
+        final nodes = await performRawDiscovery();
+        return DiscoveryPostprocessLane.process(
+          nodes: nodes,
+          userId: userId,
+          personality: personality,
+          vibeAnalyzer: vibeAnalyzer,
+          isConnectionWorthy: isConnectionWorthy,
+          updateDiscoveredNodes: updateDiscoveredNodes,
+          onWorthyNodes: onWorthyNodes,
+          logger: logger,
+          logName: logName,
+        );
+      },
+      throwOnError: throwOnError,
+      buildDiscoveryException: buildDiscoveryException,
+      logger: logger,
+      logName: logName,
+    );
   }
 }
