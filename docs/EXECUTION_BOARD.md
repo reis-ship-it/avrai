@@ -131,6 +131,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M6-P3-3 | 10 | 6 | Master-plan completion readiness audit + sign-off package | baseline | none | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.9.21, 10.10.8 | docs | AP, REL | GOV | M6-P3-1, M6-P3-2 | 20 | Critical | Day 61-90 | Backlog | - |
 | M7-P7-3 | 7 | 7 | URK Stage A: TriggerService + PrivacyModePolicy + NoEgressGate contract freeze | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.2, 7.5.1, 7.7.5, 10.9.12 | lib/core/controllers | AP, REL | REL | M6-P3-3 | 20 | Critical | Week 13-14 | Done | docs/plans/methodology/M7_P7_3_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_BASELINE.md, configs/runtime/urk_stage_a_trigger_privacy_no_egress_controls.json, scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py, docs/plans/methodology/MASTER_PLAN_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_STAGE_A_TRIGGER_PRIVACY_NO_EGRESS_REPORT.md, lib/core/controllers/urk_stage_a_trigger_privacy_no_egress_contract.dart, test/unit/controllers/urk_stage_a_trigger_privacy_no_egress_contract_test.dart |
 | M7-P7-4 | 7 | 7 | URK Stage B: Event Ops runtime shadow wiring (ingest-plan-gate-observe) | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 6.1.1, 6.2.1, 7.4.3, 7.7.5 | lib/core/controllers | AP, MOB | REL | M7-P7-3 | 20 | Critical | Week 14-15 | Done | docs/plans/methodology/M7_P7_4_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_BASELINE.md, configs/runtime/urk_stage_b_event_ops_shadow_runtime_controls.json, scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py, docs/plans/methodology/MASTER_PLAN_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_STAGE_B_EVENT_OPS_SHADOW_RUNTIME_REPORT.md, lib/core/controllers/urk_stage_b_event_ops_shadow_runtime_contract.dart, test/unit/controllers/urk_stage_b_event_ops_shadow_runtime_contract_test.dart |
+| M7-P8-3 | 8 | 7 | URK Stage C prep: private-mesh policy conformance for Event Ops deltas | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 8.1.3, 8.1.4, 8.9.5, 10.9.12 | lib/core/ai2ai | FED, LOC | AP | M7-P7-4 | 20 | Critical | Week 15-16 | Done | docs/plans/methodology/M7_P8_3_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_BASELINE.md, configs/runtime/urk_stage_c_private_mesh_policy_conformance_controls.json, scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py, docs/plans/methodology/MASTER_PLAN_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_STAGE_C_PRIVATE_MESH_POLICY_CONFORMANCE_REPORT.md, lib/core/ai2ai/urk_stage_c_private_mesh_policy_conformance_contract.dart, test/unit/ai2ai/urk_stage_c_private_mesh_policy_conformance_contract_test.dart |
 <!-- EXECUTION_BOARD:MILESTONE_BOARD_END -->
 
 ## Kanban Snapshot
@@ -154,7 +155,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`
+`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
