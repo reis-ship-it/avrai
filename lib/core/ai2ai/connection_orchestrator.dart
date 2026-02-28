@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
-import 'package:avrai/core/crypto/signal/signal_session_manager.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
@@ -27,7 +26,7 @@ import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.d
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
@@ -43,14 +42,10 @@ import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
@@ -1046,13 +1041,14 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _manageSessionLifecycle() async {
-    await SessionLifecycleLane.run(
+    await SessionLifecycleOrchestrationFlowLane.run(
+      activeConnectionsById: _activeConnections,
+      discoveredNodes: _discoveredNodes.values,
+      completeConnection: _completeConnection,
+      previousQualityScores: _previousQualityScores,
+      qualityChangeThreshold: _qualityChangeThreshold,
       logger: _logger,
       logName: _logName,
-      expireSessionsBasedOnQuality: _expireSessionsBasedOnQuality,
-      cleanupInactiveSessions: _cleanupInactiveSessions,
-      renewActiveSessions: _renewActiveSessions,
-      rotateKeysBasedOnQualityChanges: _rotateKeysBasedOnQualityChanges,
     );
   }
 
@@ -1060,50 +1056,6 @@ class VibeConnectionOrchestrator {
     await PrekeyBundleRotationLane.run(
       signalKeyManager: _signalKeyManager,
       activeConnections: _activeConnections.values,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _expireSessionsBasedOnQuality(
-      SignalSessionManager sessionManager) async {
-    await SessionExpiryLane.run(
-      sessionManager: sessionManager,
-      activeConnectionsById: _activeConnections,
-      completeConnection: _completeConnection,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _cleanupInactiveSessions(
-      SignalSessionManager sessionManager) async {
-    await InactiveSessionCleanupLane.run(
-      sessionManager: sessionManager,
-      activeConnections: _activeConnections.values,
-      discoveredNodes: _discoveredNodes.values,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _renewActiveSessions(SignalSessionManager sessionManager) async {
-    await SessionRenewalLane.run(
-      sessionManager: sessionManager,
-      activeConnections: _activeConnections.values,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _rotateKeysBasedOnQualityChanges(
-    SignalSessionManager sessionManager,
-  ) async {
-    await QualityChangeKeyRotationLane.run(
-      sessionManager: sessionManager,
-      activeConnections: _activeConnections.values,
-      previousQualityScores: _previousQualityScores,
-      qualityChangeThreshold: _qualityChangeThreshold,
       logger: _logger,
       logName: _logName,
     );
