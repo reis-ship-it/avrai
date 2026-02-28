@@ -16,6 +16,8 @@ import 'package:avrai_knot/services/knot/entity_knot_service.dart';
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
 
+part 'vibe_compatibility_models.dart';
+
 /// A structured compatibility breakdown for any "vibe score".
 ///
 /// This is the **truthful** scoring contract used by the app:
@@ -449,14 +451,3 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     ).clamped();
   }
 }
-
-class _KnotScores {
-  final double topological;
-  final double weave;
-
-  const _KnotScores({
-    required this.topological,
-    required this.weave,
-  });
-}
-
