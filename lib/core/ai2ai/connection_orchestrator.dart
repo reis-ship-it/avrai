@@ -27,17 +27,13 @@ import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
-import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
-import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
-import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_message_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_shutdown_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_init_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_orchestration_flow_lane.dart';
@@ -913,7 +909,7 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
-    await IncomingLearningInsightProcessingLane.handle(
+    await IncomingMessageOrchestrationLane.handleLearningInsight(
       message: message,
       prefs: _prefs,
       prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
@@ -930,32 +926,8 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _handleIncomingUserChat(ProtocolMessage message) async {
-    await IncomingUserChatProcessingLane.handle(
+    await IncomingMessageOrchestrationLane.handleUserChat(
       message: message,
-      handleIncomingBusinessExpertChat: _handleIncomingBusinessExpertChat,
-      handleIncomingBusinessBusinessChat: _handleIncomingBusinessBusinessChat,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _handleIncomingBusinessExpertChat(
-    ProtocolMessage _,
-    Map<String, dynamic> payload,
-  ) async {
-    await IncomingBusinessExpertChatLane.handle(
-      payload: payload,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _handleIncomingBusinessBusinessChat(
-    ProtocolMessage _,
-    Map<String, dynamic> payload,
-  ) async {
-    await IncomingBusinessBusinessChatLane.handle(
-      payload: payload,
       logger: _logger,
       logName: _logName,
     );
@@ -1283,7 +1255,7 @@ class VibeConnectionOrchestrator {
 
   Future<void> _handleIncomingLocalityAgentUpdate(
       ProtocolMessage message) async {
-    await IncomingMeshSignalHandlersLane.handleLocalityAgentUpdate(
+    await IncomingMessageOrchestrationLane.handleLocalityAgentUpdate(
       message: message,
       adaptiveMeshService: _adaptiveMeshService,
       maybeForwardLocalityAgentUpdateGossip:
@@ -1295,7 +1267,7 @@ class VibeConnectionOrchestrator {
 
   Future<void> _handleIncomingOrganicSpotDiscovery(
       ProtocolMessage message) async {
-    await IncomingMeshSignalHandlersLane.handleOrganicSpotDiscovery(
+    await IncomingMessageOrchestrationLane.handleOrganicSpotDiscovery(
       message: message,
       currentUserId: _currentUserId,
       logger: _logger,
