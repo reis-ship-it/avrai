@@ -12,6 +12,7 @@ import 'package:avrai/core/controllers/quantum_matching_controller.dart';
 import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/controllers/urk_stage_b_event_ops_shadow_runtime_contract.dart';
+import 'package:avrai/core/services/user/urk_user_runtime_learning_intake_contract.dart';
 import 'package:avrai/core/models/quantum/matching_input.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:avrai_core/models/personality_knot.dart';
@@ -20,6 +21,7 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
+import 'package:get_it/get_it.dart';
 
 /// Event Recommendation Service
 ///
@@ -62,6 +64,7 @@ class EventRecommendationService {
   final WorkflowController<MatchingInput, QuantumMatchingResult>?
       _quantumMatchingController;
   final UrkStageBEventOpsShadowRuntimeValidator _runtimeValidator;
+  final UrkUserRuntimeLearningIntakeContract _userRuntimeIntakeContract;
   final UrkRuntimeActivationReceiptDispatcher? _activationDispatcher;
 
   EventRecommendationService({
@@ -80,6 +83,8 @@ class EventRecommendationService {
         quantumMatchingController,
     UrkStageBEventOpsShadowRuntimeValidator runtimeValidator =
         const UrkStageBEventOpsShadowRuntimeValidator(),
+    UrkUserRuntimeLearningIntakeContract userRuntimeIntakeContract =
+        const UrkUserRuntimeLearningIntakeContract(),
     UrkRuntimeActivationReceiptDispatcher? activationDispatcher,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _matchingService = matchingService ?? EventMatchingService(),
@@ -91,11 +96,12 @@ class EventRecommendationService {
         _personalityLearning = personalityLearning,
         _vibeCompatibilityService = vibeCompatibilityService,
         _agentIdService = agentIdService,
-        _storageService = storageService,
+        _storageService = storageService ?? resolveDefaultStorageService(),
         _knotFabricService = knotFabricService,
         _knotStorageService = knotStorageService,
         _quantumMatchingController = quantumMatchingController,
         _runtimeValidator = runtimeValidator,
+        _userRuntimeIntakeContract = userRuntimeIntakeContract,
         _activationDispatcher = activationDispatcher ??
             resolveDefaultUrkRuntimeActivationDispatcher();
 
@@ -419,30 +425,34 @@ class EventRecommendationService {
     if (dispatcher == null) {
       return;
     }
-    final userRuntimeEnabled = _readSettingBool(
-      key: 'user_runtime_learning_enabled',
-      defaultValue: true,
-    );
-    final actor = await _resolveActorAgentId(userId);
-    final requestId =
-        'user_runtime_learning_${userId}_${scopeHint}_${reason}_${DateTime.now().millisecondsSinceEpoch}';
     try {
-      if (!userRuntimeEnabled) {
+      final actorAgentId = await _resolveActorAgentId(userId);
+      final intakeResult = _userRuntimeIntakeContract.validate(
+        UrkUserRuntimeLearningIntakeRequest(
+          actorAgentId: actorAgentId,
+          signalType: 'in_app_behavior',
+          consentScopes: await _resolveConsentScopes(),
+          containsSensitiveRawContent: false,
+        ),
+      );
+      if (!intakeResult.accepted) {
         await dispatcher.dispatch(
-          requestId: requestId,
+          requestId:
+              'user_runtime_learning_${userId}_${scopeHint}_${reason}_${DateTime.now().millisecondsSinceEpoch}',
           trigger: 'policy_violation_detected',
           privacyMode: UrkPrivacyMode.localSovereign,
-          actor: actor,
+          actor: intakeResult.pseudonymousActorRef,
           reason:
-              'user_runtime_learning_intake_rejected;runtime_lane=user_runtime;privacy_mode=local_sovereign;consent_toggle=user_runtime_learning_enabled;reason_code=consent_disabled',
+              'user_runtime_learning_intake_rejected;runtime_lane=user_runtime;privacy_mode=local_sovereign;consent_toggle=user_runtime_learning_enabled;reason_code=${intakeResult.reasonCode}',
         );
         return;
       }
       await dispatcher.dispatch(
-        requestId: requestId,
+        requestId:
+            'user_runtime_learning_${userId}_${scopeHint}_${reason}_${DateTime.now().millisecondsSinceEpoch}',
         trigger: 'user_runtime_learning_signal',
         privacyMode: UrkPrivacyMode.localSovereign,
-        actor: actor,
+        actor: intakeResult.pseudonymousActorRef,
         reason:
             'user_runtime_learning_intake_accepted;runtime_lane=user_runtime;privacy_mode=local_sovereign;consent_toggle=user_runtime_learning_enabled',
       );
@@ -461,6 +471,39 @@ class EventRecommendationService {
     } catch (_) {
       return 'agt_$userId';
     }
+  }
+
+  Future<Set<String>> _resolveConsentScopes() async {
+    final scopes = <String>{};
+    final userRuntimeLearningEnabled = _readSettingBool(
+      key: 'user_runtime_learning_enabled',
+      defaultValue: true,
+    );
+    if (userRuntimeLearningEnabled) {
+      scopes.add('user_runtime_learning');
+    }
+    final ai2aiLearningEnabled = _readSettingBool(
+      key: 'ai2ai_learning_enabled',
+      defaultValue: true,
+    );
+    if (ai2aiLearningEnabled) {
+      scopes.add('ai2ai_learning');
+    }
+    final discoveryEnabled = _readSettingBool(
+      key: 'discovery_enabled',
+      defaultValue: true,
+    );
+    if (discoveryEnabled) {
+      scopes.add('discovery');
+    }
+    final cloudSyncEnabled = _readSettingBool(
+      key: 'cloud_sync_enabled',
+      defaultValue: false,
+    );
+    if (cloudSyncEnabled) {
+      scopes.add('cloud_sync');
+    }
+    return scopes;
   }
 
   bool _readSettingBool({
@@ -912,4 +955,12 @@ class EventRecommendation {
     required this.relevanceScore,
     required this.recommendationReason,
   });
+}
+
+StorageService? resolveDefaultStorageService() {
+  final sl = GetIt.instance;
+  if (!sl.isRegistered<StorageService>()) {
+    return null;
+  }
+  return sl<StorageService>();
 }

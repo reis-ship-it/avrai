@@ -1,0 +1,24 @@
+{
+  "errors": [],
+  "learning_intake_coverage": {
+    "checks_executed": 144,
+    "observed_on_device_first_processing_pct": 100.0,
+    "observed_pseudonymous_actor_coverage_pct": 100.0,
+    "observed_signal_capture_coverage_pct": 100.0,
+    "required_on_device_first_processing_pct": 100.0,
+    "required_pseudonymous_actor_coverage_pct": 100.0,
+    "required_signal_capture_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "learning_intake_safety": {
+    "checks_executed": 144,
+    "max_missing_consent_events": 0,
+    "max_raw_user_identifier_egress_events": 0,
+    "observed_missing_consent_events": 0,
+    "observed_raw_user_identifier_egress_events": 0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_user_runtime_learning_intake_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}
