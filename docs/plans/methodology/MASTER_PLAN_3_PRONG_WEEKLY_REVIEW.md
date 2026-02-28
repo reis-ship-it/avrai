@@ -25,12 +25,12 @@
 ### Shadow Gate Telemetry Snapshot
 
 - Source: `docs/plans/methodology/MASTER_PLAN_3_PRONG_SHADOW_GATE_TELEMETRY_WEEKLY.json`
-- Bypass rate: 0.00% (0/2)
-- Enforce block rate (all enforce decisions): 0.00% (0/0)
-- Enforce block rate (high-impact only): 0.00% (0/0)
+- Bypass rate: No data
+- Enforce block rate (all enforce decisions): No data
+- Enforce block rate (high-impact only): No data
 - Threshold: <= 2.0%
-- Gate status: PASS
-- Window: 2026-02-27T12:00:02.000Z -> 2026-02-27T12:00:03.000Z
+- Gate status: NO_DATA
+- Note: Input file does not exist.
 - Canary rollback drill source: `docs/plans/methodology/MASTER_PLAN_3_PRONG_CANARY_ROLLBACK_DRILL_REPORT.json`
 - Canary rollback drill verdict: PASS (1/2 incidents required rollback)
 - Fail-closed rollback profile: PASS
