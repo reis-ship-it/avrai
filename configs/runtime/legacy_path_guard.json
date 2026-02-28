@@ -1,0 +1,24 @@
+{
+  "legacy_roots": [
+    "lib/core/",
+    "lib/domain/",
+    "lib/data/",
+    "lib/di/",
+    "lib/presentation/"
+  ],
+  "target_roots": [
+    "apps/",
+    "runtime/",
+    "engine/",
+    "shared/"
+  ],
+  "allowlisted_legacy_paths": [],
+  "strict_blocked_roots": [
+    "lib/core/ai2ai/routing/",
+    "lib/core/ai2ai/resilience/"
+  ],
+  "shim_marker": "MIGRATION_SHIM:",
+  "shim_extensions": [
+    ".dart"
+  ]
+}

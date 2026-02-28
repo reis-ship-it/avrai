@@ -32,6 +32,7 @@ Runtime transport canonicalization note:
   - `lib/runtime/avrai_runtime_os/services/transport/ble/`
   - `lib/runtime/avrai_runtime_os/services/transport/mesh/`
 - New transport logic must not be added under `lib/core/ai2ai/resilience/` or `lib/core/ai2ai/routing/`.
+- `lib/core/ai2ai/resilience/` and `lib/core/ai2ai/routing/` are strict blocked legacy roots: only deletion is allowed during migration.
 
 ## Required Update Flow for New Files
 
