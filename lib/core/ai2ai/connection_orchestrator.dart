@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
 import 'package:flutter/foundation.dart'
@@ -35,8 +36,7 @@ import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
-import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_lane.dart';
-import 'package:avrai/core/ai2ai/locality/learning_insight_peer_dispatch_lane.dart';
+import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
@@ -693,7 +693,7 @@ class VibeConnectionOrchestrator {
     required List<AIPersonalityNode> nodes,
     required Map<String, VibeCompatibilityResult> compatibilityByNodeId,
   }) async {
-    await PassiveAi2AiLearningLane.apply(
+    await PassiveAi2AiLearningOrchestrationLane.apply(
       prefs: _prefs,
       prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
       personalityLearning: _connectionManager.personalityLearning,
@@ -703,29 +703,14 @@ class VibeConnectionOrchestrator {
       compatibilityByNodeId: compatibilityByNodeId,
       lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
       applyInsightForPeer: _applyInsightForPeer,
-      sendLearningInsightToPeer: ({
-        required String peerId,
-        required AI2AILearningInsight insight,
-        required double learningQuality,
-      }) async {
-        await LearningInsightPeerDispatchLane.send(
-          allowBleSideEffects: _allowBleSideEffects,
-          eventModeEnabled: _isEventModeEnabled(),
-          protocol: _protocol,
-          deviceDiscovery: _deviceDiscovery,
-          peerId: peerId,
-          prefs: _prefs,
-          prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
-          peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-          localBleNodeId: _localBleNodeId,
-          insight: insight,
-          learningQuality: learningQuality,
-          enqueueFederatedDeltaForCloudFromInsightPayload:
-              _enqueueFederatedDeltaForCloudFromInsightPayload,
-          logger: _logger,
-          logName: _logName,
-        );
-      },
+      allowBleSideEffects: _allowBleSideEffects,
+      eventModeEnabled: _isEventModeEnabled(),
+      protocol: _protocol,
+      deviceDiscovery: _deviceDiscovery,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      localBleNodeId: _localBleNodeId,
+      enqueueFederatedDeltaForCloudFromInsightPayload:
+          _enqueueFederatedDeltaForCloudFromInsightPayload,
       logger: _logger,
       logName: _logName,
     );
