@@ -1,6 +1,6 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
-import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_routing_policy.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
