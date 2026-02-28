@@ -184,6 +184,10 @@ phase row + milestone row(s) + risk + gate criteria.
 | M22-P10-2 | 10 | 22 | Apps lane wave 22: consumer/admin shell hardening + contract-consumer adapters | baseline | none | user_runtime | cross_prong | multi_mode | L2 | PRD-012, PRD-013, PRD-014, PRD-033 | 10.1.6, 10.10.9, 10.10.11, 10.10.12 | apps/consumer_app | AP, Product | Product | M22-P10-1 | 12 | High | Week 66-67 | Done | docs/plans/methodology/M22_P10_2_APPS_WAVE22_SHELL_HARDENING_CONTRACT_CONSUMER_ADAPTERS_BASELINE.md, configs/runtime/apps_wave22_shell_hardening_contract_consumer_adapters_controls.json, docs/plans/methodology/MASTER_PLAN_APPS_WAVE22_SHELL_HARDENING_CONTRACT_CONSUMER_ADAPTERS_REPORT.json, docs/plans/methodology/MASTER_PLAN_APPS_WAVE22_SHELL_HARDENING_CONTRACT_CONSUMER_ADAPTERS_REPORT.md, docs/plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md, apps/consumer_app/README.md, apps/admin_app/README.md |
 | M22-P3-1 | 3 | 22 | Reality Model lane wave 22: deterministic interface pack + promotion/rollback contract hardening | baseline | none | shared | model_core | multi_mode | L4 | PRD-021, PRD-022, PRD-033, PRD-034 | 3.1.1, 3.2.1, 7.7.5, 10.10.9, 10.10.12 | engine/reality_engine | AP, MLE | AP | M22-P10-1 | 20 | Critical | Week 67-69 | Done | docs/plans/methodology/M22_P3_1_REALITY_MODEL_WAVE22_DETERMINISTIC_INTERFACE_PROMOTION_ROLLBACK_HARDENING_BASELINE.md, configs/runtime/reality_model_wave22_deterministic_interface_promotion_rollback_hardening_controls.json, docs/plans/methodology/MASTER_PLAN_REALITY_MODEL_WAVE22_DETERMINISTIC_INTERFACE_PROMOTION_ROLLBACK_HARDENING_REPORT.json, docs/plans/methodology/MASTER_PLAN_REALITY_MODEL_WAVE22_DETERMINISTIC_INTERFACE_PROMOTION_ROLLBACK_HARDENING_REPORT.md, docs/plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md, docs/MASTER_PLAN.md, docs/EXECUTION_BOARD.md |
 | M22-P7-1 | 7 | 22 | Runtime OS lane wave 22: endpoint contract parity + fail-closed policy adapter hardening | baseline | none | event_ops_runtime | runtime_core | multi_mode | L3 | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.7.5, 10.10.9, 10.10.12 | runtime/avrai_runtime_os | AP, REL | REL | M22-P10-1 | 16 | High | Week 66-68 | Done | docs/plans/methodology/M22_P7_1_RUNTIME_OS_WAVE22_ENDPOINT_PARITY_FAIL_CLOSED_POLICY_ADAPTER_HARDENING_BASELINE.md, configs/runtime/runtime_os_wave22_endpoint_parity_fail_closed_policy_adapter_hardening_controls.json, docs/plans/methodology/MASTER_PLAN_RUNTIME_OS_WAVE22_ENDPOINT_PARITY_FAIL_CLOSED_POLICY_ADAPTER_HARDENING_REPORT.json, docs/plans/methodology/MASTER_PLAN_RUNTIME_OS_WAVE22_ENDPOINT_PARITY_FAIL_CLOSED_POLICY_ADAPTER_HARDENING_REPORT.md, docs/plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md, python3 scripts/ci/check_three_prong_boundaries.py, python3 scripts/validate_architecture_placement.py |
+| M23-P10-1 | 10 | 23 | 3-prong concurrent execution wave 23 umbrella coordination + dependency lock | baseline | none | shared | cross_prong | multi_mode | L3 | PRD-030, PRD-031, PRD-032, PRD-033, PRD-034 | 10.10.9, 10.10.10, 10.10.11, 10.10.12 | docs/plans/architecture | AP, REL | GOV | M22-P10-2, M22-P7-1, M22-P3-1 | 12 | High | Week 69-70 | Done | docs/plans/methodology/M23_P10_1_3_PRONG_WAVE23_UMBRELLA_COORDINATION_DEPENDENCY_LOCK_BASELINE.md, configs/runtime/three_prong_wave23_umbrella_coordination_dependency_lock_controls.json, docs/plans/methodology/MASTER_PLAN_3_PRONG_WAVE23_UMBRELLA_COORDINATION_DEPENDENCY_LOCK_REPORT.json, docs/plans/methodology/MASTER_PLAN_3_PRONG_WAVE23_UMBRELLA_COORDINATION_DEPENDENCY_LOCK_REPORT.md, docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md, docs/EXECUTION_BOARD.md, docs/MASTER_PLAN.md |
+| M23-P10-2 | 10 | 23 | Apps lane wave 23: consumer/admin shell hardening + contract-consumer adapters | baseline | none | user_runtime | cross_prong | multi_mode | L2 | PRD-012, PRD-013, PRD-014, PRD-033 | 10.1.6, 10.10.9, 10.10.11, 10.10.12 | apps/consumer_app | AP, Product | Product | M23-P10-1 | 12 | High | Week 70-71 | Ready | - |
+| M23-P3-1 | 3 | 23 | Reality Model lane wave 23: deterministic interface pack + promotion/rollback contract hardening | baseline | none | shared | model_core | multi_mode | L4 | PRD-021, PRD-022, PRD-033, PRD-034 | 3.1.1, 3.2.1, 7.7.5, 10.10.9, 10.10.12 | engine/reality_engine | AP, MLE | AP | M23-P10-1 | 20 | Critical | Week 71-73 | Ready | - |
+| M23-P7-1 | 7 | 23 | Runtime OS lane wave 23: endpoint contract parity + fail-closed policy adapter hardening | baseline | none | event_ops_runtime | runtime_core | multi_mode | L3 | PRD-021, PRD-022, PRD-033, PRD-034 | 7.4.3, 7.7.5, 10.10.9, 10.10.12 | runtime/avrai_runtime_os | AP, REL | REL | M23-P10-1 | 16 | High | Week 70-72 | Ready | - |
 | M3-P11-1 | 11 | 3 | Integration governance + contract security gates | baseline | none | shared | governance_core | federated_cloud | L4 | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 11.1.1, 11.2.1, 11.4.1 | lib/core/cloud | Integrations Platform | GOV | M3-P9-1 | 15 | High | Week 11-12 | Done | docs/plans/methodology/M3_P11_1_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_BASELINE.md, configs/runtime/integration_governance_contract_security_controls.json, scripts/runtime/generate_integration_governance_contract_security_report.py, docs/plans/methodology/MASTER_PLAN_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_REPORT.json, docs/plans/methodology/MASTER_PLAN_INTEGRATION_GOVERNANCE_CONTRACT_SECURITY_REPORT.md, lib/core/cloud/integration_governance_contract_security_contract.dart, test/unit/cloud/integration_governance_contract_security_contract_test.dart |
 | M3-P9-1 | 9 | 3 | Business data/consent governance hardening | baseline | none | business_ops_runtime | governance_core | federated_cloud | L4 | PRD-020, PRD-021, PRD-022, PRD-033, PRD-034 | 9.2.6, 9.3.1, 9.3.3 | lib/core/services/business | Business Platform, AP | GOV | M2-P6-1 | 12 | High | Week 10-11 | Done | docs/plans/methodology/M3_P9_1_BUSINESS_DATA_CONSENT_GOVERNANCE_BASELINE.md, configs/runtime/business_data_consent_governance_controls.json, scripts/runtime/generate_business_data_consent_governance_report.py, docs/plans/methodology/MASTER_PLAN_BUSINESS_DATA_CONSENT_GOVERNANCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_BUSINESS_DATA_CONSENT_GOVERNANCE_REPORT.md, lib/core/services/business/business_data_consent_governance_contract.dart, test/unit/services/business_data_consent_governance_contract_test.dart |
 | M4-P3-1 | 1 | 4 | 3-prong claim lifecycle schema + API contracts | baseline | none | shared | governance_core | multi_mode | L4 | PRD-010, PRD-011, PRD-033, PRD-034 | 1.1.1, 1.1.2, 7.7.1 | lib/core/ai | AP, MLE | AP | M2-P1-1 | 20 | Critical | Day 0-30 | Done | docs/plans/methodology/M4_P3_1_CLAIM_LIFECYCLE_CONTRACT_BASELINE.md, lib/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart, test/unit/ai/claim_lifecycle_contract_test.dart |
@@ -216,20 +220,20 @@ phase row + milestone row(s) + risk + gate criteria.
 
 | Lane | Total | Backlog | Ready | In Progress | Blocked | Done |
 |------|------:|--------:|------:|------------:|--------:|-----:|
-| `user_runtime` | 14 | 0 | 0 | 0 | 0 | 14 |
-| `event_ops_runtime` | 22 | 0 | 0 | 0 | 0 | 22 |
+| `user_runtime` | 15 | 0 | 1 | 0 | 0 | 14 |
+| `event_ops_runtime` | 23 | 0 | 1 | 0 | 0 | 22 |
 | `business_ops_runtime` | 2 | 0 | 0 | 0 | 0 | 2 |
 | `expert_services_runtime` | 1 | 0 | 0 | 0 | 0 | 1 |
-| `shared` | 51 | 0 | 0 | 0 | 0 | 51 |
+| `shared` | 53 | 0 | 1 | 0 | 0 | 52 |
 
 ### URK Prong Lanes
 
 | Lane | Total | Backlog | Ready | In Progress | Blocked | Done |
 |------|------:|--------:|------:|------------:|--------:|-----:|
-| `model_core` | 19 | 0 | 0 | 0 | 0 | 19 |
-| `runtime_core` | 24 | 0 | 0 | 0 | 0 | 24 |
+| `model_core` | 20 | 0 | 1 | 0 | 0 | 19 |
+| `runtime_core` | 25 | 0 | 1 | 0 | 0 | 24 |
 | `governance_core` | 16 | 0 | 0 | 0 | 0 | 16 |
-| `cross_prong` | 31 | 0 | 0 | 0 | 0 | 31 |
+| `cross_prong` | 33 | 0 | 1 | 0 | 0 | 32 |
 
 ### Privacy Mode Impact Lanes
 
@@ -238,16 +242,16 @@ phase row + milestone row(s) + risk + gate criteria.
 | `local_sovereign` | 1 | 0 | 0 | 0 | 0 | 1 |
 | `private_mesh` | 3 | 0 | 0 | 0 | 0 | 3 |
 | `federated_cloud` | 4 | 0 | 0 | 0 | 0 | 4 |
-| `multi_mode` | 82 | 0 | 0 | 0 | 0 | 82 |
+| `multi_mode` | 86 | 0 | 3 | 0 | 0 | 83 |
 
 ### Impact Tier Lanes
 
 | Lane | Total | Backlog | Ready | In Progress | Blocked | Done |
 |------|------:|--------:|------:|------------:|--------:|-----:|
 | `L1` | 0 | 0 | 0 | 0 | 0 | 0 |
-| `L2` | 16 | 0 | 0 | 0 | 0 | 16 |
-| `L3` | 41 | 0 | 0 | 0 | 0 | 41 |
-| `L4` | 33 | 0 | 0 | 0 | 0 | 33 |
+| `L2` | 17 | 0 | 1 | 0 | 0 | 16 |
+| `L3` | 43 | 0 | 1 | 0 | 0 | 42 |
+| `L4` | 34 | 0 | 1 | 0 | 0 | 33 |
 <!-- EXECUTION_BOARD:URK_LANES_END -->
 
 ## Kanban Snapshot
@@ -259,7 +263,7 @@ None
 
 ### Ready
 
-None
+`M23-P10-2`, `M23-P3-1`, `M23-P7-1`
 
 ### In Progress
 
@@ -271,7 +275,7 @@ None
 
 ### Done
 
-`M0-P10-1`, `M0-P10-2`, `M0-P10-3`, `M0-P2-1`, `M1-P7-1`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M10-P10-3`, `M10-P10-4`, `M10-P10-5`, `M10-P10-6`, `M10-P11-1`, `M10-P11-2`, `M10-P3-1`, `M10-P6-1`, `M10-P7-1`, `M11-P3-1`, `M12-P10-1`, `M12-P10-2`, `M12-P10-3`, `M12-P10-4`, `M13-P10-1`, `M13-P10-2`, `M13-P3-1`, `M13-P7-1`, `M14-P10-1`, `M14-P10-2`, `M14-P3-1`, `M14-P7-1`, `M15-P10-1`, `M15-P10-2`, `M15-P3-1`, `M15-P7-1`, `M16-P10-1`, `M16-P10-2`, `M16-P3-1`, `M16-P7-1`, `M17-P10-1`, `M17-P10-2`, `M17-P3-1`, `M17-P7-1`, `M18-P10-1`, `M18-P10-2`, `M18-P3-1`, `M18-P7-1`, `M19-P10-1`, `M19-P10-2`, `M19-P3-1`, `M19-P7-1`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M20-P10-1`, `M20-P10-2`, `M20-P3-1`, `M20-P7-1`, `M21-P10-1`, `M21-P10-2`, `M21-P3-1`, `M21-P7-1`, `M22-P10-1`, `M22-P10-2`, `M22-P3-1`, `M22-P7-1`, `M3-P11-1`, `M3-P9-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`, `M9-P3-3`, `M9-P5-2`
+`M0-P10-1`, `M0-P10-2`, `M0-P10-3`, `M0-P2-1`, `M1-P7-1`, `M1-P7-2`, `M1-P8-1`, `M1-P8-2`, `M10-P10-3`, `M10-P10-4`, `M10-P10-5`, `M10-P10-6`, `M10-P11-1`, `M10-P11-2`, `M10-P3-1`, `M10-P6-1`, `M10-P7-1`, `M11-P3-1`, `M12-P10-1`, `M12-P10-2`, `M12-P10-3`, `M12-P10-4`, `M13-P10-1`, `M13-P10-2`, `M13-P3-1`, `M13-P7-1`, `M14-P10-1`, `M14-P10-2`, `M14-P3-1`, `M14-P7-1`, `M15-P10-1`, `M15-P10-2`, `M15-P3-1`, `M15-P7-1`, `M16-P10-1`, `M16-P10-2`, `M16-P3-1`, `M16-P7-1`, `M17-P10-1`, `M17-P10-2`, `M17-P3-1`, `M17-P7-1`, `M18-P10-1`, `M18-P10-2`, `M18-P3-1`, `M18-P7-1`, `M19-P10-1`, `M19-P10-2`, `M19-P3-1`, `M19-P7-1`, `M2-P1-1`, `M2-P3-1`, `M2-P4-1`, `M2-P5-1`, `M2-P6-1`, `M20-P10-1`, `M20-P10-2`, `M20-P3-1`, `M20-P7-1`, `M21-P10-1`, `M21-P10-2`, `M21-P3-1`, `M21-P7-1`, `M22-P10-1`, `M22-P10-2`, `M22-P3-1`, `M22-P7-1`, `M23-P10-1`, `M3-P11-1`, `M3-P9-1`, `M4-P3-1`, `M4-P3-2`, `M4-P3-3`, `M5-P3-1`, `M5-P3-2`, `M5-P3-3`, `M5-P3-4`, `M6-P3-1`, `M6-P3-2`, `M6-P3-3`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`, `M9-P3-3`, `M9-P5-2`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
