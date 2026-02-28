@@ -18,16 +18,13 @@ import 'package:avrai/core/ai2ai/pending_connection.dart';
 import 'package:avrai/core/ai2ai/connection_summary.dart';
 import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
-import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
-import 'package:avrai/core/ai2ai/routing/event_mode_initiator_policy.dart';
-import 'package:avrai/core/ai2ai/routing/event_mode_target_selector.dart';
-import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_lane.dart';
+import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
@@ -530,51 +527,34 @@ class VibeConnectionOrchestrator {
 
   Future<void> _handleEventModeScanWindow(
       List<DiscoveredDevice> devices) async {
-    await EventModeScanWindowLane.handle(
+    await EventModeScanWindowOrchestrationLane.handle(
       allowBleSideEffects: _allowBleSideEffects,
       currentUserId: _currentUserId,
       hasCurrentPersonality: _currentPersonality != null,
       lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
-      onEventModeReset: () {
-        _eventModeDeepSyncCount = 0;
-        _eventModeLastDeepSyncAtMsByNodeTag.clear();
-        _eventModeLastEpochAttempted = -1;
-        _eventModeCheckInRunning = false;
-      },
       devices: devices,
       hotRssiThresholdDbm: _hotRssiThresholdDbm,
       familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
       batteryScheduler: _batteryScheduler,
       roomCoherenceEngine: _roomCoherenceEngine,
       maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
-      eventModeMayInitiate: ({required int epoch}) {
-        return EventModeInitiatorPolicy.mayInitiate(
-          localBleNodeId: _localBleNodeId,
-          epoch: epoch,
-          eligibilityPercent: _eventInitiatorEligibilityPct,
-        );
-      },
-      pickEventModeTarget: ({
-        required List<EventModeCandidate> candidates,
-        required int nowMs,
-        required int epoch,
-      }) {
-        return EventModeTargetSelector.select(
-          candidates: candidates,
-          nowMs: nowMs,
-          epoch: epoch,
-          localNodeTagKey: _localNodeTagKey,
-          lastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
-          familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
-          perNodeDeepSyncCooldownMs: _eventPerNodeDeepSyncCooldownMs,
-        );
-      },
+      localBleNodeId: _localBleNodeId,
+      eventInitiatorEligibilityPct: _eventInitiatorEligibilityPct,
+      localNodeTagKey: _localNodeTagKey,
+      eventModeLastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
+      eventPerNodeDeepSyncCooldownMs: _eventPerNodeDeepSyncCooldownMs,
       eventEpochMs: _eventEpochMs,
       eventCheckInWindowMs: _eventCheckInWindowMs,
       eventMaxDeepSyncPerEvent: _eventMaxDeepSyncPerEvent,
       eventModeDeepSyncCount: _eventModeDeepSyncCount,
       eventModeLastEpochAttempted: _eventModeLastEpochAttempted,
       eventModeCheckInRunning: _eventModeCheckInRunning,
+      onEventModeReset: () {
+        _eventModeDeepSyncCount = 0;
+        _eventModeLastDeepSyncAtMsByNodeTag.clear();
+        _eventModeLastEpochAttempted = -1;
+        _eventModeCheckInRunning = false;
+      },
       setEventModeLastEpochAttempted: (epoch) {
         _eventModeLastEpochAttempted = epoch;
       },
@@ -583,16 +563,6 @@ class VibeConnectionOrchestrator {
       },
       incrementEventModeDeepSyncCount: () {
         _eventModeDeepSyncCount += 1;
-      },
-      eventModeLastDeepSyncAtMsByNodeTag: _eventModeLastDeepSyncAtMsByNodeTag,
-      waitInitiatorJitter: ({required int epoch}) async {
-        final jitterMs = EventModeInitiatorPolicy.jitterMs(
-          localBleNodeId: _localBleNodeId,
-          epoch: epoch,
-        );
-        if (jitterMs > 0) {
-          await Future<void>.delayed(Duration(milliseconds: jitterMs));
-        }
       },
       processHotDevice: _processHotDevice,
     );
