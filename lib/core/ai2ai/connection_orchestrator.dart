@@ -34,7 +34,7 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestrat
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_init_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/session_lifecycle_orchestration_flow_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
@@ -489,7 +489,7 @@ class VibeConnectionOrchestrator {
 
   Future<void> _handleEventModeScanWindow(
       List<DiscoveredDevice> devices) async {
-    await EventModeScanWindowOrchestrationLane.handle(
+    final state = await EventModeScanWindowOrchestrationLane.handleForOrchestrator(
       allowBleSideEffects: _allowBleSideEffects,
       currentUserId: _currentUserId,
       hasCurrentPersonality: _currentPersonality != null,
@@ -511,23 +511,11 @@ class VibeConnectionOrchestrator {
       eventModeDeepSyncCount: _eventModeDeepSyncCount,
       eventModeLastEpochAttempted: _eventModeLastEpochAttempted,
       eventModeCheckInRunning: _eventModeCheckInRunning,
-      onEventModeReset: () {
-        _eventModeDeepSyncCount = 0;
-        _eventModeLastDeepSyncAtMsByNodeTag.clear();
-        _eventModeLastEpochAttempted = -1;
-        _eventModeCheckInRunning = false;
-      },
-      setEventModeLastEpochAttempted: (epoch) {
-        _eventModeLastEpochAttempted = epoch;
-      },
-      setEventModeCheckInRunning: (running) {
-        _eventModeCheckInRunning = running;
-      },
-      incrementEventModeDeepSyncCount: () {
-        _eventModeDeepSyncCount += 1;
-      },
       processHotDevice: _processHotDevice,
     );
+    _eventModeDeepSyncCount = state.deepSyncCount;
+    _eventModeLastEpochAttempted = state.lastEpochAttempted;
+    _eventModeCheckInRunning = state.checkInRunning;
   }
 
   Future<void> _maybeUpdateEventModeBroadcastFlags({
