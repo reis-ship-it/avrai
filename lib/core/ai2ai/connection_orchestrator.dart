@@ -403,8 +403,25 @@ class VibeConnectionOrchestrator {
           _connectionMaintenanceTimer =
               OrchestrationStartupLane.startConnectionMaintenance(
             manageActiveConnections: manageActiveConnections,
-            manageSessionLifecycle: _manageSessionLifecycle,
-            managePreKeyBundleRotation: _managePreKeyBundleRotation,
+            manageSessionLifecycle: () async {
+              await SessionLifecycleOrchestrationFlowLane.run(
+                activeConnectionsById: _activeConnections,
+                discoveredNodes: _discoveredNodes.values,
+                completeConnection: _completeConnection,
+                previousQualityScores: _previousQualityScores,
+                qualityChangeThreshold: _qualityChangeThreshold,
+                logger: _logger,
+                logName: _logName,
+              );
+            },
+            managePreKeyBundleRotation: () async {
+              await PrekeyBundleRotationLane.run(
+                signalKeyManager: _signalKeyManager,
+                activeConnections: _activeConnections.values,
+                logger: _logger,
+                logName: _logName,
+              );
+            },
             logger: _logger,
             logName: _logName,
           );
@@ -883,7 +900,7 @@ class VibeConnectionOrchestrator {
       final handles = await FederatedCloudOrchestrationLane.startSync(
         isTestBinding: _isTestBinding,
         connectivity: _connectivity,
-        syncFederatedCloudQueue: _syncFederatedCloudQueue,
+        syncFederatedCloudQueue: syncFederatedCloudQueue,
         existingTimer: _federatedCloudSyncTimer,
         existingSubscription: _federatedCloudConnectivitySub,
         logger: _logger,
@@ -908,9 +925,7 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  Future<void> syncFederatedCloudQueue() => _syncFederatedCloudQueue();
-
-  Future<void> _syncFederatedCloudQueue() async {
+  Future<void> syncFederatedCloudQueue() async {
     _lastFederatedCloudSyncAttemptMs =
         await FederatedCloudOrchestrationLane.syncQueue(
       federatedLearningParticipationEnabled:
@@ -959,27 +974,6 @@ class VibeConnectionOrchestrator {
       eventModeLearningBuffer: _eventModeLearningBuffer,
       lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
       urkActivationDispatcher: _urkActivationDispatcher,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _manageSessionLifecycle() async {
-    await SessionLifecycleOrchestrationFlowLane.run(
-      activeConnectionsById: _activeConnections,
-      discoveredNodes: _discoveredNodes.values,
-      completeConnection: _completeConnection,
-      previousQualityScores: _previousQualityScores,
-      qualityChangeThreshold: _qualityChangeThreshold,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _managePreKeyBundleRotation() async {
-    await PrekeyBundleRotationLane.run(
-      signalKeyManager: _signalKeyManager,
-      activeConnections: _activeConnections.values,
       logger: _logger,
       logName: _logName,
     );
