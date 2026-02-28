@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/pages/profile/ai_personality_status_page.dart';
-import '../../helpers/widget_test_helpers.dart';
-import '../../mocks/mock_blocs.dart';
+import 'package:avrai/apps/consumer_app/ui/pages/profile/ai_personality_status_page.dart';
+import '../../../../../widget/helpers/widget_test_helpers.dart';
+import '../../../../../widget/mocks/mock_blocs.dart';
 
 /// Widget tests for AIPersonalityStatusPage
 /// Tests AI personality status page display
@@ -35,4 +35,3 @@ void main() {
     });
   });
 }
-

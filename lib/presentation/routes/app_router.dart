@@ -13,7 +13,7 @@ import 'package:avrai/presentation/pages/spots/spots_page.dart';
 import 'package:avrai/presentation/pages/lists/lists_page.dart';
 import 'package:avrai/presentation/pages/map/map_page.dart';
 import 'package:avrai/presentation/pages/profile/profile_page.dart';
-import 'package:avrai/presentation/pages/profile/ai_personality_status_page.dart';
+import 'package:avrai/apps/consumer_app/ui/pages/profile/ai_personality_status_page.dart';
 import 'package:avrai/presentation/pages/chat/unified_chat_page.dart';
 import 'package:avrai/presentation/pages/chat/friend_chat_view.dart';
 import 'package:avrai/presentation/pages/chat/community_chat_view.dart';

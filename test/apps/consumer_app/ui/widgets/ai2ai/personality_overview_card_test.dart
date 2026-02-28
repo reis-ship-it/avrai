@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/widgets/ai2ai/personality_overview_card.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/personality_overview_card.dart';
 import 'package:avrai_core/models/personality_profile.dart';
-import '../../helpers/widget_test_helpers.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../../../widget/helpers/widget_test_helpers.dart';
+import '../../../../../helpers/test_helpers.dart';
 
 /// Widget tests for PersonalityOverviewCard
 /// Tests personality overview display with dimensions, confidence, and archetype
@@ -101,4 +101,3 @@ void main() {
     });
   });
 }
-

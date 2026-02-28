@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/widgets/ai2ai/learning_insights_widget.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/learning_insights_widget.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
-import '../../helpers/widget_test_helpers.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../../../widget/helpers/widget_test_helpers.dart';
+import '../../../../../helpers/test_helpers.dart';
 
 /// Widget tests for LearningInsightsWidget
 /// Tests display of learning insights from AI2AI interactions including formatting, limits, and reliability indicators

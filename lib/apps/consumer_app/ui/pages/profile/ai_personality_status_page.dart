@@ -5,11 +5,11 @@ import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/ai/ai2ai_learning.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/presentation/widgets/ai2ai/personality_overview_card.dart';
-import 'package:avrai/presentation/widgets/ai2ai/user_connections_display.dart';
-import 'package:avrai/presentation/widgets/ai2ai/learning_insights_widget.dart';
-import 'package:avrai/presentation/widgets/ai2ai/evolution_timeline_widget.dart';
-import 'package:avrai/presentation/widgets/ai2ai/privacy_controls_widget.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/personality_overview_card.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/user_connections_display.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/learning_insights_widget.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/evolution_timeline_widget.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/privacy_controls_widget.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;

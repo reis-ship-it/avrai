@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:avrai/presentation/widgets/ai2ai/user_connections_display.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/user_connections_display.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
-import '../../helpers/widget_test_helpers.dart';
+import '../../../../../widget/helpers/widget_test_helpers.dart';
 
 /// Widget tests for UserConnectionsDisplay
 /// Tests display of active AI2AI connections

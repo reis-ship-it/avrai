@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/widgets/ai2ai/privacy_controls_widget.dart';
-import '../../helpers/widget_test_helpers.dart';
+import 'package:avrai/apps/consumer_app/ui/widgets/ai2ai/privacy_controls_widget.dart';
+import '../../../../../widget/helpers/widget_test_helpers.dart';
 
 /// Widget tests for PrivacyControlsWidget
 /// Tests privacy controls for AI2AI participation
@@ -53,4 +53,3 @@ void main() {
     });
   });
 }
-
