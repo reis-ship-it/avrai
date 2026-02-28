@@ -582,7 +582,7 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _processHotDevice(DiscoveredDevice device) async {
-    await HotPathOrchestrationFlowLane.processHotDevice(
+    await HotPathOrchestrationFlowLane.processHotDeviceForOrchestrator(
       device: device,
       currentUserId: _currentUserId,
       currentPersonality: _currentPersonality,
@@ -594,25 +594,16 @@ class VibeConnectionOrchestrator {
       isConnectionWorthy: _isConnectionWorthy,
       updateDiscoveredNodes: _updateDiscoveredNodes,
       maybeApplyPassiveAi2AiLearning: _maybeApplyPassiveAi2AiLearning,
-      logger: _logger,
-      logName: _logName,
-      onSessionOpenMs: _hotSessionOpenMs.add,
-      onVibeReadMs: _hotVibeReadMs.add,
-      onCompatMs: _hotCompatMs.add,
-      onTotalMs: _hotTotalMs.add,
-      maybeLogHotMetrics: _maybeLogHotMetrics,
-    );
-  }
-
-  void _maybeLogHotMetrics() {
-    _lastHotMetricsLogAtMs = HotPathMetricsOrchestrationLane.maybeLog(
-      lastLogAtMs: _lastHotMetricsLogAtMs,
-      minInterval: _hotMetricsLogInterval,
-      queueWait: _hotQueueWaitMs,
-      sessionOpen: _hotSessionOpenMs,
-      vibeRead: _hotVibeReadMs,
-      compatibility: _hotCompatMs,
-      total: _hotTotalMs,
+      hotSessionOpenMs: _hotSessionOpenMs,
+      hotVibeReadMs: _hotVibeReadMs,
+      hotCompatMs: _hotCompatMs,
+      hotTotalMs: _hotTotalMs,
+      hotQueueWaitMs: _hotQueueWaitMs,
+      lastHotMetricsLogAtMs: _lastHotMetricsLogAtMs,
+      hotMetricsLogInterval: _hotMetricsLogInterval,
+      setLastHotMetricsLogAtMs: (value) {
+        _lastHotMetricsLogAtMs = value;
+      },
       logger: _logger,
       logName: _logName,
     );

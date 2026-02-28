@@ -2,6 +2,8 @@
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
+import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
@@ -129,6 +131,75 @@ class HotPathOrchestrationFlowLane {
       prefs: prefs,
       processHotDevice: processHotDevice,
       onFinally: onWorkerStopped,
+    );
+  }
+
+  static Future<void> processHotDeviceForOrchestrator({
+    required DiscoveredDevice device,
+    required String? currentUserId,
+    required PersonalityProfile? currentPersonality,
+    required UserVibeAnalyzer vibeAnalyzer,
+    required bool allowBleSideEffects,
+    required DeviceDiscoveryService? deviceDiscovery,
+    required Future<void> Function({
+      required DiscoveredDevice device,
+      required BleGattSession session,
+    })
+        primeOfflineSignalPreKeyBundleInSession,
+    required bool Function(VibeCompatibilityResult compatibility)
+        isConnectionWorthy,
+    required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
+    required Future<void> Function({
+      required String userId,
+      required PersonalityProfile localPersonality,
+      required List<AIPersonalityNode> nodes,
+      required Map<String, VibeCompatibilityResult> compatibilityByNodeId,
+    })
+        maybeApplyPassiveAi2AiLearning,
+    required HotLatencyWindow hotSessionOpenMs,
+    required HotLatencyWindow hotVibeReadMs,
+    required HotLatencyWindow hotCompatMs,
+    required HotLatencyWindow hotTotalMs,
+    required HotLatencyWindow hotQueueWaitMs,
+    required int lastHotMetricsLogAtMs,
+    required Duration hotMetricsLogInterval,
+    required void Function(int value) setLastHotMetricsLogAtMs,
+    required AppLogger logger,
+    required String logName,
+  }) {
+    return processHotDevice(
+      device: device,
+      currentUserId: currentUserId,
+      currentPersonality: currentPersonality,
+      vibeAnalyzer: vibeAnalyzer,
+      allowBleSideEffects: allowBleSideEffects,
+      deviceDiscovery: deviceDiscovery,
+      primeOfflineSignalPreKeyBundleInSession:
+          primeOfflineSignalPreKeyBundleInSession,
+      isConnectionWorthy: isConnectionWorthy,
+      updateDiscoveredNodes: updateDiscoveredNodes,
+      maybeApplyPassiveAi2AiLearning: maybeApplyPassiveAi2AiLearning,
+      logger: logger,
+      logName: logName,
+      onSessionOpenMs: hotSessionOpenMs.add,
+      onVibeReadMs: hotVibeReadMs.add,
+      onCompatMs: hotCompatMs.add,
+      onTotalMs: hotTotalMs.add,
+      maybeLogHotMetrics: () {
+        setLastHotMetricsLogAtMs(
+          HotPathMetricsOrchestrationLane.maybeLog(
+            lastLogAtMs: lastHotMetricsLogAtMs,
+            minInterval: hotMetricsLogInterval,
+            queueWait: hotQueueWaitMs,
+            sessionOpen: hotSessionOpenMs,
+            vibeRead: hotVibeReadMs,
+            compatibility: hotCompatMs,
+            total: hotTotalMs,
+            logger: logger,
+            logName: logName,
+          ),
+        );
+      },
     );
   }
 }
