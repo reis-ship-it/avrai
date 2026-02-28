@@ -44,6 +44,8 @@ jobs:
           python3 scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py --check
           python3 scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py --check
           python3 scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py --check
+          python3 scripts/runtime/check_urk_kernel_registry.py
+          python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 
       - name: Validate deferred rename governance
         run: |
