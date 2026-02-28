@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/widgets/ai2ai/learning_metrics_chart.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/learning_metrics_chart.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
-import '../../helpers/widget_test_helpers.dart';
-import '../../../helpers/test_helpers.dart';
+import '../../../../widget/helpers/widget_test_helpers.dart';
+import '../../../../helpers/test_helpers.dart';
 
 /// Widget tests for LearningMetricsChart
 /// Tests learning metrics chart display including chart types, time ranges, interactions, and custom painting
