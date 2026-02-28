@@ -102,4 +102,53 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
       logName: logName,
     );
   }
+
+  static Future<void> primeOfflineSignalPreKeyBundleInSessionForOrchestrator({
+    required bool allowBleSideEffects,
+    required SignalKeyManager? signalKeyManager,
+    required AI2AIProtocol? protocol,
+    required DiscoveredDevice device,
+    required BleGattSession session,
+    required Map<String, String> peerNodeIdByDeviceId,
+    required bool federatedLearningParticipationEnabled,
+    required String localBleNodeId,
+    required DeviceDiscoveryService? discovery,
+    required Map<String, AIPersonalityNode> discoveredNodes,
+    required AdaptiveMeshNetworkingService? adaptiveMeshService,
+    required AppLogger logger,
+    required String logName,
+  }) {
+    return primeOfflineSignalPreKeyBundleInSession(
+      allowBleSideEffects: allowBleSideEffects,
+      signalKeyManager: signalKeyManager,
+      protocol: protocol,
+      device: device,
+      session: session,
+      peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      federatedLearningParticipationEnabled:
+          federatedLearningParticipationEnabled,
+      forwardPreKeyBundleThroughMesh: ({
+        required SignalPreKeyBundle bundle,
+        required String recipientId,
+        required DiscoveredDevice device,
+      }) {
+        return forwardPreKeyBundleThroughMesh(
+          allowBleSideEffects: allowBleSideEffects,
+          protocol: protocol,
+          discovery: discovery,
+          bundle: bundle,
+          recipientId: recipientId,
+          discoveredNodes: discoveredNodes,
+          localNodeId: localBleNodeId,
+          peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+          adaptiveMeshService: adaptiveMeshService,
+          logger: logger,
+          logName: logName,
+        );
+      },
+      localBleNodeId: localBleNodeId,
+      logger: logger,
+      logName: logName,
+    );
+  }
 }

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, visibleForTesting;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
-import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
@@ -936,7 +935,8 @@ class VibeConnectionOrchestrator {
     required DiscoveredDevice device,
     required BleGattSession session,
   }) async {
-    await Ai2AiDiscoveryPrekeyOrchestrationLane.primeOfflineSignalPreKeyBundleInSession(
+    await Ai2AiDiscoveryPrekeyOrchestrationLane
+        .primeOfflineSignalPreKeyBundleInSessionForOrchestrator(
       allowBleSideEffects: _allowBleSideEffects,
       signalKeyManager: _signalKeyManager,
       protocol: _protocol,
@@ -945,26 +945,10 @@ class VibeConnectionOrchestrator {
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       federatedLearningParticipationEnabled: _adaptiveMeshService != null &&
           _isFederatedLearningParticipationEnabled(),
-      forwardPreKeyBundleThroughMesh: ({
-        required SignalPreKeyBundle bundle,
-        required String recipientId,
-        required DiscoveredDevice device,
-      }) {
-        return Ai2AiDiscoveryPrekeyOrchestrationLane.forwardPreKeyBundleThroughMesh(
-          allowBleSideEffects: _allowBleSideEffects,
-          protocol: _protocol,
-          discovery: _deviceDiscovery,
-          bundle: bundle,
-          recipientId: recipientId,
-          discoveredNodes: _discoveredNodes,
-          localNodeId: _localBleNodeId,
-          peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-          adaptiveMeshService: _adaptiveMeshService,
-          logger: _logger,
-          logName: _logName,
-        );
-      },
       localBleNodeId: _localBleNodeId,
+      discovery: _deviceDiscovery,
+      discoveredNodes: _discoveredNodes,
+      adaptiveMeshService: _adaptiveMeshService,
       logger: _logger,
       logName: _logName,
     );
