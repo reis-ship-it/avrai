@@ -38,6 +38,7 @@ jobs:
           python3 scripts/runtime/generate_trigger_orchestration_persistence_report.py --check
           python3 scripts/runtime/generate_memory_reliability_gates_report.py --check
           python3 scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py --check
+          python3 scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py --check
 
       - name: Validate deferred rename governance
         run: |
