@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/performance_issues_list.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
-import '../../helpers/widget_test_helpers.dart';
+import '../../../../widget/helpers/widget_test_helpers.dart';
 
 /// Widget tests for PerformanceIssuesList
 /// Tests performance issues and recommendations display

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/privacy_compliance_card.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
-import '../../helpers/widget_test_helpers.dart';
+import '../../../../widget/helpers/widget_test_helpers.dart';
 
 /// Widget tests for PrivacyComplianceCard
 /// Tests privacy compliance metrics display
