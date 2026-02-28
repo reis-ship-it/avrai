@@ -36,7 +36,6 @@ import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_l
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
@@ -47,7 +46,7 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_h
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/prekey_mesh_forward_bridge_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
@@ -59,6 +58,7 @@ import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lan
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_update_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/connection_management_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
@@ -1174,10 +1174,12 @@ class VibeConnectionOrchestrator {
   }
 
   void _scheduleConnectionManagement(ConnectionMetrics connection) {
-    // Connection-specific management would be handled by the main maintenance timer
-    _logger.debug(
-        'Scheduled management for connection: ${connection.connectionId}',
-        tag: _logName);
+    // Connection-specific management is handled by the main maintenance timer.
+    ConnectionManagementOrchestrationLane.schedule(
+      connection: connection,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<ConnectionMetrics?> _completeConnection(ConnectionMetrics connection,
@@ -1191,16 +1193,18 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> _updateConnectionLearning(ConnectionMetrics connection) async {
-    _activeConnections[connection.connectionId] =
-        ConnectionLifecycleLane.maybeApplyLearningUpdate(connection);
+    ConnectionManagementOrchestrationLane.applyLearningUpdate(
+      activeConnections: _activeConnections,
+      connection: connection,
+    );
   }
 
   Future<void> _monitorConnectionHealth(ConnectionMetrics connection) async {
-    // Monitor connection health and update AI pleasure score
+    // Monitor connection health and update AI pleasure score.
     final currentPleasure = await calculateAIPleasureScore(connection);
 
-    _activeConnections[connection.connectionId] =
-        ConnectionLifecycleLane.applyHealthUpdate(
+    ConnectionManagementOrchestrationLane.applyHealthUpdate(
+      activeConnections: _activeConnections,
       connection: connection,
       aiPleasureScore: currentPleasure,
     );
