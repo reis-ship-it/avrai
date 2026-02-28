@@ -46,10 +46,10 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_management_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/connection_shutdown_cleanup_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_completion_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/active_connection_management_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_management_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
