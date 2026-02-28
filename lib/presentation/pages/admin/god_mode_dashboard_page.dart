@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:avrai/core/services/admin/admin_auth_service.dart';

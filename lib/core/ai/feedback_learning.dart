@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:convert';
