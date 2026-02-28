@@ -26,8 +26,8 @@ import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.d
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
+import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
@@ -965,7 +965,7 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    await MeshOutboundForwardingLane.forwardLearningInsightGossip(
+    await MeshForwardingOrchestrationLane.forwardLearningInsightGossip(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
@@ -1243,7 +1243,7 @@ class VibeConnectionOrchestrator {
   Future<void> forwardOrganicSpotDiscovery(
     Map<String, dynamic> signal,
   ) async {
-    await MeshOutboundForwardingLane.forwardOrganicSpotDiscovery(
+    await MeshForwardingOrchestrationLane.forwardOrganicSpotDiscovery(
       signal: signal,
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
@@ -1258,7 +1258,7 @@ class VibeConnectionOrchestrator {
   }
 
   Future<void> forwardLocalityAgentUpdate(Map<String, dynamic> message) async {
-    await MeshOutboundForwardingLane.forwardLocalityAgentUpdate(
+    await MeshForwardingOrchestrationLane.forwardLocalityAgentUpdate(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
@@ -1303,7 +1303,7 @@ class VibeConnectionOrchestrator {
     required int hop,
     required String receivedFromDeviceId,
   }) async {
-    await MeshOutboundForwardingLane.forwardLocalityAgentUpdateGossip(
+    await MeshForwardingOrchestrationLane.forwardLocalityAgentUpdateGossip(
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
