@@ -41,22 +41,20 @@ import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_init_ledger_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_discovery_start_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_renewal_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/inactive_session_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_expiry_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/quality_change_key_rotation_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_mesh_forward_bridge_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_inbox_processing_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
@@ -76,11 +74,13 @@ import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_metrics_emit_lane.dart';
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
-import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/battery_adaptive_ble_scheduler.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/user/anonymous_user.dart';
@@ -142,6 +142,7 @@ class VibeConnectionOrchestrator {
   final UserAnonymizationService? _anonymizationService;
   final SignalKeyManager? _signalKeyManager;
   final SharedPreferencesCompat _prefs;
+  final UrkRuntimeActivationReceiptDispatcher? _urkActivationDispatcher;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
 
@@ -315,6 +316,7 @@ class VibeConnectionOrchestrator {
     UserAnonymizationService? anonymizationService,
     SignalKeyManager? signalKeyManager,
     required SharedPreferencesCompat prefs,
+    UrkRuntimeActivationReceiptDispatcher? urkActivationDispatcher,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
@@ -328,6 +330,8 @@ class VibeConnectionOrchestrator {
         _anonymizationService = anonymizationService,
         _signalKeyManager = signalKeyManager,
         _prefs = prefs,
+        _urkActivationDispatcher = urkActivationDispatcher ??
+            resolveDefaultUrkRuntimeActivationDispatcher(),
         _knotWeavingService = knotWeavingService,
         _knotStorageService = knotStorageService,
         _discoveryManager = DiscoveryManager(
@@ -376,118 +380,105 @@ class VibeConnectionOrchestrator {
   Future<void> initializeOrchestration(
       String userId, PersonalityProfile personality) async {
     try {
-      await OrchestrationInitFlowLane.run(
+      await OrchestrationInitFlowLane.runForOrchestrator(
         isInitialized: _isInitialized,
         userId: userId,
         personality: personality,
-        readDiscoveryEnabled: () =>
-            _prefs.getBool('discovery_enabled') ?? false,
-        onAlreadyInitialized: () {
-          _logger.debug(
-              'Orchestration already initialized; skipping reinitialization',
-              tag: _logName);
-        },
-        onDiscoveryDisabled: () {
-          OrchestrationInitLedgerLane.appendInitSkipped(userId);
-        },
-        setCurrentContext: (nextUserId, nextPersonality) {
-          _currentUserId = nextUserId;
-          _currentPersonality = nextPersonality;
-        },
-        prepareIdentityAndCaches: () async {
-          final identity = await BleNodeIdentity.ensure(
-            prefs: _prefs,
-            prefsKeyNodeId: _prefsKeyBleNodeId,
-            prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
-          );
-          _localBleNodeId = identity.nodeId;
-          _localNodeTagKey = identity.nodeTagKey;
-          _loadSeenBleHashes();
-          LearningInsightSeenIdsPersistenceLane.load(
-            prefs: _prefs,
-            prefsKey: _prefsKeySeenLearningInsightIds,
-            seenLearningInsightIds: _seenLearningInsightIds,
-          );
-          return _localBleNodeId;
-        },
-        onInitStarted: (bleNodeId) {
-          OrchestrationInitLedgerLane.appendInitStarted(
-            userId: userId,
-            bleNodeId: bleNodeId,
-            allowBleSideEffects: _allowBleSideEffects,
-            isTestBinding: _isTestBinding,
-            isWeb: kIsWeb,
-            platform: defaultTargetPlatform.name,
-          );
-        },
+        prefs: _prefs,
+        prefsKeyNodeId: _prefsKeyBleNodeId,
+        prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
+        prefsKeySeenLearningInsightIds: _prefsKeySeenLearningInsightIds,
+        seenLearningInsightIds: _seenLearningInsightIds,
+        loadSeenBleHashes: _loadSeenBleHashes,
+        setCurrentContext: _setCurrentContext,
+        setBleIdentity: _setBleIdentity,
         allowBleSideEffects: _allowBleSideEffects,
+        isTestBinding: _isTestBinding,
         isWeb: kIsWeb,
+        platform: defaultTargetPlatform.name,
         isAndroid: defaultTargetPlatform == TargetPlatform.android,
         startBleForegroundService: BleForegroundService.startService,
-        onBleForegroundServiceStarted: () {
-          OrchestrationInitLedgerLane.appendBleForegroundServiceStarted();
-        },
-        onBleForegroundServiceFailed: () {
-          OrchestrationInitLedgerLane.appendBleForegroundServiceFailed();
-        },
-        publishPrekeyPayload: () {
-          return PrekeyPayloadPublishLane.publishIfAvailable(
-            signalKeyManager: _signalKeyManager,
-            localBleNodeId: _localBleNodeId,
-            logger: _logger,
-            logName: _logName,
-          );
-        },
+        publishPrekeyPayload: _publishPrekeyPayload,
         initializeRealtime: _realtimeService?.initialize,
         setupRealtimeListeners: _setupRealtimeListeners,
-        startAdvertising: () {
-          return PersonalityAdvertisingStartLane.startIfAllowed(
-            allowBleSideEffects: _allowBleSideEffects,
-            advertisingService: _advertisingService,
-            vibeAnalyzer: _vibeAnalyzer,
-            userId: userId,
-            personality: personality,
-            localBleNodeId: _localBleNodeId,
-            eventModeEnabled: _isEventModeEnabled(),
-            logger: _logger,
-            logName: _logName,
-          );
-        },
-        startDiscovery: () async {
-          final discoveryStart = await BleDiscoveryStartLane.startIfAllowed(
-            allowBleSideEffects: _allowBleSideEffects,
-            deviceDiscovery: _deviceDiscovery,
-            prefs: _prefs,
-            hotScanWindow: _hotScanWindow,
-            hotDeviceTimeout: _hotDeviceTimeout,
-            onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
-            existingBatteryScheduler: _batteryScheduler,
-            existingAdaptiveMeshService: _adaptiveMeshService,
-            logger: _logger,
-            logName: _logName,
-          );
-          _batteryScheduler = discoveryStart.batteryScheduler;
-          _adaptiveMeshService = discoveryStart.adaptiveMeshService;
-        },
+        startAdvertising: () => _startAdvertising(userId, personality),
+        startDiscovery: _startDiscovery,
         startAi2AiDiscovery: () => _startAI2AIDiscovery(userId, personality),
         startBleInboxProcessing: _startBleInboxProcessing,
         startFederatedCloudSync: _startFederatedCloudSync,
         startConnectionMaintenance: _startConnectionMaintenance,
-        onMarkInitialized: () {
-          _isInitialized = true;
-        },
-        onInitCompleted: () {
-          OrchestrationInitLedgerLane.appendInitCompleted(userId);
-        },
-        onInitFailed: (error) {
-          OrchestrationInitLedgerLane.appendInitFailed(userId, error);
-        },
+        onAlreadyInitialized: _onInitializeAlreadyInitialized,
+        onMarkInitialized: _markInitialized,
         logger: _logger,
         logName: _logName,
       );
     } catch (e) {
       throw AI2AIConnectionException('Failed to initialize orchestration: $e');
     }
+  }
+
+  void _setCurrentContext(String userId, PersonalityProfile personality) {
+    _currentUserId = userId;
+    _currentPersonality = personality;
+  }
+
+  void _setBleIdentity(String nodeId, String nodeTagKey) {
+    _localBleNodeId = nodeId;
+    _localNodeTagKey = nodeTagKey;
+  }
+
+  Future<void> _publishPrekeyPayload() {
+    return PrekeyPayloadPublishLane.publishIfAvailable(
+      signalKeyManager: _signalKeyManager,
+      localBleNodeId: _localBleNodeId,
+      logger: _logger,
+      logName: _logName,
+    );
+  }
+
+  Future<void> _startAdvertising(
+    String userId,
+    PersonalityProfile personality,
+  ) {
+    return PersonalityAdvertisingStartLane.startIfAllowed(
+      allowBleSideEffects: _allowBleSideEffects,
+      advertisingService: _advertisingService,
+      vibeAnalyzer: _vibeAnalyzer,
+      userId: userId,
+      personality: personality,
+      localBleNodeId: _localBleNodeId,
+      eventModeEnabled: _isEventModeEnabled(),
+      logger: _logger,
+      logName: _logName,
+    );
+  }
+
+  Future<void> _startDiscovery() async {
+    final discoveryStart = await BleDiscoveryStartLane.startIfAllowed(
+      allowBleSideEffects: _allowBleSideEffects,
+      deviceDiscovery: _deviceDiscovery,
+      prefs: _prefs,
+      hotScanWindow: _hotScanWindow,
+      hotDeviceTimeout: _hotDeviceTimeout,
+      onDevicesDiscoveredHotPath: _onDevicesDiscoveredHotPath,
+      existingBatteryScheduler: _batteryScheduler,
+      existingAdaptiveMeshService: _adaptiveMeshService,
+      logger: _logger,
+      logName: _logName,
+    );
+    _batteryScheduler = discoveryStart.batteryScheduler;
+    _adaptiveMeshService = discoveryStart.adaptiveMeshService;
+  }
+
+  void _onInitializeAlreadyInitialized() {
+    _logger.debug(
+      'Orchestration already initialized; skipping reinitialization',
+      tag: _logName,
+    );
+  }
+
+  void _markInitialized() {
+    _isInitialized = true;
   }
 
   void _onDevicesDiscoveredHotPath(List<DiscoveredDevice> devices) {
@@ -856,7 +847,8 @@ class VibeConnectionOrchestrator {
       nearbyVibes: _nearbyVibes,
       discoveredNodes: _discoveredNodes,
       completeConnection: _completeConnection,
-      onResetNetworkDensity: () => _adaptiveMeshService?.updateNetworkDensity(0),
+      onResetNetworkDensity: () =>
+          _adaptiveMeshService?.updateNetworkDensity(0),
       onClearCurrentUser: () {
         _currentUserId = null;
       },
@@ -1048,7 +1040,7 @@ class VibeConnectionOrchestrator {
     required double learningQuality,
     required Map<String, double> deltas,
   }) async {
-    return LearningInsightApplicationLane.apply(
+    final applied = await LearningInsightApplicationLane.apply(
       eventModeEnabled: _isEventModeEnabled(),
       evolveFromAi2AiLearning: () =>
           personalityLearning.evolveFromAI2AILearning(userId, insight),
@@ -1077,6 +1069,16 @@ class VibeConnectionOrchestrator {
         );
       },
     );
+    if (applied) {
+      await _urkActivationDispatcher?.dispatch(
+        requestId: 'ai2ai_${peerId}_${now.millisecondsSinceEpoch}',
+        trigger: 'ai2ai_private_mesh_sync',
+        privacyMode: UrkPrivacyMode.privateMesh,
+        actor: _logName,
+        reason: 'learning_insight_applied:$source',
+      );
+    }
+    return applied;
   }
 
   Future<void> _manageSessionLifecycle() async {
@@ -1167,8 +1169,7 @@ class VibeConnectionOrchestrator {
       device: device,
       session: session,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      federatedLearningParticipationEnabled:
-          _adaptiveMeshService != null &&
+      federatedLearningParticipationEnabled: _adaptiveMeshService != null &&
           _isFederatedLearningParticipationEnabled(),
       forwardPreKeyBundleThroughMesh: _forwardPreKeyBundleThroughMesh,
       localBleNodeId: _localBleNodeId,
