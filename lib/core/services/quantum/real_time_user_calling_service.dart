@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Real-Time User Calling Service
 //
 // Implements dynamic real-time user calling based on evolving entangled states

@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 part of 'connection_monitor.dart';
 
 // Supporting classes for connection monitoring

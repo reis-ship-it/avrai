@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 part of 'reservation_check_in_service.dart';
 
 /// Result of check-in validation and completion.

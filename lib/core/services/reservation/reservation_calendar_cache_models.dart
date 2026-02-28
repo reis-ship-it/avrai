@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 part of 'reservation_calendar_service.dart';
 
 class _CachedKnotSignature {

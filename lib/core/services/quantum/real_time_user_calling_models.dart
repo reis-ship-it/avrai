@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Extracted cache models for real-time user calling service.
 
 import 'package:avrai_core/models/atomic_timestamp.dart';

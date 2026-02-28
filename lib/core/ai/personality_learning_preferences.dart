@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 part of 'personality_learning.dart';
 
 // Lightweight preferences abstraction to allow in-memory prefs during tests.

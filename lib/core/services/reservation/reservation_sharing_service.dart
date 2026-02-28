@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Reservation Sharing Service
 //
 // Phase 10.4: Reservation Sharing & Transfer

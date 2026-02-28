@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Reservation Recurrence Service
 //
 // Phase 10.3: Recurring Reservations
