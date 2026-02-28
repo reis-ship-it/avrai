@@ -16,41 +16,7 @@ import 'package:avrai/core/ai/quantum/quantum_vibe_engine.dart';
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// Lightweight preferences abstraction to allow in-memory prefs during tests
-abstract class PreferencesLike {
-  String? getString(String key);
-  Future<bool> setString(String key, String value);
-  Future<bool> remove(String key);
-}
-
-class _SharedPreferencesAdapter implements PreferencesLike {
-  final SharedPreferences _prefs;
-  _SharedPreferencesAdapter(this._prefs);
-  @override
-  String? getString(String key) => _prefs.getString(key);
-  @override
-  Future<bool> setString(String key, String value) =>
-      _prefs.setString(key, value);
-  @override
-  Future<bool> remove(String key) => _prefs.remove(key);
-}
-
-class _InMemoryPreferences implements PreferencesLike {
-  final Map<String, String> _store = {};
-  @override
-  String? getString(String key) => _store[key];
-  @override
-  Future<bool> setString(String key, String value) async {
-    _store[key] = value;
-    return true;
-  }
-
-  @override
-  Future<bool> remove(String key) async {
-    _store.remove(key);
-    return true;
-  }
-}
+part 'personality_learning_preferences.dart';
 
 /// OUR_GUTS.md: "AI personality that evolves and learns from user behavior while preserving privacy"
 /// Core personality learning engine that manages the 12-dimensional personality evolution
@@ -1521,4 +1487,3 @@ Map<String, double> _calculateOutcomeInsights({
 }
   // Remove duplicate methods below; keep single minimal versions
   
-
