@@ -26,7 +26,7 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/nearby_dis
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_public_forwarding_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_hot_path_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_realtime_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_startup_lane.dart';
@@ -490,7 +490,38 @@ class VibeConnectionOrchestrator {
       prefs: _prefs,
       eventModeEnabled: _isEventModeEnabled(),
       lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
-      maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
+      maybeUpdateEventModeBroadcastFlags: ({
+        required bool eventModeEnabled,
+        required bool connectOk,
+        required bool brownout,
+      }) async {
+        final next = await EventModeBroadcastFlagsLane.maybeUpdate(
+          hasRequiredContext: _currentUserId != null &&
+              _currentPersonality != null &&
+              _advertisingService != null,
+          currentEventModeEnabled: _lastAdvertisedEventModeEnabled,
+          currentConnectOk: _lastAdvertisedConnectOk,
+          currentBrownout: _lastAdvertisedBrownout,
+          nextEventModeEnabled: eventModeEnabled,
+          nextConnectOk: connectOk,
+          nextBrownout: brownout,
+          updateServiceDataFrameV1Flags: ({
+            required bool eventModeEnabled,
+            required bool connectOk,
+            required bool brownout,
+          }) {
+            return _advertisingService!.updateServiceDataFrameV1Flags(
+              nodeId: _localBleNodeId,
+              eventModeEnabled: eventModeEnabled,
+              connectOk: connectOk,
+              brownout: brownout,
+            );
+          },
+        );
+        _lastAdvertisedEventModeEnabled = next.eventModeEnabled;
+        _lastAdvertisedConnectOk = next.connectOk;
+        _lastAdvertisedBrownout = next.brownout;
+      },
       devices: devices,
       hotRssiThresholdDbm: _hotRssiThresholdDbm,
       hotDeviceCooldown: _hotDeviceCooldown,
@@ -534,40 +565,6 @@ class VibeConnectionOrchestrator {
 
   bool _isEventModeEnabled() =>
       (_prefs.getBool(_prefsKeyEventModeEnabled) ?? false) == true;
-
-  Future<void> _maybeUpdateEventModeBroadcastFlags({
-    required bool eventModeEnabled,
-    required bool connectOk,
-    required bool brownout,
-  }) async {
-    final next = await EventModeBroadcastFlagsLane.maybeUpdate(
-      hasRequiredContext: _currentUserId != null &&
-          _currentPersonality != null &&
-          _advertisingService != null,
-      currentEventModeEnabled: _lastAdvertisedEventModeEnabled,
-      currentConnectOk: _lastAdvertisedConnectOk,
-      currentBrownout: _lastAdvertisedBrownout,
-      nextEventModeEnabled: eventModeEnabled,
-      nextConnectOk: connectOk,
-      nextBrownout: brownout,
-      updateServiceDataFrameV1Flags: ({
-        required bool eventModeEnabled,
-        required bool connectOk,
-        required bool brownout,
-      }) {
-        return _advertisingService!.updateServiceDataFrameV1Flags(
-          nodeId: _localBleNodeId,
-          eventModeEnabled: eventModeEnabled,
-          connectOk: connectOk,
-          brownout: brownout,
-        );
-      },
-    );
-
-    _lastAdvertisedEventModeEnabled = next.eventModeEnabled;
-    _lastAdvertisedConnectOk = next.connectOk;
-    _lastAdvertisedBrownout = next.brownout;
-  }
 
   Future<void> _runHotWorker() async {
     await HotPathOrchestrationFlowLane.runWorkerForOrchestratorWithMetrics(
