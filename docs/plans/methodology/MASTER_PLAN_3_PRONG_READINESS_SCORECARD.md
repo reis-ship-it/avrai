@@ -37,10 +37,10 @@ Use this scorecard for weekly readiness review and final sign-off.
 | High-impact confusion/correction rate | TBD | <= threshold | TBD | Product |
 | Rollback success rate | TBD | 100% in drills | TBD | Reliability |
 | 7/30/90-day delayed-outcome alignment | TBD | >= threshold | TBD | ML Research |
-| Shadow bypass rate (high-impact shadow gate) | 0.00% (0/2) | <= 2.0% | Observed | Runtime/OS |
-| Enforce-mode block rate (all enforce decisions) | 0.00% (0/0) | Tracked in canary; no unexplained spikes | Observed | Runtime/OS |
-| Enforce-mode block rate (high-impact only) | 0.00% (0/0) | Tracked in canary; policy-consistent blocks only | Observed | Runtime/OS |
-| Top shadow reason codes | No data | No persistent unresolved policy reasons | Observed | Runtime/OS |
+| Shadow bypass rate (high-impact shadow gate) | No data | <= 2.0% | No data | Runtime/OS |
+| Enforce-mode block rate (all enforce decisions) | No data | Tracked in canary; no unexplained spikes | No data | Runtime/OS |
+| Enforce-mode block rate (high-impact only) | No data | Tracked in canary; policy-consistent blocks only | No data | Runtime/OS |
+| Top shadow reason codes | No data | No persistent unresolved policy reasons | No data | Runtime/OS |
 | Canary rollback drill verdict | PASS (1/2 incidents required rollback) | PASS with fail-closed profile | Observed | Reliability |
 | Replication SLA verdict | PASS (overdue=0, active=2) | PASS with overdue active items = 0 | Observed | ML Research |
 | Trust UX priority-flow verdict | PASS (implemented=1/3, coverage=33%) | PASS with contract-complete priority flows | Observed | Product |
