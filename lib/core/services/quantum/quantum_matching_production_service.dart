@@ -18,6 +18,8 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:injectable/injectable.dart';
 
+part 'quantum_matching_production_models.dart';
+
 /// Circuit breaker state
 enum CircuitBreakerState {
   closed, // Normal operation
@@ -302,17 +304,6 @@ class QuantumMatchingProductionService {
       'openedAt': _circuitBreakerOpenedAt?.toIso8601String(),
     };
   }
-}
-
-/// Cached result
-class _CachedResult {
-  final dynamic result;
-  final DateTime cachedAt;
-
-  _CachedResult({
-    required this.result,
-    required this.cachedAt,
-  });
 }
 
 /// Health check result
