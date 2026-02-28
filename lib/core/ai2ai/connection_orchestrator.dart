@@ -25,7 +25,7 @@ import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.d
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_message_orchestration_lane.dart';
+import 'package:avrai/core/ai2ai/locality/incoming_message_runtime_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_realtime_orchestration_lane.dart';
@@ -39,7 +39,6 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_h
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ai2ai_discovery_prekey_orchestration_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_cloud_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
@@ -843,15 +842,26 @@ class VibeConnectionOrchestrator {
   }
 
   void _startBleInboxProcessing() {
-    _bleInboxPoller = BleInboxProcessingOrchestrationLane.start(
+    _bleInboxPoller = IncomingMessageRuntimeOrchestrationLane.startBleInboxProcessing(
       allowBleSideEffects: _allowBleSideEffects,
       existingPoller: _bleInboxPoller,
       protocol: _protocol,
       seenBleMessageHashes: _seenBleMessageHashes,
-      handleIncomingLocalityAgentUpdate: _handleIncomingLocalityAgentUpdate,
-      handleIncomingOrganicSpotDiscovery: _handleIncomingOrganicSpotDiscovery,
-      handleIncomingLearningInsight: _handleIncomingLearningInsight,
-      handleIncomingUserChat: _handleIncomingUserChat,
+      prefs: _prefs,
+      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+      currentUserId: _currentUserId,
+      personalityLearning: _connectionManager.personalityLearning,
+      adaptiveMeshService: _adaptiveMeshService,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+      applyInsightForPeer: _applyInsightForPeer,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+      localNodeId: _localBleNodeId,
+      bloomFilters: _bloomFilters,
+      discoveredNodes: _discoveredNodes,
+      discovery: _deviceDiscovery,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
       persistSeenLearningInsightIdsIfNeeded:
           _persistSeenLearningInsightIdsIfNeeded,
@@ -920,57 +930,6 @@ class VibeConnectionOrchestrator {
       prefsKey: _prefsKeySeenLearningInsightIds,
       seenLearningInsightIds: _seenLearningInsightIds,
       lastPersistMs: _lastSeenInsightsPersistMs,
-    );
-  }
-
-  Future<void> _handleIncomingLearningInsight(ProtocolMessage message) async {
-    await IncomingMessageOrchestrationLane.handleLearningInsight(
-      message: message,
-      prefs: _prefs,
-      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
-      currentUserId: _currentUserId,
-      personalityLearning: _connectionManager.personalityLearning,
-      adaptiveMeshService: _adaptiveMeshService,
-      seenLearningInsightIds: _seenLearningInsightIds,
-      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
-      applyInsightForPeer: _applyInsightForPeer,
-      maybeForwardLearningInsightGossip: _maybeForwardLearningInsightGossip,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _handleIncomingUserChat(ProtocolMessage message) async {
-    await IncomingMessageOrchestrationLane.handleUserChat(
-      message: message,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _maybeForwardLearningInsightGossip({
-    required Map<String, dynamic> payload,
-    required String originId,
-    required int hop,
-    required String receivedFromDeviceId,
-  }) async {
-    await MeshForwardingOrchestrationLane.forwardLearningInsightGossip(
-      allowBleSideEffects: _allowBleSideEffects,
-      federatedLearningParticipationEnabled:
-          _isFederatedLearningParticipationEnabled(),
-      originId: originId,
-      localNodeId: _localBleNodeId,
-      payload: payload,
-      hop: hop,
-      receivedFromDeviceId: receivedFromDeviceId,
-      adaptiveMeshService: _adaptiveMeshService,
-      bloomFilters: _bloomFilters,
-      logger: _logger,
-      logName: _logName,
-      discoveredNodes: _discoveredNodes,
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
     );
   }
 
@@ -1190,51 +1149,4 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  Future<void> _handleIncomingLocalityAgentUpdate(
-      ProtocolMessage message) async {
-    await IncomingMessageOrchestrationLane.handleLocalityAgentUpdate(
-      message: message,
-      adaptiveMeshService: _adaptiveMeshService,
-      maybeForwardLocalityAgentUpdateGossip:
-          _maybeForwardLocalityAgentUpdateGossip,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _handleIncomingOrganicSpotDiscovery(
-      ProtocolMessage message) async {
-    await IncomingMessageOrchestrationLane.handleOrganicSpotDiscovery(
-      message: message,
-      currentUserId: _currentUserId,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _maybeForwardLocalityAgentUpdateGossip({
-    required Map<String, dynamic> payload,
-    required String originId,
-    required int hop,
-    required String receivedFromDeviceId,
-  }) async {
-    await MeshForwardingOrchestrationLane.forwardLocalityAgentUpdateGossip(
-      allowBleSideEffects: _allowBleSideEffects,
-      federatedLearningParticipationEnabled:
-          _isFederatedLearningParticipationEnabled(),
-      originId: originId,
-      localNodeId: _localBleNodeId,
-      payload: payload,
-      hop: hop,
-      receivedFromDeviceId: receivedFromDeviceId,
-      adaptiveMeshService: _adaptiveMeshService,
-      bloomFilters: _bloomFilters,
-      logger: _logger,
-      logName: _logName,
-      discoveredNodes: _discoveredNodes,
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-    );
-  }
 }
