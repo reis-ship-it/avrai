@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 enum TriggerOrchestrationPersistenceFailure {
   invalidReliabilityThreshold,
   invalidPersistenceThreshold,
@@ -80,31 +81,26 @@ class TriggerOrchestrationPersistenceValidator {
     if (policy.maxDroppedTriggerRatePct < 0 ||
         policy.maxDuplicateTriggerRatePct < 0) {
       failures.add(
-        TriggerOrchestrationPersistenceFailure.invalidReliabilityThreshold,
-      );
+          TriggerOrchestrationPersistenceFailure.invalidReliabilityThreshold);
     }
     if (policy.requiredIdempotencyCoveragePct < 0) {
       failures.add(
-        TriggerOrchestrationPersistenceFailure.invalidPersistenceThreshold,
-      );
+          TriggerOrchestrationPersistenceFailure.invalidPersistenceThreshold);
     }
     if (policy.maxP95TriggerToActionLatencyMs < 0) {
-      failures.add(
-        TriggerOrchestrationPersistenceFailure.invalidLatencyThreshold,
-      );
+      failures
+          .add(TriggerOrchestrationPersistenceFailure.invalidLatencyThreshold);
     }
 
     if (snapshot.observedDroppedTriggerRatePct >
         policy.maxDroppedTriggerRatePct) {
       failures.add(
-        TriggerOrchestrationPersistenceFailure.droppedTriggerRateExceeded,
-      );
+          TriggerOrchestrationPersistenceFailure.droppedTriggerRateExceeded);
     }
     if (snapshot.observedDuplicateTriggerRatePct >
         policy.maxDuplicateTriggerRatePct) {
       failures.add(
-        TriggerOrchestrationPersistenceFailure.duplicateTriggerRateExceeded,
-      );
+          TriggerOrchestrationPersistenceFailure.duplicateTriggerRateExceeded);
     }
     if (snapshot.observedIdempotencyCoveragePct <
         policy.requiredIdempotencyCoveragePct) {
@@ -114,9 +110,8 @@ class TriggerOrchestrationPersistenceValidator {
       );
     }
     if (!snapshot.replayOnRestartPassed) {
-      failures.add(
-        TriggerOrchestrationPersistenceFailure.replayOnRestartFailed,
-      );
+      failures
+          .add(TriggerOrchestrationPersistenceFailure.replayOnRestartFailed);
     }
     if (snapshot.unrecoveredStateRecords > 0) {
       failures.add(

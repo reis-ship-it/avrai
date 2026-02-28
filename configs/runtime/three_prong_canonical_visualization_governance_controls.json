@@ -1,0 +1,14 @@
+{
+  "milestone_id": "M10-P10-5",
+  "master_plan_refs": ["10.10.10"],
+  "objective": "canonical external/internal architecture visualization governance",
+  "authority_docs": [
+    "docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md",
+    "docs/plans/architecture/ARCHITECTURE_INDEX.md",
+    "docs/MASTER_PLAN.md"
+  ],
+  "required_checks": [
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py"
+  ]
+}

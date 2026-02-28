@@ -1,0 +1,12 @@
+{
+  "milestone_id": "M17-P10-1",
+  "status": "complete",
+  "master_plan_refs": ["10.10.9", "10.10.10", "10.10.11", "10.10.12"],
+  "artifacts": [
+    "docs/plans/methodology/M17_P10_1_3_PRONG_WAVE17_UMBRELLA_COORDINATION_DEPENDENCY_LOCK_BASELINE.md",
+    "configs/runtime/three_prong_wave17_umbrella_coordination_dependency_lock_controls.json",
+    "docs/plans/methodology/MASTER_PLAN_3_PRONG_WAVE17_UMBRELLA_COORDINATION_DEPENDENCY_LOCK_REPORT.md",
+    "docs/EXECUTION_BOARD.csv",
+    "docs/EXECUTION_BOARD.md"
+  ]
+}

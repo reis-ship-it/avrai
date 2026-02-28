@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ import 'package:avrai/presentation/pages/spots/spots_page.dart';
 import 'package:avrai/presentation/pages/lists/lists_page.dart';
 import 'package:avrai/presentation/pages/map/map_page.dart';
 import 'package:avrai/presentation/pages/profile/profile_page.dart';
-import 'package:avrai/presentation/pages/profile/ai_personality_status_page.dart';
+import 'package:avrai/apps/consumer_app/ui/pages/profile/ai_personality_status_page.dart';
 import 'package:avrai/presentation/pages/chat/unified_chat_page.dart';
 import 'package:avrai/presentation/pages/chat/friend_chat_view.dart';
 import 'package:avrai/presentation/pages/chat/community_chat_view.dart';
@@ -25,16 +26,15 @@ import 'package:avrai/presentation/pages/onboarding/knot_discovery_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/pages/supabase_test_page.dart';
 import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
-import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
 // Phase 19.18: Quantum Group Matching System
 import 'package:avrai/presentation/pages/group/group_formation_page.dart';
 import 'package:avrai/presentation/pages/group/group_results_page.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
-import 'package:avrai/presentation/pages/admin/fraud_review_page.dart';
-import 'package:avrai/presentation/pages/admin/review_fraud_review_page.dart';
-import 'package:avrai/presentation/pages/admin/user_detail_page.dart';
-import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
-import 'package:avrai/presentation/pages/admin/club_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/fraud_review_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/review_fraud_review_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/user_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/connection_communication_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/club_detail_page.dart';
 import 'package:avrai/presentation/pages/business/business_signup_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
@@ -69,7 +69,7 @@ import 'package:avrai/presentation/pages/social/add_friend_qr_page.dart';
 import 'package:avrai/presentation/pages/social/scan_friend_qr_page.dart';
 // Phase 10: Social Media Integration - Public Handles
 import 'package:avrai/presentation/pages/settings/public_handles_page.dart';
-import 'package:avrai/presentation/pages/admin/learning_analytics_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/learning_analytics_page.dart';
 // Phase 6, Week 29: Communities & Clubs
 import 'package:avrai/presentation/pages/communities/community_page.dart';
 import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';
@@ -483,26 +483,6 @@ class AppRouter {
                 final id = s.pathParameters['id']!;
                 return ClubPage(clubId: id);
               },
-            ),
-            GoRoute(
-              path: 'admin/ai2ai',
-              redirect: (context, state) async {
-                final authState = authBloc.state;
-
-                // Check authentication
-                if (authState is! Authenticated) {
-                  return '/login';
-                }
-
-                // Check admin role
-                if (authState.user.role != UserRole.admin) {
-                  // Redirect non-admin users to home
-                  return '/home';
-                }
-
-                return null;
-              },
-              builder: (c, s) => const AI2AIAdminDashboard(),
             ),
             GoRoute(
               path: 'admin/fraud-review/:eventId',

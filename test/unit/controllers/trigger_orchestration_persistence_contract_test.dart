@@ -5,30 +5,28 @@ void main() {
   group('TriggerOrchestrationPersistenceValidator', () {
     const validator = TriggerOrchestrationPersistenceValidator();
 
-    test(
-      'passes when reliability persistence and latency checks are healthy',
-      () {
-        const snapshot = TriggerOrchestrationPersistenceSnapshot(
-          observedDroppedTriggerRatePct: 0.02,
-          observedDuplicateTriggerRatePct: 0.05,
-          observedIdempotencyCoveragePct: 100.0,
-          replayOnRestartPassed: true,
-          unrecoveredStateRecords: 0,
-          observedP95TriggerToActionLatencyMs: 120,
-        );
+    test('passes when reliability persistence and latency checks are healthy',
+        () {
+      const snapshot = TriggerOrchestrationPersistenceSnapshot(
+        observedDroppedTriggerRatePct: 0.02,
+        observedDuplicateTriggerRatePct: 0.05,
+        observedIdempotencyCoveragePct: 100.0,
+        replayOnRestartPassed: true,
+        unrecoveredStateRecords: 0,
+        observedP95TriggerToActionLatencyMs: 120,
+      );
 
-        const policy = TriggerOrchestrationPersistencePolicy(
-          maxDroppedTriggerRatePct: 0.1,
-          maxDuplicateTriggerRatePct: 0.2,
-          requiredIdempotencyCoveragePct: 100.0,
-          maxP95TriggerToActionLatencyMs: 250,
-        );
+      const policy = TriggerOrchestrationPersistencePolicy(
+        maxDroppedTriggerRatePct: 0.1,
+        maxDuplicateTriggerRatePct: 0.2,
+        requiredIdempotencyCoveragePct: 100.0,
+        maxP95TriggerToActionLatencyMs: 250,
+      );
 
-        final result = validator.validate(snapshot: snapshot, policy: policy);
-        expect(result.isPassing, isTrue);
-        expect(result.failures, isEmpty);
-      },
-    );
+      final result = validator.validate(snapshot: snapshot, policy: policy);
+      expect(result.isPassing, isTrue);
+      expect(result.failures, isEmpty);
+    });
 
     test('fails when dropped/duplicate trigger rates exceed thresholds', () {
       const snapshot = TriggerOrchestrationPersistenceSnapshot(
@@ -52,8 +50,7 @@ void main() {
       expect(
         result.failures,
         contains(
-          TriggerOrchestrationPersistenceFailure.droppedTriggerRateExceeded,
-        ),
+            TriggerOrchestrationPersistenceFailure.droppedTriggerRateExceeded),
       );
       expect(
         result.failures,

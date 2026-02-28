@@ -1,0 +1,22 @@
+{
+  "milestone_id": "M24-P3-1",
+  "scope": "reality model wave-24 deterministic interface and promotion rollback hardening",
+  "master_plan_refs": [
+    "3.1.1",
+    "3.2.1",
+    "7.7.5",
+    "10.10.9",
+    "10.10.12"
+  ],
+  "dependencies": [
+    "M24-P10-1"
+  ],
+  "guardrails": {
+    "deterministic_interfaces_stable_or_versioned": true,
+    "promotion_and_rollback_gates_auditable": true,
+    "forbid_engine_to_runtime_apps_imports": true,
+    "shared_runtime_consumer_compatibility_required": true
+  },
+  "status": "complete",
+  "completed_on": "2026-02-28"
+}

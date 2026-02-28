@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Online Learning Service for Phase 12: Neural Network Implementation
 // Section 3.2.1: Continuous Learning
 // Manages periodic retraining and incremental model updates
@@ -8,8 +9,8 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/core/services/calling_score/calling_score_data_collector.dart';
-import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_retraining_service.dart';

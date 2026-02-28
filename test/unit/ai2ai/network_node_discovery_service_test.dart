@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/core/ai2ai/network_node_discovery_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/network_node_discovery_service.dart';
 import 'package:avrai_network/avra_network.dart';
 
 void main() {

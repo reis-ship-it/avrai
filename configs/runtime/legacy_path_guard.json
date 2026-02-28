@@ -1,0 +1,50 @@
+{
+  "legacy_roots": [
+    "lib/core/",
+    "lib/domain/",
+    "lib/data/",
+    "lib/di/",
+    "lib/presentation/"
+  ],
+  "target_roots": [
+    "apps/",
+    "runtime/",
+    "engine/",
+    "shared/"
+  ],
+  "allowlisted_legacy_paths": [
+    "lib/presentation/widgets/ai2ai/ai_network_status_chip.dart",
+    "lib/presentation/widgets/ai2ai/connections_list.dart",
+    "lib/presentation/widgets/ai2ai/connection_visualization_widget.dart",
+    "lib/presentation/widgets/ai2ai/learning_metrics_chart.dart",
+    "lib/presentation/widgets/ai2ai/network_3d_visualization_widget.dart",
+    "lib/presentation/widgets/ai2ai/network_health_gauge.dart",
+    "lib/presentation/widgets/ai2ai/network_wisdom_feed_section.dart",
+    "lib/presentation/widgets/ai2ai/performance_issues_list.dart",
+    "lib/presentation/widgets/ai2ai/privacy_compliance_card.dart",
+    "lib/core/ai/personality_learning.dart",
+    "lib/core/ai/personality_learning_preferences.dart",
+    "lib/core/monitoring/connection_monitor.dart",
+    "lib/core/monitoring/connection_monitor_models.dart",
+    "lib/core/services/admin/reality_grouping_audit_service.dart",
+    "lib/core/services/admin/reality_model_checkin_service.dart",
+    "lib/core/services/admin/research_activity_service.dart",
+    "lib/core/services/quantum/real_time_user_calling_models.dart",
+    "lib/core/services/quantum/real_time_user_calling_service.dart",
+    "lib/core/services/reservation/reservation_calendar_cache_models.dart",
+    "lib/core/services/reservation/reservation_calendar_service.dart",
+    "lib/core/services/reservation/reservation_check_in_models.dart",
+    "lib/core/services/reservation/reservation_recurrence_models.dart",
+    "lib/core/services/reservation/reservation_recurrence_service.dart",
+    "lib/core/services/reservation/reservation_sharing_cache_models.dart",
+    "lib/core/services/reservation/reservation_sharing_service.dart"
+  ],
+  "strict_blocked_roots": [
+    "lib/core/ai2ai/routing/",
+    "lib/core/ai2ai/resilience/"
+  ],
+  "shim_marker": "MIGRATION_SHIM:",
+  "shim_extensions": [
+    ".dart"
+  ]
+}

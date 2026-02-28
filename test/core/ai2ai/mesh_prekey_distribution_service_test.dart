@@ -3,7 +3,7 @@
 // Tests prekey bundle forwarding, caching, and expiration handling
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/core/ai2ai/mesh_prekey_distribution_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_prekey_distribution_service.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';
 import 'dart:typed_data';
 

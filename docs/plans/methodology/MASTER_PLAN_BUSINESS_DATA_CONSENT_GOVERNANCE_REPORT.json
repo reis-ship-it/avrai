@@ -1,0 +1,28 @@
+{
+  "audit_completeness": {
+    "audit_entries_verified": 1880,
+    "observed_completeness_pct": 100.0,
+    "required_completeness_pct": 100.0,
+    "retention_policy_passed": true,
+    "within_threshold": true
+  },
+  "consent_coverage": {
+    "evaluated_data_flows": 1250,
+    "min_coverage_pct": 99.9,
+    "observed_coverage_pct": 100.0,
+    "unauthorized_processing_events": 0,
+    "within_threshold": true
+  },
+  "dp_enforcement": {
+    "dp_checks_executed": 640,
+    "epsilon_budget_exceeded_events": 0,
+    "max_dp_budget_usage_pct": 80.0,
+    "observed_dp_budget_usage_pct": 31.0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T21:10:00Z",
+  "source": "configs/runtime/business_data_consent_governance_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

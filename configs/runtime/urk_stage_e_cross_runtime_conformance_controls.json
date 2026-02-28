@@ -7,9 +7,10 @@
     "end": "2026-02-27T23:59:00Z"
   },
   "runtime_set": {
-    "required_runtime_count": 3,
-    "observed_runtime_count": 3,
+    "required_runtime_count": 4,
+    "observed_runtime_count": 4,
     "runtimes": [
+      "user_runtime",
       "event_ops_runtime",
       "business_ops_runtime",
       "expert_services_runtime"

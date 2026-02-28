@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'dart:developer' as developer;
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
 
@@ -16,7 +17,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart';
 /// **Usage:**
 /// ```dart
 /// final featureFlags = sl<FeatureFlagService>();
-/// 
+///
 /// if (await featureFlags.isEnabled('quantum_location_entanglement')) {
 ///   // Use location entanglement
 /// }
@@ -34,7 +35,7 @@ class FeatureFlagService {
 
   FeatureFlagService({
     required StorageService storage,
-  })  : _storage = storage;
+  }) : _storage = storage;
 
   /// Check if a feature is enabled for a specific user
   ///
@@ -138,7 +139,7 @@ class FeatureFlagService {
   ) async {
     try {
       _remoteConfig = config;
-      
+
       // Store config locally for offline use
       for (final entry in config.entries) {
         await _storeConfig(entry.key, entry.value);
@@ -161,14 +162,14 @@ class FeatureFlagService {
   /// Get all enabled features for a user
   Future<Set<String>> getEnabledFeatures({String? userId}) async {
     final enabled = <String>{};
-    
+
     // Check all known feature flags
     for (final flag in QuantumFeatureFlags.allFlags) {
       if (await isEnabled(flag, userId: userId)) {
         enabled.add(flag);
       }
     }
-    
+
     return enabled;
   }
 
@@ -229,7 +230,8 @@ class FeatureFlagService {
   }
 
   /// Store config locally
-  Future<void> _storeConfig(String featureName, FeatureFlagConfig config) async {
+  Future<void> _storeConfig(
+      String featureName, FeatureFlagConfig config) async {
     try {
       final key = '$_rolloutPrefix$featureName';
       await _storage.setObject(key, config.toJson());
@@ -274,7 +276,8 @@ class FeatureFlagConfig {
   factory FeatureFlagConfig.fromJson(Map<String, dynamic> json) {
     return FeatureFlagConfig(
       enabled: json['enabled'] as bool? ?? false,
-      rolloutPercentage: (json['rolloutPercentage'] as num?)?.toDouble() ?? 100.0,
+      rolloutPercentage:
+          (json['rolloutPercentage'] as num?)?.toDouble() ?? 100.0,
       targetUsers: json['targetUsers'] as List<String>?,
       description: json['description'] as String?,
     );
@@ -333,3 +336,9 @@ class QuantumFeatureFlags {
   }
 }
 
+/// Governance and safety feature flags.
+class GovernanceFeatureFlags {
+  /// Enables hard enforcement for kernel governance gates.
+  /// When false, gates operate in shadow mode.
+  static const String kernelGovernanceEnforce = 'kernel_governance_enforce';
+}

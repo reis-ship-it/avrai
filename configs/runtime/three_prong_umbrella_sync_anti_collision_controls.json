@@ -1,0 +1,23 @@
+{
+  "milestone_id": "M12-P10-1",
+  "master_plan_refs": ["10.10.12"],
+  "authority_docs": [
+    "docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md",
+    "docs/plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md",
+    "docs/plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md",
+    "docs/plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md"
+  ],
+  "anti_collision_rules": {
+    "dependency_direction": "apps->runtime->engine->shared",
+    "contract_first_integration": true,
+    "forbid_apps_to_engine_direct_import": true,
+    "forbid_engine_to_runtime_import": true,
+    "require_prong_lane_traceability": true
+  },
+  "required_checks": [
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py",
+    "scripts/validate_architecture_placement.py",
+    "scripts/ci/check_three_prong_boundaries.py"
+  ]
+}

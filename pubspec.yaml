@@ -157,7 +157,7 @@ dependencies:
   apple_maps_flutter: ^1.4.0
   gradient_borders: ^1.0.0
 
-  shared_preferences: ^2.5.4
+  shared_preferences: 2.5.3
   path: any
   flutter_rust_bridge: 2.11.1
   battery_plus: ^7.0.0
@@ -215,6 +215,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - configs/runtime/kernel_registry.json
+    - configs/runtime/urk_user_runtime_observability_thresholds.json
     - assets/models/
     - assets/models/optimized/
     - assets/tokenizers/

@@ -57,6 +57,8 @@ void main() {
     final events = supervisor.getRollbackEvents();
     expect(events, isNotEmpty);
     expect(events.first['model_type'], equals('calling_score'));
+    expect(events.first['governance_decision_id'], isNotNull);
+    expect(events.first['governance_correlation_id'], isNotNull);
   });
 
   test('does not rollback when there are too few baseline samples', () async {

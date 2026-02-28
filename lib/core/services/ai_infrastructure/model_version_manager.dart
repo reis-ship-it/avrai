@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Model Version Manager for Phase 12: Neural Network Implementation
 // Section 3.2.2: Model Versioning
 // Manages model version switching, A/B testing, and rollback
@@ -5,6 +6,7 @@
 import 'dart:developer' as developer;
 import 'package:avrai/core/ml/model_version_registry.dart';
 import 'package:avrai/core/ml/model_version_info.dart';
+import 'package:avrai/core/services/ai_infrastructure/kernel_governance_gate.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_safety_supervisor.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -16,6 +18,11 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 class ModelVersionManager {
   static const String _logName = 'ModelVersionManager';
   SharedPreferencesCompat? _prefs;
+  final KernelGovernanceGate? _kernelGovernanceGate;
+
+  ModelVersionManager({
+    KernelGovernanceGate? kernelGovernanceGate,
+  }) : _kernelGovernanceGate = kernelGovernanceGate;
 
   Future<SharedPreferencesCompat> _getPrefs() async {
     _prefs ??= await SharedPreferencesCompat.getInstance();
@@ -40,18 +47,40 @@ class ModelVersionManager {
     }
 
     final previousVersion = ModelVersionRegistry.activeCallingScoreVersion;
+    final correlationId =
+        'mvm_switch_calling_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+    final gateDecision = await _evaluateGovernance(
+      KernelGovernanceRequest(
+        action: KernelGovernanceAction.modelSwitch,
+        modelType: 'calling_score',
+        fromVersion: previousVersion,
+        toVersion: newVersion,
+        correlationId: correlationId,
+      ),
+    );
+    if (!gateDecision.servingAllowed) {
+      developer.log(
+        'Blocked calling_score switch by kernel governance: '
+        '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+        name: _logName,
+      );
+      return false;
+    }
     final success =
         ModelVersionRegistry.setActiveCallingScoreVersion(newVersion);
 
     if (success) {
       developer.log(
-        'Switched calling score model: $previousVersion → $newVersion',
+        'Switched calling score model: $previousVersion → $newVersion decision_id=${gateDecision.decisionId} corr=$correlationId',
         name: _logName,
       );
 
       try {
         final prefs = await _getPrefs();
-        await ModelSafetySupervisor(prefs: prefs).startRolloutCandidate(
+        await ModelSafetySupervisor(
+          prefs: prefs,
+          kernelGovernanceGate: _kernelGovernanceGate,
+        ).startRolloutCandidate(
           modelType: 'calling_score',
           fromVersion: previousVersion,
           toVersion: newVersion,
@@ -84,17 +113,39 @@ class ModelVersionManager {
     }
 
     final previousVersion = ModelVersionRegistry.activeOutcomeVersion;
+    final correlationId =
+        'mvm_switch_outcome_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+    final gateDecision = await _evaluateGovernance(
+      KernelGovernanceRequest(
+        action: KernelGovernanceAction.modelSwitch,
+        modelType: 'outcome',
+        fromVersion: previousVersion,
+        toVersion: newVersion,
+        correlationId: correlationId,
+      ),
+    );
+    if (!gateDecision.servingAllowed) {
+      developer.log(
+        'Blocked outcome switch by kernel governance: '
+        '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+        name: _logName,
+      );
+      return false;
+    }
     final success = ModelVersionRegistry.setActiveOutcomeVersion(newVersion);
 
     if (success) {
       developer.log(
-        'Switched outcome prediction model: $previousVersion → $newVersion',
+        'Switched outcome prediction model: $previousVersion → $newVersion decision_id=${gateDecision.decisionId} corr=$correlationId',
         name: _logName,
       );
 
       try {
         final prefs = await _getPrefs();
-        await ModelSafetySupervisor(prefs: prefs).startRolloutCandidate(
+        await ModelSafetySupervisor(
+          prefs: prefs,
+          kernelGovernanceGate: _kernelGovernanceGate,
+        ).startRolloutCandidate(
           modelType: 'outcome',
           fromVersion: previousVersion,
           toVersion: newVersion,
@@ -220,6 +271,27 @@ class ModelVersionManager {
     String modelType = 'calling_score',
   }) async {
     trafficPercentage = trafficPercentage.clamp(0.0, 1.0);
+    final correlationId =
+        'mvm_abtest_${DateTime.now().toUtc().microsecondsSinceEpoch}';
+    final gateDecision = await _evaluateGovernance(
+      KernelGovernanceRequest(
+        action: KernelGovernanceAction.modelAbTestStart,
+        modelType: modelType,
+        toVersion: version,
+        correlationId: correlationId,
+        metadata: <String, dynamic>{
+          'traffic_percentage': trafficPercentage,
+        },
+      ),
+    );
+    if (!gateDecision.servingAllowed) {
+      developer.log(
+        'Blocked AB test start for $modelType/$version: '
+        '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+        name: _logName,
+      );
+      return;
+    }
 
     final versionInfo = modelType == 'calling_score'
         ? ModelVersionRegistry.getCallingScoreVersion(version)
@@ -230,7 +302,7 @@ class ModelVersionManager {
       versionInfo.abTestStartDate = DateTime.now();
 
       developer.log(
-        'Started A/B test for $modelType version $version: ${(trafficPercentage * 100).toStringAsFixed(1)}% traffic',
+        'Started A/B test for $modelType version $version: ${(trafficPercentage * 100).toStringAsFixed(1)}% traffic decision_id=${gateDecision.decisionId} corr=$correlationId',
         name: _logName,
       );
     }
@@ -268,5 +340,24 @@ class ModelVersionManager {
       'Registered $modelType version: ${versionInfo.version}',
       name: _logName,
     );
+  }
+
+  Future<KernelGovernanceDecision> _evaluateGovernance(
+    KernelGovernanceRequest request,
+  ) async {
+    if (_kernelGovernanceGate == null) {
+      return KernelGovernanceDecision(
+        decisionId: 'kgd_none',
+        mode: KernelGovernanceMode.shadow,
+        wouldAllow: true,
+        servingAllowed: true,
+        shadowBypassApplied: false,
+        reasonCodes: const <String>['no_kernel_gate_configured'],
+        policyVersion: 'none',
+        timestamp: DateTime.now().toUtc(),
+        correlationId: request.correlationId,
+      );
+    }
+    return _kernelGovernanceGate.evaluate(request);
   }
 }

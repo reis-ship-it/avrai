@@ -1,4 +1,4 @@
-import 'package:avrai/core/controllers/urk_stage_a_trigger_privacy_no_egress_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_stage_a_trigger_privacy_no_egress_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:avrai/core/services/quantum/urk_reality_temporal_truth_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_reality_temporal_truth_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

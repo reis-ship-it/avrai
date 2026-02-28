@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Real-Time User Calling Service
 //
 // Implements dynamic real-time user calling based on evolving entangled states
@@ -37,7 +38,10 @@ import 'package:avrai_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import 'package:avrai/core/services/security/hybrid_encryption_service.dart';
+import 'package:avrai/core/services/quantum/real_time_user_calling_models.dart';
 import 'dart:math' as math;
+
+export 'package:avrai/core/services/quantum/real_time_user_calling_models.dart';
 
 /// Real-time user calling service
 ///
@@ -1518,45 +1522,5 @@ class RealTimeUserCallingService {
         );
       }
     }
-  }
-}
-
-/// Cached quantum state
-class CachedQuantumState {
-  final QuantumEntityState state;
-  final AtomicTimestamp timestamp;
-  final DateTime cachedAt;
-
-  CachedQuantumState({
-    required this.state,
-    required this.timestamp,
-  }) : cachedAt = DateTime.now();
-
-  bool get isExpired {
-    // Check if cache is expired using DateTime comparison
-    final now = DateTime.now();
-    final age = now.difference(cachedAt);
-    // TTL is 5 minutes
-    return age > const Duration(minutes: 5);
-  }
-}
-
-/// Cached compatibility
-class CachedCompatibility {
-  final double compatibility;
-  final AtomicTimestamp timestamp;
-  final DateTime cachedAt;
-
-  CachedCompatibility({
-    required this.compatibility,
-    required this.timestamp,
-  }) : cachedAt = DateTime.now();
-
-  bool get isExpired {
-    // Check if cache is expired using DateTime comparison
-    final now = DateTime.now();
-    final age = now.difference(cachedAt);
-    // TTL is 5 minutes
-    return age > const Duration(minutes: 5);
   }
 }

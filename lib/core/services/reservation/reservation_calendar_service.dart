@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Reservation Calendar Service
 //
 // Phase 10.2: Calendar Integration
@@ -27,6 +28,8 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_core/models/quantum_entity_state.dart';
 import 'package:avrai_core/models/quantum_entity_type.dart';
 import 'package:avrai/core/models/quantum/matching_result.dart';
+
+part 'reservation_calendar_cache_models.dart';
 
 /// Calendar Sync Result
 ///
@@ -989,38 +992,5 @@ class CalendarConflict {
     required this.calendarEventId,
     required this.compatibility,
     required this.reason,
-  });
-}
-
-/// Cached Knot Signature (Phase 9.2: Performance optimization)
-class _CachedKnotSignature {
-  final String signature;
-  final DateTime cachedAt;
-
-  _CachedKnotSignature({
-    required this.signature,
-    required this.cachedAt,
-  });
-}
-
-/// Cached Compatibility (Phase 9.2: Performance optimization)
-class _CachedCompatibility {
-  final double compatibility;
-  final DateTime cachedAt;
-
-  _CachedCompatibility({
-    required this.compatibility,
-    required this.cachedAt,
-  });
-}
-
-/// Cached Calendar Event (Phase 9.2: Performance optimization)
-class _CachedCalendarEvent {
-  final String eventId;
-  final DateTime cachedAt;
-
-  _CachedCalendarEvent({
-    required this.eventId,
-    required this.cachedAt,
   });
 }

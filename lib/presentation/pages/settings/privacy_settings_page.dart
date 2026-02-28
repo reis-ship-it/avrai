@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -94,6 +95,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           _storageService.getBool('user_runtime_learning_enabled') ?? true;
       _userRuntimeLearning = enabled;
     } catch (_) {
+      // Default: enabled.
       _userRuntimeLearning = true;
     }
   }
@@ -730,9 +732,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 try {
                   await _storageService.setBool('ai2ai_learning_enabled', true);
                   await _storageService.setBool(
-                    'user_runtime_learning_enabled',
-                    true,
-                  );
+                      'user_runtime_learning_enabled', true);
                 } catch (_) {
                   // Ignore.
                 }

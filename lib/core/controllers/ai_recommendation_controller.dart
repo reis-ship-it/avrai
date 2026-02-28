@@ -1,12 +1,18 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
+// ignore_for_file: unused_field
+
 import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 
+import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/conviction_shadow_gate.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/services/matching/preferences_profile_service.dart';
-import 'package:avrai/core/services/events/event_recommendation_service.dart' as event_rec_service;
+import 'package:avrai/core/services/events/event_recommendation_service.dart'
+    as event_rec_service;
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/core/models/user/unified_user.dart';
@@ -23,14 +29,15 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
 // This is the type registered in DI container
-import 'package:avrai/core/services/infrastructure/storage_service.dart' show SharedPreferencesCompat;
+import 'package:avrai/core/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 
 /// AI Recommendation Controller
-/// 
+///
 /// Orchestrates the complete AI recommendation workflow. Coordinates loading
 /// of personality and preferences profiles, calculates quantum compatibility,
 /// and generates personalized recommendations for events, spots, and lists.
-/// 
+///
 /// **Responsibilities:**
 /// - Load PersonalityProfile (for quantum compatibility with hosts/users)
 /// - Load PreferencesProfile (for quantum compatibility with events/spots)
@@ -38,13 +45,13 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart' show Sh
 /// - Get event recommendations via EventRecommendationService
 /// - Rank and filter recommendations
 /// - Return unified recommendation results
-/// 
+///
 /// **Dependencies:**
 /// - `PersonalityLearning` - Load personality profiles
 /// - `PreferencesProfileService` - Load preferences profiles
 /// - `EventRecommendationService` - Get event recommendations
 /// - `AgentIdService` - Get agentId for privacy protection
-/// 
+///
 /// **Usage:**
 /// ```dart
 /// final controller = AIRecommendationController();
@@ -56,7 +63,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart' show Sh
 ///     maxResults: 20,
 ///   ),
 /// );
-/// 
+///
 /// if (result.isSuccess) {
 ///   final recommendations = result.recommendations;
 ///   final events = recommendations.events;
@@ -70,20 +77,22 @@ class AIRecommendationController
 
   final PersonalityLearning _personalityLearning;
   final PreferencesProfileService _preferencesProfileService;
-  final event_rec_service.EventRecommendationService _eventRecommendationService;
+  final event_rec_service.EventRecommendationService
+      _eventRecommendationService;
   final AgentIdService _agentIdService;
-  // ignore: unused_field
-  final AtomicClockService _atomicClock; // Reserved for future timestamp-based recommendations
-  
+  final AtomicClockService
+      _atomicClock; // Reserved for future timestamp-based recommendations
+
   // AVRAI Core System Integration (optional, graceful degradation)
   final PersonalityKnotService? _personalityKnotService;
   final KnotStorageService? _knotStorageService;
   final CrossEntityCompatibilityService? _knotCompatibilityService;
   final IntegratedKnotRecommendationEngine? _knotEngine;
   final LocationTimingQuantumStateService? _locationTimingService;
-  // ignore: unused_field
-  final QuantumEntanglementService? _quantumEntanglementService; // Reserved for future quantum compatibility calculations
+  final QuantumEntanglementService?
+      _quantumEntanglementService; // Reserved for future quantum compatibility calculations
   final QuantumMatchingAILearningService? _aiLearningService;
+  final ConvictionGateEvaluator _convictionGateEvaluator;
 
   AIRecommendationController({
     PersonalityLearning? personalityLearning,
@@ -98,6 +107,7 @@ class AIRecommendationController
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
+    ConvictionGateEvaluator? convictionGateEvaluator,
   })  : _personalityLearning = personalityLearning ??
             (() {
               // Use same pattern as injection_container.dart
@@ -107,8 +117,7 @@ class AIRecommendationController
             })(),
         _preferencesProfileService =
             preferencesProfileService ?? PreferencesProfileService(),
-        _eventRecommendationService =
-            eventRecommendationService ??
+        _eventRecommendationService = eventRecommendationService ??
             event_rec_service.EventRecommendationService(),
         _agentIdService = agentIdService ?? di.sl<AgentIdService>(),
         _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
@@ -139,10 +148,12 @@ class AIRecommendationController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
-                : null);
+                : null),
+        _convictionGateEvaluator =
+            convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
 
   /// Generate comprehensive recommendations
-  /// 
+  ///
   /// Orchestrates the complete recommendation workflow:
   /// 1. Get agentId for privacy protection
   /// 2. Load PersonalityProfile
@@ -150,27 +161,56 @@ class AIRecommendationController
   /// 4. Get event recommendations
   /// 5. Calculate quantum compatibility scores
   /// 6. Rank and filter results
-  /// 
+  ///
   /// **Parameters:**
   /// - `userId`: User ID to get recommendations for
   /// - `context`: Recommendation context (category, location, maxResults, etc.)
-  /// 
+  ///
   /// **Returns:**
   /// RecommendationResult with event, spot, and list recommendations
   Future<RecommendationResult> generateRecommendations({
     required String userId,
     required RecommendationContext context,
   }) async {
+    ConvictionGateDecision? convictionGateDecision;
     try {
       developer.log(
         '🎯 Starting AI recommendation generation for user: $userId',
         name: _logName,
       );
 
-      // Step 1: Get agentId for privacy protection
+      // Step 1: Evaluate conviction/policy gate (shadow mode by default)
+      convictionGateDecision = await _convictionGateEvaluator.evaluate(
+        ConvictionGateRequest(
+          controllerName: 'AIRecommendationController',
+          requestId: context.convictionRequestId ??
+              'recommend-$userId-${DateTime.now().millisecondsSinceEpoch}',
+          claimState: context.claimState,
+          isHighImpact: context.isHighImpactAction,
+          policyChecksPassed: context.policyChecksPassed,
+          subjectId: userId,
+        ),
+      );
+
+      if (convictionGateDecision.shadowBypassApplied) {
+        developer.log(
+          '⚠️ Conviction gate shadow bypass applied: ${convictionGateDecision.reasonCodes.join(",")}',
+          name: _logName,
+        );
+      }
+
+      if (!convictionGateDecision.servingAllowed) {
+        return RecommendationResult.failure(
+          error: 'Conviction gate blocked request',
+          errorCode: 'CONVICTION_GATE_BLOCKED',
+          convictionGateDecision: convictionGateDecision,
+        );
+      }
+
+      // Step 2: Get agentId for privacy protection
       final agentId = await _agentIdService.getUserAgentId(userId);
 
-      // Step 2: Load PersonalityProfile
+      // Step 3: Load PersonalityProfile
       PersonalityProfile? personalityProfile;
       try {
         personalityProfile = await _personalityLearning.initializePersonality(
@@ -188,7 +228,7 @@ class AIRecommendationController
         // Continue without personality profile - can still generate recommendations
       }
 
-      // Step 3: Load PreferencesProfile
+      // Step 4: Load PreferencesProfile
       PreferencesProfile? preferencesProfile;
       try {
         preferencesProfile =
@@ -212,7 +252,7 @@ class AIRecommendationController
         // Continue without preferences profile - can still generate recommendations
       }
 
-      // Step 4: Create user object (for recommendation services)
+      // Step 5: Create user object (for recommendation services)
       // Note: EventRecommendationService expects UnifiedUser
       // In a real implementation, you'd load the full user from a service
       // For now, we'll construct a minimal user object
@@ -224,7 +264,7 @@ class AIRecommendationController
         updatedAt: DateTime.now(),
       );
 
-      // Step 5: Get event recommendations
+      // Step 6: Get event recommendations
       List<event_rec_service.EventRecommendation> eventRecommendations = [];
       try {
         eventRecommendations =
@@ -247,19 +287,21 @@ class AIRecommendationController
         // Continue without event recommendations
       }
 
-      // Step 6: AVRAI Core System Integration (optional, graceful degradation)
-      
+      // Step 7: AVRAI Core System Integration (optional, graceful degradation)
+
       // 6.1: Load personality knots for knot-based recommendations
-      if (_personalityKnotService != null && _knotStorageService != null && personalityProfile != null) {
+      if (_personalityKnotService != null &&
+          _knotStorageService != null &&
+          personalityProfile != null) {
         try {
           developer.log(
             '🎯 Loading personality knots for knot-based recommendations',
             name: _logName,
           );
-          
+
           // Get user's knot (if available)
           final userKnot = await _knotStorageService.loadKnot(agentId);
-          
+
           if (userKnot != null) {
             developer.log(
               '✅ Loaded user personality knot (crossings: ${userKnot.invariants.crossingNumber})',
@@ -280,7 +322,7 @@ class AIRecommendationController
           // Continue - knot loading is optional
         }
       }
-      
+
       // 6.2: Calculate knot compatibility for recommendations
       if (_knotCompatibilityService != null) {
         try {
@@ -298,7 +340,7 @@ class AIRecommendationController
           // Continue - knot compatibility is optional
         }
       }
-      
+
       // 6.3: Use integrated knot recommendation engine (if available)
       if (_knotEngine != null) {
         try {
@@ -316,7 +358,7 @@ class AIRecommendationController
           // Continue - knot engine is optional
         }
       }
-      
+
       // 6.4: Create 4D quantum states for location-aware recommendations
       if (_locationTimingService != null && context.location != null) {
         try {
@@ -324,7 +366,7 @@ class AIRecommendationController
             '🌐 Creating 4D quantum location state for recommendation context',
             name: _logName,
           );
-          
+
           // Parse location and create quantum state
           // Note: Full implementation would parse context.location and create quantum state
           developer.log(
@@ -340,7 +382,7 @@ class AIRecommendationController
           // Continue - location quantum state is optional
         }
       }
-      
+
       // 6.5: Enhance recommendations with quantum compatibility scores
       final enhancedEventRecommendations =
           await _enhanceRecommendationsWithQuantumCompatibility(
@@ -350,7 +392,8 @@ class AIRecommendationController
       );
 
       // 6.6: Learn from recommendation outcomes via AI2AI mesh (optional, fire-and-forget)
-      if (_aiLearningService != null && enhancedEventRecommendations.isNotEmpty) {
+      if (_aiLearningService != null &&
+          enhancedEventRecommendations.isNotEmpty) {
         try {
           developer.log(
             '🤖 AI2AI learning service available (learning deferred to matching)',
@@ -368,7 +411,7 @@ class AIRecommendationController
         }
       }
 
-      // Step 7: Sort and filter final results
+      // Step 8: Sort and filter final results
       final filteredEvents = _filterAndSortRecommendations(
         enhancedEventRecommendations,
         minRelevanceScore: context.minRelevanceScore,
@@ -386,6 +429,7 @@ class AIRecommendationController
         lists: const [], // TODO(Phase 8.11): Implement when ListRecommendationService is available
         personalityProfile: personalityProfile,
         preferencesProfile: preferencesProfile,
+        convictionGateDecision: convictionGateDecision,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -397,12 +441,13 @@ class AIRecommendationController
       return RecommendationResult.failure(
         error: 'Failed to generate recommendations: ${e.toString()}',
         errorCode: 'RECOMMENDATION_GENERATION_FAILED',
+        convictionGateDecision: convictionGateDecision,
       );
     }
   }
 
   /// Enhance event recommendations with quantum compatibility scores
-  /// 
+  ///
   /// Calculates quantum compatibility scores using both PersonalityProfile
   /// (for host compatibility) and PreferencesProfile (for event compatibility).
   Future<List<event_rec_service.EventRecommendation>>
@@ -425,9 +470,9 @@ class AIRecommendationController
 
         // Combine relevance score with preferences compatibility
         // Weight: 60% original relevance, 40% preferences compatibility
-        quantumCompatibility = (recommendation.relevanceScore * 0.6 +
-                preferencesCompat * 0.4)
-            .clamp(0.0, 1.0);
+        quantumCompatibility =
+            (recommendation.relevanceScore * 0.6 + preferencesCompat * 0.4)
+                .clamp(0.0, 1.0);
       }
 
       // TODO(Phase 8.11): Calculate personality compatibility with event host
@@ -447,7 +492,7 @@ class AIRecommendationController
   }
 
   /// Filter and sort recommendations
-  /// 
+  ///
   /// Filters recommendations by minimum relevance score and sorts by
   /// relevance score (highest first).
   List<event_rec_service.EventRecommendation> _filterAndSortRecommendations(
@@ -494,7 +539,8 @@ class AIRecommendationController
 
     if (input.context.explorationRatio < 0.0 ||
         input.context.explorationRatio > 1.0) {
-      errors['explorationRatio'] = 'Exploration ratio must be between 0.0 and 1.0';
+      errors['explorationRatio'] =
+          'Exploration ratio must be between 0.0 and 1.0';
     }
 
     if (input.context.minRelevanceScore < 0.0 ||
@@ -520,7 +566,7 @@ class AIRecommendationController
 }
 
 /// Recommendation Input
-/// 
+///
 /// Input data for recommendation generation.
 class RecommendationInput {
   final String userId;
@@ -533,7 +579,7 @@ class RecommendationInput {
 }
 
 /// Recommendation Context
-/// 
+///
 /// Context for generating recommendations (filters, limits, etc.).
 class RecommendationContext {
   final String? category;
@@ -541,6 +587,10 @@ class RecommendationContext {
   final int maxResults;
   final double explorationRatio;
   final double minRelevanceScore;
+  final ClaimLifecycleState claimState;
+  final bool isHighImpactAction;
+  final bool policyChecksPassed;
+  final String? convictionRequestId;
 
   const RecommendationContext({
     this.category,
@@ -548,6 +598,10 @@ class RecommendationContext {
     this.maxResults = 20,
     this.explorationRatio = 0.3,
     this.minRelevanceScore = 0.3,
+    this.claimState = ClaimLifecycleState.canonical,
+    this.isHighImpactAction = false,
+    this.policyChecksPassed = true,
+    this.convictionRequestId,
   });
 
   RecommendationContext copyWith({
@@ -556,6 +610,10 @@ class RecommendationContext {
     int? maxResults,
     double? explorationRatio,
     double? minRelevanceScore,
+    ClaimLifecycleState? claimState,
+    bool? isHighImpactAction,
+    bool? policyChecksPassed,
+    String? convictionRequestId,
   }) {
     return RecommendationContext(
       category: category ?? this.category,
@@ -563,19 +621,26 @@ class RecommendationContext {
       maxResults: maxResults ?? this.maxResults,
       explorationRatio: explorationRatio ?? this.explorationRatio,
       minRelevanceScore: minRelevanceScore ?? this.minRelevanceScore,
+      claimState: claimState ?? this.claimState,
+      isHighImpactAction: isHighImpactAction ?? this.isHighImpactAction,
+      policyChecksPassed: policyChecksPassed ?? this.policyChecksPassed,
+      convictionRequestId: convictionRequestId ?? this.convictionRequestId,
     );
   }
 }
 
 /// Recommendation Result
-/// 
+///
 /// Unified result containing all recommendation types.
 class RecommendationResult extends ControllerResult {
   final List<event_rec_service.EventRecommendation> events;
-  final List<dynamic> spots; // TODO(Phase 8.11): Replace with SpotRecommendation
-  final List<dynamic> lists; // TODO(Phase 8.11): Replace with ListRecommendation
+  final List<dynamic>
+      spots; // TODO(Phase 8.11): Replace with SpotRecommendation
+  final List<dynamic>
+      lists; // TODO(Phase 8.11): Replace with ListRecommendation
   final PersonalityProfile? personalityProfile;
   final PreferencesProfile? preferencesProfile;
+  final ConvictionGateDecision? convictionGateDecision;
 
   const RecommendationResult({
     required super.success,
@@ -587,6 +652,7 @@ class RecommendationResult extends ControllerResult {
     this.lists = const [],
     this.personalityProfile,
     this.preferencesProfile,
+    this.convictionGateDecision,
   });
 
   /// Create successful recommendation result
@@ -596,6 +662,7 @@ class RecommendationResult extends ControllerResult {
     List<dynamic> lists = const [],
     PersonalityProfile? personalityProfile,
     PreferencesProfile? preferencesProfile,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return RecommendationResult(
       success: true,
@@ -604,6 +671,7 @@ class RecommendationResult extends ControllerResult {
       lists: lists,
       personalityProfile: personalityProfile,
       preferencesProfile: preferencesProfile,
+      convictionGateDecision: convictionGateDecision,
       metadata: {
         'timestamp': DateTime.now().toIso8601String(),
         'eventCount': events.length,
@@ -618,14 +686,14 @@ class RecommendationResult extends ControllerResult {
     required String error,
     String? errorCode,
     Map<String, dynamic>? metadata,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return RecommendationResult(
       success: false,
       error: error,
       errorCode: errorCode ?? 'RECOMMENDATION_FAILED',
       metadata: metadata,
+      convictionGateDecision: convictionGateDecision,
     );
   }
 }
-
-

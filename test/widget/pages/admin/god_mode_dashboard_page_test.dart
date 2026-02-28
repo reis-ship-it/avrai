@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/pages/admin/god_mode_dashboard_page.dart';
-import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_dashboard_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for GodModeDashboardPage

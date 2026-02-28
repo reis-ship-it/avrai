@@ -8,6 +8,14 @@
 
 Every file must be placed in an explicit architecture spot.
 
+Default target placement direction for all new code:
+
+1. `apps/*` -> product surfaces and UI workflows.
+2. `runtime/*` -> endpoint handling, AI2AI/BLE transport, orchestration, security, policy, privacy.
+3. `engine/*` -> model-truth logic (state/prediction/planning/learning).
+4. `shared/*` -> contracts, schemas, primitives.
+5. Import direction must converge to `apps -> runtime -> engine -> shared`.
+
 - A file is valid only if it maps to:
   1. a row in `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`, and
   2. a registered spot in `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`.
@@ -18,6 +26,13 @@ Every file must be placed in an explicit architecture spot.
   - explicit `injections` block (`mode`, `roots`, `provides`, `consumes`, `required_validation`) so DI impacts are tracked per file
 - If a file does not fit an existing spot, **create a new spot** in `ARCHITECTURE_SPOTS_REGISTRY.csv` before merge.
 - No unresolved dispositions are allowed in build validation (`review_required`, `delete_candidate`).
+
+Runtime transport canonicalization note:
+- AI2AI transport implementation files must be placed under:
+  - `lib/runtime/avrai_runtime_os/services/transport/ble/`
+  - `lib/runtime/avrai_runtime_os/services/transport/mesh/`
+- New transport logic must not be added under `lib/core/ai2ai/resilience/` or `lib/core/ai2ai/routing/`.
+- `lib/core/ai2ai/resilience/` and `lib/core/ai2ai/routing/` are strict blocked legacy roots: only deletion is allowed during migration.
 
 ## Required Update Flow for New Files
 

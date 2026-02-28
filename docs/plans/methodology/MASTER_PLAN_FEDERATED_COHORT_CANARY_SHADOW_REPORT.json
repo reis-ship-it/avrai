@@ -1,0 +1,21 @@
+{
+  "cohorts_checked": 4,
+  "cohorts_passing": 4,
+  "errors": [],
+  "generated_at": "2026-02-27T17:00:00Z",
+  "max_regression_pct": 2.0,
+  "minimum_samples_per_cohort": 50,
+  "missing_required_stages": [],
+  "promotion_policy_enforced": true,
+  "required_stages": [
+    "canary",
+    "shadow"
+  ],
+  "source": "configs/runtime/federated_cohort_canary_shadow_pipeline.json",
+  "stage_coverage": {
+    "canary": 2,
+    "shadow": 2
+  },
+  "verdict": "PASS",
+  "version": "v1"
+}

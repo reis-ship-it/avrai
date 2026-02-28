@@ -1,10 +1,11 @@
-import 'package:avrai/core/services/expertise/urk_stage_d_expert_runtime_replication_contract.dart';
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
-import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_stage_d_expert_runtime_replication_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:flutter_test/flutter_test.dart';
+
 import '../../helpers/platform_channel_helper.dart';
 import '../../mocks/mock_storage_service.dart';
 
@@ -23,12 +24,12 @@ class _ExpertKernelRegistryService extends UrkKernelRegistryService {
         UrkKernelRecord(
           kernelId: 'k_expert_runtime',
           title: 'Expert Runtime',
-          purpose: 'Expert runtime dispatch',
+          purpose: 'Expert runtime dispatch coverage',
           runtimeScope: ['expert_services_runtime'],
           prongScope: 'runtime_core',
           privacyModes: ['private_mesh'],
           impactTier: 'L3',
-          localityScope: ['mesh'],
+          localityScope: ['mesh', 'cloud'],
           activationTriggers: [
             'expert_runtime_request',
             'runtime_health_breach',
@@ -54,23 +55,19 @@ void main() {
     test('passes when expert runtime replication controls are healthy', () {
       const snapshot = UrkStageDExpertRuntimeReplicationSnapshot(
         observedPipelineCoveragePct: 100.0,
-        observedPolicyGateCoveragePct: 100.0,
+        observedExpertisePolicyGateCoveragePct: 100.0,
         observedLineageCoveragePct: 100.0,
-        observedUnattributedActions: 0,
-        observedProvenanceCoveragePct: 100.0,
-        observedUnverifiedOutputs: 0,
+        observedProvenanceTagCoveragePct: 100.0,
+        observedUnverifiedExpertCommits: 0,
         observedHighImpactReviewCoveragePct: 100.0,
-        observedUnreviewedHighImpactCommits: 0,
       );
       const policy = UrkStageDExpertRuntimeReplicationPolicy(
         requiredPipelineCoveragePct: 100.0,
-        requiredPolicyGateCoveragePct: 100.0,
+        requiredExpertisePolicyGateCoveragePct: 100.0,
         requiredLineageCoveragePct: 100.0,
-        maxUnattributedActions: 0,
-        requiredProvenanceCoveragePct: 100.0,
-        maxUnverifiedOutputs: 0,
+        requiredProvenanceTagCoveragePct: 100.0,
+        maxUnverifiedExpertCommits: 0,
         requiredHighImpactReviewCoveragePct: 100.0,
-        maxUnreviewedHighImpactCommits: 0,
       );
 
       final result = validator.validate(snapshot: snapshot, policy: policy);
@@ -78,94 +75,77 @@ void main() {
       expect(result.failures, isEmpty);
     });
 
-    test('fails on pipeline, policy, and lineage regressions', () {
+    test('fails on pipeline and expertise policy gate regressions', () {
       const snapshot = UrkStageDExpertRuntimeReplicationSnapshot(
-        observedPipelineCoveragePct: 91.0,
-        observedPolicyGateCoveragePct: 92.0,
-        observedLineageCoveragePct: 93.0,
-        observedUnattributedActions: 2,
-        observedProvenanceCoveragePct: 100.0,
-        observedUnverifiedOutputs: 0,
+        observedPipelineCoveragePct: 90.0,
+        observedExpertisePolicyGateCoveragePct: 87.0,
+        observedLineageCoveragePct: 100.0,
+        observedProvenanceTagCoveragePct: 100.0,
+        observedUnverifiedExpertCommits: 0,
         observedHighImpactReviewCoveragePct: 100.0,
-        observedUnreviewedHighImpactCommits: 0,
       );
       const policy = UrkStageDExpertRuntimeReplicationPolicy(
         requiredPipelineCoveragePct: 100.0,
-        requiredPolicyGateCoveragePct: 100.0,
+        requiredExpertisePolicyGateCoveragePct: 100.0,
         requiredLineageCoveragePct: 100.0,
-        maxUnattributedActions: 0,
-        requiredProvenanceCoveragePct: 100.0,
-        maxUnverifiedOutputs: 0,
+        requiredProvenanceTagCoveragePct: 100.0,
+        maxUnverifiedExpertCommits: 0,
         requiredHighImpactReviewCoveragePct: 100.0,
-        maxUnreviewedHighImpactCommits: 0,
       );
 
       final result = validator.validate(snapshot: snapshot, policy: policy);
       expect(result.isPassing, isFalse);
       expect(
         result.failures,
-        contains(
-          UrkStageDExpertRuntimeReplicationFailure
-              .pipelineCoverageBelowThreshold,
-        ),
+        contains(UrkStageDExpertRuntimeReplicationFailure
+            .pipelineCoverageBelowThreshold),
       );
       expect(
         result.failures,
         contains(
           UrkStageDExpertRuntimeReplicationFailure
-              .policyGateCoverageBelowThreshold,
-        ),
-      );
-      expect(
-        result.failures,
-        contains(
-          UrkStageDExpertRuntimeReplicationFailure
-              .lineageCoverageBelowThreshold,
-        ),
-      );
-      expect(
-        result.failures,
-        contains(
-          UrkStageDExpertRuntimeReplicationFailure.unattributedActionsDetected,
+              .expertisePolicyGateCoverageBelowThreshold,
         ),
       );
     });
 
-    test('fails on provenance and high-impact review safety regressions', () {
+    test('fails on lineage/provenance and commit safety regressions', () {
       const snapshot = UrkStageDExpertRuntimeReplicationSnapshot(
         observedPipelineCoveragePct: 100.0,
-        observedPolicyGateCoveragePct: 100.0,
-        observedLineageCoveragePct: 100.0,
-        observedUnattributedActions: 0,
-        observedProvenanceCoveragePct: 94.0,
-        observedUnverifiedOutputs: 3,
-        observedHighImpactReviewCoveragePct: 96.0,
-        observedUnreviewedHighImpactCommits: 1,
+        observedExpertisePolicyGateCoveragePct: 100.0,
+        observedLineageCoveragePct: 93.0,
+        observedProvenanceTagCoveragePct: 91.0,
+        observedUnverifiedExpertCommits: 2,
+        observedHighImpactReviewCoveragePct: 88.0,
       );
       const policy = UrkStageDExpertRuntimeReplicationPolicy(
         requiredPipelineCoveragePct: 100.0,
-        requiredPolicyGateCoveragePct: 100.0,
+        requiredExpertisePolicyGateCoveragePct: 100.0,
         requiredLineageCoveragePct: 100.0,
-        maxUnattributedActions: 0,
-        requiredProvenanceCoveragePct: 100.0,
-        maxUnverifiedOutputs: 0,
+        requiredProvenanceTagCoveragePct: 100.0,
+        maxUnverifiedExpertCommits: 0,
         requiredHighImpactReviewCoveragePct: 100.0,
-        maxUnreviewedHighImpactCommits: 0,
       );
 
       final result = validator.validate(snapshot: snapshot, policy: policy);
       expect(result.isPassing, isFalse);
       expect(
         result.failures,
+        contains(UrkStageDExpertRuntimeReplicationFailure
+            .lineageCoverageBelowThreshold),
+      );
+      expect(
+        result.failures,
         contains(
           UrkStageDExpertRuntimeReplicationFailure
-              .provenanceCoverageBelowThreshold,
+              .provenanceTagCoverageBelowThreshold,
         ),
       );
       expect(
         result.failures,
         contains(
-          UrkStageDExpertRuntimeReplicationFailure.unverifiedOutputsDetected,
+          UrkStageDExpertRuntimeReplicationFailure
+              .unverifiedExpertCommitDetected,
         ),
       );
       expect(
@@ -175,16 +155,9 @@ void main() {
               .highImpactReviewCoverageBelowThreshold,
         ),
       );
-      expect(
-        result.failures,
-        contains(
-          UrkStageDExpertRuntimeReplicationFailure
-              .unreviewedHighImpactCommitDetected,
-        ),
-      );
     });
 
-    test('dispatches expert activation receipt on pass', () async {
+    test('dispatches expert runtime activation receipt on pass', () async {
       MockGetStorage.reset();
       final storage = getTestStorage(boxName: 'urk_expert_dispatch_pass');
       final prefs = await SharedPreferencesCompat.getInstance(storage: storage);
@@ -199,30 +172,26 @@ void main() {
 
       const snapshot = UrkStageDExpertRuntimeReplicationSnapshot(
         observedPipelineCoveragePct: 100.0,
-        observedPolicyGateCoveragePct: 100.0,
+        observedExpertisePolicyGateCoveragePct: 100.0,
         observedLineageCoveragePct: 100.0,
-        observedUnattributedActions: 0,
-        observedProvenanceCoveragePct: 100.0,
-        observedUnverifiedOutputs: 0,
+        observedProvenanceTagCoveragePct: 100.0,
+        observedUnverifiedExpertCommits: 0,
         observedHighImpactReviewCoveragePct: 100.0,
-        observedUnreviewedHighImpactCommits: 0,
       );
       const policy = UrkStageDExpertRuntimeReplicationPolicy(
         requiredPipelineCoveragePct: 100.0,
-        requiredPolicyGateCoveragePct: 100.0,
+        requiredExpertisePolicyGateCoveragePct: 100.0,
         requiredLineageCoveragePct: 100.0,
-        maxUnattributedActions: 0,
-        requiredProvenanceCoveragePct: 100.0,
-        maxUnverifiedOutputs: 0,
+        requiredProvenanceTagCoveragePct: 100.0,
+        maxUnverifiedExpertCommits: 0,
         requiredHighImpactReviewCoveragePct: 100.0,
-        maxUnreviewedHighImpactCommits: 0,
       );
 
       final result = await validator.validateAndDispatch(
         snapshot: snapshot,
         policy: policy,
         activationDispatcher: dispatcher,
-        actor: 'ExpertRecommendationsService',
+        actor: 'ExpertRuntimeService',
       );
 
       expect(result.isPassing, isTrue);
@@ -231,6 +200,52 @@ void main() {
         lineage.where((event) => event.eventType == 'activation_receipt'),
         isNotEmpty,
       );
+    });
+
+    test('dispatches runtime health breach trigger on unverified commits',
+        () async {
+      MockGetStorage.reset();
+      final storage = getTestStorage(boxName: 'urk_expert_dispatch_fail');
+      final prefs = await SharedPreferencesCompat.getInstance(storage: storage);
+      final controlPlane = UrkKernelControlPlaneService(
+        prefs: prefs,
+        registryService: const _ExpertKernelRegistryService(),
+      );
+      final dispatcher = UrkRuntimeActivationReceiptDispatcher(
+        controlPlaneService: controlPlane,
+        registryService: const _ExpertKernelRegistryService(),
+      );
+
+      const snapshot = UrkStageDExpertRuntimeReplicationSnapshot(
+        observedPipelineCoveragePct: 100.0,
+        observedExpertisePolicyGateCoveragePct: 100.0,
+        observedLineageCoveragePct: 100.0,
+        observedProvenanceTagCoveragePct: 100.0,
+        observedUnverifiedExpertCommits: 1,
+        observedHighImpactReviewCoveragePct: 100.0,
+      );
+      const policy = UrkStageDExpertRuntimeReplicationPolicy(
+        requiredPipelineCoveragePct: 100.0,
+        requiredExpertisePolicyGateCoveragePct: 100.0,
+        requiredLineageCoveragePct: 100.0,
+        requiredProvenanceTagCoveragePct: 100.0,
+        maxUnverifiedExpertCommits: 0,
+        requiredHighImpactReviewCoveragePct: 100.0,
+      );
+
+      final result = await validator.validateAndDispatch(
+        snapshot: snapshot,
+        policy: policy,
+        activationDispatcher: dispatcher,
+        actor: 'ExpertRuntimeService',
+      );
+
+      expect(result.isPassing, isFalse);
+      final lineage = await controlPlane.getKernelLineage('k_expert_runtime');
+      final receipts =
+          lineage.where((event) => event.eventType == 'activation_receipt');
+      expect(receipts, isNotEmpty);
+      expect(receipts.first.reason, contains('runtime_health_breach'));
     });
   });
 }

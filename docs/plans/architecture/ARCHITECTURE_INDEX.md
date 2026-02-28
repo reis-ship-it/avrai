@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** February 20, 2026  
+**Last Updated:** February 28, 2026  
 **Status:** Active Reference (Current Architecture)  
 **Purpose:** Canonical navigation for architecture documents aligned to the current codebase and `docs/MASTER_PLAN.md`.
 
@@ -10,6 +10,7 @@
 
 - **Product requirements authority:** [`docs/PRD.md`](../../PRD.md)
 - **Execution plan:** [`docs/MASTER_PLAN.md`](../../MASTER_PLAN.md)
+- **Build-doc wiring authority:** [`docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`](../methodology/BUILD_DOCS_WIRING_INDEX.md)
 - **Execution status (canonical):** [`docs/agents/status/status_tracker.md`](../../agents/status/status_tracker.md)
 - **Plan registry (catalog, not live status):** [`docs/MASTER_PLAN_TRACKER.md`](../../MASTER_PLAN_TRACKER.md)
 - **Phase rationale docs:** [`docs/plans/rationale/`](../rationale/)
@@ -78,6 +79,17 @@ Use these when changing world-model training/planning behavior or model lifecycl
 
 ## AI2AI / Offline / Runtime Architecture
 
+- **Runtime transport migration status checkpoint (current):** [`MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md`](./MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md)
+- **3-prong target end-state umbrella authority:** [`MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`](./MASTER_PLAN_3_PRONG_TARGET_END_STATE.md)
+- **Apps prong concurrent execution plan:** [`PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
+- **Runtime OS prong concurrent execution plan:** [`PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
+- **Reality Model prong concurrent execution plan:** [`PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
+- **3-prong architecture visualization guide (external + internal + endpoint flows):** [`THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`](./THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md)
+- **Target codebase structure enforcement policy (default placement for new work):** [`TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`](./TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md)
+- **Refactor fast-lane playbook (slice-by-slice migration workflow):** [`REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md`](./REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md)
+- **Unified Runtime Kernel canonical blueprint (current):** [`UNIFIED_RUNTIME_KERNEL_BLUEPRINT_2026-02-27.md`](./UNIFIED_RUNTIME_KERNEL_BLUEPRINT_2026-02-27.md)
+- **Unified Runtime Kernel interface contracts (current):** [`URK_INTERFACE_CONTRACTS_2026-02-27.md`](./URK_INTERFACE_CONTRACTS_2026-02-27.md)
+- **URK admin console route pathway (current):** [`URK_ADMIN_CONSOLE_PATHWAY_2026-02-27.md`](./URK_ADMIN_CONSOLE_PATHWAY_2026-02-27.md)
 - **Online/offline strategy:** [`ONLINE_OFFLINE_STRATEGY.md`](./ONLINE_OFFLINE_STRATEGY.md)
 - **Offline cloud AI architecture:** [`OFFLINE_CLOUD_AI_ARCHITECTURE.md`](./OFFLINE_CLOUD_AI_ARCHITECTURE.md)
 - **AI2AI federated architecture:** [`architecture_ai_federated_p2p.md`](./architecture_ai_federated_p2p.md)
@@ -89,6 +101,10 @@ Use these when changing world-model training/planning behavior or model lifecycl
 - **3-prong boundary guard (build-enforced):** [`scripts/ci/check_three_prong_boundaries.py`](../../../scripts/ci/check_three_prong_boundaries.py)
 - **Cross-OS runtime capability contracts:** `configs/runtime/capabilities/*.json`
 - **Runtime capability contract validator:** [`scripts/ci/check_runtime_capability_contracts.py`](../../../scripts/ci/check_runtime_capability_contracts.py)
+
+Canonical runtime transport source of truth:
+- BLE transport lanes: `lib/runtime/avrai_runtime_os/services/transport/ble/*`
+- Mesh transport lanes: `lib/runtime/avrai_runtime_os/services/transport/mesh/*`
 
 Note: the historical filename `architecture_ai_federated_p2p.md` remains in use, but current architecture principle is **ai2ai-only (never p2p)** as defined in `docs/MASTER_PLAN.md`.
 

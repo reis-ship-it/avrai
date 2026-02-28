@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/presentation/pages/admin/communications_viewer_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/communications_viewer_page.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for CommunicationsViewerPage

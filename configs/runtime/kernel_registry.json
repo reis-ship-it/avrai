@@ -6,27 +6,14 @@
       "kernel_id": "urk_stage_a_trigger_privacy_no_egress",
       "title": "URK Stage A Trigger + Privacy + No-Egress",
       "purpose": "Enforce trigger coverage, privacy policy coverage, and local sovereign no-egress guarantees.",
-      "runtime_scope": [
-        "user_runtime",
-        "event_ops_runtime"
-      ],
+      "runtime_scope": ["user_runtime", "event_ops_runtime"],
       "prong_scope": "runtime_core",
-      "privacy_modes": [
-        "multi_mode"
-      ],
+      "privacy_modes": ["multi_mode"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "device",
-        "mesh",
-        "cloud"
-      ],
-      "activation_triggers": [
-        "runtime_request_pre_plan"
-      ],
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["runtime_request_pre_plan"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M6-P3-3"
-      ],
+      "dependencies": ["M6-P3-3"],
       "lifecycle_state": "replicated",
       "owner": "AP;REL",
       "approver": "REL",
@@ -46,27 +33,14 @@
       "kernel_id": "urk_stage_b_event_ops_shadow_runtime",
       "title": "URK Stage B Event Ops Shadow Runtime",
       "purpose": "Run ingest-plan-gate-observe shadow path with lineage and high-impact block guarantees.",
-      "runtime_scope": [
-        "user_runtime",
-        "event_ops_runtime"
-      ],
+      "runtime_scope": ["user_runtime", "event_ops_runtime"],
       "prong_scope": "runtime_core",
-      "privacy_modes": [
-        "multi_mode"
-      ],
+      "privacy_modes": ["multi_mode"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "device",
-        "mesh",
-        "cloud"
-      ],
-      "activation_triggers": [
-        "event_ops_shadow_execution"
-      ],
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["event_ops_shadow_execution"],
       "authority_mode": "shadow",
-      "dependencies": [
-        "M7-P7-3"
-      ],
+      "dependencies": ["M7-P7-3"],
       "lifecycle_state": "replicated",
       "owner": "AP;MOB",
       "approver": "REL",
@@ -86,25 +60,14 @@
       "kernel_id": "urk_stage_c_private_mesh_policy_conformance",
       "title": "URK Stage C Private Mesh Policy Conformance",
       "purpose": "Enforce private-mesh payload minimization, encryption, lineage tags, and policy gating.",
-      "runtime_scope": [
-        "user_runtime",
-        "event_ops_runtime"
-      ],
+      "runtime_scope": ["user_runtime", "event_ops_runtime"],
       "prong_scope": "governance_core",
-      "privacy_modes": [
-        "private_mesh"
-      ],
+      "privacy_modes": ["private_mesh"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "mesh"
-      ],
-      "activation_triggers": [
-        "ai2ai_private_mesh_sync"
-      ],
+      "locality_scope": ["mesh"],
+      "activation_triggers": ["ai2ai_private_mesh_sync"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M7-P7-4"
-      ],
+      "dependencies": ["M7-P7-4"],
       "lifecycle_state": "replicated",
       "owner": "FED;LOC",
       "approver": "AP",
@@ -124,24 +87,14 @@
       "kernel_id": "urk_stage_d_business_runtime_replication",
       "title": "URK Stage D Business Runtime Replication",
       "purpose": "Replicate URK request-policy-lineage-review invariants into business runtime.",
-      "runtime_scope": [
-        "business_ops_runtime"
-      ],
+      "runtime_scope": ["business_ops_runtime"],
       "prong_scope": "runtime_core",
-      "privacy_modes": [
-        "federated_cloud"
-      ],
+      "privacy_modes": ["federated_cloud"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "cloud"
-      ],
-      "activation_triggers": [
-        "business_runtime_request"
-      ],
+      "locality_scope": ["cloud"],
+      "activation_triggers": ["business_runtime_request"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M7-P8-3"
-      ],
+      "dependencies": ["M7-P8-3"],
       "lifecycle_state": "replicated",
       "owner": "Business Platform;AP",
       "approver": "GOV",
@@ -161,25 +114,14 @@
       "kernel_id": "urk_stage_d_expert_runtime_replication",
       "title": "URK Stage D Expert Runtime Replication",
       "purpose": "Replicate URK request-policy-lineage-provenance-review invariants into expert runtime.",
-      "runtime_scope": [
-        "expert_services_runtime"
-      ],
+      "runtime_scope": ["expert_services_runtime"],
       "prong_scope": "runtime_core",
-      "privacy_modes": [
-        "private_mesh"
-      ],
+      "privacy_modes": ["private_mesh"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "mesh",
-        "cloud"
-      ],
-      "activation_triggers": [
-        "expert_runtime_request"
-      ],
+      "locality_scope": ["mesh", "cloud"],
+      "activation_triggers": ["expert_runtime_request"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M8-P9-2"
-      ],
+      "dependencies": ["M8-P9-2"],
       "lifecycle_state": "replicated",
       "owner": "Integrations Platform;AP",
       "approver": "GOV",
@@ -199,27 +141,14 @@
       "kernel_id": "urk_stage_e_cross_runtime_conformance",
       "title": "URK Stage E Cross-Runtime Conformance",
       "purpose": "Prove cross-runtime invariant conformance and deterministic replay across Event/Business/Expert.",
-      "runtime_scope": [
-        "shared"
-      ],
+      "runtime_scope": ["shared"],
       "prong_scope": "cross_prong",
-      "privacy_modes": [
-        "multi_mode"
-      ],
+      "privacy_modes": ["multi_mode"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "device",
-        "mesh",
-        "cloud"
-      ],
-      "activation_triggers": [
-        "release_candidate_validation",
-        "weekly_conformance_sweep"
-      ],
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["release_candidate_validation", "weekly_conformance_sweep"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M8-P11-2"
-      ],
+      "dependencies": ["M8-P11-2"],
       "lifecycle_state": "replicated",
       "owner": "AP;REL",
       "approver": "GOV",
@@ -239,26 +168,14 @@
       "kernel_id": "urk_kernel_promotion_lifecycle",
       "title": "URK Kernel Promotion Lifecycle",
       "purpose": "Govern kernel progression across draft, shadow, enforced, and replicated with approval chain coverage.",
-      "runtime_scope": [
-        "shared"
-      ],
+      "runtime_scope": ["shared"],
       "prong_scope": "governance_core",
-      "privacy_modes": [
-        "multi_mode"
-      ],
+      "privacy_modes": ["multi_mode"],
       "impact_tier": "L3",
-      "locality_scope": [
-        "device",
-        "mesh",
-        "cloud"
-      ],
-      "activation_triggers": [
-        "kernel_state_change_request"
-      ],
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["kernel_state_change_request"],
       "authority_mode": "enforced",
-      "dependencies": [
-        "M8-P10-4"
-      ],
+      "dependencies": ["M8-P10-4"],
       "lifecycle_state": "enforced",
       "owner": "AP;REL",
       "approver": "GOV",
@@ -272,6 +189,279 @@
         "report_json": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.json",
         "report_md": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.md",
         "baseline": "docs/plans/methodology/M9_P10_1_URK_KERNEL_PROMOTION_LIFECYCLE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_learning_update_governance",
+      "title": "URK Learning Update Governance",
+      "purpose": "Govern learning update validation, lineage traceability, and high-impact learning promotion safety.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "model_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "cloud"],
+      "activation_triggers": ["learning_update_candidate"],
+      "authority_mode": "enforced",
+      "dependencies": ["M8-P10-4"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;MLE",
+      "approver": "AP",
+      "milestone_id": "M9-P3-2",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_learning_update_governance_controls.json",
+        "contract": "lib/core/ai/urk_learning_update_governance_contract.dart",
+        "test": "test/unit/ai/urk_learning_update_governance_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_learning_update_governance_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_LEARNING_UPDATE_GOVERNANCE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_LEARNING_UPDATE_GOVERNANCE_REPORT.md",
+        "baseline": "docs/plans/methodology/M9_P3_2_URK_LEARNING_UPDATE_GOVERNANCE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_reality_world_state_coherence",
+      "title": "URK Reality Kernel: World-State Coherence",
+      "purpose": "Maintain coherence across reality-model planes/knots/strings with zero unresolved state conflicts.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "model_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["world_state_update", "prediction_cycle_start"],
+      "authority_mode": "enforced",
+      "dependencies": ["M9-P3-2"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;MLE",
+      "approver": "AP",
+      "milestone_id": "M9-P3-3",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_reality_world_state_coherence_controls.json",
+        "contract": "lib/core/models/urk_reality_world_state_coherence_contract.dart",
+        "test": "test/unit/models/urk_reality_world_state_coherence_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_reality_world_state_coherence_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_REALITY_WORLD_STATE_COHERENCE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_REALITY_WORLD_STATE_COHERENCE_REPORT.md",
+        "baseline": "docs/plans/methodology/M9_P3_3_URK_REALITY_WORLD_STATE_COHERENCE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_reality_temporal_truth",
+      "title": "URK Reality Kernel: Temporal Truth",
+      "purpose": "Align atomic and semantic time while blocking timeline contradictions and clock regressions.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "runtime_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["scheduling_request", "timeline_merge", "prediction_cycle_start"],
+      "authority_mode": "enforced",
+      "dependencies": ["M9-P3-3"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;MLE",
+      "approver": "AP",
+      "milestone_id": "M9-P5-2",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_reality_temporal_truth_controls.json",
+        "contract": "lib/core/services/quantum/urk_reality_temporal_truth_contract.dart",
+        "test": "test/unit/services/urk_reality_temporal_truth_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_reality_temporal_truth_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_REALITY_TEMPORAL_TRUTH_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_REALITY_TEMPORAL_TRUTH_REPORT.md",
+        "baseline": "docs/plans/methodology/M9_P5_2_URK_REALITY_TEMPORAL_TRUTH_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_self_learning_governance",
+      "title": "URK Universal Kernel: Self-Learning Governance",
+      "purpose": "Continuously gate self-learning proposals with policy, quality, lineage, and promotion safety constraints.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "model_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["learning_cycle_tick", "new_signal_ingested", "policy_version_change"],
+      "authority_mode": "enforced",
+      "dependencies": ["M9-P3-2"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;MLE",
+      "approver": "AP",
+      "milestone_id": "M10-P3-1",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_self_learning_governance_controls.json",
+        "contract": "lib/core/ai/urk_self_learning_governance_contract.dart",
+        "test": "test/unit/ai/urk_self_learning_governance_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_self_learning_governance_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_SELF_LEARNING_GOVERNANCE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_SELF_LEARNING_GOVERNANCE_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P3_1_URK_SELF_LEARNING_GOVERNANCE_KERNEL_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_user_runtime_learning_intake",
+      "title": "URK User Runtime Kernel: Realtime Learning Intake Governance",
+      "purpose": "Gate user-origin realtime learning intake with consent, pseudonymous actor constraints, and on-device-first safety policy.",
+      "runtime_scope": ["user_runtime"],
+      "prong_scope": "model_core",
+      "privacy_modes": ["local_sovereign", "private_mesh"],
+      "impact_tier": "L3",
+      "locality_scope": ["device", "mesh"],
+      "activation_triggers": [
+        "user_runtime_learning_signal",
+        "policy_violation_detected"
+      ],
+      "authority_mode": "enforced",
+      "dependencies": ["M10-P3-1", "M10-P11-2"],
+      "lifecycle_state": "draft",
+      "owner": "AP;MLE",
+      "approver": "AP",
+      "milestone_id": "M11-P3-1",
+      "status": "ready",
+      "artifacts": {
+        "controls": "configs/runtime/urk_user_runtime_learning_intake_controls.json",
+        "contract": "lib/core/services/user/urk_user_runtime_learning_intake_contract.dart",
+        "test": "test/unit/services/urk_user_runtime_learning_intake_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_user_runtime_learning_intake_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_USER_RUNTIME_LEARNING_INTAKE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_USER_RUNTIME_LEARNING_INTAKE_REPORT.md",
+        "baseline": "docs/plans/methodology/M11_P3_1_URK_USER_RUNTIME_LEARNING_INTAKE_KERNEL_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_self_healing_recovery",
+      "title": "URK Universal Kernel: Self-Healing Recovery",
+      "purpose": "Detect, contain, and recover runtime/model degradations with deterministic incident lineage and rollback guarantees.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "runtime_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["runtime_health_breach", "policy_violation_detected", "incident_declared"],
+      "authority_mode": "enforced",
+      "dependencies": ["M6-P3-1"],
+      "lifecycle_state": "enforced",
+      "owner": "REL;AP",
+      "approver": "GOV",
+      "milestone_id": "M10-P6-1",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_self_healing_recovery_controls.json",
+        "contract": "lib/core/services/urk_self_healing_recovery_contract.dart",
+        "test": "test/unit/services/urk_self_healing_recovery_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_self_healing_recovery_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_SELF_HEALING_RECOVERY_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_SELF_HEALING_RECOVERY_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P6_1_URK_SELF_HEALING_RECOVERY_KERNEL_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_learning_healing_bridge",
+      "title": "URK Universal Kernel: Learning-Healing Bridge",
+      "purpose": "Close the loop from incidents to validated learning updates so recovery outcomes become safe policy-governed improvements.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "cross_prong",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["incident_closed", "postmortem_finalized", "learning_patch_candidate"],
+      "authority_mode": "enforced",
+      "dependencies": ["M10-P3-1", "M10-P6-1"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;REL;MLE",
+      "approver": "GOV",
+      "milestone_id": "M10-P10-3",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_learning_healing_bridge_controls.json",
+        "contract": "lib/core/controllers/urk_learning_healing_bridge_contract.dart",
+        "test": "test/unit/controllers/urk_learning_healing_bridge_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_learning_healing_bridge_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_LEARNING_HEALING_BRIDGE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_LEARNING_HEALING_BRIDGE_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P10_3_URK_LEARNING_HEALING_BRIDGE_KERNEL_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_kernel_activation_engine",
+      "title": "URK Universal Kernel: Activation Engine",
+      "purpose": "Deterministically route triggers to eligible kernels with privacy-mode and dependency gate enforcement plus activation receipts.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "runtime_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["runtime_health_breach", "incident_closed", "learning_patch_candidate", "release_candidate_validation"],
+      "authority_mode": "enforced",
+      "dependencies": ["M10-P10-3"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;REL;MLE",
+      "approver": "GOV",
+      "milestone_id": "M10-P7-1",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_kernel_activation_engine_controls.json",
+        "contract": "lib/core/controllers/urk_kernel_activation_engine_contract.dart",
+        "test": "test/unit/controllers/urk_kernel_activation_engine_contract_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_kernel_activation_engine_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_ACTIVATION_ENGINE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_ACTIVATION_ENGINE_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P10_4_URK_KERNEL_ACTIVATION_ENGINE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_kernel_control_plane",
+      "title": "URK Universal Kernel: Control Plane",
+      "purpose": "Provide live kernel state, health, lineage, and guarded state transition APIs for admin runtime governance.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "governance_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["admin_control_plane_query", "admin_control_plane_state_change", "release_candidate_validation"],
+      "authority_mode": "enforced",
+      "dependencies": ["M10-P7-1"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;REL;Product",
+      "approver": "GOV",
+      "milestone_id": "M10-P11-1",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_kernel_control_plane_controls.json",
+        "contract": "lib/core/services/admin/urk_kernel_control_plane_service.dart",
+        "test": "test/unit/services/admin/urk_kernel_control_plane_service_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_kernel_control_plane_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_CONTROL_PLANE_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_KERNEL_CONTROL_PLANE_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P11_1_URK_KERNEL_CONTROL_PLANE_BASELINE.md"
+      }
+    },
+    {
+      "kernel_id": "urk_runtime_activation_receipt_dispatch",
+      "title": "URK Universal Kernel: Runtime Activation Receipt Dispatch",
+      "purpose": "Wire runtime decisions to activation-engine evaluation and persisted control-plane receipts with deterministic trigger mapping.",
+      "runtime_scope": ["shared"],
+      "prong_scope": "runtime_core",
+      "privacy_modes": ["multi_mode"],
+      "impact_tier": "L4",
+      "locality_scope": ["device", "mesh", "cloud"],
+      "activation_triggers": ["policy_violation_detected", "runtime_health_breach", "release_candidate_validation", "learning_patch_candidate"],
+      "authority_mode": "enforced",
+      "dependencies": ["M10-P7-1", "M10-P11-1"],
+      "lifecycle_state": "enforced",
+      "owner": "AP;REL;MLE",
+      "approver": "GOV",
+      "milestone_id": "M10-P11-2",
+      "status": "done",
+      "artifacts": {
+        "controls": "configs/runtime/urk_runtime_activation_receipt_dispatch_controls.json",
+        "contract": "lib/core/controllers/urk_runtime_activation_receipt_dispatcher.dart",
+        "test": "test/unit/controllers/urk_runtime_activation_receipt_dispatcher_test.dart",
+        "report_generator": "scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py",
+        "report_json": "docs/plans/methodology/MASTER_PLAN_URK_RUNTIME_ACTIVATION_RECEIPT_DISPATCH_REPORT.json",
+        "report_md": "docs/plans/methodology/MASTER_PLAN_URK_RUNTIME_ACTIVATION_RECEIPT_DISPATCH_REPORT.md",
+        "baseline": "docs/plans/methodology/M10_P11_2_URK_RUNTIME_ACTIVATION_RECEIPT_DISPATCH_BASELINE.md"
       }
     }
   ]

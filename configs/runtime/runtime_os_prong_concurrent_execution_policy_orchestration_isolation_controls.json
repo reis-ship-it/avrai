@@ -1,0 +1,20 @@
+{
+  "milestone_id": "M12-P10-3",
+  "master_plan_refs": ["10.10.12"],
+  "prong": "runtime_os",
+  "rules": {
+    "forbid_runtime_to_apps_import": true,
+    "require_contract_only_engine_access": true,
+    "fail_closed_on_unknown_policy_fields": true,
+    "require_contract_overlap_compatibility": true
+  },
+  "authority_docs": [
+    "docs/plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md",
+    "docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md"
+  ],
+  "checks": [
+    "python3 scripts/ci/check_three_prong_boundaries.py",
+    "dart run tool/update_execution_board.dart --check",
+    "python3 scripts/validate_execution_board_urk_quality.py"
+  ]
+}

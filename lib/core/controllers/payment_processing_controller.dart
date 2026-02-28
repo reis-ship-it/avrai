@@ -1,5 +1,8 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
+import 'package:avrai/core/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
 import 'package:avrai/core/controllers/base/workflow_controller.dart';
 import 'package:avrai/core/controllers/base/controller_result.dart';
+import 'package:avrai/core/controllers/conviction_shadow_gate.dart';
 import 'package:avrai/core/services/payment/sales_tax_service.dart';
 import 'package:avrai/core/services/payment/payment_event_service.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
@@ -48,12 +51,16 @@ class PaymentProcessingController
 
   final SalesTaxService _salesTaxService;
   final PaymentEventService _paymentEventService;
+  final ConvictionGateEvaluator _convictionGateEvaluator;
 
   PaymentProcessingController({
     required SalesTaxService salesTaxService,
     required PaymentEventService paymentEventService,
+    ConvictionGateEvaluator? convictionGateEvaluator,
   })  : _salesTaxService = salesTaxService,
-        _paymentEventService = paymentEventService;
+        _paymentEventService = paymentEventService,
+        _convictionGateEvaluator =
+            convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
 
   /// Process event payment
   ///
@@ -76,12 +83,44 @@ class PaymentProcessingController
     required ExpertiseEvent event,
     required UnifiedUser buyer,
     int quantity = 1,
+    ClaimLifecycleState claimState = ClaimLifecycleState.canonical,
+    bool isHighImpactAction = true,
+    bool policyChecksPassed = true,
+    String? convictionRequestId,
   }) async {
+    ConvictionGateDecision? convictionGateDecision;
     try {
       developer.log(
         'Processing event payment: event=${event.id}, buyer=${buyer.id}, quantity=$quantity',
         name: _logName,
       );
+
+      convictionGateDecision = await _convictionGateEvaluator.evaluate(
+        ConvictionGateRequest(
+          controllerName: 'PaymentProcessingController',
+          requestId: convictionRequestId ??
+              'payment-${buyer.id}-${DateTime.now().millisecondsSinceEpoch}',
+          claimState: claimState,
+          isHighImpact: isHighImpactAction,
+          policyChecksPassed: policyChecksPassed,
+          subjectId: buyer.id,
+        ),
+      );
+
+      if (convictionGateDecision.shadowBypassApplied) {
+        developer.log(
+          '⚠️ Conviction gate shadow bypass applied: ${convictionGateDecision.reasonCodes.join(",")}',
+          name: _logName,
+        );
+      }
+
+      if (!convictionGateDecision.servingAllowed) {
+        return PaymentProcessingResult.failure(
+          error: 'Conviction gate blocked request',
+          errorCode: 'CONVICTION_GATE_BLOCKED',
+          convictionGateDecision: convictionGateDecision,
+        );
+      }
 
       // Step 1: Validate payment data
       final validation = validatePayment(
@@ -94,6 +133,7 @@ class PaymentProcessingController
           error: validation.firstError ?? 'Payment validation failed',
           errorCode: 'VALIDATION_FAILED',
           validationErrors: validation.fieldErrors,
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -134,6 +174,7 @@ class PaymentProcessingController
           error: paymentResult.errorMessage ?? 'Payment processing failed',
           errorCode: paymentResult.errorCode ?? 'PAYMENT_FAILED',
           payment: paymentResult.payment,
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -144,6 +185,7 @@ class PaymentProcessingController
           error: 'Event not found after payment',
           errorCode: 'EVENT_NOT_FOUND',
           payment: paymentResult.payment,
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -168,6 +210,7 @@ class PaymentProcessingController
         return PaymentProcessingResult.failure(
           error: 'Payment record not found for paid event',
           errorCode: 'PAYMENT_NOT_FOUND',
+          convictionGateDecision: convictionGateDecision,
         );
       }
 
@@ -181,6 +224,7 @@ class PaymentProcessingController
         totalAmount: totalAmount,
         event: updatedEvent,
         quantity: quantity,
+        convictionGateDecision: convictionGateDecision,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -192,6 +236,7 @@ class PaymentProcessingController
       return PaymentProcessingResult.failure(
         error: 'Payment processing failed: ${e.toString()}',
         errorCode: 'PROCESSING_ERROR',
+        convictionGateDecision: convictionGateDecision,
       );
     }
   }
@@ -315,6 +360,10 @@ class PaymentProcessingController
       event: input.event,
       buyer: input.buyer,
       quantity: input.quantity,
+      claimState: input.claimState,
+      isHighImpactAction: input.isHighImpactAction,
+      policyChecksPassed: input.policyChecksPassed,
+      convictionRequestId: input.convictionRequestId,
     );
   }
 
@@ -349,11 +398,19 @@ class PaymentData {
   final ExpertiseEvent event;
   final UnifiedUser buyer;
   final int quantity;
+  final ClaimLifecycleState claimState;
+  final bool isHighImpactAction;
+  final bool policyChecksPassed;
+  final String? convictionRequestId;
 
   const PaymentData({
     required this.event,
     required this.buyer,
     this.quantity = 1,
+    this.claimState = ClaimLifecycleState.canonical,
+    this.isHighImpactAction = true,
+    this.policyChecksPassed = true,
+    this.convictionRequestId,
   });
 }
 
@@ -391,6 +448,7 @@ class PaymentProcessingResult extends ControllerResult {
 
   /// Validation errors (if validation failed)
   final Map<String, String>? validationErrors;
+  final ConvictionGateDecision? convictionGateDecision;
 
   const PaymentProcessingResult({
     required super.success,
@@ -407,6 +465,7 @@ class PaymentProcessingResult extends ControllerResult {
     this.event,
     this.quantity = 0,
     this.validationErrors,
+    this.convictionGateDecision,
   });
 
   /// Create successful payment result
@@ -420,6 +479,7 @@ class PaymentProcessingResult extends ControllerResult {
     required double totalAmount,
     required ExpertiseEvent event,
     required int quantity,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return PaymentProcessingResult(
       success: true,
@@ -432,6 +492,7 @@ class PaymentProcessingResult extends ControllerResult {
       totalAmount: totalAmount,
       event: event,
       quantity: quantity,
+      convictionGateDecision: convictionGateDecision,
       metadata: {
         'timestamp': DateTime.now().toIso8601String(),
       },
@@ -444,6 +505,7 @@ class PaymentProcessingResult extends ControllerResult {
     String? errorCode,
     Payment? payment,
     Map<String, String>? validationErrors,
+    ConvictionGateDecision? convictionGateDecision,
   }) {
     return PaymentProcessingResult(
       success: false,
@@ -451,6 +513,7 @@ class PaymentProcessingResult extends ControllerResult {
       errorCode: errorCode,
       payment: payment,
       validationErrors: validationErrors,
+      convictionGateDecision: convictionGateDecision,
       metadata: {
         'timestamp': DateTime.now().toIso8601String(),
       },
@@ -470,5 +533,6 @@ class PaymentProcessingResult extends ControllerResult {
         event,
         quantity,
         validationErrors,
+        convictionGateDecision,
       ];
 }

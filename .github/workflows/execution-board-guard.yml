@@ -33,10 +33,33 @@ jobs:
         run: |
           dart --version
           dart run tool/update_execution_board.dart --check
+          python3 scripts/validate_execution_board_urk_quality.py
           dart run tool/update_three_prong_reviews.dart --check
-          python3 scripts/runtime/generate_security_cryptographic_assurance_report.py --check
+          dart run tool/export_conviction_shadow_telemetry.dart --check
+          python3 scripts/ml/check_promotion_eval_manifest.py --check
+          python3 scripts/runtime/check_conviction_canary_rollout_config.py
+          python3 scripts/runtime/check_conviction_canary_dry_run_fixture.py
+          python3 scripts/runtime/generate_conviction_canary_rollback_drill_report.py --check
+          python3 scripts/runtime/generate_research_replication_sla_report.py --check
+          python3 scripts/runtime/generate_trust_ux_priority_flow_report.py --check
+          python3 scripts/runtime/generate_self_healing_incident_routing_report.py --check
+          python3 scripts/runtime/generate_lineage_transparency_priority_flow_report.py --check
+          python3 scripts/runtime/check_master_plan_signoff_registry.py
+          python3 scripts/runtime/generate_master_plan_completion_audit_package.py --check
           python3 scripts/runtime/generate_trigger_orchestration_persistence_report.py --check
+          python3 scripts/runtime/generate_security_cryptographic_assurance_report.py --check
+          python3 scripts/runtime/generate_controller_orchestrator_reliability_report.py --check
+          python3 scripts/runtime/generate_federated_cohort_canary_shadow_report.py --check
+          python3 scripts/runtime/generate_advisory_quarantine_rollback_report.py --check
           python3 scripts/runtime/generate_memory_reliability_gates_report.py --check
+          python3 scripts/runtime/generate_state_encoder_consistency_freshness_report.py --check
+          python3 scripts/runtime/generate_energy_function_safety_regression_report.py --check
+          python3 scripts/runtime/generate_transition_predictor_drift_calibration_report.py --check
+          python3 scripts/runtime/generate_planner_guardrail_rollback_hardening_report.py --check
+          python3 scripts/runtime/generate_business_data_consent_governance_report.py --check
+          python3 scripts/runtime/generate_integration_governance_contract_security_report.py --check
+          python3 scripts/runtime/generate_split_pass_ci_guard_contract_hardening_report.py --check
+          python3 scripts/runtime/generate_production_readiness_cleanup_report.py --check
           python3 scripts/runtime/generate_urk_stage_a_trigger_privacy_no_egress_report.py --check
           python3 scripts/runtime/generate_urk_stage_b_event_ops_shadow_runtime_report.py --check
           python3 scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py --check
@@ -52,6 +75,7 @@ jobs:
           python3 scripts/runtime/generate_urk_learning_healing_bridge_report.py --check
           python3 scripts/runtime/generate_urk_kernel_activation_engine_report.py --check
           python3 scripts/runtime/generate_urk_kernel_control_plane_report.py --check
+          python3 scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py --check
           python3 scripts/runtime/check_urk_kernel_registry.py
           python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 

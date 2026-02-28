@@ -60,6 +60,7 @@ import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_runtime.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
 import 'package:avrai/data/repositories/supabase_community_repository.dart';
@@ -70,7 +71,8 @@ import 'package:avrai/core/services/events/event_recommendation_service.dart'
 import 'package:avrai/core/services/events/event_matching_service.dart';
 import 'package:avrai/core/services/matching/spot_vibe_matching_service.dart';
 import 'package:avrai/core/services/matching/vibe_compatibility_service.dart';
-import 'package:avrai/core/services/infrastructure/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/infrastructure/auth/app_auth_service.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_deep_link_handler.dart';
 import 'package:avrai/core/services/social_media/social_media_connection_service.dart';
 import 'package:avrai/core/services/social_media/base/social_media_common_utils.dart';
 import 'package:avrai/core/services/social_media/social_media_service_factory.dart';
@@ -116,7 +118,7 @@ import 'package:avrai/supabase_config.dart';
 import 'package:avrai/google_places_config.dart';
 import 'package:avrai/core/services/matching/group_formation_service.dart';
 import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 
 /// AI/Network Services Registration Module
 ///
@@ -519,8 +521,15 @@ Future<void> registerAIServices(GetIt sl) async {
   );
 
   // OAuth Deep Link Handler (Phase 8.2: OAuth Implementation)
+  sl.registerLazySingleton<AppAuthService>(
+    () => SupabaseAppAuthService(client: Supabase.instance.client),
+  );
+
   sl.registerLazySingleton<OAuthDeepLinkHandler>(
     () => OAuthDeepLinkHandler(),
+  );
+  sl.registerLazySingleton<OAuthRuntime>(
+    () => sl<OAuthDeepLinkHandler>(),
   );
 
   // Social Media Connection Service (Phase 8.2: Social Media Data Collection)
@@ -580,7 +589,7 @@ Future<void> registerAIServices(GetIt sl) async {
     () => SocialMediaConnectionService(
       sl<StorageService>(),
       sl<AgentIdService>(),
-      sl<OAuthDeepLinkHandler>(),
+      sl<OAuthRuntime>(),
       serviceFactory: sl<SocialMediaServiceFactory>(),
     ),
   );

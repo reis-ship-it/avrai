@@ -10,14 +10,17 @@ Define one uniform workflow for all entity models (business, community, spot/pla
 Master authority alignment:
 - `docs/MASTER_PLAN.md` -> `Universal Self-Healing Contract (All Reality/Universe Models)` and task `10.9.12` define mandatory break-to-learning behavior for any subsystem failure (not limited to ML).
 - This governance doc implements the ML/training/simulation slice of that universal contract.
+- Cross-doc synchronization authority: `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`.
 
 ## Canonical Sources
+- `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`
 - `configs/ml/model_training_registry.csv`
 - `configs/ml/feature_label_contracts.json`
 - `configs/ml/avrai_native_type_contracts.json`
 - `configs/ml/simulation_experiment_contracts.json`
 - `configs/ml/simulation_experiment_runs.csv`
 - `configs/ml/learning_cycle_recovery_queue.csv`
+- `configs/ml/promotion_eval_manifest.json`
 
 ## Generated Artifacts
 - `docs/ML_MODEL_TRAINING_CHECKLIST.md`
@@ -38,6 +41,7 @@ Use this table as the canonical end-to-end wiring contract.
 | Detect broken cycles + sync recovery queue | `configs/ml/learning_cycle_recovery_queue.csv` | `python3 scripts/ml/auto_recover_learning_cycles.py` | Open/resolve recovery items across all models/entities | `ML Training Governance Guard / ml-training-governance` |
 | Auto-schedule fixes for broken cycles | `configs/ml/learning_cycle_recovery_queue.csv` + `configs/ml/simulation_experiment_runs.csv` | `python3 scripts/ml/auto_recover_learning_cycles.py --apply-fixes` | Schedules pending recovery runs + marks registry `recovering` | operational runbook |
 | Regenerate/check canonical docs | ML registry/contract files | `python3 scripts/generate_ml_training_checklist.py` and `--check` | `docs/ML_MODEL_TRAINING_CHECKLIST.md`, `docs/ML_SIMULATION_EXPERIMENT_LOG.md` | `ML Training Governance Guard / ml-training-governance` |
+| Validate promotion eval manifest contract | `configs/ml/promotion_eval_manifest.json` | `python3 scripts/ml/check_promotion_eval_manifest.py --check` | `docs/plans/methodology/MASTER_PLAN_3_PRONG_PROMOTION_EVAL_CHECK.json` | `Execution Board Guard / execution-board-check`, `ML Training Governance Guard / ml-training-governance` |
 
 ## Operator Runbook (Single Follow Path)
 1. Add or update experiment scripts, then run experiment registry generator/validator.

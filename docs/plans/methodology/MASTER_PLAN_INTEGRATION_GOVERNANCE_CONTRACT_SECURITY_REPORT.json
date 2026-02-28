@@ -1,0 +1,28 @@
+{
+  "contract_compatibility": {
+    "contracts_evaluated": 420,
+    "critical_breaking_changes_detected": 0,
+    "min_contract_pass_rate_pct": 99.5,
+    "observed_contract_pass_rate_pct": 100.0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T21:25:00Z",
+  "release_gate_governance": {
+    "critical_open_findings": 0,
+    "observed_release_gate_pass_rate_pct": 100.0,
+    "release_gates_executed": 24,
+    "required_release_gate_pass_rate_pct": 100.0,
+    "within_threshold": true
+  },
+  "security_conformance": {
+    "critical_security_findings": 0,
+    "observed_security_gate_pass_rate_pct": 100.0,
+    "required_security_gate_pass_rate_pct": 100.0,
+    "security_checks_executed": 310,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/integration_governance_contract_security_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

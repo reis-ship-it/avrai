@@ -1,8 +1,8 @@
-import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/models/expertise/expertise_event.dart';
 import 'package:avrai/core/models/user/unified_user.dart';
-import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/events/event_recommendation_service.dart';
 import 'package:avrai/core/services/expertise/expertise_event_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart';
@@ -20,9 +20,9 @@ class _EventOpsRuntimeKernelRegistryService extends UrkKernelRegistryService {
     return UrkKernelRegistrySnapshot(
       version: 'v1',
       updatedAt: '2026-02-28',
-      byProng: const {'runtime_core': 1, 'model_core': 1},
-      byMode: const {'multi_mode': 1, 'local_sovereign': 1},
-      byImpactTier: const {'L3': 2},
+      byProng: const {'runtime_core': 1},
+      byMode: const {'multi_mode': 1},
+      byImpactTier: const {'L3': 1},
       kernels: const [
         UrkKernelRecord(
           kernelId: 'k_event_ops_runtime',
@@ -61,7 +61,7 @@ class _EventOpsRuntimeKernelRegistryService extends UrkKernelRegistryService {
           owner: 'AP',
           approver: 'GOV',
           milestoneId: 'M11-P3-1',
-          status: 'done',
+          status: 'ready',
         ),
       ],
     );
