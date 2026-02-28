@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Reservation Service
 //
 // Phase 15: Reservation System Implementation

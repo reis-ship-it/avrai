@@ -6,7 +6,7 @@ import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 

@@ -22,7 +22,7 @@ import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
 import 'package:avrai/core/models/user/user_partnership.dart';
 // Admin: God Mode Access
-import 'package:avrai/presentation/pages/admin/god_mode_login_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
 import 'package:avrai/presentation/pages/profile/edit_profile_page.dart';
 import 'package:avrai/core/models/user/user.dart' show UserRole;
 // Phase 4: Dynamic Knots

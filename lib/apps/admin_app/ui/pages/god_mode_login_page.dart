@@ -3,7 +3,7 @@ import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/theme/app_theme.dart';
 import 'package:avrai/core/theme/colors.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/pages/admin/god_mode_dashboard_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/god_mode_dashboard_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/core/models/user/user.dart' show UserRole;

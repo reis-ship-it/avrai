@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 /// Result object for reservation modification eligibility checks.
 class ModificationCheckResult {
   /// Whether the reservation can be modified.

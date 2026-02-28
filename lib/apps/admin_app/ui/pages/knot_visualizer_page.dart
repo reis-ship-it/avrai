@@ -8,11 +8,11 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/core/services/admin/admin_auth_service.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer/knot_distribution_tab.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer/knot_pattern_analysis_tab.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer/knot_matching_tab.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer/knot_evolution_tab.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer/knot_debug_tab.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_distribution_tab.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_pattern_analysis_tab.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_matching_tab.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_evolution_tab.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_debug_tab.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 /// Admin Knot Visualizer Page

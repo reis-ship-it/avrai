@@ -7,7 +7,7 @@ import 'package:avrai/core/services/admin/reality_model_checkin_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart';
@@ -31,7 +31,8 @@ class RealitySystemOversightPage extends StatefulWidget {
       _RealitySystemOversightPageState();
 }
 
-class _RealitySystemOversightPageState extends State<RealitySystemOversightPage> {
+class _RealitySystemOversightPageState
+    extends State<RealitySystemOversightPage> {
   final TextEditingController _checkInController = TextEditingController();
   final List<_CheckInEntry> _checkIns = <_CheckInEntry>[];
   final RealityModelCheckInService _checkInService =
@@ -753,7 +754,8 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
                   child: TextField(
                     controller: _checkInController,
                     decoration: const InputDecoration(
-                      hintText: 'Ask: What are you planning and preparing next?',
+                      hintText:
+                          'Ask: What are you planning and preparing next?',
                       border: OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _runCheckIn(),
