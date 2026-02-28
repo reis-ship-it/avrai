@@ -825,6 +825,62 @@ class VibeConnectionOrchestrator {
     );
   }
 
+  void _startBleInboxProcessing() {
+    _bleInboxPoller =
+        RuntimeServicesStartupOrchestrationLane.startBleInboxProcessing(
+      allowBleSideEffects: _allowBleSideEffects,
+      existingPoller: _bleInboxPoller,
+      protocol: _protocol,
+      seenBleMessageHashes: _seenBleMessageHashes,
+      prefs: _prefs,
+      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
+      currentUserId: _currentUserId,
+      personalityLearning: _connectionManager.personalityLearning,
+      adaptiveMeshService: _adaptiveMeshService,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+      applyInsightForPeer: _applyInsightForPeer,
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
+      localNodeId: _localBleNodeId,
+      bloomFilters: _bloomFilters,
+      discoveredNodes: _discoveredNodes,
+      discovery: _deviceDiscovery,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
+      persistSeenLearningInsightIdsIfNeeded:
+          _persistSeenLearningInsightIdsIfNeeded,
+      logger: _logger,
+      logName: _logName,
+    );
+  }
+
+  bool _isFederatedLearningParticipationEnabled() {
+    return RuntimeServicesStartupOrchestrationLane
+        .isFederatedLearningParticipationEnabled(
+      prefs: _prefs,
+      prefsKeyFederatedLearningParticipation:
+          _prefsKeyFederatedLearningParticipation,
+    );
+  }
+
+  void _startFederatedCloudSync() {
+    unawaited(() async {
+      final handles =
+          await RuntimeServicesStartupOrchestrationLane.startFederatedCloudSync(
+        isTestBinding: _isTestBinding,
+        connectivity: _connectivity,
+        syncFederatedCloudQueue: syncFederatedCloudQueue,
+        existingTimer: _federatedCloudSyncTimer,
+        existingSubscription: _federatedCloudConnectivitySub,
+        logger: _logger,
+        logName: _logName,
+      );
+      _federatedCloudSyncTimer = handles.timer;
+      _federatedCloudConnectivitySub = handles.subscription;
+    }());
+  }
+
   Future<void> _enqueueFederatedDeltaForCloudFromInsightPayload(
     Map<String, dynamic> payload,
   ) async {
