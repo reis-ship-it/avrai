@@ -253,5 +253,46 @@ void main() {
         UrkUserRuntimeObservabilityThresholdAuditAction.windowUpsert,
       );
     });
+
+    test('rejects override entries that violate configured bounds', () async {
+      final service = UrkUserRuntimeObservabilityThresholdOverrideService(
+        prefs: prefs,
+      );
+
+      expect(
+        () => service.upsertWindowOverride(
+          window: UrkUserRuntimeObservabilityWindow.last1h,
+          entry: const UrkUserRuntimeObservabilityThresholdEntry(
+            warnOptOutRatePct: -1.0,
+            criticalOptOutRatePct: 30.0,
+            warnRejectionRatePct: 20.0,
+            criticalRejectionRatePct: 40.0,
+          ),
+          actor: 'admin:test',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('rejects override entries when critical threshold is below warning',
+        () async {
+      final service = UrkUserRuntimeObservabilityThresholdOverrideService(
+        prefs: prefs,
+      );
+
+      expect(
+        () => service.upsertWindowOverride(
+          window: UrkUserRuntimeObservabilityWindow.last24h,
+          entry: const UrkUserRuntimeObservabilityThresholdEntry(
+            warnOptOutRatePct: 25.0,
+            criticalOptOutRatePct: 20.0,
+            warnRejectionRatePct: 30.0,
+            criticalRejectionRatePct: 15.0,
+          ),
+          actor: 'admin:test',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 }
