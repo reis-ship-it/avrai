@@ -51,6 +51,7 @@ jobs:
           python3 scripts/runtime/generate_urk_self_healing_recovery_report.py --check
           python3 scripts/runtime/generate_urk_learning_healing_bridge_report.py --check
           python3 scripts/runtime/generate_urk_kernel_activation_engine_report.py --check
+          python3 scripts/runtime/generate_urk_kernel_control_plane_report.py --check
           python3 scripts/runtime/check_urk_kernel_registry.py
           python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 
