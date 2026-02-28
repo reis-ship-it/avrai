@@ -46,6 +46,7 @@ jobs:
           python3 scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py --check
           python3 scripts/runtime/generate_urk_learning_update_governance_report.py --check
           python3 scripts/runtime/generate_urk_reality_world_state_coherence_report.py --check
+          python3 scripts/runtime/generate_urk_reality_temporal_truth_report.py --check
           python3 scripts/runtime/check_urk_kernel_registry.py
           python3 scripts/runtime/generate_urk_kernel_catalog.py --check
 

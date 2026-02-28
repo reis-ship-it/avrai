@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:58Z",
+  "temporal_alignment": {
+    "required_atomic_semantic_alignment_pct": 100.0,
+    "observed_atomic_semantic_alignment_pct": 100.0,
+    "required_timezone_normalization_coverage_pct": 100.0,
+    "observed_timezone_normalization_coverage_pct": 100.0,
+    "checks_executed": 540
+  },
+  "timeline_safety": {
+    "max_temporal_contradiction_events": 0,
+    "observed_temporal_contradiction_events": 0,
+    "max_clock_regression_events": 0,
+    "observed_clock_regression_events": 0,
+    "checks_executed": 220
+  }
+}

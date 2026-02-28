@@ -70,7 +70,7 @@ lib/core/services/partnerships,3,core-services-general,"1,2,3,4,5,6,7,8,9,10",ac
 lib/core/services/payment,14,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/places,12,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/predictive_outreach,22,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
-lib/core/services/quantum,21,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
+lib/core/services/quantum,22,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/recommendations,5,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/reservation,21,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/security,12,security-services,"2.1,2.2,2.5",active,architecture spot for file placement
@@ -121,7 +121,7 @@ scripts/patents,4,tooling-ops,"10.2,methodology",active,architecture spot for fi
 scripts/perf,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/personality_data,30,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/proof_run,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/runtime,14,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/runtime,15,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security_validation,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/smoke,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -192,7 +192,7 @@ test/unit/quantum,1,testing-quality,"10.6,methodology",active,architecture spot 
 test/unit/repositories,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/routes,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/scripts,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
-test/unit/services,191,testing-quality,"10.6,methodology",active,architecture spot for file placement
+test/unit/services,192,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/sync,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/theme,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/widgets,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
