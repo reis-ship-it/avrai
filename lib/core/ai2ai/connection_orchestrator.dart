@@ -32,8 +32,7 @@ import 'package:avrai/core/ai2ai/routing/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_expert_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_business_business_chat_lane.dart';
 import 'package:avrai/core/ai2ai/chat/incoming_user_chat_processing_lane.dart';
-import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
-import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';
+import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
@@ -60,7 +59,6 @@ import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dar
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/event_mode_learning_buffer_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/personality_advertising_update_lane.dart';
@@ -74,7 +72,6 @@ import 'package:avrai/core/ai2ai/telemetry/hot_queue_worker_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_metrics_emit_lane.dart';
-import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
@@ -868,15 +865,8 @@ class VibeConnectionOrchestrator {
       handleIncomingLearningInsight: _handleIncomingLearningInsight,
       handleIncomingUserChat: _handleIncomingUserChat,
       persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
-      persistSeenLearningInsightIdsIfNeeded: () async {
-        _lastSeenInsightsPersistMs =
-            await LearningInsightSeenIdsPersistenceLane.persistIfNeeded(
-          prefs: _prefs,
-          prefsKey: _prefsKeySeenLearningInsightIds,
-          seenLearningInsightIds: _seenLearningInsightIds,
-          lastPersistMs: _lastSeenInsightsPersistMs,
-        );
-      },
+      persistSeenLearningInsightIdsIfNeeded:
+          _persistSeenLearningInsightIdsIfNeeded,
       logger: _logger,
       logName: _logName,
     );
@@ -926,6 +916,16 @@ class VibeConnectionOrchestrator {
       prefsKeyQueue: _prefsKeyFederatedCloudQueue,
       logger: _logger,
       logName: _logName,
+    );
+  }
+
+  Future<void> _persistSeenLearningInsightIdsIfNeeded() async {
+    _lastSeenInsightsPersistMs =
+        await LearningInsightSeenIdsPersistenceLane.persistIfNeeded(
+      prefs: _prefs,
+      prefsKey: _prefsKeySeenLearningInsightIds,
+      seenLearningInsightIds: _seenLearningInsightIds,
+      lastPersistMs: _lastSeenInsightsPersistMs,
     );
   }
 
@@ -1040,45 +1040,23 @@ class VibeConnectionOrchestrator {
     required double learningQuality,
     required Map<String, double> deltas,
   }) async {
-    final applied = await LearningInsightApplicationLane.apply(
+    return LearningInsightApplyOrchestrationLane.applyForPeer(
       eventModeEnabled: _isEventModeEnabled(),
-      evolveFromAi2AiLearning: () =>
-          personalityLearning.evolveFromAI2AILearning(userId, insight),
-      onEventModeBuffer: () {
-        EventModeLearningBufferLane.buffer(
-          buffer: _eventModeLearningBuffer,
-          insight: EventModeBufferedLearningInsight(
-            source: source,
-            insightId: insightId,
-            senderDeviceId: peerId,
-            receivedAt: now,
-            learningQuality: learningQuality,
-            deltas: deltas,
-          ),
-        );
-        _lastAi2AiLearningAtByPeerId[peerId] = now;
-      },
-      onApplied: () {
-        _lastAi2AiLearningAtByPeerId[peerId] = now;
-        ContinuousLearningMirror.mirrorInsight(
-          userId: userId,
-          insight: insight,
-          peerId: peerId,
-          logger: _logger,
-          logTag: _logName,
-        );
-      },
+      userId: userId,
+      personalityLearning: personalityLearning,
+      peerId: peerId,
+      insight: insight,
+      now: now,
+      source: source,
+      insightId: insightId,
+      learningQuality: learningQuality,
+      deltas: deltas,
+      eventModeLearningBuffer: _eventModeLearningBuffer,
+      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
+      urkActivationDispatcher: _urkActivationDispatcher,
+      logger: _logger,
+      logName: _logName,
     );
-    if (applied) {
-      await _urkActivationDispatcher?.dispatch(
-        requestId: 'ai2ai_${peerId}_${now.millisecondsSinceEpoch}',
-        trigger: 'ai2ai_private_mesh_sync',
-        privacyMode: UrkPrivacyMode.privateMesh,
-        actor: _logName,
-        reason: 'learning_insight_applied:$source',
-      );
-    }
-    return applied;
   }
 
   Future<void> _manageSessionLifecycle() async {
