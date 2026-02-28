@@ -1,3 +1,5 @@
+// MIGRATION_SHIM: Legacy core/infrastructure auth path retained temporarily
+// while auth contracts are promoted under target-root runtime/app modules.
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// App-level authentication contract (separate from social OAuth linking).

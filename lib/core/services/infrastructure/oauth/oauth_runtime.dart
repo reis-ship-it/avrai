@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: Legacy infrastructure oauth runtime retained temporarily.
 /// Generic OAuth runtime contract.
 ///
 /// Domain-specific providers (social, payments, etc.) should depend on this

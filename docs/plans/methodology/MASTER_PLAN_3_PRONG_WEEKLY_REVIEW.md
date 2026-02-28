@@ -1,6 +1,6 @@
 # Master Plan 3-Prong Weekly Review (Auto)
 
-**Week of:** 2026-02-27  
+**Week of:** 2026-02-28  
 **Generated from:** `docs/EXECUTION_BOARD.csv` via `tool/update_three_prong_reviews.dart`
 
 ---

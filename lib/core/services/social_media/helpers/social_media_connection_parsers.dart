@@ -1,3 +1,5 @@
+// MIGRATION_SHIM: Legacy social_media helper path retained temporarily while
+// social adapters are promoted into target-root runtime/app modules.
 const List<String> socialConnectionKnownPlatforms = <String>[
   'google',
   'instagram',

@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 3144
+**Total mapped files:** 3156
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,26 +10,27 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2724 |
-| keep_review | 391 |
+| keep_update | 2735 |
+| keep_review | 392 |
 | refactor_planned | 29 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 909 |
-| core-services-general | 390 |
-| presentation | 382 |
-| tooling-ops | 339 |
+| testing-quality | 908 |
+| core-services-general | 393 |
+| presentation | 342 |
+| tooling-ops | 340 |
 | package-modules | 207 |
 | core-models | 142 |
 | supabase-infra | 124 |
-| world-model-ai-core | 115 |
-| runtime-os-prong | 102 |
-| ai2ai-network | 62 |
+| world-model-ai-core | 117 |
+| runtime-os-prong | 111 |
 | platform-runtime | 62 |
+| ai2ai-network | 61 |
 | data-layer | 55 |
+| apps-prong | 43 |
 | assets | 26 |
 | ml-legacy-and-transition | 25 |
 | native-modules | 24 |
@@ -45,7 +46,6 @@
 | data-platform-sql | 6 |
 | cloud-integration | 5 |
 | tooling-dev | 5 |
-| apps-prong | 4 |
 | bootstrap-boundary | 3 |
 | bootstrap-registrars | 3 |
 | crypto-core | 3 |
@@ -62,20 +62,21 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 403 |
-| lib/presentation/widgets | 204 |
+| lib/core/services | 406 |
 | test/unit/services | 202 |
-| lib/presentation/pages | 174 |
+| lib/presentation/widgets | 188 |
+| lib/presentation/pages | 150 |
 | lib/core/models | 142 |
-| lib/core/ai | 115 |
-| lib/runtime/avrai_runtime_os | 102 |
-| test/widget/widgets | 101 |
+| lib/core/ai | 117 |
+| lib/runtime/avrai_runtime_os | 111 |
+| test/widget/widgets | 90 |
 | packages/avrai_knot/lib | 84 |
 | packages/avrai_network/lib | 67 |
-| lib/core/ai2ai | 62 |
+| lib/core/ai2ai | 61 |
 | test/unit/models | 57 |
-| test/widget/pages | 56 |
+| test/widget/pages | 55 |
 | test/unit/ai | 54 |
+| lib/apps/admin_app | 36 |
 | packages/avrai_core/lib | 34 |
 | scripts/ecommerce_experiments/results | 28 |
 | android/app | 27 |
@@ -101,7 +102,6 @@
 | lib/core/theme | 10 |
 | lib/data/database | 10 |
 | lib/core/monitoring | 9 |
-| test/integration/security | 9 |
 
 ## Delete Candidates
 

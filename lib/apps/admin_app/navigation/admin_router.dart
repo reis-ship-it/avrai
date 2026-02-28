@@ -7,6 +7,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/apps/admin_app/ui/pages/ai2ai_admin_dashboard.dart';
+import 'package:avrai/apps/admin_app/ui/pages/research_center_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/reality_system_oversight_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/urk_kernel_console_page.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
@@ -17,6 +18,7 @@ class AdminRouter {
   static const String login = '/login';
   static const String urkKernels = '/admin/urk-kernels';
   static const String ai2ai = '/admin/ai2ai';
+  static const String researchCenter = '/admin/research-center';
   static const String realitySystemReality = '/admin/reality-system/reality';
   static const String realitySystemUniverse = '/admin/reality-system/universe';
   static const String realitySystemWorld = '/admin/reality-system/world';
@@ -73,6 +75,10 @@ class AdminRouter {
         GoRoute(
           path: ai2ai,
           builder: (context, state) => const AI2AIAdminDashboard(),
+        ),
+        GoRoute(
+          path: researchCenter,
+          builder: (context, state) => const ResearchCenterPage(),
         ),
         GoRoute(
           path: realitySystemReality,

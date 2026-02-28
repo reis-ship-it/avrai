@@ -11,10 +11,16 @@ class RealtimeAgentGlobeWidget extends StatefulWidget {
     super.key,
     required this.agents,
     required this.title,
+    this.links = const <GlobeConnectionLink>[],
+    this.temporalState,
+    this.onTemporalStateRendered,
   });
 
   final List<ActiveAIAgentData> agents;
   final String title;
+  final List<GlobeConnectionLink> links;
+  final GlobeTemporalStateView? temporalState;
+  final ValueChanged<GlobeTemporalRenderAck>? onTemporalStateRendered;
 
   @override
   State<RealtimeAgentGlobeWidget> createState() =>
@@ -27,7 +33,9 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
   @override
   void didUpdateWidget(covariant RealtimeAgentGlobeWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.agents != widget.agents) {
+    if (oldWidget.agents != widget.agents ||
+        oldWidget.links != widget.links ||
+        oldWidget.temporalState != widget.temporalState) {
       _pushAgentsToGlobe();
     }
   }
@@ -51,9 +59,34 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
         )
         .toList();
 
+    final linksPayload = widget.links
+        .map(
+          (link) => <String, dynamic>{
+            'from': link.fromAgentId,
+            'to': link.toAgentId,
+            'strength': link.strength,
+          },
+        )
+        .toList();
+
     await bridge.evaluateJavascript(
       'if(window.globeRenderer){window.globeRenderer.setAgents(${jsonEncode(payload)});}',
     );
+    await bridge.evaluateJavascript(
+      'if(window.globeRenderer){window.globeRenderer.setConnections(${jsonEncode(linksPayload)});}',
+    );
+    if (widget.temporalState != null) {
+      await bridge.evaluateJavascript(
+        'if(window.globeRenderer){window.globeRenderer.setTemporalState(${jsonEncode(widget.temporalState!.toJson())});}',
+      );
+      widget.onTemporalStateRendered?.call(
+        GlobeTemporalRenderAck(
+          state: widget.temporalState!.currentState,
+          progress: widget.temporalState!.progress,
+          renderedAt: DateTime.now(),
+        ),
+      );
+    }
   }
 
   @override
@@ -74,6 +107,31 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
               'Real-time 3D globe showing agent identity placement only (no personal data).',
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (widget.temporalState != null) ...[
+              const SizedBox(height: 10),
+              LinearProgressIndicator(
+                value: widget.temporalState!.progress,
+                minHeight: 5,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: widget.temporalState!.states
+                    .map(
+                      (state) => Chip(
+                        avatar: Icon(
+                          state == widget.temporalState!.currentState
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          size: 16,
+                        ),
+                        label: Text(state),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
             const SizedBox(height: 12),
             SizedBox(
               height: 360,
@@ -99,6 +157,7 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
                 Chip(
                     label:
                         Text('Offline: ${widget.agents.length - onlineCount}')),
+                Chip(label: Text('Pathways: ${widget.links.length}')),
               ],
             ),
             const SizedBox(height: 8),
@@ -121,4 +180,81 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
     }
     return value.substring(0, maxLength);
   }
+}
+
+class GlobeConnectionLink {
+  const GlobeConnectionLink({
+    required this.fromAgentId,
+    required this.toAgentId,
+    required this.strength,
+  });
+
+  final String fromAgentId;
+  final String toAgentId;
+  final double strength;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is GlobeConnectionLink &&
+        other.fromAgentId == fromAgentId &&
+        other.toAgentId == toAgentId &&
+        other.strength == strength;
+  }
+
+  @override
+  int get hashCode => Object.hash(fromAgentId, toAgentId, strength);
+}
+
+class GlobeTemporalStateView {
+  const GlobeTemporalStateView({
+    required this.currentState,
+    required this.progress,
+    required this.states,
+  });
+
+  final String currentState;
+  final double progress;
+  final List<String> states;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'state': currentState,
+      'progress': progress,
+      'states': states,
+    };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is GlobeTemporalStateView &&
+        other.currentState == currentState &&
+        other.progress == progress &&
+        _sameList(other.states, states);
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(currentState, progress, Object.hashAll(states));
+
+  static bool _sameList(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+}
+
+class GlobeTemporalRenderAck {
+  const GlobeTemporalRenderAck({
+    required this.state,
+    required this.progress,
+    required this.renderedAt,
+  });
+
+  final String state;
+  final double progress;
+  final DateTime renderedAt;
 }

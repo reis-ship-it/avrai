@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: Legacy infrastructure oauth handler retained temporarily.
 import 'dart:async';
 import 'dart:developer' as developer;
 

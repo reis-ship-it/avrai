@@ -863,6 +863,11 @@ class _RealitySystemOversightPageState
                   icon: const Icon(Icons.settings_suggest),
                   label: const Text('URK Kernel Console'),
                 ),
+                OutlinedButton.icon(
+                  onPressed: () => context.go('/admin/research-center'),
+                  icon: const Icon(Icons.science_outlined),
+                  label: const Text('Research Center'),
+                ),
               ],
             ),
           ],

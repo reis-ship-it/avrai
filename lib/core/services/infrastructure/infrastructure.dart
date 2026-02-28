@@ -1,3 +1,5 @@
+// MIGRATION_SHIM: Legacy infrastructure barrel retained temporarily while
+// contracts migrate to target-root architecture slices.
 /// Barrel file for infrastructure - re-exports all public APIs.
 /// Generated as part of Phase 10.5 codebase reorganization.
 library;
