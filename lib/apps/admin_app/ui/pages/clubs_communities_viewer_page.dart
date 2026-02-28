@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/presentation/pages/admin/club_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/club_detail_page.dart';
 import 'package:intl/intl.dart';
 
 /// Clubs/Communities Viewer Page

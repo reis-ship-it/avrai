@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// MIGRATION_SHIM: Legacy ai_infrastructure path is temporarily retained while
+// runtime/app-layer LLM contracts are migrated in controlled slices.
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/services.dart';

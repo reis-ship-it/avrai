@@ -30,11 +30,11 @@ import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
 import 'package:avrai/presentation/pages/group/group_formation_page.dart';
 import 'package:avrai/presentation/pages/group/group_results_page.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
-import 'package:avrai/presentation/pages/admin/fraud_review_page.dart';
-import 'package:avrai/presentation/pages/admin/review_fraud_review_page.dart';
-import 'package:avrai/presentation/pages/admin/user_detail_page.dart';
-import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
-import 'package:avrai/presentation/pages/admin/club_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/fraud_review_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/review_fraud_review_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/user_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/connection_communication_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/club_detail_page.dart';
 import 'package:avrai/presentation/pages/business/business_signup_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
@@ -69,7 +69,7 @@ import 'package:avrai/presentation/pages/social/add_friend_qr_page.dart';
 import 'package:avrai/presentation/pages/social/scan_friend_qr_page.dart';
 // Phase 10: Social Media Integration - Public Handles
 import 'package:avrai/presentation/pages/settings/public_handles_page.dart';
-import 'package:avrai/presentation/pages/admin/learning_analytics_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/learning_analytics_page.dart';
 // Phase 6, Week 29: Communities & Clubs
 import 'package:avrai/presentation/pages/communities/community_page.dart';
 import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';

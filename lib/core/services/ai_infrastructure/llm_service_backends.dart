@@ -1,4 +1,6 @@
 part of 'llm_service.dart';
+// MIGRATION_SHIM: Backend implementations remain in legacy path until runtime
+// kernel/service contracts are fully promoted and consumers are rewired.
 
 /// Chat message with role and content
 class ChatMessage {
@@ -730,4 +732,3 @@ class AndroidLlamaFlutterAndroidBackend implements LlmBackend {
     }
   }
 }
-

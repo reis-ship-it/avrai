@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/core/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/core/theme/colors.dart';
-import 'package:avrai/presentation/pages/admin/connection_communication_detail_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/connection_communication_detail_page.dart';
 
 /// Communications Viewer Page
 /// View AI2AI and user communications
