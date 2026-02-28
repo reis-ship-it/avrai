@@ -28,7 +28,7 @@ import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart
 import 'package:avrai/core/ai2ai/locality/incoming_message_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
+import 'package:avrai/core/ai2ai/trust/payload_realtime_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_startup_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_shutdown_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_init_flow_lane.dart';
@@ -36,12 +36,11 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personalit
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/learning_insight_seen_ids_persistence_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_bundle_rotation_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ai2ai_discovery_prekey_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/realtime_listener_callbacks_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_cloud_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_orchestration_lane.dart';
@@ -1157,7 +1156,7 @@ class VibeConnectionOrchestrator {
     PersonalityProfile? personalityProfile, {
     bool isAdmin = false,
   }) async {
-    return PayloadAnonymizationLane.anonymizeUserForTransmission(
+    return PayloadRealtimeOrchestrationLane.anonymizeUserForTransmission(
       anonymizationService: _anonymizationService,
       user: user,
       agentId: agentId,
@@ -1168,14 +1167,9 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  void validateNoUnifiedUserInPayload(Map<String, dynamic> payload) {
-    PayloadAnonymizationLane.validateNoUnifiedUserInPayload(payload);
-  }
-
   Future<void> _setupRealtimeListeners() async {
-    await RealtimeListenerCallbacksLane.setup(
+    await PayloadRealtimeOrchestrationLane.setupRealtimeListeners(
       coordinator: _realtimeCoordinator,
-      validateNoUnifiedUserInPayload: validateNoUnifiedUserInPayload,
       logger: _logger,
       logName: _logName,
     );
