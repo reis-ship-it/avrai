@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2905
+**Total mapped files:** 2908
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,18 +10,18 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2529 |
-| keep_review | 350 |
+| keep_update | 2531 |
+| keep_review | 351 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 881 |
+| testing-quality | 882 |
 | presentation | 381 |
 | core-services-general | 375 |
-| tooling-ops | 299 |
+| tooling-ops | 300 |
 | package-modules | 207 |
 | core-models | 141 |
 | supabase-infra | 124 |
@@ -30,8 +30,8 @@
 | data-layer | 55 |
 | assets | 26 |
 | ai2ai-network | 25 |
+| workflow-controllers | 25 |
 | native-modules | 24 |
-| workflow-controllers | 24 |
 | ml-legacy-and-transition | 22 |
 | security-signal-ffi | 21 |
 | domain-layer | 19 |
@@ -76,10 +76,10 @@
 | android/app | 27 |
 | lib/data/datasources | 26 |
 | lib/core/ai2ai | 25 |
-| lib/core/controllers | 24 |
+| lib/core/controllers | 25 |
 | test/core/services | 24 |
 | lib/core/ml | 22 |
-| test/unit/controllers | 20 |
+| test/unit/controllers | 21 |
 | test/unit/data | 20 |
 | test/integration/ai | 19 |
 | test/unit/ai2ai | 19 |
