@@ -22,6 +22,7 @@ import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
+import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
@@ -733,64 +734,39 @@ class VibeConnectionOrchestrator {
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(
       String userId, PersonalityProfile personality,
       {bool throwOnError = false}) async {
-    if (_isDiscovering) {
-      _logger.debug('Discovery already in progress, returning cached results',
-          tag: _logName);
-      return _discoveredNodes.values.toList();
-    }
-
-    // Connectivity should NOT block offline-first physical discovery.
-    // It only affects whether realtime/cloud discovery is viable.
-    try {
-      final connectivityResults = await _connectivity.checkConnectivity();
-      if (!ConnectionRoutingPolicy.isConnected(connectivityResults)) {
-        _logger.info(
-            'No connectivity available, proceeding with offline discovery',
-            tag: _logName);
-      }
-    } catch (e) {
-      _logger.warn('Error checking connectivity: $e, proceeding with discovery',
-          tag: _logName);
-    }
-
-    _isDiscovering = true;
-
-    try {
-      _logger.info('Discovering nearby AI personalities', tag: _logName);
-
-      final nodes = await _discoveryManager.discover(
-          userId, personality, _performAI2AIDiscovery);
-
-      return DiscoveryPostprocessLane.process(
-        nodes: nodes,
-        userId: userId,
-        personality: personality,
-        vibeAnalyzer: _vibeAnalyzer,
-        isConnectionWorthy: _isConnectionWorthy,
-        updateDiscoveredNodes: _updateDiscoveredNodes,
-        onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
-          // Passive, on-device AI2AI learning from nearby compatible peers.
-          // Fire-and-forget: discovery should not block on learning updates.
-          unawaited(_maybeApplyPassiveAi2AiLearning(
-            userId: userId,
-            localPersonality: personality,
-            nodes: worthyNodes,
-            compatibilityByNodeId: compatibilityByNodeId,
-          ));
-        },
-        logger: _logger,
-        logName: _logName,
-      );
-    } catch (e) {
-      _logger.error('Error discovering AI personalities',
-          error: e, tag: _logName);
-      if (throwOnError) {
-        throw AI2AIConnectionException('Discovery failed: $e');
-      }
-      return [];
-    } finally {
-      _isDiscovering = false;
-    }
+    return NearbyDiscoveryOrchestrationLane.run(
+      isDiscovering: _isDiscovering,
+      setIsDiscovering: (value) => _isDiscovering = value,
+      getCachedNodes: () => _discoveredNodes.values.toList(),
+      checkConnectivity: _connectivity.checkConnectivity,
+      performDiscovery: () async {
+        final nodes = await _discoveryManager.discover(
+            userId, personality, _performAI2AIDiscovery);
+        return DiscoveryPostprocessLane.process(
+          nodes: nodes,
+          userId: userId,
+          personality: personality,
+          vibeAnalyzer: _vibeAnalyzer,
+          isConnectionWorthy: _isConnectionWorthy,
+          updateDiscoveredNodes: _updateDiscoveredNodes,
+          onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
+            unawaited(_maybeApplyPassiveAi2AiLearning(
+              userId: userId,
+              localPersonality: personality,
+              nodes: worthyNodes,
+              compatibilityByNodeId: compatibilityByNodeId,
+            ));
+          },
+          logger: _logger,
+          logName: _logName,
+        );
+      },
+      throwOnError: throwOnError,
+      buildDiscoveryException: (error) =>
+          AI2AIConnectionException('Discovery failed: $error'),
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<ConnectionMetrics?> establishAI2AIConnection(
