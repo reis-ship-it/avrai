@@ -674,8 +674,19 @@ class VibeConnectionOrchestrator {
       setIsDiscovering: (value) => _isDiscovering = value,
       getCachedNodes: () => _discoveredNodes.values.toList(),
       checkConnectivity: _connectivity.checkConnectivity,
-      performRawDiscovery: () =>
-          _discoveryManager.discover(userId, personality, _performAI2AIDiscovery),
+      performRawDiscovery: () => _discoveryManager.discover(
+        userId,
+        personality,
+        (localVibe) => Ai2AiDiscoveryPrekeyOrchestrationLane.performDiscovery(
+          deviceDiscovery: _deviceDiscovery,
+          allowBleSideEffects: _allowBleSideEffects,
+          primeOfflineSignalPreKeyBundleInSession:
+              _primeOfflineSignalPreKeyBundleInSession,
+          realtimeService: _realtimeService,
+          logger: _logger,
+          logName: _logName,
+        ),
+      ),
       userId: userId,
       personality: personality,
       vibeAnalyzer: _vibeAnalyzer,
@@ -921,19 +932,6 @@ class VibeConnectionOrchestrator {
     );
   }
 
-  Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
-      AnonymizedVibeData localVibe) async {
-    return Ai2AiDiscoveryPrekeyOrchestrationLane.performDiscovery(
-      deviceDiscovery: _deviceDiscovery,
-      allowBleSideEffects: _allowBleSideEffects,
-      primeOfflineSignalPreKeyBundleInSession:
-          _primeOfflineSignalPreKeyBundleInSession,
-      realtimeService: _realtimeService,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
   Future<void> _primeOfflineSignalPreKeyBundleInSession({
     required DiscoveredDevice device,
     required BleGattSession session,
@@ -947,28 +945,26 @@ class VibeConnectionOrchestrator {
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       federatedLearningParticipationEnabled: _adaptiveMeshService != null &&
           _isFederatedLearningParticipationEnabled(),
-      forwardPreKeyBundleThroughMesh: _forwardPreKeyBundleThroughMesh,
+      forwardPreKeyBundleThroughMesh: ({
+        required SignalPreKeyBundle bundle,
+        required String recipientId,
+        required DiscoveredDevice device,
+      }) {
+        return Ai2AiDiscoveryPrekeyOrchestrationLane.forwardPreKeyBundleThroughMesh(
+          allowBleSideEffects: _allowBleSideEffects,
+          protocol: _protocol,
+          discovery: _deviceDiscovery,
+          bundle: bundle,
+          recipientId: recipientId,
+          discoveredNodes: _discoveredNodes,
+          localNodeId: _localBleNodeId,
+          peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+          adaptiveMeshService: _adaptiveMeshService,
+          logger: _logger,
+          logName: _logName,
+        );
+      },
       localBleNodeId: _localBleNodeId,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  Future<void> _forwardPreKeyBundleThroughMesh({
-    required SignalPreKeyBundle bundle,
-    required String recipientId,
-    required DiscoveredDevice device,
-  }) async {
-    await Ai2AiDiscoveryPrekeyOrchestrationLane.forwardPreKeyBundleThroughMesh(
-      allowBleSideEffects: _allowBleSideEffects,
-      protocol: _protocol,
-      discovery: _deviceDiscovery,
-      bundle: bundle,
-      recipientId: recipientId,
-      discoveredNodes: _discoveredNodes,
-      localNodeId: _localBleNodeId,
-      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      adaptiveMeshService: _adaptiveMeshService,
       logger: _logger,
       logName: _logName,
     );
