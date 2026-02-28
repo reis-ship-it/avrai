@@ -1,0 +1,35 @@
+{
+  "commit_safety": {
+    "checks_executed": 140,
+    "max_unreviewed_high_impact_commits": 0,
+    "observed_high_impact_review_coverage_pct": 100.0,
+    "observed_unreviewed_high_impact_commits": 0,
+    "required_high_impact_review_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "evaluation_window": {
+    "end": "2026-02-27T23:58:00Z",
+    "start": "2026-02-27T00:00:00Z"
+  },
+  "generated_at": "2026-02-27T23:59:30Z",
+  "lineage_and_audit": {
+    "checks_executed": 360,
+    "max_unattributed_actions": 0,
+    "observed_lineage_coverage_pct": 100.0,
+    "observed_unattributed_actions": 0,
+    "required_lineage_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "runtime_request_pipeline": {
+    "observed_pipeline_coverage_pct": 100.0,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "requests_evaluated": 360,
+    "required_pipeline_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_stage_d_business_runtime_replication_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

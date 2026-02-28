@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 2899
+**Total mapped files:** 2902
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,18 +10,18 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2525 |
-| keep_review | 348 |
+| keep_update | 2527 |
+| keep_review | 349 |
 | refactor_planned | 26 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 879 |
+| testing-quality | 880 |
 | presentation | 381 |
-| core-services-general | 373 |
-| tooling-ops | 297 |
+| core-services-general | 374 |
+| tooling-ops | 298 |
 | package-modules | 207 |
 | core-models | 141 |
 | supabase-infra | 124 |
@@ -59,9 +59,9 @@
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 386 |
+| lib/core/services | 387 |
 | lib/presentation/widgets | 204 |
-| test/unit/services | 189 |
+| test/unit/services | 190 |
 | lib/presentation/pages | 173 |
 | lib/core/models | 141 |
 | lib/core/ai | 112 |

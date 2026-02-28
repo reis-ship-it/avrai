@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:30Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:58:00Z"
+  },
+  "runtime_request_pipeline": {
+    "required_pipeline_coverage_pct": 100.0,
+    "observed_pipeline_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "requests_evaluated": 360
+  },
+  "lineage_and_audit": {
+    "required_lineage_coverage_pct": 100.0,
+    "observed_lineage_coverage_pct": 100.0,
+    "max_unattributed_actions": 0,
+    "observed_unattributed_actions": 0,
+    "checks_executed": 360
+  },
+  "commit_safety": {
+    "required_high_impact_review_coverage_pct": 100.0,
+    "observed_high_impact_review_coverage_pct": 100.0,
+    "max_unreviewed_high_impact_commits": 0,
+    "observed_unreviewed_high_impact_commits": 0,
+    "checks_executed": 140
+  }
+}
