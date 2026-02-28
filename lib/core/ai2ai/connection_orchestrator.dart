@@ -368,8 +368,14 @@ class VibeConnectionOrchestrator {
         prefsKeySeenLearningInsightIds: _prefsKeySeenLearningInsightIds,
         seenLearningInsightIds: _seenLearningInsightIds,
         loadSeenBleHashes: _loadSeenBleHashes,
-        setCurrentContext: _setCurrentContext,
-        setBleIdentity: _setBleIdentity,
+        setCurrentContext: (nextUserId, nextPersonality) {
+          _currentUserId = nextUserId;
+          _currentPersonality = nextPersonality;
+        },
+        setBleIdentity: (nodeId, nodeTagKey) {
+          _localBleNodeId = nodeId;
+          _localNodeTagKey = nodeTagKey;
+        },
         allowBleSideEffects: _allowBleSideEffects,
         isTestBinding: _isTestBinding,
         isWeb: kIsWeb,
@@ -385,24 +391,21 @@ class VibeConnectionOrchestrator {
         startBleInboxProcessing: _startBleInboxProcessing,
         startFederatedCloudSync: _startFederatedCloudSync,
         startConnectionMaintenance: _startConnectionMaintenance,
-        onAlreadyInitialized: _onInitializeAlreadyInitialized,
-        onMarkInitialized: _markInitialized,
+        onAlreadyInitialized: () {
+          _logger.debug(
+            'Orchestration already initialized; skipping reinitialization',
+            tag: _logName,
+          );
+        },
+        onMarkInitialized: () {
+          _isInitialized = true;
+        },
         logger: _logger,
         logName: _logName,
       );
     } catch (e) {
       throw AI2AIConnectionException('Failed to initialize orchestration: $e');
     }
-  }
-
-  void _setCurrentContext(String userId, PersonalityProfile personality) {
-    _currentUserId = userId;
-    _currentPersonality = personality;
-  }
-
-  void _setBleIdentity(String nodeId, String nodeTagKey) {
-    _localBleNodeId = nodeId;
-    _localNodeTagKey = nodeTagKey;
   }
 
   Future<void> _publishPrekeyPayload() {
@@ -446,17 +449,6 @@ class VibeConnectionOrchestrator {
     );
     _batteryScheduler = discoveryStart.batteryScheduler;
     _adaptiveMeshService = discoveryStart.adaptiveMeshService;
-  }
-
-  void _onInitializeAlreadyInitialized() {
-    _logger.debug(
-      'Orchestration already initialized; skipping reinitialization',
-      tag: _logName,
-    );
-  }
-
-  void _markInitialized() {
-    _isInitialized = true;
   }
 
   void _onDevicesDiscoveredHotPath(List<DiscoveredDevice> devices) {
