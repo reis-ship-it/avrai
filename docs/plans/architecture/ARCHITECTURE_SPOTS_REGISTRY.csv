@@ -29,7 +29,7 @@ lib/core/ai2ai,25,ai2ai-network,"3.7,8,7.4",active,architecture spot for file pl
 lib/core/cloud,4,cloud-integration,"7.7,8.1,9.2.6",active,architecture spot for file placement
 lib/core/config,3,config-and-theme,"7.5,10.3,10.4",active,architecture spot for file placement
 lib/core/constants,2,config-and-theme,"7.5,10.3,10.4",active,architecture spot for file placement
-lib/core/controllers,28,workflow-controllers,"1.2,10.1,7",active,architecture spot for file placement
+lib/core/controllers,29,workflow-controllers,"1.2,10.1,7",active,architecture spot for file placement
 lib/core/crypto,17,security-signal,"2.4,2.5,7.7",active,architecture spot for file placement
 lib/core/deployment,1,deployment-sync,"7.7,7.8",active,architecture spot for file placement
 lib/core/legal,3,legal-domain,"2.1,10.1",active,architecture spot for file placement
@@ -38,7 +38,7 @@ lib/core/models,142,core-models,"3.1,3.4,10.7.3",active,architecture spot for fi
 lib/core/monitoring,9,monitoring-observability,"7.7,7.7A,8.8",active,architecture spot for file placement
 lib/core/p2p,2,legacy-p2p,"methodology,10.2",active,architecture spot for file placement
 lib/core/services,1,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
-lib/core/services/admin,14,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
+lib/core/services/admin,16,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/ai_infrastructure,14,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/analytics,8,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
 lib/core/services/behavior,3,core-services-general,"1,2,3,4,5,6,7,8,9,10",active,architecture spot for file placement
@@ -89,7 +89,7 @@ lib/data/repositories,13,data-layer,"1.1,1.2,2.1,10.7",active,architecture spot 
 lib/domain/repositories,5,domain-layer,10.8.3,active,architecture spot for file placement
 lib/domain/usecases,15,domain-layer,10.8.3,active,architecture spot for file placement
 lib/presentation/blocs,5,presentation,"10.1,10.3,10.4",active,architecture spot for file placement
-lib/presentation/pages,173,presentation,"10.1,10.3,10.4",active,architecture spot for file placement
+lib/presentation/pages,174,presentation,"10.1,10.3,10.4",active,architecture spot for file placement
 lib/presentation/routes,1,presentation,"10.1,10.3,10.4",active,architecture spot for file placement
 lib/presentation/widgets,204,presentation,"10.1,10.3,10.4",active,architecture spot for file placement
 macos/.gitignore,1,platform-runtime,"7.5,11.2",active,architecture spot for file placement
@@ -122,7 +122,7 @@ scripts/patents,4,tooling-ops,"10.2,methodology",active,architecture spot for fi
 scripts/perf,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/personality_data,30,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/proof_run,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/runtime,19,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/runtime,20,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security_validation,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/smoke,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -193,7 +193,7 @@ test/unit/quantum,1,testing-quality,"10.6,methodology",active,architecture spot 
 test/unit/repositories,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/routes,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/scripts,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
-test/unit/services,193,testing-quality,"10.6,methodology",active,architecture spot for file placement
+test/unit/services,194,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/sync,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/theme,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/widgets,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
