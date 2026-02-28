@@ -1,7 +1,8 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
 import 'package:avrai/core/ai/personality_learning.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_parser.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_learning_insight_side_effects.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_flow_gate.dart';

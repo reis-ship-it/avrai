@@ -108,6 +108,7 @@ import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
 import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
 import 'package:avrai/core/services/business/business_shared_agent_service.dart';
+import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
 import 'package:avrai/core/services/onboarding/onboarding_data_service.dart';
 import 'package:avrai/core/services/network/edge_function_service.dart';
@@ -179,7 +180,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 // Phase 10.1: AI2AI Mesh Integration
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart'
     show VibeConnectionOrchestrator;
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import 'package:avrai/core/services/network/rate_limiting_service.dart';
 import 'package:avrai/core/services/events/event_success_analysis_service.dart';
@@ -235,6 +236,8 @@ import 'package:avrai/core/ml/calling_score_neural_model.dart';
 import 'package:avrai/core/services/behavior/behavior_assessment_service.dart';
 import 'package:avrai/core/ml/outcome_prediction_model.dart';
 import 'package:avrai/core/services/recommendations/outcome_prediction_service.dart';
+import 'package:avrai/core/services/ai_infrastructure/kernel_governance_gate.dart';
+import 'package:avrai/core/services/ai_infrastructure/kernel_governance_telemetry_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai/core/services/ai_infrastructure/online_learning_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/model_retraining_service.dart';
@@ -409,7 +412,22 @@ Future<void> init() async {
 
         // Register Calling Score Neural Model (Phase 12 Section 2.1: Calling Score Prediction Model)
         // Register ModelVersionManager (Phase 12 Section 3.2.2: Model Versioning)
-        sl.registerLazySingleton(() => ModelVersionManager());
+        sl.registerLazySingleton(() => const UrkKernelRegistryService());
+        logger.debug('✅ [DI] UrkKernelRegistryService registered');
+        sl.registerLazySingleton(() => KernelGovernanceTelemetryService(
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] KernelGovernanceTelemetryService registered');
+        sl.registerLazySingleton(() => KernelGovernanceGate(
+              registryService: sl<UrkKernelRegistryService>(),
+              featureFlagService: sl<FeatureFlagService>(),
+              telemetryService: sl<KernelGovernanceTelemetryService>(),
+              defaultMode: KernelGovernanceMode.enforce,
+            ));
+        logger.debug('✅ [DI] KernelGovernanceGate registered');
+        sl.registerLazySingleton(() => ModelVersionManager(
+              kernelGovernanceGate: sl<KernelGovernanceGate>(),
+            ));
         logger.debug('✅ [DI] ModelVersionManager registered');
 
         // Register ModelRetrainingService (Phase 12 Section 3.2.1: Backend Integration)

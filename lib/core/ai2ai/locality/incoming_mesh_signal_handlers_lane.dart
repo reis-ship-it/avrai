@@ -1,4 +1,5 @@
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_locality_agent_update_processor.dart';
 import 'package:avrai/core/ai2ai/locality/incoming_organic_spot_discovery_processor.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';

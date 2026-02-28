@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/places/organic_spot_discovery_service.dart';
 import 'package:get_it/get_it.dart';

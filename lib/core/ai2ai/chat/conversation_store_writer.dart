@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:get_storage/get_storage.dart';
 
 class ConversationStoreWriter {

@@ -25,7 +25,7 @@ import 'package:avrai/core/models/quantum/group_session.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart' show VibeConnectionOrchestrator;
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 
 /// Discovered user from proximity detection
 class DiscoveredUser {

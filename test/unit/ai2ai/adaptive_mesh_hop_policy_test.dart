@@ -1,6 +1,6 @@
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_hop_policy.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/adaptive_mesh_hop_policy.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';
 
 void main() {

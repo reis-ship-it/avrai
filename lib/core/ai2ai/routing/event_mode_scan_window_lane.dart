@@ -1,9 +1,10 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
-import 'package:avrai/core/ai2ai/battery_adaptive_ble_scheduler.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/battery_adaptive_ble_scheduler.dart';
 import 'package:avrai/core/ai2ai/discovery/event_mode_candidate.dart';
 import 'package:avrai/core/ai2ai/room_coherence_engine.dart';
-import 'package:avrai/core/ai2ai/resilience/ble_node_identity.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_node_identity.dart';
 import 'package:avrai_network/avra_network.dart';
 
 class EventModeScanWindowLane {

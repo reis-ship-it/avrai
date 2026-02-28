@@ -1,6 +1,6 @@
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
-import 'package:avrai/core/ai2ai/routing/mesh_forwarding_context_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_forwarding_context_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_session_prime_lane.dart';
 import 'package:avrai/core/crypto/signal/signal_key_manager.dart';
 import 'package:avrai/core/crypto/signal/signal_types.dart';

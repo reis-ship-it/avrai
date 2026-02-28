@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:typed_data';
 
 import 'package:avrai/core/ai2ai/chat/conversation_store_writer.dart';

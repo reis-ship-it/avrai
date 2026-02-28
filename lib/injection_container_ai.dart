@@ -116,7 +116,7 @@ import 'package:avrai/supabase_config.dart';
 import 'package:avrai/google_places_config.dart';
 import 'package:avrai/core/services/matching/group_formation_service.dart';
 import 'package:avrai_knot/services/knot/cross_entity_compatibility_service.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 
 /// AI/Network Services Registration Module
 ///

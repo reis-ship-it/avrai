@@ -22,7 +22,7 @@ import 'package:avrai/core/services/quantum/quantum_matching_ai_learning_service
 import 'package:avrai/core/services/security/hybrid_encryption_service.dart';
 import 'package:avrai/core/ai2ai/anonymous_communication.dart';
 import 'package:avrai/core/ai2ai/connection_orchestrator.dart';
-import 'package:avrai/core/ai2ai/adaptive_mesh_networking_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai_knot/services/knot/knot_orchestrator_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';

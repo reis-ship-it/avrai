@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai/core/constants/vibe_constants.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/personality_profile.dart';
