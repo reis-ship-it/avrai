@@ -11,6 +11,7 @@ import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_rou
 import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_placeholder_profile_builder.dart';
+import 'package:avrai/core/services/social_media/helpers/social_media_connection_parsers.dart';
 import 'package:avrai/core/services/social_media/sync/social_connection_sync_lane.dart';
 import 'package:avrai/core/services/social_media/sync/social_insight_analysis_trigger.dart';
 import 'package:avrai/core/services/social_media/sync/social_request_throttle.dart';
@@ -1613,100 +1614,12 @@ class SocialMediaConnectionService {
   }
 
   /// Parse interests from Instagram media captions
-  List<String> _parseInstagramInterests(List<Map<String, dynamic>> media) {
-    final interests = <String>{};
-    final interestKeywords = {
-      'food': [
-        'food',
-        'restaurant',
-        'cafe',
-        'coffee',
-        'brunch',
-        'dinner',
-        'lunch',
-        'foodie',
-        'culinary'
-      ],
-      'travel': [
-        'travel',
-        'trip',
-        'vacation',
-        'explore',
-        'adventure',
-        'wanderlust',
-        'journey'
-      ],
-      'art': [
-        'art',
-        'gallery',
-        'museum',
-        'exhibition',
-        'artist',
-        'creative',
-        'design'
-      ],
-      'music': ['music', 'concert', 'live', 'gig', 'festival', 'dj', 'band'],
-      'fitness': [
-        'fitness',
-        'gym',
-        'workout',
-        'yoga',
-        'running',
-        'exercise',
-        'health'
-      ],
-      'nature': [
-        'nature',
-        'outdoor',
-        'hiking',
-        'camping',
-        'park',
-        'beach',
-        'mountain'
-      ],
-      'fashion': [
-        'fashion',
-        'style',
-        'outfit',
-        'clothing',
-        'shopping',
-        'boutique'
-      ],
-      'photography': [
-        'photography',
-        'photo',
-        'camera',
-        'shot',
-        'picture',
-        'photographer'
-      ],
-    };
-
-    for (final item in media) {
-      final caption = (item['caption'] as String? ?? '').toLowerCase();
-      for (final entry in interestKeywords.entries) {
-        if (entry.value.any((keyword) => caption.contains(keyword))) {
-          interests.add(entry.key);
-        }
-      }
-    }
-
-    return interests.toList();
-  }
+  List<String> _parseInstagramInterests(List<Map<String, dynamic>> media) =>
+      parseInstagramInterests(media);
 
   /// Parse communities from Instagram follows and media
-  List<String> _parseInstagramCommunities(List<Map<String, dynamic>> media) {
-    final communities = <String>{};
-    // Extract hashtags from captions as communities
-    for (final item in media) {
-      final caption = item['caption'] as String? ?? '';
-      final hashtags = RegExp(r'#(\w+)').allMatches(caption);
-      for (final match in hashtags) {
-        communities.add(match.group(1)!.toLowerCase());
-      }
-    }
-    return communities.toList();
-  }
+  List<String> _parseInstagramCommunities(List<Map<String, dynamic>> media) =>
+      parseInstagramCommunities(media);
 
   /// Fetch Facebook profile data from Facebook Graph API
   Future<Map<String, dynamic>> _fetchFacebookProfileData(
@@ -2271,12 +2184,8 @@ class SocialMediaConnectionService {
   }
 
   /// Parse Retry-After header
-  Duration _parseRetryAfter(String? retryAfter) {
-    if (retryAfter == null) return const Duration(seconds: 60);
-    final seconds = int.tryParse(retryAfter);
-    if (seconds != null) return Duration(seconds: seconds);
-    return const Duration(seconds: 60);
-  }
+  Duration _parseRetryAfter(String? retryAfter) =>
+      parseRetryAfterHeader(retryAfter);
 
   /// Refresh token if needed
   Future<bool> _refreshTokenIfNeeded(String platform, String _) async {
@@ -2513,18 +2422,9 @@ class SocialMediaConnectionService {
   /// Get all connections for an agent
   Future<List<SocialMediaConnection>> _getAllConnections(String agentId) async {
     // TODO: Implement efficient storage query
-    // For now, we'll need to know all possible platforms
-    final platforms = [
-      'google',
-      'instagram',
-      'facebook',
-      'twitter',
-      'tiktok',
-      'linkedin'
-    ];
     final connections = <SocialMediaConnection>[];
 
-    for (final platform in platforms) {
+    for (final platform in socialConnectionKnownPlatforms) {
       final connection = await _getConnection(agentId, platform);
       if (connection != null) {
         connections.add(connection);
