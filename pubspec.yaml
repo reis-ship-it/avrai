@@ -215,6 +215,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - configs/runtime/kernel_registry.json
+    - configs/runtime/urk_user_runtime_observability_thresholds.json
     - assets/models/
     - assets/models/optimized/
     - assets/tokenizers/
