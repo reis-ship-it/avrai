@@ -18,33 +18,14 @@ import 'package:avrai/core/services/payment/payment_service.dart';
 import 'package:avrai/core/services/payment/refund_service.dart';
 import 'package:avrai/core/services/reservation/reservation_cancellation_policy_service.dart';
 import 'package:avrai/core/services/reservation/reservation_analytics_service.dart';
+import 'package:avrai/core/services/reservation/reservation_modification_check_result.dart';
 import 'package:avrai/core/services/reservation/reservation_orchestrator.dart';
 import 'package:avrai/core/services/reservation/reservation_policy.dart';
 import 'package:avrai/core/services/reservation/reservation_repository_adapter.dart';
 import 'package:avrai/core/ai/event_logger.dart';
 import 'package:uuid/uuid.dart';
 
-/// Modification check result
-class ModificationCheckResult {
-  /// Whether the reservation can be modified
-  final bool canModify;
-
-  /// Reason if cannot modify
-  final String? reason;
-
-  /// Current modification count
-  final int? modificationCount;
-
-  /// Remaining modifications allowed
-  final int? remainingModifications;
-
-  const ModificationCheckResult({
-    required this.canModify,
-    this.reason,
-    this.modificationCount,
-    this.remainingModifications,
-  });
-}
+export 'package:avrai/core/services/reservation/reservation_modification_check_result.dart';
 
 /// Reservation Service
 ///
