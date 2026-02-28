@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
 import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
@@ -122,6 +124,59 @@ void main() {
       expect(lineage, isNotEmpty);
       expect(lineage.first.eventType, 'activation_receipt');
       expect(lineage.first.requestId, 'req-42');
+    });
+
+    test('falls back safely when persisted state or lineage payload is invalid',
+        () async {
+      await prefs.setString(
+        'urk_kernel_control_plane_state_v1',
+        'not-json',
+      );
+      await prefs.setString(
+        'urk_kernel_control_plane_lineage_v1',
+        '{"unexpected":"map"}',
+      );
+
+      final kernels = await service.listKernels();
+      expect(kernels, hasLength(1));
+      expect(kernels.first.kernel.kernelId, 'k_activation');
+      expect(kernels.first.state.state, UrkKernelRuntimeState.active);
+
+      final lineage = await service.getKernelLineage('k_activation', limit: 10);
+      expect(lineage, isEmpty);
+    });
+
+    test('caps lineage persistence to last 5000 events', () async {
+      final seed = List<Map<String, dynamic>>.generate(5000, (index) {
+        return <String, dynamic>{
+          'kernel_id': 'k_activation',
+          'event_type': 'activation_receipt',
+          'actor': 'seed_actor',
+          'reason': 'seed_reason',
+          'timestamp': DateTime.utc(2026, 1, 1)
+              .add(Duration(seconds: index))
+              .toIso8601String(),
+          'request_id': 'seed-$index',
+        };
+      });
+      await prefs.setString(
+        'urk_kernel_control_plane_lineage_v1',
+        jsonEncode(seed),
+      );
+
+      await service.recordActivationReceipt(
+        kernelId: 'k_activation',
+        requestId: 'latest-request',
+        actor: 'runtime_engine',
+        reason: 'post-cap-check',
+      );
+
+      final lineage =
+          await service.getKernelLineage('k_activation', limit: 6000);
+      expect(lineage, hasLength(5000));
+      expect(lineage.first.requestId, 'latest-request');
+      expect(lineage.any((event) => event.requestId == 'seed-0'), isFalse);
+      expect(lineage.any((event) => event.requestId == 'seed-1'), isTrue);
     });
 
     test('summarizes user-runtime learning acceptance and opt-out rates',
