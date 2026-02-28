@@ -6,7 +6,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/user/agent_id_service.dart';
 import 'package:avrai/core/config/oauth_config.dart';
-import 'package:avrai/core/services/infrastructure/oauth/oauth_deep_link_handler.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_runtime.dart';
 import 'package:avrai/core/services/social_media/oauth/social_oauth_platform_router.dart';
 import 'package:avrai/core/services/social_media/mapping/social_platform_mapping.dart';
 import 'package:avrai/core/services/social_media/fallbacks/social_oauth_fallback.dart';
@@ -43,7 +43,7 @@ class SocialMediaConnectionService {
   final AppLogger _logger = const AppLogger(defaultTag: 'SPOTS');
   final StorageService _storageService;
   final AgentIdService _agentIdService;
-  final OAuthDeepLinkHandler _deepLinkHandler;
+  final OAuthRuntime _oauthRuntime;
 
   /// Secure storage for OAuth tokens and sensitive data.
   ///
@@ -62,7 +62,7 @@ class SocialMediaConnectionService {
   SocialMediaConnectionService(
     this._storageService,
     this._agentIdService,
-    this._deepLinkHandler, {
+    this._oauthRuntime, {
     SocialMediaServiceFactory? serviceFactory,
     FlutterSecureStorage? secureStorage,
     SocialOAuthPlatformRouter? platformRouter,
@@ -74,10 +74,10 @@ class SocialMediaConnectionService {
         _syncLane = syncLane ?? const SocialConnectionSyncLane(),
         _requestThrottle = requestThrottle ?? SocialRequestThrottle() {
     // Start listening for OAuth deep links (for AppAuth flows)
-    _deepLinkHandler.startListening();
+    _oauthRuntime.startListening();
     // Also check for initial deep link (if app was opened via deep link)
     // Note: getInitialLink is async, but we call it here to start the check
-    _deepLinkHandler.getInitialLink().catchError((e) {
+    _oauthRuntime.getInitialLink().catchError((e) {
       _logger.warn('Failed to get initial deep link: $e', tag: _logName);
       return null;
     });

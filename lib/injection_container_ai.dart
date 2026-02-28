@@ -60,6 +60,7 @@ import 'package:avrai/core/services/business/business_account_service.dart';
 import 'package:avrai/core/services/community/community_service.dart';
 import 'package:avrai/core/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
+import 'package:avrai/core/services/infrastructure/oauth/oauth_runtime.dart';
 import 'package:avrai/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai/data/repositories/local_community_repository.dart';
 import 'package:avrai/data/repositories/supabase_community_repository.dart';
@@ -527,6 +528,9 @@ Future<void> registerAIServices(GetIt sl) async {
   sl.registerLazySingleton<OAuthDeepLinkHandler>(
     () => OAuthDeepLinkHandler(),
   );
+  sl.registerLazySingleton<OAuthRuntime>(
+    () => sl<OAuthDeepLinkHandler>(),
+  );
 
   // Social Media Connection Service (Phase 8.2: Social Media Data Collection)
   // Phase 1.3: Refactored to use platform-specific services
@@ -585,7 +589,7 @@ Future<void> registerAIServices(GetIt sl) async {
     () => SocialMediaConnectionService(
       sl<StorageService>(),
       sl<AgentIdService>(),
-      sl<OAuthDeepLinkHandler>(),
+      sl<OAuthRuntime>(),
       serviceFactory: sl<SocialMediaServiceFactory>(),
     ),
   );
