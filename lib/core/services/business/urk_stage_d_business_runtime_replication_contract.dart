@@ -1,3 +1,6 @@
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+
 enum UrkStageDBusinessRuntimeReplicationFailure {
   invalidPipelineThreshold,
   invalidLineageThreshold,
@@ -83,11 +86,13 @@ class UrkStageDBusinessRuntimeReplicationValidator {
 
     if (policy.requiredPipelineCoveragePct < 0 ||
         policy.requiredPolicyGateCoveragePct < 0) {
-      failures.add(UrkStageDBusinessRuntimeReplicationFailure.invalidPipelineThreshold);
+      failures.add(
+          UrkStageDBusinessRuntimeReplicationFailure.invalidPipelineThreshold);
     }
     if (policy.requiredLineageCoveragePct < 0 ||
         policy.maxUnattributedActions < 0) {
-      failures.add(UrkStageDBusinessRuntimeReplicationFailure.invalidLineageThreshold);
+      failures.add(
+          UrkStageDBusinessRuntimeReplicationFailure.invalidLineageThreshold);
     }
     if (policy.requiredHighImpactReviewCoveragePct < 0 ||
         policy.maxUnreviewedHighImpactCommits < 0) {
@@ -96,19 +101,24 @@ class UrkStageDBusinessRuntimeReplicationValidator {
       );
     }
 
-    if (snapshot.observedPipelineCoveragePct < policy.requiredPipelineCoveragePct) {
-      failures.add(UrkStageDBusinessRuntimeReplicationFailure.pipelineCoverageBelowThreshold);
+    if (snapshot.observedPipelineCoveragePct <
+        policy.requiredPipelineCoveragePct) {
+      failures.add(UrkStageDBusinessRuntimeReplicationFailure
+          .pipelineCoverageBelowThreshold);
     }
     if (snapshot.observedPolicyGateCoveragePct <
         policy.requiredPolicyGateCoveragePct) {
-      failures
-          .add(UrkStageDBusinessRuntimeReplicationFailure.policyGateCoverageBelowThreshold);
+      failures.add(UrkStageDBusinessRuntimeReplicationFailure
+          .policyGateCoverageBelowThreshold);
     }
-    if (snapshot.observedLineageCoveragePct < policy.requiredLineageCoveragePct) {
-      failures.add(UrkStageDBusinessRuntimeReplicationFailure.lineageCoverageBelowThreshold);
+    if (snapshot.observedLineageCoveragePct <
+        policy.requiredLineageCoveragePct) {
+      failures.add(UrkStageDBusinessRuntimeReplicationFailure
+          .lineageCoverageBelowThreshold);
     }
     if (snapshot.observedUnattributedActions > policy.maxUnattributedActions) {
-      failures.add(UrkStageDBusinessRuntimeReplicationFailure.unattributedActionsDetected);
+      failures.add(UrkStageDBusinessRuntimeReplicationFailure
+          .unattributedActionsDetected);
     }
     if (snapshot.observedHighImpactReviewCoveragePct <
         policy.requiredHighImpactReviewCoveragePct) {
@@ -129,5 +139,46 @@ class UrkStageDBusinessRuntimeReplicationValidator {
       return UrkStageDBusinessRuntimeReplicationValidationResult.pass();
     }
     return UrkStageDBusinessRuntimeReplicationValidationResult.fail(failures);
+  }
+
+  Future<UrkStageDBusinessRuntimeReplicationValidationResult>
+      validateAndDispatch({
+    required UrkStageDBusinessRuntimeReplicationSnapshot snapshot,
+    required UrkStageDBusinessRuntimeReplicationPolicy policy,
+    required UrkRuntimeActivationReceiptDispatcher activationDispatcher,
+    required String actor,
+    String requestIdPrefix = 'business_runtime',
+  }) async {
+    final result = validate(snapshot: snapshot, policy: policy);
+    final trigger = _mapResultToTrigger(result);
+    await activationDispatcher.dispatch(
+      requestId: '${requestIdPrefix}_${DateTime.now().millisecondsSinceEpoch}',
+      trigger: trigger,
+      privacyMode: UrkPrivacyMode.federatedCloud,
+      actor: actor,
+      reason: result.isPassing
+          ? 'business_runtime_validation_pass:trigger=$trigger'
+          : 'business_runtime_validation_fail:trigger=$trigger:${result.failures.map((f) => f.name).join(",")}',
+    );
+    return result;
+  }
+
+  String _mapResultToTrigger(
+    UrkStageDBusinessRuntimeReplicationValidationResult result,
+  ) {
+    if (result.isPassing) {
+      return 'business_runtime_request';
+    }
+    if (result.failures.contains(
+          UrkStageDBusinessRuntimeReplicationFailure
+              .unreviewedHighImpactCommitDetected,
+        ) ||
+        result.failures.contains(
+          UrkStageDBusinessRuntimeReplicationFailure
+              .unattributedActionsDetected,
+        )) {
+      return 'runtime_health_breach';
+    }
+    return 'policy_violation_detected';
   }
 }

@@ -1,3 +1,6 @@
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
+
 enum UrkStageBEventOpsShadowRuntimeFailure {
   invalidPipelineThreshold,
   invalidDecisionEnvelopeThreshold,
@@ -83,7 +86,8 @@ class UrkStageBEventOpsShadowRuntimeValidator {
     final failures = <UrkStageBEventOpsShadowRuntimeFailure>[];
 
     if (policy.requiredPipelineCoveragePct < 0) {
-      failures.add(UrkStageBEventOpsShadowRuntimeFailure.invalidPipelineThreshold);
+      failures
+          .add(UrkStageBEventOpsShadowRuntimeFailure.invalidPipelineThreshold);
     }
     if (policy.requiredDecisionEnvelopeCoveragePct < 0) {
       failures.add(
@@ -92,14 +96,16 @@ class UrkStageBEventOpsShadowRuntimeValidator {
     }
     if (policy.requiredLineageCompletenessPct < 0 ||
         policy.maxOrphanActionStates < 0) {
-      failures.add(UrkStageBEventOpsShadowRuntimeFailure.invalidLineageThreshold);
+      failures
+          .add(UrkStageBEventOpsShadowRuntimeFailure.invalidLineageThreshold);
     }
     if (policy.maxHighImpactAutocommits < 0 ||
         policy.requiredShadowBlockCoveragePct < 0) {
       failures.add(UrkStageBEventOpsShadowRuntimeFailure.invalidGuardThreshold);
     }
 
-    if (snapshot.observedPipelineCoveragePct < policy.requiredPipelineCoveragePct) {
+    if (snapshot.observedPipelineCoveragePct <
+        policy.requiredPipelineCoveragePct) {
       failures.add(
         UrkStageBEventOpsShadowRuntimeFailure.pipelineCoverageBelowThreshold,
       );
@@ -118,7 +124,8 @@ class UrkStageBEventOpsShadowRuntimeValidator {
       );
     }
     if (snapshot.observedOrphanActionStates > policy.maxOrphanActionStates) {
-      failures.add(UrkStageBEventOpsShadowRuntimeFailure.orphanActionStatesDetected);
+      failures.add(
+          UrkStageBEventOpsShadowRuntimeFailure.orphanActionStatesDetected);
     }
     if (snapshot.observedHighImpactAutocommits >
         policy.maxHighImpactAutocommits) {
@@ -137,5 +144,43 @@ class UrkStageBEventOpsShadowRuntimeValidator {
       return UrkStageBEventOpsShadowRuntimeValidationResult.pass();
     }
     return UrkStageBEventOpsShadowRuntimeValidationResult.fail(failures);
+  }
+
+  Future<UrkStageBEventOpsShadowRuntimeValidationResult> validateAndDispatch({
+    required UrkStageBEventOpsShadowRuntimeSnapshot snapshot,
+    required UrkStageBEventOpsShadowRuntimePolicy policy,
+    required UrkRuntimeActivationReceiptDispatcher activationDispatcher,
+    required String actor,
+    String requestIdPrefix = 'event_ops_runtime',
+  }) async {
+    final result = validate(snapshot: snapshot, policy: policy);
+    final trigger = _mapResultToTrigger(result);
+    await activationDispatcher.dispatch(
+      requestId: '${requestIdPrefix}_${DateTime.now().millisecondsSinceEpoch}',
+      trigger: trigger,
+      privacyMode: UrkPrivacyMode.multiMode,
+      actor: actor,
+      reason: result.isPassing
+          ? 'event_ops_runtime_validation_pass:trigger=$trigger'
+          : 'event_ops_runtime_validation_fail:trigger=$trigger:${result.failures.map((f) => f.name).join(",")}',
+    );
+    return result;
+  }
+
+  String _mapResultToTrigger(
+    UrkStageBEventOpsShadowRuntimeValidationResult result,
+  ) {
+    if (result.isPassing) {
+      return 'event_ops_shadow_execution';
+    }
+    if (result.failures.contains(
+          UrkStageBEventOpsShadowRuntimeFailure.highImpactAutocommitDetected,
+        ) ||
+        result.failures.contains(
+          UrkStageBEventOpsShadowRuntimeFailure.orphanActionStatesDetected,
+        )) {
+      return 'runtime_health_breach';
+    }
+    return 'policy_violation_detected';
   }
 }

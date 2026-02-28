@@ -21,6 +21,8 @@ import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai/privacy_protection.dart';
 import 'package:avrai/core/ai/continuous_learning_system.dart';
+import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
+import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai_ai/services/ai2ai_broadcast_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
@@ -113,6 +115,7 @@ class VibeConnectionOrchestrator {
   final UserAnonymizationService? _anonymizationService;
   final SignalKeyManager? _signalKeyManager;
   final SharedPreferencesCompat _prefs;
+  final UrkRuntimeActivationReceiptDispatcher? _urkActivationDispatcher;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
 
@@ -355,6 +358,7 @@ class VibeConnectionOrchestrator {
     UserAnonymizationService? anonymizationService,
     SignalKeyManager? signalKeyManager,
     required SharedPreferencesCompat prefs,
+    UrkRuntimeActivationReceiptDispatcher? urkActivationDispatcher,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
@@ -368,6 +372,8 @@ class VibeConnectionOrchestrator {
         _anonymizationService = anonymizationService,
         _signalKeyManager = signalKeyManager,
         _prefs = prefs,
+        _urkActivationDispatcher = urkActivationDispatcher ??
+            resolveDefaultUrkRuntimeActivationDispatcher(),
         _knotWeavingService = knotWeavingService,
         _knotStorageService = knotStorageService,
         _discoveryManager = DiscoveryManager(
@@ -1277,6 +1283,15 @@ class VibeConnectionOrchestrator {
         await personalityLearning.evolveFromAI2AILearning(
           userId,
           insight,
+        );
+        await _urkActivationDispatcher?.dispatch(
+          requestId:
+              'ai2ai_${userId}_${node.nodeId}_${DateTime.now().millisecondsSinceEpoch}',
+          trigger: 'ai2ai_private_mesh_sync',
+          privacyMode: UrkPrivacyMode.privateMesh,
+          actor: _logName,
+          reason:
+              'passive_ai2ai_learning_applied;peer=${node.nodeId};quality=${learningQuality.toStringAsFixed(3)}',
         );
         _lastAi2AiLearningAtByPeerId[node.nodeId] = now;
 
