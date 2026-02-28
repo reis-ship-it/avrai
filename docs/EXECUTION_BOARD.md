@@ -138,6 +138,7 @@ phase row + milestone row(s) + risk + gate criteria.
 | M9-P10-1 | 10 | 9 | URK Universal Kernel: promotion lifecycle governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 10.9.12, 10.10.8 | lib/core/controllers | AP, REL | GOV | M8-P10-4 | 15 | High | Week 19-20 | Done | docs/plans/methodology/M9_P10_1_URK_KERNEL_PROMOTION_LIFECYCLE_BASELINE.md, configs/runtime/urk_kernel_promotion_lifecycle_controls.json, scripts/runtime/generate_urk_kernel_promotion_lifecycle_report.py, docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_KERNEL_PROMOTION_LIFECYCLE_REPORT.md, lib/core/controllers/urk_kernel_promotion_lifecycle_contract.dart, test/unit/controllers/urk_kernel_promotion_lifecycle_contract_test.dart |
 | M9-P10-2 | 10 | 9 | URK Universal Kernel: registry completeness + admin catalog | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 7.7.6, 10.9.12, 10.10.8 | docs | AP, REL | GOV | M9-P10-1 | 12 | High | Week 20-21 | Done | docs/plans/methodology/M9_P10_2_URK_KERNEL_REGISTRY_AND_ADMIN_CATALOG_BASELINE.md, configs/runtime/kernel_registry.json, scripts/runtime/check_urk_kernel_registry.py, scripts/runtime/generate_urk_kernel_catalog.py, docs/admin/URK_KERNEL_CATALOG.md |
 | M9-P3-2 | 3 | 9 | URK Universal Kernel: learning update governance | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 3.2.1, 7.9.6, 10.9.12 | lib/core/ai | AP, MLE | AP | M8-P10-4 | 20 | Critical | Week 19-20 | Done | docs/plans/methodology/M9_P3_2_URK_LEARNING_UPDATE_GOVERNANCE_BASELINE.md, configs/runtime/urk_learning_update_governance_controls.json, scripts/runtime/generate_urk_learning_update_governance_report.py, docs/plans/methodology/MASTER_PLAN_URK_LEARNING_UPDATE_GOVERNANCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_LEARNING_UPDATE_GOVERNANCE_REPORT.md, lib/core/ai/urk_learning_update_governance_contract.dart, test/unit/ai/urk_learning_update_governance_contract_test.dart |
+| M9-P3-3 | 3 | 9 | URK Reality Kernel: world-state coherence | baseline | none | PRD-021, PRD-022, PRD-033, PRD-034 | 3.1.1, 3.4.4, 10.9.12 | lib/core/models | AP, MLE | AP | M9-P3-2 | 20 | Critical | Week 20-21 | Done | docs/plans/methodology/M9_P3_3_URK_REALITY_WORLD_STATE_COHERENCE_BASELINE.md, configs/runtime/urk_reality_world_state_coherence_controls.json, scripts/runtime/generate_urk_reality_world_state_coherence_report.py, docs/plans/methodology/MASTER_PLAN_URK_REALITY_WORLD_STATE_COHERENCE_REPORT.json, docs/plans/methodology/MASTER_PLAN_URK_REALITY_WORLD_STATE_COHERENCE_REPORT.md, lib/core/models/urk_reality_world_state_coherence_contract.dart, test/unit/models/urk_reality_world_state_coherence_contract_test.dart |
 <!-- EXECUTION_BOARD:MILESTONE_BOARD_END -->
 
 ## Kanban Snapshot
@@ -161,7 +162,7 @@ None
 
 ### Done
 
-`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`
+`M0-P10-2`, `M0-P2-1`, `M1-P7-1`, `M2-P1-1`, `M7-P7-3`, `M7-P7-4`, `M7-P8-3`, `M8-P10-4`, `M8-P11-2`, `M8-P9-2`, `M9-P10-1`, `M9-P10-2`, `M9-P3-2`, `M9-P3-3`
 <!-- EXECUTION_BOARD:KANBAN_END -->
 
 ## Exit Criteria Checklist (Per Milestone)
