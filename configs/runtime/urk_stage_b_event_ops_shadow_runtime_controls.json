@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:58:00Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:50:00Z"
+  },
+  "pipeline_shadow": {
+    "required_pipeline_coverage_pct": 100.0,
+    "observed_pipeline_coverage_pct": 100.0,
+    "required_decision_envelope_coverage_pct": 100.0,
+    "observed_decision_envelope_coverage_pct": 100.0,
+    "shadow_requests_evaluated": 420
+  },
+  "lineage_integrity": {
+    "required_lineage_completeness_pct": 100.0,
+    "observed_lineage_completeness_pct": 100.0,
+    "max_orphan_action_states": 0,
+    "observed_orphan_action_states": 0,
+    "lineage_checks_executed": 420
+  },
+  "high_impact_commit_guard": {
+    "max_high_impact_autocommits": 0,
+    "observed_high_impact_autocommits": 0,
+    "required_shadow_block_coverage_pct": 100.0,
+    "observed_shadow_block_coverage_pct": 100.0,
+    "guard_checks_executed": 160
+  }
+}
