@@ -7,6 +7,7 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
+import 'package:avrai/presentation/pages/admin/reality_system_oversight_page.dart';
 import 'package:avrai/presentation/pages/admin/urk_kernel_console_page.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +17,9 @@ class AdminRouter {
   static const String login = '/login';
   static const String urkKernels = '/admin/urk-kernels';
   static const String ai2ai = '/admin/ai2ai';
+  static const String realitySystemReality = '/admin/reality-system/reality';
+  static const String realitySystemUniverse = '/admin/reality-system/universe';
+  static const String realitySystemWorld = '/admin/reality-system/world';
 
   static GoRouter build({required AuthBloc authBloc}) {
     return GoRouter(
@@ -69,6 +73,24 @@ class AdminRouter {
         GoRoute(
           path: ai2ai,
           builder: (context, state) => const AI2AIAdminDashboard(),
+        ),
+        GoRoute(
+          path: realitySystemReality,
+          builder: (context, state) => const RealitySystemOversightPage(
+            layer: OversightLayer.reality,
+          ),
+        ),
+        GoRoute(
+          path: realitySystemUniverse,
+          builder: (context, state) => const RealitySystemOversightPage(
+            layer: OversightLayer.universe,
+          ),
+        ),
+        GoRoute(
+          path: realitySystemWorld,
+          builder: (context, state) => const RealitySystemOversightPage(
+            layer: OversightLayer.world,
+          ),
         ),
       ],
     );

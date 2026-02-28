@@ -315,6 +315,19 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
               ),
             ),
 
+            Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: ListTile(
+                leading: const Icon(Icons.travel_explore),
+                title: const Text('Reality System Oversight'),
+                subtitle: const Text(
+                  'Open separate Reality, Universe, and World admin pages with model check-ins',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go('/admin/reality-system/reality'),
+              ),
+            ),
+
             // Error banner if partial error
             if (_errorMessage != null)
               Container(
