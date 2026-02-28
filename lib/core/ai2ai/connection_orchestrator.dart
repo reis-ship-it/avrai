@@ -36,7 +36,7 @@ import 'package:avrai/core/ai2ai/locality/incoming_mesh_signal_handlers_lane.dar
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
@@ -48,9 +48,7 @@ import 'package:avrai/core/ai2ai/resilience/ai2ai_discovery_prekey_orchestration
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/federated_cloud_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
@@ -852,12 +850,16 @@ class VibeConnectionOrchestrator {
   }
 
   bool _isFederatedLearningParticipationEnabled() {
-    return _prefs.getBool(_prefsKeyFederatedLearningParticipation) ?? true;
+    return FederatedCloudOrchestrationLane.isParticipationEnabled(
+      prefs: _prefs,
+      prefsKeyFederatedLearningParticipation:
+          _prefsKeyFederatedLearningParticipation,
+    );
   }
 
   void _startFederatedCloudSync() {
     unawaited(() async {
-      final handles = await FederatedCloudSyncStartLane.start(
+      final handles = await FederatedCloudOrchestrationLane.startSync(
         isTestBinding: _isTestBinding,
         connectivity: _connectivity,
         syncFederatedCloudQueue: _syncFederatedCloudQueue,
@@ -874,8 +876,9 @@ class VibeConnectionOrchestrator {
   Future<void> _enqueueFederatedDeltaForCloudFromInsightPayload(
     Map<String, dynamic> payload,
   ) async {
-    if (!_isFederatedLearningParticipationEnabled()) return;
-    await FederatedCloudQueueLane.enqueueFromLearningInsightPayload(
+    await FederatedCloudOrchestrationLane.enqueueLearningInsightDelta(
+      federatedLearningParticipationEnabled:
+          _isFederatedLearningParticipationEnabled(),
       prefs: _prefs,
       prefsKeyQueue: _prefsKeyFederatedCloudQueue,
       payload: payload,
@@ -887,7 +890,8 @@ class VibeConnectionOrchestrator {
   Future<void> syncFederatedCloudQueue() => _syncFederatedCloudQueue();
 
   Future<void> _syncFederatedCloudQueue() async {
-    _lastFederatedCloudSyncAttemptMs = await FederatedCloudSyncLane.run(
+    _lastFederatedCloudSyncAttemptMs =
+        await FederatedCloudOrchestrationLane.syncQueue(
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
       lastFederatedCloudSyncAttemptMs: _lastFederatedCloudSyncAttemptMs,
