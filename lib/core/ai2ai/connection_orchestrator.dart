@@ -20,7 +20,6 @@ import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
@@ -39,23 +38,22 @@ import 'package:avrai/core/ai2ai/trust/payload_anonymization_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_startup_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_shutdown_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/orchestration_init_flow_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/personality_advertising_start_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_start_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_discovery_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/session_lifecycle_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_seen_hashes_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/learning_insight_seen_ids_persistence_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/prekey_bundle_rotation_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/prekey_session_prime_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/prekey_mesh_forward_bridge_lane.dart';
+import 'package:avrai/core/ai2ai/resilience/ai2ai_discovery_prekey_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/core/ai2ai/resilience/realtime_listener_callbacks_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_start_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_queue_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/federated_cloud_sync_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/prekey_payload_publish_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_attempt_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/resilience/personality_advertising_update_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_completion_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/active_connection_management_lane.dart';
 import 'package:avrai/core/ai2ai/resilience/connection_management_orchestration_lane.dart';
@@ -1063,7 +1061,7 @@ class VibeConnectionOrchestrator {
 
   Future<List<AIPersonalityNode>> _performAI2AIDiscovery(
       AnonymizedVibeData localVibe) async {
-    return AI2AIDiscoveryExecutionLane.discover(
+    return Ai2AiDiscoveryPrekeyOrchestrationLane.performDiscovery(
       deviceDiscovery: _deviceDiscovery,
       allowBleSideEffects: _allowBleSideEffects,
       primeOfflineSignalPreKeyBundleInSession:
@@ -1078,7 +1076,7 @@ class VibeConnectionOrchestrator {
     required DiscoveredDevice device,
     required BleGattSession session,
   }) async {
-    await PrekeySessionPrimeLane.run(
+    await Ai2AiDiscoveryPrekeyOrchestrationLane.primeOfflineSignalPreKeyBundleInSession(
       allowBleSideEffects: _allowBleSideEffects,
       signalKeyManager: _signalKeyManager,
       protocol: _protocol,
@@ -1099,7 +1097,7 @@ class VibeConnectionOrchestrator {
     required String recipientId,
     required DiscoveredDevice device,
   }) async {
-    await PrekeyMeshForwardBridgeLane.forward(
+    await Ai2AiDiscoveryPrekeyOrchestrationLane.forwardPreKeyBundleThroughMesh(
       allowBleSideEffects: _allowBleSideEffects,
       tryCreateMeshForwardingContext: _tryCreateMeshForwardingContext,
       bundle: bundle,
