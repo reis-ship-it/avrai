@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/services/admin/admin_internal_use_agreement_service.dart';
 import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
@@ -1400,7 +1401,8 @@ class _GovernanceRecentCardState extends State<_GovernanceRecentCard> {
                       tooltip: 'Copy Deep Link',
                       onPressed: () => _copyToClipboard(
                         'Decision Deep Link',
-                        '/admin/urk-kernels?decisionId=${event.decisionId}',
+                        AdminRoutePaths.urkKernelsDecisionLink(
+                            event.decisionId),
                       ),
                       icon: const Icon(Icons.link, size: 18),
                     ),

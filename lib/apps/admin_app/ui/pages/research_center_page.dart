@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai/core/services/admin/research_activity_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -204,13 +205,25 @@ class _ResearchCenterPageState extends State<ResearchCenterPage> {
           const SizedBox(height: 12),
           Card(
             child: ListTile(
+              leading: const Icon(Icons.dashboard_customize_outlined),
+              title: const Text('Admin Command Center'),
+              subtitle: const Text(
+                'Return to central admin navigation and oversight controls',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go(AdminRoutePaths.commandCenter),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.travel_explore),
               title: const Text('Reality System Oversight'),
               subtitle: const Text(
                 'Return to Reality/Universe/World oversight pages',
               ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go('/admin/reality-system/reality'),
+              onTap: () => context.go(AdminRoutePaths.realitySystemReality),
             ),
           ),
           const SizedBox(height: 8),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
+import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai/core/monitoring/connection_monitor.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/ai/quantum/quantum_temporal_state.dart';
@@ -418,13 +419,25 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
             Card(
               margin: const EdgeInsets.only(bottom: 16),
               child: ListTile(
+                leading: const Icon(Icons.dashboard_customize_outlined),
+                title: const Text('Admin Command Center'),
+                subtitle: const Text(
+                  'Open central oversight navigation across reality, universe, world, mesh, kernel, and research',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go(AdminRoutePaths.commandCenter),
+              ),
+            ),
+            Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: ListTile(
                 leading: const Icon(Icons.hub_outlined),
                 title: const Text('URK Kernel Console'),
                 subtitle: const Text(
                   'Open kernel governance, activation triggers, and prong/mode coverage',
                 ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go('/admin/urk-kernels'),
+                onTap: () => context.go(AdminRoutePaths.urkKernels),
               ),
             ),
             Card(
@@ -436,7 +449,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                   'Open separate Reality, Universe, and World admin pages with model check-ins',
                 ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go('/admin/reality-system/reality'),
+                onTap: () => context.go(AdminRoutePaths.realitySystemReality),
               ),
             ),
             Card(
@@ -448,7 +461,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
                   'Shared admin + reality-model research feed, status, and notes',
                 ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go('/admin/research-center'),
+                onTap: () => context.go(AdminRoutePaths.researchCenter),
               ),
             ),
             if (_errorMessage != null)

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai/core/models/community/collaborative_activity_metrics.dart';
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/services/admin/reality_grouping_audit_service.dart';
@@ -362,19 +363,19 @@ class _RealitySystemOversightPageState
             _layerChip(
               context: context,
               layer: OversightLayer.reality,
-              route: '/admin/reality-system/reality',
+              route: AdminRoutePaths.realitySystemReality,
               icon: Icons.psychology_alt,
             ),
             _layerChip(
               context: context,
               layer: OversightLayer.universe,
-              route: '/admin/reality-system/universe',
+              route: AdminRoutePaths.realitySystemUniverse,
               icon: Icons.groups,
             ),
             _layerChip(
               context: context,
               layer: OversightLayer.world,
-              route: '/admin/reality-system/world',
+              route: AdminRoutePaths.realitySystemWorld,
               icon: Icons.public,
             ),
           ],
@@ -854,17 +855,22 @@ class _RealitySystemOversightPageState
                   label: const Text('World Planes'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => context.go('/admin/ai2ai'),
+                  onPressed: () => context.go(AdminRoutePaths.commandCenter),
+                  icon: const Icon(Icons.dashboard_customize_outlined),
+                  label: const Text('Command Center'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => context.go(AdminRoutePaths.ai2ai),
                   icon: const Icon(Icons.hub_outlined),
                   label: const Text('AI2AI Dashboard'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => context.go('/admin/urk-kernels'),
+                  onPressed: () => context.go(AdminRoutePaths.urkKernels),
                   icon: const Icon(Icons.settings_suggest),
                   label: const Text('URK Kernel Console'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => context.go('/admin/research-center'),
+                  onPressed: () => context.go(AdminRoutePaths.researchCenter),
                   icon: const Icon(Icons.science_outlined),
                   label: const Text('Research Center'),
                 ),
