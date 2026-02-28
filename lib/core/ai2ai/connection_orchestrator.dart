@@ -26,7 +26,6 @@ import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.d
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_public_forwarding_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_scan_window_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_message_runtime_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_realtime_orchestration_lane.dart';
@@ -43,6 +42,7 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/ai2ai_disc
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_buffered_learning_insight.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/federated_cloud_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/prekey_payload_publish_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/runtime_services_startup_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_attempt_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/personality_advertising_update_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_completion_lane.dart';
@@ -823,59 +823,6 @@ class VibeConnectionOrchestrator {
       logger: _logger,
       logName: _logName,
     );
-  }
-
-  void _startBleInboxProcessing() {
-    _bleInboxPoller = IncomingMessageRuntimeOrchestrationLane.startBleInboxProcessing(
-      allowBleSideEffects: _allowBleSideEffects,
-      existingPoller: _bleInboxPoller,
-      protocol: _protocol,
-      seenBleMessageHashes: _seenBleMessageHashes,
-      prefs: _prefs,
-      prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
-      currentUserId: _currentUserId,
-      personalityLearning: _connectionManager.personalityLearning,
-      adaptiveMeshService: _adaptiveMeshService,
-      seenLearningInsightIds: _seenLearningInsightIds,
-      lastAi2AiLearningAtByPeerId: _lastAi2AiLearningAtByPeerId,
-      applyInsightForPeer: _applyInsightForPeer,
-      federatedLearningParticipationEnabled:
-          _isFederatedLearningParticipationEnabled(),
-      localNodeId: _localBleNodeId,
-      bloomFilters: _bloomFilters,
-      discoveredNodes: _discoveredNodes,
-      discovery: _deviceDiscovery,
-      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
-      persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
-      persistSeenLearningInsightIdsIfNeeded:
-          _persistSeenLearningInsightIdsIfNeeded,
-      logger: _logger,
-      logName: _logName,
-    );
-  }
-
-  bool _isFederatedLearningParticipationEnabled() {
-    return FederatedCloudOrchestrationLane.isParticipationEnabled(
-      prefs: _prefs,
-      prefsKeyFederatedLearningParticipation:
-          _prefsKeyFederatedLearningParticipation,
-    );
-  }
-
-  void _startFederatedCloudSync() {
-    unawaited(() async {
-      final handles = await FederatedCloudOrchestrationLane.startSync(
-        isTestBinding: _isTestBinding,
-        connectivity: _connectivity,
-        syncFederatedCloudQueue: syncFederatedCloudQueue,
-        existingTimer: _federatedCloudSyncTimer,
-        existingSubscription: _federatedCloudConnectivitySub,
-        logger: _logger,
-        logName: _logName,
-      );
-      _federatedCloudSyncTimer = handles.timer;
-      _federatedCloudConnectivitySub = handles.subscription;
-    }());
   }
 
   Future<void> _enqueueFederatedDeltaForCloudFromInsightPayload(

@@ -1,7 +1,8 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
-import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_routing_policy.dart';
 import 'package:avrai/core/models/user/user_vibe.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';

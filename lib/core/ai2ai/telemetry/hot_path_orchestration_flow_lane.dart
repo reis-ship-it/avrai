@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/ai/vibe_analysis_engine.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_device_processing_lane.dart';

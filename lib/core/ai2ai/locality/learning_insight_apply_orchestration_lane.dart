@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai2ai/locality/continuous_learning_mirror.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_application_lane.dart';

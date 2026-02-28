@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Quantum Matching AI Learning Service
 //
 // Integrates Phase 19 quantum matching with AI2AI personality learning and mesh networking

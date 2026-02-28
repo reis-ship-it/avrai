@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/ai2ai/connection_summary.dart';
 import 'package:avrai/core/models/quantum/connection_metrics.dart';
 
