@@ -11,7 +11,7 @@ import 'package:avrai/presentation/widgets/ai2ai/connections_list.dart';
 import 'package:avrai/presentation/widgets/ai2ai/learning_metrics_chart.dart';
 import 'package:avrai/presentation/widgets/ai2ai/privacy_compliance_card.dart';
 import 'package:avrai/presentation/widgets/ai2ai/performance_issues_list.dart';
-import 'package:avrai/presentation/widgets/admin/admin_collaborative_activity_widget.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/admin_collaborative_activity_widget.dart';
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;

@@ -14,7 +14,7 @@ import 'package:avrai/presentation/pages/admin/communications_viewer_page.dart';
 import 'package:avrai/presentation/pages/admin/clubs_communities_viewer_page.dart';
 import 'package:avrai/presentation/pages/admin/ai_live_map_page.dart';
 import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
-import 'package:avrai/presentation/widgets/admin/admin_federated_rounds_widget.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/admin_federated_rounds_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 /// God-Mode Admin Dashboard

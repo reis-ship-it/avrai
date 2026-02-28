@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:avrai/core/models/community/collaborative_activity_metrics.dart';
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
+import 'package:avrai/core/services/admin/reality_grouping_audit_service.dart';
 import 'package:avrai/core/services/admin/reality_model_checkin_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -7,7 +10,7 @@ import 'package:avrai/core/theme/colors.dart';
 import 'package:avrai/presentation/pages/admin/knot_visualizer_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/admin/realtime_agent_globe_widget.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -33,9 +36,12 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
   final List<_CheckInEntry> _checkIns = <_CheckInEntry>[];
   final RealityModelCheckInService _checkInService =
       RealityModelCheckInService();
+  final RealityGroupingAuditService _groupingAuditService =
+      RealityGroupingAuditService();
 
   AdminRuntimeGovernanceService? _service;
   SharedPreferencesCompat? _prefs;
+  Timer? _liveRefreshTimer;
 
   bool _isLoading = true;
   bool _isCheckInBusy = false;
@@ -52,6 +58,8 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
 
   Set<String> _approvedGroupings = <String>{};
   List<String> _proposedGroupings = <String>[];
+  List<RealityGroupingAuditEvent> _recentAuditEvents =
+      <RealityGroupingAuditEvent>[];
 
   @override
   void initState() {
@@ -64,8 +72,10 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
       _service = GetIt.instance<AdminRuntimeGovernanceService>();
       _prefs = await SharedPreferencesCompat.getInstance();
       await _loadApprovedGroupings();
+      await _loadAuditEvents();
       await _load();
       await _generateGroupingProposals();
+      _startLiveRefreshLoop();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -162,6 +172,33 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
     );
   }
 
+  Future<void> _loadAuditEvents() async {
+    final events = await _groupingAuditService.getRecentEvents(
+      layer: _layerKey(widget.layer),
+      limit: 10,
+    );
+    if (!mounted) return;
+    setState(() {
+      _recentAuditEvents = events;
+    });
+  }
+
+  Future<void> _recordGroupingAudit({
+    required String action,
+    required String grouping,
+  }) async {
+    await _groupingAuditService.recordEvent(
+      layer: _layerKey(widget.layer),
+      action: action,
+      grouping: grouping,
+      actor: 'admin_operator',
+      metadata: <String, dynamic>{
+        'surface': 'reality_system_oversight',
+      },
+    );
+    await _loadAuditEvents();
+  }
+
   Future<void> _generateGroupingProposals() async {
     if (!mounted) return;
 
@@ -194,8 +231,37 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
 
   @override
   void dispose() {
+    _liveRefreshTimer?.cancel();
     _checkInController.dispose();
     super.dispose();
+  }
+
+  void _startLiveRefreshLoop() {
+    _liveRefreshTimer?.cancel();
+    if (widget.layer == OversightLayer.reality) {
+      return;
+    }
+
+    _liveRefreshTimer = Timer.periodic(
+      const Duration(seconds: 20),
+      (_) => _refreshLiveAgentsOnly(),
+    );
+  }
+
+  Future<void> _refreshLiveAgentsOnly() async {
+    if (!mounted || _service == null) {
+      return;
+    }
+
+    try {
+      final agents = await _service!.getAllActiveAIAgents();
+      if (!mounted) return;
+      setState(() {
+        _activeAgents = agents;
+      });
+    } catch (_) {
+      // Keep existing snapshot if a single live refresh cycle fails.
+    }
   }
 
   @override
@@ -209,6 +275,7 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
               : () async {
                   await _load();
                   await _generateGroupingProposals();
+                  await _loadAuditEvents();
                 },
           icon: const Icon(Icons.refresh),
           tooltip: 'Refresh',
@@ -238,6 +305,7 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
                 onPressed: () async {
                   await _load();
                   await _generateGroupingProposals();
+                  await _loadAuditEvents();
                 },
                 child: const Text('Retry'),
               ),
@@ -251,6 +319,7 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
       onRefresh: () async {
         await _load();
         await _generateGroupingProposals();
+        await _loadAuditEvents();
       },
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -555,6 +624,10 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
                           _approvedGroupings.remove(grouping);
                         });
                         await _persistApprovedGroupings();
+                        await _recordGroupingAudit(
+                          action: 'removed_approval',
+                          grouping: grouping,
+                        );
                       },
                     );
                   },
@@ -610,14 +683,22 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
                             _proposedGroupings.remove(grouping);
                           });
                           await _persistApprovedGroupings();
+                          await _recordGroupingAudit(
+                            action: 'approved',
+                            grouping: grouping,
+                          );
                         },
                         child: const Text('Approve'),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             _proposedGroupings.remove(grouping);
                           });
+                          await _recordGroupingAudit(
+                            action: 'rejected',
+                            grouping: grouping,
+                          );
                         },
                         child: const Text('Reject'),
                       ),
@@ -625,6 +706,24 @@ class _RealitySystemOversightPageState extends State<RealitySystemOversightPage>
                   ),
                 ),
               ),
+            const SizedBox(height: 12),
+            Text(
+              'Approve to Reality Memory Audit',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            if (_recentAuditEvents.isEmpty)
+              const Text('No oversight decisions logged yet.')
+            else
+              ..._recentAuditEvents.take(6).map(
+                    (event) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        '${_formatTime(event.timestamp.toLocal())} | ${event.action} | ${event.grouping} | ${event.actor}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),
