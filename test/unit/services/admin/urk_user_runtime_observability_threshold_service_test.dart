@@ -1,4 +1,4 @@
-import 'package:avrai/core/services/admin/urk_user_runtime_observability_threshold_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_user_runtime_observability_threshold_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:flutter/services.dart';

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activation_engine_contract.dart';
 import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 
@@ -157,6 +157,7 @@ class UrkKernelControlPlaneService {
 
   static const String _stateKey = 'urk_kernel_control_plane_state_v1';
   static const String _lineageKey = 'urk_kernel_control_plane_lineage_v1';
+  static const int _maxLineageEvents = 5000;
 
   final SharedPreferencesCompat _prefs;
   final UrkKernelRegistryService _registryService;
@@ -466,20 +467,33 @@ class UrkKernelControlPlaneService {
     if (raw == null || raw.isEmpty) {
       return <String, UrkKernelRuntimeStateSnapshot>{};
     }
-
-    final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    final out = <String, UrkKernelRuntimeStateSnapshot>{};
-    decoded.forEach((kernelId, value) {
-      final item = value as Map<String, dynamic>;
-      out[kernelId] = UrkKernelRuntimeStateSnapshot(
-        kernelId: kernelId,
-        state: _stateFromString(item['state'] as String?),
-        updatedAt: DateTime.parse(item['updated_at'] as String),
-        updatedBy: item['updated_by'] as String? ?? 'unknown',
-        reason: item['reason'] as String? ?? 'none',
-      );
-    });
-    return out;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map<String, dynamic>) {
+        return <String, UrkKernelRuntimeStateSnapshot>{};
+      }
+      final out = <String, UrkKernelRuntimeStateSnapshot>{};
+      decoded.forEach((kernelId, value) {
+        if (value is! Map<String, dynamic>) {
+          return;
+        }
+        final updatedAtRaw = value['updated_at'] as String?;
+        final updatedAt = updatedAtRaw == null
+            ? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true)
+            : DateTime.tryParse(updatedAtRaw)?.toUtc() ??
+                DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+        out[kernelId] = UrkKernelRuntimeStateSnapshot(
+          kernelId: kernelId,
+          state: _stateFromString(value['state'] as String?),
+          updatedAt: updatedAt,
+          updatedBy: value['updated_by'] as String? ?? 'unknown',
+          reason: value['reason'] as String? ?? 'none',
+        );
+      });
+      return out;
+    } catch (_) {
+      return <String, UrkKernelRuntimeStateSnapshot>{};
+    }
   }
 
   Future<void> _writeStateMap(
@@ -502,28 +516,58 @@ class UrkKernelControlPlaneService {
     if (raw == null || raw.isEmpty) {
       return <UrkKernelLineageEvent>[];
     }
-    final decoded = jsonDecode(raw) as List<dynamic>;
-    return decoded.map((row) {
-      final item = row as Map<String, dynamic>;
-      return UrkKernelLineageEvent(
-        kernelId: item['kernel_id'] as String,
-        eventType: item['event_type'] as String,
-        actor: item['actor'] as String,
-        reason: item['reason'] as String,
-        timestamp: DateTime.parse(item['timestamp'] as String),
-        fromState: item['from_state'] == null
-            ? null
-            : _stateFromString(item['from_state'] as String),
-        toState: item['to_state'] == null
-            ? null
-            : _stateFromString(item['to_state'] as String),
-        requestId: item['request_id'] as String?,
-      );
-    }).toList();
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List<dynamic>) {
+        return <UrkKernelLineageEvent>[];
+      }
+      final out = <UrkKernelLineageEvent>[];
+      for (final row in decoded) {
+        if (row is! Map<String, dynamic>) {
+          continue;
+        }
+        final kernelId = row['kernel_id'] as String?;
+        final eventType = row['event_type'] as String?;
+        final actor = row['actor'] as String?;
+        final reason = row['reason'] as String?;
+        final tsRaw = row['timestamp'] as String?;
+        final timestamp =
+            tsRaw == null ? null : DateTime.tryParse(tsRaw)?.toUtc();
+        if (kernelId == null ||
+            eventType == null ||
+            actor == null ||
+            reason == null ||
+            timestamp == null) {
+          continue;
+        }
+        out.add(
+          UrkKernelLineageEvent(
+            kernelId: kernelId,
+            eventType: eventType,
+            actor: actor,
+            reason: reason,
+            timestamp: timestamp,
+            fromState: row['from_state'] == null
+                ? null
+                : _stateFromString(row['from_state'] as String),
+            toState: row['to_state'] == null
+                ? null
+                : _stateFromString(row['to_state'] as String),
+            requestId: row['request_id'] as String?,
+          ),
+        );
+      }
+      return out;
+    } catch (_) {
+      return <UrkKernelLineageEvent>[];
+    }
   }
 
   Future<void> _writeLineage(List<UrkKernelLineageEvent> lineage) async {
-    final encoded = lineage
+    final capped = lineage.length <= _maxLineageEvents
+        ? lineage
+        : lineage.sublist(lineage.length - _maxLineageEvents);
+    final encoded = capped
         .map(
           (event) => {
             'kernel_id': event.kernelId,

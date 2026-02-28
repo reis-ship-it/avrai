@@ -1,4 +1,4 @@
-import 'package:avrai/core/services/urk_self_healing_recovery_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_self_healing_recovery_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

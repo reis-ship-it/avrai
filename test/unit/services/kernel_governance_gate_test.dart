@@ -1,4 +1,4 @@
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/kernel_governance_gate.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -3,8 +3,8 @@ import 'dart:async';
 
 import 'package:avrai/core/services/admin/admin_auth_service.dart';
 import 'package:avrai/core/services/admin/admin_internal_use_agreement_service.dart';
-import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
-import 'package:avrai/core/services/admin/urk_user_runtime_observability_threshold_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_user_runtime_observability_threshold_service.dart';
 import 'package:avrai/core/services/ai_infrastructure/kernel_governance_telemetry_service.dart';
 import 'package:avrai/core/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'

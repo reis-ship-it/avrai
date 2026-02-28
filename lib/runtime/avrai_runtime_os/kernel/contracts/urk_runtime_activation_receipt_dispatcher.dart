@@ -2,8 +2,8 @@
 import 'dart:developer' as developer;
 
 import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activation_engine_contract.dart';
-import 'package:avrai/core/services/admin/urk_kernel_control_plane_service.dart';
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:get_it/get_it.dart';
 
 class UrkRuntimeActivationReceiptDispatcher {

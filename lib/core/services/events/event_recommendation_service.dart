@@ -14,7 +14,7 @@ import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_kernel_activ
 import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_stage_b_event_ops_shadow_runtime_contract.dart';
 import 'package:avrai/core/models/quantum/matching_input.dart';
-import 'package:avrai/core/services/user/urk_user_runtime_learning_intake_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_user_runtime_learning_intake_contract.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';

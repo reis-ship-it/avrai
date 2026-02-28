@@ -7,7 +7,7 @@ import 'package:avrai/runtime/avrai_runtime_os/kernel/contracts/urk_runtime_acti
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/expertise/expertise_matching_service.dart';
 import 'package:avrai/core/services/expertise/golden_expert_ai_influence_service.dart';
-import 'package:avrai/core/services/expertise/urk_stage_d_expert_runtime_replication_contract.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_stage_d_expert_runtime_replication_contract.dart';
 
 /// Expert Recommendations Service
 /// Provides recommendations based on expert preferences and validations

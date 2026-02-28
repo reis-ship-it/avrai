@@ -108,7 +108,7 @@ import 'package:avrai/core/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai/core/services/ledgers/ledger_receipts_service_v0.dart';
 import 'package:avrai/core/services/ledgers/proof_run_service_v0.dart';
 import 'package:avrai/core/services/business/business_shared_agent_service.dart';
-import 'package:avrai/core/services/admin/urk_kernel_registry_service.dart';
+import 'package:avrai/runtime/avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
 import 'package:avrai/core/services/onboarding/onboarding_data_service.dart';
 import 'package:avrai/core/services/network/edge_function_service.dart';

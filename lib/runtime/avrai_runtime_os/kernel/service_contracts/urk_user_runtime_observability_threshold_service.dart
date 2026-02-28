@@ -361,6 +361,8 @@ class UrkUserRuntimeObservabilityThresholdOverrideService {
     String? reason,
   }) async {
     final effective = await loadEffective();
+    final validation = effective.validation;
+    _validateEntry(entry, validation);
     final before = effective.forWindow(window);
     final overrides = _readOverrides();
     overrides[window] = entry;
@@ -480,6 +482,38 @@ class UrkUserRuntimeObservabilityThresholdOverrideService {
         ? next
         : next.sublist(next.length - _maxAuditEvents);
     await _prefs.setStringList(_auditKey, capped);
+  }
+
+  void _validateEntry(
+    UrkUserRuntimeObservabilityThresholdEntry entry,
+    UrkUserRuntimeObservabilityValidationRules validation,
+  ) {
+    if (!_inBounds(entry.warnOptOutRatePct, validation.warnOptOutRatePct) ||
+        !_inBounds(
+          entry.criticalOptOutRatePct,
+          validation.criticalOptOutRatePct,
+        ) ||
+        !_inBounds(
+          entry.warnRejectionRatePct,
+          validation.warnRejectionRatePct,
+        ) ||
+        !_inBounds(
+          entry.criticalRejectionRatePct,
+          validation.criticalRejectionRatePct,
+        )) {
+      throw ArgumentError('Threshold entry violates configured bounds.');
+    }
+    if (validation.requireCriticalGteWarn &&
+        (entry.criticalOptOutRatePct < entry.warnOptOutRatePct ||
+            entry.criticalRejectionRatePct < entry.warnRejectionRatePct)) {
+      throw ArgumentError(
+        'Critical thresholds must be greater than or equal to warning thresholds.',
+      );
+    }
+  }
+
+  bool _inBounds(double value, UrkUserRuntimeObservabilityValueBounds bounds) {
+    return value >= bounds.min && value <= bounds.max;
   }
 }
 
