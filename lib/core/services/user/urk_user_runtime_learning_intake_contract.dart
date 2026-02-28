@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 /// Deterministic intake gate for user-origin realtime learning signals.
 ///
 /// This kernel contract enforces:

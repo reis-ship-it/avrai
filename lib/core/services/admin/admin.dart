@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 /// Barrel file for admin - re-exports all public APIs.
 /// Generated as part of Phase 10.5 codebase reorganization.
 library;

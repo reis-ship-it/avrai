@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:flutter/material.dart';
 import 'package:avrai/core/monitoring/network_analytics.dart';
 import 'package:avrai/core/theme/colors.dart';

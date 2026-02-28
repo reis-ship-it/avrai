@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/controllers/urk_kernel_activation_engine_contract.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 

@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Online Learning Service for Phase 12: Neural Network Implementation
 // Section 3.2.1: Continuous Learning
 // Manages periodic retraining and incremental model updates

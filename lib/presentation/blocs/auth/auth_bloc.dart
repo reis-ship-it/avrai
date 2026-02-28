@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';

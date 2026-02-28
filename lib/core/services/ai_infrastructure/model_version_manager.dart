@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 // Model Version Manager for Phase 12: Neural Network Implementation
 // Section 3.2.2: Model Versioning
 // Manages model version switching, A/B testing, and rollback

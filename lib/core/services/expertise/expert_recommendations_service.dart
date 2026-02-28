@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/models/user/unified_user.dart';
 import 'package:avrai/core/models/spots/spot.dart';
 import 'package:avrai/core/models/expertise/expertise_level.dart';

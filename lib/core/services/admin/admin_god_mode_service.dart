@@ -1,3 +1,4 @@
+// MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai/core/services/admin/admin_runtime_governance_service.dart';
 
 export 'admin_runtime_governance_service.dart';
