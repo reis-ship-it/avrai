@@ -21,6 +21,8 @@ import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 
+part 'reservation_sharing_cache_models.dart';
+
 /// Sharing Permission Level
 enum SharingPermission {
   /// Read-only access (can view reservation details)
@@ -614,15 +616,4 @@ class ReservationSharingService {
     );
     return [];
   }
-}
-
-/// Cached compatibility calculation
-class _CachedCompatibility {
-  final double compatibility;
-  final DateTime cachedAt;
-
-  _CachedCompatibility({
-    required this.compatibility,
-    required this.cachedAt,
-  });
 }
