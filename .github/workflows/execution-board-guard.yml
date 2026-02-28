@@ -42,6 +42,7 @@ jobs:
           python3 scripts/runtime/generate_urk_stage_c_private_mesh_policy_conformance_report.py --check
           python3 scripts/runtime/generate_urk_stage_d_business_runtime_replication_report.py --check
           python3 scripts/runtime/generate_urk_stage_d_expert_runtime_replication_report.py --check
+          python3 scripts/runtime/generate_urk_stage_e_cross_runtime_conformance_report.py --check
 
       - name: Validate deferred rename governance
         run: |
