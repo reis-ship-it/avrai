@@ -29,6 +29,23 @@ Required rules:
 Traceability anchor:
 - `M12-P10-2` (`10.10.12`)
 
+## Command Center Routes
+
+Primary entrypoint:
+- `/admin/command-center`
+
+Oversight and control pages:
+1. `/admin/reality-system/reality`
+2. `/admin/reality-system/universe`
+3. `/admin/reality-system/world`
+4. `/admin/ai2ai`
+5. `/admin/urk-kernels`
+6. `/admin/research-center`
+
+Privacy baseline:
+- Admin pages must render agent identity and aggregate telemetry only.
+- Direct user PII must not be shown in command-center oversight surfaces.
+
 ## Run
 
 ```bash

@@ -8,6 +8,7 @@
 **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
 **3-prong target end-state companion spec:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
+**Admin command-center ideal architecture companion spec:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`  
 **Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
 **Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
 **Canonical build-doc wiring index:** `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`  
@@ -175,6 +176,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/URK_INTERFACE_CONTRACTS_2026-02-27.md`
 - `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`
 - `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`
+- `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`
 - `docs/security/RED_TEAM_TEST_MATRIX.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
@@ -1889,6 +1891,10 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.19 | **Downstream scaling reliability gate.** Promotion requires cross-setting scaling robustness evidence (validation/task/setup sensitivity sweeps), explicit regime classification, and documented mitigation for inversion/nonmonotonic responses | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 7.9.41, 8.1.16 |
 | 10.9.20 | **System hijack red-team gate.** Maintain and execute canonical red-team matrix across auth/session, backend authorization, secrets/CI, federated/advisory channels, encryption lifecycle, BLE discovery metadata, third-party exports, autonomy governance, logging, supply chain, and operator controls. Critical lanes block autonomous scope expansion when red | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 |
 | 10.9.21 | **Dream-conviction hierarchy safety gate.** Enforce immutable belief-tier precedence, no dream override of proven convictions, dual-key evidence requirement for tier elevation, simulator-exploit containment, and fail-closed dream promotion control | 1.1E.20, 1.1E.21, 5.2.23, 5.2.26, 7.7.16, 8.1.19 |
+| 10.9.22 | **Admin command-center unified system graph + time-travel replay.** Build a single live graph across users/businesses/services/universe/world/reality-model/kernel/runtime entities with end-to-end lineage edges; add timestamped replay to inspect node/edge/decision state at any past incident point | 7.3.4, 8.8, 10.9.9, 10.10.10 |
+| 10.9.23 | **Cross-layer correlation + SLO burn-rate command center.** Add correlation views that join user/business KPI shifts to runtime/model changes, with per-domain SLOs, burn-rate forecasting, and release/rollback risk scoring | 7.3.4, 8.8, 9.2.6, 10.9.3, 10.9.9 |
+| 10.9.24 | **Policy/lineage/SOC observability hardening.** Add live allow/deny/defer policy reasoning, immutable data provenance per decision, privacy SOC leak/anomaly detection, and incident-grade alert intelligence with runbook linkage | 2.1, 2.5, 7.7, 10.9.9, 10.9.10, 10.9.20 |
+| 10.9.25 | **Digital twins + intervention console.** Add entity twins (user/business/universe/world/reality model) with expected transitions, intervention controls (pause/safe-mode/human-review), and auditable control actions executed only via backend control plane | 6.1, 7.7, 7.9, 10.9.11, 10.9.18 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -1917,6 +1923,10 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.19 | Applied ML + Reliability Science + Federated Learning | 5.2.20, 5.2.21, 7.7.15, 7.9.40, 8.1.16 | 1-2 weeks | Cross-setting scaling sweeps are mandatory before promotion; regime classification attached to manifests; inversion/nonmonotonic cohorts are quarantined or mitigated before rollout |
 | 10.9.20 | Security Engineering + Reliability Engineering + Governance | 2.1, 2.5, 7.7, 8.1, 9.2.6, 10.9.10-10.9.18 | 1-2 weeks | `docs/security/RED_TEAM_TEST_MATRIX.md` is current; critical lanes execute on cadence in staging; failed lanes auto-open remediation milestones; autonomous scope expansion is blocked while critical lanes are red |
 | 10.9.21 | Applied ML + Governance + Reliability Engineering | 1.1E.20, 1.1E.21, 5.2.23, 7.7.16, 8.1.19 | 1-2 weeks | CI/runtime reject any tier-precedence violations; dream-only updates cannot promote; dual-key evidence receipts required for tier elevation; dream/reality mismatch alarms auto-trigger quarantine and rollback paths |
+| 10.9.22 | Admin Platform + Observability + Runtime Engineering | 7.3.4, 8.8, 10.9.9, 10.10.10 | 1-2 weeks | Unified cross-domain graph is live with trace-linked nodes/edges and replay-by-timestamp; incident replay reliably reconstructs decisions, policy outcomes, and topology state |
+| 10.9.23 | Observability + Applied ML + Business Platform | 7.3.4, 8.8, 9.2.6, 10.9.3 | 1 week | Correlation panel ties outcome shifts to model/runtime changes with statistical confidence; SLO burn-rate widgets and breach forecasts active for user/business/runtime/reality lanes |
+| 10.9.24 | Security Engineering + Governance + Observability | 2.1, 2.5, 7.7, 10.9.10, 10.9.20 | 1-2 weeks | Policy-decision traces (`allow/deny/defer`) are queryable; provenance chain present for all high-impact decisions; SOC alerts include leak/anomaly class, confidence, and runbook pointer |
+| 10.9.25 | Admin Platform + Runtime Control Plane + Model Ops | 6.1, 7.7, 7.9, 10.9.11, 10.9.18 | 1-2 weeks | Entity digital twins expose current/expected state + risk score; intervention console enforces backend-only execution and records immutable control-action audit entries |
 
 > **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.20 in parallel where dependencies allow.
 
