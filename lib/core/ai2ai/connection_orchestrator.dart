@@ -18,11 +18,10 @@ import 'package:avrai/core/ai2ai/pending_connection.dart';
 import 'package:avrai/core/ai2ai/connection_summary.dart';
 import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
-import 'package:avrai/core/ai2ai/discovery/discovered_node_registry.dart';
+import 'package:avrai/core/ai2ai/discovery/discovery_node_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
-import 'package:avrai/core/ai2ai/routing/connection_routing_policy.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/core/ai2ai/routing/event_mode_scan_window_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/routing/mesh_forwarding_orchestration_lane.dart';
@@ -1088,13 +1087,11 @@ class VibeConnectionOrchestrator {
   }
 
   void _updateDiscoveredNodes(List<AIPersonalityNode> nodes) {
-    DiscoveredNodeRegistry.mergeAndPrune(
-      incomingNodes: nodes,
+    DiscoveryNodeOrchestrationLane.updateDiscoveredNodes(
+      nodes: nodes,
       discoveredNodes: _discoveredNodes,
       nearbyVibes: _nearbyVibes,
-      onDensityChanged: (density) {
-        _adaptiveMeshService?.updateNetworkDensity(density);
-      },
+      adaptiveMeshService: _adaptiveMeshService,
     );
   }
 
@@ -1103,29 +1100,20 @@ class VibeConnectionOrchestrator {
     List<AIPersonalityNode> nodes,
     Map<String, VibeCompatibilityResult> compatibilityResults,
   ) async {
-    final prioritized = DiscoveredNodeRegistry.prioritizeConnections(
+    return DiscoveryNodeOrchestrationLane.prioritizeConnections(
       nodes: nodes,
       compatibilityResults: compatibilityResults,
-      maxConnections: 5,
+      logger: _logger,
+      logName: _logName,
     );
-
-    _logger.debug(
-        'Prioritized ${nodes.length} nodes to top ${prioritized.length} connections',
-        tag: _logName);
-
-    return prioritized;
   }
 
   bool _isConnectionWorthy(VibeCompatibilityResult compatibility) {
-    final result = ConnectionRoutingPolicy.evaluateWorthiness(compatibility);
-
-    if (!result.isWorthy) {
-      _logger.debug(
-          'Connection not worthy: ${result.reason}; opportunities=${compatibility.learningOpportunities.length}',
-          tag: _logName);
-    }
-
-    return result.isWorthy;
+    return DiscoveryNodeOrchestrationLane.isConnectionWorthy(
+      compatibility: compatibility,
+      logger: _logger,
+      logName: _logName,
+    );
   }
 
   Future<int?> getBatteryLevel() async {
