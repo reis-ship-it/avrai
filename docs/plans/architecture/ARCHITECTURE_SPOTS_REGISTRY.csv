@@ -29,7 +29,7 @@ lib/core/ai2ai,25,ai2ai-network,"3.7,8,7.4",active,architecture spot for file pl
 lib/core/cloud,4,cloud-integration,"7.7,8.1,9.2.6",active,architecture spot for file placement
 lib/core/config,3,config-and-theme,"7.5,10.3,10.4",active,architecture spot for file placement
 lib/core/constants,2,config-and-theme,"7.5,10.3,10.4",active,architecture spot for file placement
-lib/core/controllers,25,workflow-controllers,"1.2,10.1,7",active,architecture spot for file placement
+lib/core/controllers,26,workflow-controllers,"1.2,10.1,7",active,architecture spot for file placement
 lib/core/crypto,17,security-signal,"2.4,2.5,7.7",active,architecture spot for file placement
 lib/core/deployment,1,deployment-sync,"7.7,7.8",active,architecture spot for file placement
 lib/core/legal,3,legal-domain,"2.1,10.1",active,architecture spot for file placement
@@ -121,7 +121,7 @@ scripts/patents,4,tooling-ops,"10.2,methodology",active,architecture spot for fi
 scripts/perf,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/personality_data,30,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/proof_run,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/runtime,9,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/runtime,10,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security_validation,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/smoke,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -178,7 +178,7 @@ test/unit/ai2ai,19,testing-quality,"10.6,methodology",active,architecture spot f
 test/unit/audio,4,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/blocs,4,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/cloud,4,testing-quality,"10.6,methodology",active,architecture spot for file placement
-test/unit/controllers,21,testing-quality,"10.6,methodology",active,architecture spot for file placement
+test/unit/controllers,22,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/crypto,2,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/data,20,testing-quality,"10.6,methodology",active,architecture spot for file placement
 test/unit/deployment,1,testing-quality,"10.6,methodology",active,architecture spot for file placement
