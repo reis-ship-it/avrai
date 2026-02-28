@@ -6,9 +6,9 @@ import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/core/services/infrastructure/supabase_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
-import 'package:avrai/presentation/pages/admin/reality_system_oversight_page.dart';
-import 'package:avrai/presentation/pages/admin/urk_kernel_console_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/ai2ai_admin_dashboard.dart';
+import 'package:avrai/apps/admin_app/ui/pages/reality_system_oversight_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/urk_kernel_console_page.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';

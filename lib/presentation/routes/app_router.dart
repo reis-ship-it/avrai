@@ -26,8 +26,8 @@ import 'package:avrai/presentation/pages/onboarding/knot_discovery_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
 import 'package:avrai/presentation/pages/supabase_test_page.dart';
 import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
-import 'package:avrai/presentation/pages/admin/ai2ai_admin_dashboard.dart';
-import 'package:avrai/presentation/pages/admin/urk_kernel_console_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/ai2ai_admin_dashboard.dart';
+import 'package:avrai/apps/admin_app/ui/pages/urk_kernel_console_page.dart';
 // Phase 19.18: Quantum Group Matching System
 import 'package:avrai/presentation/pages/group/group_formation_page.dart';
 import 'package:avrai/presentation/pages/group/group_results_page.dart';
