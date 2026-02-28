@@ -19,13 +19,13 @@ import 'package:avrai/core/ai2ai/connection_summary.dart';
 import 'package:avrai/core/ai2ai/connection_summary_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/ai2ai_connection_exception.dart';
 import 'package:avrai/core/ai2ai/orchestrator_components.dart';
-import 'package:avrai/core/ai2ai/discovery/discovery_node_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/discovery_node_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/discovery_postprocess_lane.dart';
 import 'package:avrai/core/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
-import 'package:avrai/core/ai2ai/discovery/nearby_discovery_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/nearby_discovery_orchestration_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_broadcast_flags_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/mesh/mesh_public_forwarding_orchestration_lane.dart';
-import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_scan_window_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/event_mode_hot_path_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/learning_insight_apply_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/locality/passive_ai2ai_learning_orchestration_lane.dart';
 import 'package:avrai/core/ai2ai/trust/payload_realtime_orchestration_lane.dart';
@@ -50,7 +50,6 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection_shutdown_cleanup_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_orchestration_flow_lane.dart';
 import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
@@ -486,13 +485,12 @@ class VibeConnectionOrchestrator {
   }
 
   void _onDevicesDiscoveredHotPath(List<DiscoveredDevice> devices) {
-    HotDiscoveryEnqueueLane.handle(
+    EventModeHotPathOrchestrationLane.onDevicesDiscoveredHotPath(
       allowBleSideEffects: _allowBleSideEffects,
       prefs: _prefs,
       eventModeEnabled: _isEventModeEnabled(),
       lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
       maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
-      handleEventModeScanWindow: _handleEventModeScanWindow,
       devices: devices,
       hotRssiThresholdDbm: _hotRssiThresholdDbm,
       hotDeviceCooldown: _hotDeviceCooldown,
@@ -500,31 +498,10 @@ class VibeConnectionOrchestrator {
       hotQueuedDeviceIds: _hotQueuedDeviceIds,
       hotQueue: _hotQueue,
       hotEnqueuedAtMsByDeviceId: _hotEnqueuedAtMsByDeviceId,
-      batteryScheduler: _batteryScheduler,
-      hotWorkerRunning: _hotWorkerRunning,
-      startHotWorker: () {
-        _hotWorkerRunning = true;
-        unawaited(_runHotWorker());
-      },
-    );
-  }
-
-  bool _isEventModeEnabled() =>
-      (_prefs.getBool(_prefsKeyEventModeEnabled) ?? false) == true;
-
-  Future<void> _handleEventModeScanWindow(
-      List<DiscoveredDevice> devices) async {
-    final state = await EventModeScanWindowOrchestrationLane.handleForOrchestrator(
-      allowBleSideEffects: _allowBleSideEffects,
       currentUserId: _currentUserId,
       hasCurrentPersonality: _currentPersonality != null,
-      lastAdvertisedEventModeEnabled: _lastAdvertisedEventModeEnabled,
-      devices: devices,
-      hotRssiThresholdDbm: _hotRssiThresholdDbm,
       familiarityByNodeTag: _eventModeFamiliarityByNodeTag,
-      batteryScheduler: _batteryScheduler,
       roomCoherenceEngine: _roomCoherenceEngine,
-      maybeUpdateEventModeBroadcastFlags: _maybeUpdateEventModeBroadcastFlags,
       localBleNodeId: _localBleNodeId,
       eventInitiatorEligibilityPct: _eventInitiatorEligibilityPct,
       localNodeTagKey: _localNodeTagKey,
@@ -536,12 +513,27 @@ class VibeConnectionOrchestrator {
       eventModeDeepSyncCount: _eventModeDeepSyncCount,
       eventModeLastEpochAttempted: _eventModeLastEpochAttempted,
       eventModeCheckInRunning: _eventModeCheckInRunning,
+      setEventModeDeepSyncCount: (value) {
+        _eventModeDeepSyncCount = value;
+      },
+      setEventModeLastEpochAttempted: (value) {
+        _eventModeLastEpochAttempted = value;
+      },
+      setEventModeCheckInRunning: (value) {
+        _eventModeCheckInRunning = value;
+      },
       processHotDevice: _processHotDevice,
+      batteryScheduler: _batteryScheduler,
+      hotWorkerRunning: _hotWorkerRunning,
+      startHotWorker: () {
+        _hotWorkerRunning = true;
+        unawaited(_runHotWorker());
+      },
     );
-    _eventModeDeepSyncCount = state.deepSyncCount;
-    _eventModeLastEpochAttempted = state.lastEpochAttempted;
-    _eventModeCheckInRunning = state.checkInRunning;
   }
+
+  bool _isEventModeEnabled() =>
+      (_prefs.getBool(_prefsKeyEventModeEnabled) ?? false) == true;
 
   Future<void> _maybeUpdateEventModeBroadcastFlags({
     required bool eventModeEnabled,
