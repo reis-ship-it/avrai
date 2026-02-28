@@ -51,8 +51,8 @@ import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/connection
 import 'package:avrai/core/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai/core/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai/core/ai2ai/telemetry/hot_discovery_enqueue_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_path_orchestration_flow_lane.dart';
-import 'package:avrai/core/ai2ai/telemetry/hot_path_metrics_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_orchestration_flow_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai/core/controllers/urk_runtime_activation_receipt_dispatcher.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
