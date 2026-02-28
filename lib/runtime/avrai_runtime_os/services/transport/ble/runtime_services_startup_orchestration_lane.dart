@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:avrai/core/ai/personality_learning.dart';
 import 'package:avrai/core/ai2ai/aipersonality_node.dart';
-import 'package:avrai/core/ai2ai/locality/incoming_message_runtime_orchestration_lane.dart';
+import 'package:avrai/runtime/avrai_runtime_os/services/transport/ble/incoming_message_runtime_orchestration_lane.dart';
 import 'package:avrai/core/services/infrastructure/logger.dart';
 import 'package:avrai/core/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
