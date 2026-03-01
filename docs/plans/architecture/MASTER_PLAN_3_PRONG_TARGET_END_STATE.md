@@ -69,3 +69,6 @@ All four documents must be updated together when boundary contracts or ownership
 3. `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`
 4. `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`
 5. `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`
+6. `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`
+7. `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`
+8. `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`

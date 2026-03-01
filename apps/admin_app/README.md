@@ -2,6 +2,22 @@
 
 Standalone admin app shell.
 
+## Platform Policy
+
+This admin app is desktop-only:
+- `macOS`
+- `Windows`
+- `Linux`
+
+Forbidden targets:
+- Web
+- Android
+- iOS
+
+Enforcement:
+- Runtime hard-block in `lib/apps/admin_app/bootstrap/admin_bootstrap.dart`
+- CI check: `python3 scripts/ci/check_admin_desktop_only.py`
+
 ## Internal-Only Usage Policy
 
 This app is for internal operators only.

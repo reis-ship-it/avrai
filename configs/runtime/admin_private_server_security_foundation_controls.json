@@ -1,0 +1,28 @@
+{
+  "control_pack_id": "admin_private_server_security_foundation",
+  "scope": "phase-a foundation hardening for admin private server architecture",
+  "master_plan_refs": ["10.9.24", "10.10.9", "10.10.10", "10.10.11", "10.10.12"],
+  "related_milestones": ["M26-P10-3", "M26-P10-1"],
+  "environment_policy": {
+    "admin_environments": ["dev", "staging", "prod"],
+    "private_subnet_required": true,
+    "public_ingress_for_admin_api_allowed": false,
+    "separate_admin_vpc_or_vnet_required": true,
+    "allowed_admin_client_platforms": ["macos", "windows", "linux"],
+    "forbidden_admin_client_platforms": ["web", "android", "ios"]
+  },
+  "network_baseline": {
+    "default_deny_ingress": true,
+    "default_deny_egress": true,
+    "egress_allowlist_required": true,
+    "firewall_policy_template_version": "v1-starter"
+  },
+  "deployment_gate": {
+    "iac_required": true,
+    "manual_drift_allowed": false,
+    "change_approval_required_for_prod": true
+  },
+  "status": "starter",
+  "last_updated": "2026-02-28",
+  "notes": "Starter baseline until internal backend network provisioning is complete."
+}

@@ -1,5 +1,5 @@
 name: avrai_admin_app
-description: AVRAI Admin standalone app shell
+description: AVRAI Admin standalone app shell (desktop-only: macOS/windows/linux)
 publish_to: "none"
 version: 0.1.0+1
 

@@ -3,6 +3,9 @@
 **Date:** February 28, 2026  
 **Status:** Active planning authority  
 **Purpose:** Define the robust oversight architecture for the admin app across reality, universe, and world model surfaces with privacy-safe observability and operator controls.
+**Private-server security checklist:** `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`  
+**Future references registry:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`
+**Conformance alignment audit:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`
 
 ---
 
@@ -30,6 +33,10 @@ The admin app is the command center for safe, explainable system oversight:
    1. Hide sensitive fields in UI
    2. Emit policy breach telemetry
    3. Require explicit governed override flow for any temporary debug exception
+5. Platform policy is desktop-only:
+   1. Allowed: `macOS`, `Windows`, `Linux`
+   2. Forbidden: `web`, `android`, `ios`
+   3. Runtime and CI must fail closed when forbidden targets are detected
 
 ---
 
@@ -121,3 +128,20 @@ This architecture directly governs and depends on:
 3. Policy lineage completeness checks for all admin-inspection surfaces.
 4. Integration tests for research visibility + reality-model read alignment.
 5. Fail-closed behavior checks when backend state service is unavailable.
+
+---
+
+## 9. Ideal Finalization Wiring (Safety + Private Servers)
+
+This architecture is finalization-wired through:
+
+1. `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`
+   1. Concrete implementation checklist for zero-trust, private mesh, mTLS, policy gates, secrets, and incident readiness
+   2. Go-live acceptance gates and evidence requirements
+2. `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`
+   1. Long-term registry of canonical references and update rules
+   2. Milestone-task traceability so architecture and evidence do not drift
+3. `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`
+   1. Prong boundary compatibility for command-center implementation rollout
+4. `docs/EXECUTION_BOARD.csv`
+   1. `M24-P10-3`, `M25-P10-3`, and follow-on wave milestones for sustained delivery

@@ -9,6 +9,9 @@
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
 **3-prong target end-state companion spec:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
 **Admin command-center ideal architecture companion spec:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`  
+**Admin command-center ideal architecture alignment audit:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`  
+**Admin private-server security implementation checklist:** `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`  
+**Admin command-center future references registry:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`  
 **Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
 **Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
 **Canonical build-doc wiring index:** `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`  
@@ -177,6 +180,9 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`
 - `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`
 - `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`
+- `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`
+- `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`
+- `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`
 - `docs/security/RED_TEAM_TEST_MATRIX.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`

@@ -78,6 +78,8 @@ jobs:
           python3 scripts/runtime/generate_urk_runtime_activation_receipt_dispatch_report.py --check
           python3 scripts/runtime/check_urk_kernel_registry.py
           python3 scripts/runtime/generate_urk_kernel_catalog.py --check
+          python3 scripts/ci/check_admin_desktop_only.py
+          python3 scripts/ci/check_admin_ideal_architecture_alignment.py
 
       - name: Validate deferred rename governance
         run: |
