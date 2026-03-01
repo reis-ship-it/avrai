@@ -1,0 +1,25 @@
+approach,parameter,accuracy_preservation,accuracy_preservation_percent,meets_target
+Reduced Noise Scale,reduction_factor=0.1,0.6695839467004435,66.95839467004436,False
+Reduced Noise Scale,reduction_factor=0.2,0.684355009983599,68.4355009983599,False
+Reduced Noise Scale,reduction_factor=0.3,0.683114071316283,68.3114071316283,False
+Reduced Noise Scale,reduction_factor=0.4,0.6755456094838226,67.55456094838226,False
+Reduced Noise Scale,reduction_factor=0.5,0.6840335144985645,68.40335144985646,False
+Post-Normalization Correction,correction_strength=0.1,0.7223539214047863,72.23539214047862,False
+Post-Normalization Correction,correction_strength=0.2,0.7823191918360413,78.23191918360412,False
+Post-Normalization Correction,correction_strength=0.3,0.8213639970156232,82.13639970156233,False
+Post-Normalization Correction,correction_strength=0.4,0.8503729308737953,85.03729308737952,False
+Post-Normalization Correction,correction_strength=0.5,0.8781338180483425,87.81338180483425,False
+Post-Normalization Correction,correction_strength=0.6,0.8880228283440138,88.80228283440138,False
+Post-Normalization Correction,correction_strength=0.7,0.904152342459084,90.41523424590841,False
+Post-Normalization Correction,correction_strength=0.75,0.9090716775836623,90.90716775836623,False
+Post-Normalization Correction,correction_strength=0.8,0.9232493891118603,92.32493891118602,False
+Post-Normalization Correction,correction_strength=0.85,0.9410177477032462,94.10177477032462,False
+Post-Normalization Correction,correction_strength=0.9,0.9593975532895277,95.93975532895277,True
+Post-Normalization Correction,correction_strength=0.95,0.9781651703704966,97.81651703704965,True
+Selective Noise,"critical_dims=[0, 1, 2]",0.6883290055164935,68.83290055164935,False
+Selective Noise,"critical_dims=[0, 1, 2, 3, 4]",0.6710898393726679,67.10898393726679,False
+Selective Noise,"critical_dims=[6, 7, 8]",0.6821242169394452,68.21242169394452,False
+Selective Noise,"critical_dims=[9, 10, 11]",0.698174204873153,69.8174204873153,False
+Adaptive Epsilon,weight_config_1,0.669307983676208,66.93079836762081,False
+Adaptive Epsilon,weight_config_2,0.6785650340084459,67.85650340084459,False
+Adaptive Epsilon,weight_config_3,0.6961370359389418,69.61370359389419,False

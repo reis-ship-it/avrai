@@ -1,0 +1,51 @@
+target_agent_id,use_agent_network,inferred_location,true_location,distance_error_km,inference_success
+target_0000,True,,"{'lat': -13.76, 'lng': -80.4}",,False
+target_0001,False,"{'lat': 30.62, 'lng': 128.78}","{'lat': 30.62, 'lng': 128.78}",0.0,True
+target_0002,False,"{'lat': -63.34, 'lng': -134.12}","{'lat': -63.34, 'lng': -134.12}",0.0,True
+target_0003,False,"{'lat': -74.59, 'lng': 79.23}","{'lat': -74.59, 'lng': 79.23}",0.0,True
+target_0004,False,"{'lat': -51.82, 'lng': 107.22}","{'lat': -51.82, 'lng': 107.22}",0.0,True
+target_0005,False,"{'lat': 88.21, 'lng': -70.06}","{'lat': 88.21, 'lng': -70.06}",0.0,True
+target_0006,False,"{'lat': 22.01, 'lng': -170.29}","{'lat': 22.01, 'lng': -170.29}",0.0,True
+target_0007,True,,"{'lat': -11.14, 'lng': 6.33}",,False
+target_0008,False,"{'lat': 47.85, 'lng': 7.67}","{'lat': 47.85, 'lng': 7.67}",0.0,True
+target_0009,False,"{'lat': 38.7, 'lng': -152.64}","{'lat': 38.7, 'lng': -152.64}",0.0,True
+target_0010,False,"{'lat': -11.55, 'lng': -169.55}","{'lat': -11.55, 'lng': -169.55}",0.0,True
+target_0011,False,"{'lat': 79.06, 'lng': -138.48}","{'lat': 79.06, 'lng': -138.48}",0.0,True
+target_0012,True,,"{'lat': 53.16, 'lng': -98.07}",,False
+target_0013,True,,"{'lat': 62.92, 'lng': 116.04}",,False
+target_0014,False,"{'lat': 59.79, 'lng': -0.58}","{'lat': 59.79, 'lng': -0.58}",0.0,True
+target_0015,False,"{'lat': -68.21, 'lng': 174.18}","{'lat': -68.21, 'lng': 174.18}",0.0,True
+target_0016,True,,"{'lat': -17.57, 'lng': -73.56}",,False
+target_0017,True,,"{'lat': 7.23, 'lng': -130.19}",,False
+target_0018,False,"{'lat': 54.4, 'lng': 131.06}","{'lat': 54.4, 'lng': 131.06}",0.0,True
+target_0019,False,"{'lat': -45.03, 'lng': 152.38}","{'lat': -45.03, 'lng': 152.38}",0.0,True
+target_0020,True,,"{'lat': 79.68, 'lng': 0.17}",,False
+target_0021,True,,"{'lat': -53.23, 'lng': 77.83}",,False
+target_0022,False,"{'lat': 68.69, 'lng': -92.21}","{'lat': 68.69, 'lng': -92.21}",0.0,True
+target_0023,True,,"{'lat': -35.83, 'lng': 17.26}",,False
+target_0024,False,"{'lat': 70.25, 'lng': -91.36}","{'lat': 70.25, 'lng': -91.36}",0.0,True
+target_0025,True,,"{'lat': 68.28, 'lng': 131.05}",,False
+target_0026,True,,"{'lat': -15.4, 'lng': 46.72}",,False
+target_0027,True,,"{'lat': -75.64, 'lng': -96.2}",,False
+target_0028,False,"{'lat': -85.54, 'lng': 85.16}","{'lat': -85.54, 'lng': 85.16}",0.0,True
+target_0029,False,"{'lat': 46.16, 'lng': 45.15}","{'lat': 46.16, 'lng': 45.15}",0.0,True
+target_0030,False,"{'lat': 63.62, 'lng': 163.23}","{'lat': 63.62, 'lng': 163.23}",0.0,True
+target_0031,False,"{'lat': -73.56, 'lng': 166.29}","{'lat': -73.56, 'lng': 166.29}",0.0,True
+target_0032,False,"{'lat': 79.27, 'lng': 63.83}","{'lat': 79.27, 'lng': 63.83}",0.0,True
+target_0033,True,,"{'lat': -35.83, 'lng': 17.26}",,False
+target_0034,True,,"{'lat': 43.22, 'lng': 161.13}",,False
+target_0035,False,"{'lat': 47.6, 'lng': 38.27}","{'lat': 47.6, 'lng': 38.27}",0.0,True
+target_0036,True,,"{'lat': -11.14, 'lng': 6.33}",,False
+target_0037,True,,"{'lat': -85.12, 'lng': 51.39}",,False
+target_0038,False,"{'lat': 59.29, 'lng': 42.67}","{'lat': 59.29, 'lng': 42.67}",0.0,True
+target_0039,True,,"{'lat': 68.17, 'lng': 119.4}",,False
+target_0040,False,"{'lat': 47.02, 'lng': -43.51}","{'lat': 47.02, 'lng': -43.51}",0.0,True
+target_0041,False,"{'lat': 34.31, 'lng': 52.53}","{'lat': 34.31, 'lng': 52.53}",0.0,True
+target_0042,False,"{'lat': -49.96, 'lng': 113.97}","{'lat': -49.96, 'lng': 113.97}",0.0,True
+target_0043,False,"{'lat': -87.93, 'lng': 79.46}","{'lat': -87.93, 'lng': 79.46}",0.0,True
+target_0044,False,"{'lat': 59.5, 'lng': 17.23}","{'lat': 59.5, 'lng': 17.23}",0.0,True
+target_0045,False,"{'lat': -87.93, 'lng': 79.46}","{'lat': -87.93, 'lng': 79.46}",0.0,True
+target_0046,False,"{'lat': -59.8, 'lng': 38.61}","{'lat': -59.8, 'lng': 38.61}",0.0,True
+target_0047,True,,"{'lat': 7.23, 'lng': -130.19}",,False
+target_0048,False,"{'lat': -85.22, 'lng': -108.42}","{'lat': -85.22, 'lng': -108.42}",0.0,True
+target_0049,False,"{'lat': -1.49, 'lng': -147.15}","{'lat': -1.49, 'lng': -147.15}",0.0,True

@@ -1,0 +1,25 @@
+{
+  "system_wide_average": 0.715051893006319,
+  "per_metric_average": 0.9169450769577554,
+  "per_metric_min": 0.911610031031132,
+  "per_metric_max": 0.9242513636786591,
+  "cluster_based_homogenization": 0.0,
+  "initial_num_clusters": 10,
+  "current_num_clusters": 10,
+  "max_individual_drift": 0.18360000000000004,
+  "avg_max_individual_drift": 0.16933737676452756,
+  "drift_percentiles": {
+    "p10": 0.018729294108573165,
+    "p25": 0.04623780861981223,
+    "p50": 0.08800156575803544,
+    "p75": 0.13261795399901555,
+    "p90": 0.16170804992922402,
+    "p95": 0.17666195502944748,
+    "p99": 0.1836
+  },
+  "agents_with_acceptable_drift": 0,
+  "total_agents": 100,
+  "metrics_with_acceptable_drift": 61,
+  "total_metrics_checked": 1200,
+  "acceptable_drift_rate": 0.050833333333333335
+}

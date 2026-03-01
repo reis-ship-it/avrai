@@ -1,0 +1,6 @@
+approach,approach_key,homogenization_rate,homogenization_percent,duration_seconds
+No Mechanisms (Baseline),no_mechanisms,0.8638791863001715,86.38791863001714,2.4010679721832275
+Fixed Threshold Only,fixed_threshold,0.8076840411408988,80.76840411408988,2.436234951019287
+Time-Based Decay Only,time_decay,0.8089813896834662,80.89813896834663,2.505185127258301
+Adaptive Influence Reduction Only,influence_reduction,0.7914720757939296,79.14720757939297,2.535433292388916
+SPOTS Combination (All Three),spots_combination,0.7122743793093546,71.22743793093545,2.414093017578125

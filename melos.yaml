@@ -4,6 +4,9 @@ repository: https://github.com/AVRA-CADAVRA/avrai
 packages:
   - apps/**
   - packages/**
+  - shared/**
+  - runtime/**
+  - engine/**
 
 command:
   version:
@@ -17,11 +20,11 @@ command:
 scripts:
   # Repo guardrails (architecture + hygiene)
   check:architecture:
-    run: dart run scripts/ci/check_architecture.dart
+    run: dart run work/scripts/ci/check_architecture.dart
     description: Enforce package dependency boundaries (no package:avra/* from packages/)
 
   check:repo_hygiene:
-    run: dart run scripts/ci/check_repo_hygiene.dart
+    run: dart run work/scripts/ci/check_repo_hygiene.dart
     description: Fail if generated artifacts (build/Pods/tmp/logs) are tracked by git
 
   # Analysis

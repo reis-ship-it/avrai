@@ -1,0 +1,8 @@
+{
+  "experiment": "Privacy-Preserving Aggregation Accuracy",
+  "avg_privacy_loss": 0.09914055911982864,
+  "max_privacy_loss": 0.27313302429639297,
+  "correlation": NaN,
+  "p_value": NaN,
+  "num_privacy_budgets_tested": 4
+}

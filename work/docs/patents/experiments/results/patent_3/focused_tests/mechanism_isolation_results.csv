@@ -1,0 +1,6 @@
+configuration,use_adaptive_influence,use_time_decay,use_frequency_reduction,homogenization_rate,homogenization_percent,duration_seconds
+None (Baseline),False,False,False,0.809261703489935,80.9261703489935,0.19251489639282227
+Adaptive Influence Reduction Alone,True,False,False,0.7905807877031265,79.05807877031265,2.4373512268066406
+Time-Based Drift Decay Alone,False,True,False,0.8094812188583528,80.94812188583528,0.2016291618347168
+Interaction Frequency Reduction Alone,False,False,True,0.7312210667843184,73.12210667843185,0.1367800235748291
+All Three Together,True,True,True,0.7136295395099097,71.36295395099097,2.357205867767334

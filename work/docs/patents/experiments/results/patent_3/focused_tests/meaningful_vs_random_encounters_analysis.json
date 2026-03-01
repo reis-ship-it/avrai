@@ -1,0 +1,10 @@
+{
+  "random_homogenization": 0.1756919196207316,
+  "meaningful_homogenization": 0.5405558270897441,
+  "difference": 0.36486390746901254,
+  "total_meaningful_encounters": 4593,
+  "total_random_encounters": 191,
+  "meaningful_ratio": 0.9600752508361204,
+  "expected_result": true,
+  "meets_expectation": true
+}

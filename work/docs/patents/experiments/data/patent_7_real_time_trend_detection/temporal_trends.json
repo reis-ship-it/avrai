@@ -1,0 +1,3002 @@
+[
+  {
+    "timestamp": 1766434822.927434,
+    "category": "technology",
+    "trend_score": 70.03198262626569,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766438422.927435,
+    "category": "technology",
+    "trend_score": 68.5812427794781,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766442022.927436,
+    "category": "technology",
+    "trend_score": 74.31343123971537,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766445622.927436,
+    "category": "technology",
+    "trend_score": 80.45890075736024,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766449222.927436,
+    "category": "technology",
+    "trend_score": 72.09969555158686,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766452822.927436,
+    "category": "technology",
+    "trend_score": 72.75599186782416,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766456422.927436,
+    "category": "technology",
+    "trend_score": 82.94880169393086,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766460022.927436,
+    "category": "technology",
+    "trend_score": 78.23423975918081,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766463622.927436,
+    "category": "technology",
+    "trend_score": 70.79477139238202,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766467222.927437,
+    "category": "technology",
+    "trend_score": 75.17084973826923,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766470822.927437,
+    "category": "technology",
+    "trend_score": 68.42905936908824,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766474422.927437,
+    "category": "technology",
+    "trend_score": 66.83917432677508,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766478022.927437,
+    "category": "technology",
+    "trend_score": 68.68527442142101,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766481622.927437,
+    "category": "technology",
+    "trend_score": 56.40434330282248,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766485222.927437,
+    "category": "technology",
+    "trend_score": 55.896779979684744,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766488822.927437,
+    "category": "technology",
+    "trend_score": 60.074640695572896,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766492422.927437,
+    "category": "technology",
+    "trend_score": 56.98411927190064,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766496022.927437,
+    "category": "technology",
+    "trend_score": 62.34984130928502,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766499622.927437,
+    "category": "technology",
+    "trend_score": 56.608981458457876,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766503222.927437,
+    "category": "technology",
+    "trend_score": 54.53996250919582,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766506822.927437,
+    "category": "technology",
+    "trend_score": 68.28109502927248,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766510422.927437,
+    "category": "technology",
+    "trend_score": 61.60432688411068,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766514022.927438,
+    "category": "technology",
+    "trend_score": 64.36469775123078,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766517622.927438,
+    "category": "technology",
+    "trend_score": 58.724565608106104,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766521222.927438,
+    "category": "technology",
+    "trend_score": 64.68060064334622,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766524822.927438,
+    "category": "technology",
+    "trend_score": 69.7097506875927,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766528422.927438,
+    "category": "technology",
+    "trend_score": 64.71715765822039,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766532022.927438,
+    "category": "technology",
+    "trend_score": 74.16038439243343,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766535622.927438,
+    "category": "technology",
+    "trend_score": 69.95004348145284,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766539222.927438,
+    "category": "technology",
+    "trend_score": 72.28041988649971,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766542822.927438,
+    "category": "technology",
+    "trend_score": 70.79325748661738,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766546422.927438,
+    "category": "technology",
+    "trend_score": 84.02240597070478,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766550022.927438,
+    "category": "technology",
+    "trend_score": 73.11356840331811,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766553622.927438,
+    "category": "technology",
+    "trend_score": 66.44749953421722,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766557222.927438,
+    "category": "technology",
+    "trend_score": 75.02717056989613,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766560822.927438,
+    "category": "technology",
+    "trend_score": 62.816212213100606,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766564422.9274392,
+    "category": "technology",
+    "trend_score": 68.37388344337721,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766568022.9274392,
+    "category": "technology",
+    "trend_score": 56.03627571122475,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766571622.9274392,
+    "category": "technology",
+    "trend_score": 57.64265323637859,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766575222.9274392,
+    "category": "technology",
+    "trend_score": 63.46640382391174,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766578822.9274392,
+    "category": "technology",
+    "trend_score": 64.84901113165762,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766582422.9274392,
+    "category": "technology",
+    "trend_score": 61.572646365438466,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766586022.9274392,
+    "category": "technology",
+    "trend_score": 60.0433646918426,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766589622.9274392,
+    "category": "technology",
+    "trend_score": 59.42748917635046,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766593222.9274392,
+    "category": "technology",
+    "trend_score": 54.70184207528463,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766596822.9274392,
+    "category": "technology",
+    "trend_score": 59.173085651251796,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766600422.9274392,
+    "category": "technology",
+    "trend_score": 61.71730190142864,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766604022.9274392,
+    "category": "technology",
+    "trend_score": 70.67061851755182,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766607622.9274392,
+    "category": "technology",
+    "trend_score": 68.97470811857706,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766611222.9274392,
+    "category": "technology",
+    "trend_score": 59.94775463524541,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766614822.9274392,
+    "category": "technology",
+    "trend_score": 72.30812230401088,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766618422.9274392,
+    "category": "technology",
+    "trend_score": 69.93129233136709,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766622022.92744,
+    "category": "technology",
+    "trend_score": 69.377062589557,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766625622.92744,
+    "category": "technology",
+    "trend_score": 77.07357408441597,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766629222.92744,
+    "category": "technology",
+    "trend_score": 79.61265387284568,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766632822.92744,
+    "category": "technology",
+    "trend_score": 78.8126175143178,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766636422.92744,
+    "category": "technology",
+    "trend_score": 68.46888683582043,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766640022.92744,
+    "category": "technology",
+    "trend_score": 70.29841238791246,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766643622.92744,
+    "category": "technology",
+    "trend_score": 72.29475032122384,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766647222.92744,
+    "category": "technology",
+    "trend_score": 73.9327160186825,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766650822.92744,
+    "category": "technology",
+    "trend_score": 64.7877966838896,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766654422.92744,
+    "category": "technology",
+    "trend_score": 64.53463602413353,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766658022.92744,
+    "category": "technology",
+    "trend_score": 58.557843126641984,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766661622.92744,
+    "category": "technology",
+    "trend_score": 56.85800731203225,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766665222.92744,
+    "category": "technology",
+    "trend_score": 65.05397625814565,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766668822.927441,
+    "category": "technology",
+    "trend_score": 66.79295102181095,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766672422.927441,
+    "category": "technology",
+    "trend_score": 60.108428579764535,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766676022.927441,
+    "category": "technology",
+    "trend_score": 65.18877608426025,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766679622.927441,
+    "category": "technology",
+    "trend_score": 62.97255786534171,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766683222.927441,
+    "category": "technology",
+    "trend_score": 59.384707758859896,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766686822.927441,
+    "category": "technology",
+    "trend_score": 65.48336247417707,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766690422.927441,
+    "category": "technology",
+    "trend_score": 72.87083383601846,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766694022.927441,
+    "category": "technology",
+    "trend_score": 66.9315888799476,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766697622.927441,
+    "category": "technology",
+    "trend_score": 76.86713396146943,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766701222.927441,
+    "category": "technology",
+    "trend_score": 56.69982719321778,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766704822.927441,
+    "category": "technology",
+    "trend_score": 76.23673570524983,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766708422.927441,
+    "category": "technology",
+    "trend_score": 73.36918354518998,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766712022.9274418,
+    "category": "technology",
+    "trend_score": 71.9203392437289,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766715622.9274418,
+    "category": "technology",
+    "trend_score": 74.28635341530207,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766719222.9274418,
+    "category": "technology",
+    "trend_score": 62.648686292618514,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766722822.9274418,
+    "category": "technology",
+    "trend_score": 71.67635344464965,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766726422.9274418,
+    "category": "technology",
+    "trend_score": 73.70940445597182,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766730022.9274418,
+    "category": "technology",
+    "trend_score": 78.16136856624881,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766733622.9274418,
+    "category": "technology",
+    "trend_score": 66.12065165820943,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766737222.9274418,
+    "category": "technology",
+    "trend_score": 62.99530226341271,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766740822.9274418,
+    "category": "technology",
+    "trend_score": 62.85293030184033,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766744422.9274418,
+    "category": "technology",
+    "trend_score": 68.02249159677994,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766748022.9274418,
+    "category": "technology",
+    "trend_score": 63.808060926116426,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766751622.9274418,
+    "category": "technology",
+    "trend_score": 58.790510533384975,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766755222.9274418,
+    "category": "technology",
+    "trend_score": 62.853407575212685,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766758822.9274418,
+    "category": "technology",
+    "trend_score": 60.738015263228554,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766762422.9274418,
+    "category": "technology",
+    "trend_score": 64.8993811431222,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766766022.9274418,
+    "category": "technology",
+    "trend_score": 57.981440677221116,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766769622.927443,
+    "category": "technology",
+    "trend_score": 60.724176507873764,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766773222.927443,
+    "category": "technology",
+    "trend_score": 61.76561690515884,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766776822.927443,
+    "category": "technology",
+    "trend_score": 58.109384123836,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766780422.927443,
+    "category": "technology",
+    "trend_score": 68.44542286558284,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766784022.927443,
+    "category": "technology",
+    "trend_score": 70.03082159010378,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766787622.927443,
+    "category": "technology",
+    "trend_score": 70.32714216206261,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766791222.927443,
+    "category": "technology",
+    "trend_score": 70.42454790981218,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766794822.927443,
+    "category": "technology",
+    "trend_score": 65.04799580072293,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766798422.927443,
+    "category": "technology",
+    "trend_score": 71.09341253201997,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766802022.927443,
+    "category": "technology",
+    "trend_score": 71.73625194869845,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766805622.927443,
+    "category": "technology",
+    "trend_score": 68.9876062047324,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766809222.927443,
+    "category": "technology",
+    "trend_score": 71.8350335837843,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766812822.927443,
+    "category": "technology",
+    "trend_score": 73.8044769592707,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766816422.927443,
+    "category": "technology",
+    "trend_score": 80.15170833771188,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766820022.927443,
+    "category": "technology",
+    "trend_score": 69.52487924377719,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766823622.927443,
+    "category": "technology",
+    "trend_score": 68.17962463625508,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766827222.927444,
+    "category": "technology",
+    "trend_score": 64.79206632429117,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766830822.927444,
+    "category": "technology",
+    "trend_score": 54.42156554954912,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766834422.927444,
+    "category": "technology",
+    "trend_score": 62.021760063273945,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766838022.927444,
+    "category": "technology",
+    "trend_score": 61.35172676594034,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766841622.927444,
+    "category": "technology",
+    "trend_score": 71.52971055065073,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766845222.927444,
+    "category": "technology",
+    "trend_score": 59.30423411393368,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766848822.927444,
+    "category": "technology",
+    "trend_score": 61.75427135593794,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766852422.927444,
+    "category": "technology",
+    "trend_score": 60.89591753536284,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766856022.927444,
+    "category": "technology",
+    "trend_score": 56.68085999523625,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766859622.927444,
+    "category": "technology",
+    "trend_score": 68.9179362860074,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766863222.927444,
+    "category": "technology",
+    "trend_score": 68.75780247488633,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766866822.927444,
+    "category": "technology",
+    "trend_score": 70.7740836202378,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766870422.927444,
+    "category": "technology",
+    "trend_score": 63.87746781789366,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766874022.927444,
+    "category": "technology",
+    "trend_score": 77.51177417210494,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766877622.927444,
+    "category": "technology",
+    "trend_score": 64.01932402963133,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766881222.927444,
+    "category": "technology",
+    "trend_score": 75.76759236736181,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766884822.927445,
+    "category": "technology",
+    "trend_score": 85.24999197477435,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766888422.927445,
+    "category": "technology",
+    "trend_score": 68.01274464661576,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766892022.927445,
+    "category": "technology",
+    "trend_score": 70.12148304796276,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766895622.927445,
+    "category": "technology",
+    "trend_score": 73.09417533856144,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766899222.927445,
+    "category": "technology",
+    "trend_score": 68.78977121649166,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766902822.927445,
+    "category": "technology",
+    "trend_score": 61.95505686826014,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766906422.927445,
+    "category": "technology",
+    "trend_score": 68.83141202121027,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766910022.927445,
+    "category": "technology",
+    "trend_score": 61.43445651877335,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1766913622.927445,
+    "category": "technology",
+    "trend_score": 67.31921518794115,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1766917222.927445,
+    "category": "technology",
+    "trend_score": 59.02986099413348,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1766920822.927445,
+    "category": "technology",
+    "trend_score": 69.2110617536115,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1766924422.927445,
+    "category": "technology",
+    "trend_score": 57.36628583202189,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1766928022.927445,
+    "category": "technology",
+    "trend_score": 58.81658579198649,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1766931622.927445,
+    "category": "technology",
+    "trend_score": 63.69937809789858,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1766935222.927445,
+    "category": "technology",
+    "trend_score": 54.70050609124107,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1766938822.9274461,
+    "category": "technology",
+    "trend_score": 61.95998988601228,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1766942422.9274461,
+    "category": "technology",
+    "trend_score": 68.0490480419255,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1766946022.9274461,
+    "category": "technology",
+    "trend_score": 55.715379837419704,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1766949622.9274461,
+    "category": "technology",
+    "trend_score": 65.85259903177588,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1766953222.9274461,
+    "category": "technology",
+    "trend_score": 67.97244026102729,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1766956822.9274461,
+    "category": "technology",
+    "trend_score": 72.40270446878375,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1766960422.9274461,
+    "category": "technology",
+    "trend_score": 63.499920332581226,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1766964022.9274461,
+    "category": "technology",
+    "trend_score": 64.29885944870858,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1766967622.9274461,
+    "category": "technology",
+    "trend_score": 75.25637278057145,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1766971222.9274461,
+    "category": "technology",
+    "trend_score": 74.70817074391861,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1766974822.9274461,
+    "category": "technology",
+    "trend_score": 74.67791775697573,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1766978422.9274461,
+    "category": "technology",
+    "trend_score": 74.96604496040923,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1766982022.9274461,
+    "category": "technology",
+    "trend_score": 68.69965255872266,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1766985622.9274461,
+    "category": "technology",
+    "trend_score": 72.57232346644821,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1766989222.9274461,
+    "category": "technology",
+    "trend_score": 71.48147789117616,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1766992822.9274461,
+    "category": "technology",
+    "trend_score": 64.66584977640774,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1766996422.9274461,
+    "category": "technology",
+    "trend_score": 75.92895004789025,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767000022.927447,
+    "category": "technology",
+    "trend_score": 67.17826502998311,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767003622.927447,
+    "category": "technology",
+    "trend_score": 57.59983177955595,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767007222.927447,
+    "category": "technology",
+    "trend_score": 64.92443450400305,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767010822.927447,
+    "category": "technology",
+    "trend_score": 56.3587723688412,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767014422.927447,
+    "category": "technology",
+    "trend_score": 63.69483498081995,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767018022.927447,
+    "category": "technology",
+    "trend_score": 65.12092288955475,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767021622.927447,
+    "category": "technology",
+    "trend_score": 56.42150841922498,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767025222.927447,
+    "category": "technology",
+    "trend_score": 65.18764730655111,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767028822.927447,
+    "category": "technology",
+    "trend_score": 63.757862484328925,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767032422.927447,
+    "category": "technology",
+    "trend_score": 67.11710824608384,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767036022.927447,
+    "category": "technology",
+    "trend_score": 74.04970346999053,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767039622.927447,
+    "category": "technology",
+    "trend_score": 65.30018811453341,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767043222.927447,
+    "category": "technology",
+    "trend_score": 64.37651962352868,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767046822.927447,
+    "category": "technology",
+    "trend_score": 65.1707683341579,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767050422.927447,
+    "category": "technology",
+    "trend_score": 66.84429639652711,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767054022.927447,
+    "category": "technology",
+    "trend_score": 71.84323036072485,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767057622.927448,
+    "category": "technology",
+    "trend_score": 74.79034819971366,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767061222.927448,
+    "category": "technology",
+    "trend_score": 74.66151912162739,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767064822.927448,
+    "category": "technology",
+    "trend_score": 77.44190713249017,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767068422.927448,
+    "category": "technology",
+    "trend_score": 72.30634225476055,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767072022.927448,
+    "category": "technology",
+    "trend_score": 78.95429907251001,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767075622.927448,
+    "category": "technology",
+    "trend_score": 68.40020655685953,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767079222.927448,
+    "category": "technology",
+    "trend_score": 82.1332386656697,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767082822.927448,
+    "category": "technology",
+    "trend_score": 69.5825166357541,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767086422.927448,
+    "category": "technology",
+    "trend_score": 60.55343399792489,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767090022.927448,
+    "category": "technology",
+    "trend_score": 58.03318131000271,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767093622.927448,
+    "category": "technology",
+    "trend_score": 63.979994455869345,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767097222.927448,
+    "category": "technology",
+    "trend_score": 59.65631698143017,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767100822.927448,
+    "category": "technology",
+    "trend_score": 63.232906377355405,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767104422.927448,
+    "category": "technology",
+    "trend_score": 61.90550425888871,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767108022.927448,
+    "category": "technology",
+    "trend_score": 59.66778501856566,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767111622.927448,
+    "category": "technology",
+    "trend_score": 56.78736211360147,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767115222.927448,
+    "category": "technology",
+    "trend_score": 54.66566011768398,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767118822.927449,
+    "category": "technology",
+    "trend_score": 60.95277374831613,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767122422.927449,
+    "category": "technology",
+    "trend_score": 68.84024795590594,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767126022.927449,
+    "category": "technology",
+    "trend_score": 67.4516998199614,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767129622.927449,
+    "category": "technology",
+    "trend_score": 61.703163025473,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767133222.927449,
+    "category": "technology",
+    "trend_score": 70.59672647541134,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767136822.927449,
+    "category": "technology",
+    "trend_score": 73.11838336525405,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767140422.927449,
+    "category": "technology",
+    "trend_score": 67.30158355214657,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767144022.927449,
+    "category": "technology",
+    "trend_score": 73.60270340800581,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767147622.927449,
+    "category": "technology",
+    "trend_score": 73.29938032200414,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767151222.927449,
+    "category": "technology",
+    "trend_score": 66.47963808105948,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767154822.927449,
+    "category": "technology",
+    "trend_score": 74.02103338676791,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767158422.927449,
+    "category": "technology",
+    "trend_score": 74.01870257479997,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767162022.927449,
+    "category": "technology",
+    "trend_score": 75.32248148302975,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767165622.927449,
+    "category": "technology",
+    "trend_score": 73.43608561734088,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767169222.927449,
+    "category": "technology",
+    "trend_score": 59.419935461906235,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767172822.927449,
+    "category": "technology",
+    "trend_score": 60.0184142333465,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767176422.927449,
+    "category": "technology",
+    "trend_score": 65.4277354795586,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767180022.927449,
+    "category": "technology",
+    "trend_score": 63.989910050164944,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767183622.9274502,
+    "category": "technology",
+    "trend_score": 62.89582243203792,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767187222.9274502,
+    "category": "technology",
+    "trend_score": 77.27886572477753,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767190822.9274502,
+    "category": "technology",
+    "trend_score": 62.21363441071336,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767194422.9274502,
+    "category": "technology",
+    "trend_score": 64.99434305957257,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767198022.9274502,
+    "category": "technology",
+    "trend_score": 64.87830971152849,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767201622.9274502,
+    "category": "technology",
+    "trend_score": 64.59539046227955,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767205222.9274502,
+    "category": "technology",
+    "trend_score": 61.43758814311733,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767208822.9274502,
+    "category": "technology",
+    "trend_score": 68.22358691377745,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767212422.9274502,
+    "category": "technology",
+    "trend_score": 62.37120743138512,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767216022.9274502,
+    "category": "technology",
+    "trend_score": 66.72865406021452,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767219622.9274502,
+    "category": "technology",
+    "trend_score": 66.98617551359058,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767223222.9274502,
+    "category": "technology",
+    "trend_score": 71.33766966393324,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767226822.9274502,
+    "category": "technology",
+    "trend_score": 84.52062892534997,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767230422.9274502,
+    "category": "technology",
+    "trend_score": 62.361698332540314,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767234022.9274502,
+    "category": "technology",
+    "trend_score": 76.59317606284985,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767237622.9274502,
+    "category": "technology",
+    "trend_score": 63.74405030295738,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767241222.9274502,
+    "category": "technology",
+    "trend_score": 69.35462559453745,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767244822.9274502,
+    "category": "technology",
+    "trend_score": 76.69005371971978,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767248422.9274502,
+    "category": "technology",
+    "trend_score": 69.82074008161148,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767252022.927451,
+    "category": "technology",
+    "trend_score": 62.3528353070929,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767255622.927451,
+    "category": "technology",
+    "trend_score": 62.58586616015445,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767259222.927451,
+    "category": "technology",
+    "trend_score": 67.75409677911775,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767262822.927451,
+    "category": "technology",
+    "trend_score": 59.373473744185546,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767266422.927451,
+    "category": "technology",
+    "trend_score": 62.47281326288595,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767270022.927451,
+    "category": "technology",
+    "trend_score": 60.618469711895784,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767273622.927451,
+    "category": "technology",
+    "trend_score": 56.800826790136774,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767277222.927451,
+    "category": "technology",
+    "trend_score": 69.16106767884442,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767280822.927451,
+    "category": "technology",
+    "trend_score": 62.596581712477594,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767284422.927451,
+    "category": "technology",
+    "trend_score": 51.13933281230545,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767288022.927451,
+    "category": "technology",
+    "trend_score": 62.299504732579905,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767291622.927451,
+    "category": "technology",
+    "trend_score": 59.6530286320336,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767295222.927451,
+    "category": "technology",
+    "trend_score": 68.53669085127542,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767298822.927451,
+    "category": "technology",
+    "trend_score": 62.12683221667209,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767302422.927451,
+    "category": "technology",
+    "trend_score": 67.20518977843449,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767306022.927451,
+    "category": "technology",
+    "trend_score": 72.0323248793415,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767309622.9274518,
+    "category": "technology",
+    "trend_score": 75.37800462946036,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767313222.9274518,
+    "category": "technology",
+    "trend_score": 65.26530120887948,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767316822.9274518,
+    "category": "technology",
+    "trend_score": 70.60579604124891,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767320422.9274518,
+    "category": "technology",
+    "trend_score": 70.04605844964362,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767324022.9274518,
+    "category": "technology",
+    "trend_score": 68.84434144109426,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767327622.9274518,
+    "category": "technology",
+    "trend_score": 81.35184003023576,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767331222.9274518,
+    "category": "technology",
+    "trend_score": 72.87217565784735,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767334822.9274518,
+    "category": "technology",
+    "trend_score": 62.71043674610203,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767338422.9274518,
+    "category": "technology",
+    "trend_score": 72.43944574262798,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767342022.9274518,
+    "category": "technology",
+    "trend_score": 76.62726809628006,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767345622.9274518,
+    "category": "technology",
+    "trend_score": 69.33064843338876,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767349222.9274518,
+    "category": "technology",
+    "trend_score": 55.487105191084865,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767352822.9274518,
+    "category": "technology",
+    "trend_score": 59.08150113987493,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767356422.9274518,
+    "category": "technology",
+    "trend_score": 66.06304833121538,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767360022.9274518,
+    "category": "technology",
+    "trend_score": 56.41575553493087,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767363622.9274518,
+    "category": "technology",
+    "trend_score": 61.379198867824826,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767367222.927453,
+    "category": "technology",
+    "trend_score": 63.100391756971405,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767370822.927453,
+    "category": "technology",
+    "trend_score": 56.02159109964699,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767374422.927453,
+    "category": "technology",
+    "trend_score": 61.02099224772089,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767378022.927453,
+    "category": "technology",
+    "trend_score": 47.261891758879834,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767381622.927453,
+    "category": "technology",
+    "trend_score": 59.25334298944892,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767385222.927453,
+    "category": "technology",
+    "trend_score": 64.68069755663241,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767388822.927453,
+    "category": "technology",
+    "trend_score": 61.24365533536302,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767392422.927453,
+    "category": "technology",
+    "trend_score": 77.79810853533594,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767396022.927453,
+    "category": "technology",
+    "trend_score": 62.930585638145786,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767399622.927453,
+    "category": "technology",
+    "trend_score": 69.2372268512067,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767403222.927453,
+    "category": "technology",
+    "trend_score": 72.99670942750785,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767406822.927453,
+    "category": "technology",
+    "trend_score": 80.42477339613139,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767410422.927453,
+    "category": "technology",
+    "trend_score": 64.39375224930359,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767414022.927454,
+    "category": "technology",
+    "trend_score": 77.92105546039754,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767417622.927454,
+    "category": "technology",
+    "trend_score": 70.6026535713891,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767421222.927454,
+    "category": "technology",
+    "trend_score": 64.02396461336002,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767424822.927454,
+    "category": "technology",
+    "trend_score": 69.9520001894422,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767428422.927454,
+    "category": "technology",
+    "trend_score": 66.86588799384685,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767432022.927454,
+    "category": "technology",
+    "trend_score": 61.23640087314889,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767435622.927454,
+    "category": "technology",
+    "trend_score": 62.8970697175935,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767439222.927454,
+    "category": "technology",
+    "trend_score": 59.405548772864634,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767442822.927454,
+    "category": "technology",
+    "trend_score": 60.66225098607156,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767446422.927454,
+    "category": "technology",
+    "trend_score": 62.47138859980822,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767450022.927454,
+    "category": "technology",
+    "trend_score": 66.38777927810723,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767453622.927454,
+    "category": "technology",
+    "trend_score": 53.878277524290475,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767457222.927454,
+    "category": "technology",
+    "trend_score": 69.86314462521356,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767460822.927454,
+    "category": "technology",
+    "trend_score": 52.09172082187013,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767464422.927454,
+    "category": "technology",
+    "trend_score": 61.79832970731337,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767468022.927455,
+    "category": "technology",
+    "trend_score": 66.96604637656172,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767471622.927455,
+    "category": "technology",
+    "trend_score": 67.20260005703598,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767475222.927455,
+    "category": "technology",
+    "trend_score": 64.30029172149139,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767478822.927455,
+    "category": "technology",
+    "trend_score": 67.98211490031989,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767482422.927455,
+    "category": "technology",
+    "trend_score": 67.7914029227137,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767486022.927455,
+    "category": "technology",
+    "trend_score": 68.26743522868345,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767489622.927455,
+    "category": "technology",
+    "trend_score": 76.77821025914051,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767493222.927455,
+    "category": "technology",
+    "trend_score": 74.30086812431438,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767496822.927455,
+    "category": "technology",
+    "trend_score": 68.3073433388715,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767500422.927455,
+    "category": "technology",
+    "trend_score": 76.33057687278848,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767504022.927455,
+    "category": "technology",
+    "trend_score": 72.03680061165569,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767507622.927455,
+    "category": "technology",
+    "trend_score": 73.29121868026704,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767511222.927455,
+    "category": "technology",
+    "trend_score": 70.66163270272247,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767514822.927455,
+    "category": "technology",
+    "trend_score": 61.579716866131754,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767518422.927455,
+    "category": "technology",
+    "trend_score": 61.28927755180267,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767522022.927455,
+    "category": "technology",
+    "trend_score": 65.97655172275087,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767525622.927456,
+    "category": "technology",
+    "trend_score": 63.89635960152499,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767529222.927456,
+    "category": "technology",
+    "trend_score": 59.915098905195,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767532822.927456,
+    "category": "technology",
+    "trend_score": 59.87868695864743,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767536422.927456,
+    "category": "technology",
+    "trend_score": 64.8688878007874,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767540022.927456,
+    "category": "technology",
+    "trend_score": 56.66558116656774,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767543622.927456,
+    "category": "technology",
+    "trend_score": 62.48693259449529,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767547222.927456,
+    "category": "technology",
+    "trend_score": 60.086934117535,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767550822.927456,
+    "category": "technology",
+    "trend_score": 61.346720477927576,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767554422.927456,
+    "category": "technology",
+    "trend_score": 69.31016477745943,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767558022.927456,
+    "category": "technology",
+    "trend_score": 69.77882486806357,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767561622.927456,
+    "category": "technology",
+    "trend_score": 71.51752293887051,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767565222.927456,
+    "category": "technology",
+    "trend_score": 75.77532797725654,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767568822.927456,
+    "category": "technology",
+    "trend_score": 70.38694082247818,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767572422.927456,
+    "category": "technology",
+    "trend_score": 75.01598789672762,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767576022.927457,
+    "category": "technology",
+    "trend_score": 70.25870212990012,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767579622.927457,
+    "category": "technology",
+    "trend_score": 73.95971053543191,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767583222.927457,
+    "category": "technology",
+    "trend_score": 71.23298119058558,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767586822.927457,
+    "category": "technology",
+    "trend_score": 71.81148693515665,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767590422.927457,
+    "category": "technology",
+    "trend_score": 73.4216470180697,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767594022.927457,
+    "category": "technology",
+    "trend_score": 64.5748414943875,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767597622.927457,
+    "category": "technology",
+    "trend_score": 78.01504603918704,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767601222.927457,
+    "category": "technology",
+    "trend_score": 60.54870741800621,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767604822.927457,
+    "category": "technology",
+    "trend_score": 57.96175300895355,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767608422.927457,
+    "category": "technology",
+    "trend_score": 67.78933103206516,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767612022.927457,
+    "category": "technology",
+    "trend_score": 64.60314411403459,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767615622.927457,
+    "category": "technology",
+    "trend_score": 62.72764100345929,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767619222.927457,
+    "category": "technology",
+    "trend_score": 62.05516981592974,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767622822.927457,
+    "category": "technology",
+    "trend_score": 58.93297745621472,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767626422.927457,
+    "category": "technology",
+    "trend_score": 55.15299482740302,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767630022.927457,
+    "category": "technology",
+    "trend_score": 60.20128176541838,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767633622.927458,
+    "category": "technology",
+    "trend_score": 57.744434666065644,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767637222.927458,
+    "category": "technology",
+    "trend_score": 66.87392221151566,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767640822.927458,
+    "category": "technology",
+    "trend_score": 63.100094935737474,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767644422.927458,
+    "category": "technology",
+    "trend_score": 61.378359543923466,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767648022.927458,
+    "category": "technology",
+    "trend_score": 65.54650556582801,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767651622.927458,
+    "category": "technology",
+    "trend_score": 70.93626189964408,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767655222.927458,
+    "category": "technology",
+    "trend_score": 67.10035203073274,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767658822.927458,
+    "category": "technology",
+    "trend_score": 66.6852621911016,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767662422.927458,
+    "category": "technology",
+    "trend_score": 73.13602097174072,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767666022.927458,
+    "category": "technology",
+    "trend_score": 73.36362438308232,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767669622.927458,
+    "category": "technology",
+    "trend_score": 69.0070098806946,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767673222.927458,
+    "category": "technology",
+    "trend_score": 68.56681683019673,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767676822.927458,
+    "category": "technology",
+    "trend_score": 71.32151972240194,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767680422.927458,
+    "category": "technology",
+    "trend_score": 61.11486481350302,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767684022.927458,
+    "category": "technology",
+    "trend_score": 59.91320303262231,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767687622.927458,
+    "category": "technology",
+    "trend_score": 61.84067562400515,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767691222.927459,
+    "category": "technology",
+    "trend_score": 62.69383335204871,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767694822.927459,
+    "category": "technology",
+    "trend_score": 63.62651260405485,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767698422.927459,
+    "category": "technology",
+    "trend_score": 67.64430848844681,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767702022.927459,
+    "category": "technology",
+    "trend_score": 63.660951838893546,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767705622.927459,
+    "category": "technology",
+    "trend_score": 58.36265660604789,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767709222.927459,
+    "category": "technology",
+    "trend_score": 58.77120716275009,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767712822.927459,
+    "category": "technology",
+    "trend_score": 54.54565880930301,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767716422.927459,
+    "category": "technology",
+    "trend_score": 59.63727156122885,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767720022.927459,
+    "category": "technology",
+    "trend_score": 59.41401237311244,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767723622.927459,
+    "category": "technology",
+    "trend_score": 63.63641392391175,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767727222.927459,
+    "category": "technology",
+    "trend_score": 59.64512657379427,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767730822.927459,
+    "category": "technology",
+    "trend_score": 67.9566805038545,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767734422.927459,
+    "category": "technology",
+    "trend_score": 74.90739703549072,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767738022.927459,
+    "category": "technology",
+    "trend_score": 68.04418851029929,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767741622.927459,
+    "category": "technology",
+    "trend_score": 72.11265256050847,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767745222.9274602,
+    "category": "technology",
+    "trend_score": 74.7434244194499,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767748822.9274602,
+    "category": "technology",
+    "trend_score": 69.44002584061785,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767752422.9274602,
+    "category": "technology",
+    "trend_score": 73.0883295371805,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767756022.9274602,
+    "category": "technology",
+    "trend_score": 71.69561395603954,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767759622.9274602,
+    "category": "technology",
+    "trend_score": 71.49811671416589,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767763222.9274602,
+    "category": "technology",
+    "trend_score": 65.78466473102029,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767766822.9274602,
+    "category": "technology",
+    "trend_score": 68.69279354622415,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767770422.9274602,
+    "category": "technology",
+    "trend_score": 69.53742459401842,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767774022.9274602,
+    "category": "technology",
+    "trend_score": 72.54271717400515,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767777622.9274602,
+    "category": "technology",
+    "trend_score": 68.2635408798308,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767781222.9274602,
+    "category": "technology",
+    "trend_score": 72.2387156251687,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767784822.9274602,
+    "category": "technology",
+    "trend_score": 57.08812403737447,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767788422.9274602,
+    "category": "technology",
+    "trend_score": 63.59464600855593,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767792022.9274602,
+    "category": "technology",
+    "trend_score": 59.78146254729436,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767795622.9274602,
+    "category": "technology",
+    "trend_score": 68.57958546207806,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767799222.9274602,
+    "category": "technology",
+    "trend_score": 55.29120282812868,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767802822.9274611,
+    "category": "technology",
+    "trend_score": 55.753559338116226,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767806422.9274611,
+    "category": "technology",
+    "trend_score": 57.834622324729885,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767810022.9274611,
+    "category": "technology",
+    "trend_score": 51.87639335635872,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767813622.9274611,
+    "category": "technology",
+    "trend_score": 60.971370840432805,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767817222.9274611,
+    "category": "technology",
+    "trend_score": 61.418387029642744,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767820822.9274611,
+    "category": "technology",
+    "trend_score": 67.66710907716842,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767824422.9274611,
+    "category": "technology",
+    "trend_score": 70.2562056875286,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767828022.9274611,
+    "category": "technology",
+    "trend_score": 79.85003405310856,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767831622.9274611,
+    "category": "technology",
+    "trend_score": 75.99899543377471,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767835222.9274611,
+    "category": "technology",
+    "trend_score": 68.31677123874704,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767838822.9274611,
+    "category": "technology",
+    "trend_score": 66.75405284004611,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767842422.9274611,
+    "category": "technology",
+    "trend_score": 74.16375464243976,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767846022.9274611,
+    "category": "technology",
+    "trend_score": 63.636064749255695,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767849622.9274611,
+    "category": "technology",
+    "trend_score": 79.57161205288033,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767853222.9274611,
+    "category": "technology",
+    "trend_score": 74.60298329015221,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767856822.9274611,
+    "category": "technology",
+    "trend_score": 64.42671965616908,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767860422.9274619,
+    "category": "technology",
+    "trend_score": 56.57542889433815,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767864022.9274619,
+    "category": "technology",
+    "trend_score": 70.0433619346876,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767867622.9274619,
+    "category": "technology",
+    "trend_score": 61.32843197156336,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767871222.9274619,
+    "category": "technology",
+    "trend_score": 66.2694298476873,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767874822.9274619,
+    "category": "technology",
+    "trend_score": 52.19577538245496,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767878422.9274619,
+    "category": "technology",
+    "trend_score": 56.11409573046467,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767882022.9274619,
+    "category": "technology",
+    "trend_score": 58.617761075616706,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767885622.9274619,
+    "category": "technology",
+    "trend_score": 59.022724275003334,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767889222.9274619,
+    "category": "technology",
+    "trend_score": 57.39985254088218,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767892822.9274619,
+    "category": "technology",
+    "trend_score": 63.378126128839554,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767896422.9274619,
+    "category": "technology",
+    "trend_score": 56.755098291787455,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767900022.9274619,
+    "category": "technology",
+    "trend_score": 62.696514590964014,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767903622.9274619,
+    "category": "technology",
+    "trend_score": 65.66963090073334,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767907222.9274619,
+    "category": "technology",
+    "trend_score": 69.38477150801033,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767910822.9274619,
+    "category": "technology",
+    "trend_score": 72.04477244966594,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1767914422.9274628,
+    "category": "technology",
+    "trend_score": 63.62880769839707,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1767918022.9274628,
+    "category": "technology",
+    "trend_score": 62.34193617534922,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1767921622.9274628,
+    "category": "technology",
+    "trend_score": 78.3253769958947,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1767925222.9274628,
+    "category": "technology",
+    "trend_score": 73.36257324358871,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1767928822.9274628,
+    "category": "technology",
+    "trend_score": 67.20266592711648,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1767932422.9274628,
+    "category": "technology",
+    "trend_score": 79.07780422041778,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1767936022.9274628,
+    "category": "technology",
+    "trend_score": 70.22985598470065,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1767939622.9274628,
+    "category": "technology",
+    "trend_score": 74.44904039770127,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1767943222.9274628,
+    "category": "technology",
+    "trend_score": 67.02996995245176,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1767946822.9274628,
+    "category": "technology",
+    "trend_score": 75.29894356896509,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1767950422.9274628,
+    "category": "technology",
+    "trend_score": 71.85662894566815,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1767954022.9274628,
+    "category": "technology",
+    "trend_score": 60.55131381576216,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1767957622.9274628,
+    "category": "technology",
+    "trend_score": 64.89675391536754,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1767961222.9274628,
+    "category": "technology",
+    "trend_score": 62.29166751932546,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1767964822.9274628,
+    "category": "technology",
+    "trend_score": 64.871849471982,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1767968422.9274628,
+    "category": "technology",
+    "trend_score": 54.12070101856075,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1767972022.927464,
+    "category": "technology",
+    "trend_score": 61.77762610919574,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1767975622.927464,
+    "category": "technology",
+    "trend_score": 64.15584452703837,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1767979222.927464,
+    "category": "technology",
+    "trend_score": 52.17661697165163,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1767982822.927464,
+    "category": "technology",
+    "trend_score": 56.06721468071682,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1767986422.927464,
+    "category": "technology",
+    "trend_score": 53.3156004409782,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1767990022.927464,
+    "category": "technology",
+    "trend_score": 63.57522097471367,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1767993622.927464,
+    "category": "technology",
+    "trend_score": 70.27689843066634,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1767997222.927464,
+    "category": "technology",
+    "trend_score": 76.04297638820415,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1768000822.927464,
+    "category": "technology",
+    "trend_score": 69.89009543216865,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1768004422.927464,
+    "category": "technology",
+    "trend_score": 79.3665541990766,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1768008022.927464,
+    "category": "technology",
+    "trend_score": 63.59288703391114,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1768011622.927464,
+    "category": "technology",
+    "trend_score": 62.005755406486465,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1768015222.927464,
+    "category": "technology",
+    "trend_score": 70.84203365432268,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1768018822.927464,
+    "category": "technology",
+    "trend_score": 72.57847559966383,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1768022422.927464,
+    "category": "technology",
+    "trend_score": 69.27933846143023,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1768026022.927464,
+    "category": "technology",
+    "trend_score": 57.25046668115757,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1768029622.927465,
+    "category": "technology",
+    "trend_score": 66.07683312876591,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1768033222.927465,
+    "category": "technology",
+    "trend_score": 58.32695884679349,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1768036822.927465,
+    "category": "technology",
+    "trend_score": 66.42666180551865,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1768040422.927465,
+    "category": "technology",
+    "trend_score": 63.33663247452227,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1768044022.927465,
+    "category": "technology",
+    "trend_score": 55.87971904073468,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1768047622.927465,
+    "category": "technology",
+    "trend_score": 56.86415757781663,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1768051222.927465,
+    "category": "technology",
+    "trend_score": 53.77337823738237,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1768054822.927465,
+    "category": "technology",
+    "trend_score": 58.04949281772829,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1768058422.927465,
+    "category": "technology",
+    "trend_score": 62.861314536106676,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1768062022.927465,
+    "category": "technology",
+    "trend_score": 54.68697251370689,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1768065622.927465,
+    "category": "technology",
+    "trend_score": 62.554950240840924,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1768069222.927465,
+    "category": "technology",
+    "trend_score": 59.03036621313464,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1768072822.927465,
+    "category": "technology",
+    "trend_score": 59.243984913029635,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1768076422.927465,
+    "category": "technology",
+    "trend_score": 64.24120575192627,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1768080022.927465,
+    "category": "technology",
+    "trend_score": 61.13647482132199,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1768083622.927465,
+    "category": "technology",
+    "trend_score": 65.09575053662805,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1768087222.927466,
+    "category": "technology",
+    "trend_score": 62.92430770270882,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1768090822.927466,
+    "category": "technology",
+    "trend_score": 81.0341091587302,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1768094422.927466,
+    "category": "technology",
+    "trend_score": 71.19329067256609,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1768098022.927466,
+    "category": "technology",
+    "trend_score": 67.36538117421948,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1768101622.927466,
+    "category": "technology",
+    "trend_score": 72.15985332123634,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1768105222.927466,
+    "category": "technology",
+    "trend_score": 69.7230307188495,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1768108822.927466,
+    "category": "technology",
+    "trend_score": 68.11518487901233,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1768112422.927466,
+    "category": "technology",
+    "trend_score": 71.17572040659564,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1768116022.927466,
+    "category": "technology",
+    "trend_score": 70.26985986654998,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1768119622.927466,
+    "category": "technology",
+    "trend_score": 62.05090301602773,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1768123222.927466,
+    "category": "technology",
+    "trend_score": 60.218264738943795,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1768126822.927466,
+    "category": "technology",
+    "trend_score": 60.15019252861641,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1768130422.927466,
+    "category": "technology",
+    "trend_score": 49.41548541881582,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1768134022.927466,
+    "category": "technology",
+    "trend_score": 52.157860434089145,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1768137622.927466,
+    "category": "technology",
+    "trend_score": 64.60030178805481,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1768141222.927467,
+    "category": "technology",
+    "trend_score": 65.60259563049969,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1768144822.927467,
+    "category": "technology",
+    "trend_score": 57.290191254823554,
+    "time_pattern": 19
+  },
+  {
+    "timestamp": 1768148422.927467,
+    "category": "technology",
+    "trend_score": 61.68863668079186,
+    "time_pattern": 20
+  },
+  {
+    "timestamp": 1768152022.927467,
+    "category": "technology",
+    "trend_score": 61.52355116574362,
+    "time_pattern": 21
+  },
+  {
+    "timestamp": 1768155622.927467,
+    "category": "technology",
+    "trend_score": 76.03517102509059,
+    "time_pattern": 22
+  },
+  {
+    "timestamp": 1768159222.927467,
+    "category": "technology",
+    "trend_score": 68.41661319448902,
+    "time_pattern": 23
+  },
+  {
+    "timestamp": 1768162822.927467,
+    "category": "technology",
+    "trend_score": 63.99087199905783,
+    "time_pattern": 0
+  },
+  {
+    "timestamp": 1768166422.927467,
+    "category": "technology",
+    "trend_score": 61.39562471002377,
+    "time_pattern": 1
+  },
+  {
+    "timestamp": 1768170022.927467,
+    "category": "technology",
+    "trend_score": 59.41537373334922,
+    "time_pattern": 2
+  },
+  {
+    "timestamp": 1768173622.927467,
+    "category": "technology",
+    "trend_score": 70.27025028062148,
+    "time_pattern": 3
+  },
+  {
+    "timestamp": 1768177222.927467,
+    "category": "technology",
+    "trend_score": 66.09193665203325,
+    "time_pattern": 4
+  },
+  {
+    "timestamp": 1768180822.927467,
+    "category": "technology",
+    "trend_score": 63.04178736135235,
+    "time_pattern": 5
+  },
+  {
+    "timestamp": 1768184422.927467,
+    "category": "technology",
+    "trend_score": 67.49723325008365,
+    "time_pattern": 6
+  },
+  {
+    "timestamp": 1768188022.927467,
+    "category": "technology",
+    "trend_score": 64.89653159315867,
+    "time_pattern": 7
+  },
+  {
+    "timestamp": 1768191622.927467,
+    "category": "technology",
+    "trend_score": 79.34103967521897,
+    "time_pattern": 8
+  },
+  {
+    "timestamp": 1768195222.927467,
+    "category": "technology",
+    "trend_score": 73.86184882477752,
+    "time_pattern": 9
+  },
+  {
+    "timestamp": 1768198822.927467,
+    "category": "technology",
+    "trend_score": 67.75629638945615,
+    "time_pattern": 10
+  },
+  {
+    "timestamp": 1768202422.927468,
+    "category": "technology",
+    "trend_score": 73.82585846122818,
+    "time_pattern": 11
+  },
+  {
+    "timestamp": 1768206022.927468,
+    "category": "technology",
+    "trend_score": 64.94435269708106,
+    "time_pattern": 12
+  },
+  {
+    "timestamp": 1768209622.927468,
+    "category": "technology",
+    "trend_score": 58.685755461593395,
+    "time_pattern": 13
+  },
+  {
+    "timestamp": 1768213222.927468,
+    "category": "technology",
+    "trend_score": 68.55292474164206,
+    "time_pattern": 14
+  },
+  {
+    "timestamp": 1768216822.927468,
+    "category": "technology",
+    "trend_score": 62.479674877734595,
+    "time_pattern": 15
+  },
+  {
+    "timestamp": 1768220422.927468,
+    "category": "technology",
+    "trend_score": 54.207366264681575,
+    "time_pattern": 16
+  },
+  {
+    "timestamp": 1768224022.927468,
+    "category": "technology",
+    "trend_score": 57.43450819125872,
+    "time_pattern": 17
+  },
+  {
+    "timestamp": 1768227622.927468,
+    "category": "technology",
+    "trend_score": 54.12865094379885,
+    "time_pattern": 18
+  },
+  {
+    "timestamp": 1768231222.927468,
+    "category": "technology",
+    "trend_score": 52.037133643289586,
+    "time_pattern": 19
+  }
+]

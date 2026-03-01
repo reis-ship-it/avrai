@@ -1,0 +1,6 @@
+metric,homogenization_percent
+Entropy-based,46.32614122416873
+Correlation-based,2.9225613594044546
+PCA-based,9.090909090909093
+Cosine similarity,89.30257957689307
+Variance ratio,91.66876010326733

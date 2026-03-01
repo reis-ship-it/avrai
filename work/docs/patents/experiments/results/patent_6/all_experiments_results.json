@@ -1,0 +1,43 @@
+{
+  "patent_number": "6",
+  "patent_name": "Self-Improving Network Architecture with Collective Intelligence",
+  "experiments": {
+    "experiment_1": {
+      "experiment": "Connection Success Learning Accuracy",
+      "mae": 0.0,
+      "mse": 0.0,
+      "correlation": 1.0,
+      "p_value": 0.0,
+      "success_prediction_accuracy": 0.53,
+      "num_samples": 500
+    },
+    "experiment_2": {
+      "experiment": "Network Pattern Recognition Effectiveness",
+      "mae_no_privacy": 0.5232370383418472,
+      "mae_with_privacy": 0.46999354586983827,
+      "correlation_no_privacy": NaN,
+      "correlation_with_privacy": -1.0,
+      "privacy_overhead_percent": -10.17578813624109,
+      "num_patterns": 2
+    },
+    "experiment_3": {
+      "experiment": "Collective Intelligence Emergence",
+      "ground_truth_intelligence": 100.0,
+      "predicted_intelligence": 100.0,
+      "intelligence_error": 0.0,
+      "intelligence_accuracy": 1.0,
+      "pattern_confidence": 1.0,
+      "high_success_rate": 1.0
+    },
+    "experiment_4": {
+      "experiment": "Privacy-Preserving Aggregation Accuracy",
+      "avg_privacy_loss": 0.09914055911982864,
+      "max_privacy_loss": 0.27313302429639297,
+      "correlation": NaN,
+      "p_value": NaN,
+      "num_privacy_budgets_tested": 4
+    }
+  },
+  "execution_time_seconds": 0.08126497268676758,
+  "timestamp": "2025-12-22 14:14:37"
+}

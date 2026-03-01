@@ -1,0 +1,2 @@
+target_users,num_months,initial_diversity,diversity_no_mechanisms,diversity_with_mechanisms,homogenization_no_mechanisms,homogenization_with_mechanisms,improvement,improvement_percent,prevention_rate,scenario1_time_seconds,scenario2_time_seconds,total_time_seconds
+4892,6,0.684401052377581,0.13001190562530798,0.1479030350718923,0.8100354972078841,0.7838942027367093,0.02614129447117486,3.22717887812095,0.0322717887812095,44.84613013267517,5266.275436162949,5355.508665084839

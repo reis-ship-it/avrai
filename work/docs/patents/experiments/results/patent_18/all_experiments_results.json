@@ -1,0 +1,44 @@
+{
+  "patent_number": "18",
+  "patent_name": "Location Obfuscation System with Differential Privacy Noise",
+  "experiments": {
+    "experiment_1": {
+      "experiment": "City-Level Rounding Accuracy",
+      "avg_distance_km": 0.3613616788060367,
+      "max_distance_km": 0.7368622635014732,
+      "p95_distance_km": 0.6010134618390331,
+      "rounding_accuracy": 1.0,
+      "target_precision_km": 1.0,
+      "num_samples": 1000
+    },
+    "experiment_2": {
+      "experiment": "Differential Privacy Noise Effectiveness",
+      "avg_total_distance_km": 0.48206596643760036,
+      "avg_noise_distance_km": 0.23751045849202412,
+      "max_noise_distance_km": 0.6536941652118285,
+      "noise_within_range": 0.9865771812080537,
+      "expected_noise_km": 0.5,
+      "num_samples": 447
+    },
+    "experiment_3": {
+      "experiment": "Home Location Protection Accuracy",
+      "home_locations_count": 110,
+      "blocked_count": 110,
+      "protection_accuracy": 1.0,
+      "recall": 1.0,
+      "false_positive_rate": 0.0,
+      "num_samples": 1000
+    },
+    "experiment_4": {
+      "experiment": "Obfuscation Distance Analysis",
+      "avg_total_obfuscation_km": 0.48091518901919916,
+      "avg_rounding_component_km": 0.35878712243195243,
+      "avg_noise_component_km": 0.3644488002812161,
+      "within_expected_range": 0.4250559284116331,
+      "expected_total_km": 1.5,
+      "num_samples": 447
+    }
+  },
+  "execution_time_seconds": 0.05428194999694824,
+  "timestamp": "2025-12-22 14:24:13"
+}

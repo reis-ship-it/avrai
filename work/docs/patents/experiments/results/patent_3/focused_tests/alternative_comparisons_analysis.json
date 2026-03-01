@@ -1,0 +1,33 @@
+{
+  "baseline_homogenization": 86.38791863001714,
+  "spots_combination_homogenization": 71.22743793093545,
+  "spots_improvement": 15.160480699081688,
+  "spots_better_than_all": true,
+  "approaches": [
+    {
+      "name": "No Mechanisms (Baseline)",
+      "key": "no_mechanisms",
+      "homogenization": 86.38791863001714
+    },
+    {
+      "name": "Fixed Threshold Only",
+      "key": "fixed_threshold",
+      "homogenization": 80.76840411408988
+    },
+    {
+      "name": "Time-Based Decay Only",
+      "key": "time_decay",
+      "homogenization": 80.89813896834663
+    },
+    {
+      "name": "Adaptive Influence Reduction Only",
+      "key": "influence_reduction",
+      "homogenization": 79.14720757939297
+    },
+    {
+      "name": "SPOTS Combination (All Three)",
+      "key": "spots_combination",
+      "homogenization": 71.22743793093545
+    }
+  ]
+}

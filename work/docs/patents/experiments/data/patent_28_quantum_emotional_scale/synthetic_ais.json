@@ -1,0 +1,2002 @@
+[
+  {
+    "ai_id": "ai_0000",
+    "emotional_state": {
+      "satisfaction": 0.6394267984578837,
+      "confidence": 0.025010755222666936,
+      "fulfillment": 0.27502931836911926,
+      "growth": 0.22321073814882275,
+      "alignment": 0.7364712141640124
+    }
+  },
+  {
+    "ai_id": "ai_0001",
+    "emotional_state": {
+      "satisfaction": 0.6766994874229113,
+      "confidence": 0.8921795677048454,
+      "fulfillment": 0.08693883262941615,
+      "growth": 0.4219218196852704,
+      "alignment": 0.029797219438070344
+    }
+  },
+  {
+    "ai_id": "ai_0002",
+    "emotional_state": {
+      "satisfaction": 0.21863797480360336,
+      "confidence": 0.5053552881033624,
+      "fulfillment": 0.026535969683863625,
+      "growth": 0.1988376506866485,
+      "alignment": 0.6498844377795232
+    }
+  },
+  {
+    "ai_id": "ai_0003",
+    "emotional_state": {
+      "satisfaction": 0.5449414806032167,
+      "confidence": 0.2204406220406967,
+      "fulfillment": 0.5892656838759087,
+      "growth": 0.8094304566778266,
+      "alignment": 0.006498759678061017
+    }
+  },
+  {
+    "ai_id": "ai_0004",
+    "emotional_state": {
+      "satisfaction": 0.8058192518328079,
+      "confidence": 0.6981393949882269,
+      "fulfillment": 0.3402505165179919,
+      "growth": 0.15547949981178155,
+      "alignment": 0.9572130722067812
+    }
+  },
+  {
+    "ai_id": "ai_0005",
+    "emotional_state": {
+      "satisfaction": 0.33659454511262676,
+      "confidence": 0.09274584338014791,
+      "fulfillment": 0.09671637683346401,
+      "growth": 0.8474943663474598,
+      "alignment": 0.6037260313668911
+    }
+  },
+  {
+    "ai_id": "ai_0006",
+    "emotional_state": {
+      "satisfaction": 0.8071282732743802,
+      "confidence": 0.7297317866938179,
+      "fulfillment": 0.5362280914547007,
+      "growth": 0.9731157639793706,
+      "alignment": 0.3785343772083535
+    }
+  },
+  {
+    "ai_id": "ai_0007",
+    "emotional_state": {
+      "satisfaction": 0.552040631273227,
+      "confidence": 0.8294046642529949,
+      "fulfillment": 0.6185197523642461,
+      "growth": 0.8617069003107772,
+      "alignment": 0.577352145256762
+    }
+  },
+  {
+    "ai_id": "ai_0008",
+    "emotional_state": {
+      "satisfaction": 0.7045718362149235,
+      "confidence": 0.045824383655662215,
+      "fulfillment": 0.22789827565154686,
+      "growth": 0.28938796360210717,
+      "alignment": 0.0797919769236275
+    }
+  },
+  {
+    "ai_id": "ai_0009",
+    "emotional_state": {
+      "satisfaction": 0.23279088636103018,
+      "confidence": 0.10100142940972912,
+      "fulfillment": 0.2779736031100921,
+      "growth": 0.6356844442644002,
+      "alignment": 0.36483217897008424
+    }
+  },
+  {
+    "ai_id": "ai_0010",
+    "emotional_state": {
+      "satisfaction": 0.37018096711688264,
+      "confidence": 0.2095070307714877,
+      "fulfillment": 0.26697782204911336,
+      "growth": 0.936654587712494,
+      "alignment": 0.6480353852465935
+    }
+  },
+  {
+    "ai_id": "ai_0011",
+    "emotional_state": {
+      "satisfaction": 0.6091310056669882,
+      "confidence": 0.171138648198097,
+      "fulfillment": 0.7291267979503492,
+      "growth": 0.1634024937619284,
+      "alignment": 0.3794554417576478
+    }
+  },
+  {
+    "ai_id": "ai_0012",
+    "emotional_state": {
+      "satisfaction": 0.9895233506365952,
+      "confidence": 0.6399997598540929,
+      "fulfillment": 0.5569497437746462,
+      "growth": 0.6846142509898746,
+      "alignment": 0.8428519201898096
+    }
+  },
+  {
+    "ai_id": "ai_0013",
+    "emotional_state": {
+      "satisfaction": 0.7759999115462448,
+      "confidence": 0.22904807196410437,
+      "fulfillment": 0.03210024390403776,
+      "growth": 0.3154530480590819,
+      "alignment": 0.26774087597570273
+    }
+  },
+  {
+    "ai_id": "ai_0014",
+    "emotional_state": {
+      "satisfaction": 0.21098284358632646,
+      "confidence": 0.9429097143350544,
+      "fulfillment": 0.8763676264726689,
+      "growth": 0.3146778807984779,
+      "alignment": 0.65543866529488
+    }
+  },
+  {
+    "ai_id": "ai_0015",
+    "emotional_state": {
+      "satisfaction": 0.39563190106066426,
+      "confidence": 0.9145475897405435,
+      "fulfillment": 0.4588518525873988,
+      "growth": 0.26488016649805246,
+      "alignment": 0.24662750769398345
+    }
+  },
+  {
+    "ai_id": "ai_0016",
+    "emotional_state": {
+      "satisfaction": 0.5613681341631508,
+      "confidence": 0.26274160852293527,
+      "fulfillment": 0.5845859902235405,
+      "growth": 0.897822883602477,
+      "alignment": 0.39940050514039727
+    }
+  },
+  {
+    "ai_id": "ai_0017",
+    "emotional_state": {
+      "satisfaction": 0.21932075915728333,
+      "confidence": 0.9975376064951103,
+      "fulfillment": 0.5095262936764645,
+      "growth": 0.09090941217379389,
+      "alignment": 0.04711637542473457
+    }
+  },
+  {
+    "ai_id": "ai_0018",
+    "emotional_state": {
+      "satisfaction": 0.10964913035065915,
+      "confidence": 0.62744604170309,
+      "fulfillment": 0.7920793643629641,
+      "growth": 0.42215996679968404,
+      "alignment": 0.06352770615195713
+    }
+  },
+  {
+    "ai_id": "ai_0019",
+    "emotional_state": {
+      "satisfaction": 0.38161928650653676,
+      "confidence": 0.9961213802400968,
+      "fulfillment": 0.529114345099137,
+      "growth": 0.9710783776136181,
+      "alignment": 0.8607797022344981
+    }
+  },
+  {
+    "ai_id": "ai_0020",
+    "emotional_state": {
+      "satisfaction": 0.011481021942819636,
+      "confidence": 0.7207218193601946,
+      "fulfillment": 0.6817103690265748,
+      "growth": 0.5369703304087952,
+      "alignment": 0.2668251899525428
+    }
+  },
+  {
+    "ai_id": "ai_0021",
+    "emotional_state": {
+      "satisfaction": 0.6409617985798081,
+      "confidence": 0.11155217359587644,
+      "fulfillment": 0.434765250669105,
+      "growth": 0.45372370632920644,
+      "alignment": 0.9538159275210801
+    }
+  },
+  {
+    "ai_id": "ai_0022",
+    "emotional_state": {
+      "satisfaction": 0.8758529403781941,
+      "confidence": 0.26338905075109076,
+      "fulfillment": 0.5005861130502983,
+      "growth": 0.17865188053013137,
+      "alignment": 0.9126278393448205
+    }
+  },
+  {
+    "ai_id": "ai_0023",
+    "emotional_state": {
+      "satisfaction": 0.8705185698367669,
+      "confidence": 0.2984447914486329,
+      "fulfillment": 0.6389494948660052,
+      "growth": 0.6089702114381723,
+      "alignment": 0.1528392685496348
+    }
+  },
+  {
+    "ai_id": "ai_0024",
+    "emotional_state": {
+      "satisfaction": 0.7625108000751513,
+      "confidence": 0.5393790301196257,
+      "fulfillment": 0.7786264786305582,
+      "growth": 0.5303536721951775,
+      "alignment": 0.0005718961279435053
+    }
+  },
+  {
+    "ai_id": "ai_0025",
+    "emotional_state": {
+      "satisfaction": 0.3241560570046731,
+      "confidence": 0.019476742385832302,
+      "fulfillment": 0.9290986162646171,
+      "growth": 0.8787218778231842,
+      "alignment": 0.8316655293611794
+    }
+  },
+  {
+    "ai_id": "ai_0026",
+    "emotional_state": {
+      "satisfaction": 0.30751412540266143,
+      "confidence": 0.05792516649418755,
+      "fulfillment": 0.8780095992040405,
+      "growth": 0.9469494452979941,
+      "alignment": 0.08565345206787878
+    }
+  },
+  {
+    "ai_id": "ai_0027",
+    "emotional_state": {
+      "satisfaction": 0.4859904633166138,
+      "confidence": 0.06921251846838361,
+      "fulfillment": 0.7606021652572316,
+      "growth": 0.7658344293069878,
+      "alignment": 0.1283914644997628
+    }
+  },
+  {
+    "ai_id": "ai_0028",
+    "emotional_state": {
+      "satisfaction": 0.4752823780987313,
+      "confidence": 0.5498035934949439,
+      "fulfillment": 0.2650566289400591,
+      "growth": 0.8724330410852574,
+      "alignment": 0.4231379402008869
+    }
+  },
+  {
+    "ai_id": "ai_0029",
+    "emotional_state": {
+      "satisfaction": 0.21179820544208205,
+      "confidence": 0.5392960887794583,
+      "fulfillment": 0.7299310690899762,
+      "growth": 0.2011510633896959,
+      "alignment": 0.31171629130089495
+    }
+  },
+  {
+    "ai_id": "ai_0030",
+    "emotional_state": {
+      "satisfaction": 0.9951493566608947,
+      "confidence": 0.6498780576394535,
+      "fulfillment": 0.43810008391450406,
+      "growth": 0.5175758410355906,
+      "alignment": 0.12100419586826572
+    }
+  },
+  {
+    "ai_id": "ai_0031",
+    "emotional_state": {
+      "satisfaction": 0.22469733703155736,
+      "confidence": 0.33808556214745533,
+      "fulfillment": 0.5883087184572333,
+      "growth": 0.230114732596577,
+      "alignment": 0.22021738445155947
+    }
+  },
+  {
+    "ai_id": "ai_0032",
+    "emotional_state": {
+      "satisfaction": 0.07099308600903254,
+      "confidence": 0.6311029572700989,
+      "fulfillment": 0.22894178381115438,
+      "growth": 0.905420013006128,
+      "alignment": 0.8596354002537465
+    }
+  },
+  {
+    "ai_id": "ai_0033",
+    "emotional_state": {
+      "satisfaction": 0.07085734988865344,
+      "confidence": 0.23800463436899522,
+      "fulfillment": 0.6689777782962806,
+      "growth": 0.2142368073704386,
+      "alignment": 0.132311848725025
+    }
+  },
+  {
+    "ai_id": "ai_0034",
+    "emotional_state": {
+      "satisfaction": 0.935514240580671,
+      "confidence": 0.5710430933252845,
+      "fulfillment": 0.47267102631179414,
+      "growth": 0.7846194242907534,
+      "alignment": 0.8074969977666434
+    }
+  },
+  {
+    "ai_id": "ai_0035",
+    "emotional_state": {
+      "satisfaction": 0.1904099143618777,
+      "confidence": 0.09693081422882333,
+      "fulfillment": 0.4310511824063775,
+      "growth": 0.4235786230199208,
+      "alignment": 0.467024668036675
+    }
+  },
+  {
+    "ai_id": "ai_0036",
+    "emotional_state": {
+      "satisfaction": 0.7290758494598506,
+      "confidence": 0.6733645472933015,
+      "fulfillment": 0.9841652113659661,
+      "growth": 0.09841787115195888,
+      "alignment": 0.4026212821022688
+    }
+  },
+  {
+    "ai_id": "ai_0037",
+    "emotional_state": {
+      "satisfaction": 0.33930260539496315,
+      "confidence": 0.8616725363527911,
+      "fulfillment": 0.24865633392028563,
+      "growth": 0.1902089084408115,
+      "alignment": 0.4486135478331319
+    }
+  },
+  {
+    "ai_id": "ai_0038",
+    "emotional_state": {
+      "satisfaction": 0.4218816398344042,
+      "confidence": 0.27854514466694047,
+      "fulfillment": 0.2498064478821005,
+      "growth": 0.9232655992760128,
+      "alignment": 0.44313074505345695
+    }
+  },
+  {
+    "ai_id": "ai_0039",
+    "emotional_state": {
+      "satisfaction": 0.8613491047618306,
+      "confidence": 0.5503253124498481,
+      "fulfillment": 0.05058832952488124,
+      "growth": 0.9992824684127266,
+      "alignment": 0.8360275850799519
+    }
+  },
+  {
+    "ai_id": "ai_0040",
+    "emotional_state": {
+      "satisfaction": 0.9689962572847513,
+      "confidence": 0.9263669830081276,
+      "fulfillment": 0.8486957344143055,
+      "growth": 0.16631111060391401,
+      "alignment": 0.48564112545071847
+    }
+  },
+  {
+    "ai_id": "ai_0041",
+    "emotional_state": {
+      "satisfaction": 0.21374729919918167,
+      "confidence": 0.4010402925494526,
+      "fulfillment": 0.058635399972178925,
+      "growth": 0.3789731189769161,
+      "alignment": 0.9853088437797259
+    }
+  },
+  {
+    "ai_id": "ai_0042",
+    "emotional_state": {
+      "satisfaction": 0.26520305817215195,
+      "confidence": 0.7840706019485694,
+      "fulfillment": 0.4550083673391433,
+      "growth": 0.4230074859901629,
+      "alignment": 0.9573176408596732
+    }
+  },
+  {
+    "ai_id": "ai_0043",
+    "emotional_state": {
+      "satisfaction": 0.9954226894927138,
+      "confidence": 0.5557683234056182,
+      "fulfillment": 0.718408275296326,
+      "growth": 0.15479682527406413,
+      "alignment": 0.2967078254945642
+    }
+  },
+  {
+    "ai_id": "ai_0044",
+    "emotional_state": {
+      "satisfaction": 0.9687093649691588,
+      "confidence": 0.5791802908162562,
+      "fulfillment": 0.5421952013742742,
+      "growth": 0.7479755603790641,
+      "alignment": 0.05716527290748308
+    }
+  },
+  {
+    "ai_id": "ai_0045",
+    "emotional_state": {
+      "satisfaction": 0.5841775944589712,
+      "confidence": 0.5028503829195136,
+      "fulfillment": 0.8527198920482854,
+      "growth": 0.15743272793948326,
+      "alignment": 0.9607789032744504
+    }
+  },
+  {
+    "ai_id": "ai_0046",
+    "emotional_state": {
+      "satisfaction": 0.08011146524058688,
+      "confidence": 0.1858249609807232,
+      "fulfillment": 0.5950351064500277,
+      "growth": 0.6752125536040902,
+      "alignment": 0.2352038950009312
+    }
+  },
+  {
+    "ai_id": "ai_0047",
+    "emotional_state": {
+      "satisfaction": 0.11988661394712419,
+      "confidence": 0.8902873141294375,
+      "fulfillment": 0.24621534778862486,
+      "growth": 0.5945191535334412,
+      "alignment": 0.6193815103321031
+    }
+  },
+  {
+    "ai_id": "ai_0048",
+    "emotional_state": {
+      "satisfaction": 0.4192249153358725,
+      "confidence": 0.5836722892912247,
+      "fulfillment": 0.5227827155319589,
+      "growth": 0.9347062577364272,
+      "alignment": 0.20425919942353643
+    }
+  },
+  {
+    "ai_id": "ai_0049",
+    "emotional_state": {
+      "satisfaction": 0.7161918007894148,
+      "confidence": 0.23868595261584602,
+      "fulfillment": 0.3957858467912545,
+      "growth": 0.6716902229599713,
+      "alignment": 0.2999970797987622
+    }
+  },
+  {
+    "ai_id": "ai_0050",
+    "emotional_state": {
+      "satisfaction": 0.31617719627185403,
+      "confidence": 0.7518644924144021,
+      "fulfillment": 0.07254311449315731,
+      "growth": 0.4582855226185861,
+      "alignment": 0.9984544408544423
+    }
+  },
+  {
+    "ai_id": "ai_0051",
+    "emotional_state": {
+      "satisfaction": 0.9960964478550944,
+      "confidence": 0.073260721099633,
+      "fulfillment": 0.2131543122670404,
+      "growth": 0.26520041475040135,
+      "alignment": 0.9332593779937091
+    }
+  },
+  {
+    "ai_id": "ai_0052",
+    "emotional_state": {
+      "satisfaction": 0.8808641736864395,
+      "confidence": 0.8792702424845428,
+      "fulfillment": 0.36952708873888396,
+      "growth": 0.15774683235723197,
+      "alignment": 0.833744954639807
+    }
+  },
+  {
+    "ai_id": "ai_0053",
+    "emotional_state": {
+      "satisfaction": 0.703539925087371,
+      "confidence": 0.6116777657259501,
+      "fulfillment": 0.9872330636315043,
+      "growth": 0.6539763177107326,
+      "alignment": 0.007823107152157949
+    }
+  },
+  {
+    "ai_id": "ai_0054",
+    "emotional_state": {
+      "satisfaction": 0.8171041351154616,
+      "confidence": 0.2993787521999779,
+      "fulfillment": 0.6633887149660773,
+      "growth": 0.9389300039271039,
+      "alignment": 0.13429111439336772
+    }
+  },
+  {
+    "ai_id": "ai_0055",
+    "emotional_state": {
+      "satisfaction": 0.11542867041910221,
+      "confidence": 0.10703597770941764,
+      "fulfillment": 0.5532236408848159,
+      "growth": 0.2723482123148163,
+      "alignment": 0.6048298270302239
+    }
+  },
+  {
+    "ai_id": "ai_0056",
+    "emotional_state": {
+      "satisfaction": 0.7176121871387979,
+      "confidence": 0.20359731232745293,
+      "fulfillment": 0.6342379588850797,
+      "growth": 0.2639839016304094,
+      "alignment": 0.48853185214937656
+    }
+  },
+  {
+    "ai_id": "ai_0057",
+    "emotional_state": {
+      "satisfaction": 0.9053364910793232,
+      "confidence": 0.8461037132948555,
+      "fulfillment": 0.09229846771273342,
+      "growth": 0.42357577256372636,
+      "alignment": 0.27668022397225167
+    }
+  },
+  {
+    "ai_id": "ai_0058",
+    "emotional_state": {
+      "satisfaction": 0.0035456890877823,
+      "confidence": 0.7711192230196271,
+      "fulfillment": 0.6371133773013796,
+      "growth": 0.2619552624343482,
+      "alignment": 0.7412309083479308
+    }
+  },
+  {
+    "ai_id": "ai_0059",
+    "emotional_state": {
+      "satisfaction": 0.5516804211263913,
+      "confidence": 0.42768691898067934,
+      "fulfillment": 0.009669699608339966,
+      "growth": 0.07524386007376704,
+      "alignment": 0.883106393300143
+    }
+  },
+  {
+    "ai_id": "ai_0060",
+    "emotional_state": {
+      "satisfaction": 0.9039285715598931,
+      "confidence": 0.5455902892055223,
+      "fulfillment": 0.8345950198860167,
+      "growth": 0.582509566489794,
+      "alignment": 0.14809378556748265
+    }
+  },
+  {
+    "ai_id": "ai_0061",
+    "emotional_state": {
+      "satisfaction": 0.12744551928213876,
+      "confidence": 0.3082583499301337,
+      "fulfillment": 0.89898148874259,
+      "growth": 0.7961223048880417,
+      "alignment": 0.8607025820009028
+    }
+  },
+  {
+    "ai_id": "ai_0062",
+    "emotional_state": {
+      "satisfaction": 0.8989246365264746,
+      "confidence": 0.21007653833975404,
+      "fulfillment": 0.24952973922292443,
+      "growth": 0.10279362167178563,
+      "alignment": 0.7801162418714427
+    }
+  },
+  {
+    "ai_id": "ai_0063",
+    "emotional_state": {
+      "satisfaction": 0.8841347014510089,
+      "confidence": 0.4063773898321168,
+      "fulfillment": 0.6206615101507128,
+      "growth": 0.15455333833220464,
+      "alignment": 0.9298810156936744
+    }
+  },
+  {
+    "ai_id": "ai_0064",
+    "emotional_state": {
+      "satisfaction": 0.864605696219964,
+      "confidence": 0.9762060329309629,
+      "fulfillment": 0.8107717199403969,
+      "growth": 0.8814162046633244,
+      "alignment": 0.024786361898188725
+    }
+  },
+  {
+    "ai_id": "ai_0065",
+    "emotional_state": {
+      "satisfaction": 0.7365644717550821,
+      "confidence": 0.33218546794642867,
+      "fulfillment": 0.9308158860483255,
+      "growth": 0.8022351389371389,
+      "alignment": 0.8640640283752794
+    }
+  },
+  {
+    "ai_id": "ai_0066",
+    "emotional_state": {
+      "satisfaction": 0.810749316574389,
+      "confidence": 0.26680570959447203,
+      "fulfillment": 0.7873745091354711,
+      "growth": 0.10809562640295711,
+      "alignment": 0.8721667829060897
+    }
+  },
+  {
+    "ai_id": "ai_0067",
+    "emotional_state": {
+      "satisfaction": 0.8585932513377816,
+      "confidence": 0.22243371754566443,
+      "fulfillment": 0.816586605596929,
+      "growth": 0.4603032346789421,
+      "alignment": 0.30519086733860057
+    }
+  },
+  {
+    "ai_id": "ai_0068",
+    "emotional_state": {
+      "satisfaction": 0.7953454991528618,
+      "confidence": 0.22759548740777036,
+      "fulfillment": 0.02366443470145152,
+      "growth": 0.19312978832770866,
+      "alignment": 0.3282619511977065
+    }
+  },
+  {
+    "ai_id": "ai_0069",
+    "emotional_state": {
+      "satisfaction": 0.8643529420302863,
+      "confidence": 0.9668891040483611,
+      "fulfillment": 0.2791249927218714,
+      "growth": 0.6414817386076277,
+      "alignment": 0.39967838436006087
+    }
+  },
+  {
+    "ai_id": "ai_0070",
+    "emotional_state": {
+      "satisfaction": 0.9811496871982601,
+      "confidence": 0.5362157324787219,
+      "fulfillment": 0.9392371403247157,
+      "growth": 0.11534175185142759,
+      "alignment": 0.970400611022228
+    }
+  },
+  {
+    "ai_id": "ai_0071",
+    "emotional_state": {
+      "satisfaction": 0.17856781617246364,
+      "confidence": 0.9625343157615555,
+      "fulfillment": 0.2654663625229686,
+      "growth": 0.1084025472147111,
+      "alignment": 0.43456375856464435
+    }
+  },
+  {
+    "ai_id": "ai_0072",
+    "emotional_state": {
+      "satisfaction": 0.7285450606527043,
+      "confidence": 0.31367731419499123,
+      "fulfillment": 0.6062088533061433,
+      "growth": 0.5114230596694781,
+      "alignment": 0.38519543334472717
+    }
+  },
+  {
+    "ai_id": "ai_0073",
+    "emotional_state": {
+      "satisfaction": 0.5765880434965995,
+      "confidence": 0.25472250613858194,
+      "fulfillment": 0.7087852838341706,
+      "growth": 0.0016912782186294661,
+      "alignment": 0.9255751654990827
+    }
+  },
+  {
+    "ai_id": "ai_0074",
+    "emotional_state": {
+      "satisfaction": 0.5384519970927919,
+      "confidence": 0.7194299991448455,
+      "fulfillment": 0.7419500778394765,
+      "growth": 0.6706285044329995,
+      "alignment": 0.3642214717812642
+    }
+  },
+  {
+    "ai_id": "ai_0075",
+    "emotional_state": {
+      "satisfaction": 0.06997381112631018,
+      "confidence": 0.6642376849112723,
+      "fulfillment": 0.3302000360425964,
+      "growth": 0.31391564505835967,
+      "alignment": 0.8480152795063355
+    }
+  },
+  {
+    "ai_id": "ai_0076",
+    "emotional_state": {
+      "satisfaction": 0.7197542630139502,
+      "confidence": 0.3003222682112642,
+      "fulfillment": 0.30928466220865325,
+      "growth": 0.40839290861921684,
+      "alignment": 0.40240038705772463
+    }
+  },
+  {
+    "ai_id": "ai_0077",
+    "emotional_state": {
+      "satisfaction": 0.295655202525947,
+      "confidence": 0.12728779905915322,
+      "fulfillment": 0.4204463337729083,
+      "growth": 0.940363670730183,
+      "alignment": 0.6773179452727329
+    }
+  },
+  {
+    "ai_id": "ai_0078",
+    "emotional_state": {
+      "satisfaction": 0.9028055457325826,
+      "confidence": 0.6155149159513805,
+      "fulfillment": 0.3009498745655653,
+      "growth": 0.5479372131356982,
+      "alignment": 0.0004059396972875273
+    }
+  },
+  {
+    "ai_id": "ai_0079",
+    "emotional_state": {
+      "satisfaction": 0.2869137168689272,
+      "confidence": 0.4298881499898346,
+      "fulfillment": 0.579984781195682,
+      "growth": 0.6547056237030716,
+      "alignment": 0.4649881902470142
+    }
+  },
+  {
+    "ai_id": "ai_0080",
+    "emotional_state": {
+      "satisfaction": 0.4421597993048074,
+      "confidence": 0.2137014009891003,
+      "fulfillment": 0.47318618590932626,
+      "growth": 0.9011808258282542,
+      "alignment": 0.7960247601267803
+    }
+  },
+  {
+    "ai_id": "ai_0081",
+    "emotional_state": {
+      "satisfaction": 0.16969139619805473,
+      "confidence": 0.08479553672512175,
+      "fulfillment": 0.5154520099152164,
+      "growth": 0.6329408557657957,
+      "alignment": 0.3351882554098009
+    }
+  },
+  {
+    "ai_id": "ai_0082",
+    "emotional_state": {
+      "satisfaction": 0.8184234645366643,
+      "confidence": 0.7511381375407322,
+      "fulfillment": 0.672795670557167,
+      "growth": 0.22464066599728827,
+      "alignment": 0.19912993272657664
+    }
+  },
+  {
+    "ai_id": "ai_0083",
+    "emotional_state": {
+      "satisfaction": 0.024425387726826342,
+      "confidence": 0.24484254407835015,
+      "fulfillment": 0.47513634421880513,
+      "growth": 0.8497376946247319,
+      "alignment": 0.0728282291845691
+    }
+  },
+  {
+    "ai_id": "ai_0084",
+    "emotional_state": {
+      "satisfaction": 0.41444101099771935,
+      "confidence": 0.6297653807377137,
+      "fulfillment": 0.1944352367397093,
+      "growth": 0.6963542504905049,
+      "alignment": 0.49437716901043693
+    }
+  },
+  {
+    "ai_id": "ai_0085",
+    "emotional_state": {
+      "satisfaction": 0.24398443957843885,
+      "confidence": 0.6560580111117841,
+      "fulfillment": 0.00554481813803176,
+      "growth": 0.7509644766184729,
+      "alignment": 0.7700461885740251
+    }
+  },
+  {
+    "ai_id": "ai_0086",
+    "emotional_state": {
+      "satisfaction": 0.10658729656353894,
+      "confidence": 0.4251461939427341,
+      "fulfillment": 0.17588668170653166,
+      "growth": 0.9579660422795397,
+      "alignment": 0.5179577504437408
+    }
+  },
+  {
+    "ai_id": "ai_0087",
+    "emotional_state": {
+      "satisfaction": 0.05021838514064092,
+      "confidence": 0.24919827965997166,
+      "fulfillment": 0.8483363473516597,
+      "growth": 0.45646182547017256,
+      "alignment": 0.8014166017222645
+    }
+  },
+  {
+    "ai_id": "ai_0088",
+    "emotional_state": {
+      "satisfaction": 0.6675777325863531,
+      "confidence": 0.987892453066448,
+      "fulfillment": 0.5954523184694197,
+      "growth": 0.9500396084431559,
+      "alignment": 0.891425925810437
+    }
+  },
+  {
+    "ai_id": "ai_0089",
+    "emotional_state": {
+      "satisfaction": 0.6126523227617628,
+      "confidence": 0.7192739612759671,
+      "fulfillment": 0.504778164824402,
+      "growth": 0.830569169721415,
+      "alignment": 0.5478719506108284
+    }
+  },
+  {
+    "ai_id": "ai_0090",
+    "emotional_state": {
+      "satisfaction": 0.8972081032332622,
+      "confidence": 0.7436554421595849,
+      "fulfillment": 0.4746744368230533,
+      "growth": 0.25919154846501935,
+      "alignment": 0.24723973750965955
+    }
+  },
+  {
+    "ai_id": "ai_0091",
+    "emotional_state": {
+      "satisfaction": 0.6376614367761563,
+      "confidence": 0.7658136842971655,
+      "fulfillment": 0.5212998128279821,
+      "growth": 0.6267484369817813,
+      "alignment": 0.2745974469175383
+    }
+  },
+  {
+    "ai_id": "ai_0092",
+    "emotional_state": {
+      "satisfaction": 0.07748335386473582,
+      "confidence": 0.2857281508631525,
+      "fulfillment": 0.2717151070821846,
+      "growth": 0.3197095684187623,
+      "alignment": 0.5401522225184564
+    }
+  },
+  {
+    "ai_id": "ai_0093",
+    "emotional_state": {
+      "satisfaction": 0.13837406151615572,
+      "confidence": 0.23126147972818678,
+      "fulfillment": 0.6939498122990523,
+      "growth": 0.7064191416945522,
+      "alignment": 0.06422885071387807
+    }
+  },
+  {
+    "ai_id": "ai_0094",
+    "emotional_state": {
+      "satisfaction": 0.4075993696665867,
+      "confidence": 0.5426111405039153,
+      "fulfillment": 0.41577423410315595,
+      "growth": 0.20683438951441024,
+      "alignment": 0.4201435177734256
+    }
+  },
+  {
+    "ai_id": "ai_0095",
+    "emotional_state": {
+      "satisfaction": 0.9048384783401769,
+      "confidence": 0.5840794142042252,
+      "fulfillment": 0.6955229864979681,
+      "growth": 0.8567320323039342,
+      "alignment": 0.7655945761180695
+    }
+  },
+  {
+    "ai_id": "ai_0096",
+    "emotional_state": {
+      "satisfaction": 0.38038102892771164,
+      "confidence": 0.0058960835839930725,
+      "fulfillment": 0.3517588026718247,
+      "growth": 0.7534751250593859,
+      "alignment": 0.8534479505691046
+    }
+  },
+  {
+    "ai_id": "ai_0097",
+    "emotional_state": {
+      "satisfaction": 0.9534303384701063,
+      "confidence": 0.41902128262982186,
+      "fulfillment": 0.7475156689780508,
+      "growth": 0.5461323097338391,
+      "alignment": 0.6032525889412413
+    }
+  },
+  {
+    "ai_id": "ai_0098",
+    "emotional_state": {
+      "satisfaction": 0.2205386943238189,
+      "confidence": 0.21942163462143616,
+      "fulfillment": 0.4358359760466366,
+      "growth": 0.02902481994671524,
+      "alignment": 0.33612954369838244
+    }
+  },
+  {
+    "ai_id": "ai_0099",
+    "emotional_state": {
+      "satisfaction": 0.6791418850283497,
+      "confidence": 0.4043166691376371,
+      "fulfillment": 0.16504473120350882,
+      "growth": 0.46739014923231015,
+      "alignment": 0.1276277972811607
+    }
+  },
+  {
+    "ai_id": "ai_0100",
+    "emotional_state": {
+      "satisfaction": 0.6222569609740647,
+      "confidence": 0.02696645190513769,
+      "fulfillment": 0.3940202563397047,
+      "growth": 0.5643919830247741,
+      "alignment": 0.027102046340312436
+    }
+  },
+  {
+    "ai_id": "ai_0101",
+    "emotional_state": {
+      "satisfaction": 0.6427496480093358,
+      "confidence": 0.13569948723056424,
+      "fulfillment": 0.4616984440515117,
+      "growth": 0.05028463348862755,
+      "alignment": 0.37910386418813957
+    }
+  },
+  {
+    "ai_id": "ai_0102",
+    "emotional_state": {
+      "satisfaction": 0.21166028421148153,
+      "confidence": 0.32684580488130854,
+      "fulfillment": 0.7612297078940271,
+      "growth": 0.3791262155641363,
+      "alignment": 0.7520098235547849
+    }
+  },
+  {
+    "ai_id": "ai_0103",
+    "emotional_state": {
+      "satisfaction": 0.8319242851552726,
+      "confidence": 0.2522715317823806,
+      "fulfillment": 0.08190623276164255,
+      "growth": 0.01938328705001069,
+      "alignment": 0.5394190479225337
+    }
+  },
+  {
+    "ai_id": "ai_0104",
+    "emotional_state": {
+      "satisfaction": 0.9999078285092092,
+      "confidence": 0.3499603437201839,
+      "fulfillment": 0.650144093249875,
+      "growth": 0.7812330496108949,
+      "alignment": 0.6517546552438894
+    }
+  },
+  {
+    "ai_id": "ai_0105",
+    "emotional_state": {
+      "satisfaction": 0.7542332040595262,
+      "confidence": 0.9496117327159889,
+      "fulfillment": 0.1993606823625329,
+      "growth": 0.020380017320332344,
+      "alignment": 0.15238234578479037
+    }
+  },
+  {
+    "ai_id": "ai_0106",
+    "emotional_state": {
+      "satisfaction": 0.12622097487420625,
+      "confidence": 0.6694588446199107,
+      "fulfillment": 0.5639695819300191,
+      "growth": 0.21796454090650363,
+      "alignment": 0.6994649712461508
+    }
+  },
+  {
+    "ai_id": "ai_0107",
+    "emotional_state": {
+      "satisfaction": 0.7668980983562408,
+      "confidence": 0.16778914336780226,
+      "fulfillment": 0.6072474938909317,
+      "growth": 0.7479256519552858,
+      "alignment": 0.11453287137889767
+    }
+  },
+  {
+    "ai_id": "ai_0108",
+    "emotional_state": {
+      "satisfaction": 0.8193011743110851,
+      "confidence": 0.9647207730340877,
+      "fulfillment": 0.10809874965760657,
+      "growth": 0.025678425497466018,
+      "alignment": 0.3119572443946952
+    }
+  },
+  {
+    "ai_id": "ai_0109",
+    "emotional_state": {
+      "satisfaction": 0.6773472868504088,
+      "confidence": 0.9581728382058959,
+      "fulfillment": 0.3966544415166273,
+      "growth": 0.7150147050494684,
+      "alignment": 0.07599647784305996
+    }
+  },
+  {
+    "ai_id": "ai_0110",
+    "emotional_state": {
+      "satisfaction": 0.6906144159329803,
+      "confidence": 0.6272423956010444,
+      "fulfillment": 0.10190130544597653,
+      "growth": 0.772480884951224,
+      "alignment": 0.8502932390887963
+    }
+  },
+  {
+    "ai_id": "ai_0111",
+    "emotional_state": {
+      "satisfaction": 0.6004116148168441,
+      "confidence": 0.12105506506731512,
+      "fulfillment": 0.9838443515146713,
+      "growth": 0.7826353463610196,
+      "alignment": 0.347203765308449
+    }
+  },
+  {
+    "ai_id": "ai_0112",
+    "emotional_state": {
+      "satisfaction": 0.42837801323474445,
+      "confidence": 0.3705708762180562,
+      "fulfillment": 0.5059607896770779,
+      "growth": 0.3412311748612832,
+      "alignment": 0.8495756269995773
+    }
+  },
+  {
+    "ai_id": "ai_0113",
+    "emotional_state": {
+      "satisfaction": 0.8223309180900581,
+      "confidence": 0.10553887064399858,
+      "fulfillment": 0.9607875672145786,
+      "growth": 0.6355851061014459,
+      "alignment": 0.8287073110024582
+    }
+  },
+  {
+    "ai_id": "ai_0114",
+    "emotional_state": {
+      "satisfaction": 0.7073086437060769,
+      "confidence": 0.43548714500767705,
+      "fulfillment": 0.7337953040133919,
+      "growth": 0.9654737312380777,
+      "alignment": 0.27008239638740084
+    }
+  },
+  {
+    "ai_id": "ai_0115",
+    "emotional_state": {
+      "satisfaction": 0.8081992188067559,
+      "confidence": 0.5381729064482558,
+      "fulfillment": 0.4834975038831961,
+      "growth": 0.4355744930038943,
+      "alignment": 0.7310262143051223
+    }
+  },
+  {
+    "ai_id": "ai_0116",
+    "emotional_state": {
+      "satisfaction": 0.26839553804922534,
+      "confidence": 0.8517131600193318,
+      "fulfillment": 0.8307310188906034,
+      "growth": 0.0866628980556744,
+      "alignment": 0.881631184002772
+    }
+  },
+  {
+    "ai_id": "ai_0117",
+    "emotional_state": {
+      "satisfaction": 0.243863439190956,
+      "confidence": 0.46470846660323173,
+      "fulfillment": 0.6103317042305206,
+      "growth": 0.37898930412826404,
+      "alignment": 0.02869999777008958
+    }
+  },
+  {
+    "ai_id": "ai_0118",
+    "emotional_state": {
+      "satisfaction": 0.8509528363124591,
+      "confidence": 0.1818398571576918,
+      "fulfillment": 0.212119850179739,
+      "growth": 0.7978323568280965,
+      "alignment": 0.34033884316428364
+    }
+  },
+  {
+    "ai_id": "ai_0119",
+    "emotional_state": {
+      "satisfaction": 0.8803199797582254,
+      "confidence": 0.7011837503322016,
+      "fulfillment": 0.2762685757561849,
+      "growth": 0.010151114438677111,
+      "alignment": 0.9480625777770312
+    }
+  },
+  {
+    "ai_id": "ai_0120",
+    "emotional_state": {
+      "satisfaction": 0.08561296195802126,
+      "confidence": 0.7200746641041943,
+      "fulfillment": 0.48857784684878736,
+      "growth": 0.7581646534824664,
+      "alignment": 0.690609339446523
+    }
+  },
+  {
+    "ai_id": "ai_0121",
+    "emotional_state": {
+      "satisfaction": 0.6459028997409523,
+      "confidence": 0.49082133507858616,
+      "fulfillment": 0.7929328681323174,
+      "growth": 0.09305335055467168,
+      "alignment": 0.22159640047253015
+    }
+  },
+  {
+    "ai_id": "ai_0122",
+    "emotional_state": {
+      "satisfaction": 0.6917871552952018,
+      "confidence": 0.3062060301300884,
+      "fulfillment": 0.5815555853323672,
+      "growth": 0.47326048875952476,
+      "alignment": 0.5309219311457678
+    }
+  },
+  {
+    "ai_id": "ai_0123",
+    "emotional_state": {
+      "satisfaction": 0.42550381270521476,
+      "confidence": 0.7459354367136096,
+      "fulfillment": 0.33079129719593015,
+      "growth": 0.7028549421857689,
+      "alignment": 0.27091642697619633
+    }
+  },
+  {
+    "ai_id": "ai_0124",
+    "emotional_state": {
+      "satisfaction": 0.2514036762009415,
+      "confidence": 0.12065588475230582,
+      "fulfillment": 0.1925842934515174,
+      "growth": 0.11955474125505283,
+      "alignment": 0.5358639653837498
+    }
+  },
+  {
+    "ai_id": "ai_0125",
+    "emotional_state": {
+      "satisfaction": 0.762189609484103,
+      "confidence": 0.18514984243766197,
+      "fulfillment": 0.21638463987860568,
+      "growth": 0.4841985872127087,
+      "alignment": 0.7245850010930516
+    }
+  },
+  {
+    "ai_id": "ai_0126",
+    "emotional_state": {
+      "satisfaction": 0.9766070228830568,
+      "confidence": 0.5246368691086079,
+      "fulfillment": 0.282998703274955,
+      "growth": 0.10052610809079077,
+      "alignment": 0.19411757809107344
+    }
+  },
+  {
+    "ai_id": "ai_0127",
+    "emotional_state": {
+      "satisfaction": 0.2274831634825547,
+      "confidence": 0.17944154368540333,
+      "fulfillment": 0.014148367256063832,
+      "growth": 0.5341350892676633,
+      "alignment": 0.2743113267832673
+    }
+  },
+  {
+    "ai_id": "ai_0128",
+    "emotional_state": {
+      "satisfaction": 0.9742949311027379,
+      "confidence": 0.5533589667986083,
+      "fulfillment": 0.6974173929101944,
+      "growth": 0.1262794929584089,
+      "alignment": 0.868461197262944
+    }
+  },
+  {
+    "ai_id": "ai_0129",
+    "emotional_state": {
+      "satisfaction": 0.49087869452377886,
+      "confidence": 0.8727197349985346,
+      "fulfillment": 0.5740642196263323,
+      "growth": 0.4693969449305102,
+      "alignment": 0.44046879813601025
+    }
+  },
+  {
+    "ai_id": "ai_0130",
+    "emotional_state": {
+      "satisfaction": 0.18436367039008172,
+      "confidence": 0.051376717183577836,
+      "fulfillment": 0.9410635967681032,
+      "growth": 0.4777291872656877,
+      "alignment": 0.8221156452994304
+    }
+  },
+  {
+    "ai_id": "ai_0131",
+    "emotional_state": {
+      "satisfaction": 0.40070744225193977,
+      "confidence": 0.07408217025563979,
+      "fulfillment": 0.6294457069519983,
+      "growth": 0.05360907429253314,
+      "alignment": 0.14919758447365516
+    }
+  },
+  {
+    "ai_id": "ai_0132",
+    "emotional_state": {
+      "satisfaction": 0.5628395970845642,
+      "confidence": 0.3038355118422277,
+      "fulfillment": 0.9939181227102202,
+      "growth": 0.11845156221146158,
+      "alignment": 0.7644434453261942
+    }
+  },
+  {
+    "ai_id": "ai_0133",
+    "emotional_state": {
+      "satisfaction": 0.6063176512429628,
+      "confidence": 0.7907408298434194,
+      "fulfillment": 0.22568713706503463,
+      "growth": 0.5225725351302178,
+      "alignment": 0.45051446488875424
+    }
+  },
+  {
+    "ai_id": "ai_0134",
+    "emotional_state": {
+      "satisfaction": 0.44272100401932835,
+      "confidence": 0.8601666658261801,
+      "fulfillment": 0.9900312604667979,
+      "growth": 0.3053802443193604,
+      "alignment": 0.6210273210721485
+    }
+  },
+  {
+    "ai_id": "ai_0135",
+    "emotional_state": {
+      "satisfaction": 0.6096309122451303,
+      "confidence": 0.740089305484545,
+      "fulfillment": 0.947590200325378,
+      "growth": 0.20778790582355133,
+      "alignment": 0.211025195305393
+    }
+  },
+  {
+    "ai_id": "ai_0136",
+    "emotional_state": {
+      "satisfaction": 0.6604281371920366,
+      "confidence": 0.15705709338087714,
+      "fulfillment": 0.17381354832643447,
+      "growth": 0.07506486890116792,
+      "alignment": 0.002675722602885733
+    }
+  },
+  {
+    "ai_id": "ai_0137",
+    "emotional_state": {
+      "satisfaction": 0.4505037046177024,
+      "confidence": 0.5938111951195633,
+      "fulfillment": 0.2912592890310276,
+      "growth": 0.23147623455602584,
+      "alignment": 0.7069558298790333
+    }
+  },
+  {
+    "ai_id": "ai_0138",
+    "emotional_state": {
+      "satisfaction": 0.7029875580937172,
+      "confidence": 0.45403132640704325,
+      "fulfillment": 0.6873849200712427,
+      "growth": 0.9239110444825487,
+      "alignment": 0.7878280266467313
+    }
+  },
+  {
+    "ai_id": "ai_0139",
+    "emotional_state": {
+      "satisfaction": 0.6250580071642219,
+      "confidence": 0.6611830428533678,
+      "fulfillment": 0.9336684584455133,
+      "growth": 0.42513896610421165,
+      "alignment": 0.5445623787105787
+    }
+  },
+  {
+    "ai_id": "ai_0140",
+    "emotional_state": {
+      "satisfaction": 0.6476347234024807,
+      "confidence": 0.9084114452126061,
+      "fulfillment": 0.8266311596500596,
+      "growth": 0.07140983685581415,
+      "alignment": 0.16592278922072468
+    }
+  },
+  {
+    "ai_id": "ai_0141",
+    "emotional_state": {
+      "satisfaction": 0.30761181261423254,
+      "confidence": 0.7489577220696233,
+      "fulfillment": 0.5692070493190924,
+      "growth": 0.28861058830584174,
+      "alignment": 0.12435365817470823
+    }
+  },
+  {
+    "ai_id": "ai_0142",
+    "emotional_state": {
+      "satisfaction": 0.6886779912120937,
+      "confidence": 0.6997336849757173,
+      "fulfillment": 0.9426762407440408,
+      "growth": 0.5004721771179256,
+      "alignment": 0.4937952193450843
+    }
+  },
+  {
+    "ai_id": "ai_0143",
+    "emotional_state": {
+      "satisfaction": 0.08044185189930098,
+      "confidence": 0.03986078418361305,
+      "fulfillment": 0.43202866416077257,
+      "growth": 0.32232158335829997,
+      "alignment": 0.2503679024120039
+    }
+  },
+  {
+    "ai_id": "ai_0144",
+    "emotional_state": {
+      "satisfaction": 0.0913268866309852,
+      "confidence": 0.9619111021928367,
+      "fulfillment": 0.8359586139061813,
+      "growth": 0.5751991092199304,
+      "alignment": 0.9507862778063524
+    }
+  },
+  {
+    "ai_id": "ai_0145",
+    "emotional_state": {
+      "satisfaction": 0.9995724168774514,
+      "confidence": 0.6722815843032393,
+      "fulfillment": 0.2695110259670539,
+      "growth": 0.040231673144616176,
+      "alignment": 0.7562688304125571
+    }
+  },
+  {
+    "ai_id": "ai_0146",
+    "emotional_state": {
+      "satisfaction": 0.47050082325163356,
+      "confidence": 0.6515094894336864,
+      "fulfillment": 0.9160727879267675,
+      "growth": 0.18148914722312592,
+      "alignment": 0.5853296252778544
+    }
+  },
+  {
+    "ai_id": "ai_0147",
+    "emotional_state": {
+      "satisfaction": 0.6347847194540869,
+      "confidence": 0.49172580219101336,
+      "fulfillment": 0.09124240629382718,
+      "growth": 0.34796105629465046,
+      "alignment": 0.333308393665092
+    }
+  },
+  {
+    "ai_id": "ai_0148",
+    "emotional_state": {
+      "satisfaction": 0.6701335095211854,
+      "confidence": 0.8577330944003526,
+      "fulfillment": 0.3298036635789654,
+      "growth": 0.6936736739834325,
+      "alignment": 0.28821779536145575
+    }
+  },
+  {
+    "ai_id": "ai_0149",
+    "emotional_state": {
+      "satisfaction": 0.9451935395632106,
+      "confidence": 0.8135660347379726,
+      "fulfillment": 0.5500966089717829,
+      "growth": 0.45482590860172945,
+      "alignment": 0.3145171571701679
+    }
+  },
+  {
+    "ai_id": "ai_0150",
+    "emotional_state": {
+      "satisfaction": 0.3232737862759947,
+      "confidence": 0.9701847268085771,
+      "fulfillment": 0.40417505700074563,
+      "growth": 0.5145962523291051,
+      "alignment": 0.9881192147817541
+    }
+  },
+  {
+    "ai_id": "ai_0151",
+    "emotional_state": {
+      "satisfaction": 0.657660386483129,
+      "confidence": 0.542593594357195,
+      "fulfillment": 0.4132475707993215,
+      "growth": 0.18758254139452712,
+      "alignment": 0.36177935915167525
+    }
+  },
+  {
+    "ai_id": "ai_0152",
+    "emotional_state": {
+      "satisfaction": 0.7564431540555737,
+      "confidence": 0.625408742145009,
+      "fulfillment": 0.759990536061017,
+      "growth": 0.20355823835027387,
+      "alignment": 0.5492196390853317
+    }
+  },
+  {
+    "ai_id": "ai_0153",
+    "emotional_state": {
+      "satisfaction": 0.9276727608444477,
+      "confidence": 0.43811609507237825,
+      "fulfillment": 0.6982500291221723,
+      "growth": 0.12142608336261984,
+      "alignment": 0.9731468158216944
+    }
+  },
+  {
+    "ai_id": "ai_0154",
+    "emotional_state": {
+      "satisfaction": 0.6088716670819649,
+      "confidence": 0.23929746232765037,
+      "fulfillment": 0.1583781638052324,
+      "growth": 0.55083900700267,
+      "alignment": 0.552251409053733
+    }
+  },
+  {
+    "ai_id": "ai_0155",
+    "emotional_state": {
+      "satisfaction": 0.09320920128152255,
+      "confidence": 0.9922571393952196,
+      "fulfillment": 0.912929878484168,
+      "growth": 0.4614478941787834,
+      "alignment": 0.11746614908955755
+    }
+  },
+  {
+    "ai_id": "ai_0156",
+    "emotional_state": {
+      "satisfaction": 0.8321431737689012,
+      "confidence": 0.49837550470719527,
+      "fulfillment": 0.7166033259917911,
+      "growth": 0.5088720150695117,
+      "alignment": 0.2734248967132742
+    }
+  },
+  {
+    "ai_id": "ai_0157",
+    "emotional_state": {
+      "satisfaction": 0.8347239455766944,
+      "confidence": 0.9802446326033755,
+      "fulfillment": 0.24373090607513836,
+      "growth": 0.5512650768804697,
+      "alignment": 0.3835860132471499
+    }
+  },
+  {
+    "ai_id": "ai_0158",
+    "emotional_state": {
+      "satisfaction": 0.9218681499315619,
+      "confidence": 0.508240891592894,
+      "fulfillment": 0.8793262551464761,
+      "growth": 0.8640269344285881,
+      "alignment": 0.27624740282204097
+    }
+  },
+  {
+    "ai_id": "ai_0159",
+    "emotional_state": {
+      "satisfaction": 0.7900061820031135,
+      "confidence": 0.41494242355134514,
+      "fulfillment": 0.9342483936825201,
+      "growth": 0.5077376758096565,
+      "alignment": 0.8205494731855784
+    }
+  },
+  {
+    "ai_id": "ai_0160",
+    "emotional_state": {
+      "satisfaction": 0.28283898328282664,
+      "confidence": 0.2985558497717672,
+      "fulfillment": 0.5869377224141611,
+      "growth": 0.9989023332293387,
+      "alignment": 0.489640346655701
+    }
+  },
+  {
+    "ai_id": "ai_0161",
+    "emotional_state": {
+      "satisfaction": 0.1485954183827891,
+      "confidence": 0.5385805777038737,
+      "fulfillment": 0.34512394169300753,
+      "growth": 0.551917417070811,
+      "alignment": 0.543430062958673
+    }
+  },
+  {
+    "ai_id": "ai_0162",
+    "emotional_state": {
+      "satisfaction": 0.4553446168665011,
+      "confidence": 0.3217773502290374,
+      "fulfillment": 0.18865237370710541,
+      "growth": 0.6974984276205713,
+      "alignment": 0.5717976419849011
+    }
+  },
+  {
+    "ai_id": "ai_0163",
+    "emotional_state": {
+      "satisfaction": 0.2335624460578931,
+      "confidence": 0.7755444750992588,
+      "fulfillment": 0.04364729909730192,
+      "growth": 0.7447051515651959,
+      "alignment": 0.7052278810250026
+    }
+  },
+  {
+    "ai_id": "ai_0164",
+    "emotional_state": {
+      "satisfaction": 0.8114089025648769,
+      "confidence": 0.38607875249098234,
+      "fulfillment": 0.6636888294845347,
+      "growth": 0.820747551709555,
+      "alignment": 0.9808181386597851
+    }
+  },
+  {
+    "ai_id": "ai_0165",
+    "emotional_state": {
+      "satisfaction": 0.49532864961642353,
+      "confidence": 0.03701961134557619,
+      "fulfillment": 0.5022911501329659,
+      "growth": 0.590180429309567,
+      "alignment": 0.8697003133622154
+    }
+  },
+  {
+    "ai_id": "ai_0166",
+    "emotional_state": {
+      "satisfaction": 0.8741903740543083,
+      "confidence": 0.44030620977067714,
+      "fulfillment": 0.5259510868075614,
+      "growth": 0.4569280744742422,
+      "alignment": 0.7224438275706426
+    }
+  },
+  {
+    "ai_id": "ai_0167",
+    "emotional_state": {
+      "satisfaction": 0.4099786197463644,
+      "confidence": 0.6547813264277338,
+      "fulfillment": 0.15436121877154885,
+      "growth": 0.46949060098473194,
+      "alignment": 0.9692036305742172
+    }
+  },
+  {
+    "ai_id": "ai_0168",
+    "emotional_state": {
+      "satisfaction": 0.3385612340514317,
+      "confidence": 0.692704598586882,
+      "fulfillment": 0.6498366525792726,
+      "growth": 0.8517652923506914,
+      "alignment": 0.8523413365658931
+    }
+  },
+  {
+    "ai_id": "ai_0169",
+    "emotional_state": {
+      "satisfaction": 0.8593421841682666,
+      "confidence": 0.38000939752265506,
+      "fulfillment": 0.31666115393339966,
+      "growth": 0.718717425222983,
+      "alignment": 0.7594018093343636
+    }
+  },
+  {
+    "ai_id": "ai_0170",
+    "emotional_state": {
+      "satisfaction": 0.8723830173985363,
+      "confidence": 0.03589909983768658,
+      "fulfillment": 0.06842074718155144,
+      "growth": 0.6311610168546405,
+      "alignment": 0.9209290987802967
+    }
+  },
+  {
+    "ai_id": "ai_0171",
+    "emotional_state": {
+      "satisfaction": 0.9974259229562153,
+      "confidence": 0.746766366737927,
+      "fulfillment": 0.4339714719231257,
+      "growth": 0.09844312638319797,
+      "alignment": 0.6337478287807913
+    }
+  },
+  {
+    "ai_id": "ai_0172",
+    "emotional_state": {
+      "satisfaction": 0.8725792326070907,
+      "confidence": 0.4436785516617058,
+      "fulfillment": 0.6940011627932345,
+      "growth": 0.903424062050486,
+      "alignment": 0.04599096867721275
+    }
+  },
+  {
+    "ai_id": "ai_0173",
+    "emotional_state": {
+      "satisfaction": 0.7961434651622118,
+      "confidence": 0.2933677759652088,
+      "fulfillment": 0.37484108977531483,
+      "growth": 0.14556979569939843,
+      "alignment": 0.53116631814876
+    }
+  },
+  {
+    "ai_id": "ai_0174",
+    "emotional_state": {
+      "satisfaction": 0.5659280619159368,
+      "confidence": 0.7925194738809532,
+      "fulfillment": 0.16998364906809738,
+      "growth": 0.07896835065999463,
+      "alignment": 0.8708395986448548
+    }
+  },
+  {
+    "ai_id": "ai_0175",
+    "emotional_state": {
+      "satisfaction": 0.6197103685374153,
+      "confidence": 0.24082979185631304,
+      "fulfillment": 0.9128290160235548,
+      "growth": 0.14311772012850965,
+      "alignment": 0.46114991335499755
+    }
+  },
+  {
+    "ai_id": "ai_0176",
+    "emotional_state": {
+      "satisfaction": 0.2539773394135423,
+      "confidence": 0.25532670815915404,
+      "fulfillment": 0.009397431454871041,
+      "growth": 0.8046330769751463,
+      "alignment": 0.901209423598883
+    }
+  },
+  {
+    "ai_id": "ai_0177",
+    "emotional_state": {
+      "satisfaction": 0.6776108856990795,
+      "confidence": 0.15797562207178695,
+      "fulfillment": 0.44172978360381443,
+      "growth": 0.3455656244430817,
+      "alignment": 0.5875717051264214
+    }
+  },
+  {
+    "ai_id": "ai_0178",
+    "emotional_state": {
+      "satisfaction": 0.6389387023600122,
+      "confidence": 0.4243089384608977,
+      "fulfillment": 0.25009822440770124,
+      "growth": 0.8453039251425987,
+      "alignment": 0.19921699910889235
+    }
+  },
+  {
+    "ai_id": "ai_0179",
+    "emotional_state": {
+      "satisfaction": 0.38469324896734547,
+      "confidence": 0.4832080610592161,
+      "fulfillment": 0.23720570192757462,
+      "growth": 0.5719226923507389,
+      "alignment": 0.5748119301786451
+    }
+  },
+  {
+    "ai_id": "ai_0180",
+    "emotional_state": {
+      "satisfaction": 0.9926920436268976,
+      "confidence": 0.29523075388326936,
+      "fulfillment": 0.9779444845768627,
+      "growth": 0.6582298159286807,
+      "alignment": 0.27448038017822773
+    }
+  },
+  {
+    "ai_id": "ai_0181",
+    "emotional_state": {
+      "satisfaction": 0.565929016955699,
+      "confidence": 0.6857994927340121,
+      "fulfillment": 0.7446688411653252,
+      "growth": 0.04904425077599994,
+      "alignment": 0.6064064930764745
+    }
+  },
+  {
+    "ai_id": "ai_0182",
+    "emotional_state": {
+      "satisfaction": 0.4967272865238703,
+      "confidence": 0.9041552908937254,
+      "fulfillment": 0.28619415145919447,
+      "growth": 0.7988601195075987,
+      "alignment": 0.607064998164266
+    }
+  },
+  {
+    "ai_id": "ai_0183",
+    "emotional_state": {
+      "satisfaction": 0.35232095583531653,
+      "confidence": 0.6366178780058919,
+      "fulfillment": 0.6208911631303041,
+      "growth": 0.6777644586233594,
+      "alignment": 0.720928376670709
+    }
+  },
+  {
+    "ai_id": "ai_0184",
+    "emotional_state": {
+      "satisfaction": 0.6591815403167537,
+      "confidence": 0.8383371169625166,
+      "fulfillment": 0.6282481036868983,
+      "growth": 0.9034037040729679,
+      "alignment": 0.6463406088905228
+    }
+  },
+  {
+    "ai_id": "ai_0185",
+    "emotional_state": {
+      "satisfaction": 0.3089328839526361,
+      "confidence": 0.4408231901628116,
+      "fulfillment": 0.5795738053684028,
+      "growth": 0.7323597679392383,
+      "alignment": 0.09013337574621894
+    }
+  },
+  {
+    "ai_id": "ai_0186",
+    "emotional_state": {
+      "satisfaction": 0.2951104516291553,
+      "confidence": 0.7474808649383715,
+      "fulfillment": 0.17564007044430663,
+      "growth": 0.13215979774678355,
+      "alignment": 0.5394077589844211
+    }
+  },
+  {
+    "ai_id": "ai_0187",
+    "emotional_state": {
+      "satisfaction": 0.9714895812113399,
+      "confidence": 0.530852373702785,
+      "fulfillment": 0.9134869744816969,
+      "growth": 0.8304726195673974,
+      "alignment": 0.2569700845632623
+    }
+  },
+  {
+    "ai_id": "ai_0188",
+    "emotional_state": {
+      "satisfaction": 0.8246898125424073,
+      "confidence": 0.4818478298737412,
+      "fulfillment": 0.8064884937937665,
+      "growth": 0.746559350717045,
+      "alignment": 0.3387152538018863
+    }
+  },
+  {
+    "ai_id": "ai_0189",
+    "emotional_state": {
+      "satisfaction": 0.1151697074497594,
+      "confidence": 0.9628932928688776,
+      "fulfillment": 0.14075701500588267,
+      "growth": 0.9665002094627521,
+      "alignment": 0.8601405968988218
+    }
+  },
+  {
+    "ai_id": "ai_0190",
+    "emotional_state": {
+      "satisfaction": 0.7242167120755182,
+      "confidence": 0.9799422427819034,
+      "fulfillment": 0.9672697473000323,
+      "growth": 0.8045876440205619,
+      "alignment": 0.3657750494055664
+    }
+  },
+  {
+    "ai_id": "ai_0191",
+    "emotional_state": {
+      "satisfaction": 0.7906819685889375,
+      "confidence": 0.013918655100901178,
+      "fulfillment": 0.5365723082690591,
+      "growth": 0.45478602773387466,
+      "alignment": 0.6728283818737536
+    }
+  },
+  {
+    "ai_id": "ai_0192",
+    "emotional_state": {
+      "satisfaction": 0.6723407973510132,
+      "confidence": 0.584560091652166,
+      "fulfillment": 0.8224173012267743,
+      "growth": 0.9402918917795542,
+      "alignment": 0.10834610219923069
+    }
+  },
+  {
+    "ai_id": "ai_0193",
+    "emotional_state": {
+      "satisfaction": 0.23382190221158317,
+      "confidence": 0.025024649646482322,
+      "fulfillment": 0.8842348452148522,
+      "growth": 0.5614073822498789,
+      "alignment": 0.9152559087431594
+    }
+  },
+  {
+    "ai_id": "ai_0194",
+    "emotional_state": {
+      "satisfaction": 0.22136720007399002,
+      "confidence": 0.06321704116019544,
+      "fulfillment": 0.8238553513904476,
+      "growth": 0.909387638427892,
+      "alignment": 0.30219017452925023
+    }
+  },
+  {
+    "ai_id": "ai_0195",
+    "emotional_state": {
+      "satisfaction": 0.4082958557954127,
+      "confidence": 0.13977701250722108,
+      "fulfillment": 0.9462615328819463,
+      "growth": 0.3043645843560052,
+      "alignment": 0.49262461897820586
+    }
+  },
+  {
+    "ai_id": "ai_0196",
+    "emotional_state": {
+      "satisfaction": 0.0971919986218216,
+      "confidence": 0.8872593085285023,
+      "fulfillment": 0.13566404870633653,
+      "growth": 0.4536437568888926,
+      "alignment": 0.6704862188501712
+    }
+  },
+  {
+    "ai_id": "ai_0197",
+    "emotional_state": {
+      "satisfaction": 0.7431401215231715,
+      "confidence": 0.9459740857794321,
+      "fulfillment": 0.41912675341472283,
+      "growth": 0.7422690147653158,
+      "alignment": 0.15452290240983502
+    }
+  },
+  {
+    "ai_id": "ai_0198",
+    "emotional_state": {
+      "satisfaction": 0.4148845274368069,
+      "confidence": 0.0990216347105285,
+      "fulfillment": 0.4893470377896145,
+      "growth": 0.4081158856977005,
+      "alignment": 0.9515215253810595
+    }
+  },
+  {
+    "ai_id": "ai_0199",
+    "emotional_state": {
+      "satisfaction": 0.032716286855046905,
+      "confidence": 0.3705299587344354,
+      "fulfillment": 0.44338308606070165,
+      "growth": 0.950555169851427,
+      "alignment": 0.8554501933059546
+    }
+  }
+]

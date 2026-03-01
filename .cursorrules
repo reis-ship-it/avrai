@@ -19,29 +19,29 @@
 1. Find the file(s), read the code, make the change, check lints
 
 ### Targeted Tier (specific task in a known phase):
-1. Read Master Plan task section (`docs/MASTER_PLAN.md` → Phase X.Y)
-2. Read phase rationale (`docs/plans/rationale/PHASE_X_RATIONALE.md`)
+1. Read Master Plan task section (`work/docs/MASTER_PLAN.md` → Phase X.Y)
+2. Read phase rationale (`work/docs/plans/rationale/PHASE_X_RATIONALE.md`)
 3. Search for existing implementations
 4. Check pre-flight checklist in rationale
 5. Implement, test, verify
 
 ### Phase Tier (starting a new phase):
-1. Read Foundational Decisions (`docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` → quick reference table)
-2. Read Phase Rationale (`docs/plans/rationale/PHASE_X_RATIONALE.md`) -- full document
-3. Read Cross-Phase Connections (`docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`) -- this phase's section
-4. Read Master Plan section (`docs/MASTER_PLAN.md` → Phase X)
-5. Check status (`docs/agents/status/status_tracker.md`)
+1. Read Foundational Decisions (`work/docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` → quick reference table)
+2. Read Phase Rationale (`work/docs/plans/rationale/PHASE_X_RATIONALE.md`) -- full document
+3. Read Cross-Phase Connections (`work/docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`) -- this phase's section
+4. Read Master Plan section (`work/docs/MASTER_PLAN.md` → Phase X)
+5. Check status (`work/docs/agents/status/status_tracker.md`)
 6. Search for existing implementations
 7. Create TODO list, communicate plan, get user approval
 
 ### Architectural Tier (cross-phase, major refactor):
 1. Read Foundational Decisions -- full document
-2. Read DOORS.md (`docs/plans/philosophy_implementation/DOORS.md`) -- answer all four questions
+2. Read DOORS.md (`work/docs/plans/philosophy_implementation/DOORS.md`) -- answer all four questions
 3. Read Phase Rationale for EVERY affected phase
 4. Read Cross-Phase Connections -- especially "Critical Cross-Cutting Contracts"
-5. Read AVRAI Philosophy (`docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md`)
+5. Read AVRAI Philosophy (`work/docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md`)
 6. Read Master Plan sections for all affected phases
-7. Check Master Plan Tracker (`docs/MASTER_PLAN_TRACKER.md`) for related plans
+7. Check Master Plan Tracker (`work/docs/MASTER_PLAN_TRACKER.md`) for related plans
 8. Search ALL affected existing implementations
 9. Create detailed TODO with dependency ordering
 10. Communicate plan with chain-reaction analysis, get user approval
@@ -109,29 +109,29 @@ Then synthesize comprehensive answer.
 ## 📚 Key Documentation
 
 ### Rationale System (Read Before Every Phase)
-- **Foundational Decisions:** `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` (WHY architecture-wide decisions were made)
-- **Phase Rationale:** `docs/plans/rationale/PHASE_X_RATIONALE.md` (WHY each phase is designed the way it is)
-- **Cross-Phase Connections:** `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` (data flows, contracts, breaking change risks)
+- **Foundational Decisions:** `work/docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` (WHY architecture-wide decisions were made)
+- **Phase Rationale:** `work/docs/plans/rationale/PHASE_X_RATIONALE.md` (WHY each phase is designed the way it is)
+- **Cross-Phase Connections:** `work/docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` (data flows, contracts, breaking change risks)
 
 ### Planning & Execution
-- **Entry Point:** `docs/plans/methodology/START_HERE_NEW_TASK.md` (tiered context protocol)
-- **Quick Reference:** `docs/plans/methodology/SESSION_START_CHECKLIST.md`
-- **Master Plan:** `docs/MASTER_PLAN.md` (THE execution plan -- WHAT to build)
-- **Master Plan Tracker:** `docs/MASTER_PLAN_TRACKER.md` (registry of all plans)
-- **Status Tracker:** `docs/agents/status/status_tracker.md` (canonical execution status)
+- **Entry Point:** `work/docs/plans/methodology/START_HERE_NEW_TASK.md` (tiered context protocol)
+- **Quick Reference:** `work/docs/plans/methodology/SESSION_START_CHECKLIST.md`
+- **Master Plan:** `work/docs/MASTER_PLAN.md` (THE execution plan -- WHAT to build)
+- **Master Plan Tracker:** `work/docs/MASTER_PLAN_TRACKER.md` (registry of all plans)
+- **Status Tracker:** `work/docs/agents/status/status_tracker.md` (canonical execution status)
 
 ### Philosophy & Architecture
-- **DOORS Philosophy:** `docs/plans/philosophy_implementation/DOORS.md` (core philosophy)
-- **AVRAI Philosophy:** `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` (full philosophy + architecture)
-- **ML Roadmap:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md` (source of truth for ML architecture)
+- **DOORS Philosophy:** `work/docs/plans/philosophy_implementation/DOORS.md` (core philosophy)
+- **AVRAI Philosophy:** `work/docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` (full philosophy + architecture)
+- **ML Roadmap:** `work/docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md` (source of truth for ML architecture)
 
 ### Process & Standards
-- **Full Methodology:** `docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
+- **Full Methodology:** `work/docs/plans/methodology/DEVELOPMENT_METHODOLOGY.md`
 - **Master Plan System:** `.cursorrules_master_plan` (automated workflow for new features)
 - **Integration Optimization:** `.cursorrules_integration_optimization` (phase-to-phase integration optimization)
-- **Documentation Protocol:** `docs/agents/REFACTORING_PROTOCOL.md` (MANDATORY for all documentation)
+- **Documentation Protocol:** `work/docs/agents/REFACTORING_PROTOCOL.md` (MANDATORY for all documentation)
 - **Development Guide:** `README_DEVELOPMENT.md`
-- **Legacy Master Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)
+- **Legacy Master Plan:** `work/docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)
 
 ---
 
@@ -151,9 +151,9 @@ Then synthesize comprehensive answer.
 7. **Update Rationale / "Why" documents (MANDATORY)**
 
 **⚠️ CRITICAL: Step 7 is NON-NEGOTIABLE.** Every Master Plan change MUST be reflected in the rationale documents:
-- `docs/plans/rationale/PHASE_X_RATIONALE.md` — add "Why [feature]" subsection, update pre-flight checklist, update pitfalls
-- `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` — add outputs, contracts, chain reactions
-- `docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` — add references if feature exemplifies existing decisions
+- `work/docs/plans/rationale/PHASE_X_RATIONALE.md` — add "Why [feature]" subsection, update pre-flight checklist, update pitfalls
+- `work/docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md` — add outputs, contracts, chain reactions
+- `work/docs/plans/rationale/FOUNDATIONAL_DECISIONS.md` — add references if feature exemplifies existing decisions
 
 **A Master Plan change without a rationale update is INCOMPLETE.**
 
@@ -187,7 +187,7 @@ Then synthesize comprehensive answer.
    - Update integration tests
 
 **See:** `.cursorrules_integration_optimization` for complete integration optimization workflow  
-**Reference:** `docs/INTEGRATION_OPTIMIZATION_PLAN.md` for complete guide
+**Reference:** `work/docs/INTEGRATION_OPTIMIZATION_PLAN.md` for complete guide
 
 ---
 
@@ -218,19 +218,19 @@ Then synthesize comprehensive answer.
 
 1. **Read the refactoring protocol:**
    ```
-   read_file('docs/agents/REFACTORING_PROTOCOL.md')
+   read_file('work/docs/agents/REFACTORING_PROTOCOL.md')
    ```
 
 2. **Follow the mandatory folder structure:**
-   - Phase-specific docs → `docs/agents/prompts/[phase]/` and `docs/agents/tasks/[phase]/`
-   - Shared docs → `docs/agents/status/`, `docs/agents/protocols/`, `docs/agents/reference/`
-   - Reports → `docs/agents/reports/agent_X/[phase]/`
+   - Phase-specific docs → `work/docs/agents/prompts/[phase]/` and `work/docs/agents/tasks/[phase]/`
+   - Shared docs → `work/docs/agents/status/`, `work/docs/agents/protocols/`, `work/docs/agents/reference/`
+   - Reports → `work/docs/agents/reports/agent_X/[phase]/`
 
 3. **Critical Rules:**
    - ✅ **DO:** Create phase folders in `prompts/` and `tasks/`
    - ✅ **DO:** Update SINGLE status tracker (`status/status_tracker.md`) with new phase sections
    - ✅ **DO:** Organize reports by agent first, then phase
-   - ❌ **DO NOT:** Create files in `docs/` root (e.g., `docs/PHASE_3_TASKS.md`)
+   - ❌ **DO NOT:** Create files in `work/docs/` root (e.g., `work/docs/PHASE_3_TASKS.md`)
    - ❌ **DO NOT:** Create phase-specific status trackers (use single file)
    - ❌ **DO NOT:** Create phase-specific protocols (use shared protocols)
 
@@ -240,7 +240,7 @@ Then synthesize comprehensive answer.
    - Update status tracker (single file) if needed
    - Follow file naming conventions
 
-**Reference:** `docs/agents/REFACTORING_PROTOCOL.md` - **MUST READ before creating documentation**
+**Reference:** `work/docs/agents/REFACTORING_PROTOCOL.md` - **MUST READ before creating documentation**
 
 **This protocol applies to ALL phases (Phase 3+ and future phases).**
 
@@ -262,7 +262,7 @@ Then synthesize comprehensive answer.
   - Agent prompts
   - Completion reports
   - All documentation
-- **Reference:** `docs/MASTER_PLAN.md` (Notation System section) for complete format guide
+- **Reference:** `work/docs/MASTER_PLAN.md` (Notation System section) for complete format guide
 
 ### Design Tokens (100% Adherence Required)
 - ✅ ALWAYS use `AppColors` or `AppTheme` for colors
@@ -295,8 +295,8 @@ Then synthesize comprehensive answer.
   - Actor → `MPCPlanner` (Phase 6.1)
   - Guardrails → Diversity, safety, doors, notification constraints (Phase 6.2)
   - Short-Term Memory → `EpisodicMemoryStore` (Phase 1.1)
-- **Master Plan Source of Truth:** `docs/MASTER_PLAN.md` (Intelligence-First Architecture)
-- **ML Roadmap Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`
+- **Master Plan Source of Truth:** `work/docs/MASTER_PLAN.md` (Intelligence-First Architecture)
+- **ML Roadmap Source of Truth:** `work/docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`
 
 ### Code Standards
 - Zero linter errors before completion
@@ -676,10 +676,10 @@ test('should serialize and deserialize correctly (round-trip)', () {
 ```
 
 **Resources:**
-- **Full Guide:** `docs/plans/test_refactoring/TEST_WRITING_GUIDE.md` - Comprehensive guide with examples
-- **Quick Reference:** `docs/plans/test_refactoring/TEST_QUALITY_QUICK_REFERENCE.md` - One-page checklist
+- **Full Guide:** `work/docs/plans/test_refactoring/TEST_WRITING_GUIDE.md` - Comprehensive guide with examples
+- **Quick Reference:** `work/docs/plans/test_refactoring/TEST_QUALITY_QUICK_REFERENCE.md` - One-page checklist
 - **Templates:** `test/templates/` - Use templates which include quality guidelines
-- **Quality Checker:** `dart run scripts/check_test_quality.dart [file]` - Verify test quality
+- **Quality Checker:** `dart run work/scripts/check_test_quality.dart [file]` - Verify test quality
 
 **Before committing tests:**
 - [ ] Tests focus on behavior, not properties
@@ -787,15 +787,15 @@ compatibility = abs(inner_product(location_state_a, location_state_b)) ** 2
 - Have I explained and received approval for the mock?
 
 ### Philosophy
-- **CRITICAL:** Reference `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` for core philosophy
+- **CRITICAL:** Reference `work/docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` for core philosophy
 - **Core Principle:** "Doors, not badges" - Authentic contributions, not gamification
 - **Code Cleanup Philosophy:**
   - **General Rule:** Remove unused code to maintain codebase cleanliness
   - **Exceptions - Keep unused code ONLY if:**
     1. **Planned Feature Setup** - Code is documented as preparation for a specific planned feature
-       - Must include: Reference to plan document (e.g., `docs/plans/phase_X/feature_name.md`)
+       - Must include: Reference to plan document (e.g., `work/docs/plans/phase_X/feature_name.md`)
        - Must include: Expected usage date/phase
-       - Example comment: `// TODO(Phase 3.2): Event analytics - See docs/plans/phase_3/event_analytics.md`
+       - Example comment: `// TODO(Phase 3.2): Event analytics - See work/docs/plans/phase_3/event_analytics.md`
     2. **API Contracts** - Interfaces, abstract classes, or stubs required for API compatibility
     3. **Active Experimentation** - Part of an active experimental branch (with clear branch name)
     4. **Auto-Generated Code** - Code generated by tools (marked with `// ignore: unused_element` or similar)
@@ -835,7 +835,7 @@ compatibility = abs(inner_product(location_state_a, location_state_b)) ** 2
 
 ## ✅ Before Starting ANY Implementation
 
-**Follow the tiered checklist from `docs/plans/methodology/SESSION_START_CHECKLIST.md`.**
+**Follow the tiered checklist from `work/docs/plans/methodology/SESSION_START_CHECKLIST.md`.**
 
 **Minimum requirements for ALL tiers (MANDATORY):**
 - [ ] I have classified the task tier (Quick / Targeted / Phase / Architectural)
@@ -844,7 +844,7 @@ compatibility = abs(inner_product(location_state_a, location_state_b)) ** 2
 - [ ] I understand where new code should be placed
 
 **Additional for Targeted tier and above:**
-- [ ] I have read the relevant phase rationale (`docs/plans/rationale/PHASE_X_RATIONALE.md`)
+- [ ] I have read the relevant phase rationale (`work/docs/plans/rationale/PHASE_X_RATIONALE.md`)
 - [ ] I have checked the pre-flight checklist in the rationale
 
 **Additional for Phase tier and above:**
@@ -945,7 +945,7 @@ spots_profiles = load_and_convert_big_five_to_spots(
 
 ### **Conversion:**
 
-- Uses `BigFiveToSpotsConverter` from `scripts/personality_data/converters/big_five_to_spots.py`
+- Uses `BigFiveToSpotsConverter` from `work/scripts/personality_data/converters/big_five_to_spots.py`
 - Converts OCEAN (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) → AVRAI 12 dimensions
 - All values normalized to 0.0-1.0 range
 

@@ -1,0 +1,6 @@
+scenario,rate,count,total,meets_target,epsilon,noise_magnitude,applied,precision_km,success_rate,success_count,total_attempts
+agentid_only,1.0,500.0,500.0,True,,,,,,,
+pii_removal,1.0,500.0,500.0,True,,,,,,,
+differential_privacy,,,,,0.01,0.7976570770179109,True,,,,
+location_obfuscation,,,,,,,True,1.0,,,
+reidentification_resistance,,,,True,,,,,0.0,0.0,100.0

@@ -1,0 +1,66 @@
+// Platform-specific integration test for Android
+// Tests Rust FFI integration on Android platform
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_runtime_os/runtime_api.dart';
+
+void main() {
+  group('Knot Math Android Integration', () {
+    late PersonalityKnotService service;
+
+    setUpAll(() async {
+      // Initialize Rust library for Android
+      // Note: This will load the actual .so library on Android
+      try {
+        await RustLib.init();
+      } catch (e) {
+        // If already initialized or in test mode, that's fine
+        if (!e.toString().contains('Should not initialize')) {
+          rethrow;
+        }
+      }
+    });
+
+    setUp(() {
+      service = PersonalityKnotService();
+    });
+
+    test('should load Rust library on Android', () {
+      // ignore: invalid_use_of_internal_member - Testing internal RustLib instance
+      expect(RustLib.instance, isNotNull);
+    });
+
+    test('should generate knot on Android', () async {
+      final profile = PersonalityProfile.initial(
+        'android_test_agent',
+        userId: 'android_test_user',
+      );
+
+      final knot = await service.generateKnot(profile);
+
+      expect(knot, isNotNull);
+      expect(knot.agentId, equals('android_test_agent'));
+      expect(knot.invariants.crossingNumber, greaterThanOrEqualTo(0));
+    });
+
+    test('should calculate compatibility on Android', () async {
+      final profile1 = PersonalityProfile.initial(
+        'android_test_agent_1',
+        userId: 'android_test_user_1',
+      );
+      final profile2 = PersonalityProfile.initial(
+        'android_test_agent_2',
+        userId: 'android_test_user_2',
+      );
+
+      final knot1 = await service.generateKnot(profile1);
+      final knot2 = await service.generateKnot(profile2);
+
+      final compatibility = await service.calculateCompatibility(knot1, knot2);
+
+      expect(compatibility, greaterThanOrEqualTo(0.0));
+      expect(compatibility, lessThanOrEqualTo(1.0));
+    });
+  });
+}

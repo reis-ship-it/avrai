@@ -1,0 +1,2502 @@
+[
+  {
+    "work_id": "work_0000",
+    "ai_id": "ai_0025",
+    "ground_truth_quality": 0.9809277183240671
+  },
+  {
+    "work_id": "work_0001",
+    "ai_id": "ai_0094",
+    "ground_truth_quality": 0.5444658614821449
+  },
+  {
+    "work_id": "work_0002",
+    "ai_id": "ai_0165",
+    "ground_truth_quality": 0.35867384121231793
+  },
+  {
+    "work_id": "work_0003",
+    "ai_id": "ai_0101",
+    "ground_truth_quality": 0.27588144086158684
+  },
+  {
+    "work_id": "work_0004",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.9490107882621376
+  },
+  {
+    "work_id": "work_0005",
+    "ai_id": "ai_0116",
+    "ground_truth_quality": 0.09167342381752086
+  },
+  {
+    "work_id": "work_0006",
+    "ai_id": "ai_0054",
+    "ground_truth_quality": 0.6417044672332176
+  },
+  {
+    "work_id": "work_0007",
+    "ai_id": "ai_0152",
+    "ground_truth_quality": 0.9710933120649863
+  },
+  {
+    "work_id": "work_0008",
+    "ai_id": "ai_0012",
+    "ground_truth_quality": 0.7867945904546167
+  },
+  {
+    "work_id": "work_0009",
+    "ai_id": "ai_0062",
+    "ground_truth_quality": 0.9888209039414217
+  },
+  {
+    "work_id": "work_0010",
+    "ai_id": "ai_0144",
+    "ground_truth_quality": 0.2052055751428764
+  },
+  {
+    "work_id": "work_0011",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.5542077884611291
+  },
+  {
+    "work_id": "work_0012",
+    "ai_id": "ai_0150",
+    "ground_truth_quality": 0.21595135191867476
+  },
+  {
+    "work_id": "work_0013",
+    "ai_id": "ai_0059",
+    "ground_truth_quality": 0.3285595534322304
+  },
+  {
+    "work_id": "work_0014",
+    "ai_id": "ai_0037",
+    "ground_truth_quality": 0.7886437542776095
+  },
+  {
+    "work_id": "work_0015",
+    "ai_id": "ai_0152",
+    "ground_truth_quality": 0.0028355514800163517
+  },
+  {
+    "work_id": "work_0016",
+    "ai_id": "ai_0037",
+    "ground_truth_quality": 0.9875273043661723
+  },
+  {
+    "work_id": "work_0017",
+    "ai_id": "ai_0138",
+    "ground_truth_quality": 0.25065419672812383
+  },
+  {
+    "work_id": "work_0018",
+    "ai_id": "ai_0044",
+    "ground_truth_quality": 0.10992634788943556
+  },
+  {
+    "work_id": "work_0019",
+    "ai_id": "ai_0006",
+    "ground_truth_quality": 0.1318032295618975
+  },
+  {
+    "work_id": "work_0020",
+    "ai_id": "ai_0091",
+    "ground_truth_quality": 0.7899846642347539
+  },
+  {
+    "work_id": "work_0021",
+    "ai_id": "ai_0060",
+    "ground_truth_quality": 0.5888529220504423
+  },
+  {
+    "work_id": "work_0022",
+    "ai_id": "ai_0004",
+    "ground_truth_quality": 0.1742462014061772
+  },
+  {
+    "work_id": "work_0023",
+    "ai_id": "ai_0013",
+    "ground_truth_quality": 0.12675854371278028
+  },
+  {
+    "work_id": "work_0024",
+    "ai_id": "ai_0107",
+    "ground_truth_quality": 0.5260855265978671
+  },
+  {
+    "work_id": "work_0025",
+    "ai_id": "ai_0190",
+    "ground_truth_quality": 0.06355803814713623
+  },
+  {
+    "work_id": "work_0026",
+    "ai_id": "ai_0114",
+    "ground_truth_quality": 0.7780170393142027
+  },
+  {
+    "work_id": "work_0027",
+    "ai_id": "ai_0131",
+    "ground_truth_quality": 0.5936660178680271
+  },
+  {
+    "work_id": "work_0028",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.5038386897858214
+  },
+  {
+    "work_id": "work_0029",
+    "ai_id": "ai_0157",
+    "ground_truth_quality": 0.043365036899171705
+  },
+  {
+    "work_id": "work_0030",
+    "ai_id": "ai_0168",
+    "ground_truth_quality": 0.5214512147130841
+  },
+  {
+    "work_id": "work_0031",
+    "ai_id": "ai_0117",
+    "ground_truth_quality": 0.6433406842054887
+  },
+  {
+    "work_id": "work_0032",
+    "ai_id": "ai_0007",
+    "ground_truth_quality": 0.06082540749450582
+  },
+  {
+    "work_id": "work_0033",
+    "ai_id": "ai_0122",
+    "ground_truth_quality": 0.8472985431672427
+  },
+  {
+    "work_id": "work_0034",
+    "ai_id": "ai_0109",
+    "ground_truth_quality": 0.6860974960622327
+  },
+  {
+    "work_id": "work_0035",
+    "ai_id": "ai_0125",
+    "ground_truth_quality": 0.7124013148970963
+  },
+  {
+    "work_id": "work_0036",
+    "ai_id": "ai_0113",
+    "ground_truth_quality": 0.0734907157664505
+  },
+  {
+    "work_id": "work_0037",
+    "ai_id": "ai_0020",
+    "ground_truth_quality": 0.3221118197463261
+  },
+  {
+    "work_id": "work_0038",
+    "ai_id": "ai_0037",
+    "ground_truth_quality": 0.06568223332011391
+  },
+  {
+    "work_id": "work_0039",
+    "ai_id": "ai_0070",
+    "ground_truth_quality": 0.6243174942812079
+  },
+  {
+    "work_id": "work_0040",
+    "ai_id": "ai_0149",
+    "ground_truth_quality": 0.5483564340483605
+  },
+  {
+    "work_id": "work_0041",
+    "ai_id": "ai_0083",
+    "ground_truth_quality": 0.3809043988185208
+  },
+  {
+    "work_id": "work_0042",
+    "ai_id": "ai_0152",
+    "ground_truth_quality": 0.5305568374313245
+  },
+  {
+    "work_id": "work_0043",
+    "ai_id": "ai_0116",
+    "ground_truth_quality": 0.5055510744856804
+  },
+  {
+    "work_id": "work_0044",
+    "ai_id": "ai_0110",
+    "ground_truth_quality": 0.09917846167904198
+  },
+  {
+    "work_id": "work_0045",
+    "ai_id": "ai_0179",
+    "ground_truth_quality": 0.11441407243007962
+  },
+  {
+    "work_id": "work_0046",
+    "ai_id": "ai_0167",
+    "ground_truth_quality": 0.6509166648813054
+  },
+  {
+    "work_id": "work_0047",
+    "ai_id": "ai_0196",
+    "ground_truth_quality": 0.5513352283897989
+  },
+  {
+    "work_id": "work_0048",
+    "ai_id": "ai_0055",
+    "ground_truth_quality": 0.43006994166638635
+  },
+  {
+    "work_id": "work_0049",
+    "ai_id": "ai_0058",
+    "ground_truth_quality": 0.4138135711769134
+  },
+  {
+    "work_id": "work_0050",
+    "ai_id": "ai_0116",
+    "ground_truth_quality": 0.3987301842569533
+  },
+  {
+    "work_id": "work_0051",
+    "ai_id": "ai_0186",
+    "ground_truth_quality": 0.09508583927563086
+  },
+  {
+    "work_id": "work_0052",
+    "ai_id": "ai_0109",
+    "ground_truth_quality": 0.3125235711418678
+  },
+  {
+    "work_id": "work_0053",
+    "ai_id": "ai_0065",
+    "ground_truth_quality": 0.37430102343553684
+  },
+  {
+    "work_id": "work_0054",
+    "ai_id": "ai_0039",
+    "ground_truth_quality": 0.6868210354669767
+  },
+  {
+    "work_id": "work_0055",
+    "ai_id": "ai_0121",
+    "ground_truth_quality": 0.06713330813664775
+  },
+  {
+    "work_id": "work_0056",
+    "ai_id": "ai_0021",
+    "ground_truth_quality": 0.0932301017036774
+  },
+  {
+    "work_id": "work_0057",
+    "ai_id": "ai_0024",
+    "ground_truth_quality": 0.744588969191879
+  },
+  {
+    "work_id": "work_0058",
+    "ai_id": "ai_0095",
+    "ground_truth_quality": 0.8117692852773923
+  },
+  {
+    "work_id": "work_0059",
+    "ai_id": "ai_0142",
+    "ground_truth_quality": 0.05998097797084656
+  },
+  {
+    "work_id": "work_0060",
+    "ai_id": "ai_0143",
+    "ground_truth_quality": 0.5616833815697281
+  },
+  {
+    "work_id": "work_0061",
+    "ai_id": "ai_0171",
+    "ground_truth_quality": 0.1222312853545593
+  },
+  {
+    "work_id": "work_0062",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.8736073722343185
+  },
+  {
+    "work_id": "work_0063",
+    "ai_id": "ai_0192",
+    "ground_truth_quality": 0.4229368557638834
+  },
+  {
+    "work_id": "work_0064",
+    "ai_id": "ai_0184",
+    "ground_truth_quality": 0.051446079972376046
+  },
+  {
+    "work_id": "work_0065",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.600410091224677
+  },
+  {
+    "work_id": "work_0066",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.1036005659246334
+  },
+  {
+    "work_id": "work_0067",
+    "ai_id": "ai_0129",
+    "ground_truth_quality": 0.2127388056720061
+  },
+  {
+    "work_id": "work_0068",
+    "ai_id": "ai_0168",
+    "ground_truth_quality": 0.4821893962043886
+  },
+  {
+    "work_id": "work_0069",
+    "ai_id": "ai_0027",
+    "ground_truth_quality": 0.35011399422119116
+  },
+  {
+    "work_id": "work_0070",
+    "ai_id": "ai_0142",
+    "ground_truth_quality": 0.36756105061535016
+  },
+  {
+    "work_id": "work_0071",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.2785682124949992
+  },
+  {
+    "work_id": "work_0072",
+    "ai_id": "ai_0057",
+    "ground_truth_quality": 0.8072213711523444
+  },
+  {
+    "work_id": "work_0073",
+    "ai_id": "ai_0143",
+    "ground_truth_quality": 0.9745466021257082
+  },
+  {
+    "work_id": "work_0074",
+    "ai_id": "ai_0159",
+    "ground_truth_quality": 0.6135732805354648
+  },
+  {
+    "work_id": "work_0075",
+    "ai_id": "ai_0164",
+    "ground_truth_quality": 0.5567397551704483
+  },
+  {
+    "work_id": "work_0076",
+    "ai_id": "ai_0155",
+    "ground_truth_quality": 0.9290842909949364
+  },
+  {
+    "work_id": "work_0077",
+    "ai_id": "ai_0177",
+    "ground_truth_quality": 0.26744772515411064
+  },
+  {
+    "work_id": "work_0078",
+    "ai_id": "ai_0046",
+    "ground_truth_quality": 0.2732703887127248
+  },
+  {
+    "work_id": "work_0079",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.30898468882991015
+  },
+  {
+    "work_id": "work_0080",
+    "ai_id": "ai_0086",
+    "ground_truth_quality": 0.3510234207369818
+  },
+  {
+    "work_id": "work_0081",
+    "ai_id": "ai_0046",
+    "ground_truth_quality": 0.8698627065364382
+  },
+  {
+    "work_id": "work_0082",
+    "ai_id": "ai_0144",
+    "ground_truth_quality": 0.6573446348367955
+  },
+  {
+    "work_id": "work_0083",
+    "ai_id": "ai_0017",
+    "ground_truth_quality": 0.14187465415126865
+  },
+  {
+    "work_id": "work_0084",
+    "ai_id": "ai_0162",
+    "ground_truth_quality": 0.971810318758019
+  },
+  {
+    "work_id": "work_0085",
+    "ai_id": "ai_0023",
+    "ground_truth_quality": 0.7461117620057067
+  },
+  {
+    "work_id": "work_0086",
+    "ai_id": "ai_0055",
+    "ground_truth_quality": 0.3761944057034886
+  },
+  {
+    "work_id": "work_0087",
+    "ai_id": "ai_0116",
+    "ground_truth_quality": 0.3408959817693328
+  },
+  {
+    "work_id": "work_0088",
+    "ai_id": "ai_0094",
+    "ground_truth_quality": 0.3116373697042164
+  },
+  {
+    "work_id": "work_0089",
+    "ai_id": "ai_0083",
+    "ground_truth_quality": 0.776835619966741
+  },
+  {
+    "work_id": "work_0090",
+    "ai_id": "ai_0145",
+    "ground_truth_quality": 0.5962237722050923
+  },
+  {
+    "work_id": "work_0091",
+    "ai_id": "ai_0013",
+    "ground_truth_quality": 0.15557990340448835
+  },
+  {
+    "work_id": "work_0092",
+    "ai_id": "ai_0193",
+    "ground_truth_quality": 0.6178381819260306
+  },
+  {
+    "work_id": "work_0093",
+    "ai_id": "ai_0172",
+    "ground_truth_quality": 0.08158152753191317
+  },
+  {
+    "work_id": "work_0094",
+    "ai_id": "ai_0113",
+    "ground_truth_quality": 0.6619386928082612
+  },
+  {
+    "work_id": "work_0095",
+    "ai_id": "ai_0124",
+    "ground_truth_quality": 0.6070760074410154
+  },
+  {
+    "work_id": "work_0096",
+    "ai_id": "ai_0106",
+    "ground_truth_quality": 0.27316684436476946
+  },
+  {
+    "work_id": "work_0097",
+    "ai_id": "ai_0193",
+    "ground_truth_quality": 0.5123463058011047
+  },
+  {
+    "work_id": "work_0098",
+    "ai_id": "ai_0088",
+    "ground_truth_quality": 0.42991363339789035
+  },
+  {
+    "work_id": "work_0099",
+    "ai_id": "ai_0072",
+    "ground_truth_quality": 0.6782178929335344
+  },
+  {
+    "work_id": "work_0100",
+    "ai_id": "ai_0151",
+    "ground_truth_quality": 0.4866327533642508
+  },
+  {
+    "work_id": "work_0101",
+    "ai_id": "ai_0170",
+    "ground_truth_quality": 0.30841939185125644
+  },
+  {
+    "work_id": "work_0102",
+    "ai_id": "ai_0056",
+    "ground_truth_quality": 0.39526339608762895
+  },
+  {
+    "work_id": "work_0103",
+    "ai_id": "ai_0153",
+    "ground_truth_quality": 0.054781958518080986
+  },
+  {
+    "work_id": "work_0104",
+    "ai_id": "ai_0052",
+    "ground_truth_quality": 0.3014193620184368
+  },
+  {
+    "work_id": "work_0105",
+    "ai_id": "ai_0054",
+    "ground_truth_quality": 0.7673495273086041
+  },
+  {
+    "work_id": "work_0106",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.2555195040214593
+  },
+  {
+    "work_id": "work_0107",
+    "ai_id": "ai_0083",
+    "ground_truth_quality": 0.11998434370554911
+  },
+  {
+    "work_id": "work_0108",
+    "ai_id": "ai_0127",
+    "ground_truth_quality": 0.7470141234297678
+  },
+  {
+    "work_id": "work_0109",
+    "ai_id": "ai_0044",
+    "ground_truth_quality": 0.12918570175921495
+  },
+  {
+    "work_id": "work_0110",
+    "ai_id": "ai_0136",
+    "ground_truth_quality": 0.7036712633826636
+  },
+  {
+    "work_id": "work_0111",
+    "ai_id": "ai_0128",
+    "ground_truth_quality": 0.5587235676747128
+  },
+  {
+    "work_id": "work_0112",
+    "ai_id": "ai_0171",
+    "ground_truth_quality": 0.8062001865667638
+  },
+  {
+    "work_id": "work_0113",
+    "ai_id": "ai_0018",
+    "ground_truth_quality": 0.3970711742472973
+  },
+  {
+    "work_id": "work_0114",
+    "ai_id": "ai_0189",
+    "ground_truth_quality": 0.04230226156279138
+  },
+  {
+    "work_id": "work_0115",
+    "ai_id": "ai_0004",
+    "ground_truth_quality": 0.45975425035627504
+  },
+  {
+    "work_id": "work_0116",
+    "ai_id": "ai_0019",
+    "ground_truth_quality": 0.8621100136120664
+  },
+  {
+    "work_id": "work_0117",
+    "ai_id": "ai_0147",
+    "ground_truth_quality": 0.4292842863008356
+  },
+  {
+    "work_id": "work_0118",
+    "ai_id": "ai_0103",
+    "ground_truth_quality": 0.7094989615689342
+  },
+  {
+    "work_id": "work_0119",
+    "ai_id": "ai_0106",
+    "ground_truth_quality": 0.28951520558575816
+  },
+  {
+    "work_id": "work_0120",
+    "ai_id": "ai_0103",
+    "ground_truth_quality": 0.02085655902474881
+  },
+  {
+    "work_id": "work_0121",
+    "ai_id": "ai_0083",
+    "ground_truth_quality": 0.171873180578069
+  },
+  {
+    "work_id": "work_0122",
+    "ai_id": "ai_0158",
+    "ground_truth_quality": 0.4600969018938087
+  },
+  {
+    "work_id": "work_0123",
+    "ai_id": "ai_0176",
+    "ground_truth_quality": 0.9197697517413846
+  },
+  {
+    "work_id": "work_0124",
+    "ai_id": "ai_0022",
+    "ground_truth_quality": 0.4367117795682278
+  },
+  {
+    "work_id": "work_0125",
+    "ai_id": "ai_0027",
+    "ground_truth_quality": 0.24331647482273366
+  },
+  {
+    "work_id": "work_0126",
+    "ai_id": "ai_0150",
+    "ground_truth_quality": 0.4004498163160871
+  },
+  {
+    "work_id": "work_0127",
+    "ai_id": "ai_0020",
+    "ground_truth_quality": 0.39576669685933297
+  },
+  {
+    "work_id": "work_0128",
+    "ai_id": "ai_0079",
+    "ground_truth_quality": 0.7458048264646029
+  },
+  {
+    "work_id": "work_0129",
+    "ai_id": "ai_0056",
+    "ground_truth_quality": 0.33306862249313196
+  },
+  {
+    "work_id": "work_0130",
+    "ai_id": "ai_0043",
+    "ground_truth_quality": 0.07637937747302115
+  },
+  {
+    "work_id": "work_0131",
+    "ai_id": "ai_0162",
+    "ground_truth_quality": 0.11402663983855255
+  },
+  {
+    "work_id": "work_0132",
+    "ai_id": "ai_0130",
+    "ground_truth_quality": 0.19390370626690034
+  },
+  {
+    "work_id": "work_0133",
+    "ai_id": "ai_0198",
+    "ground_truth_quality": 0.3493752654723803
+  },
+  {
+    "work_id": "work_0134",
+    "ai_id": "ai_0186",
+    "ground_truth_quality": 0.9582233489971503
+  },
+  {
+    "work_id": "work_0135",
+    "ai_id": "ai_0165",
+    "ground_truth_quality": 0.8150370057500141
+  },
+  {
+    "work_id": "work_0136",
+    "ai_id": "ai_0060",
+    "ground_truth_quality": 0.10280452777776283
+  },
+  {
+    "work_id": "work_0137",
+    "ai_id": "ai_0065",
+    "ground_truth_quality": 0.19727180282398327
+  },
+  {
+    "work_id": "work_0138",
+    "ai_id": "ai_0154",
+    "ground_truth_quality": 0.15286978900592985
+  },
+  {
+    "work_id": "work_0139",
+    "ai_id": "ai_0194",
+    "ground_truth_quality": 0.6555090105187391
+  },
+  {
+    "work_id": "work_0140",
+    "ai_id": "ai_0045",
+    "ground_truth_quality": 0.9512921405795819
+  },
+  {
+    "work_id": "work_0141",
+    "ai_id": "ai_0160",
+    "ground_truth_quality": 0.49411702501738863
+  },
+  {
+    "work_id": "work_0142",
+    "ai_id": "ai_0193",
+    "ground_truth_quality": 0.5637354832878496
+  },
+  {
+    "work_id": "work_0143",
+    "ai_id": "ai_0148",
+    "ground_truth_quality": 0.448905256995063
+  },
+  {
+    "work_id": "work_0144",
+    "ai_id": "ai_0144",
+    "ground_truth_quality": 0.6429918306715661
+  },
+  {
+    "work_id": "work_0145",
+    "ai_id": "ai_0159",
+    "ground_truth_quality": 0.3232082416433607
+  },
+  {
+    "work_id": "work_0146",
+    "ai_id": "ai_0160",
+    "ground_truth_quality": 0.3161388944905802
+  },
+  {
+    "work_id": "work_0147",
+    "ai_id": "ai_0112",
+    "ground_truth_quality": 0.06828625849575609
+  },
+  {
+    "work_id": "work_0148",
+    "ai_id": "ai_0113",
+    "ground_truth_quality": 0.6313851200254293
+  },
+  {
+    "work_id": "work_0149",
+    "ai_id": "ai_0070",
+    "ground_truth_quality": 0.591419756831021
+  },
+  {
+    "work_id": "work_0150",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.5073368852897782
+  },
+  {
+    "work_id": "work_0151",
+    "ai_id": "ai_0079",
+    "ground_truth_quality": 0.4617424864464541
+  },
+  {
+    "work_id": "work_0152",
+    "ai_id": "ai_0009",
+    "ground_truth_quality": 0.05689005083395238
+  },
+  {
+    "work_id": "work_0153",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.076731001173455
+  },
+  {
+    "work_id": "work_0154",
+    "ai_id": "ai_0023",
+    "ground_truth_quality": 0.6150083884155736
+  },
+  {
+    "work_id": "work_0155",
+    "ai_id": "ai_0129",
+    "ground_truth_quality": 0.3844824765824649
+  },
+  {
+    "work_id": "work_0156",
+    "ai_id": "ai_0148",
+    "ground_truth_quality": 0.5543163713383039
+  },
+  {
+    "work_id": "work_0157",
+    "ai_id": "ai_0189",
+    "ground_truth_quality": 0.8958767655568026
+  },
+  {
+    "work_id": "work_0158",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.9090499565736645
+  },
+  {
+    "work_id": "work_0159",
+    "ai_id": "ai_0146",
+    "ground_truth_quality": 0.6518374546486099
+  },
+  {
+    "work_id": "work_0160",
+    "ai_id": "ai_0082",
+    "ground_truth_quality": 0.6050058340700643
+  },
+  {
+    "work_id": "work_0161",
+    "ai_id": "ai_0128",
+    "ground_truth_quality": 0.15086107669563853
+  },
+  {
+    "work_id": "work_0162",
+    "ai_id": "ai_0015",
+    "ground_truth_quality": 0.4505231090150913
+  },
+  {
+    "work_id": "work_0163",
+    "ai_id": "ai_0087",
+    "ground_truth_quality": 0.9823855810933974
+  },
+  {
+    "work_id": "work_0164",
+    "ai_id": "ai_0021",
+    "ground_truth_quality": 0.5045490015009574
+  },
+  {
+    "work_id": "work_0165",
+    "ai_id": "ai_0044",
+    "ground_truth_quality": 0.03914212620067381
+  },
+  {
+    "work_id": "work_0166",
+    "ai_id": "ai_0181",
+    "ground_truth_quality": 0.437758274309233
+  },
+  {
+    "work_id": "work_0167",
+    "ai_id": "ai_0112",
+    "ground_truth_quality": 0.5240685531701745
+  },
+  {
+    "work_id": "work_0168",
+    "ai_id": "ai_0156",
+    "ground_truth_quality": 0.15874620798154138
+  },
+  {
+    "work_id": "work_0169",
+    "ai_id": "ai_0095",
+    "ground_truth_quality": 0.9179367891169605
+  },
+  {
+    "work_id": "work_0170",
+    "ai_id": "ai_0099",
+    "ground_truth_quality": 0.4087693972473203
+  },
+  {
+    "work_id": "work_0171",
+    "ai_id": "ai_0086",
+    "ground_truth_quality": 0.6788977205595811
+  },
+  {
+    "work_id": "work_0172",
+    "ai_id": "ai_0013",
+    "ground_truth_quality": 0.7892269315636647
+  },
+  {
+    "work_id": "work_0173",
+    "ai_id": "ai_0165",
+    "ground_truth_quality": 0.33464934725993756
+  },
+  {
+    "work_id": "work_0174",
+    "ai_id": "ai_0084",
+    "ground_truth_quality": 0.09450594751509434
+  },
+  {
+    "work_id": "work_0175",
+    "ai_id": "ai_0173",
+    "ground_truth_quality": 0.38656420472373787
+  },
+  {
+    "work_id": "work_0176",
+    "ai_id": "ai_0064",
+    "ground_truth_quality": 0.7237336550024618
+  },
+  {
+    "work_id": "work_0177",
+    "ai_id": "ai_0168",
+    "ground_truth_quality": 0.9644100286539099
+  },
+  {
+    "work_id": "work_0178",
+    "ai_id": "ai_0154",
+    "ground_truth_quality": 0.8732796620605389
+  },
+  {
+    "work_id": "work_0179",
+    "ai_id": "ai_0085",
+    "ground_truth_quality": 0.08150198744788395
+  },
+  {
+    "work_id": "work_0180",
+    "ai_id": "ai_0169",
+    "ground_truth_quality": 0.14142838058431784
+  },
+  {
+    "work_id": "work_0181",
+    "ai_id": "ai_0089",
+    "ground_truth_quality": 0.3102317375518121
+  },
+  {
+    "work_id": "work_0182",
+    "ai_id": "ai_0167",
+    "ground_truth_quality": 0.698479962811881
+  },
+  {
+    "work_id": "work_0183",
+    "ai_id": "ai_0100",
+    "ground_truth_quality": 0.1289516582715602
+  },
+  {
+    "work_id": "work_0184",
+    "ai_id": "ai_0181",
+    "ground_truth_quality": 0.9380021995657608
+  },
+  {
+    "work_id": "work_0185",
+    "ai_id": "ai_0079",
+    "ground_truth_quality": 0.5589220700910635
+  },
+  {
+    "work_id": "work_0186",
+    "ai_id": "ai_0164",
+    "ground_truth_quality": 0.7916619578635435
+  },
+  {
+    "work_id": "work_0187",
+    "ai_id": "ai_0032",
+    "ground_truth_quality": 0.6701163999947225
+  },
+  {
+    "work_id": "work_0188",
+    "ai_id": "ai_0189",
+    "ground_truth_quality": 0.9971641129658702
+  },
+  {
+    "work_id": "work_0189",
+    "ai_id": "ai_0134",
+    "ground_truth_quality": 0.09345296506602174
+  },
+  {
+    "work_id": "work_0190",
+    "ai_id": "ai_0171",
+    "ground_truth_quality": 0.4234063663221037
+  },
+  {
+    "work_id": "work_0191",
+    "ai_id": "ai_0092",
+    "ground_truth_quality": 0.01823053779153272
+  },
+  {
+    "work_id": "work_0192",
+    "ai_id": "ai_0079",
+    "ground_truth_quality": 0.18026292287684464
+  },
+  {
+    "work_id": "work_0193",
+    "ai_id": "ai_0054",
+    "ground_truth_quality": 0.34173234513154815
+  },
+  {
+    "work_id": "work_0194",
+    "ai_id": "ai_0196",
+    "ground_truth_quality": 0.4862709208727273
+  },
+  {
+    "work_id": "work_0195",
+    "ai_id": "ai_0057",
+    "ground_truth_quality": 0.9999766211030285
+  },
+  {
+    "work_id": "work_0196",
+    "ai_id": "ai_0039",
+    "ground_truth_quality": 0.07716508430087632
+  },
+  {
+    "work_id": "work_0197",
+    "ai_id": "ai_0025",
+    "ground_truth_quality": 0.5076897127246462
+  },
+  {
+    "work_id": "work_0198",
+    "ai_id": "ai_0138",
+    "ground_truth_quality": 0.835119826634556
+  },
+  {
+    "work_id": "work_0199",
+    "ai_id": "ai_0134",
+    "ground_truth_quality": 0.03774749235756125
+  },
+  {
+    "work_id": "work_0200",
+    "ai_id": "ai_0086",
+    "ground_truth_quality": 0.8763927725427418
+  },
+  {
+    "work_id": "work_0201",
+    "ai_id": "ai_0158",
+    "ground_truth_quality": 0.13104904142950802
+  },
+  {
+    "work_id": "work_0202",
+    "ai_id": "ai_0096",
+    "ground_truth_quality": 0.15425276132112153
+  },
+  {
+    "work_id": "work_0203",
+    "ai_id": "ai_0046",
+    "ground_truth_quality": 0.8313450566891255
+  },
+  {
+    "work_id": "work_0204",
+    "ai_id": "ai_0197",
+    "ground_truth_quality": 0.6247404799539127
+  },
+  {
+    "work_id": "work_0205",
+    "ai_id": "ai_0042",
+    "ground_truth_quality": 0.721182997805427
+  },
+  {
+    "work_id": "work_0206",
+    "ai_id": "ai_0011",
+    "ground_truth_quality": 0.41085861149653347
+  },
+  {
+    "work_id": "work_0207",
+    "ai_id": "ai_0173",
+    "ground_truth_quality": 0.71958567379065
+  },
+  {
+    "work_id": "work_0208",
+    "ai_id": "ai_0113",
+    "ground_truth_quality": 0.6105954221258157
+  },
+  {
+    "work_id": "work_0209",
+    "ai_id": "ai_0192",
+    "ground_truth_quality": 0.7485365180954363
+  },
+  {
+    "work_id": "work_0210",
+    "ai_id": "ai_0114",
+    "ground_truth_quality": 0.23400294433542446
+  },
+  {
+    "work_id": "work_0211",
+    "ai_id": "ai_0061",
+    "ground_truth_quality": 0.3094678965627896
+  },
+  {
+    "work_id": "work_0212",
+    "ai_id": "ai_0120",
+    "ground_truth_quality": 0.9039743381374582
+  },
+  {
+    "work_id": "work_0213",
+    "ai_id": "ai_0049",
+    "ground_truth_quality": 0.3678409582250328
+  },
+  {
+    "work_id": "work_0214",
+    "ai_id": "ai_0146",
+    "ground_truth_quality": 0.9844397935315773
+  },
+  {
+    "work_id": "work_0215",
+    "ai_id": "ai_0118",
+    "ground_truth_quality": 0.769438551975576
+  },
+  {
+    "work_id": "work_0216",
+    "ai_id": "ai_0199",
+    "ground_truth_quality": 0.3818724341907105
+  },
+  {
+    "work_id": "work_0217",
+    "ai_id": "ai_0135",
+    "ground_truth_quality": 0.4186608267297458
+  },
+  {
+    "work_id": "work_0218",
+    "ai_id": "ai_0041",
+    "ground_truth_quality": 0.8168912395812401
+  },
+  {
+    "work_id": "work_0219",
+    "ai_id": "ai_0154",
+    "ground_truth_quality": 0.1383985346034312
+  },
+  {
+    "work_id": "work_0220",
+    "ai_id": "ai_0064",
+    "ground_truth_quality": 0.052179803261004576
+  },
+  {
+    "work_id": "work_0221",
+    "ai_id": "ai_0123",
+    "ground_truth_quality": 0.874116945052237
+  },
+  {
+    "work_id": "work_0222",
+    "ai_id": "ai_0141",
+    "ground_truth_quality": 0.9342935539974997
+  },
+  {
+    "work_id": "work_0223",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.8458922767334385
+  },
+  {
+    "work_id": "work_0224",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.28506301405932843
+  },
+  {
+    "work_id": "work_0225",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.1603123342453785
+  },
+  {
+    "work_id": "work_0226",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.9053062089782412
+  },
+  {
+    "work_id": "work_0227",
+    "ai_id": "ai_0037",
+    "ground_truth_quality": 0.8310467186381858
+  },
+  {
+    "work_id": "work_0228",
+    "ai_id": "ai_0023",
+    "ground_truth_quality": 0.9464132630117607
+  },
+  {
+    "work_id": "work_0229",
+    "ai_id": "ai_0056",
+    "ground_truth_quality": 0.8167032558555005
+  },
+  {
+    "work_id": "work_0230",
+    "ai_id": "ai_0089",
+    "ground_truth_quality": 0.9304719271262749
+  },
+  {
+    "work_id": "work_0231",
+    "ai_id": "ai_0106",
+    "ground_truth_quality": 0.05325688717107446
+  },
+  {
+    "work_id": "work_0232",
+    "ai_id": "ai_0128",
+    "ground_truth_quality": 0.37396148767902004
+  },
+  {
+    "work_id": "work_0233",
+    "ai_id": "ai_0098",
+    "ground_truth_quality": 0.9945253512382912
+  },
+  {
+    "work_id": "work_0234",
+    "ai_id": "ai_0095",
+    "ground_truth_quality": 0.22453875860711592
+  },
+  {
+    "work_id": "work_0235",
+    "ai_id": "ai_0081",
+    "ground_truth_quality": 0.9308259047499531
+  },
+  {
+    "work_id": "work_0236",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.6499606842941816
+  },
+  {
+    "work_id": "work_0237",
+    "ai_id": "ai_0037",
+    "ground_truth_quality": 0.13759958772587166
+  },
+  {
+    "work_id": "work_0238",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.9173961716127513
+  },
+  {
+    "work_id": "work_0239",
+    "ai_id": "ai_0120",
+    "ground_truth_quality": 0.6960719885759836
+  },
+  {
+    "work_id": "work_0240",
+    "ai_id": "ai_0035",
+    "ground_truth_quality": 0.7588411547656072
+  },
+  {
+    "work_id": "work_0241",
+    "ai_id": "ai_0120",
+    "ground_truth_quality": 0.4486014739822466
+  },
+  {
+    "work_id": "work_0242",
+    "ai_id": "ai_0001",
+    "ground_truth_quality": 0.9058574891032708
+  },
+  {
+    "work_id": "work_0243",
+    "ai_id": "ai_0004",
+    "ground_truth_quality": 0.2559239284370447
+  },
+  {
+    "work_id": "work_0244",
+    "ai_id": "ai_0038",
+    "ground_truth_quality": 0.5488042454438354
+  },
+  {
+    "work_id": "work_0245",
+    "ai_id": "ai_0186",
+    "ground_truth_quality": 0.6088800991160535
+  },
+  {
+    "work_id": "work_0246",
+    "ai_id": "ai_0108",
+    "ground_truth_quality": 0.11118686032423841
+  },
+  {
+    "work_id": "work_0247",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.23764022664093365
+  },
+  {
+    "work_id": "work_0248",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.04774944661885128
+  },
+  {
+    "work_id": "work_0249",
+    "ai_id": "ai_0107",
+    "ground_truth_quality": 0.6389517321728103
+  },
+  {
+    "work_id": "work_0250",
+    "ai_id": "ai_0159",
+    "ground_truth_quality": 0.45711361663644867
+  },
+  {
+    "work_id": "work_0251",
+    "ai_id": "ai_0028",
+    "ground_truth_quality": 0.8366877206053353
+  },
+  {
+    "work_id": "work_0252",
+    "ai_id": "ai_0127",
+    "ground_truth_quality": 0.596739042818947
+  },
+  {
+    "work_id": "work_0253",
+    "ai_id": "ai_0004",
+    "ground_truth_quality": 0.6319549420131424
+  },
+  {
+    "work_id": "work_0254",
+    "ai_id": "ai_0147",
+    "ground_truth_quality": 0.24193813442099332
+  },
+  {
+    "work_id": "work_0255",
+    "ai_id": "ai_0036",
+    "ground_truth_quality": 0.29127198777525787
+  },
+  {
+    "work_id": "work_0256",
+    "ai_id": "ai_0000",
+    "ground_truth_quality": 0.6148095827759507
+  },
+  {
+    "work_id": "work_0257",
+    "ai_id": "ai_0061",
+    "ground_truth_quality": 0.5706637160224288
+  },
+  {
+    "work_id": "work_0258",
+    "ai_id": "ai_0047",
+    "ground_truth_quality": 0.6643713017420091
+  },
+  {
+    "work_id": "work_0259",
+    "ai_id": "ai_0021",
+    "ground_truth_quality": 0.5234845576782113
+  },
+  {
+    "work_id": "work_0260",
+    "ai_id": "ai_0092",
+    "ground_truth_quality": 0.06767932290884604
+  },
+  {
+    "work_id": "work_0261",
+    "ai_id": "ai_0134",
+    "ground_truth_quality": 0.5440819599280334
+  },
+  {
+    "work_id": "work_0262",
+    "ai_id": "ai_0129",
+    "ground_truth_quality": 0.5541519524181955
+  },
+  {
+    "work_id": "work_0263",
+    "ai_id": "ai_0099",
+    "ground_truth_quality": 0.8733314385275176
+  },
+  {
+    "work_id": "work_0264",
+    "ai_id": "ai_0011",
+    "ground_truth_quality": 0.63567079146863
+  },
+  {
+    "work_id": "work_0265",
+    "ai_id": "ai_0095",
+    "ground_truth_quality": 0.25365026106921273
+  },
+  {
+    "work_id": "work_0266",
+    "ai_id": "ai_0004",
+    "ground_truth_quality": 0.3570938765147329
+  },
+  {
+    "work_id": "work_0267",
+    "ai_id": "ai_0017",
+    "ground_truth_quality": 0.3448024931633913
+  },
+  {
+    "work_id": "work_0268",
+    "ai_id": "ai_0187",
+    "ground_truth_quality": 0.6571044000108314
+  },
+  {
+    "work_id": "work_0269",
+    "ai_id": "ai_0026",
+    "ground_truth_quality": 0.7715013741098591
+  },
+  {
+    "work_id": "work_0270",
+    "ai_id": "ai_0188",
+    "ground_truth_quality": 0.7566789264419571
+  },
+  {
+    "work_id": "work_0271",
+    "ai_id": "ai_0034",
+    "ground_truth_quality": 0.044335688295208175
+  },
+  {
+    "work_id": "work_0272",
+    "ai_id": "ai_0139",
+    "ground_truth_quality": 0.33854725817970077
+  },
+  {
+    "work_id": "work_0273",
+    "ai_id": "ai_0164",
+    "ground_truth_quality": 0.17508912705170843
+  },
+  {
+    "work_id": "work_0274",
+    "ai_id": "ai_0199",
+    "ground_truth_quality": 0.6846825664089835
+  },
+  {
+    "work_id": "work_0275",
+    "ai_id": "ai_0178",
+    "ground_truth_quality": 0.478531171617924
+  },
+  {
+    "work_id": "work_0276",
+    "ai_id": "ai_0046",
+    "ground_truth_quality": 0.8114976818476064
+  },
+  {
+    "work_id": "work_0277",
+    "ai_id": "ai_0016",
+    "ground_truth_quality": 0.7160450575961946
+  },
+  {
+    "work_id": "work_0278",
+    "ai_id": "ai_0117",
+    "ground_truth_quality": 0.03698379019977571
+  },
+  {
+    "work_id": "work_0279",
+    "ai_id": "ai_0051",
+    "ground_truth_quality": 0.043806275659123095
+  },
+  {
+    "work_id": "work_0280",
+    "ai_id": "ai_0051",
+    "ground_truth_quality": 0.8857903856181051
+  },
+  {
+    "work_id": "work_0281",
+    "ai_id": "ai_0080",
+    "ground_truth_quality": 0.9333709799503973
+  },
+  {
+    "work_id": "work_0282",
+    "ai_id": "ai_0131",
+    "ground_truth_quality": 0.39822405568601704
+  },
+  {
+    "work_id": "work_0283",
+    "ai_id": "ai_0139",
+    "ground_truth_quality": 0.47339976767684344
+  },
+  {
+    "work_id": "work_0284",
+    "ai_id": "ai_0009",
+    "ground_truth_quality": 0.7532909188188649
+  },
+  {
+    "work_id": "work_0285",
+    "ai_id": "ai_0048",
+    "ground_truth_quality": 0.28611089555154867
+  },
+  {
+    "work_id": "work_0286",
+    "ai_id": "ai_0199",
+    "ground_truth_quality": 0.04780403424649138
+  },
+  {
+    "work_id": "work_0287",
+    "ai_id": "ai_0167",
+    "ground_truth_quality": 0.33192468638134454
+  },
+  {
+    "work_id": "work_0288",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.7993424115182397
+  },
+  {
+    "work_id": "work_0289",
+    "ai_id": "ai_0111",
+    "ground_truth_quality": 0.8894865170122814
+  },
+  {
+    "work_id": "work_0290",
+    "ai_id": "ai_0190",
+    "ground_truth_quality": 0.4397366337078622
+  },
+  {
+    "work_id": "work_0291",
+    "ai_id": "ai_0098",
+    "ground_truth_quality": 0.3390366284081606
+  },
+  {
+    "work_id": "work_0292",
+    "ai_id": "ai_0047",
+    "ground_truth_quality": 0.49620322653702265
+  },
+  {
+    "work_id": "work_0293",
+    "ai_id": "ai_0127",
+    "ground_truth_quality": 0.36734692695968196
+  },
+  {
+    "work_id": "work_0294",
+    "ai_id": "ai_0132",
+    "ground_truth_quality": 0.2667206958021826
+  },
+  {
+    "work_id": "work_0295",
+    "ai_id": "ai_0021",
+    "ground_truth_quality": 0.7270813243426357
+  },
+  {
+    "work_id": "work_0296",
+    "ai_id": "ai_0020",
+    "ground_truth_quality": 0.4306071520034469
+  },
+  {
+    "work_id": "work_0297",
+    "ai_id": "ai_0046",
+    "ground_truth_quality": 0.545474397344637
+  },
+  {
+    "work_id": "work_0298",
+    "ai_id": "ai_0082",
+    "ground_truth_quality": 0.1025979077821143
+  },
+  {
+    "work_id": "work_0299",
+    "ai_id": "ai_0083",
+    "ground_truth_quality": 0.6609192214581366
+  },
+  {
+    "work_id": "work_0300",
+    "ai_id": "ai_0078",
+    "ground_truth_quality": 0.44591576309965264
+  },
+  {
+    "work_id": "work_0301",
+    "ai_id": "ai_0183",
+    "ground_truth_quality": 0.4261160728830454
+  },
+  {
+    "work_id": "work_0302",
+    "ai_id": "ai_0176",
+    "ground_truth_quality": 0.443908381101094
+  },
+  {
+    "work_id": "work_0303",
+    "ai_id": "ai_0114",
+    "ground_truth_quality": 0.042355162850129524
+  },
+  {
+    "work_id": "work_0304",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.6148514821987643
+  },
+  {
+    "work_id": "work_0305",
+    "ai_id": "ai_0111",
+    "ground_truth_quality": 0.2745553600748576
+  },
+  {
+    "work_id": "work_0306",
+    "ai_id": "ai_0014",
+    "ground_truth_quality": 0.07504116498815927
+  },
+  {
+    "work_id": "work_0307",
+    "ai_id": "ai_0163",
+    "ground_truth_quality": 0.40621023150765245
+  },
+  {
+    "work_id": "work_0308",
+    "ai_id": "ai_0131",
+    "ground_truth_quality": 0.8010959755621699
+  },
+  {
+    "work_id": "work_0309",
+    "ai_id": "ai_0173",
+    "ground_truth_quality": 0.15998672658793178
+  },
+  {
+    "work_id": "work_0310",
+    "ai_id": "ai_0007",
+    "ground_truth_quality": 0.14277946836254973
+  },
+  {
+    "work_id": "work_0311",
+    "ai_id": "ai_0155",
+    "ground_truth_quality": 0.6780888719954488
+  },
+  {
+    "work_id": "work_0312",
+    "ai_id": "ai_0112",
+    "ground_truth_quality": 0.034798965798542025
+  },
+  {
+    "work_id": "work_0313",
+    "ai_id": "ai_0017",
+    "ground_truth_quality": 0.23599538042035229
+  },
+  {
+    "work_id": "work_0314",
+    "ai_id": "ai_0165",
+    "ground_truth_quality": 0.36632847310714856
+  },
+  {
+    "work_id": "work_0315",
+    "ai_id": "ai_0098",
+    "ground_truth_quality": 0.9494671118799197
+  },
+  {
+    "work_id": "work_0316",
+    "ai_id": "ai_0008",
+    "ground_truth_quality": 0.6050948288547855
+  },
+  {
+    "work_id": "work_0317",
+    "ai_id": "ai_0173",
+    "ground_truth_quality": 0.44992256871479397
+  },
+  {
+    "work_id": "work_0318",
+    "ai_id": "ai_0094",
+    "ground_truth_quality": 0.3720133784706837
+  },
+  {
+    "work_id": "work_0319",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.0768854288303984
+  },
+  {
+    "work_id": "work_0320",
+    "ai_id": "ai_0035",
+    "ground_truth_quality": 0.5294598815362896
+  },
+  {
+    "work_id": "work_0321",
+    "ai_id": "ai_0101",
+    "ground_truth_quality": 0.31438544131488155
+  },
+  {
+    "work_id": "work_0322",
+    "ai_id": "ai_0071",
+    "ground_truth_quality": 0.24961165309339794
+  },
+  {
+    "work_id": "work_0323",
+    "ai_id": "ai_0029",
+    "ground_truth_quality": 0.02591334086414321
+  },
+  {
+    "work_id": "work_0324",
+    "ai_id": "ai_0047",
+    "ground_truth_quality": 0.4990439602564668
+  },
+  {
+    "work_id": "work_0325",
+    "ai_id": "ai_0099",
+    "ground_truth_quality": 0.9135425058131866
+  },
+  {
+    "work_id": "work_0326",
+    "ai_id": "ai_0030",
+    "ground_truth_quality": 0.2617766765874958
+  },
+  {
+    "work_id": "work_0327",
+    "ai_id": "ai_0066",
+    "ground_truth_quality": 0.7040378112068258
+  },
+  {
+    "work_id": "work_0328",
+    "ai_id": "ai_0054",
+    "ground_truth_quality": 0.9963651121547608
+  },
+  {
+    "work_id": "work_0329",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.6939806410407938
+  },
+  {
+    "work_id": "work_0330",
+    "ai_id": "ai_0125",
+    "ground_truth_quality": 0.2001783409911202
+  },
+  {
+    "work_id": "work_0331",
+    "ai_id": "ai_0034",
+    "ground_truth_quality": 0.8528262903843227
+  },
+  {
+    "work_id": "work_0332",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.17265636398404105
+  },
+  {
+    "work_id": "work_0333",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.44511119274245503
+  },
+  {
+    "work_id": "work_0334",
+    "ai_id": "ai_0022",
+    "ground_truth_quality": 0.8105132183576319
+  },
+  {
+    "work_id": "work_0335",
+    "ai_id": "ai_0081",
+    "ground_truth_quality": 0.6678397904889679
+  },
+  {
+    "work_id": "work_0336",
+    "ai_id": "ai_0181",
+    "ground_truth_quality": 0.06493907831607115
+  },
+  {
+    "work_id": "work_0337",
+    "ai_id": "ai_0138",
+    "ground_truth_quality": 0.2903622827778136
+  },
+  {
+    "work_id": "work_0338",
+    "ai_id": "ai_0076",
+    "ground_truth_quality": 0.8513620507531259
+  },
+  {
+    "work_id": "work_0339",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.7095637912103865
+  },
+  {
+    "work_id": "work_0340",
+    "ai_id": "ai_0179",
+    "ground_truth_quality": 0.6377000225640163
+  },
+  {
+    "work_id": "work_0341",
+    "ai_id": "ai_0092",
+    "ground_truth_quality": 0.5087557451743008
+  },
+  {
+    "work_id": "work_0342",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.9851325467301932
+  },
+  {
+    "work_id": "work_0343",
+    "ai_id": "ai_0035",
+    "ground_truth_quality": 0.2367361842868705
+  },
+  {
+    "work_id": "work_0344",
+    "ai_id": "ai_0126",
+    "ground_truth_quality": 0.026284026808265692
+  },
+  {
+    "work_id": "work_0345",
+    "ai_id": "ai_0141",
+    "ground_truth_quality": 0.5722774071165261
+  },
+  {
+    "work_id": "work_0346",
+    "ai_id": "ai_0119",
+    "ground_truth_quality": 0.8036617262885865
+  },
+  {
+    "work_id": "work_0347",
+    "ai_id": "ai_0141",
+    "ground_truth_quality": 0.12977122971377042
+  },
+  {
+    "work_id": "work_0348",
+    "ai_id": "ai_0022",
+    "ground_truth_quality": 0.06574810526736607
+  },
+  {
+    "work_id": "work_0349",
+    "ai_id": "ai_0101",
+    "ground_truth_quality": 0.9995950439343869
+  },
+  {
+    "work_id": "work_0350",
+    "ai_id": "ai_0184",
+    "ground_truth_quality": 0.4786651099152539
+  },
+  {
+    "work_id": "work_0351",
+    "ai_id": "ai_0105",
+    "ground_truth_quality": 0.769164550374698
+  },
+  {
+    "work_id": "work_0352",
+    "ai_id": "ai_0147",
+    "ground_truth_quality": 0.07375071291123902
+  },
+  {
+    "work_id": "work_0353",
+    "ai_id": "ai_0081",
+    "ground_truth_quality": 0.6423385893863813
+  },
+  {
+    "work_id": "work_0354",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.46583319962105885
+  },
+  {
+    "work_id": "work_0355",
+    "ai_id": "ai_0132",
+    "ground_truth_quality": 0.3445147807026997
+  },
+  {
+    "work_id": "work_0356",
+    "ai_id": "ai_0199",
+    "ground_truth_quality": 0.5513034436091327
+  },
+  {
+    "work_id": "work_0357",
+    "ai_id": "ai_0150",
+    "ground_truth_quality": 0.18196313655213736
+  },
+  {
+    "work_id": "work_0358",
+    "ai_id": "ai_0033",
+    "ground_truth_quality": 0.43261828648197487
+  },
+  {
+    "work_id": "work_0359",
+    "ai_id": "ai_0014",
+    "ground_truth_quality": 0.8313908064675414
+  },
+  {
+    "work_id": "work_0360",
+    "ai_id": "ai_0132",
+    "ground_truth_quality": 0.15301546681020062
+  },
+  {
+    "work_id": "work_0361",
+    "ai_id": "ai_0042",
+    "ground_truth_quality": 0.16196695955589968
+  },
+  {
+    "work_id": "work_0362",
+    "ai_id": "ai_0181",
+    "ground_truth_quality": 0.2254702847154667
+  },
+  {
+    "work_id": "work_0363",
+    "ai_id": "ai_0132",
+    "ground_truth_quality": 0.8949259168211244
+  },
+  {
+    "work_id": "work_0364",
+    "ai_id": "ai_0020",
+    "ground_truth_quality": 0.25060530898199906
+  },
+  {
+    "work_id": "work_0365",
+    "ai_id": "ai_0162",
+    "ground_truth_quality": 0.9563516270431981
+  },
+  {
+    "work_id": "work_0366",
+    "ai_id": "ai_0070",
+    "ground_truth_quality": 0.1251702951269027
+  },
+  {
+    "work_id": "work_0367",
+    "ai_id": "ai_0077",
+    "ground_truth_quality": 0.614428278308198
+  },
+  {
+    "work_id": "work_0368",
+    "ai_id": "ai_0023",
+    "ground_truth_quality": 0.5025731447412627
+  },
+  {
+    "work_id": "work_0369",
+    "ai_id": "ai_0043",
+    "ground_truth_quality": 0.5918084453166051
+  },
+  {
+    "work_id": "work_0370",
+    "ai_id": "ai_0148",
+    "ground_truth_quality": 0.15419426687956317
+  },
+  {
+    "work_id": "work_0371",
+    "ai_id": "ai_0168",
+    "ground_truth_quality": 0.6244791874336657
+  },
+  {
+    "work_id": "work_0372",
+    "ai_id": "ai_0154",
+    "ground_truth_quality": 0.33761958660580216
+  },
+  {
+    "work_id": "work_0373",
+    "ai_id": "ai_0144",
+    "ground_truth_quality": 0.041194303521784104
+  },
+  {
+    "work_id": "work_0374",
+    "ai_id": "ai_0007",
+    "ground_truth_quality": 0.08122285489336989
+  },
+  {
+    "work_id": "work_0375",
+    "ai_id": "ai_0164",
+    "ground_truth_quality": 0.7710223687944653
+  },
+  {
+    "work_id": "work_0376",
+    "ai_id": "ai_0067",
+    "ground_truth_quality": 0.6511299774855999
+  },
+  {
+    "work_id": "work_0377",
+    "ai_id": "ai_0196",
+    "ground_truth_quality": 0.5721372024460641
+  },
+  {
+    "work_id": "work_0378",
+    "ai_id": "ai_0158",
+    "ground_truth_quality": 0.6389911922088705
+  },
+  {
+    "work_id": "work_0379",
+    "ai_id": "ai_0127",
+    "ground_truth_quality": 0.8889968814489544
+  },
+  {
+    "work_id": "work_0380",
+    "ai_id": "ai_0139",
+    "ground_truth_quality": 0.2896716568016058
+  },
+  {
+    "work_id": "work_0381",
+    "ai_id": "ai_0077",
+    "ground_truth_quality": 0.48294481817541945
+  },
+  {
+    "work_id": "work_0382",
+    "ai_id": "ai_0175",
+    "ground_truth_quality": 0.4060925267445584
+  },
+  {
+    "work_id": "work_0383",
+    "ai_id": "ai_0116",
+    "ground_truth_quality": 0.07297302550534579
+  },
+  {
+    "work_id": "work_0384",
+    "ai_id": "ai_0015",
+    "ground_truth_quality": 0.15808044701520718
+  },
+  {
+    "work_id": "work_0385",
+    "ai_id": "ai_0106",
+    "ground_truth_quality": 0.4842511301073592
+  },
+  {
+    "work_id": "work_0386",
+    "ai_id": "ai_0052",
+    "ground_truth_quality": 0.34019256835177736
+  },
+  {
+    "work_id": "work_0387",
+    "ai_id": "ai_0036",
+    "ground_truth_quality": 0.31258249924693304
+  },
+  {
+    "work_id": "work_0388",
+    "ai_id": "ai_0183",
+    "ground_truth_quality": 0.31931639264672806
+  },
+  {
+    "work_id": "work_0389",
+    "ai_id": "ai_0088",
+    "ground_truth_quality": 0.9753741279148802
+  },
+  {
+    "work_id": "work_0390",
+    "ai_id": "ai_0033",
+    "ground_truth_quality": 0.7606649947951748
+  },
+  {
+    "work_id": "work_0391",
+    "ai_id": "ai_0131",
+    "ground_truth_quality": 0.5616512157483692
+  },
+  {
+    "work_id": "work_0392",
+    "ai_id": "ai_0081",
+    "ground_truth_quality": 0.2417378609364671
+  },
+  {
+    "work_id": "work_0393",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.2674716744541824
+  },
+  {
+    "work_id": "work_0394",
+    "ai_id": "ai_0063",
+    "ground_truth_quality": 0.1408776350081835
+  },
+  {
+    "work_id": "work_0395",
+    "ai_id": "ai_0012",
+    "ground_truth_quality": 0.2902120049699015
+  },
+  {
+    "work_id": "work_0396",
+    "ai_id": "ai_0098",
+    "ground_truth_quality": 0.8641638503624308
+  },
+  {
+    "work_id": "work_0397",
+    "ai_id": "ai_0107",
+    "ground_truth_quality": 0.2482702803811866
+  },
+  {
+    "work_id": "work_0398",
+    "ai_id": "ai_0040",
+    "ground_truth_quality": 0.8134778464394495
+  },
+  {
+    "work_id": "work_0399",
+    "ai_id": "ai_0147",
+    "ground_truth_quality": 0.7211284288221219
+  },
+  {
+    "work_id": "work_0400",
+    "ai_id": "ai_0048",
+    "ground_truth_quality": 0.7631213751386285
+  },
+  {
+    "work_id": "work_0401",
+    "ai_id": "ai_0127",
+    "ground_truth_quality": 0.9959694110954168
+  },
+  {
+    "work_id": "work_0402",
+    "ai_id": "ai_0119",
+    "ground_truth_quality": 0.49875970839765416
+  },
+  {
+    "work_id": "work_0403",
+    "ai_id": "ai_0078",
+    "ground_truth_quality": 0.497370273047509
+  },
+  {
+    "work_id": "work_0404",
+    "ai_id": "ai_0023",
+    "ground_truth_quality": 0.9452328040692373
+  },
+  {
+    "work_id": "work_0405",
+    "ai_id": "ai_0129",
+    "ground_truth_quality": 0.45723064218973086
+  },
+  {
+    "work_id": "work_0406",
+    "ai_id": "ai_0061",
+    "ground_truth_quality": 0.2151444225262411
+  },
+  {
+    "work_id": "work_0407",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.04865813292965593
+  },
+  {
+    "work_id": "work_0408",
+    "ai_id": "ai_0072",
+    "ground_truth_quality": 0.4948942035251763
+  },
+  {
+    "work_id": "work_0409",
+    "ai_id": "ai_0167",
+    "ground_truth_quality": 0.6725206037654493
+  },
+  {
+    "work_id": "work_0410",
+    "ai_id": "ai_0073",
+    "ground_truth_quality": 0.536690749288927
+  },
+  {
+    "work_id": "work_0411",
+    "ai_id": "ai_0027",
+    "ground_truth_quality": 0.4309277693475405
+  },
+  {
+    "work_id": "work_0412",
+    "ai_id": "ai_0067",
+    "ground_truth_quality": 0.7275080633593919
+  },
+  {
+    "work_id": "work_0413",
+    "ai_id": "ai_0195",
+    "ground_truth_quality": 0.4032540721143585
+  },
+  {
+    "work_id": "work_0414",
+    "ai_id": "ai_0011",
+    "ground_truth_quality": 0.4005816210147566
+  },
+  {
+    "work_id": "work_0415",
+    "ai_id": "ai_0145",
+    "ground_truth_quality": 0.5618168651659436
+  },
+  {
+    "work_id": "work_0416",
+    "ai_id": "ai_0092",
+    "ground_truth_quality": 0.5532229266211517
+  },
+  {
+    "work_id": "work_0417",
+    "ai_id": "ai_0018",
+    "ground_truth_quality": 0.3863488249797785
+  },
+  {
+    "work_id": "work_0418",
+    "ai_id": "ai_0115",
+    "ground_truth_quality": 0.7644041147072396
+  },
+  {
+    "work_id": "work_0419",
+    "ai_id": "ai_0071",
+    "ground_truth_quality": 0.8253113179586135
+  },
+  {
+    "work_id": "work_0420",
+    "ai_id": "ai_0159",
+    "ground_truth_quality": 0.6803986401188608
+  },
+  {
+    "work_id": "work_0421",
+    "ai_id": "ai_0030",
+    "ground_truth_quality": 0.12866339068921517
+  },
+  {
+    "work_id": "work_0422",
+    "ai_id": "ai_0024",
+    "ground_truth_quality": 0.39390371272860714
+  },
+  {
+    "work_id": "work_0423",
+    "ai_id": "ai_0086",
+    "ground_truth_quality": 0.5578318382721287
+  },
+  {
+    "work_id": "work_0424",
+    "ai_id": "ai_0093",
+    "ground_truth_quality": 0.7549651722927939
+  },
+  {
+    "work_id": "work_0425",
+    "ai_id": "ai_0050",
+    "ground_truth_quality": 0.6024629511618801
+  },
+  {
+    "work_id": "work_0426",
+    "ai_id": "ai_0102",
+    "ground_truth_quality": 0.5000779035706439
+  },
+  {
+    "work_id": "work_0427",
+    "ai_id": "ai_0011",
+    "ground_truth_quality": 0.03891396624622023
+  },
+  {
+    "work_id": "work_0428",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.3330407053527672
+  },
+  {
+    "work_id": "work_0429",
+    "ai_id": "ai_0121",
+    "ground_truth_quality": 0.5193327103330833
+  },
+  {
+    "work_id": "work_0430",
+    "ai_id": "ai_0038",
+    "ground_truth_quality": 0.6062605224038041
+  },
+  {
+    "work_id": "work_0431",
+    "ai_id": "ai_0131",
+    "ground_truth_quality": 0.1397809857723552
+  },
+  {
+    "work_id": "work_0432",
+    "ai_id": "ai_0156",
+    "ground_truth_quality": 0.31853003175930705
+  },
+  {
+    "work_id": "work_0433",
+    "ai_id": "ai_0100",
+    "ground_truth_quality": 0.9906157375611401
+  },
+  {
+    "work_id": "work_0434",
+    "ai_id": "ai_0189",
+    "ground_truth_quality": 0.8426019273641283
+  },
+  {
+    "work_id": "work_0435",
+    "ai_id": "ai_0151",
+    "ground_truth_quality": 0.33637345215167835
+  },
+  {
+    "work_id": "work_0436",
+    "ai_id": "ai_0130",
+    "ground_truth_quality": 0.5323398298758764
+  },
+  {
+    "work_id": "work_0437",
+    "ai_id": "ai_0181",
+    "ground_truth_quality": 0.5629242606445444
+  },
+  {
+    "work_id": "work_0438",
+    "ai_id": "ai_0121",
+    "ground_truth_quality": 0.8157488332438242
+  },
+  {
+    "work_id": "work_0439",
+    "ai_id": "ai_0094",
+    "ground_truth_quality": 0.33123959357892263
+  },
+  {
+    "work_id": "work_0440",
+    "ai_id": "ai_0028",
+    "ground_truth_quality": 0.9798980311791619
+  },
+  {
+    "work_id": "work_0441",
+    "ai_id": "ai_0149",
+    "ground_truth_quality": 0.30767783371176427
+  },
+  {
+    "work_id": "work_0442",
+    "ai_id": "ai_0185",
+    "ground_truth_quality": 0.8720991141203317
+  },
+  {
+    "work_id": "work_0443",
+    "ai_id": "ai_0161",
+    "ground_truth_quality": 0.026647154963833186
+  },
+  {
+    "work_id": "work_0444",
+    "ai_id": "ai_0121",
+    "ground_truth_quality": 0.2655304369857213
+  },
+  {
+    "work_id": "work_0445",
+    "ai_id": "ai_0167",
+    "ground_truth_quality": 0.7829039914314214
+  },
+  {
+    "work_id": "work_0446",
+    "ai_id": "ai_0198",
+    "ground_truth_quality": 0.578474332225579
+  },
+  {
+    "work_id": "work_0447",
+    "ai_id": "ai_0058",
+    "ground_truth_quality": 0.7214001122963067
+  },
+  {
+    "work_id": "work_0448",
+    "ai_id": "ai_0149",
+    "ground_truth_quality": 0.480448783714414
+  },
+  {
+    "work_id": "work_0449",
+    "ai_id": "ai_0134",
+    "ground_truth_quality": 0.6290252411453636
+  },
+  {
+    "work_id": "work_0450",
+    "ai_id": "ai_0158",
+    "ground_truth_quality": 0.7746061298338109
+  },
+  {
+    "work_id": "work_0451",
+    "ai_id": "ai_0097",
+    "ground_truth_quality": 0.14777570830033182
+  },
+  {
+    "work_id": "work_0452",
+    "ai_id": "ai_0174",
+    "ground_truth_quality": 0.24219656014122448
+  },
+  {
+    "work_id": "work_0453",
+    "ai_id": "ai_0146",
+    "ground_truth_quality": 0.9482051707843013
+  },
+  {
+    "work_id": "work_0454",
+    "ai_id": "ai_0028",
+    "ground_truth_quality": 0.19078432782692734
+  },
+  {
+    "work_id": "work_0455",
+    "ai_id": "ai_0112",
+    "ground_truth_quality": 0.3136924834458552
+  },
+  {
+    "work_id": "work_0456",
+    "ai_id": "ai_0038",
+    "ground_truth_quality": 0.4129601097889264
+  },
+  {
+    "work_id": "work_0457",
+    "ai_id": "ai_0052",
+    "ground_truth_quality": 0.41037740932270506
+  },
+  {
+    "work_id": "work_0458",
+    "ai_id": "ai_0198",
+    "ground_truth_quality": 0.6114780598917674
+  },
+  {
+    "work_id": "work_0459",
+    "ai_id": "ai_0120",
+    "ground_truth_quality": 0.8728177089123204
+  },
+  {
+    "work_id": "work_0460",
+    "ai_id": "ai_0188",
+    "ground_truth_quality": 0.7274020989409185
+  },
+  {
+    "work_id": "work_0461",
+    "ai_id": "ai_0180",
+    "ground_truth_quality": 0.1380824857852102
+  },
+  {
+    "work_id": "work_0462",
+    "ai_id": "ai_0053",
+    "ground_truth_quality": 0.5608867729086393
+  },
+  {
+    "work_id": "work_0463",
+    "ai_id": "ai_0169",
+    "ground_truth_quality": 0.4783709833434011
+  },
+  {
+    "work_id": "work_0464",
+    "ai_id": "ai_0096",
+    "ground_truth_quality": 0.31375259873781713
+  },
+  {
+    "work_id": "work_0465",
+    "ai_id": "ai_0044",
+    "ground_truth_quality": 0.45966353201958654
+  },
+  {
+    "work_id": "work_0466",
+    "ai_id": "ai_0136",
+    "ground_truth_quality": 0.34232701768184615
+  },
+  {
+    "work_id": "work_0467",
+    "ai_id": "ai_0090",
+    "ground_truth_quality": 0.675868576556368
+  },
+  {
+    "work_id": "work_0468",
+    "ai_id": "ai_0184",
+    "ground_truth_quality": 0.6807458895691416
+  },
+  {
+    "work_id": "work_0469",
+    "ai_id": "ai_0177",
+    "ground_truth_quality": 0.2643621832883103
+  },
+  {
+    "work_id": "work_0470",
+    "ai_id": "ai_0123",
+    "ground_truth_quality": 0.1922641691367134
+  },
+  {
+    "work_id": "work_0471",
+    "ai_id": "ai_0063",
+    "ground_truth_quality": 0.2790063959217567
+  },
+  {
+    "work_id": "work_0472",
+    "ai_id": "ai_0076",
+    "ground_truth_quality": 0.2248670379928167
+  },
+  {
+    "work_id": "work_0473",
+    "ai_id": "ai_0076",
+    "ground_truth_quality": 0.7711742690876434
+  },
+  {
+    "work_id": "work_0474",
+    "ai_id": "ai_0180",
+    "ground_truth_quality": 0.20727779485464026
+  },
+  {
+    "work_id": "work_0475",
+    "ai_id": "ai_0180",
+    "ground_truth_quality": 0.48900307951152877
+  },
+  {
+    "work_id": "work_0476",
+    "ai_id": "ai_0122",
+    "ground_truth_quality": 0.3488031742013066
+  },
+  {
+    "work_id": "work_0477",
+    "ai_id": "ai_0184",
+    "ground_truth_quality": 0.27345753675542306
+  },
+  {
+    "work_id": "work_0478",
+    "ai_id": "ai_0031",
+    "ground_truth_quality": 0.5734768038736451
+  },
+  {
+    "work_id": "work_0479",
+    "ai_id": "ai_0139",
+    "ground_truth_quality": 0.3796941853743825
+  },
+  {
+    "work_id": "work_0480",
+    "ai_id": "ai_0101",
+    "ground_truth_quality": 0.8183774601305623
+  },
+  {
+    "work_id": "work_0481",
+    "ai_id": "ai_0197",
+    "ground_truth_quality": 0.8046158339565703
+  },
+  {
+    "work_id": "work_0482",
+    "ai_id": "ai_0074",
+    "ground_truth_quality": 0.042066486832725514
+  },
+  {
+    "work_id": "work_0483",
+    "ai_id": "ai_0182",
+    "ground_truth_quality": 0.07902943600985035
+  },
+  {
+    "work_id": "work_0484",
+    "ai_id": "ai_0113",
+    "ground_truth_quality": 0.6559720505509076
+  },
+  {
+    "work_id": "work_0485",
+    "ai_id": "ai_0191",
+    "ground_truth_quality": 0.4790792630164832
+  },
+  {
+    "work_id": "work_0486",
+    "ai_id": "ai_0051",
+    "ground_truth_quality": 0.8279517035080337
+  },
+  {
+    "work_id": "work_0487",
+    "ai_id": "ai_0069",
+    "ground_truth_quality": 0.9330239337833077
+  },
+  {
+    "work_id": "work_0488",
+    "ai_id": "ai_0178",
+    "ground_truth_quality": 0.2716214667057466
+  },
+  {
+    "work_id": "work_0489",
+    "ai_id": "ai_0027",
+    "ground_truth_quality": 0.6156770344144923
+  },
+  {
+    "work_id": "work_0490",
+    "ai_id": "ai_0150",
+    "ground_truth_quality": 0.23928206594629609
+  },
+  {
+    "work_id": "work_0491",
+    "ai_id": "ai_0012",
+    "ground_truth_quality": 0.669833964893104
+  },
+  {
+    "work_id": "work_0492",
+    "ai_id": "ai_0135",
+    "ground_truth_quality": 0.2256716462816638
+  },
+  {
+    "work_id": "work_0493",
+    "ai_id": "ai_0059",
+    "ground_truth_quality": 0.05249110683946279
+  },
+  {
+    "work_id": "work_0494",
+    "ai_id": "ai_0105",
+    "ground_truth_quality": 0.3302936234873388
+  },
+  {
+    "work_id": "work_0495",
+    "ai_id": "ai_0120",
+    "ground_truth_quality": 0.1005449047773479
+  },
+  {
+    "work_id": "work_0496",
+    "ai_id": "ai_0197",
+    "ground_truth_quality": 0.13746703419969553
+  },
+  {
+    "work_id": "work_0497",
+    "ai_id": "ai_0140",
+    "ground_truth_quality": 0.9779107118330872
+  },
+  {
+    "work_id": "work_0498",
+    "ai_id": "ai_0040",
+    "ground_truth_quality": 0.40690745154688346
+  },
+  {
+    "work_id": "work_0499",
+    "ai_id": "ai_0121",
+    "ground_truth_quality": 0.4774485204408965
+  }
+]

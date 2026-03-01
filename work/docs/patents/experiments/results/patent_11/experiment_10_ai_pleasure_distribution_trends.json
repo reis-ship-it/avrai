@@ -1,0 +1,19 @@
+{
+  "distribution_accuracy": 0.9749926174002795,
+  "trend_correlation": 0.8477110662049052,
+  "pleasure_compatibility_correlation": 0.8525164793667396,
+  "pleasure_learning_correlation": 0.7851506644435611,
+  "optimization_accuracy": 0.7866666666666666,
+  "pleasure_distribution": {
+    "mean": 0.6189211879059454,
+    "std": 0.21415744663233083,
+    "min": 0.11611698137659401,
+    "max": 0.9820469875998145,
+    "percentiles": {
+      "25th": 0.43549378136193795,
+      "50th": 0.6119489545913015,
+      "75th": 0.8163890736461423
+    }
+  },
+  "low_pleasure_count": 75
+}

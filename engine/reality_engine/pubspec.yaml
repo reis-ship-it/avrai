@@ -1,0 +1,15 @@
+name: reality_engine
+description: AVRAI Reality Engine containing the AI truth model, planning math, and Air Gap scrubber.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  meta: ^1.10.0
+  uuid: ^4.3.3
+  avrai_core:
+    path: ../../shared/avrai_core

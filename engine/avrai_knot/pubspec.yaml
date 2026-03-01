@@ -1,0 +1,23 @@
+name: avrai_knot
+description: Knot theory services, knot weaving, and knot fabric for SPOTS
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  avrai_core:
+    path: ../../shared/avrai_core
+  equatable: ^2.0.5
+  meta: ^1.9.1
+  uuid: ^4.3.3
+  flutter_rust_bridge: 2.11.1
+  audioplayers: ^6.0.0
+  vector_math: ^2.1.4  # For Vector3 and 3D math (3D knot visualization)
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  test: ^1.24.7

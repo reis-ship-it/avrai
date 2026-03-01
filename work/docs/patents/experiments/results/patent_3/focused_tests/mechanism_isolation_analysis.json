@@ -1,0 +1,17 @@
+{
+  "baseline_homogenization": 80.9261703489935,
+  "all_together_homogenization": 71.36295395099097,
+  "combined_improvement": 9.563216398002524,
+  "individual_improvements": {
+    "adaptive_influence": 1.868091578680847,
+    "time_decay": -0.02195153684178308,
+    "frequency_reduction": 7.804063670561646
+  },
+  "sum_of_individuals": 9.65020371240071,
+  "synergistic_effect": -0.0869873143981863,
+  "best_individual_improvement": -0.02195153684178308,
+  "best_individual_config": "Time Decay",
+  "combination_vs_best": 9.585167934844307,
+  "synergistic_effect_proven": false,
+  "combination_better_than_best": true
+}

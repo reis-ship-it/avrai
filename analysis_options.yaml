@@ -15,3 +15,5 @@ analyzer:
     # Build directories
     - build/**
     - .dart_tool/**
+    - work/**
+    - engine/spots_knot/**

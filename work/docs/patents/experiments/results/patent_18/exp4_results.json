@@ -1,0 +1,9 @@
+{
+  "experiment": "Obfuscation Distance Analysis",
+  "avg_total_obfuscation_km": 0.48091518901919916,
+  "avg_rounding_component_km": 0.35878712243195243,
+  "avg_noise_component_km": 0.3644488002812161,
+  "within_expected_range": 0.4250559284116331,
+  "expected_total_km": 1.5,
+  "num_samples": 447
+}

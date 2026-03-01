@@ -1,0 +1,72 @@
+{
+  "status": "complete",
+  "total_knots": 100,
+  "total_pairs_tested": 4950,
+  "compatible_pairs": 990,
+  "incompatible_pairs": 990,
+  "relationship_types_tested": 5,
+  "overall_stability_difference": 0.19615729513732774,
+  "success_rate": 1.0,
+  "results_by_relationship_type": [
+    {
+      "relationship_type": "friendship",
+      "compatible_pairs": 990,
+      "incompatible_pairs": 990,
+      "avg_compatible_stability": 0.4436769587124197,
+      "avg_incompatible_stability": 0.2563501872574236,
+      "stability_difference": 0.1873267714549961,
+      "avg_compatible_harmony": 1.0,
+      "avg_incompatible_harmony": 0.8832580677592403,
+      "stability_validation": true
+    },
+    {
+      "relationship_type": "mentorship",
+      "compatible_pairs": 990,
+      "incompatible_pairs": 990,
+      "avg_compatible_stability": 0.41305894276979277,
+      "avg_incompatible_stability": 0.24132409669399282,
+      "stability_difference": 0.17173484607579995,
+      "avg_compatible_harmony": 1.0,
+      "avg_incompatible_harmony": 0.8651772596784323,
+      "stability_validation": true
+    },
+    {
+      "relationship_type": "romantic",
+      "compatible_pairs": 990,
+      "incompatible_pairs": 990,
+      "avg_compatible_stability": 0.4436769587124197,
+      "avg_incompatible_stability": 0.2563501872574236,
+      "stability_difference": 0.1873267714549961,
+      "avg_compatible_harmony": 1.0,
+      "avg_incompatible_harmony": 0.9364398859410585,
+      "stability_validation": true
+    },
+    {
+      "relationship_type": "collaborative",
+      "compatible_pairs": 990,
+      "incompatible_pairs": 990,
+      "avg_compatible_stability": 0.4436769587124197,
+      "avg_incompatible_stability": 0.2563501872574236,
+      "stability_difference": 0.1873267714549961,
+      "avg_compatible_harmony": 1.0,
+      "avg_incompatible_harmony": 0.8364398859410584,
+      "stability_validation": true
+    },
+    {
+      "relationship_type": "professional",
+      "compatible_pairs": 990,
+      "incompatible_pairs": 990,
+      "avg_compatible_stability": 0.5243236315726434,
+      "avg_incompatible_stability": 0.277252316326793,
+      "stability_difference": 0.2470713152458504,
+      "avg_compatible_harmony": 1.0,
+      "avg_incompatible_harmony": 0.8364398859410584,
+      "stability_validation": true
+    }
+  ],
+  "success_criteria": {
+    "compatible_pairs_more_stable": true,
+    "all_relationship_types_validated": true,
+    "stability_correlates_with_compatibility": true
+  }
+}

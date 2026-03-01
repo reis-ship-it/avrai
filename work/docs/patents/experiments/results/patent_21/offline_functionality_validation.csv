@@ -1,0 +1,6 @@
+scenario,success_rate,success_count,total_attempts,meets_target,time_per_pair_ms,calculation_accuracy
+bluetooth_discovery,0.98,98.0,100.0,True,,
+nsd_discovery,0.99,99.0,100.0,True,,
+profile_exchange,0.87,87.0,100.0,False,,
+local_calculation,,,,True,0.010991096496582031,1.0
+offline_learning,0.91,91.0,100.0,True,,

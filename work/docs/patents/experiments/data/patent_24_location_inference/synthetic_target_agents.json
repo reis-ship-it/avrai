@@ -1,0 +1,702 @@
+[
+  {
+    "agent_id": "agent_0072",
+    "true_location": {
+      "lat": -13.756360938529255,
+      "lng": -80.3951193699894
+    },
+    "obfuscated_location": {
+      "lat": -13.76,
+      "lng": -80.4
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0000"
+  },
+  {
+    "agent_id": "agent_0185",
+    "true_location": {
+      "lat": 30.62403171381338,
+      "lng": 128.78391398412697
+    },
+    "obfuscated_location": {
+      "lat": 30.62,
+      "lng": 128.78
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0001"
+  },
+  {
+    "agent_id": "agent_0076",
+    "true_location": {
+      "lat": -63.34311859785312,
+      "lng": -134.11961305843005
+    },
+    "obfuscated_location": {
+      "lat": -63.34,
+      "lng": -134.12
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0002"
+  },
+  {
+    "agent_id": "agent_0150",
+    "true_location": {
+      "lat": -74.58966684755617,
+      "lng": 79.22687907750992
+    },
+    "obfuscated_location": {
+      "lat": -74.59,
+      "lng": 79.23
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0003"
+  },
+  {
+    "agent_id": "agent_0148",
+    "true_location": {
+      "lat": -51.81842696764698,
+      "lng": 107.21964845811476
+    },
+    "obfuscated_location": {
+      "lat": -51.82,
+      "lng": 107.22
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0004"
+  },
+  {
+    "agent_id": "agent_0168",
+    "true_location": {
+      "lat": 88.20562688402362,
+      "lng": -70.06311204503025
+    },
+    "obfuscated_location": {
+      "lat": 88.21,
+      "lng": -70.06
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0005"
+  },
+  {
+    "agent_id": "agent_0125",
+    "true_location": {
+      "lat": 22.00625297533165,
+      "lng": -170.29207731415045
+    },
+    "obfuscated_location": {
+      "lat": 22.01,
+      "lng": -170.29
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0006"
+  },
+  {
+    "agent_id": "agent_0038",
+    "true_location": {
+      "lat": -11.141984895389271,
+      "lng": 6.327302772812629
+    },
+    "obfuscated_location": {
+      "lat": -11.14,
+      "lng": 6.33
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0007"
+  },
+  {
+    "agent_id": "agent_0114",
+    "true_location": {
+      "lat": 47.84646317348978,
+      "lng": 7.667932618073564
+    },
+    "obfuscated_location": {
+      "lat": 47.85,
+      "lng": 7.67
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0008"
+  },
+  {
+    "agent_id": "agent_0137",
+    "true_location": {
+      "lat": 38.70264690890431,
+      "lng": -152.6412679764984
+    },
+    "obfuscated_location": {
+      "lat": 38.7,
+      "lng": -152.64
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0009"
+  },
+  {
+    "agent_id": "agent_0123",
+    "true_location": {
+      "lat": -11.54952431160541,
+      "lng": -169.5510648191825
+    },
+    "obfuscated_location": {
+      "lat": -11.55,
+      "lng": -169.55
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0010"
+  },
+  {
+    "agent_id": "agent_0088",
+    "true_location": {
+      "lat": 79.06268525844882,
+      "lng": -138.47696933348607
+    },
+    "obfuscated_location": {
+      "lat": 79.06,
+      "lng": -138.48
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0011"
+  },
+  {
+    "agent_id": "agent_0085",
+    "true_location": {
+      "lat": 53.16218984751512,
+      "lng": -98.06562453320267
+    },
+    "obfuscated_location": {
+      "lat": 53.16,
+      "lng": -98.07
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0012"
+  },
+  {
+    "agent_id": "agent_0141",
+    "true_location": {
+      "lat": 62.923612859923935,
+      "lng": 116.03913051242091
+    },
+    "obfuscated_location": {
+      "lat": 62.92,
+      "lng": 116.04
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0013"
+  },
+  {
+    "agent_id": "agent_0195",
+    "true_location": {
+      "lat": 59.78577127840222,
+      "lng": -0.5848183054096978
+    },
+    "obfuscated_location": {
+      "lat": 59.79,
+      "lng": -0.58
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0014"
+  },
+  {
+    "agent_id": "agent_0139",
+    "true_location": {
+      "lat": -68.21008828788328,
+      "lng": 174.1839665452817
+    },
+    "obfuscated_location": {
+      "lat": -68.21,
+      "lng": 174.18
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0015"
+  },
+  {
+    "agent_id": "agent_0096",
+    "true_location": {
+      "lat": -17.567930329609567,
+      "lng": -73.56412709065907
+    },
+    "obfuscated_location": {
+      "lat": -17.57,
+      "lng": -73.56
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0016"
+  },
+  {
+    "agent_id": "agent_0116",
+    "true_location": {
+      "lat": 7.227400053322157,
+      "lng": -130.18533785418396
+    },
+    "obfuscated_location": {
+      "lat": 7.23,
+      "lng": -130.19
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0017"
+  },
+  {
+    "agent_id": "agent_0082",
+    "true_location": {
+      "lat": 54.40232500868501,
+      "lng": 131.0630502151006
+    },
+    "obfuscated_location": {
+      "lat": 54.4,
+      "lng": 131.06
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0018"
+  },
+  {
+    "agent_id": "agent_0048",
+    "true_location": {
+      "lat": -45.034839381221914,
+      "lng": 152.3756157393646
+    },
+    "obfuscated_location": {
+      "lat": -45.03,
+      "lng": 152.38
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0019"
+  },
+  {
+    "agent_id": "agent_0178",
+    "true_location": {
+      "lat": 79.68172333392735,
+      "lng": 0.16998376245319946
+    },
+    "obfuscated_location": {
+      "lat": 79.68,
+      "lng": 0.17
+    },
+    "has_vpn": false,
+    "has_proxy": true,
+    "target_agent_id": "target_0020"
+  },
+  {
+    "agent_id": "agent_0061",
+    "true_location": {
+      "lat": -53.23334410376344,
+      "lng": 77.82904828418935
+    },
+    "obfuscated_location": {
+      "lat": -53.23,
+      "lng": 77.83
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0021"
+  },
+  {
+    "agent_id": "agent_0146",
+    "true_location": {
+      "lat": 68.69361312049895,
+      "lng": -92.20916189125585
+    },
+    "obfuscated_location": {
+      "lat": 68.69,
+      "lng": -92.21
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0022"
+  },
+  {
+    "agent_id": "agent_0098",
+    "true_location": {
+      "lat": -35.82902257819824,
+      "lng": 17.257396728851347
+    },
+    "obfuscated_location": {
+      "lat": -35.83,
+      "lng": 17.26
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0023"
+  },
+  {
+    "agent_id": "agent_0059",
+    "true_location": {
+      "lat": 70.25171654329876,
+      "lng": -91.36247479609506
+    },
+    "obfuscated_location": {
+      "lat": 70.25,
+      "lng": -91.36
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0024"
+  },
+  {
+    "agent_id": "agent_0198",
+    "true_location": {
+      "lat": 68.2787259263657,
+      "lng": 131.04969639429174
+    },
+    "obfuscated_location": {
+      "lat": 68.28,
+      "lng": 131.05
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0025"
+  },
+  {
+    "agent_id": "agent_0105",
+    "true_location": {
+      "lat": -15.40061802041052,
+      "lng": 46.71553706557694
+    },
+    "obfuscated_location": {
+      "lat": -15.4,
+      "lng": 46.72
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0026"
+  },
+  {
+    "agent_id": "agent_0011",
+    "true_location": {
+      "lat": -75.63744415374705,
+      "lng": -96.19528091002914
+    },
+    "obfuscated_location": {
+      "lat": -75.64,
+      "lng": -96.2
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0027"
+  },
+  {
+    "agent_id": "agent_0081",
+    "true_location": {
+      "lat": -85.53845485832603,
+      "lng": 85.16320983182953
+    },
+    "obfuscated_location": {
+      "lat": -85.54,
+      "lng": 85.16
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0028"
+  },
+  {
+    "agent_id": "agent_0190",
+    "true_location": {
+      "lat": 46.15976773000327,
+      "lng": 45.14714717220323
+    },
+    "obfuscated_location": {
+      "lat": 46.16,
+      "lng": 45.15
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0029"
+  },
+  {
+    "agent_id": "agent_0121",
+    "true_location": {
+      "lat": 63.620631102438836,
+      "lng": 163.23492184923828
+    },
+    "obfuscated_location": {
+      "lat": 63.62,
+      "lng": 163.23
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0030"
+  },
+  {
+    "agent_id": "agent_0180",
+    "true_location": {
+      "lat": -73.56116040642266,
+      "lng": 166.28799678942124
+    },
+    "obfuscated_location": {
+      "lat": -73.56,
+      "lng": 166.29
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0031"
+  },
+  {
+    "agent_id": "agent_0097",
+    "true_location": {
+      "lat": 79.26546073143294,
+      "lng": 63.83446029818384
+    },
+    "obfuscated_location": {
+      "lat": 79.27,
+      "lng": 63.83
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0032"
+  },
+  {
+    "agent_id": "agent_0098",
+    "true_location": {
+      "lat": -35.82902257819824,
+      "lng": 17.257396728851347
+    },
+    "obfuscated_location": {
+      "lat": -35.83,
+      "lng": 17.26
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0033"
+  },
+  {
+    "agent_id": "agent_0169",
+    "true_location": {
+      "lat": 43.21607498721809,
+      "lng": 161.1324721171361
+    },
+    "obfuscated_location": {
+      "lat": 43.22,
+      "lng": 161.13
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0034"
+  },
+  {
+    "agent_id": "agent_0166",
+    "true_location": {
+      "lat": 47.59982015871498,
+      "lng": 38.27435444746661
+    },
+    "obfuscated_location": {
+      "lat": 47.6,
+      "lng": 38.27
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0035"
+  },
+  {
+    "agent_id": "agent_0038",
+    "true_location": {
+      "lat": -11.141984895389271,
+      "lng": 6.327302772812629
+    },
+    "obfuscated_location": {
+      "lat": -11.14,
+      "lng": 6.33
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0036"
+  },
+  {
+    "agent_id": "agent_0126",
+    "true_location": {
+      "lat": -85.12163165874377,
+      "lng": 51.389873283360885
+    },
+    "obfuscated_location": {
+      "lat": -85.12,
+      "lng": 51.39
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0037"
+  },
+  {
+    "agent_id": "agent_0009",
+    "true_location": {
+      "lat": 59.29283956553908,
+      "lng": 42.66711085112857
+    },
+    "obfuscated_location": {
+      "lat": 59.29,
+      "lng": 42.67
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0038"
+  },
+  {
+    "agent_id": "agent_0032",
+    "true_location": {
+      "lat": 68.16993800817315,
+      "lng": 119.3995905700246
+    },
+    "obfuscated_location": {
+      "lat": 68.17,
+      "lng": 119.4
+    },
+    "has_vpn": false,
+    "has_proxy": true,
+    "target_agent_id": "target_0039"
+  },
+  {
+    "agent_id": "agent_0128",
+    "true_location": {
+      "lat": 47.02134742092488,
+      "lng": -43.51456239691095
+    },
+    "obfuscated_location": {
+      "lat": 47.02,
+      "lng": -43.51
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0040"
+  },
+  {
+    "agent_id": "agent_0151",
+    "true_location": {
+      "lat": 34.30968110037415,
+      "lng": 52.52504390674281
+    },
+    "obfuscated_location": {
+      "lat": 34.31,
+      "lng": 52.53
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0041"
+  },
+  {
+    "agent_id": "agent_0084",
+    "true_location": {
+      "lat": -49.9619308417804,
+      "lng": 113.9711780148944
+    },
+    "obfuscated_location": {
+      "lat": -49.96,
+      "lng": 113.97
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0042"
+  },
+  {
+    "agent_id": "agent_0025",
+    "true_location": {
+      "lat": -87.93341605029246,
+      "lng": 79.45985496967006
+    },
+    "obfuscated_location": {
+      "lat": -87.93,
+      "lng": 79.46
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0043"
+  },
+  {
+    "agent_id": "agent_0112",
+    "true_location": {
+      "lat": 59.5024505498547,
+      "lng": 17.233902219898226
+    },
+    "obfuscated_location": {
+      "lat": 59.5,
+      "lng": 17.23
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0044"
+  },
+  {
+    "agent_id": "agent_0025",
+    "true_location": {
+      "lat": -87.93341605029246,
+      "lng": 79.45985496967006
+    },
+    "obfuscated_location": {
+      "lat": -87.93,
+      "lng": 79.46
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0045"
+  },
+  {
+    "agent_id": "agent_0134",
+    "true_location": {
+      "lat": -59.79795419379559,
+      "lng": 38.60909780073541
+    },
+    "obfuscated_location": {
+      "lat": -59.8,
+      "lng": 38.61
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0046"
+  },
+  {
+    "agent_id": "agent_0116",
+    "true_location": {
+      "lat": 7.227400053322157,
+      "lng": -130.18533785418396
+    },
+    "obfuscated_location": {
+      "lat": 7.23,
+      "lng": -130.19
+    },
+    "has_vpn": true,
+    "has_proxy": false,
+    "target_agent_id": "target_0047"
+  },
+  {
+    "agent_id": "agent_0003",
+    "true_location": {
+      "lat": -85.22352545690455,
+      "lng": -108.41844575280655
+    },
+    "obfuscated_location": {
+      "lat": -85.22,
+      "lng": -108.42
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0048"
+  },
+  {
+    "agent_id": "agent_0184",
+    "true_location": {
+      "lat": -1.4893556056175896,
+      "lng": -147.1527337342222
+    },
+    "obfuscated_location": {
+      "lat": -1.49,
+      "lng": -147.15
+    },
+    "has_vpn": false,
+    "has_proxy": false,
+    "target_agent_id": "target_0049"
+  }
+]

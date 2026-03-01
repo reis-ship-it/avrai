@@ -1,0 +1,25 @@
+{
+  "status": "complete",
+  "total_knots": 100,
+  "correlations": {
+    "energy_complexity": 0.9986371908838133,
+    "stability_consistency": 0.9694042205743173,
+    "temperature_variability": 1.0,
+    "entropy_exploration": 0.20041044907143896
+  },
+  "energy_minimization_rate": 0.008450284855406859,
+  "boltzmann_fit": {
+    "0.1_r2": 1.0,
+    "0.5_r2": 1.0,
+    "1.0_r2": 1.0,
+    "2.0_r2": 1.0
+  },
+  "success_criteria": {
+    "energy_complexity_correlation": true,
+    "stability_consistency_correlation": true,
+    "temperature_variability_correlation": true,
+    "entropy_exploration_correlation": false,
+    "energy_minimization": true,
+    "boltzmann_distribution": true
+  }
+}

@@ -1,0 +1,7192 @@
+[
+  {
+    "event_id": "event_0000",
+    "total_revenue": 6314.432612041357,
+    "parties": [
+      {
+        "party_id": "party_0_0",
+        "party_type": "Brand",
+        "percentage": 5.88
+      },
+      {
+        "party_id": "party_0_1",
+        "party_type": "Business",
+        "percentage": 13.57
+      },
+      {
+        "party_id": "party_0_2",
+        "party_type": "Platform",
+        "percentage": 30.78
+      },
+      {
+        "party_id": "party_0_3",
+        "party_type": "User",
+        "percentage": 49.77
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_0_0",
+        "amount": 334.15977382922864,
+        "percentage": 5.88
+      },
+      {
+        "party_id": "party_0_1",
+        "amount": 771.181654908611,
+        "percentage": 13.57
+      },
+      {
+        "party_id": "party_0_2",
+        "amount": 1749.2241221876968,
+        "percentage": 30.78
+      },
+      {
+        "party_id": "party_0_3",
+        "amount": 2828.4237999116854,
+        "percentage": 49.77
+      }
+    ],
+    "event_start_time": 1766431135.0501919,
+    "platform_fee": 631.4432612041358
+  },
+  {
+    "event_id": "event_0001",
+    "total_revenue": 2983.9655983662706,
+    "parties": [
+      {
+        "party_id": "party_1_0",
+        "party_type": "Platform",
+        "percentage": 12.65
+      },
+      {
+        "party_id": "party_1_1",
+        "party_type": "Platform",
+        "percentage": 26.07
+      },
+      {
+        "party_id": "party_1_2",
+        "party_type": "Platform",
+        "percentage": 11.96
+      },
+      {
+        "party_id": "party_1_3",
+        "party_type": "Sponsor",
+        "percentage": 49.32
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_1_0",
+        "amount": 339.7244833739999,
+        "percentage": 12.65
+      },
+      {
+        "party_id": "party_1_1",
+        "amount": 700.127848344678,
+        "percentage": 26.07
+      },
+      {
+        "party_id": "party_1_2",
+        "amount": 321.19405700814536,
+        "percentage": 11.96
+      },
+      {
+        "party_id": "party_1_3",
+        "amount": 1324.5226498028203,
+        "percentage": 49.32
+      }
+    ],
+    "event_start_time": 1767876130.9975893,
+    "platform_fee": 298.3965598366271
+  },
+  {
+    "event_id": "event_0002",
+    "total_revenue": 2399.315498306034,
+    "parties": [
+      {
+        "party_id": "party_2_0",
+        "party_type": "Business",
+        "percentage": 31.56
+      },
+      {
+        "party_id": "party_2_1",
+        "party_type": "Brand",
+        "percentage": 29.43
+      },
+      {
+        "party_id": "party_2_2",
+        "party_type": "Brand",
+        "percentage": 39.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_2_0",
+        "amount": 681.501574138846,
+        "percentage": 31.56
+      },
+      {
+        "party_id": "party_2_1",
+        "amount": 635.5066960363193,
+        "percentage": 29.43
+      },
+      {
+        "party_id": "party_2_2",
+        "amount": 842.3756783002656,
+        "percentage": 39.01
+      }
+    ],
+    "event_start_time": 1768829850.6281478,
+    "platform_fee": 239.93154983060342
+  },
+  {
+    "event_id": "event_0003",
+    "total_revenue": 6196.169307310858,
+    "parties": [
+      {
+        "party_id": "party_3_0",
+        "party_type": "Sponsor",
+        "percentage": 8.58
+      },
+      {
+        "party_id": "party_3_1",
+        "party_type": "Brand",
+        "percentage": 8.39
+      },
+      {
+        "party_id": "party_3_2",
+        "party_type": "User",
+        "percentage": 26.13
+      },
+      {
+        "party_id": "party_3_3",
+        "party_type": "Platform",
+        "percentage": 28.28
+      },
+      {
+        "party_id": "party_3_4",
+        "party_type": "Sponsor",
+        "percentage": 6.08
+      },
+      {
+        "party_id": "party_3_5",
+        "party_type": "Brand",
+        "percentage": 5.59
+      },
+      {
+        "party_id": "party_3_6",
+        "party_type": "Platform",
+        "percentage": 10.77
+      },
+      {
+        "party_id": "party_3_7",
+        "party_type": "Brand",
+        "percentage": 6.18
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_3_0",
+        "amount": 478.46819391054447,
+        "percentage": 8.58
+      },
+      {
+        "party_id": "party_3_1",
+        "amount": 467.8727443950429,
+        "percentage": 8.39
+      },
+      {
+        "party_id": "party_3_2",
+        "amount": 1457.1531360002944,
+        "percentage": 26.13
+      },
+      {
+        "party_id": "party_3_3",
+        "amount": 1577.0490120967597,
+        "percentage": 28.28
+      },
+      {
+        "party_id": "party_3_4",
+        "amount": 339.05438449605015,
+        "percentage": 6.08
+      },
+      {
+        "party_id": "party_3_5",
+        "amount": 311.7292778508093,
+        "percentage": 5.59
+      },
+      {
+        "party_id": "party_3_6",
+        "amount": 600.5946909576414,
+        "percentage": 10.77
+      },
+      {
+        "party_id": "party_3_7",
+        "amount": 344.6309368726299,
+        "percentage": 6.18
+      }
+    ],
+    "event_start_time": 1768175004.544468,
+    "platform_fee": 619.6169307310859
+  },
+  {
+    "event_id": "event_0004",
+    "total_revenue": 4421.136025352495,
+    "parties": [
+      {
+        "party_id": "party_4_0",
+        "party_type": "Brand",
+        "percentage": 28.14
+      },
+      {
+        "party_id": "party_4_1",
+        "party_type": "Business",
+        "percentage": 39.48
+      },
+      {
+        "party_id": "party_4_2",
+        "party_type": "User",
+        "percentage": 32.38
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_4_0",
+        "amount": 1119.6969097807728,
+        "percentage": 28.14
+      },
+      {
+        "party_id": "party_4_1",
+        "amount": 1570.9180525282484,
+        "percentage": 39.48
+      },
+      {
+        "party_id": "party_4_2",
+        "amount": 1288.4074605082242,
+        "percentage": 32.38
+      }
+    ],
+    "event_start_time": 1767523993.8487418,
+    "platform_fee": 442.1136025352496
+  },
+  {
+    "event_id": "event_0005",
+    "total_revenue": 7161.528258908871,
+    "parties": [
+      {
+        "party_id": "party_5_0",
+        "party_type": "Brand",
+        "percentage": 10.69
+      },
+      {
+        "party_id": "party_5_1",
+        "party_type": "Brand",
+        "percentage": 12.33
+      },
+      {
+        "party_id": "party_5_2",
+        "party_type": "User",
+        "percentage": 29.56
+      },
+      {
+        "party_id": "party_5_3",
+        "party_type": "Business",
+        "percentage": 18.65
+      },
+      {
+        "party_id": "party_5_4",
+        "party_type": "Business",
+        "percentage": 9.68
+      },
+      {
+        "party_id": "party_5_5",
+        "party_type": "Sponsor",
+        "percentage": 5.67
+      },
+      {
+        "party_id": "party_5_6",
+        "party_type": "Platform",
+        "percentage": 5.92
+      },
+      {
+        "party_id": "party_5_7",
+        "party_type": "Business",
+        "percentage": 7.5
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_5_0",
+        "amount": 689.0106337896224,
+        "percentage": 10.69
+      },
+      {
+        "party_id": "party_5_1",
+        "amount": 794.7147908911174,
+        "percentage": 12.33
+      },
+      {
+        "party_id": "party_5_2",
+        "amount": 1905.2529780001157,
+        "percentage": 29.56
+      },
+      {
+        "party_id": "party_5_3",
+        "amount": 1202.062518257854,
+        "percentage": 18.65
+      },
+      {
+        "party_id": "party_5_4",
+        "amount": 623.9123419161408,
+        "percentage": 9.68
+      },
+      {
+        "party_id": "party_5_5",
+        "amount": 365.4527870521197,
+        "percentage": 5.67
+      },
+      {
+        "party_id": "party_5_6",
+        "amount": 381.56622563466465,
+        "percentage": 5.92
+      },
+      {
+        "party_id": "party_5_7",
+        "amount": 483.4031574763487,
+        "percentage": 7.5
+      }
+    ],
+    "event_start_time": 1768533426.522143,
+    "platform_fee": 716.1528258908871
+  },
+  {
+    "event_id": "event_0006",
+    "total_revenue": 1595.697446903925,
+    "parties": [
+      {
+        "party_id": "party_6_0",
+        "party_type": "User",
+        "percentage": 13.02
+      },
+      {
+        "party_id": "party_6_1",
+        "party_type": "Sponsor",
+        "percentage": 33.18
+      },
+      {
+        "party_id": "party_6_2",
+        "party_type": "Brand",
+        "percentage": 53.8
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_6_0",
+        "amount": 186.9838268282019,
+        "percentage": 13.02
+      },
+      {
+        "party_id": "party_6_1",
+        "amount": 476.5071715944501,
+        "percentage": 33.18
+      },
+      {
+        "party_id": "party_6_2",
+        "amount": 772.6367037908803,
+        "percentage": 53.8
+      }
+    ],
+    "event_start_time": 1768715603.179036,
+    "platform_fee": 159.56974469039253
+  },
+  {
+    "event_id": "event_0007",
+    "total_revenue": 5585.73664308818,
+    "parties": [
+      {
+        "party_id": "party_7_0",
+        "party_type": "Sponsor",
+        "percentage": 12.44
+      },
+      {
+        "party_id": "party_7_1",
+        "party_type": "Sponsor",
+        "percentage": 18.85
+      },
+      {
+        "party_id": "party_7_2",
+        "party_type": "Business",
+        "percentage": 10.0
+      },
+      {
+        "party_id": "party_7_3",
+        "party_type": "Platform",
+        "percentage": 13.31
+      },
+      {
+        "party_id": "party_7_4",
+        "party_type": "Platform",
+        "percentage": 18.69
+      },
+      {
+        "party_id": "party_7_5",
+        "party_type": "Platform",
+        "percentage": 10.02
+      },
+      {
+        "party_id": "party_7_6",
+        "party_type": "Business",
+        "percentage": 7.67
+      },
+      {
+        "party_id": "party_7_7",
+        "party_type": "Business",
+        "percentage": 9.02
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_7_0",
+        "amount": 625.3790745601527,
+        "percentage": 12.44
+      },
+      {
+        "party_id": "party_7_1",
+        "amount": 947.6202214999099,
+        "percentage": 18.85
+      },
+      {
+        "party_id": "party_7_2",
+        "amount": 502.7162978779363,
+        "percentage": 10.0
+      },
+      {
+        "party_id": "party_7_3",
+        "amount": 669.1153924755331,
+        "percentage": 13.31
+      },
+      {
+        "party_id": "party_7_4",
+        "amount": 939.5767607338629,
+        "percentage": 18.69
+      },
+      {
+        "party_id": "party_7_5",
+        "amount": 503.7217304736921,
+        "percentage": 10.02
+      },
+      {
+        "party_id": "party_7_6",
+        "amount": 385.58340047237715,
+        "percentage": 7.67
+      },
+      {
+        "party_id": "party_7_7",
+        "amount": 453.4501006858985,
+        "percentage": 9.02
+      }
+    ],
+    "event_start_time": 1766584391.5415144,
+    "platform_fee": 558.573664308818
+  },
+  {
+    "event_id": "event_0008",
+    "total_revenue": 1571.749355367614,
+    "parties": [
+      {
+        "party_id": "party_8_0",
+        "party_type": "Business",
+        "percentage": 35.14
+      },
+      {
+        "party_id": "party_8_1",
+        "party_type": "Sponsor",
+        "percentage": 26.96
+      },
+      {
+        "party_id": "party_8_2",
+        "party_type": "Platform",
+        "percentage": 37.9
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_8_0",
+        "amount": 497.0814511285616,
+        "percentage": 35.14
+      },
+      {
+        "party_id": "party_8_1",
+        "amount": 381.36926358639784,
+        "percentage": 26.96
+      },
+      {
+        "party_id": "party_8_2",
+        "amount": 536.1237051158931,
+        "percentage": 37.9
+      }
+    ],
+    "event_start_time": 1767337911.535789,
+    "platform_fee": 157.1749355367614
+  },
+  {
+    "event_id": "event_0009",
+    "total_revenue": 9213.650554103384,
+    "parties": [
+      {
+        "party_id": "party_9_0",
+        "party_type": "Platform",
+        "percentage": 23.52
+      },
+      {
+        "party_id": "party_9_1",
+        "party_type": "User",
+        "percentage": 32.1
+      },
+      {
+        "party_id": "party_9_2",
+        "party_type": "User",
+        "percentage": 7.98
+      },
+      {
+        "party_id": "party_9_3",
+        "party_type": "Platform",
+        "percentage": 5.96
+      },
+      {
+        "party_id": "party_9_4",
+        "party_type": "Brand",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_9_5",
+        "party_type": "Sponsor",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_9_6",
+        "party_type": "User",
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_9_7",
+        "party_type": "Brand",
+        "percentage": 5.08
+      },
+      {
+        "party_id": "party_9_8",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_9_9",
+        "party_type": "Platform",
+        "percentage": 5.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_9_0",
+        "amount": 1950.3455492926041,
+        "percentage": 23.52
+      },
+      {
+        "party_id": "party_9_1",
+        "amount": 2661.8236450804675,
+        "percentage": 32.1
+      },
+      {
+        "party_id": "party_9_2",
+        "amount": 661.7243827957051,
+        "percentage": 7.98
+      },
+      {
+        "party_id": "party_9_3",
+        "amount": 494.2202157221055,
+        "percentage": 5.96
+      },
+      {
+        "party_id": "party_9_4",
+        "amount": 441.9788170803393,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_9_5",
+        "amount": 415.44350348452156,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_9_6",
+        "amount": 416.2727320343908,
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_9_7",
+        "amount": 421.24810333360665,
+        "percentage": 5.08
+      },
+      {
+        "party_id": "party_9_8",
+        "amount": 414.61427493465226,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_9_9",
+        "amount": 414.61427493465226,
+        "percentage": 5.0
+      }
+    ],
+    "event_start_time": 1768605138.4781957,
+    "platform_fee": 921.3650554103384
+  },
+  {
+    "event_id": "event_0010",
+    "total_revenue": 9361.887546381553,
+    "parties": [
+      {
+        "party_id": "party_10_0",
+        "party_type": "Platform",
+        "percentage": 34.46
+      },
+      {
+        "party_id": "party_10_1",
+        "party_type": "Business",
+        "percentage": 26.31
+      },
+      {
+        "party_id": "party_10_2",
+        "party_type": "Business",
+        "percentage": 10.32
+      },
+      {
+        "party_id": "party_10_3",
+        "party_type": "Platform",
+        "percentage": 9.8
+      },
+      {
+        "party_id": "party_10_4",
+        "party_type": "Platform",
+        "percentage": 8.77
+      },
+      {
+        "party_id": "party_10_5",
+        "party_type": "User",
+        "percentage": 5.11
+      },
+      {
+        "party_id": "party_10_6",
+        "party_type": "User",
+        "percentage": 5.23
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_10_0",
+        "amount": 2903.4958036347753,
+        "percentage": 34.46
+      },
+      {
+        "party_id": "party_10_1",
+        "amount": 2216.801352107688,
+        "percentage": 26.31
+      },
+      {
+        "party_id": "party_10_2",
+        "amount": 869.5321153079187,
+        "percentage": 10.32
+      },
+      {
+        "party_id": "party_10_3",
+        "amount": 825.718481590853,
+        "percentage": 9.8
+      },
+      {
+        "party_id": "party_10_4",
+        "amount": 738.933784035896,
+        "percentage": 8.77
+      },
+      {
+        "party_id": "party_10_5",
+        "amount": 430.5532082580877,
+        "percentage": 5.11
+      },
+      {
+        "party_id": "party_10_6",
+        "amount": 440.66404680817976,
+        "percentage": 5.23
+      }
+    ],
+    "event_start_time": 1768626401.4525106,
+    "platform_fee": 936.1887546381554
+  },
+  {
+    "event_id": "event_0011",
+    "total_revenue": 3385.509660460532,
+    "parties": [
+      {
+        "party_id": "party_11_0",
+        "party_type": "Business",
+        "percentage": 13.38
+      },
+      {
+        "party_id": "party_11_1",
+        "party_type": "User",
+        "percentage": 35.73
+      },
+      {
+        "party_id": "party_11_2",
+        "party_type": "Sponsor",
+        "percentage": 7.22
+      },
+      {
+        "party_id": "party_11_3",
+        "party_type": "Platform",
+        "percentage": 24.32
+      },
+      {
+        "party_id": "party_11_4",
+        "party_type": "Business",
+        "percentage": 8.34
+      },
+      {
+        "party_id": "party_11_5",
+        "party_type": "Platform",
+        "percentage": 5.67
+      },
+      {
+        "party_id": "party_11_6",
+        "party_type": "Business",
+        "percentage": 5.34
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_11_0",
+        "amount": 407.68307331265726,
+        "percentage": 13.38
+      },
+      {
+        "party_id": "party_11_1",
+        "amount": 1088.678341514293,
+        "percentage": 35.73
+      },
+      {
+        "party_id": "party_11_2",
+        "amount": 219.99041773672533,
+        "percentage": 7.22
+      },
+      {
+        "party_id": "party_11_3",
+        "amount": 741.0203544816012,
+        "percentage": 24.32
+      },
+      {
+        "party_id": "party_11_4",
+        "amount": 254.1163551141675,
+        "percentage": 8.34
+      },
+      {
+        "party_id": "party_11_5",
+        "amount": 172.76255797330094,
+        "percentage": 5.67
+      },
+      {
+        "party_id": "party_11_6",
+        "amount": 162.70759428173315,
+        "percentage": 5.34
+      }
+    ],
+    "event_start_time": 1768610100.787692,
+    "platform_fee": 338.5509660460532
+  },
+  {
+    "event_id": "event_0012",
+    "total_revenue": 6295.96102969316,
+    "parties": [
+      {
+        "party_id": "party_12_0",
+        "party_type": "Platform",
+        "percentage": 38.75
+      },
+      {
+        "party_id": "party_12_1",
+        "party_type": "Business",
+        "percentage": 21.05
+      },
+      {
+        "party_id": "party_12_2",
+        "party_type": "Sponsor",
+        "percentage": 8.71
+      },
+      {
+        "party_id": "party_12_3",
+        "party_type": "Brand",
+        "percentage": 6.49
+      },
+      {
+        "party_id": "party_12_4",
+        "party_type": "Platform",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_5",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_6",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_7",
+        "party_type": "Platform",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_8",
+        "party_type": "Business",
+        "percentage": 5.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_12_0",
+        "amount": 2195.716409105489,
+        "percentage": 38.75
+      },
+      {
+        "party_id": "party_12_1",
+        "amount": 1192.7698170753692,
+        "percentage": 21.05
+      },
+      {
+        "party_id": "party_12_2",
+        "amount": 493.5403851176468,
+        "percentage": 8.71
+      },
+      {
+        "party_id": "party_12_3",
+        "amount": 367.74708374437745,
+        "percentage": 6.49
+      },
+      {
+        "party_id": "party_12_4",
+        "amount": 283.3182463361922,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_5",
+        "amount": 283.3182463361922,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_6",
+        "amount": 283.3182463361922,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_7",
+        "amount": 283.3182463361922,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_12_8",
+        "amount": 283.3182463361922,
+        "percentage": 5.0
+      }
+    ],
+    "event_start_time": 1766367392.9998574,
+    "platform_fee": 629.596102969316
+  },
+  {
+    "event_id": "event_0013",
+    "total_revenue": 3142.041709320957,
+    "parties": [
+      {
+        "party_id": "party_13_0",
+        "party_type": "User",
+        "percentage": 13.01
+      },
+      {
+        "party_id": "party_13_1",
+        "party_type": "User",
+        "percentage": 35.09
+      },
+      {
+        "party_id": "party_13_2",
+        "party_type": "Platform",
+        "percentage": 51.9
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_13_0",
+        "amount": 367.9016637443909,
+        "percentage": 13.01
+      },
+      {
+        "party_id": "party_13_1",
+        "amount": 992.2881922206516,
+        "percentage": 35.09
+      },
+      {
+        "party_id": "party_13_2",
+        "amount": 1467.647682423819,
+        "percentage": 51.9
+      }
+    ],
+    "event_start_time": 1768082744.746561,
+    "platform_fee": 314.20417093209574
+  },
+  {
+    "event_id": "event_0014",
+    "total_revenue": 4699.920484447643,
+    "parties": [
+      {
+        "party_id": "party_14_0",
+        "party_type": "Platform",
+        "percentage": 23.87
+      },
+      {
+        "party_id": "party_14_1",
+        "party_type": "Business",
+        "percentage": 25.17
+      },
+      {
+        "party_id": "party_14_2",
+        "party_type": "Sponsor",
+        "percentage": 29.29
+      },
+      {
+        "party_id": "party_14_3",
+        "party_type": "User",
+        "percentage": 6.27
+      },
+      {
+        "party_id": "party_14_4",
+        "party_type": "Brand",
+        "percentage": 8.56
+      },
+      {
+        "party_id": "party_14_5",
+        "party_type": "Sponsor",
+        "percentage": 6.84
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_14_0",
+        "amount": 1009.6839176738872,
+        "percentage": 23.87
+      },
+      {
+        "party_id": "party_14_1",
+        "amount": 1064.6729873419247,
+        "percentage": 25.17
+      },
+      {
+        "party_id": "party_14_2",
+        "amount": 1238.946038905243,
+        "percentage": 29.29
+      },
+      {
+        "party_id": "party_14_3",
+        "amount": 265.21651293738046,
+        "percentage": 6.27
+      },
+      {
+        "party_id": "party_14_4",
+        "amount": 362.08187412184645,
+        "percentage": 8.56
+      },
+      {
+        "party_id": "party_14_5",
+        "amount": 289.3271050225969,
+        "percentage": 6.84
+      }
+    ],
+    "event_start_time": 1768587819.197005,
+    "platform_fee": 469.9920484447643
+  },
+  {
+    "event_id": "event_0015",
+    "total_revenue": 3237.9070052825705,
+    "parties": [
+      {
+        "party_id": "party_15_0",
+        "party_type": "User",
+        "percentage": 28.57
+      },
+      {
+        "party_id": "party_15_1",
+        "party_type": "Brand",
+        "percentage": 7.12
+      },
+      {
+        "party_id": "party_15_2",
+        "party_type": "User",
+        "percentage": 64.31
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_15_0",
+        "amount": 832.5630282683073,
+        "percentage": 28.57
+      },
+      {
+        "party_id": "party_15_1",
+        "amount": 207.4850808985071,
+        "percentage": 7.12
+      },
+      {
+        "party_id": "party_15_2",
+        "amount": 1874.0681955874988,
+        "percentage": 64.31
+      }
+    ],
+    "event_start_time": 1766841775.8359165,
+    "platform_fee": 323.79070052825705
+  },
+  {
+    "event_id": "event_0016",
+    "total_revenue": 2481.7340926137417,
+    "parties": [
+      {
+        "party_id": "party_16_0",
+        "party_type": "Business",
+        "percentage": 9.91
+      },
+      {
+        "party_id": "party_16_1",
+        "party_type": "Business",
+        "percentage": 14.75
+      },
+      {
+        "party_id": "party_16_2",
+        "party_type": "User",
+        "percentage": 35.61
+      },
+      {
+        "party_id": "party_16_3",
+        "party_type": "Platform",
+        "percentage": 7.1
+      },
+      {
+        "party_id": "party_16_4",
+        "party_type": "Platform",
+        "percentage": 5.26
+      },
+      {
+        "party_id": "party_16_5",
+        "party_type": "User",
+        "percentage": 6.99
+      },
+      {
+        "party_id": "party_16_6",
+        "party_type": "Business",
+        "percentage": 5.36
+      },
+      {
+        "party_id": "party_16_7",
+        "party_type": "Sponsor",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_16_8",
+        "party_type": "Sponsor",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_16_9",
+        "party_type": "User",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_16_0",
+        "amount": 221.34586372021963,
+        "percentage": 9.91
+      },
+      {
+        "party_id": "party_16_1",
+        "amount": 329.4502007944742,
+        "percentage": 14.75
+      },
+      {
+        "party_id": "party_16_2",
+        "amount": 795.370959341778,
+        "percentage": 35.61
+      },
+      {
+        "party_id": "party_16_3",
+        "amount": 158.58280851801808,
+        "percentage": 7.1
+      },
+      {
+        "party_id": "party_16_4",
+        "amount": 117.48529194433453,
+        "percentage": 5.26
+      },
+      {
+        "party_id": "party_16_5",
+        "amount": 156.1258917663305,
+        "percentage": 6.99
+      },
+      {
+        "party_id": "party_16_6",
+        "amount": 119.7188526276869,
+        "percentage": 5.36
+      },
+      {
+        "party_id": "party_16_7",
+        "amount": 111.67803416761838,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_16_8",
+        "amount": 111.90139023595361,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_16_9",
+        "amount": 111.90139023595361,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1766354341.0859559,
+    "platform_fee": 248.1734092613742
+  },
+  {
+    "event_id": "event_0017",
+    "total_revenue": 5525.653446275622,
+    "parties": [
+      {
+        "party_id": "party_17_0",
+        "party_type": "Sponsor",
+        "percentage": 14.28
+      },
+      {
+        "party_id": "party_17_1",
+        "party_type": "Platform",
+        "percentage": 14.98
+      },
+      {
+        "party_id": "party_17_2",
+        "party_type": "Sponsor",
+        "percentage": 28.17
+      },
+      {
+        "party_id": "party_17_3",
+        "party_type": "Brand",
+        "percentage": 6.95
+      },
+      {
+        "party_id": "party_17_4",
+        "party_type": "User",
+        "percentage": 7.31
+      },
+      {
+        "party_id": "party_17_5",
+        "party_type": "Platform",
+        "percentage": 9.81
+      },
+      {
+        "party_id": "party_17_6",
+        "party_type": "Brand",
+        "percentage": 5.21
+      },
+      {
+        "party_id": "party_17_7",
+        "party_type": "Platform",
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_17_8",
+        "party_type": "Sponsor",
+        "percentage": 8.1
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_17_0",
+        "amount": 710.1569809153428,
+        "percentage": 14.28
+      },
+      {
+        "party_id": "party_17_1",
+        "amount": 744.9685976268794,
+        "percentage": 14.98
+      },
+      {
+        "party_id": "party_17_2",
+        "amount": 1400.9189182342584,
+        "percentage": 28.17
+      },
+      {
+        "party_id": "party_17_3",
+        "amount": 345.62962306454017,
+        "percentage": 6.95
+      },
+      {
+        "party_id": "party_17_4",
+        "amount": 363.53274023047317,
+        "percentage": 7.31
+      },
+      {
+        "party_id": "party_17_5",
+        "amount": 487.8599427716747,
+        "percentage": 9.81
+      },
+      {
+        "party_id": "party_17_6",
+        "amount": 259.09789009586393,
+        "percentage": 5.21
+      },
+      {
+        "party_id": "party_17_7",
+        "amount": 258.1032724755343,
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_17_8",
+        "amount": 402.82013623349286,
+        "percentage": 8.1
+      }
+    ],
+    "event_start_time": 1768559004.305466,
+    "platform_fee": 552.5653446275622
+  },
+  {
+    "event_id": "event_0018",
+    "total_revenue": 2078.979525524118,
+    "parties": [
+      {
+        "party_id": "party_18_0",
+        "party_type": "Platform",
+        "percentage": 6.99
+      },
+      {
+        "party_id": "party_18_1",
+        "party_type": "Business",
+        "percentage": 7.8
+      },
+      {
+        "party_id": "party_18_2",
+        "party_type": "User",
+        "percentage": 7.4
+      },
+      {
+        "party_id": "party_18_3",
+        "party_type": "Business",
+        "percentage": 28.63
+      },
+      {
+        "party_id": "party_18_4",
+        "party_type": "Sponsor",
+        "percentage": 49.18
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_18_0",
+        "amount": 130.78860195072227,
+        "percentage": 6.99
+      },
+      {
+        "party_id": "party_18_1",
+        "amount": 145.94436269179306,
+        "percentage": 7.8
+      },
+      {
+        "party_id": "party_18_2",
+        "amount": 138.46003639990627,
+        "percentage": 7.4
+      },
+      {
+        "party_id": "party_18_3",
+        "amount": 535.6906543417995,
+        "percentage": 28.63
+      },
+      {
+        "party_id": "party_18_4",
+        "amount": 920.197917587485,
+        "percentage": 49.18
+      }
+    ],
+    "event_start_time": 1768656379.0635066,
+    "platform_fee": 207.8979525524118
+  },
+  {
+    "event_id": "event_0019",
+    "total_revenue": 3390.5306127821846,
+    "parties": [
+      {
+        "party_id": "party_19_0",
+        "party_type": "User",
+        "percentage": 25.26
+      },
+      {
+        "party_id": "party_19_1",
+        "party_type": "Sponsor",
+        "percentage": 26.68
+      },
+      {
+        "party_id": "party_19_2",
+        "party_type": "Platform",
+        "percentage": 23.45
+      },
+      {
+        "party_id": "party_19_3",
+        "party_type": "Brand",
+        "percentage": 10.03
+      },
+      {
+        "party_id": "party_19_4",
+        "party_type": "Brand",
+        "percentage": 5.94
+      },
+      {
+        "party_id": "party_19_5",
+        "party_type": "Business",
+        "percentage": 8.64
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_19_0",
+        "amount": 770.8032295099018,
+        "percentage": 25.26
+      },
+      {
+        "party_id": "party_19_1",
+        "amount": 814.134210741258,
+        "percentage": 26.68
+      },
+      {
+        "party_id": "party_19_2",
+        "amount": 715.57148582768,
+        "percentage": 23.45
+      },
+      {
+        "party_id": "party_19_3",
+        "amount": 306.0631984158478,
+        "percentage": 10.03
+      },
+      {
+        "party_id": "party_19_4",
+        "amount": 181.25776655933558,
+        "percentage": 5.94
+      },
+      {
+        "party_id": "party_19_5",
+        "amount": 263.6476604499427,
+        "percentage": 8.64
+      }
+    ],
+    "event_start_time": 1766687990.8525643,
+    "platform_fee": 339.0530612782185
+  },
+  {
+    "event_id": "event_0020",
+    "total_revenue": 4325.743798649955,
+    "parties": [
+      {
+        "party_id": "party_20_0",
+        "party_type": "User",
+        "percentage": 21.0
+      },
+      {
+        "party_id": "party_20_1",
+        "party_type": "Platform",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_20_2",
+        "party_type": "User",
+        "percentage": 39.95
+      },
+      {
+        "party_id": "party_20_3",
+        "party_type": "Business",
+        "percentage": 6.01
+      },
+      {
+        "party_id": "party_20_4",
+        "party_type": "Business",
+        "percentage": 11.43
+      },
+      {
+        "party_id": "party_20_5",
+        "party_type": "User",
+        "percentage": 10.87
+      },
+      {
+        "party_id": "party_20_6",
+        "party_type": "Business",
+        "percentage": 5.41
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_20_0",
+        "amount": 817.5655779448415,
+        "percentage": 21.0
+      },
+      {
+        "party_id": "party_20_1",
+        "amount": 207.50593002123836,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_20_2",
+        "amount": 1555.3211828045914,
+        "percentage": 39.95
+      },
+      {
+        "party_id": "party_20_3",
+        "amount": 233.9794820689761,
+        "percentage": 6.01
+      },
+      {
+        "party_id": "party_20_4",
+        "amount": 444.9892645671209,
+        "percentage": 11.43
+      },
+      {
+        "party_id": "party_20_5",
+        "amount": 423.1875158219251,
+        "percentage": 10.87
+      },
+      {
+        "party_id": "party_20_6",
+        "amount": 210.62046555626634,
+        "percentage": 5.41
+      }
+    ],
+    "event_start_time": 1766757634.1347668,
+    "platform_fee": 432.57437986499554
+  },
+  {
+    "event_id": "event_0021",
+    "total_revenue": 3535.8064431210487,
+    "parties": [
+      {
+        "party_id": "party_21_0",
+        "party_type": "Platform",
+        "percentage": 26.41
+      },
+      {
+        "party_id": "party_21_1",
+        "party_type": "Platform",
+        "percentage": 5.27
+      },
+      {
+        "party_id": "party_21_2",
+        "party_type": "User",
+        "percentage": 15.48
+      },
+      {
+        "party_id": "party_21_3",
+        "party_type": "Business",
+        "percentage": 35.83
+      },
+      {
+        "party_id": "party_21_4",
+        "party_type": "User",
+        "percentage": 5.53
+      },
+      {
+        "party_id": "party_21_5",
+        "party_type": "Business",
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_21_6",
+        "party_type": "Brand",
+        "percentage": 5.38
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_21_0",
+        "amount": 840.425833465442,
+        "percentage": 26.41
+      },
+      {
+        "party_id": "party_21_1",
+        "amount": 167.7032995972313,
+        "percentage": 5.27
+      },
+      {
+        "party_id": "party_21_2",
+        "amount": 492.60855365562446,
+        "percentage": 15.48
+      },
+      {
+        "party_id": "party_21_3",
+        "amount": 1140.1915037132446,
+        "percentage": 35.83
+      },
+      {
+        "party_id": "party_21_4",
+        "amount": 175.9770866741346,
+        "percentage": 5.53
+      },
+      {
+        "party_id": "party_21_5",
+        "amount": 194.11577372734556,
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_21_6",
+        "amount": 171.20374797592117,
+        "percentage": 5.38
+      }
+    ],
+    "event_start_time": 1766894706.4105637,
+    "platform_fee": 353.5806443121049
+  },
+  {
+    "event_id": "event_0022",
+    "total_revenue": 7671.078175131377,
+    "parties": [
+      {
+        "party_id": "party_22_0",
+        "party_type": "Brand",
+        "percentage": 12.13
+      },
+      {
+        "party_id": "party_22_1",
+        "party_type": "Brand",
+        "percentage": 22.69
+      },
+      {
+        "party_id": "party_22_2",
+        "party_type": "User",
+        "percentage": 36.69
+      },
+      {
+        "party_id": "party_22_3",
+        "party_type": "Sponsor",
+        "percentage": 5.32
+      },
+      {
+        "party_id": "party_22_4",
+        "party_type": "User",
+        "percentage": 7.63
+      },
+      {
+        "party_id": "party_22_5",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_22_6",
+        "party_type": "Brand",
+        "percentage": 5.34
+      },
+      {
+        "party_id": "party_22_7",
+        "party_type": "Business",
+        "percentage": 5.2
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_22_0",
+        "amount": 837.4516043790925,
+        "percentage": 12.13
+      },
+      {
+        "party_id": "party_22_1",
+        "amount": 1566.5108741435786,
+        "percentage": 22.69
+      },
+      {
+        "party_id": "party_22_2",
+        "amount": 2533.066724210132,
+        "percentage": 36.69
+      },
+      {
+        "party_id": "party_22_3",
+        "amount": 367.2912230252904,
+        "percentage": 5.32
+      },
+      {
+        "party_id": "party_22_4",
+        "amount": 526.7729382862716,
+        "percentage": 7.63
+      },
+      {
+        "party_id": "party_22_5",
+        "amount": 345.198517880912,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_22_6",
+        "amount": 368.67201709681393,
+        "percentage": 5.34
+      },
+      {
+        "party_id": "party_22_7",
+        "amount": 359.0064585961485,
+        "percentage": 5.2
+      }
+    ],
+    "event_start_time": 1767778709.9968717,
+    "platform_fee": 767.1078175131378
+  },
+  {
+    "event_id": "event_0023",
+    "total_revenue": 8021.046176842984,
+    "parties": [
+      {
+        "party_id": "party_23_0",
+        "party_type": "User",
+        "percentage": 24.63
+      },
+      {
+        "party_id": "party_23_1",
+        "party_type": "Business",
+        "percentage": 7.63
+      },
+      {
+        "party_id": "party_23_2",
+        "party_type": "Brand",
+        "percentage": 22.86
+      },
+      {
+        "party_id": "party_23_3",
+        "party_type": "Business",
+        "percentage": 13.66
+      },
+      {
+        "party_id": "party_23_4",
+        "party_type": "User",
+        "percentage": 7.67
+      },
+      {
+        "party_id": "party_23_5",
+        "party_type": "User",
+        "percentage": 6.09
+      },
+      {
+        "party_id": "party_23_6",
+        "party_type": "Business",
+        "percentage": 7.2
+      },
+      {
+        "party_id": "party_23_7",
+        "party_type": "User",
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_23_8",
+        "party_type": "Brand",
+        "percentage": 5.09
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_23_0",
+        "amount": 1778.0253060207842,
+        "percentage": 24.63
+      },
+      {
+        "party_id": "party_23_1",
+        "amount": 550.8052409638077,
+        "percentage": 7.63
+      },
+      {
+        "party_id": "party_23_2",
+        "amount": 1650.2500404236755,
+        "percentage": 22.86
+      },
+      {
+        "party_id": "party_23_3",
+        "amount": 986.1074169810764,
+        "percentage": 13.66
+      },
+      {
+        "party_id": "party_23_4",
+        "amount": 553.6928175874713,
+        "percentage": 7.67
+      },
+      {
+        "party_id": "party_23_5",
+        "amount": 439.63354095276395,
+        "percentage": 6.09
+      },
+      {
+        "party_id": "party_23_6",
+        "amount": 519.7637922594255,
+        "percentage": 7.2
+      },
+      {
+        "party_id": "party_23_7",
+        "amount": 373.219278608504,
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_23_8",
+        "amount": 367.4441253611771,
+        "percentage": 5.09
+      }
+    ],
+    "event_start_time": 1768640431.4914873,
+    "platform_fee": 802.1046176842984
+  },
+  {
+    "event_id": "event_0024",
+    "total_revenue": 8849.501046154808,
+    "parties": [
+      {
+        "party_id": "party_24_0",
+        "party_type": "Business",
+        "percentage": 39.08
+      },
+      {
+        "party_id": "party_24_1",
+        "party_type": "Business",
+        "percentage": 24.36
+      },
+      {
+        "party_id": "party_24_2",
+        "party_type": "Business",
+        "percentage": 6.34
+      },
+      {
+        "party_id": "party_24_3",
+        "party_type": "User",
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_24_4",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_5",
+        "party_type": "Sponsor",
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_24_6",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_7",
+        "party_type": "User",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_8",
+        "party_type": "Sponsor",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_24_0",
+        "amount": 3112.546507953569,
+        "percentage": 39.08
+      },
+      {
+        "party_id": "party_24_1",
+        "amount": 1940.16460935898,
+        "percentage": 24.36
+      },
+      {
+        "party_id": "party_24_2",
+        "amount": 504.9525296935933,
+        "percentage": 6.34
+      },
+      {
+        "party_id": "party_24_3",
+        "amount": 413.3601938658911,
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_24_4",
+        "amount": 398.2275470769664,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_5",
+        "amount": 399.8204572652742,
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_24_6",
+        "amount": 398.2275470769664,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_7",
+        "amount": 398.2275470769664,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_24_8",
+        "amount": 399.0240021711203,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1768574228.0528016,
+    "platform_fee": 884.9501046154809
+  },
+  {
+    "event_id": "event_0025",
+    "total_revenue": 6773.335647468649,
+    "parties": [
+      {
+        "party_id": "party_25_0",
+        "party_type": "Sponsor",
+        "percentage": 11.99
+      },
+      {
+        "party_id": "party_25_1",
+        "party_type": "Business",
+        "percentage": 17.24
+      },
+      {
+        "party_id": "party_25_2",
+        "party_type": "Business",
+        "percentage": 12.8
+      },
+      {
+        "party_id": "party_25_3",
+        "party_type": "Brand",
+        "percentage": 18.95
+      },
+      {
+        "party_id": "party_25_4",
+        "party_type": "Brand",
+        "percentage": 30.09
+      },
+      {
+        "party_id": "party_25_5",
+        "party_type": "Brand",
+        "percentage": 8.93
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_25_0",
+        "amount": 730.9106497183419,
+        "percentage": 11.99
+      },
+      {
+        "party_id": "party_25_1",
+        "amount": 1050.9507590612357,
+        "percentage": 17.24
+      },
+      {
+        "party_id": "party_25_2",
+        "amount": 780.2882665883884,
+        "percentage": 12.8
+      },
+      {
+        "party_id": "party_25_3",
+        "amount": 1155.1923946757781,
+        "percentage": 18.95
+      },
+      {
+        "party_id": "party_25_4",
+        "amount": 1834.287026690985,
+        "percentage": 30.09
+      },
+      {
+        "party_id": "party_25_5",
+        "amount": 544.3729859870552,
+        "percentage": 8.93
+      }
+    ],
+    "event_start_time": 1767384720.7176023,
+    "platform_fee": 677.3335647468649
+  },
+  {
+    "event_id": "event_0026",
+    "total_revenue": 3292.5025552472375,
+    "parties": [
+      {
+        "party_id": "party_26_0",
+        "party_type": "User",
+        "percentage": 37.87
+      },
+      {
+        "party_id": "party_26_1",
+        "party_type": "Brand",
+        "percentage": 28.79
+      },
+      {
+        "party_id": "party_26_2",
+        "party_type": "Brand",
+        "percentage": 5.6
+      },
+      {
+        "party_id": "party_26_3",
+        "party_type": "Platform",
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_26_4",
+        "party_type": "Brand",
+        "percentage": 6.15
+      },
+      {
+        "party_id": "party_26_5",
+        "party_type": "Platform",
+        "percentage": 5.65
+      },
+      {
+        "party_id": "party_26_6",
+        "party_type": "Platform",
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_26_7",
+        "party_type": "Business",
+        "percentage": 5.74
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_26_0",
+        "amount": 1122.183645904916,
+        "percentage": 37.87
+      },
+      {
+        "party_id": "party_26_1",
+        "amount": 853.1203370901117,
+        "percentage": 28.79
+      },
+      {
+        "party_id": "party_26_2",
+        "amount": 165.94212878446075,
+        "percentage": 5.6
+      },
+      {
+        "party_id": "party_26_3",
+        "amount": 151.1258672858482,
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_26_4",
+        "amount": 182.24001643293462,
+        "percentage": 6.15
+      },
+      {
+        "party_id": "party_26_5",
+        "amount": 167.42375493432203,
+        "percentage": 5.65
+      },
+      {
+        "party_id": "party_26_6",
+        "amount": 151.1258672858482,
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_26_7",
+        "amount": 170.09068200407228,
+        "percentage": 5.74
+      }
+    ],
+    "event_start_time": 1768185925.8010464,
+    "platform_fee": 329.2502555247238
+  },
+  {
+    "event_id": "event_0027",
+    "total_revenue": 4881.676596624882,
+    "parties": [
+      {
+        "party_id": "party_27_0",
+        "party_type": "Platform",
+        "percentage": 23.2
+      },
+      {
+        "party_id": "party_27_1",
+        "party_type": "Business",
+        "percentage": 29.04
+      },
+      {
+        "party_id": "party_27_2",
+        "party_type": "Brand",
+        "percentage": 47.76
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_27_0",
+        "amount": 1019.2940733752753,
+        "percentage": 23.2
+      },
+      {
+        "party_id": "party_27_1",
+        "amount": 1275.8749952938792,
+        "percentage": 29.04
+      },
+      {
+        "party_id": "party_27_2",
+        "amount": 2098.3398682932393,
+        "percentage": 47.76
+      }
+    ],
+    "event_start_time": 1768808237.0129957,
+    "platform_fee": 488.16765966248823
+  },
+  {
+    "event_id": "event_0028",
+    "total_revenue": 6121.947293792284,
+    "parties": [
+      {
+        "party_id": "party_28_0",
+        "party_type": "User",
+        "percentage": 26.81
+      },
+      {
+        "party_id": "party_28_1",
+        "party_type": "Brand",
+        "percentage": 30.19
+      },
+      {
+        "party_id": "party_28_2",
+        "party_type": "Sponsor",
+        "percentage": 11.59
+      },
+      {
+        "party_id": "party_28_3",
+        "party_type": "Brand",
+        "percentage": 7.09
+      },
+      {
+        "party_id": "party_28_4",
+        "party_type": "Business",
+        "percentage": 7.39
+      },
+      {
+        "party_id": "party_28_5",
+        "party_type": "Sponsor",
+        "percentage": 5.81
+      },
+      {
+        "party_id": "party_28_6",
+        "party_type": "Business",
+        "percentage": 5.76
+      },
+      {
+        "party_id": "party_28_7",
+        "party_type": "Platform",
+        "percentage": 5.36
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_28_0",
+        "amount": 1477.1646625191402,
+        "percentage": 26.81
+      },
+      {
+        "party_id": "party_28_1",
+        "amount": 1663.3942991963015,
+        "percentage": 30.19
+      },
+      {
+        "party_id": "party_28_2",
+        "amount": 638.5803222154732,
+        "percentage": 11.59
+      },
+      {
+        "party_id": "party_28_3",
+        "amount": 390.64145681688564,
+        "percentage": 7.09
+      },
+      {
+        "party_id": "party_28_4",
+        "amount": 407.17071451012475,
+        "percentage": 7.39
+      },
+      {
+        "party_id": "party_28_5",
+        "amount": 320.1166239923985,
+        "percentage": 5.81
+      },
+      {
+        "party_id": "party_28_6",
+        "amount": 317.361747710192,
+        "percentage": 5.76
+      },
+      {
+        "party_id": "party_28_7",
+        "amount": 295.3227374525398,
+        "percentage": 5.36
+      }
+    ],
+    "event_start_time": 1767401301.182792,
+    "platform_fee": 612.1947293792284
+  },
+  {
+    "event_id": "event_0029",
+    "total_revenue": 6892.350613327644,
+    "parties": [
+      {
+        "party_id": "party_29_0",
+        "party_type": "Business",
+        "percentage": 15.64
+      },
+      {
+        "party_id": "party_29_1",
+        "party_type": "Platform",
+        "percentage": 20.05
+      },
+      {
+        "party_id": "party_29_2",
+        "party_type": "Platform",
+        "percentage": 64.31
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_29_0",
+        "amount": 970.1672723319992,
+        "percentage": 15.64
+      },
+      {
+        "party_id": "party_29_1",
+        "amount": 1243.7246681749734,
+        "percentage": 20.05
+      },
+      {
+        "party_id": "party_29_2",
+        "amount": 3989.2236114879074,
+        "percentage": 64.31
+      }
+    ],
+    "event_start_time": 1767554003.7344942,
+    "platform_fee": 689.2350613327644
+  },
+  {
+    "event_id": "event_0030",
+    "total_revenue": 5098.745515420802,
+    "parties": [
+      {
+        "party_id": "party_30_0",
+        "party_type": "Platform",
+        "percentage": 28.65
+      },
+      {
+        "party_id": "party_30_1",
+        "party_type": "Business",
+        "percentage": 17.47
+      },
+      {
+        "party_id": "party_30_2",
+        "party_type": "Brand",
+        "percentage": 14.15
+      },
+      {
+        "party_id": "party_30_3",
+        "party_type": "Platform",
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_30_4",
+        "party_type": "Business",
+        "percentage": 5.77
+      },
+      {
+        "party_id": "party_30_5",
+        "party_type": "Business",
+        "percentage": 6.03
+      },
+      {
+        "party_id": "party_30_6",
+        "party_type": "Business",
+        "percentage": 5.4
+      },
+      {
+        "party_id": "party_30_7",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_30_8",
+        "party_type": "Platform",
+        "percentage": 5.09
+      },
+      {
+        "party_id": "party_30_9",
+        "party_type": "User",
+        "percentage": 5.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_30_0",
+        "amount": 1314.7115311512537,
+        "percentage": 28.65
+      },
+      {
+        "party_id": "party_30_1",
+        "amount": 801.6757573896126,
+        "percentage": 17.47
+      },
+      {
+        "party_id": "party_30_2",
+        "amount": 649.3252413888391,
+        "percentage": 14.15
+      },
+      {
+        "party_id": "party_30_3",
+        "amount": 341.4119997125769,
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_30_4",
+        "amount": 264.7778546158022,
+        "percentage": 5.77
+      },
+      {
+        "party_id": "party_30_5",
+        "amount": 276.7089191218869,
+        "percentage": 6.03
+      },
+      {
+        "party_id": "party_30_6",
+        "amount": 247.79903204945097,
+        "percentage": 5.4
+      },
+      {
+        "party_id": "party_30_7",
+        "amount": 229.44354819393607,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_30_8",
+        "amount": 233.57353206142693,
+        "percentage": 5.09
+      },
+      {
+        "party_id": "party_30_9",
+        "amount": 229.44354819393607,
+        "percentage": 5.0
+      }
+    ],
+    "event_start_time": 1768645621.213643,
+    "platform_fee": 509.8745515420802
+  },
+  {
+    "event_id": "event_0031",
+    "total_revenue": 8236.988705558288,
+    "parties": [
+      {
+        "party_id": "party_31_0",
+        "party_type": "Sponsor",
+        "percentage": 30.14
+      },
+      {
+        "party_id": "party_31_1",
+        "party_type": "Business",
+        "percentage": 22.3
+      },
+      {
+        "party_id": "party_31_2",
+        "party_type": "User",
+        "percentage": 9.07
+      },
+      {
+        "party_id": "party_31_3",
+        "party_type": "User",
+        "percentage": 25.97
+      },
+      {
+        "party_id": "party_31_4",
+        "party_type": "Business",
+        "percentage": 6.96
+      },
+      {
+        "party_id": "party_31_5",
+        "party_type": "Business",
+        "percentage": 5.56
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_31_0",
+        "amount": 2234.3655562697413,
+        "percentage": 30.14
+      },
+      {
+        "party_id": "party_31_1",
+        "amount": 1653.1636332055484,
+        "percentage": 22.3
+      },
+      {
+        "party_id": "party_31_2",
+        "amount": 672.3853880347231,
+        "percentage": 9.07
+      },
+      {
+        "party_id": "party_31_3",
+        "amount": 1925.2313701501384,
+        "percentage": 25.97
+      },
+      {
+        "party_id": "party_31_4",
+        "amount": 515.9649725161711,
+        "percentage": 6.96
+      },
+      {
+        "party_id": "party_31_5",
+        "amount": 412.1789148261367,
+        "percentage": 5.56
+      }
+    ],
+    "event_start_time": 1768152557.6698394,
+    "platform_fee": 823.6988705558288
+  },
+  {
+    "event_id": "event_0032",
+    "total_revenue": 3332.7239361851744,
+    "parties": [
+      {
+        "party_id": "party_32_0",
+        "party_type": "Business",
+        "percentage": 6.76
+      },
+      {
+        "party_id": "party_32_1",
+        "party_type": "User",
+        "percentage": 37.11
+      },
+      {
+        "party_id": "party_32_2",
+        "party_type": "Sponsor",
+        "percentage": 12.36
+      },
+      {
+        "party_id": "party_32_3",
+        "party_type": "Platform",
+        "percentage": 10.85
+      },
+      {
+        "party_id": "party_32_4",
+        "party_type": "Sponsor",
+        "percentage": 6.74
+      },
+      {
+        "party_id": "party_32_5",
+        "party_type": "Platform",
+        "percentage": 5.72
+      },
+      {
+        "party_id": "party_32_6",
+        "party_type": "Platform",
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_32_7",
+        "party_type": "Business",
+        "percentage": 5.12
+      },
+      {
+        "party_id": "party_32_8",
+        "party_type": "Sponsor",
+        "percentage": 5.11
+      },
+      {
+        "party_id": "party_32_9",
+        "party_type": "Sponsor",
+        "percentage": 5.04
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_32_0",
+        "amount": 202.762924277506,
+        "percentage": 6.76
+      },
+      {
+        "party_id": "party_32_1",
+        "amount": 1113.0964674464863,
+        "percentage": 37.11
+      },
+      {
+        "party_id": "party_32_2",
+        "amount": 370.73221066123875,
+        "percentage": 12.36
+      },
+      {
+        "party_id": "party_32_3",
+        "amount": 325.44049236848224,
+        "percentage": 10.85
+      },
+      {
+        "party_id": "party_32_4",
+        "amount": 202.16303396899266,
+        "percentage": 6.74
+      },
+      {
+        "party_id": "party_32_5",
+        "amount": 171.56862823481276,
+        "percentage": 5.72
+      },
+      {
+        "party_id": "party_32_6",
+        "amount": 155.6715350592095,
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_32_7",
+        "amount": 153.57191897941283,
+        "percentage": 5.12
+      },
+      {
+        "party_id": "party_32_8",
+        "amount": 153.27197382515618,
+        "percentage": 5.11
+      },
+      {
+        "party_id": "party_32_9",
+        "amount": 151.1723577453595,
+        "percentage": 5.04
+      }
+    ],
+    "event_start_time": 1766989599.7450252,
+    "platform_fee": 333.27239361851747
+  },
+  {
+    "event_id": "event_0033",
+    "total_revenue": 2357.475922117779,
+    "parties": [
+      {
+        "party_id": "party_33_0",
+        "party_type": "Platform",
+        "percentage": 31.8
+      },
+      {
+        "party_id": "party_33_1",
+        "party_type": "Business",
+        "percentage": 21.96
+      },
+      {
+        "party_id": "party_33_2",
+        "party_type": "User",
+        "percentage": 10.83
+      },
+      {
+        "party_id": "party_33_3",
+        "party_type": "Business",
+        "percentage": 15.99
+      },
+      {
+        "party_id": "party_33_4",
+        "party_type": "Brand",
+        "percentage": 6.2
+      },
+      {
+        "party_id": "party_33_5",
+        "party_type": "User",
+        "percentage": 7.87
+      },
+      {
+        "party_id": "party_33_6",
+        "party_type": "Business",
+        "percentage": 5.35
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_33_0",
+        "amount": 674.7096089101085,
+        "percentage": 31.8
+      },
+      {
+        "party_id": "party_33_1",
+        "amount": 465.9315412473579,
+        "percentage": 21.96
+      },
+      {
+        "party_id": "party_33_2",
+        "amount": 229.78317812881997,
+        "percentage": 10.83
+      },
+      {
+        "party_id": "party_33_3",
+        "amount": 339.26435995196965,
+        "percentage": 15.99
+      },
+      {
+        "party_id": "party_33_4",
+        "amount": 131.5471564541721,
+        "percentage": 6.2
+      },
+      {
+        "party_id": "party_33_5",
+        "amount": 166.98001956360233,
+        "percentage": 7.87
+      },
+      {
+        "party_id": "party_33_6",
+        "amount": 113.51246564997108,
+        "percentage": 5.35
+      }
+    ],
+    "event_start_time": 1767341581.823394,
+    "platform_fee": 235.74759221177794
+  },
+  {
+    "event_id": "event_0034",
+    "total_revenue": 9143.546305061593,
+    "parties": [
+      {
+        "party_id": "party_34_0",
+        "party_type": "User",
+        "percentage": 29.72
+      },
+      {
+        "party_id": "party_34_1",
+        "party_type": "Brand",
+        "percentage": 19.52
+      },
+      {
+        "party_id": "party_34_2",
+        "party_type": "Sponsor",
+        "percentage": 23.99
+      },
+      {
+        "party_id": "party_34_3",
+        "party_type": "Sponsor",
+        "percentage": 6.04
+      },
+      {
+        "party_id": "party_34_4",
+        "party_type": "Sponsor",
+        "percentage": 20.73
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_34_0",
+        "amount": 2445.7157656778745,
+        "percentage": 29.72
+      },
+      {
+        "party_id": "party_34_1",
+        "amount": 1606.3382148732205,
+        "percentage": 19.52
+      },
+      {
+        "party_id": "party_34_2",
+        "amount": 1974.1830827258484,
+        "percentage": 23.99
+      },
+      {
+        "party_id": "party_34_3",
+        "amount": 497.0431771431482,
+        "percentage": 6.04
+      },
+      {
+        "party_id": "party_34_4",
+        "amount": 1705.9114341353416,
+        "percentage": 20.73
+      }
+    ],
+    "event_start_time": 1767862688.1870413,
+    "platform_fee": 914.3546305061593
+  },
+  {
+    "event_id": "event_0035",
+    "total_revenue": 3687.513871351451,
+    "parties": [
+      {
+        "party_id": "party_35_0",
+        "party_type": "Platform",
+        "percentage": 34.99
+      },
+      {
+        "party_id": "party_35_1",
+        "party_type": "User",
+        "percentage": 18.31
+      },
+      {
+        "party_id": "party_35_2",
+        "party_type": "Brand",
+        "percentage": 46.7
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_35_0",
+        "amount": 1161.2349932272855,
+        "percentage": 34.99
+      },
+      {
+        "party_id": "party_35_1",
+        "amount": 607.6654108600055,
+        "percentage": 18.31
+      },
+      {
+        "party_id": "party_35_2",
+        "amount": 1549.8620801290149,
+        "percentage": 46.7
+      }
+    ],
+    "event_start_time": 1767359599.737209,
+    "platform_fee": 368.75138713514514
+  },
+  {
+    "event_id": "event_0036",
+    "total_revenue": 6079.5278472229675,
+    "parties": [
+      {
+        "party_id": "party_36_0",
+        "party_type": "Platform",
+        "percentage": 23.84
+      },
+      {
+        "party_id": "party_36_1",
+        "party_type": "Business",
+        "percentage": 33.0
+      },
+      {
+        "party_id": "party_36_2",
+        "party_type": "Brand",
+        "percentage": 8.99
+      },
+      {
+        "party_id": "party_36_3",
+        "party_type": "User",
+        "percentage": 6.82
+      },
+      {
+        "party_id": "party_36_4",
+        "party_type": "Sponsor",
+        "percentage": 5.92
+      },
+      {
+        "party_id": "party_36_5",
+        "party_type": "Sponsor",
+        "percentage": 6.04
+      },
+      {
+        "party_id": "party_36_6",
+        "party_type": "Platform",
+        "percentage": 5.37
+      },
+      {
+        "party_id": "party_36_7",
+        "party_type": "Sponsor",
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_36_8",
+        "party_type": "Platform",
+        "percentage": 5.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_36_0",
+        "amount": 1304.4234949001598,
+        "percentage": 23.84
+      },
+      {
+        "party_id": "party_36_1",
+        "amount": 1805.6197706252212,
+        "percentage": 33.0
+      },
+      {
+        "party_id": "party_36_2",
+        "amount": 491.8945981188103,
+        "percentage": 8.99
+      },
+      {
+        "party_id": "party_36_3",
+        "amount": 373.1614192625457,
+        "percentage": 6.82
+      },
+      {
+        "party_id": "party_36_4",
+        "amount": 323.9172437000397,
+        "percentage": 5.92
+      },
+      {
+        "party_id": "party_36_5",
+        "amount": 330.4831337750405,
+        "percentage": 6.04
+      },
+      {
+        "party_id": "party_36_6",
+        "amount": 293.82358085628596,
+        "percentage": 5.37
+      },
+      {
+        "party_id": "party_36_7",
+        "amount": 274.6730681375336,
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_36_8",
+        "amount": 273.57875312503353,
+        "percentage": 5.0
+      }
+    ],
+    "event_start_time": 1766419002.849551,
+    "platform_fee": 607.9527847222968
+  },
+  {
+    "event_id": "event_0037",
+    "total_revenue": 9999.170456582882,
+    "parties": [
+      {
+        "party_id": "party_37_0",
+        "party_type": "Sponsor",
+        "percentage": 9.75
+      },
+      {
+        "party_id": "party_37_1",
+        "party_type": "Brand",
+        "percentage": 11.36
+      },
+      {
+        "party_id": "party_37_2",
+        "party_type": "Business",
+        "percentage": 18.27
+      },
+      {
+        "party_id": "party_37_3",
+        "party_type": "Brand",
+        "percentage": 18.92
+      },
+      {
+        "party_id": "party_37_4",
+        "party_type": "Sponsor",
+        "percentage": 17.71
+      },
+      {
+        "party_id": "party_37_5",
+        "party_type": "Sponsor",
+        "percentage": 6.11
+      },
+      {
+        "party_id": "party_37_6",
+        "party_type": "User",
+        "percentage": 5.73
+      },
+      {
+        "party_id": "party_37_7",
+        "party_type": "Platform",
+        "percentage": 6.01
+      },
+      {
+        "party_id": "party_37_8",
+        "party_type": "User",
+        "percentage": 6.14
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_37_0",
+        "amount": 877.4272075651479,
+        "percentage": 9.75
+      },
+      {
+        "party_id": "party_37_1",
+        "amount": 1022.3151874810337,
+        "percentage": 11.36
+      },
+      {
+        "party_id": "party_37_2",
+        "amount": 1644.1635981759232,
+        "percentage": 18.27
+      },
+      {
+        "party_id": "party_37_3",
+        "amount": 1702.658745346933,
+        "percentage": 18.92
+      },
+      {
+        "party_id": "party_37_4",
+        "amount": 1593.7677790747455,
+        "percentage": 17.71
+      },
+      {
+        "party_id": "party_37_5",
+        "amount": 549.8543834074927,
+        "percentage": 6.11
+      },
+      {
+        "party_id": "party_37_6",
+        "amount": 515.6572204459792,
+        "percentage": 5.73
+      },
+      {
+        "party_id": "party_37_7",
+        "amount": 540.855129996568,
+        "percentage": 6.01
+      },
+      {
+        "party_id": "party_37_8",
+        "amount": 552.55415943077,
+        "percentage": 6.14
+      }
+    ],
+    "event_start_time": 1767255851.5563679,
+    "platform_fee": 999.9170456582883
+  },
+  {
+    "event_id": "event_0038",
+    "total_revenue": 2371.4411120631135,
+    "parties": [
+      {
+        "party_id": "party_38_0",
+        "party_type": "User",
+        "percentage": 32.34
+      },
+      {
+        "party_id": "party_38_1",
+        "party_type": "Business",
+        "percentage": 31.4
+      },
+      {
+        "party_id": "party_38_2",
+        "party_type": "User",
+        "percentage": 10.23
+      },
+      {
+        "party_id": "party_38_3",
+        "party_type": "Platform",
+        "percentage": 26.03
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_38_0",
+        "amount": 690.2316500770899,
+        "percentage": 32.34
+      },
+      {
+        "party_id": "party_38_1",
+        "amount": 670.1692582690359,
+        "percentage": 31.4
+      },
+      {
+        "party_id": "party_38_2",
+        "amount": 218.33858318765087,
+        "percentage": 10.23
+      },
+      {
+        "party_id": "party_38_3",
+        "amount": 555.5575093230257,
+        "percentage": 26.03
+      }
+    ],
+    "event_start_time": 1766675919.1123238,
+    "platform_fee": 237.14411120631135
+  },
+  {
+    "event_id": "event_0039",
+    "total_revenue": 6465.227445018385,
+    "parties": [
+      {
+        "party_id": "party_39_0",
+        "party_type": "Business",
+        "percentage": 24.74
+      },
+      {
+        "party_id": "party_39_1",
+        "party_type": "Brand",
+        "percentage": 21.28
+      },
+      {
+        "party_id": "party_39_2",
+        "party_type": "Business",
+        "percentage": 31.84
+      },
+      {
+        "party_id": "party_39_3",
+        "party_type": "Platform",
+        "percentage": 22.14
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_39_0",
+        "amount": 1439.5475429077933,
+        "percentage": 24.74
+      },
+      {
+        "party_id": "party_39_1",
+        "amount": 1238.220360269921,
+        "percentage": 21.28
+      },
+      {
+        "party_id": "party_39_2",
+        "amount": 1852.6755766444683,
+        "percentage": 31.84
+      },
+      {
+        "party_id": "party_39_3",
+        "amount": 1288.2612206943634,
+        "percentage": 22.14
+      }
+    ],
+    "event_start_time": 1768287377.6353233,
+    "platform_fee": 646.5227445018386
+  },
+  {
+    "event_id": "event_0040",
+    "total_revenue": 7096.12558165368,
+    "parties": [
+      {
+        "party_id": "party_40_0",
+        "party_type": "Business",
+        "percentage": 32.22
+      },
+      {
+        "party_id": "party_40_1",
+        "party_type": "User",
+        "percentage": 38.77
+      },
+      {
+        "party_id": "party_40_2",
+        "party_type": "Brand",
+        "percentage": 16.0
+      },
+      {
+        "party_id": "party_40_3",
+        "party_type": "Platform",
+        "percentage": 13.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_40_0",
+        "amount": 2057.734496167934,
+        "percentage": 32.22
+      },
+      {
+        "party_id": "party_40_1",
+        "amount": 2476.0510992064187,
+        "percentage": 38.77
+      },
+      {
+        "party_id": "party_40_2",
+        "amount": 1021.8420837581299,
+        "percentage": 16.0
+      },
+      {
+        "party_id": "party_40_3",
+        "amount": 830.8853443558294,
+        "percentage": 13.01
+      }
+    ],
+    "event_start_time": 1768832338.3420887,
+    "platform_fee": 709.612558165368
+  },
+  {
+    "event_id": "event_0041",
+    "total_revenue": 8646.180642996196,
+    "parties": [
+      {
+        "party_id": "party_41_0",
+        "party_type": "Business",
+        "percentage": 37.95
+      },
+      {
+        "party_id": "party_41_1",
+        "party_type": "Business",
+        "percentage": 6.68
+      },
+      {
+        "party_id": "party_41_2",
+        "party_type": "Brand",
+        "percentage": 7.08
+      },
+      {
+        "party_id": "party_41_3",
+        "party_type": "Platform",
+        "percentage": 20.56
+      },
+      {
+        "party_id": "party_41_4",
+        "party_type": "Platform",
+        "percentage": 7.21
+      },
+      {
+        "party_id": "party_41_5",
+        "party_type": "Brand",
+        "percentage": 5.42
+      },
+      {
+        "party_id": "party_41_6",
+        "party_type": "Brand",
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_41_7",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_41_8",
+        "party_type": "User",
+        "percentage": 5.04
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_41_0",
+        "amount": 2953.1029986153508,
+        "percentage": 37.95
+      },
+      {
+        "party_id": "party_41_1",
+        "amount": 519.8083802569313,
+        "percentage": 6.68
+      },
+      {
+        "party_id": "party_41_2",
+        "amount": 550.9346305717177,
+        "percentage": 7.08
+      },
+      {
+        "party_id": "party_41_3",
+        "amount": 1599.889266180016,
+        "percentage": 20.56
+      },
+      {
+        "party_id": "party_41_4",
+        "amount": 561.0506619240232,
+        "percentage": 7.21
+      },
+      {
+        "party_id": "party_41_5",
+        "amount": 421.7606917653544,
+        "percentage": 5.42
+      },
+      {
+        "party_id": "party_41_6",
+        "amount": 393.74706648204676,
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_41_7",
+        "amount": 389.07812893482884,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_41_8",
+        "amount": 392.19075396630745,
+        "percentage": 5.04
+      }
+    ],
+    "event_start_time": 1768480236.0851572,
+    "platform_fee": 864.6180642996196
+  },
+  {
+    "event_id": "event_0042",
+    "total_revenue": 7604.157736120527,
+    "parties": [
+      {
+        "party_id": "party_42_0",
+        "party_type": "Brand",
+        "percentage": 20.17
+      },
+      {
+        "party_id": "party_42_1",
+        "party_type": "Sponsor",
+        "percentage": 27.25
+      },
+      {
+        "party_id": "party_42_2",
+        "party_type": "Sponsor",
+        "percentage": 29.76
+      },
+      {
+        "party_id": "party_42_3",
+        "party_type": "Business",
+        "percentage": 22.82
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_42_0",
+        "amount": 1380.3827538379594,
+        "percentage": 20.17
+      },
+      {
+        "party_id": "party_42_1",
+        "amount": 1864.9196847835597,
+        "percentage": 27.25
+      },
+      {
+        "party_id": "party_42_2",
+        "amount": 2036.6976080425222,
+        "percentage": 29.76
+      },
+      {
+        "party_id": "party_42_3",
+        "amount": 1561.741915844434,
+        "percentage": 22.82
+      }
+    ],
+    "event_start_time": 1768851262.2568421,
+    "platform_fee": 760.4157736120528
+  },
+  {
+    "event_id": "event_0043",
+    "total_revenue": 7754.286536443056,
+    "parties": [
+      {
+        "party_id": "party_43_0",
+        "party_type": "Platform",
+        "percentage": 26.56
+      },
+      {
+        "party_id": "party_43_1",
+        "party_type": "Sponsor",
+        "percentage": 32.11
+      },
+      {
+        "party_id": "party_43_2",
+        "party_type": "Platform",
+        "percentage": 12.11
+      },
+      {
+        "party_id": "party_43_3",
+        "party_type": "Business",
+        "percentage": 7.47
+      },
+      {
+        "party_id": "party_43_4",
+        "party_type": "User",
+        "percentage": 10.6
+      },
+      {
+        "party_id": "party_43_5",
+        "party_type": "Sponsor",
+        "percentage": 5.32
+      },
+      {
+        "party_id": "party_43_6",
+        "party_type": "Business",
+        "percentage": 5.83
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_43_0",
+        "amount": 1853.5846536713482,
+        "percentage": 26.56
+      },
+      {
+        "party_id": "party_43_1",
+        "amount": 2240.9112661666786,
+        "percentage": 32.11
+      },
+      {
+        "party_id": "party_43_2",
+        "amount": 845.1396896069286,
+        "percentage": 12.11
+      },
+      {
+        "party_id": "party_43_3",
+        "amount": 521.3206838450667,
+        "percentage": 7.47
+      },
+      {
+        "party_id": "party_43_4",
+        "amount": 739.7589355766676,
+        "percentage": 10.6
+      },
+      {
+        "party_id": "party_43_5",
+        "amount": 371.27523936489354,
+        "percentage": 5.32
+      },
+      {
+        "party_id": "party_43_6",
+        "amount": 406.86741456716715,
+        "percentage": 5.83
+      }
+    ],
+    "event_start_time": 1767825804.6244862,
+    "platform_fee": 775.4286536443057
+  },
+  {
+    "event_id": "event_0044",
+    "total_revenue": 7480.671976937749,
+    "parties": [
+      {
+        "party_id": "party_44_0",
+        "party_type": "Sponsor",
+        "percentage": 16.77
+      },
+      {
+        "party_id": "party_44_1",
+        "party_type": "Business",
+        "percentage": 34.78
+      },
+      {
+        "party_id": "party_44_2",
+        "party_type": "Brand",
+        "percentage": 11.55
+      },
+      {
+        "party_id": "party_44_3",
+        "party_type": "Brand",
+        "percentage": 10.5
+      },
+      {
+        "party_id": "party_44_4",
+        "party_type": "Platform",
+        "percentage": 5.39
+      },
+      {
+        "party_id": "party_44_5",
+        "party_type": "Brand",
+        "percentage": 5.7
+      },
+      {
+        "party_id": "party_44_6",
+        "party_type": "Platform",
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_44_7",
+        "party_type": "User",
+        "percentage": 5.13
+      },
+      {
+        "party_id": "party_44_8",
+        "party_type": "Business",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_44_0",
+        "amount": 1129.0578214792145,
+        "percentage": 16.77
+      },
+      {
+        "party_id": "party_44_1",
+        "amount": 2341.5999422210543,
+        "percentage": 34.78
+      },
+      {
+        "party_id": "party_44_2",
+        "amount": 777.615852002679,
+        "percentage": 11.55
+      },
+      {
+        "party_id": "party_44_3",
+        "amount": 706.9235018206173,
+        "percentage": 10.5
+      },
+      {
+        "party_id": "party_44_4",
+        "amount": 362.8873976012502,
+        "percentage": 5.39
+      },
+      {
+        "party_id": "party_44_5",
+        "amount": 383.75847241690656,
+        "percentage": 5.7
+      },
+      {
+        "party_id": "party_44_6",
+        "amount": 348.0756670869134,
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_44_7",
+        "amount": 345.3826251752159,
+        "percentage": 5.13
+      },
+      {
+        "party_id": "party_44_8",
+        "amount": 337.30349944012306,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1767615148.1245198,
+    "platform_fee": 748.0671976937749
+  },
+  {
+    "event_id": "event_0045",
+    "total_revenue": 5259.344398835723,
+    "parties": [
+      {
+        "party_id": "party_45_0",
+        "party_type": "Sponsor",
+        "percentage": 29.17
+      },
+      {
+        "party_id": "party_45_1",
+        "party_type": "User",
+        "percentage": 20.69
+      },
+      {
+        "party_id": "party_45_2",
+        "party_type": "Business",
+        "percentage": 7.8
+      },
+      {
+        "party_id": "party_45_3",
+        "party_type": "Business",
+        "percentage": 16.06
+      },
+      {
+        "party_id": "party_45_4",
+        "party_type": "Platform",
+        "percentage": 9.99
+      },
+      {
+        "party_id": "party_45_5",
+        "party_type": "Brand",
+        "percentage": 16.29
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_45_0",
+        "amount": 1380.7356850263425,
+        "percentage": 29.17
+      },
+      {
+        "party_id": "party_45_1",
+        "amount": 979.3425205072001,
+        "percentage": 20.69
+      },
+      {
+        "party_id": "party_45_2",
+        "amount": 369.2059767982678,
+        "percentage": 7.8
+      },
+      {
+        "party_id": "party_45_3",
+        "amount": 760.1856394077155,
+        "percentage": 16.06
+      },
+      {
+        "party_id": "party_45_4",
+        "amount": 472.8676548993199,
+        "percentage": 9.99
+      },
+      {
+        "party_id": "party_45_5",
+        "amount": 771.0724823133054,
+        "percentage": 16.29
+      }
+    ],
+    "event_start_time": 1767724903.9910238,
+    "platform_fee": 525.9344398835723
+  },
+  {
+    "event_id": "event_0046",
+    "total_revenue": 6371.116664610716,
+    "parties": [
+      {
+        "party_id": "party_46_0",
+        "party_type": "Platform",
+        "percentage": 39.88
+      },
+      {
+        "party_id": "party_46_1",
+        "party_type": "Sponsor",
+        "percentage": 11.65
+      },
+      {
+        "party_id": "party_46_2",
+        "party_type": "Brand",
+        "percentage": 8.65
+      },
+      {
+        "party_id": "party_46_3",
+        "party_type": "Business",
+        "percentage": 7.26
+      },
+      {
+        "party_id": "party_46_4",
+        "party_type": "Platform",
+        "percentage": 7.38
+      },
+      {
+        "party_id": "party_46_5",
+        "party_type": "Business",
+        "percentage": 9.92
+      },
+      {
+        "party_id": "party_46_6",
+        "party_type": "Sponsor",
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_46_7",
+        "party_type": "Platform",
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_46_8",
+        "party_type": "Platform",
+        "percentage": 5.15
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_46_0",
+        "amount": 2286.7211932620785,
+        "percentage": 39.88
+      },
+      {
+        "party_id": "party_46_1",
+        "amount": 668.0115822844335,
+        "percentage": 11.65
+      },
+      {
+        "party_id": "party_46_2",
+        "amount": 495.99143233994425,
+        "percentage": 8.65
+      },
+      {
+        "party_id": "party_46_3",
+        "amount": 416.2887628656641,
+        "percentage": 7.26
+      },
+      {
+        "party_id": "party_46_4",
+        "amount": 423.16956886344377,
+        "percentage": 7.38
+      },
+      {
+        "party_id": "party_46_5",
+        "amount": 568.8132958164447,
+        "percentage": 9.92
+      },
+      {
+        "party_id": "party_46_6",
+        "amount": 289.56725240655703,
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_46_7",
+        "amount": 290.140652906372,
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_46_8",
+        "amount": 295.3012574047067,
+        "percentage": 5.15
+      }
+    ],
+    "event_start_time": 1768890237.899666,
+    "platform_fee": 637.1116664610716
+  },
+  {
+    "event_id": "event_0047",
+    "total_revenue": 1923.288821089846,
+    "parties": [
+      {
+        "party_id": "party_47_0",
+        "party_type": "Brand",
+        "percentage": 15.37
+      },
+      {
+        "party_id": "party_47_1",
+        "party_type": "User",
+        "percentage": 11.28
+      },
+      {
+        "party_id": "party_47_2",
+        "party_type": "Business",
+        "percentage": 29.78
+      },
+      {
+        "party_id": "party_47_3",
+        "party_type": "User",
+        "percentage": 12.84
+      },
+      {
+        "party_id": "party_47_4",
+        "party_type": "Business",
+        "percentage": 16.47
+      },
+      {
+        "party_id": "party_47_5",
+        "party_type": "Sponsor",
+        "percentage": 14.26
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_47_0",
+        "amount": 266.0485426213584,
+        "percentage": 15.37
+      },
+      {
+        "party_id": "party_47_1",
+        "amount": 195.25228111704115,
+        "percentage": 11.28
+      },
+      {
+        "party_id": "party_47_2",
+        "amount": 515.4798698285006,
+        "percentage": 29.78
+      },
+      {
+        "party_id": "party_47_3",
+        "amount": 222.25525616514258,
+        "percentage": 12.84
+      },
+      {
+        "party_id": "party_47_4",
+        "amount": 285.08910195014784,
+        "percentage": 16.47
+      },
+      {
+        "party_id": "party_47_5",
+        "amount": 246.83488729867085,
+        "percentage": 14.26
+      }
+    ],
+    "event_start_time": 1766380546.2710621,
+    "platform_fee": 192.3288821089846
+  },
+  {
+    "event_id": "event_0048",
+    "total_revenue": 2342.7782602628968,
+    "parties": [
+      {
+        "party_id": "party_48_0",
+        "party_type": "Sponsor",
+        "percentage": 21.43
+      },
+      {
+        "party_id": "party_48_1",
+        "party_type": "User",
+        "percentage": 16.92
+      },
+      {
+        "party_id": "party_48_2",
+        "party_type": "Sponsor",
+        "percentage": 13.84
+      },
+      {
+        "party_id": "party_48_3",
+        "party_type": "User",
+        "percentage": 8.17
+      },
+      {
+        "party_id": "party_48_4",
+        "party_type": "User",
+        "percentage": 14.87
+      },
+      {
+        "party_id": "party_48_5",
+        "party_type": "User",
+        "percentage": 13.52
+      },
+      {
+        "party_id": "party_48_6",
+        "party_type": "Business",
+        "percentage": 11.25
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_48_0",
+        "amount": 451.85164305690483,
+        "percentage": 21.43
+      },
+      {
+        "party_id": "party_48_1",
+        "amount": 356.75827347283393,
+        "percentage": 16.92
+      },
+      {
+        "party_id": "party_48_2",
+        "amount": 291.8164600983464,
+        "percentage": 13.84
+      },
+      {
+        "party_id": "party_48_3",
+        "amount": 172.26448547713076,
+        "percentage": 8.17
+      },
+      {
+        "party_id": "party_48_4",
+        "amount": 313.53401457098346,
+        "percentage": 14.87
+      },
+      {
+        "party_id": "party_48_5",
+        "amount": 285.0692587087892,
+        "percentage": 13.52
+      },
+      {
+        "party_id": "party_48_6",
+        "amount": 237.20629885161827,
+        "percentage": 11.25
+      }
+    ],
+    "event_start_time": 1767807634.5811632,
+    "platform_fee": 234.2778260262897
+  },
+  {
+    "event_id": "event_0049",
+    "total_revenue": 3748.4221988742433,
+    "parties": [
+      {
+        "party_id": "party_49_0",
+        "party_type": "Business",
+        "percentage": 7.98
+      },
+      {
+        "party_id": "party_49_1",
+        "party_type": "Sponsor",
+        "percentage": 9.15
+      },
+      {
+        "party_id": "party_49_2",
+        "party_type": "Platform",
+        "percentage": 26.22
+      },
+      {
+        "party_id": "party_49_3",
+        "party_type": "Platform",
+        "percentage": 12.9
+      },
+      {
+        "party_id": "party_49_4",
+        "party_type": "Sponsor",
+        "percentage": 15.94
+      },
+      {
+        "party_id": "party_49_5",
+        "party_type": "Platform",
+        "percentage": 10.3
+      },
+      {
+        "party_id": "party_49_6",
+        "party_type": "Sponsor",
+        "percentage": 17.51
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_49_0",
+        "amount": 269.2116823231482,
+        "percentage": 7.98
+      },
+      {
+        "party_id": "party_49_1",
+        "amount": 308.6825680772939,
+        "percentage": 9.15
+      },
+      {
+        "party_id": "party_49_2",
+        "amount": 884.5526704903439,
+        "percentage": 26.22
+      },
+      {
+        "party_id": "party_49_3",
+        "amount": 435.19181728929965,
+        "percentage": 12.9
+      },
+      {
+        "party_id": "party_49_4",
+        "amount": 537.7486486504989,
+        "percentage": 15.94
+      },
+      {
+        "party_id": "party_49_5",
+        "amount": 347.47873783564233,
+        "percentage": 10.3
+      },
+      {
+        "party_id": "party_49_6",
+        "amount": 590.713854320592,
+        "percentage": 17.51
+      }
+    ],
+    "event_start_time": 1767958457.161753,
+    "platform_fee": 374.84221988742433
+  },
+  {
+    "event_id": "event_0050",
+    "total_revenue": 2564.3219349379106,
+    "parties": [
+      {
+        "party_id": "party_50_0",
+        "party_type": "Business",
+        "percentage": 38.17
+      },
+      {
+        "party_id": "party_50_1",
+        "party_type": "Brand",
+        "percentage": 26.89
+      },
+      {
+        "party_id": "party_50_2",
+        "party_type": "Business",
+        "percentage": 21.47
+      },
+      {
+        "party_id": "party_50_3",
+        "party_type": "Business",
+        "percentage": 13.47
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_50_0",
+        "amount": 880.9215143092205,
+        "percentage": 38.17
+      },
+      {
+        "party_id": "party_50_1",
+        "amount": 620.5915514743238,
+        "percentage": 26.89
+      },
+      {
+        "party_id": "party_50_2",
+        "amount": 495.50392748805245,
+        "percentage": 21.47
+      },
+      {
+        "party_id": "party_50_3",
+        "amount": 310.8727481725229,
+        "percentage": 13.47
+      }
+    ],
+    "event_start_time": 1766543322.48573,
+    "platform_fee": 256.4321934937911
+  },
+  {
+    "event_id": "event_0051",
+    "total_revenue": 3592.9440063432035,
+    "parties": [
+      {
+        "party_id": "party_51_0",
+        "party_type": "Platform",
+        "percentage": 19.3
+      },
+      {
+        "party_id": "party_51_1",
+        "party_type": "User",
+        "percentage": 21.45
+      },
+      {
+        "party_id": "party_51_2",
+        "party_type": "Business",
+        "percentage": 59.25
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_51_0",
+        "amount": 624.0943739018144,
+        "percentage": 19.3
+      },
+      {
+        "party_id": "party_51_1",
+        "amount": 693.6178404245554,
+        "percentage": 21.45
+      },
+      {
+        "party_id": "party_51_2",
+        "amount": 1915.9373913825132,
+        "percentage": 59.25
+      }
+    ],
+    "event_start_time": 1767081560.368649,
+    "platform_fee": 359.29440063432037
+  },
+  {
+    "event_id": "event_0052",
+    "total_revenue": 4952.381038063637,
+    "parties": [
+      {
+        "party_id": "party_52_0",
+        "party_type": "Business",
+        "percentage": 7.49
+      },
+      {
+        "party_id": "party_52_1",
+        "party_type": "Platform",
+        "percentage": 37.34
+      },
+      {
+        "party_id": "party_52_2",
+        "party_type": "Business",
+        "percentage": 15.03
+      },
+      {
+        "party_id": "party_52_3",
+        "party_type": "Platform",
+        "percentage": 7.19
+      },
+      {
+        "party_id": "party_52_4",
+        "party_type": "Business",
+        "percentage": 5.66
+      },
+      {
+        "party_id": "party_52_5",
+        "party_type": "Business",
+        "percentage": 7.08
+      },
+      {
+        "party_id": "party_52_6",
+        "party_type": "Business",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_52_7",
+        "party_type": "Platform",
+        "percentage": 5.15
+      },
+      {
+        "party_id": "party_52_8",
+        "party_type": "Platform",
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_52_9",
+        "party_type": "Brand",
+        "percentage": 5.02
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_52_0",
+        "amount": 333.84000577586977,
+        "percentage": 7.49
+      },
+      {
+        "party_id": "party_52_1",
+        "amount": 1664.2971716516656,
+        "percentage": 37.34
+      },
+      {
+        "party_id": "party_52_2",
+        "amount": 669.9085830188681,
+        "percentage": 15.03
+      },
+      {
+        "party_id": "party_52_3",
+        "amount": 320.4685769730979,
+        "percentage": 7.19
+      },
+      {
+        "party_id": "party_52_4",
+        "amount": 252.27429007896166,
+        "percentage": 5.66
+      },
+      {
+        "party_id": "party_52_5",
+        "amount": 315.5657197454149,
+        "percentage": 7.08
+      },
+      {
+        "party_id": "party_52_6",
+        "amount": 223.30286100628936,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_52_7",
+        "amount": 229.54286111424958,
+        "percentage": 5.15
+      },
+      {
+        "party_id": "party_52_8",
+        "amount": 224.19428959314084,
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_52_9",
+        "amount": 223.74857529971507,
+        "percentage": 5.02
+      }
+    ],
+    "event_start_time": 1767563619.4845078,
+    "platform_fee": 495.2381038063637
+  },
+  {
+    "event_id": "event_0053",
+    "total_revenue": 9657.19991973553,
+    "parties": [
+      {
+        "party_id": "party_53_0",
+        "party_type": "Brand",
+        "percentage": 29.49
+      },
+      {
+        "party_id": "party_53_1",
+        "party_type": "Sponsor",
+        "percentage": 22.52
+      },
+      {
+        "party_id": "party_53_2",
+        "party_type": "Platform",
+        "percentage": 15.07
+      },
+      {
+        "party_id": "party_53_3",
+        "party_type": "Sponsor",
+        "percentage": 5.52
+      },
+      {
+        "party_id": "party_53_4",
+        "party_type": "Platform",
+        "percentage": 14.12
+      },
+      {
+        "party_id": "party_53_5",
+        "party_type": "User",
+        "percentage": 5.82
+      },
+      {
+        "party_id": "party_53_6",
+        "party_type": "Business",
+        "percentage": 7.46
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_53_0",
+        "amount": 2563.1174306970074,
+        "percentage": 29.49
+      },
+      {
+        "party_id": "party_53_1",
+        "amount": 1957.3212797319975,
+        "percentage": 22.52
+      },
+      {
+        "party_id": "party_53_2",
+        "amount": 1309.8060251137301,
+        "percentage": 15.07
+      },
+      {
+        "party_id": "party_53_3",
+        "amount": 479.76969201246123,
+        "percentage": 5.52
+      },
+      {
+        "party_id": "party_53_4",
+        "amount": 1227.2369657999914,
+        "percentage": 14.12
+      },
+      {
+        "party_id": "party_53_5",
+        "amount": 505.84413179574716,
+        "percentage": 5.82
+      },
+      {
+        "party_id": "party_53_6",
+        "amount": 648.3844026110436,
+        "percentage": 7.46
+      }
+    ],
+    "event_start_time": 1768515559.072811,
+    "platform_fee": 965.7199919735531
+  },
+  {
+    "event_id": "event_0054",
+    "total_revenue": 5670.674568888436,
+    "parties": [
+      {
+        "party_id": "party_54_0",
+        "party_type": "Brand",
+        "percentage": 39.99
+      },
+      {
+        "party_id": "party_54_1",
+        "party_type": "Business",
+        "percentage": 25.17
+      },
+      {
+        "party_id": "party_54_2",
+        "party_type": "Sponsor",
+        "percentage": 34.84
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_54_0",
+        "amount": 2040.932484088637,
+        "percentage": 39.99
+      },
+      {
+        "party_id": "party_54_1",
+        "amount": 1284.5779100902976,
+        "percentage": 25.17
+      },
+      {
+        "party_id": "party_54_2",
+        "amount": 1778.0967178206581,
+        "percentage": 34.84
+      }
+    ],
+    "event_start_time": 1767495012.961832,
+    "platform_fee": 567.0674568888436
+  },
+  {
+    "event_id": "event_0055",
+    "total_revenue": 7243.063065850893,
+    "parties": [
+      {
+        "party_id": "party_55_0",
+        "party_type": "Platform",
+        "percentage": 11.35
+      },
+      {
+        "party_id": "party_55_1",
+        "party_type": "Sponsor",
+        "percentage": 20.26
+      },
+      {
+        "party_id": "party_55_2",
+        "party_type": "Sponsor",
+        "percentage": 38.92
+      },
+      {
+        "party_id": "party_55_3",
+        "party_type": "Brand",
+        "percentage": 8.3
+      },
+      {
+        "party_id": "party_55_4",
+        "party_type": "User",
+        "percentage": 6.98
+      },
+      {
+        "party_id": "party_55_5",
+        "party_type": "Brand",
+        "percentage": 8.6
+      },
+      {
+        "party_id": "party_55_6",
+        "party_type": "Sponsor",
+        "percentage": 5.59
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_55_0",
+        "amount": 739.8788921766686,
+        "percentage": 11.35
+      },
+      {
+        "party_id": "party_55_1",
+        "amount": 1320.7001194272518,
+        "percentage": 20.26
+      },
+      {
+        "party_id": "party_55_2",
+        "amount": 2537.1001307062506,
+        "percentage": 38.92
+      },
+      {
+        "party_id": "party_55_3",
+        "amount": 541.0568110190617,
+        "percentage": 8.3
+      },
+      {
+        "party_id": "party_55_4",
+        "amount": 455.0092217967531,
+        "percentage": 6.98
+      },
+      {
+        "party_id": "party_55_5",
+        "amount": 560.613081296859,
+        "percentage": 8.6
+      },
+      {
+        "party_id": "party_55_6",
+        "amount": 364.3985028429584,
+        "percentage": 5.59
+      }
+    ],
+    "event_start_time": 1767095814.8711588,
+    "platform_fee": 724.3063065850893
+  },
+  {
+    "event_id": "event_0056",
+    "total_revenue": 7807.988386500164,
+    "parties": [
+      {
+        "party_id": "party_56_0",
+        "party_type": "Platform",
+        "percentage": 33.47
+      },
+      {
+        "party_id": "party_56_1",
+        "party_type": "User",
+        "percentage": 5.97
+      },
+      {
+        "party_id": "party_56_2",
+        "party_type": "Brand",
+        "percentage": 13.04
+      },
+      {
+        "party_id": "party_56_3",
+        "party_type": "Sponsor",
+        "percentage": 7.03
+      },
+      {
+        "party_id": "party_56_4",
+        "party_type": "User",
+        "percentage": 18.39
+      },
+      {
+        "party_id": "party_56_5",
+        "party_type": "Platform",
+        "percentage": 6.38
+      },
+      {
+        "party_id": "party_56_6",
+        "party_type": "User",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_56_7",
+        "party_type": "Brand",
+        "percentage": 5.07
+      },
+      {
+        "party_id": "party_56_8",
+        "party_type": "Platform",
+        "percentage": 5.32
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_56_0",
+        "amount": 2352.0003416654445,
+        "percentage": 33.47
+      },
+      {
+        "party_id": "party_56_1",
+        "amount": 419.5232160066538,
+        "percentage": 5.97
+      },
+      {
+        "party_id": "party_56_2",
+        "amount": 916.3455170396592,
+        "percentage": 13.04
+      },
+      {
+        "party_id": "party_56_3",
+        "amount": 494.0114252138654,
+        "percentage": 7.03
+      },
+      {
+        "party_id": "party_56_4",
+        "amount": 1292.3001578496421,
+        "percentage": 18.39
+      },
+      {
+        "party_id": "party_56_5",
+        "amount": 448.33469315283935,
+        "percentage": 6.38
+      },
+      {
+        "party_id": "party_56_6",
+        "amount": 374.54920290041287,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_56_7",
+        "amount": 356.2785100760025,
+        "percentage": 5.07
+      },
+      {
+        "party_id": "party_56_8",
+        "amount": 373.8464839456279,
+        "percentage": 5.32
+      }
+    ],
+    "event_start_time": 1767969813.80523,
+    "platform_fee": 780.7988386500165
+  },
+  {
+    "event_id": "event_0057",
+    "total_revenue": 8927.61955622025,
+    "parties": [
+      {
+        "party_id": "party_57_0",
+        "party_type": "Platform",
+        "percentage": 12.12
+      },
+      {
+        "party_id": "party_57_1",
+        "party_type": "Brand",
+        "percentage": 9.59
+      },
+      {
+        "party_id": "party_57_2",
+        "party_type": "Sponsor",
+        "percentage": 78.29
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_57_0",
+        "amount": 973.8247411925048,
+        "percentage": 12.12
+      },
+      {
+        "party_id": "party_57_1",
+        "amount": 770.5428438973697,
+        "percentage": 9.59
+      },
+      {
+        "party_id": "party_57_2",
+        "amount": 6290.490015508351,
+        "percentage": 78.29
+      }
+    ],
+    "event_start_time": 1767605127.3232875,
+    "platform_fee": 892.7619556220251
+  },
+  {
+    "event_id": "event_0058",
+    "total_revenue": 5957.55106302403,
+    "parties": [
+      {
+        "party_id": "party_58_0",
+        "party_type": "Platform",
+        "percentage": 39.06
+      },
+      {
+        "party_id": "party_58_1",
+        "party_type": "Business",
+        "percentage": 32.98
+      },
+      {
+        "party_id": "party_58_2",
+        "party_type": "Brand",
+        "percentage": 27.96
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_58_0",
+        "amount": 2094.3175006954675,
+        "percentage": 39.06
+      },
+      {
+        "party_id": "party_58_1",
+        "amount": 1768.3203065267924,
+        "percentage": 32.98
+      },
+      {
+        "party_id": "party_58_2",
+        "amount": 1499.1581494993668,
+        "percentage": 27.96
+      }
+    ],
+    "event_start_time": 1767780189.9978642,
+    "platform_fee": 595.755106302403
+  },
+  {
+    "event_id": "event_0059",
+    "total_revenue": 9393.87753940694,
+    "parties": [
+      {
+        "party_id": "party_59_0",
+        "party_type": "User",
+        "percentage": 12.86
+      },
+      {
+        "party_id": "party_59_1",
+        "party_type": "User",
+        "percentage": 21.15
+      },
+      {
+        "party_id": "party_59_2",
+        "party_type": "Business",
+        "percentage": 27.67
+      },
+      {
+        "party_id": "party_59_3",
+        "party_type": "Sponsor",
+        "percentage": 38.32
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_59_0",
+        "amount": 1087.247386410959,
+        "percentage": 12.86
+      },
+      {
+        "party_id": "party_59_1",
+        "amount": 1788.1245896261107,
+        "percentage": 21.15
+      },
+      {
+        "party_id": "party_59_2",
+        "amount": 2339.35732363851,
+        "percentage": 27.67
+      },
+      {
+        "party_id": "party_59_3",
+        "amount": 3239.760485790665,
+        "percentage": 38.32
+      }
+    ],
+    "event_start_time": 1767105259.5097997,
+    "platform_fee": 939.387753940694
+  },
+  {
+    "event_id": "event_0060",
+    "total_revenue": 4058.8771880286595,
+    "parties": [
+      {
+        "party_id": "party_60_0",
+        "party_type": "Sponsor",
+        "percentage": 19.54
+      },
+      {
+        "party_id": "party_60_1",
+        "party_type": "Business",
+        "percentage": 39.31
+      },
+      {
+        "party_id": "party_60_2",
+        "party_type": "Business",
+        "percentage": 12.38
+      },
+      {
+        "party_id": "party_60_3",
+        "party_type": "Platform",
+        "percentage": 8.37
+      },
+      {
+        "party_id": "party_60_4",
+        "party_type": "Business",
+        "percentage": 7.75
+      },
+      {
+        "party_id": "party_60_5",
+        "party_type": "Brand",
+        "percentage": 7.3
+      },
+      {
+        "party_id": "party_60_6",
+        "party_type": "Sponsor",
+        "percentage": 5.35
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_60_0",
+        "amount": 713.79414228672,
+        "percentage": 19.54
+      },
+      {
+        "party_id": "party_60_1",
+        "amount": 1435.9901603526594,
+        "percentage": 39.31
+      },
+      {
+        "party_id": "party_60_2",
+        "amount": 452.24009629015325,
+        "percentage": 12.38
+      },
+      {
+        "party_id": "party_60_3",
+        "amount": 305.7552185741989,
+        "percentage": 8.37
+      },
+      {
+        "party_id": "party_60_4",
+        "amount": 283.106683864999,
+        "percentage": 7.75
+      },
+      {
+        "party_id": "party_60_5",
+        "amount": 266.66823125348293,
+        "percentage": 7.3
+      },
+      {
+        "party_id": "party_60_6",
+        "amount": 195.43493660357996,
+        "percentage": 5.35
+      }
+    ],
+    "event_start_time": 1768390517.861361,
+    "platform_fee": 405.88771880286595
+  },
+  {
+    "event_id": "event_0061",
+    "total_revenue": 5098.10155179851,
+    "parties": [
+      {
+        "party_id": "party_61_0",
+        "party_type": "Brand",
+        "percentage": 33.72
+      },
+      {
+        "party_id": "party_61_1",
+        "party_type": "Platform",
+        "percentage": 30.41
+      },
+      {
+        "party_id": "party_61_2",
+        "party_type": "Sponsor",
+        "percentage": 11.3
+      },
+      {
+        "party_id": "party_61_3",
+        "party_type": "Sponsor",
+        "percentage": 8.95
+      },
+      {
+        "party_id": "party_61_4",
+        "party_type": "Brand",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_61_5",
+        "party_type": "Platform",
+        "percentage": 5.09
+      },
+      {
+        "party_id": "party_61_6",
+        "party_type": "Sponsor",
+        "percentage": 5.2
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_61_0",
+        "amount": 1547.1718589398117,
+        "percentage": 33.72
+      },
+      {
+        "party_id": "party_61_1",
+        "amount": 1395.2994137117341,
+        "percentage": 30.41
+      },
+      {
+        "party_id": "party_61_2",
+        "amount": 518.4769278179085,
+        "percentage": 11.3
+      },
+      {
+        "party_id": "party_61_3",
+        "amount": 410.6520799973699,
+        "percentage": 8.95
+      },
+      {
+        "party_id": "party_61_4",
+        "amount": 244.55593143977453,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_61_5",
+        "amount": 233.54403208788975,
+        "percentage": 5.09
+      },
+      {
+        "party_id": "party_61_6",
+        "amount": 238.5911526241703,
+        "percentage": 5.2
+      }
+    ],
+    "event_start_time": 1767182801.2374218,
+    "platform_fee": 509.810155179851
+  },
+  {
+    "event_id": "event_0062",
+    "total_revenue": 9895.726017454263,
+    "parties": [
+      {
+        "party_id": "party_62_0",
+        "party_type": "Business",
+        "percentage": 39.33
+      },
+      {
+        "party_id": "party_62_1",
+        "party_type": "Business",
+        "percentage": 25.01
+      },
+      {
+        "party_id": "party_62_2",
+        "party_type": "Sponsor",
+        "percentage": 18.41
+      },
+      {
+        "party_id": "party_62_3",
+        "party_type": "Sponsor",
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_62_4",
+        "party_type": "Sponsor",
+        "percentage": 6.52
+      },
+      {
+        "party_id": "party_62_5",
+        "party_type": "Sponsor",
+        "percentage": 5.63
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_62_0",
+        "amount": 3502.790138398285,
+        "percentage": 39.33
+      },
+      {
+        "party_id": "party_62_1",
+        "amount": 2227.42896926878,
+        "percentage": 25.01
+      },
+      {
+        "party_id": "party_62_2",
+        "amount": 1639.6228438319968,
+        "percentage": 18.41
+      },
+      {
+        "party_id": "party_62_3",
+        "amount": 454.2138242011506,
+        "percentage": 5.1
+      },
+      {
+        "party_id": "party_62_4",
+        "amount": 580.681202704216,
+        "percentage": 6.52
+      },
+      {
+        "party_id": "party_62_5",
+        "amount": 501.4164373044074,
+        "percentage": 5.63
+      }
+    ],
+    "event_start_time": 1768402638.7141695,
+    "platform_fee": 989.5726017454263
+  },
+  {
+    "event_id": "event_0063",
+    "total_revenue": 5733.559781268053,
+    "parties": [
+      {
+        "party_id": "party_63_0",
+        "party_type": "User",
+        "percentage": 22.34
+      },
+      {
+        "party_id": "party_63_1",
+        "party_type": "Platform",
+        "percentage": 9.42
+      },
+      {
+        "party_id": "party_63_2",
+        "party_type": "User",
+        "percentage": 16.62
+      },
+      {
+        "party_id": "party_63_3",
+        "party_type": "Sponsor",
+        "percentage": 35.6
+      },
+      {
+        "party_id": "party_63_4",
+        "party_type": "User",
+        "percentage": 16.02
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_63_0",
+        "amount": 1152.7895296217546,
+        "percentage": 22.34
+      },
+      {
+        "party_id": "party_63_1",
+        "amount": 486.09119825590557,
+        "percentage": 9.42
+      },
+      {
+        "party_id": "party_63_2",
+        "amount": 857.6258720820754,
+        "percentage": 16.62
+      },
+      {
+        "party_id": "party_63_3",
+        "amount": 1837.0325539182843,
+        "percentage": 35.6
+      },
+      {
+        "party_id": "party_63_4",
+        "amount": 826.664649263228,
+        "percentage": 16.02
+      }
+    ],
+    "event_start_time": 1767533111.9146771,
+    "platform_fee": 573.3559781268053
+  },
+  {
+    "event_id": "event_0064",
+    "total_revenue": 4420.084577703896,
+    "parties": [
+      {
+        "party_id": "party_64_0",
+        "party_type": "Business",
+        "percentage": 19.35
+      },
+      {
+        "party_id": "party_64_1",
+        "party_type": "Brand",
+        "percentage": 7.62
+      },
+      {
+        "party_id": "party_64_2",
+        "party_type": "Sponsor",
+        "percentage": 16.85
+      },
+      {
+        "party_id": "party_64_3",
+        "party_type": "Brand",
+        "percentage": 27.74
+      },
+      {
+        "party_id": "party_64_4",
+        "party_type": "Platform",
+        "percentage": 28.44
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_64_0",
+        "amount": 769.7577292071335,
+        "percentage": 19.35
+      },
+      {
+        "party_id": "party_64_1",
+        "amount": 303.1294003389332,
+        "percentage": 7.62
+      },
+      {
+        "party_id": "party_64_2",
+        "amount": 670.3058262087958,
+        "percentage": 16.85
+      },
+      {
+        "party_id": "party_64_3",
+        "amount": 1103.5183156695546,
+        "percentage": 27.74
+      },
+      {
+        "party_id": "party_64_4",
+        "amount": 1131.3648485090891,
+        "percentage": 28.44
+      }
+    ],
+    "event_start_time": 1767169540.0566444,
+    "platform_fee": 442.0084577703896
+  },
+  {
+    "event_id": "event_0065",
+    "total_revenue": 4226.170080703271,
+    "parties": [
+      {
+        "party_id": "party_65_0",
+        "party_type": "User",
+        "percentage": 35.53
+      },
+      {
+        "party_id": "party_65_1",
+        "party_type": "Business",
+        "percentage": 17.02
+      },
+      {
+        "party_id": "party_65_2",
+        "party_type": "Brand",
+        "percentage": 9.7
+      },
+      {
+        "party_id": "party_65_3",
+        "party_type": "User",
+        "percentage": 7.74
+      },
+      {
+        "party_id": "party_65_4",
+        "party_type": "User",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_5",
+        "party_type": "User",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_6",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_7",
+        "party_type": "User",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_8",
+        "party_type": "User",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_9",
+        "party_type": "Brand",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_65_0",
+        "amount": 1351.402406706485,
+        "percentage": 35.53
+      },
+      {
+        "party_id": "party_65_1",
+        "amount": 647.364732962127,
+        "percentage": 17.02
+      },
+      {
+        "party_id": "party_65_2",
+        "amount": 368.9446480453955,
+        "percentage": 9.7
+      },
+      {
+        "party_id": "party_65_3",
+        "amount": 294.3950078217898,
+        "percentage": 7.74
+      },
+      {
+        "party_id": "party_65_4",
+        "amount": 190.17765363164722,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_5",
+        "amount": 190.17765363164722,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_6",
+        "amount": 190.17765363164722,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_7",
+        "amount": 190.17765363164722,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_8",
+        "amount": 190.17765363164722,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_65_9",
+        "amount": 190.5580089389105,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1767465094.49978,
+    "platform_fee": 422.61700807032713
+  },
+  {
+    "event_id": "event_0066",
+    "total_revenue": 9215.461144211993,
+    "parties": [
+      {
+        "party_id": "party_66_0",
+        "party_type": "Platform",
+        "percentage": 23.59
+      },
+      {
+        "party_id": "party_66_1",
+        "party_type": "Business",
+        "percentage": 28.86
+      },
+      {
+        "party_id": "party_66_2",
+        "party_type": "User",
+        "percentage": 9.68
+      },
+      {
+        "party_id": "party_66_3",
+        "party_type": "Sponsor",
+        "percentage": 18.94
+      },
+      {
+        "party_id": "party_66_4",
+        "party_type": "Business",
+        "percentage": 10.53
+      },
+      {
+        "party_id": "party_66_5",
+        "party_type": "Sponsor",
+        "percentage": 8.4
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_66_0",
+        "amount": 1956.5345555276483,
+        "percentage": 23.59
+      },
+      {
+        "party_id": "party_66_1",
+        "amount": 2393.623877597623,
+        "percentage": 28.86
+      },
+      {
+        "party_id": "party_66_2",
+        "amount": 802.8509748837489,
+        "percentage": 9.68
+      },
+      {
+        "party_id": "party_66_3",
+        "amount": 1570.8675066423766,
+        "percentage": 18.94
+      },
+      {
+        "party_id": "party_66_4",
+        "amount": 873.3492526369706,
+        "percentage": 10.53
+      },
+      {
+        "party_id": "party_66_5",
+        "amount": 696.6888625024268,
+        "percentage": 8.4
+      }
+    ],
+    "event_start_time": 1766719715.476244,
+    "platform_fee": 921.5461144211994
+  },
+  {
+    "event_id": "event_0067",
+    "total_revenue": 8680.019127941672,
+    "parties": [
+      {
+        "party_id": "party_67_0",
+        "party_type": "Sponsor",
+        "percentage": 27.33
+      },
+      {
+        "party_id": "party_67_1",
+        "party_type": "User",
+        "percentage": 12.07
+      },
+      {
+        "party_id": "party_67_2",
+        "party_type": "Sponsor",
+        "percentage": 23.52
+      },
+      {
+        "party_id": "party_67_3",
+        "party_type": "Platform",
+        "percentage": 6.88
+      },
+      {
+        "party_id": "party_67_4",
+        "party_type": "Sponsor",
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_67_5",
+        "party_type": "Platform",
+        "percentage": 5.16
+      },
+      {
+        "party_id": "party_67_6",
+        "party_type": "Sponsor",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_7",
+        "party_type": "Sponsor",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_8",
+        "party_type": "Business",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_9",
+        "party_type": "Sponsor",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_67_0",
+        "amount": 2135.024304899813,
+        "percentage": 27.33
+      },
+      {
+        "party_id": "party_67_1",
+        "amount": 942.9104778683039,
+        "percentage": 12.07
+      },
+      {
+        "party_id": "party_67_2",
+        "amount": 1837.386449002693,
+        "percentage": 23.52
+      },
+      {
+        "party_id": "party_67_3",
+        "amount": 537.4667844021484,
+        "percentage": 6.88
+      },
+      {
+        "party_id": "party_67_4",
+        "amount": 392.9444659219196,
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_67_5",
+        "amount": 403.10008830161127,
+        "percentage": 5.16
+      },
+      {
+        "party_id": "party_67_6",
+        "amount": 390.6008607573753,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_7",
+        "amount": 390.6008607573753,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_8",
+        "amount": 390.6008607573753,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_67_9",
+        "amount": 391.38206247889,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1766625199.6148386,
+    "platform_fee": 868.0019127941673
+  },
+  {
+    "event_id": "event_0068",
+    "total_revenue": 8217.387617907589,
+    "parties": [
+      {
+        "party_id": "party_68_0",
+        "party_type": "Platform",
+        "percentage": 25.02
+      },
+      {
+        "party_id": "party_68_1",
+        "party_type": "Brand",
+        "percentage": 15.35
+      },
+      {
+        "party_id": "party_68_2",
+        "party_type": "Sponsor",
+        "percentage": 5.54
+      },
+      {
+        "party_id": "party_68_3",
+        "party_type": "Platform",
+        "percentage": 11.61
+      },
+      {
+        "party_id": "party_68_4",
+        "party_type": "User",
+        "percentage": 20.12
+      },
+      {
+        "party_id": "party_68_5",
+        "party_type": "Sponsor",
+        "percentage": 7.15
+      },
+      {
+        "party_id": "party_68_6",
+        "party_type": "Brand",
+        "percentage": 5.18
+      },
+      {
+        "party_id": "party_68_7",
+        "party_type": "Business",
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_68_8",
+        "party_type": "Platform",
+        "percentage": 5.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_68_0",
+        "amount": 1850.3913438004306,
+        "percentage": 25.02
+      },
+      {
+        "party_id": "party_68_1",
+        "amount": 1135.2320994139334,
+        "percentage": 15.35
+      },
+      {
+        "party_id": "party_68_2",
+        "amount": 409.71894662887235,
+        "percentage": 5.54
+      },
+      {
+        "party_id": "party_68_3",
+        "amount": 858.6348321951639,
+        "percentage": 11.61
+      },
+      {
+        "party_id": "party_68_4",
+        "amount": 1488.0045498507063,
+        "percentage": 20.12
+      },
+      {
+        "party_id": "party_68_5",
+        "amount": 528.7888932123534,
+        "percentage": 7.15
+      },
+      {
+        "party_id": "party_68_6",
+        "amount": 383.0946107468518,
+        "percentage": 5.18
+      },
+      {
+        "party_id": "party_68_7",
+        "amount": 372.0011374626766,
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_68_8",
+        "amount": 369.7824428058415,
+        "percentage": 5.0
+      }
+    ],
+    "event_start_time": 1766916414.1105897,
+    "platform_fee": 821.7387617907589
+  },
+  {
+    "event_id": "event_0069",
+    "total_revenue": 3940.4721314260937,
+    "parties": [
+      {
+        "party_id": "party_69_0",
+        "party_type": "Business",
+        "percentage": 26.73
+      },
+      {
+        "party_id": "party_69_1",
+        "party_type": "User",
+        "percentage": 26.99
+      },
+      {
+        "party_id": "party_69_2",
+        "party_type": "Sponsor",
+        "percentage": 13.12
+      },
+      {
+        "party_id": "party_69_3",
+        "party_type": "Brand",
+        "percentage": 5.61
+      },
+      {
+        "party_id": "party_69_4",
+        "party_type": "User",
+        "percentage": 17.86
+      },
+      {
+        "party_id": "party_69_5",
+        "party_type": "Brand",
+        "percentage": 9.69
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_69_0",
+        "amount": 947.9593806571753,
+        "percentage": 26.73
+      },
+      {
+        "party_id": "party_69_1",
+        "amount": 957.1800854447123,
+        "percentage": 26.99
+      },
+      {
+        "party_id": "party_69_2",
+        "amount": 465.29094927879305,
+        "percentage": 13.12
+      },
+      {
+        "party_id": "party_69_3",
+        "amount": 198.95443791570347,
+        "percentage": 5.61
+      },
+      {
+        "party_id": "party_69_4",
+        "amount": 633.3914904054302,
+        "percentage": 17.86
+      },
+      {
+        "party_id": "party_69_5",
+        "amount": 343.6485745816696,
+        "percentage": 9.69
+      }
+    ],
+    "event_start_time": 1767425738.3638365,
+    "platform_fee": 394.0472131426094
+  },
+  {
+    "event_id": "event_0070",
+    "total_revenue": 7719.034156453406,
+    "parties": [
+      {
+        "party_id": "party_70_0",
+        "party_type": "Platform",
+        "percentage": 9.63
+      },
+      {
+        "party_id": "party_70_1",
+        "party_type": "Brand",
+        "percentage": 35.68
+      },
+      {
+        "party_id": "party_70_2",
+        "party_type": "Brand",
+        "percentage": 23.42
+      },
+      {
+        "party_id": "party_70_3",
+        "party_type": "Brand",
+        "percentage": 18.52
+      },
+      {
+        "party_id": "party_70_4",
+        "party_type": "Sponsor",
+        "percentage": 7.52
+      },
+      {
+        "party_id": "party_70_5",
+        "party_type": "Brand",
+        "percentage": 5.23
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_70_0",
+        "amount": 669.0086903398167,
+        "percentage": 9.63
+      },
+      {
+        "party_id": "party_70_1",
+        "amount": 2478.7362483203174,
+        "percentage": 35.68
+      },
+      {
+        "party_id": "party_70_2",
+        "amount": 1627.0180194972488,
+        "percentage": 23.42
+      },
+      {
+        "party_id": "party_70_3",
+        "amount": 1286.6086131976535,
+        "percentage": 18.52
+      },
+      {
+        "party_id": "party_70_4",
+        "amount": 522.4242317087663,
+        "percentage": 7.52
+      },
+      {
+        "party_id": "party_70_5",
+        "amount": 363.3349377442618,
+        "percentage": 5.23
+      }
+    ],
+    "event_start_time": 1767226704.2835605,
+    "platform_fee": 771.9034156453406
+  },
+  {
+    "event_id": "event_0071",
+    "total_revenue": 4291.975444650097,
+    "parties": [
+      {
+        "party_id": "party_71_0",
+        "party_type": "User",
+        "percentage": 21.39
+      },
+      {
+        "party_id": "party_71_1",
+        "party_type": "Business",
+        "percentage": 9.93
+      },
+      {
+        "party_id": "party_71_2",
+        "party_type": "Sponsor",
+        "percentage": 35.1
+      },
+      {
+        "party_id": "party_71_3",
+        "party_type": "Platform",
+        "percentage": 33.58
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_71_0",
+        "amount": 826.2481928495903,
+        "percentage": 21.39
+      },
+      {
+        "party_id": "party_71_1",
+        "amount": 383.5738454883792,
+        "percentage": 9.93
+      },
+      {
+        "party_id": "party_71_2",
+        "amount": 1355.8350429649659,
+        "percentage": 35.1
+      },
+      {
+        "party_id": "party_71_3",
+        "amount": 1297.1208188821524,
+        "percentage": 33.58
+      }
+    ],
+    "event_start_time": 1768398202.0082948,
+    "platform_fee": 429.19754446500974
+  },
+  {
+    "event_id": "event_0072",
+    "total_revenue": 4429.229493452278,
+    "parties": [
+      {
+        "party_id": "party_72_0",
+        "party_type": "User",
+        "percentage": 14.26
+      },
+      {
+        "party_id": "party_72_1",
+        "party_type": "Brand",
+        "percentage": 20.92
+      },
+      {
+        "party_id": "party_72_2",
+        "party_type": "Platform",
+        "percentage": 64.82
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_72_0",
+        "amount": 568.4473131896654,
+        "percentage": 14.26
+      },
+      {
+        "party_id": "party_72_1",
+        "amount": 833.935329027195,
+        "percentage": 20.92
+      },
+      {
+        "party_id": "party_72_2",
+        "amount": 2583.9239018901894,
+        "percentage": 64.82
+      }
+    ],
+    "event_start_time": 1768003874.0478559,
+    "platform_fee": 442.92294934522783
+  },
+  {
+    "event_id": "event_0073",
+    "total_revenue": 2050.08343054349,
+    "parties": [
+      {
+        "party_id": "party_73_0",
+        "party_type": "Business",
+        "percentage": 8.79
+      },
+      {
+        "party_id": "party_73_1",
+        "party_type": "Platform",
+        "percentage": 21.5
+      },
+      {
+        "party_id": "party_73_2",
+        "party_type": "Platform",
+        "percentage": 35.95
+      },
+      {
+        "party_id": "party_73_3",
+        "party_type": "Platform",
+        "percentage": 7.87
+      },
+      {
+        "party_id": "party_73_4",
+        "party_type": "User",
+        "percentage": 6.3
+      },
+      {
+        "party_id": "party_73_5",
+        "party_type": "Sponsor",
+        "percentage": 7.91
+      },
+      {
+        "party_id": "party_73_6",
+        "party_type": "Brand",
+        "percentage": 6.52
+      },
+      {
+        "party_id": "party_73_7",
+        "party_type": "Sponsor",
+        "percentage": 5.16
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_73_0",
+        "amount": 162.18210019029547,
+        "percentage": 8.79
+      },
+      {
+        "party_id": "party_73_1",
+        "amount": 396.69114381016533,
+        "percentage": 21.5
+      },
+      {
+        "party_id": "party_73_2",
+        "amount": 663.3044939523462,
+        "percentage": 35.95
+      },
+      {
+        "party_id": "party_73_3",
+        "amount": 145.2074093853954,
+        "percentage": 7.87
+      },
+      {
+        "party_id": "party_73_4",
+        "amount": 116.23973051181588,
+        "percentage": 6.3
+      },
+      {
+        "party_id": "party_73_5",
+        "amount": 145.94543942039107,
+        "percentage": 7.91
+      },
+      {
+        "party_id": "party_73_6",
+        "amount": 120.29889570429198,
+        "percentage": 6.52
+      },
+      {
+        "party_id": "party_73_7",
+        "amount": 95.20587451443967,
+        "percentage": 5.16
+      }
+    ],
+    "event_start_time": 1766466293.2798696,
+    "platform_fee": 205.008343054349
+  },
+  {
+    "event_id": "event_0074",
+    "total_revenue": 2220.9764383570287,
+    "parties": [
+      {
+        "party_id": "party_74_0",
+        "party_type": "Sponsor",
+        "percentage": 15.65
+      },
+      {
+        "party_id": "party_74_1",
+        "party_type": "Business",
+        "percentage": 9.06
+      },
+      {
+        "party_id": "party_74_2",
+        "party_type": "Platform",
+        "percentage": 75.29
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_74_0",
+        "amount": 312.8245313425875,
+        "percentage": 15.65
+      },
+      {
+        "party_id": "party_74_1",
+        "amount": 181.0984187836321,
+        "percentage": 9.06
+      },
+      {
+        "party_id": "party_74_2",
+        "amount": 1504.9558443951062,
+        "percentage": 75.29
+      }
+    ],
+    "event_start_time": 1767524598.963582,
+    "platform_fee": 222.09764383570288
+  },
+  {
+    "event_id": "event_0075",
+    "total_revenue": 9115.265911821893,
+    "parties": [
+      {
+        "party_id": "party_75_0",
+        "party_type": "Business",
+        "percentage": 25.56
+      },
+      {
+        "party_id": "party_75_1",
+        "party_type": "User",
+        "percentage": 35.5
+      },
+      {
+        "party_id": "party_75_2",
+        "party_type": "Platform",
+        "percentage": 8.29
+      },
+      {
+        "party_id": "party_75_3",
+        "party_type": "Brand",
+        "percentage": 5.27
+      },
+      {
+        "party_id": "party_75_4",
+        "party_type": "Brand",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_75_5",
+        "party_type": "Sponsor",
+        "percentage": 5.08
+      },
+      {
+        "party_id": "party_75_6",
+        "party_type": "Brand",
+        "percentage": 5.28
+      },
+      {
+        "party_id": "party_75_7",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_75_8",
+        "party_type": "Platform",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_75_0",
+        "amount": 2096.875770355508,
+        "percentage": 25.56
+      },
+      {
+        "party_id": "party_75_1",
+        "amount": 2912.3274588270942,
+        "percentage": 35.5
+      },
+      {
+        "party_id": "party_75_2",
+        "amount": 680.0899896810313,
+        "percentage": 8.29
+      },
+      {
+        "party_id": "party_75_3",
+        "amount": 432.3370621977123,
+        "percentage": 5.27
+      },
+      {
+        "party_id": "party_75_4",
+        "amount": 411.0073399640491,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_75_5",
+        "amount": 416.7499574884969,
+        "percentage": 5.08
+      },
+      {
+        "party_id": "party_75_6",
+        "amount": 433.15743612977633,
+        "percentage": 5.28
+      },
+      {
+        "party_id": "party_75_7",
+        "amount": 410.18696603198515,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_75_8",
+        "amount": 411.0073399640491,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1768020145.4366274,
+    "platform_fee": 911.5265911821893
+  },
+  {
+    "event_id": "event_0076",
+    "total_revenue": 6964.918642557802,
+    "parties": [
+      {
+        "party_id": "party_76_0",
+        "party_type": "Business",
+        "percentage": 18.93
+      },
+      {
+        "party_id": "party_76_1",
+        "party_type": "Sponsor",
+        "percentage": 38.89
+      },
+      {
+        "party_id": "party_76_2",
+        "party_type": "User",
+        "percentage": 42.18
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_76_0",
+        "amount": 1186.6131891325726,
+        "percentage": 18.93
+      },
+      {
+        "party_id": "party_76_1",
+        "amount": 2437.791174081656,
+        "percentage": 38.89
+      },
+      {
+        "party_id": "party_76_2",
+        "amount": 2644.0224150877925,
+        "percentage": 42.18
+      }
+    ],
+    "event_start_time": 1768012052.3248165,
+    "platform_fee": 696.4918642557802
+  },
+  {
+    "event_id": "event_0077",
+    "total_revenue": 2846.8501762858878,
+    "parties": [
+      {
+        "party_id": "party_77_0",
+        "party_type": "Brand",
+        "percentage": 6.77
+      },
+      {
+        "party_id": "party_77_1",
+        "party_type": "Business",
+        "percentage": 13.52
+      },
+      {
+        "party_id": "party_77_2",
+        "party_type": "Platform",
+        "percentage": 79.71
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_77_0",
+        "amount": 173.45858124109913,
+        "percentage": 6.77
+      },
+      {
+        "party_id": "party_77_1",
+        "amount": 346.4047294504668,
+        "percentage": 13.52
+      },
+      {
+        "party_id": "party_77_2",
+        "amount": 2042.3018479657328,
+        "percentage": 79.71
+      }
+    ],
+    "event_start_time": 1768499642.1798189,
+    "platform_fee": 284.6850176285888
+  },
+  {
+    "event_id": "event_0078",
+    "total_revenue": 8186.624412018612,
+    "parties": [
+      {
+        "party_id": "party_78_0",
+        "party_type": "Business",
+        "percentage": 25.52
+      },
+      {
+        "party_id": "party_78_1",
+        "party_type": "Business",
+        "percentage": 16.5
+      },
+      {
+        "party_id": "party_78_2",
+        "party_type": "Platform",
+        "percentage": 32.6
+      },
+      {
+        "party_id": "party_78_3",
+        "party_type": "Business",
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_78_4",
+        "party_type": "Platform",
+        "percentage": 15.22
+      },
+      {
+        "party_id": "party_78_5",
+        "party_type": "Brand",
+        "percentage": 5.13
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_78_0",
+        "amount": 1880.3038949524348,
+        "percentage": 25.52
+      },
+      {
+        "party_id": "party_78_1",
+        "amount": 1215.713725184764,
+        "percentage": 16.5
+      },
+      {
+        "party_id": "party_78_2",
+        "amount": 2401.955602486261,
+        "percentage": 32.6
+      },
+      {
+        "party_id": "party_78_3",
+        "amount": 370.6084871320826,
+        "percentage": 5.03
+      },
+      {
+        "party_id": "party_78_4",
+        "amount": 1121.4038119583095,
+        "percentage": 15.22
+      },
+      {
+        "party_id": "party_78_5",
+        "amount": 377.9764491028993,
+        "percentage": 5.13
+      }
+    ],
+    "event_start_time": 1766633683.4394946,
+    "platform_fee": 818.6624412018613
+  },
+  {
+    "event_id": "event_0079",
+    "total_revenue": 3913.943157658202,
+    "parties": [
+      {
+        "party_id": "party_79_0",
+        "party_type": "Brand",
+        "percentage": 9.61
+      },
+      {
+        "party_id": "party_79_1",
+        "party_type": "Business",
+        "percentage": 32.65
+      },
+      {
+        "party_id": "party_79_2",
+        "party_type": "Platform",
+        "percentage": 57.74
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_79_0",
+        "amount": 338.51694370585784,
+        "percentage": 9.61
+      },
+      {
+        "party_id": "party_79_1",
+        "amount": 1150.1121968778625,
+        "percentage": 32.65
+      },
+      {
+        "party_id": "party_79_2",
+        "amount": 2033.9197013086612,
+        "percentage": 57.74
+      }
+    ],
+    "event_start_time": 1766800400.4998128,
+    "platform_fee": 391.39431576582024
+  },
+  {
+    "event_id": "event_0080",
+    "total_revenue": 5034.476928428958,
+    "parties": [
+      {
+        "party_id": "party_80_0",
+        "party_type": "Sponsor",
+        "percentage": 9.44
+      },
+      {
+        "party_id": "party_80_1",
+        "party_type": "User",
+        "percentage": 23.41
+      },
+      {
+        "party_id": "party_80_2",
+        "party_type": "Sponsor",
+        "percentage": 67.15
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_80_0",
+        "amount": 427.72915983932427,
+        "percentage": 9.44
+      },
+      {
+        "party_id": "party_80_1",
+        "amount": 1060.7139440506971,
+        "percentage": 23.41
+      },
+      {
+        "party_id": "party_80_2",
+        "amount": 3042.586131696041,
+        "percentage": 67.15
+      }
+    ],
+    "event_start_time": 1767287159.365911,
+    "platform_fee": 503.4476928428958
+  },
+  {
+    "event_id": "event_0081",
+    "total_revenue": 5122.382698879138,
+    "parties": [
+      {
+        "party_id": "party_81_0",
+        "party_type": "Business",
+        "percentage": 20.82
+      },
+      {
+        "party_id": "party_81_1",
+        "party_type": "User",
+        "percentage": 38.09
+      },
+      {
+        "party_id": "party_81_2",
+        "party_type": "Platform",
+        "percentage": 27.61
+      },
+      {
+        "party_id": "party_81_3",
+        "party_type": "Brand",
+        "percentage": 13.48
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_81_0",
+        "amount": 959.8320701159729,
+        "percentage": 20.82
+      },
+      {
+        "party_id": "party_81_1",
+        "amount": 1756.0040130027573,
+        "percentage": 38.09
+      },
+      {
+        "party_id": "party_81_2",
+        "amount": 1272.8608768444772,
+        "percentage": 27.61
+      },
+      {
+        "party_id": "party_81_3",
+        "amount": 621.447469028017,
+        "percentage": 13.48
+      }
+    ],
+    "event_start_time": 1768847510.2124374,
+    "platform_fee": 512.2382698879138
+  },
+  {
+    "event_id": "event_0082",
+    "total_revenue": 7411.611834073867,
+    "parties": [
+      {
+        "party_id": "party_82_0",
+        "party_type": "Sponsor",
+        "percentage": 39.95
+      },
+      {
+        "party_id": "party_82_1",
+        "party_type": "User",
+        "percentage": 19.92
+      },
+      {
+        "party_id": "party_82_2",
+        "party_type": "Sponsor",
+        "percentage": 40.13
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_82_0",
+        "amount": 2664.845034941259,
+        "percentage": 39.95
+      },
+      {
+        "party_id": "party_82_1",
+        "amount": 1328.7537696127629,
+        "percentage": 19.92
+      },
+      {
+        "party_id": "party_82_2",
+        "amount": 2676.8518461124586,
+        "percentage": 40.13
+      }
+    ],
+    "event_start_time": 1767498467.903497,
+    "platform_fee": 741.1611834073867
+  },
+  {
+    "event_id": "event_0083",
+    "total_revenue": 7409.375167836763,
+    "parties": [
+      {
+        "party_id": "party_83_0",
+        "party_type": "Business",
+        "percentage": 16.27
+      },
+      {
+        "party_id": "party_83_1",
+        "party_type": "Brand",
+        "percentage": 7.3
+      },
+      {
+        "party_id": "party_83_2",
+        "party_type": "Platform",
+        "percentage": 26.85
+      },
+      {
+        "party_id": "party_83_3",
+        "party_type": "Platform",
+        "percentage": 49.58
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_83_0",
+        "amount": 1084.954805826337,
+        "percentage": 16.27
+      },
+      {
+        "party_id": "party_83_1",
+        "amount": 486.7959485268753,
+        "percentage": 7.3
+      },
+      {
+        "party_id": "party_83_2",
+        "amount": 1790.4755093077538,
+        "percentage": 26.85
+      },
+      {
+        "party_id": "party_83_3",
+        "amount": 3306.21138739212,
+        "percentage": 49.58
+      }
+    ],
+    "event_start_time": 1767336058.5475307,
+    "platform_fee": 740.9375167836763
+  },
+  {
+    "event_id": "event_0084",
+    "total_revenue": 4743.906852353457,
+    "parties": [
+      {
+        "party_id": "party_84_0",
+        "party_type": "Platform",
+        "percentage": 20.88
+      },
+      {
+        "party_id": "party_84_1",
+        "party_type": "User",
+        "percentage": 20.06
+      },
+      {
+        "party_id": "party_84_2",
+        "party_type": "Platform",
+        "percentage": 34.05
+      },
+      {
+        "party_id": "party_84_3",
+        "party_type": "Business",
+        "percentage": 8.61
+      },
+      {
+        "party_id": "party_84_4",
+        "party_type": "Business",
+        "percentage": 5.6
+      },
+      {
+        "party_id": "party_84_5",
+        "party_type": "Sponsor",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_84_6",
+        "party_type": "Sponsor",
+        "percentage": 5.47
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_84_0",
+        "amount": 891.4749756942616,
+        "percentage": 20.88
+      },
+      {
+        "party_id": "party_84_1",
+        "amount": 856.4649431238931,
+        "percentage": 20.06
+      },
+      {
+        "party_id": "party_84_2",
+        "amount": 1453.7702549037167,
+        "percentage": 34.05
+      },
+      {
+        "party_id": "party_84_3",
+        "amount": 367.6053419888694,
+        "percentage": 8.61
+      },
+      {
+        "party_id": "party_84_4",
+        "amount": 239.09290535861422,
+        "percentage": 5.6
+      },
+      {
+        "party_id": "party_84_5",
+        "amount": 227.56521170739532,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_84_6",
+        "amount": 233.5425343413607,
+        "percentage": 5.47
+      }
+    ],
+    "event_start_time": 1766595216.8412032,
+    "platform_fee": 474.3906852353457
+  },
+  {
+    "event_id": "event_0085",
+    "total_revenue": 3966.8138327458455,
+    "parties": [
+      {
+        "party_id": "party_85_0",
+        "party_type": "Brand",
+        "percentage": 15.94
+      },
+      {
+        "party_id": "party_85_1",
+        "party_type": "Business",
+        "percentage": 18.1
+      },
+      {
+        "party_id": "party_85_2",
+        "party_type": "Sponsor",
+        "percentage": 26.26
+      },
+      {
+        "party_id": "party_85_3",
+        "party_type": "User",
+        "percentage": 5.65
+      },
+      {
+        "party_id": "party_85_4",
+        "party_type": "User",
+        "percentage": 5.84
+      },
+      {
+        "party_id": "party_85_5",
+        "party_type": "Brand",
+        "percentage": 11.11
+      },
+      {
+        "party_id": "party_85_6",
+        "party_type": "Platform",
+        "percentage": 6.7
+      },
+      {
+        "party_id": "party_85_7",
+        "party_type": "Platform",
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_85_8",
+        "party_type": "Platform",
+        "percentage": 5.38
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_85_0",
+        "amount": 569.0791124457189,
+        "percentage": 15.94
+      },
+      {
+        "party_id": "party_85_1",
+        "amount": 646.1939733542982,
+        "percentage": 18.1
+      },
+      {
+        "party_id": "party_85_2",
+        "amount": 937.5167812311531,
+        "percentage": 26.26
+      },
+      {
+        "party_id": "party_85_3",
+        "amount": 201.71248339512624,
+        "percentage": 5.65
+      },
+      {
+        "party_id": "party_85_4",
+        "amount": 208.49573504912163,
+        "percentage": 5.84
+      },
+      {
+        "party_id": "party_85_5",
+        "amount": 396.64171513625706,
+        "percentage": 11.11
+      },
+      {
+        "party_id": "party_85_6",
+        "amount": 239.1988741145745,
+        "percentage": 6.7
+      },
+      {
+        "party_id": "party_85_7",
+        "amount": 179.22064896345728,
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_85_8",
+        "amount": 192.07312578155384,
+        "percentage": 5.38
+      }
+    ],
+    "event_start_time": 1766665577.8374538,
+    "platform_fee": 396.68138327458456
+  },
+  {
+    "event_id": "event_0086",
+    "total_revenue": 8608.360767412105,
+    "parties": [
+      {
+        "party_id": "party_86_0",
+        "party_type": "Sponsor",
+        "percentage": 35.58
+      },
+      {
+        "party_id": "party_86_1",
+        "party_type": "User",
+        "percentage": 30.54
+      },
+      {
+        "party_id": "party_86_2",
+        "party_type": "Platform",
+        "percentage": 8.76
+      },
+      {
+        "party_id": "party_86_3",
+        "party_type": "User",
+        "percentage": 5.04
+      },
+      {
+        "party_id": "party_86_4",
+        "party_type": "Business",
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_86_5",
+        "party_type": "Sponsor",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_86_6",
+        "party_type": "User",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_86_7",
+        "party_type": "Brand",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_86_0",
+        "amount": 2756.569284940704,
+        "percentage": 35.58
+      },
+      {
+        "party_id": "party_86_1",
+        "amount": 2366.094040530891,
+        "percentage": 30.54
+      },
+      {
+        "party_id": "party_86_2",
+        "amount": 678.6831629027703,
+        "percentage": 8.76
+      },
+      {
+        "party_id": "party_86_3",
+        "amount": 390.47524440981306,
+        "percentage": 5.04
+      },
+      {
+        "party_id": "party_86_4",
+        "amount": 391.24999687888015,
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_86_5",
+        "amount": 388.1509870026118,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_86_6",
+        "amount": 388.1509870026118,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_86_7",
+        "amount": 388.1509870026118,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1767301472.589017,
+    "platform_fee": 860.8360767412105
+  },
+  {
+    "event_id": "event_0087",
+    "total_revenue": 4159.210786632836,
+    "parties": [
+      {
+        "party_id": "party_87_0",
+        "party_type": "Sponsor",
+        "percentage": 25.09
+      },
+      {
+        "party_id": "party_87_1",
+        "party_type": "Platform",
+        "percentage": 34.58
+      },
+      {
+        "party_id": "party_87_2",
+        "party_type": "Platform",
+        "percentage": 14.4
+      },
+      {
+        "party_id": "party_87_3",
+        "party_type": "Brand",
+        "percentage": 5.16
+      },
+      {
+        "party_id": "party_87_4",
+        "party_type": "Brand",
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_87_5",
+        "party_type": "Brand",
+        "percentage": 8.94
+      },
+      {
+        "party_id": "party_87_6",
+        "party_type": "Brand",
+        "percentage": 6.66
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_87_0",
+        "amount": 939.1913877295607,
+        "percentage": 25.09
+      },
+      {
+        "party_id": "party_87_1",
+        "amount": 1294.4295810158712,
+        "percentage": 34.58
+      },
+      {
+        "party_id": "party_87_2",
+        "amount": 539.0337179476156,
+        "percentage": 14.4
+      },
+      {
+        "party_id": "party_87_3",
+        "amount": 193.1537489312289,
+        "percentage": 5.16
+      },
+      {
+        "party_id": "party_87_4",
+        "amount": 193.52807790202584,
+        "percentage": 5.17
+      },
+      {
+        "party_id": "party_87_5",
+        "amount": 334.65009989247795,
+        "percentage": 8.94
+      },
+      {
+        "party_id": "party_87_6",
+        "amount": 249.3030945507722,
+        "percentage": 6.66
+      }
+    ],
+    "event_start_time": 1766818957.552716,
+    "platform_fee": 415.92107866328365
+  },
+  {
+    "event_id": "event_0088",
+    "total_revenue": 4068.063835923995,
+    "parties": [
+      {
+        "party_id": "party_88_0",
+        "party_type": "Sponsor",
+        "percentage": 24.82
+      },
+      {
+        "party_id": "party_88_1",
+        "party_type": "User",
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_88_2",
+        "party_type": "Platform",
+        "percentage": 8.21
+      },
+      {
+        "party_id": "party_88_3",
+        "party_type": "Sponsor",
+        "percentage": 12.53
+      },
+      {
+        "party_id": "party_88_4",
+        "party_type": "Sponsor",
+        "percentage": 47.0
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_88_0",
+        "amount": 908.724099668702,
+        "percentage": 24.82
+      },
+      {
+        "party_id": "party_88_1",
+        "amount": 272.3975544534708,
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_88_2",
+        "amount": 300.58923683642405,
+        "percentage": 8.21
+      },
+      {
+        "party_id": "party_88_3",
+        "amount": 458.7555587771489,
+        "percentage": 12.53
+      },
+      {
+        "party_id": "party_88_4",
+        "amount": 1720.79100259585,
+        "percentage": 47.0
+      }
+    ],
+    "event_start_time": 1767307931.9615345,
+    "platform_fee": 406.8063835923995
+  },
+  {
+    "event_id": "event_0089",
+    "total_revenue": 2024.3575729918157,
+    "parties": [
+      {
+        "party_id": "party_89_0",
+        "party_type": "Platform",
+        "percentage": 32.19
+      },
+      {
+        "party_id": "party_89_1",
+        "party_type": "User",
+        "percentage": 24.56
+      },
+      {
+        "party_id": "party_89_2",
+        "party_type": "Platform",
+        "percentage": 7.06
+      },
+      {
+        "party_id": "party_89_3",
+        "party_type": "User",
+        "percentage": 5.56
+      },
+      {
+        "party_id": "party_89_4",
+        "party_type": "Sponsor",
+        "percentage": 7.89
+      },
+      {
+        "party_id": "party_89_5",
+        "party_type": "Sponsor",
+        "percentage": 8.76
+      },
+      {
+        "party_id": "party_89_6",
+        "party_type": "Business",
+        "percentage": 6.65
+      },
+      {
+        "party_id": "party_89_7",
+        "party_type": "Platform",
+        "percentage": 7.33
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_89_0",
+        "amount": 586.4766324714589,
+        "percentage": 32.19
+      },
+      {
+        "party_id": "party_89_1",
+        "amount": 447.46399793411086,
+        "percentage": 24.56
+      },
+      {
+        "party_id": "party_89_2",
+        "amount": 128.62768018789995,
+        "percentage": 7.06
+      },
+      {
+        "party_id": "party_89_3",
+        "amount": 101.29885295251044,
+        "percentage": 5.56
+      },
+      {
+        "party_id": "party_89_4",
+        "amount": 143.7496312581488,
+        "percentage": 7.89
+      },
+      {
+        "party_id": "party_89_5",
+        "amount": 159.60035105467475,
+        "percentage": 8.76
+      },
+      {
+        "party_id": "party_89_6",
+        "amount": 121.15780074356017,
+        "percentage": 6.65
+      },
+      {
+        "party_id": "party_89_7",
+        "amount": 133.5468690902701,
+        "percentage": 7.33
+      }
+    ],
+    "event_start_time": 1767463090.4836183,
+    "platform_fee": 202.43575729918157
+  },
+  {
+    "event_id": "event_0090",
+    "total_revenue": 3605.0241809569384,
+    "parties": [
+      {
+        "party_id": "party_90_0",
+        "party_type": "Platform",
+        "percentage": 28.74
+      },
+      {
+        "party_id": "party_90_1",
+        "party_type": "Brand",
+        "percentage": 22.03
+      },
+      {
+        "party_id": "party_90_2",
+        "party_type": "Sponsor",
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_90_3",
+        "party_type": "User",
+        "percentage": 27.77
+      },
+      {
+        "party_id": "party_90_4",
+        "party_type": "Brand",
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_90_5",
+        "party_type": "Business",
+        "percentage": 5.34
+      },
+      {
+        "party_id": "party_90_6",
+        "party_type": "Brand",
+        "percentage": 5.02
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_90_0",
+        "amount": 932.4755546463216,
+        "percentage": 28.74
+      },
+      {
+        "party_id": "party_90_1",
+        "amount": 714.7681443583323,
+        "percentage": 22.03
+      },
+      {
+        "party_id": "party_90_2",
+        "amount": 197.9158275345359,
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_90_3",
+        "amount": 901.0036935465677,
+        "percentage": 27.77
+      },
+      {
+        "party_id": "party_90_4",
+        "amount": 162.22608814306224,
+        "percentage": 5.0
+      },
+      {
+        "party_id": "party_90_5",
+        "amount": 173.25746213679045,
+        "percentage": 5.34
+      },
+      {
+        "party_id": "party_90_6",
+        "amount": 162.87499249563444,
+        "percentage": 5.02
+      }
+    ],
+    "event_start_time": 1766659753.7647576,
+    "platform_fee": 360.5024180956939
+  },
+  {
+    "event_id": "event_0091",
+    "total_revenue": 2036.5603539741842,
+    "parties": [
+      {
+        "party_id": "party_91_0",
+        "party_type": "Business",
+        "percentage": 31.15
+      },
+      {
+        "party_id": "party_91_1",
+        "party_type": "Platform",
+        "percentage": 8.08
+      },
+      {
+        "party_id": "party_91_2",
+        "party_type": "Platform",
+        "percentage": 19.62
+      },
+      {
+        "party_id": "party_91_3",
+        "party_type": "Brand",
+        "percentage": 8.44
+      },
+      {
+        "party_id": "party_91_4",
+        "party_type": "User",
+        "percentage": 5.2
+      },
+      {
+        "party_id": "party_91_5",
+        "party_type": "Sponsor",
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_91_6",
+        "party_type": "Brand",
+        "percentage": 6.31
+      },
+      {
+        "party_id": "party_91_7",
+        "party_type": "Platform",
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_91_8",
+        "party_type": "Sponsor",
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_91_9",
+        "party_type": "Brand",
+        "percentage": 5.02
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_91_0",
+        "amount": 570.9496952366625,
+        "percentage": 31.15
+      },
+      {
+        "party_id": "party_91_1",
+        "amount": 148.09866894100267,
+        "percentage": 8.08
+      },
+      {
+        "party_id": "party_91_2",
+        "amount": 359.61582730476147,
+        "percentage": 19.62
+      },
+      {
+        "party_id": "party_91_3",
+        "amount": 154.697124487879,
+        "percentage": 8.44
+      },
+      {
+        "party_id": "party_91_4",
+        "amount": 95.31102456599183,
+        "percentage": 5.2
+      },
+      {
+        "party_id": "party_91_5",
+        "amount": 111.80716343318271,
+        "percentage": 6.1
+      },
+      {
+        "party_id": "party_91_6",
+        "amount": 115.6562625021939,
+        "percentage": 6.31
+      },
+      {
+        "party_id": "party_91_7",
+        "amount": 92.74495851998434,
+        "percentage": 5.06
+      },
+      {
+        "party_id": "party_91_8",
+        "amount": 92.01179679255362,
+        "percentage": 5.02
+      },
+      {
+        "party_id": "party_91_9",
+        "amount": 92.01179679255362,
+        "percentage": 5.02
+      }
+    ],
+    "event_start_time": 1766402814.5468843,
+    "platform_fee": 203.65603539741844
+  },
+  {
+    "event_id": "event_0092",
+    "total_revenue": 8012.060817429381,
+    "parties": [
+      {
+        "party_id": "party_92_0",
+        "party_type": "Platform",
+        "percentage": 11.02
+      },
+      {
+        "party_id": "party_92_1",
+        "party_type": "Brand",
+        "percentage": 21.1
+      },
+      {
+        "party_id": "party_92_2",
+        "party_type": "User",
+        "percentage": 8.08
+      },
+      {
+        "party_id": "party_92_3",
+        "party_type": "Platform",
+        "percentage": 13.47
+      },
+      {
+        "party_id": "party_92_4",
+        "party_type": "User",
+        "percentage": 15.54
+      },
+      {
+        "party_id": "party_92_5",
+        "party_type": "Brand",
+        "percentage": 11.25
+      },
+      {
+        "party_id": "party_92_6",
+        "party_type": "Business",
+        "percentage": 12.11
+      },
+      {
+        "party_id": "party_92_7",
+        "party_type": "Brand",
+        "percentage": 7.43
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_92_0",
+        "amount": 794.6361918726459,
+        "percentage": 11.02
+      },
+      {
+        "party_id": "party_92_1",
+        "amount": 1521.4903492298397,
+        "percentage": 21.1
+      },
+      {
+        "party_id": "party_92_2",
+        "amount": 582.6370626434646,
+        "percentage": 8.08
+      },
+      {
+        "party_id": "party_92_3",
+        "amount": 971.3021328969639,
+        "percentage": 13.47
+      },
+      {
+        "party_id": "party_92_4",
+        "amount": 1120.5668259256731,
+        "percentage": 15.54
+      },
+      {
+        "party_id": "party_92_5",
+        "amount": 811.2211577647248,
+        "percentage": 11.25
+      },
+      {
+        "party_id": "party_92_6",
+        "amount": 873.2345084916283,
+        "percentage": 12.11
+      },
+      {
+        "party_id": "party_92_7",
+        "amount": 535.7665068615026,
+        "percentage": 7.43
+      }
+    ],
+    "event_start_time": 1766546729.692316,
+    "platform_fee": 801.2060817429382
+  },
+  {
+    "event_id": "event_0093",
+    "total_revenue": 1925.2407499998653,
+    "parties": [
+      {
+        "party_id": "party_93_0",
+        "party_type": "Business",
+        "percentage": 23.57
+      },
+      {
+        "party_id": "party_93_1",
+        "party_type": "Brand",
+        "percentage": 36.71
+      },
+      {
+        "party_id": "party_93_2",
+        "party_type": "Business",
+        "percentage": 15.44
+      },
+      {
+        "party_id": "party_93_3",
+        "party_type": "Business",
+        "percentage": 24.28
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_93_0",
+        "amount": 408.4013202974714,
+        "percentage": 23.57
+      },
+      {
+        "party_id": "party_93_1",
+        "amount": 636.0802913924555,
+        "percentage": 36.71
+      },
+      {
+        "party_id": "party_93_2",
+        "amount": 267.5314546199812,
+        "percentage": 15.44
+      },
+      {
+        "party_id": "party_93_3",
+        "amount": 420.70360868997057,
+        "percentage": 24.28
+      }
+    ],
+    "event_start_time": 1767012223.9773395,
+    "platform_fee": 192.52407499998654
+  },
+  {
+    "event_id": "event_0094",
+    "total_revenue": 6786.926476044095,
+    "parties": [
+      {
+        "party_id": "party_94_0",
+        "party_type": "User",
+        "percentage": 26.08
+      },
+      {
+        "party_id": "party_94_1",
+        "party_type": "Sponsor",
+        "percentage": 11.2
+      },
+      {
+        "party_id": "party_94_2",
+        "party_type": "Platform",
+        "percentage": 21.24
+      },
+      {
+        "party_id": "party_94_3",
+        "party_type": "Sponsor",
+        "percentage": 28.92
+      },
+      {
+        "party_id": "party_94_4",
+        "party_type": "Platform",
+        "percentage": 12.56
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_94_0",
+        "amount": 1593.0273824570695,
+        "percentage": 26.08
+      },
+      {
+        "party_id": "party_94_1",
+        "amount": 684.1221887852446,
+        "percentage": 11.2
+      },
+      {
+        "party_id": "party_94_2",
+        "amount": 1297.388865160589,
+        "percentage": 21.24
+      },
+      {
+        "party_id": "party_94_3",
+        "amount": 1766.5012231847568,
+        "percentage": 28.92
+      },
+      {
+        "party_id": "party_94_4",
+        "amount": 767.1941688520245,
+        "percentage": 12.56
+      }
+    ],
+    "event_start_time": 1768905845.154447,
+    "platform_fee": 678.6926476044096
+  },
+  {
+    "event_id": "event_0095",
+    "total_revenue": 8485.269684968094,
+    "parties": [
+      {
+        "party_id": "party_95_0",
+        "party_type": "Brand",
+        "percentage": 35.25
+      },
+      {
+        "party_id": "party_95_1",
+        "party_type": "User",
+        "percentage": 9.49
+      },
+      {
+        "party_id": "party_95_2",
+        "party_type": "Brand",
+        "percentage": 16.85
+      },
+      {
+        "party_id": "party_95_3",
+        "party_type": "Platform",
+        "percentage": 15.68
+      },
+      {
+        "party_id": "party_95_4",
+        "party_type": "Platform",
+        "percentage": 5.15
+      },
+      {
+        "party_id": "party_95_5",
+        "party_type": "Sponsor",
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_95_6",
+        "party_type": "User",
+        "percentage": 6.08
+      },
+      {
+        "party_id": "party_95_7",
+        "party_type": "Brand",
+        "percentage": 6.31
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_95_0",
+        "amount": 2691.9518075561277,
+        "percentage": 35.25
+      },
+      {
+        "party_id": "party_95_1",
+        "amount": 724.7268837931249,
+        "percentage": 9.49
+      },
+      {
+        "party_id": "party_95_2",
+        "amount": 1286.7911477254115,
+        "percentage": 16.85
+      },
+      {
+        "party_id": "party_95_3",
+        "amount": 1197.4412579426973,
+        "percentage": 15.68
+      },
+      {
+        "party_id": "party_95_4",
+        "amount": 393.29224989827117,
+        "percentage": 5.15
+      },
+      {
+        "party_id": "party_95_5",
+        "amount": 396.3469469848597,
+        "percentage": 5.19
+      },
+      {
+        "party_id": "party_95_6",
+        "amount": 464.3139571614541,
+        "percentage": 6.08
+      },
+      {
+        "party_id": "party_95_7",
+        "amount": 481.878465409338,
+        "percentage": 6.31
+      }
+    ],
+    "event_start_time": 1766547641.1009727,
+    "platform_fee": 848.5269684968094
+  },
+  {
+    "event_id": "event_0096",
+    "total_revenue": 9181.44960916298,
+    "parties": [
+      {
+        "party_id": "party_96_0",
+        "party_type": "Platform",
+        "percentage": 26.53
+      },
+      {
+        "party_id": "party_96_1",
+        "party_type": "Platform",
+        "percentage": 18.46
+      },
+      {
+        "party_id": "party_96_2",
+        "party_type": "User",
+        "percentage": 24.4
+      },
+      {
+        "party_id": "party_96_3",
+        "party_type": "Sponsor",
+        "percentage": 30.61
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_96_0",
+        "amount": 2192.2547231798453,
+        "percentage": 26.53
+      },
+      {
+        "party_id": "party_96_1",
+        "amount": 1525.406038066338,
+        "percentage": 18.46
+      },
+      {
+        "party_id": "party_96_2",
+        "amount": 2016.2463341721907,
+        "percentage": 24.4
+      },
+      {
+        "party_id": "party_96_3",
+        "amount": 2529.3975528283095,
+        "percentage": 30.61
+      }
+    ],
+    "event_start_time": 1767830488.477224,
+    "platform_fee": 918.1449609162981
+  },
+  {
+    "event_id": "event_0097",
+    "total_revenue": 3229.693512384558,
+    "parties": [
+      {
+        "party_id": "party_97_0",
+        "party_type": "Sponsor",
+        "percentage": 16.25
+      },
+      {
+        "party_id": "party_97_1",
+        "party_type": "User",
+        "percentage": 22.55
+      },
+      {
+        "party_id": "party_97_2",
+        "party_type": "Brand",
+        "percentage": 20.77
+      },
+      {
+        "party_id": "party_97_3",
+        "party_type": "User",
+        "percentage": 29.98
+      },
+      {
+        "party_id": "party_97_4",
+        "party_type": "Business",
+        "percentage": 5.23
+      },
+      {
+        "party_id": "party_97_5",
+        "party_type": "User",
+        "percentage": 5.22
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_97_0",
+        "amount": 472.34267618624165,
+        "percentage": 16.25
+      },
+      {
+        "party_id": "party_97_1",
+        "amount": 655.4662983384461,
+        "percentage": 22.55
+      },
+      {
+        "party_id": "party_97_2",
+        "amount": 603.7266082700454,
+        "percentage": 20.77
+      },
+      {
+        "party_id": "party_97_3",
+        "amount": 871.4359035116015,
+        "percentage": 29.98
+      },
+      {
+        "party_id": "party_97_4",
+        "amount": 152.02167362794117,
+        "percentage": 5.23
+      },
+      {
+        "party_id": "party_97_5",
+        "amount": 151.73100121182654,
+        "percentage": 5.22
+      }
+    ],
+    "event_start_time": 1767483423.7929516,
+    "platform_fee": 322.96935123845583
+  },
+  {
+    "event_id": "event_0098",
+    "total_revenue": 4000.258324545009,
+    "parties": [
+      {
+        "party_id": "party_98_0",
+        "party_type": "Platform",
+        "percentage": 23.34
+      },
+      {
+        "party_id": "party_98_1",
+        "party_type": "Brand",
+        "percentage": 10.03
+      },
+      {
+        "party_id": "party_98_2",
+        "party_type": "Sponsor",
+        "percentage": 29.45
+      },
+      {
+        "party_id": "party_98_3",
+        "party_type": "Brand",
+        "percentage": 5.89
+      },
+      {
+        "party_id": "party_98_4",
+        "party_type": "User",
+        "percentage": 5.88
+      },
+      {
+        "party_id": "party_98_5",
+        "party_type": "Brand",
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_98_6",
+        "party_type": "User",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_98_7",
+        "party_type": "Sponsor",
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_98_8",
+        "party_type": "Platform",
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_98_9",
+        "party_type": "Business",
+        "percentage": 5.01
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_98_0",
+        "amount": 840.2942636539246,
+        "percentage": 23.34
+      },
+      {
+        "party_id": "party_98_1",
+        "amount": 361.103318956678,
+        "percentage": 10.03
+      },
+      {
+        "party_id": "party_98_2",
+        "amount": 1060.2684689206546,
+        "percentage": 29.45
+      },
+      {
+        "party_id": "party_98_3",
+        "amount": 212.05369378413093,
+        "percentage": 5.89
+      },
+      {
+        "party_id": "party_98_4",
+        "amount": 211.6936705349219,
+        "percentage": 5.88
+      },
+      {
+        "party_id": "party_98_5",
+        "amount": 191.8923918284241,
+        "percentage": 5.33
+      },
+      {
+        "party_id": "party_98_6",
+        "amount": 180.37164785373446,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_98_7",
+        "amount": 181.81174085057066,
+        "percentage": 5.05
+      },
+      {
+        "party_id": "party_98_8",
+        "amount": 180.37164785373446,
+        "percentage": 5.01
+      },
+      {
+        "party_id": "party_98_9",
+        "amount": 180.37164785373446,
+        "percentage": 5.01
+      }
+    ],
+    "event_start_time": 1767859215.1677601,
+    "platform_fee": 400.0258324545009
+  },
+  {
+    "event_id": "event_0099",
+    "total_revenue": 8318.663054333208,
+    "parties": [
+      {
+        "party_id": "party_99_0",
+        "party_type": "Brand",
+        "percentage": 37.09
+      },
+      {
+        "party_id": "party_99_1",
+        "party_type": "Sponsor",
+        "percentage": 38.87
+      },
+      {
+        "party_id": "party_99_2",
+        "party_type": "User",
+        "percentage": 6.17
+      },
+      {
+        "party_id": "party_99_3",
+        "party_type": "Sponsor",
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_99_4",
+        "party_type": "Brand",
+        "percentage": 10.43
+      }
+    ],
+    "ground_truth_splits": [
+      {
+        "party_id": "party_99_0",
+        "amount": 2776.8529141669683,
+        "percentage": 37.09
+      },
+      {
+        "party_id": "party_99_1",
+        "amount": 2910.1178962973863,
+        "percentage": 38.87
+      },
+      {
+        "party_id": "party_99_2",
+        "amount": 461.93535940712303,
+        "percentage": 6.17
+      },
+      {
+        "party_id": "party_99_3",
+        "amount": 557.0176781181517,
+        "percentage": 7.44
+      },
+      {
+        "party_id": "party_99_4",
+        "amount": 780.8729009102583,
+        "percentage": 10.43
+      }
+    ],
+    "event_start_time": 1768085696.0547433,
+    "platform_fee": 831.8663054333209
+  }
+]

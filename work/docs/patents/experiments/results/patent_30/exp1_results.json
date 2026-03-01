@@ -1,0 +1,8 @@
+{
+  "experiment": "AdminPrivacyFilter Accuracy",
+  "leak_rate": 0.0,
+  "avg_preservation_rate": 0.9000000000000002,
+  "avg_personal_filtered": 6.0,
+  "filtering_accuracy": 1.0,
+  "num_samples": 500
+}

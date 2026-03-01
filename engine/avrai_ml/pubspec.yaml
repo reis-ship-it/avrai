@@ -1,0 +1,23 @@
+name: avrai_ml
+description: Machine learning and pattern recognition for SPOTS
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  avrai_core:
+    path: ../../shared/avrai_core
+  
+  # ML dependencies
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  test: ^1.24.7
+  mockito: ^5.4.4
+  
+

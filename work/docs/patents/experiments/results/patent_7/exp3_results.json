@@ -1,0 +1,9 @@
+{
+  "experiment": "Trend Prediction Accuracy",
+  "growth_rate_mae": 0.054603314436723414,
+  "acceleration_mae": 0.12177758067914732,
+  "growth_rate_correlation": 0.9856246841841401,
+  "acceleration_correlation": -0.2598482618306813,
+  "emerging_prediction_accuracy": 0.0,
+  "num_categories": 8
+}

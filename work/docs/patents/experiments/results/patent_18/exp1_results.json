@@ -1,0 +1,9 @@
+{
+  "experiment": "City-Level Rounding Accuracy",
+  "avg_distance_km": 0.3613616788060367,
+  "max_distance_km": 0.7368622635014732,
+  "p95_distance_km": 0.6010134618390331,
+  "rounding_accuracy": 1.0,
+  "target_precision_km": 1.0,
+  "num_samples": 1000
+}

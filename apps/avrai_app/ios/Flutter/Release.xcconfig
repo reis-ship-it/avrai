@@ -1,0 +1,10 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+#include "Generated.xcconfig"
+#include? "Secrets.xcconfig"
+
+ARCHS[sdk=iphonesimulator*] = arm64
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+
+// Used by `ios/Runner/Info.plist` for `GMSApiKey`.
+// Provide a real value via untracked `ios/Flutter/Secrets.xcconfig` or CI secrets.
+GOOGLE_MAPS_IOS_API_KEY=
