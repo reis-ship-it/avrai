@@ -135,8 +135,15 @@ class DeviceMotionService {
 
   DeviceMotionService({
     double filterAlpha = 0.15,
+    bool skipInitForTesting = false,
   }) : _filterAlpha = filterAlpha {
-    _initAdaptiveQuality();
+    if (!skipInitForTesting) {
+      try {
+        _initAdaptiveQuality();
+      } catch (e) {
+        // Ignored
+      }
+    }
   }
 
   void _initAdaptiveQuality() {
