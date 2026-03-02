@@ -293,7 +293,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Download web build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: spots-web
         path: build/web/
@@ -316,7 +316,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Download web build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: spots-web
         path: build/web/
