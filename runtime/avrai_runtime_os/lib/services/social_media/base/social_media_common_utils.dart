@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:http/http.dart' as http;
 
 /// Common utilities for social media platform services

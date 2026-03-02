@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:pointycastle/export.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:math' as math;

@@ -18,7 +18,7 @@
 #include <flutter_blue_plus_winrt/flutter_blue_plus_plugin.h>
 #include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <flutter_nsd/flutter_nsd_plugin.h>
-#include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
+#include <flutter_secure_storage_x_windows/flutter_secure_storage_windows_plugin.h>
 #include <geolocator_windows/geolocator_windows.h>
 #include <objectbox_flutter_libs/objectbox_flutter_libs_plugin.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>

@@ -79,7 +79,7 @@ dependencies:
   
   # Storage
   get_storage: ^2.1.1
-  flutter_secure_storage: ^10.0.0-beta.4
+  flutter_secure_storage_x: ^12.1.4
   path_provider: ^2.1.1
   
   drift: ^2.14.0

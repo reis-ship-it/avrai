@@ -11,7 +11,7 @@ import 'package:avrai_runtime_os/crypto/signal/signal_ffi_store_callbacks.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_platform_bridge_bindings.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_rust_wrapper_bindings.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 
 /// Mock FlutterSecureStorage for testing

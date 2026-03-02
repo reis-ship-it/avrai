@@ -24,7 +24,7 @@ import flutter_inappwebview_macos
 import flutter_local_notifications
 import flutter_macos_maps
 import flutter_nsd
-import flutter_secure_storage_darwin
+import flutter_secure_storage_x_macos
 import geolocator_apple
 import google_sign_in_ios
 import mobile_scanner
@@ -57,7 +57,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   FlutterMacosMapsPlugin.register(with: registry.registrar(forPlugin: "FlutterMacosMapsPlugin"))
   SwiftFlutterNsdPlugin.register(with: registry.registrar(forPlugin: "SwiftFlutterNsdPlugin"))
-  FlutterSecureStorageDarwinPlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStorageDarwinPlugin"))
+  FlutterSecureStoragePlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStoragePlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   FLTGoogleSignInPlugin.register(with: registry.registrar(forPlugin: "FLTGoogleSignInPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))

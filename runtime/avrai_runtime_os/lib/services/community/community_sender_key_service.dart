@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';

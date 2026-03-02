@@ -11,7 +11,7 @@ import 'package:avrai/di/registrars/injection_container_quantum.dart';
 import 'package:avrai/di/registrars/injection_container_ai.dart';
 import 'package:avrai/di/registrars/injection_container_predictive_outreach.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 

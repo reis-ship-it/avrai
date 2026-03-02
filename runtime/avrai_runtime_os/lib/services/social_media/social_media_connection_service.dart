@@ -20,7 +20,7 @@ import 'package:avrai_runtime_os/services/social_media/social_media_service_fact
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:avrai_runtime_os/services/social_media/google_sign_in_bootstrap.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 

@@ -15,7 +15,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_blue_plus_winrt
   flutter_inappwebview_windows
   flutter_nsd
-  flutter_secure_storage_windows
+  flutter_secure_storage_x_windows
   geolocator_windows
   objectbox_flutter_libs
   permission_handler_windows

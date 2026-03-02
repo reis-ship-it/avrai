@@ -19,7 +19,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 // Flutter dependencies
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 
 // Signal Protocol imports

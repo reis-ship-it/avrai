@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 
 /// In-memory FlutterSecureStorage implementation for testing
 ///
@@ -151,7 +151,6 @@ class InMemoryFlutterSecureStorage implements FlutterSecureStorage {
   @override
   MacOsOptions get mOptions => const MacOsOptions();
 
-  @override
   Map<String, List<void Function(String?)>> get getListeners => {};
 
   @override

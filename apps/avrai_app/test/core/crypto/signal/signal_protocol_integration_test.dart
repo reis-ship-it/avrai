@@ -20,7 +20,7 @@ import 'package:avrai_runtime_os/crypto/signal/signal_session_manager.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_types.dart';
 import 'package:avrai_runtime_os/services/security/signal_protocol_initialization_service.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_protocol_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 
 /// Mock FlutterSecureStorage for testing

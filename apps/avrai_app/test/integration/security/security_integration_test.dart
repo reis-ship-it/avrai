@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/user/anonymous_user.dart';
 import 'package:avrai_runtime_os/services/user/user_anonymization_service.dart';

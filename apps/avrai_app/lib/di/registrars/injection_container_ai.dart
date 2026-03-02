@@ -4,7 +4,7 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show StorageService, SharedPreferencesCompat;
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dart';

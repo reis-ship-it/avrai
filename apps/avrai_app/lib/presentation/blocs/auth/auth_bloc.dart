@@ -8,7 +8,7 @@ import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/update_password_usecase.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
