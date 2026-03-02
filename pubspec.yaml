@@ -157,7 +157,7 @@ dependencies:
   apple_maps_flutter: ^1.4.0
   gradient_borders: ^1.0.0
 
-  shared_preferences: 2.5.3
+  shared_preferences: 2.5.4
   path: any
   flutter_rust_bridge: 2.11.1
   battery_plus: ^7.0.0
