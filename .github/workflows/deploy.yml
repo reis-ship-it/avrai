@@ -1,4 +1,4 @@
-name: Deploy SPOTS
+name: Deploy AVRAI
 
 on:
   workflow_dispatch:
@@ -29,48 +29,22 @@ jobs:
       run: flutter pub get
       
     - name: Create missing test directories
+      working-directory: apps/avrai_app
       run: |
         mkdir -p test/integration
         mkdir -p test/widget
-        
-        # Create basic integration test if missing
-        if [ ! -f test/integration/basic_integration_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/integration/basic_integration_test.dart
-          echo 'import "package:spots/main.dart" as app;' >> test/integration/basic_integration_test.dart
-          echo '' >> test/integration/basic_integration_test.dart
-          echo 'void main() {' >> test/integration/basic_integration_test.dart
-          echo '  group("Basic Integration Tests", () {' >> test/integration/basic_integration_test.dart
-          echo '    testWidgets("App starts without crashing", (WidgetTester tester) async {' >> test/integration/basic_integration_test.dart
-          echo '      expect(true, isTrue);' >> test/integration/basic_integration_test.dart
-          echo '    });' >> test/integration/basic_integration_test.dart
-          echo '  });' >> test/integration/basic_integration_test.dart
-          echo '}' >> test/integration/basic_integration_test.dart
-        fi
-        
-        # Create basic widget test if missing
-        if [ ! -f test/widget/basic_widget_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/widget/basic_widget_test.dart
-          echo 'import "package:flutter/material.dart";' >> test/widget/basic_widget_test.dart
-          echo '' >> test/widget/basic_widget_test.dart
-          echo 'void main() {' >> test/widget/basic_widget_test.dart
-          echo '  group("Basic Widget Tests", () {' >> test/widget/basic_widget_test.dart
-          echo '    testWidgets("Basic widget test", (WidgetTester tester) async {' >> test/widget/basic_widget_test.dart
-          echo '      expect(true, isTrue);' >> test/widget/basic_widget_test.dart
-          echo '    });' >> test/widget/basic_widget_test.dart
-          echo '  });' >> test/widget/basic_widget_test.dart
-          echo '}' >> test/widget/basic_widget_test.dart
-        fi
       
     - name: Setup complete Android configuration
+      working-directory: apps/avrai_app
       run: |
         # Create Android manifest with proper v2 embedding
         mkdir -p android/app/src/main
         cat > android/app/src/main/AndroidManifest.xml << 'EOF'
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-            package="com.example.spots">
+            package="com.avrai.app">
             <application
-                android:label="SPOTS"
+                android:label="AVRAI"
                 android:name="${applicationName}"
                 android:icon="@mipmap/ic_launcher">
                 <activity
@@ -98,9 +72,9 @@ jobs:
         EOF
         
         # Create MainActivity with proper Flutter v2 embedding
-        mkdir -p android/app/src/main/kotlin/com/example/spots
-        cat > android/app/src/main/kotlin/com/example/spots/MainActivity.kt << 'EOF'
-        package com.example.spots
+        mkdir -p android/app/src/main/kotlin/com/avrai/app
+        cat > android/app/src/main/kotlin/com/avrai/app/MainActivity.kt << 'EOF'
+        package com.avrai.app
         
         import io.flutter.embedding.android.FlutterActivity
         
@@ -146,10 +120,12 @@ jobs:
         touch android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
       
     - name: Run tests before build
+      working-directory: apps/avrai_app
       run: flutter test test/unit/ --coverage
       continue-on-error: true
       
     - name: Build APK
+      working-directory: apps/avrai_app
       run: flutter build apk --release
       continue-on-error: true
       
@@ -157,8 +133,8 @@ jobs:
       uses: actions/upload-artifact@v6
       if: success() || failure()
       with:
-        name: spots-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: avrai-apk
+        path: apps/avrai_app/build/app/outputs/flutter-apk/app-release.apk
 
   build-ios:
     name: Build iOS
@@ -178,40 +154,8 @@ jobs:
     - name: Get dependencies
       run: flutter pub get
       
-    - name: Create missing test directories
-      run: |
-        mkdir -p test/integration
-        mkdir -p test/widget
-        
-        # Create basic integration test if missing
-        if [ ! -f test/integration/basic_integration_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/integration/basic_integration_test.dart
-          echo 'import "package:spots/main.dart" as app;' >> test/integration/basic_integration_test.dart
-          echo '' >> test/integration/basic_integration_test.dart
-          echo 'void main() {' >> test/integration/basic_integration_test.dart
-          echo '  group("Basic Integration Tests", () {' >> test/integration/basic_integration_test.dart
-          echo '    testWidgets("App starts without crashing", (WidgetTester tester) async {' >> test/integration/basic_integration_test.dart
-          echo '      expect(true, isTrue);' >> test/integration/basic_integration_test.dart
-          echo '    });' >> test/integration/basic_integration_test.dart
-          echo '  });' >> test/integration/basic_integration_test.dart
-          echo '}' >> test/integration/basic_integration_test.dart
-        fi
-        
-        # Create basic widget test if missing
-        if [ ! -f test/widget/basic_widget_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/widget/basic_widget_test.dart
-          echo 'import "package:flutter/material.dart";' >> test/widget/basic_widget_test.dart
-          echo '' >> test/widget/basic_widget_test.dart
-          echo 'void main() {' >> test/widget/basic_widget_test.dart
-          echo '  group("Basic Widget Tests", () {' >> test/widget/basic_widget_test.dart
-          echo '    testWidgets("Basic widget test", (WidgetTester tester) async {' >> test/widget/basic_widget_test.dart
-          echo '      expect(true, isTrue);' >> test/widget/basic_widget_test.dart
-          echo '    });' >> test/widget/basic_widget_test.dart
-          echo '  });' >> test/widget/basic_widget_test.dart
-          echo '}' >> test/widget/basic_widget_test.dart
-        fi
-      
     - name: Build iOS
+      working-directory: apps/avrai_app
       run: flutter build ios --release --no-codesign
       continue-on-error: true
       
@@ -219,8 +163,8 @@ jobs:
       uses: actions/upload-artifact@v6
       if: success() || failure()
       with:
-        name: spots-ios
-        path: build/ios/iphoneos/
+        name: avrai-ios
+        path: apps/avrai_app/build/ios/iphoneos/
 
   build-web:
     name: Build Web
@@ -240,47 +184,15 @@ jobs:
     - name: Get dependencies
       run: flutter pub get
       
-    - name: Create missing test directories
-      run: |
-        mkdir -p test/integration
-        mkdir -p test/widget
-        
-        # Create basic integration test if missing
-        if [ ! -f test/integration/basic_integration_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/integration/basic_integration_test.dart
-          echo 'import "package:spots/main.dart" as app;' >> test/integration/basic_integration_test.dart
-          echo '' >> test/integration/basic_integration_test.dart
-          echo 'void main() {' >> test/integration/basic_integration_test.dart
-          echo '  group("Basic Integration Tests", () {' >> test/integration/basic_integration_test.dart
-          echo '    testWidgets("App starts without crashing", (WidgetTester tester) async {' >> test/integration/basic_integration_test.dart
-          echo '      expect(true, isTrue);' >> test/integration/basic_integration_test.dart
-          echo '    });' >> test/integration/basic_integration_test.dart
-          echo '  });' >> test/integration/basic_integration_test.dart
-          echo '}' >> test/integration/basic_integration_test.dart
-        fi
-        
-        # Create basic widget test if missing
-        if [ ! -f test/widget/basic_widget_test.dart ]; then
-          echo 'import "package:flutter_test/flutter_test.dart";' > test/widget/basic_widget_test.dart
-          echo 'import "package:flutter/material.dart";' >> test/widget/basic_widget_test.dart
-          echo '' >> test/widget/basic_widget_test.dart
-          echo 'void main() {' >> test/widget/basic_widget_test.dart
-          echo '  group("Basic Widget Tests", () {' >> test/widget/basic_widget_test.dart
-          echo '    testWidgets("Basic widget test", (WidgetTester tester) async {' >> test/widget/basic_widget_test.dart
-          echo '      expect(true, isTrue);' >> test/widget/basic_widget_test.dart
-          echo '    });' >> test/widget/basic_widget_test.dart
-          echo '  });' >> test/widget/basic_widget_test.dart
-          echo '}' >> test/widget/basic_widget_test.dart
-        fi
-      
     - name: Build Web
+      working-directory: apps/avrai_app
       run: flutter build web --release
       
     - name: Upload Web build
       uses: actions/upload-artifact@v6
       with:
-        name: spots-web
-        path: build/web/
+        name: avrai-web
+        path: apps/avrai_app/build/web/
 
   deploy-preview:
     name: Deploy Preview
@@ -295,7 +207,7 @@ jobs:
     - name: Download web build
       uses: actions/download-artifact@v4
       with:
-        name: spots-web
+        name: avrai-web
         path: build/web/
         
     - name: Deploy to GitHub Pages
@@ -318,11 +230,11 @@ jobs:
     - name: Download web build
       uses: actions/download-artifact@v4
       with:
-        name: spots-web
+        name: avrai-web
         path: build/web/
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build/web 
+        publish_dir: ./build/web

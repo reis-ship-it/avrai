@@ -1,0 +1,28 @@
+---
+description: Rules for test files
+globs: "**/test/**"
+---
+
+# Test Writing Rules
+
+Reference: `work/docs/plans/test_refactoring/TEST_WRITING_GUIDE.md`
+
+## Core Principle
+Test what the code DOES, not what it IS.
+
+## Required Patterns
+- Test behavior, not property assignment
+- Use round-trip JSON: `final restored = Model.fromJson(original.toJson()); expect(restored, equals(original));`
+- Always test error handling cases, not just happy path
+- Consolidate related checks into comprehensive tests
+- Test names must be descriptive and behavior-focused
+
+## Forbidden Patterns
+- No constructor-only tests (`expect(obj, isNotNull)`)
+- No field-by-field JSON checks (use round-trip instead)
+- No trivial null checks without behavior
+- No stubs (NEVER acceptable)
+- Mocks require explicit justification and approval
+
+## Quality Check
+Run `dart run work/scripts/check_test_quality.dart [file]` to verify test quality.

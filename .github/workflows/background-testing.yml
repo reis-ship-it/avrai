@@ -1,4 +1,4 @@
-name: SPOTS Background Testing
+name: AVRAI Background Testing
 
 on:
   workflow_dispatch: # Manual only (legacy background workflow)
@@ -32,7 +32,7 @@ jobs:
       run: |
         if [ ! -f test/integration/basic_integration_test.dart ]; then
           echo 'import "package:flutter_test/flutter_test.dart";' > test/integration/basic_integration_test.dart
-          echo 'import "package:spots/main.dart" as app;' >> test/integration/basic_integration_test.dart
+          echo 'import "package:avrai/main.dart" as app;' >> test/integration/basic_integration_test.dart
           echo '' >> test/integration/basic_integration_test.dart
           echo 'void main() {' >> test/integration/basic_integration_test.dart
           echo '  group("Basic Integration Tests", () {' >> test/integration/basic_integration_test.dart
@@ -100,8 +100,10 @@ jobs:
       run: |
         chmod +x scripts/test_core.sh
         ./scripts/test_core.sh
-        # Generate coverage for core suites
-        flutter test test/unit/ --coverage --reporter=expanded || true
+      
+    - name: Generate coverage for core suites
+      working-directory: apps/avrai_app
+      run: flutter test test/unit/ --coverage --reporter=expanded || true
       
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
@@ -146,6 +148,7 @@ jobs:
       run: flutter pub get
       
     - name: Run integration tests
+      working-directory: apps/avrai_app
       run: flutter test test/integration/ --reporter=expanded
     - name: Supabase smoke test (REST)
       run: dart run scripts/supabase/test_supabase_connection.dart
@@ -153,6 +156,7 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV }}
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_DEV }}
+      working-directory: apps/avrai_app
       run: flutter test test/ci/supabase_flutter_smoke_test.dart
       
     - name: Generate integration report
@@ -163,7 +167,7 @@ jobs:
         echo "" >> integration-results.md
         echo "## Component Integration" >> integration-results.md
         echo "- Auth + Lists integration" >> integration-results.md
-        echo "- Lists + Spots integration" >> integration-results.md
+        echo "- Lists + AVRAI integration" >> integration-results.md
         echo "- Offline + Online sync" >> integration-results.md
         
     - name: Upload integration results
@@ -193,6 +197,7 @@ jobs:
       run: flutter pub get
       
     - name: Run widget tests
+      working-directory: apps/avrai_app
       run: flutter test test/widget/ --reporter=expanded
       
     - name: Generate widget report
@@ -448,7 +453,7 @@ jobs:
         # Create missing test files
         if [ ! -f test/integration/basic_integration_test.dart ]; then
           echo 'import "package:flutter_test/flutter_test.dart";' > test/integration/basic_integration_test.dart
-          echo 'import "package:spots/main.dart" as app;' >> test/integration/basic_integration_test.dart
+          echo 'import "package:avrai/main.dart" as app;' >> test/integration/basic_integration_test.dart
           echo '' >> test/integration/basic_integration_test.dart
           echo 'void main() {' >> test/integration/basic_integration_test.dart
           echo '  group("Basic Integration Tests", () {' >> test/integration/basic_integration_test.dart
@@ -473,17 +478,18 @@ jobs:
         fi
         
         # Apply code quality fixes
-        find lib/ -name "*.dart" -exec sed -i 's/\.withOpacity(/\.withValues(alpha: /g' {} \;
-        find lib/ -name "*.dart" -exec sed -i 's/desiredAccuracy: LocationAccuracy\./accuracy: LocationAccuracy\./g' {} \;
-        find lib/ -name "*.dart" -exec sed -i 's/timeLimit: const Duration(/timeLimit: Duration(/g' {} \;
-        find lib/ -name "*.dart" -exec sed -i 's/print(/developer.log(/g' {} \;
-        find lib/ -name "*.dart" -exec sed -i '/import.*package:spots\/core\/models\/user\.dart/d' {} \;
-        find lib/ -name "*.dart" -exec sed -i '/import.*package:spots\/data\/datasources\/local\/sembast_database\.dart/d' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/\.withOpacity(/\.withValues(alpha: /g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/desiredAccuracy: LocationAccuracy\./accuracy: LocationAccuracy\./g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/timeLimit: const Duration(/timeLimit: Duration(/g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/print(/developer.log(/g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i '/import.*package:avrai\/core\/models\/user\.dart/d' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i '/import.*package:avrai\/data\/datasources\/local\/sembast_database\.dart/d' {} \;
         
         # Format code
         dart format .
         
     - name: Run tests to ensure fixes work
+      working-directory: apps/avrai_app
       run: flutter test test/unit/ --reporter=compact
       continue-on-error: true
       
@@ -520,7 +526,7 @@ jobs:
           - Project structure is complete
           - No breaking changes detected
           
-          **Auto-generated by SPOTS Background Agent**
+          **Auto-generated by AVRAI Background Agent**
           
         branch: auto-fix/$(date +%Y%m%d)-$(date +%H%M%S)
         base: main
@@ -549,7 +555,7 @@ jobs:
         
     - name: Generate comprehensive report
       run: |
-        echo "# SPOTS Testing Summary Report" > summary-report.md
+        echo "# AVRAI Testing Summary Report" > summary-report.md
         echo "**Date:** $(date)" >> summary-report.md
         echo "**Workflow:** ${{ github.workflow }}" >> summary-report.md
         echo "**Event:** ${{ github.event_name }}" >> summary-report.md

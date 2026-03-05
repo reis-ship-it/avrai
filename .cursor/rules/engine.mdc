@@ -1,0 +1,21 @@
+---
+description: Rules for engine layer code (engine/**)
+globs: engine/**
+---
+
+# Engine Layer Rules
+
+The engine layer contains core business logic and algorithms. It must remain independent of the app and presentation layers.
+
+## Import Restrictions
+- NEVER import from `apps/` or `presentation/`
+- NEVER import from `runtime/` (engine is lower-level than runtime)
+- OK to import from `shared/avrai_core`
+- OK to import between engine packages (avrai_ai, avrai_ml, avrai_knot, avrai_quantum, reality_engine)
+
+## Standards
+- Use `developer.log()` from `dart:developer`, never `print()`
+- Use `AppColors`/`AppTheme` for any color references (no direct `Colors.*`)
+- All public APIs must have `///` doc comments
+- All new scoring must use the energy function (Phase 4) or be flagged for future replacement
+- Respect latency budgets: feature extraction < 50ms, state encoder < 20ms, energy function < 10ms

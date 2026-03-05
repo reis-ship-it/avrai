@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'test/**/*_test.dart'
-      - 'scripts/check_test_quality.dart'
+      - 'apps/avrai_app/test/**/*_test.dart'
+      - 'work/scripts/check_test_quality.dart'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
         if [ "${{ github.event_name }}" == "pull_request" ]; then
           TEST_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "_test\.dart$" || true)
         else
-          TEST_FILES=$(find test -name "*_test.dart" | head -20)
+          TEST_FILES=$(find apps/avrai_app/test -name "*_test.dart" | head -20)
         fi
         
         if [ -z "$TEST_FILES" ]; then
