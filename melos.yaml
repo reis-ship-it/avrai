@@ -3,7 +3,6 @@ repository: https://github.com/AVRA-CADAVRA/avrai
 
 packages:
   - apps/**
-  - packages/**
   - shared/**
   - runtime/**
   - engine/**

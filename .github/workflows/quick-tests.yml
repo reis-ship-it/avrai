@@ -7,14 +7,14 @@ on:
       - 'pubspec.yaml'
       - 'pubspec.lock'
       - 'analysis_options.yaml'
-      - 'lib/**'
-      - 'test/**'
-      - 'integration_test/**'
-      - 'scripts/**'
-      - 'packages/**'
-      - 'native/**'
-      - 'supabase/**'
-      - 'tool/**'
+      - 'apps/avrai_app/lib/**'
+      - 'apps/avrai_app/test/**'
+      - 'apps/admin_app/**'
+      - 'engine/**'
+      - 'runtime/**'
+      - 'shared/**'
+      - 'work/scripts/**'
+      - 'work/tools/**'
       - '.github/workflows/quick-tests.yml'
   workflow_dispatch:
 
@@ -37,6 +37,7 @@ jobs:
       run: flutter pub get
 
     - name: Bootstrap CI-only runtime files
+      working-directory: apps/avrai_app
       run: |
         mkdir -p \
           assets/models \
@@ -83,10 +84,11 @@ jobs:
 
     - name: Generate package model code
       run: |
-        (cd packages/avrai_core && dart pub get && dart run build_runner build --delete-conflicting-outputs)
-        (cd packages/avrai_network && dart pub get && dart run build_runner build --delete-conflicting-outputs)
+        (cd shared/avrai_core && dart pub get && dart run build_runner build --delete-conflicting-outputs)
+        (cd runtime/avrai_network && dart pub get && dart run build_runner build --delete-conflicting-outputs)
 
     - name: Generate required app/test artifacts
+      working-directory: apps/avrai_app
       run: |
         dart run build_runner build \
           --delete-conflicting-outputs \
@@ -110,6 +112,7 @@ jobs:
         # Supabase connectivity sanity (non-credentialed)
         dart run scripts/supabase/test_supabase_connection.dart || true
     - name: Supabase Flutter smoke (if secrets available)
+      working-directory: apps/avrai_app
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV }}
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_DEV }}
@@ -122,9 +125,9 @@ jobs:
       run: dart format --set-exit-if-changed .
       
     - name: Generate test coverage (quick)
+      working-directory: apps/avrai_app
       run: |
         flutter test --coverage --exclude-tags=performance || true
-        # Upload coverage if available
         if [ -f coverage/lcov.info ]; then
           echo "Coverage file generated"
         fi

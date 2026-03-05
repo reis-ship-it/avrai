@@ -36,25 +36,17 @@ jobs:
       run: |
         echo "Applying background agent fixes..."
         
-        # Fix deprecated APIs
-        find lib/ -name "*.dart" -exec sed -i 's/\.withOpacity(/\.withValues(alpha: /g' {} \;
-        find lib/ -name "*.dart" -exec sed -i 's/desiredAccuracy: LocationAccuracy\./accuracy: LocationAccuracy\./g' {} \;
-        find lib/ -name "*.dart" -exec sed -i 's/timeLimit: const Duration(/timeLimit: Duration(/g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/\.withOpacity(/\.withValues(alpha: /g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/desiredAccuracy: LocationAccuracy\./accuracy: LocationAccuracy\./g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/timeLimit: const Duration(/timeLimit: Duration(/g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i 's/print(/developer.log(/g' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i '/import.*package:avrai\/core\/models\/user\.dart/d' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i '/import.*package:avrai\/data\/datasources\/local\/sembast_database\.dart/d' {} \;
+        find apps/avrai_app/lib/ -name "*.dart" -exec sed -i '1i import "dart:developer" as developer;' {} \;
         
-        # Replace print statements
-        find lib/ -name "*.dart" -exec sed -i 's/print(/developer.log(/g' {} \;
-        
-        # Remove unused imports
-        find lib/ -name "*.dart" -exec sed -i '/import.*package:spots\/core\/models\/user\.dart/d' {} \;
-        find lib/ -name "*.dart" -exec sed -i '/import.*package:spots\/data\/datasources\/local\/sembast_database\.dart/d' {} \;
-        
-        # Add developer import where needed
-        find lib/ -name "*.dart" -exec sed -i '1i import "dart:developer" as developer;' {} \;
-        
-        # Format code
         dart format .
         
-        echo "✅ Background agent fixes applied"
+        echo "Background agent fixes applied"
         
     - name: Run final analysis
       run: |
@@ -63,6 +55,7 @@ jobs:
         echo "Final issues found: $(grep -c 'error\|warning\|info' final_analysis.log || echo '0')"
         
     - name: Run tests
+      working-directory: apps/avrai_app
       run: flutter test test/unit/ --reporter=compact || echo "Some tests failed"
       
     - name: Create Pull Request
