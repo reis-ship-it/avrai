@@ -10,6 +10,7 @@ import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_token.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
@@ -32,6 +33,7 @@ class LocalityKernel implements LocalityKernelContract {
   final LocalityInferenceHead _inferenceHead;
   final LocalitySyncCoordinator _syncCoordinator;
   final LocalityProjectionService _projectionService;
+  final LocalityTrainingContract _trainingContract;
 
   LocalityKernel({
     required AgentIdService agentIdService,
@@ -42,6 +44,7 @@ class LocalityKernel implements LocalityKernelContract {
     required LocalityInferenceHead inferenceHead,
     required LocalitySyncCoordinator syncCoordinator,
     required LocalityProjectionService projectionService,
+    required LocalityTrainingContract trainingContract,
   })  : _agentIdService = agentIdService,
         _geoHierarchyService = geoHierarchyService,
         _prefs = prefs,
@@ -49,7 +52,8 @@ class LocalityKernel implements LocalityKernelContract {
         _memory = memory,
         _inferenceHead = inferenceHead,
         _syncCoordinator = syncCoordinator,
-        _projectionService = projectionService;
+        _projectionService = projectionService,
+        _trainingContract = trainingContract;
 
   LocalityKernel.fromRuntimeContext(LocalityKernelRuntimeContext context)
       : this(
@@ -61,6 +65,7 @@ class LocalityKernel implements LocalityKernelContract {
           inferenceHead: context.inferenceHead,
           syncCoordinator: context.syncCoordinator,
           projectionService: context.projectionService,
+          trainingContract: context.trainingContract,
         );
 
   @override
@@ -205,10 +210,14 @@ class LocalityKernel implements LocalityKernelContract {
 
   @override
   Future<LocalityUpdateReceipt> observe(LocalityObservation observation) async {
-    final state = await _inferenceHead.resolveFromKey(
+    final resolvedState = await _inferenceHead.resolveFromKey(
       agentId: observation.agentId,
       key: observation.key,
       topAlias: observation.topAlias,
+    );
+    final state = await _applyObservationState(
+      observation: observation,
+      resolvedState: resolvedState,
     );
     await _memory.saveSnapshot(agentId: observation.agentId, state: state);
     final cloudUpdated = await _syncCoordinator.emitObservation(observation);
@@ -289,6 +298,7 @@ class LocalityKernel implements LocalityKernelContract {
     );
   }
 
+  @override
   Future<bool> observeMeshUpdate({
     required LocalityAgentKeyV1 key,
     required List<double> delta12,
@@ -300,6 +310,26 @@ class LocalityKernel implements LocalityKernelContract {
       delta12: delta12,
       ttlMs: ttlMs,
       hop: hop,
+    );
+  }
+
+  @override
+  Future<LocalityZeroReliabilityReport> evaluateZeroLocalityReadiness({
+    required String cityProfile,
+    String modelFamily = 'reality_model',
+    int localityCount = 12,
+  }) async {
+    final artifact = await _trainingContract.loadBaselineArtifact(
+      cityProfile: cityProfile,
+      modelFamily: modelFamily,
+    );
+    final batch = await _trainingContract.buildBootstrapBatch(
+      cityProfile: cityProfile,
+      localityCount: localityCount,
+    );
+    return _trainingContract.evaluateZeroLocality(
+      artifact: artifact,
+      batch: batch,
     );
   }
 
@@ -473,6 +503,201 @@ class LocalityKernel implements LocalityKernelContract {
     return state.copyWith(
       reliabilityTier: LocalityReliabilityTier.candidate,
       evidenceCount: candidate.coherenceCount,
+    );
+  }
+
+  Future<LocalityState> _applyObservationState({
+    required LocalityObservation observation,
+    required LocalityState resolvedState,
+  }) async {
+    final freshness =
+        observation.occurredAtUtc.isAfter(resolvedState.freshness)
+            ? observation.occurredAtUtc
+            : resolvedState.freshness;
+
+    switch (observation.type) {
+      case LocalityObservationType.visitComplete:
+      case LocalityObservationType.organicDiscoverySignal:
+        final candidate = _nextCandidateRecord(
+          agentId: observation.agentId,
+          token: resolvedState.activeToken,
+          occurredAtUtc: observation.occurredAtUtc,
+        );
+        await _memory.saveCandidate(
+          agentId: observation.agentId,
+          record: candidate,
+        );
+        return _normalizeCandidateState(
+          state: resolvedState.copyWith(
+            freshness: freshness,
+            sourceMix: _blendObservationSourceMix(
+              current: resolvedState.sourceMix,
+              overlay: const LocalitySourceMix(
+                local: 0.65,
+                mesh: 0.1,
+                federated: 0.15,
+                geometry: 0.05,
+                syntheticPrior: 0.05,
+              ),
+            ),
+          ),
+          candidate: candidate,
+        );
+      case LocalityObservationType.meshLocalityUpdate:
+        return resolvedState.copyWith(
+          freshness: freshness,
+          confidence: resolvedState.confidence < 0.42
+              ? 0.42
+              : resolvedState.confidence,
+          reliabilityTier: resolvedState.reliabilityTier ==
+                  LocalityReliabilityTier.zeroLocality
+              ? LocalityReliabilityTier.candidate
+              : resolvedState.reliabilityTier,
+          sourceMix: _blendObservationSourceMix(
+            current: resolvedState.sourceMix,
+            overlay: const LocalitySourceMix(
+              local: 0.1,
+              mesh: 0.7,
+              federated: 0.1,
+              geometry: 0.05,
+              syntheticPrior: 0.05,
+            ),
+          ),
+        );
+      case LocalityObservationType.federatedPriorUpdate:
+        return resolvedState.copyWith(
+          freshness: freshness,
+          confidence: resolvedState.confidence < 0.5
+              ? 0.5
+              : resolvedState.confidence,
+          reliabilityTier:
+              resolvedState.reliabilityTier == LocalityReliabilityTier.zeroLocality
+                  ? LocalityReliabilityTier.bootstrap
+                  : resolvedState.reliabilityTier,
+          sourceMix: _blendObservationSourceMix(
+            current: resolvedState.sourceMix,
+            overlay: const LocalitySourceMix(
+              local: 0.1,
+              mesh: 0.1,
+              federated: 0.65,
+              geometry: 0.1,
+              syntheticPrior: 0.05,
+            ),
+          ),
+        );
+      case LocalityObservationType.happinessSignal:
+      case LocalityObservationType.advisoryResult:
+        return _applyAdvisoryObservationState(
+          observation: observation,
+          state: resolvedState.copyWith(freshness: freshness),
+        );
+      case LocalityObservationType.onboardingSeed:
+        return resolvedState.copyWith(
+          freshness: freshness,
+          reliabilityTier: LocalityReliabilityTier.bootstrap,
+          sourceMix: _blendObservationSourceMix(
+            current: resolvedState.sourceMix,
+            overlay: const LocalitySourceMix(
+              local: 0.1,
+              mesh: 0.0,
+              federated: 0.45,
+              geometry: 0.2,
+              syntheticPrior: 0.25,
+            ),
+          ),
+        );
+    }
+  }
+
+  LocalityState _applyAdvisoryObservationState({
+    required LocalityObservation observation,
+    required LocalityState state,
+  }) {
+    final qualityScore = observation.qualityScore;
+    if (qualityScore == null) {
+      return state.copyWith(
+        sourceMix: _blendObservationSourceMix(
+          current: state.sourceMix,
+          overlay: const LocalitySourceMix(
+            local: 0.4,
+            mesh: 0.1,
+            federated: 0.4,
+            geometry: 0.0,
+            syntheticPrior: 0.1,
+          ),
+        ),
+      );
+    }
+
+    if (qualityScore < 0.45) {
+      return state.copyWith(
+        reliabilityTier: LocalityReliabilityTier.advisory,
+        advisoryStatus: LocalityAdvisoryStatus.active,
+        confidence: state.confidence < 0.55 ? 0.55 : state.confidence,
+        evolutionRate: (state.evolutionRate + 0.12).clamp(0.0, 1.0),
+        sourceMix: _blendObservationSourceMix(
+          current: state.sourceMix,
+          overlay: const LocalitySourceMix(
+            local: 0.2,
+            mesh: 0.15,
+            federated: 0.45,
+            geometry: 0.05,
+            syntheticPrior: 0.15,
+          ),
+        ),
+      );
+    }
+
+    if (state.advisoryStatus == LocalityAdvisoryStatus.active &&
+        qualityScore >= 0.7) {
+      return state.copyWith(
+        reliabilityTier: state.evidenceCount >= 8
+            ? LocalityReliabilityTier.established
+            : LocalityReliabilityTier.candidate,
+        advisoryStatus: LocalityAdvisoryStatus.coolingDown,
+        evolutionRate: (state.evolutionRate - 0.08).clamp(0.0, 1.0),
+      );
+    }
+
+    return state.copyWith(
+      advisoryStatus: qualityScore >= 0.6
+          ? LocalityAdvisoryStatus.coolingDown
+          : LocalityAdvisoryStatus.eligible,
+      sourceMix: _blendObservationSourceMix(
+        current: state.sourceMix,
+        overlay: const LocalitySourceMix(
+          local: 0.35,
+          mesh: 0.1,
+          federated: 0.35,
+          geometry: 0.05,
+          syntheticPrior: 0.15,
+        ),
+      ),
+    );
+  }
+
+  LocalitySourceMix _blendObservationSourceMix({
+    required LocalitySourceMix current,
+    required LocalitySourceMix overlay,
+  }) {
+    final local = ((current.local + overlay.local) / 2).clamp(0.0, 1.0);
+    final mesh = ((current.mesh + overlay.mesh) / 2).clamp(0.0, 1.0);
+    final federated =
+        ((current.federated + overlay.federated) / 2).clamp(0.0, 1.0);
+    final geometry =
+        ((current.geometry + overlay.geometry) / 2).clamp(0.0, 1.0);
+    final syntheticPrior = ((current.syntheticPrior + overlay.syntheticPrior) / 2)
+        .clamp(0.0, 1.0);
+    final total = local + mesh + federated + geometry + syntheticPrior;
+    if (total <= 0) {
+      return const LocalitySourceMix.syntheticBootstrap();
+    }
+    return LocalitySourceMix(
+      local: local / total,
+      mesh: mesh / total,
+      federated: federated / total,
+      geometry: geometry / total,
+      syntheticPrior: syntheticPrior / total,
     );
   }
 

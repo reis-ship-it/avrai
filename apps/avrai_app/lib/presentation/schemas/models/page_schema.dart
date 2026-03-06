@@ -105,6 +105,71 @@ class ActionListSectionSchema extends SectionSchema {
   }) : super(title: title);
 }
 
+sealed class SettingItemSchema {
+  final String title;
+  final String? subtitle;
+  final IconData? icon;
+
+  const SettingItemSchema({
+    required this.title,
+    this.subtitle,
+    this.icon,
+  });
+}
+
+class ToggleSettingItemSchema extends SettingItemSchema {
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const ToggleSettingItemSchema({
+    required super.title,
+    super.subtitle,
+    super.icon,
+    required this.value,
+    this.onChanged,
+  });
+}
+
+class DropdownSettingItemSchema extends SettingItemSchema {
+  final String value;
+  final List<String> options;
+  final ValueChanged<String?>? onChanged;
+
+  const DropdownSettingItemSchema({
+    required super.title,
+    super.subtitle,
+    super.icon,
+    required this.value,
+    required this.options,
+    this.onChanged,
+  });
+}
+
+class ActionSettingItemSchema extends SettingItemSchema {
+  final VoidCallback? onTap;
+  final Widget? trailing;
+  final Color? emphasisColor;
+
+  const ActionSettingItemSchema({
+    required super.title,
+    super.subtitle,
+    super.icon,
+    this.onTap,
+    this.trailing,
+    this.emphasisColor,
+  });
+}
+
+class SettingsGroupSectionSchema extends SectionSchema {
+  final List<SettingItemSchema> items;
+
+  const SettingsGroupSectionSchema({
+    required String title,
+    super.subtitle,
+    required this.items,
+  }) : super(title: title);
+}
+
 class BulletListSectionSchema extends SectionSchema {
   final List<String> items;
 
@@ -132,5 +197,22 @@ class MetricSectionSchema extends SectionSchema {
     required String title,
     super.subtitle,
     required this.metrics,
+  }) : super(title: title);
+}
+
+class CtaSectionSchema extends SectionSchema {
+  final String body;
+  final String primaryLabel;
+  final VoidCallback? onPrimaryTap;
+  final String? secondaryLabel;
+  final VoidCallback? onSecondaryTap;
+
+  const CtaSectionSchema({
+    required String title,
+    required this.body,
+    required this.primaryLabel,
+    this.onPrimaryTap,
+    this.secondaryLabel,
+    this.onSecondaryTap,
   }) : super(title: title);
 }

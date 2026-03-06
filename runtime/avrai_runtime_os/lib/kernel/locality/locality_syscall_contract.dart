@@ -1,5 +1,6 @@
 import 'package:avrai_core/models/spots/visit.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
 
 /// Extraction-ready locality boundary.
@@ -41,6 +42,12 @@ abstract class LocalityKernelContract {
     required List<double> delta12,
     required int ttlMs,
     required int hop,
+  });
+
+  Future<LocalityZeroReliabilityReport> evaluateZeroLocalityReadiness({
+    required String cityProfile,
+    String modelFamily,
+    int localityCount,
   });
 
   LocalityKernelSnapshot? snapshot(String agentId);

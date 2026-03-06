@@ -144,6 +144,7 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
         inferenceHead: sl<LocalityInferenceHead>(),
         syncCoordinator: sl<LocalitySyncCoordinator>(),
         projectionService: sl<LocalityProjectionService>(),
+        trainingContract: sl<LocalityTrainingContract>(),
       ),
     );
   }
@@ -159,8 +160,16 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       () => sl<LocalityKernel>(),
     );
   }
+  if (!sl.isRegistered<LocalityTrainingContract>()) {
+    sl.registerLazySingleton<LocalityTrainingContract>(
+      () => const SyntheticLocalityTrainingService(),
+    );
+  }
+  // ignore: deprecated_member_use
   if (!sl.isRegistered<LocalityAgentIngestionServiceV1>()) {
+    // ignore: deprecated_member_use
     sl.registerLazySingleton<LocalityAgentIngestionServiceV1>(
+      // ignore: deprecated_member_use
       () => LocalityAgentIngestionServiceV1(
         kernel: sl<LocalityKernelContract>(),
       ),

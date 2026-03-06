@@ -21,6 +21,8 @@ import 'package:avrai_runtime_os/kernel/locality/locality_projection_service.dar
 import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/synthetic_locality_training_service.dart';
 
 // Database
 // Note: AppDatabase (Drift) is initialized in registerDeviceSyncServices() (injection_container_device_sync.dart)

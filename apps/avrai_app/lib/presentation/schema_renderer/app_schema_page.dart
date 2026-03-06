@@ -6,8 +6,13 @@ import 'package:avrai/presentation/widgets/common/app_list_row.dart';
 import 'package:avrai/presentation/widgets/common/app_metric_row.dart';
 import 'package:avrai/presentation/widgets/common/app_page_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
+import 'package:avrai/presentation/widgets/common/app_setting_row.dart';
 import 'package:avrai/presentation/widgets/common/app_status_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_toggle_row.dart';
+import 'package:avrai/theme/colors.dart';
 
 class AppSchemaPage extends StatelessWidget {
   final PageSchema schema;
@@ -131,6 +136,24 @@ class AppSchemaPage extends StatelessWidget {
       );
     }
 
+    if (section is SettingsGroupSectionSchema) {
+      return AppSection(
+        title: section.title!,
+        subtitle: section.subtitle,
+        child: AppSurface(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (var i = 0; i < section.items.length; i++) ...[
+                _buildSettingItem(section.items[i]),
+                if (i != section.items.length - 1) const Divider(height: 1),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
     if (section is BulletListSectionSchema) {
       return AppSection(
         title: section.title!,
@@ -176,6 +199,82 @@ class AppSchemaPage extends StatelessWidget {
             ],
           ),
         ),
+      );
+    }
+
+    if (section is CtaSectionSchema) {
+      return AppSection(
+        title: section.title!,
+        child: AppSurface(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(section.body),
+              const SizedBox(height: 16),
+              AppButtonPrimary(
+                onPressed: section.onPrimaryTap,
+                child: Text(section.primaryLabel),
+              ),
+              if (section.secondaryLabel != null) ...[
+                const SizedBox(height: 8),
+                AppButtonSecondary(
+                  onPressed: section.onSecondaryTap,
+                  child: Text(section.secondaryLabel!),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildSettingItem(SettingItemSchema item) {
+    if (item is ToggleSettingItemSchema) {
+      return AppToggleRow(
+        title: item.title,
+        subtitle: item.subtitle,
+        value: item.value,
+        onChanged: item.onChanged,
+        leadingIcon: item.icon,
+      );
+    }
+
+    if (item is DropdownSettingItemSchema) {
+      return AppSettingRow(
+        title: item.title,
+        subtitle: item.subtitle,
+        leadingIcon: item.icon,
+        control: DropdownButton<String>(
+          value: item.value,
+          onChanged: item.onChanged,
+          underline: const SizedBox.shrink(),
+          items: item.options
+              .map((option) => DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  ))
+              .toList(),
+        ),
+      );
+    }
+
+    if (item is ActionSettingItemSchema) {
+      return ListTile(
+        leading: item.icon == null
+            ? null
+            : Icon(item.icon, color: item.emphasisColor ?? AppColors.primary),
+        title: Text(
+          item.title,
+          style: item.emphasisColor == null
+              ? null
+              : TextStyle(color: item.emphasisColor),
+        ),
+        subtitle: item.subtitle == null ? null : Text(item.subtitle!),
+        trailing: item.trailing ?? const Icon(Icons.chevron_right),
+        onTap: item.onTap,
       );
     }
 

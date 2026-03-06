@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
