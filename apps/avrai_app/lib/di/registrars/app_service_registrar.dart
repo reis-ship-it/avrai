@@ -136,7 +136,7 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
   }
   if (!sl.isRegistered<LocalityKernelContract>()) {
     sl.registerLazySingleton<LocalityKernelContract>(
-      () => sl<LocalityKernel>(),
+      () => sl<LocalityNativeKernelStub>(),
     );
   }
   if (!sl.isRegistered<LocalityLibraryManager>()) {
@@ -154,7 +154,7 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
   if (!sl.isRegistered<InProcessLocalitySyscallTransport>()) {
     sl.registerLazySingleton<InProcessLocalitySyscallTransport>(
       () => InProcessLocalitySyscallTransport(
-        delegate: sl<LocalityKernelContract>(),
+        delegate: sl<LocalityKernel>(),
       ),
     );
   }

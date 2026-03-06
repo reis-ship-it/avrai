@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
@@ -98,20 +100,24 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
                   child: CrossAppLearningInsightsWidget(),
                 ),
                 const SizedBox(height: 24),
-                AppSection(
-                  title: 'Privacy Note',
-                  child: _buildPrivacyNote(
-                      Theme.of(context).brightness == Brightness.dark),
+                const AppInfoBanner(
+                  title: 'Local processing',
+                  body:
+                      'Connected app signals stay on this device. Use these controls to decide which sources can contribute to local learning.',
+                  icon: Icons.shield_outlined,
                 ),
                 const SizedBox(height: 24),
                 AppSection(
                   title: 'Quick Actions',
-                  child: _buildQuickActions(
-                      Theme.of(context).brightness == Brightness.dark),
+                  subtitle:
+                      'Enable or disable all supported sources in one step.',
+                  child: _buildQuickActions(),
                 ),
                 const SizedBox(height: 24),
                 AppSection(
                   title: 'Data Management',
+                  subtitle:
+                      'Pause learning temporarily or clear stored insights.',
                   child: _buildDataManagementSection(),
                 ),
               ],
@@ -642,107 +648,27 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
     );
   }
 
-  Widget _buildPrivacyNote(bool isDark) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AppSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 12,
-      color: isDark
-          ? AppColors.electricBlue.withValues(alpha: 0.1)
-          : AppColors.electricBlue.withValues(alpha: 0.05),
-      borderColor: AppColors.electricBlue.withValues(alpha: 0.2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.shield_outlined,
-            color: AppColors.electricBlue,
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Your Privacy Matters',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppColors.white : AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'All data is processed locally on your device. We never send your calendar, health, music, or app usage data to our servers.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: isDark
-                        ? AppColors.white.withValues(alpha: 0.6)
-                        : AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActions(bool isDark) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildQuickActions() {
+    return Row(
       children: [
-        Text(
-          'Quick Actions',
-          style: textTheme.titleMedium?.copyWith(
-            color: isDark ? AppColors.white : AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+        Expanded(
+          child: AppButtonPrimary(
+            onPressed: () async {
+              await _consentService.enableAll();
+              await _loadConsents();
+            },
+            child: const Text('Enable All'),
           ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  await _consentService.enableAll();
-                  await _loadConsents();
-                },
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Enable All'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: const BorderSide(color: AppColors.primary),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  await _consentService.disableAll();
-                  await _loadConsents();
-                },
-                icon: const Icon(Icons.cancel_outlined),
-                label: const Text('Disable All'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark
-                      ? AppColors.white.withValues(alpha: 0.6)
-                      : AppColors.textSecondary,
-                  side: BorderSide(
-                    color: isDark
-                        ? AppColors.white.withValues(alpha: 0.3)
-                        : AppColors.grey400,
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(width: 12),
+        Expanded(
+          child: AppButtonSecondary(
+            onPressed: () async {
+              await _consentService.disableAll();
+              await _loadConsents();
+            },
+            child: const Text('Disable All'),
+          ),
         ),
       ],
     );
