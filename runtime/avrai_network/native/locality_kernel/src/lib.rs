@@ -5,6 +5,7 @@ use std::ffi::{CStr, CString};
 use std::sync::{Mutex, OnceLock};
 
 static SNAPSHOT_REGISTRY: OnceLock<Mutex<std::collections::HashMap<String, Value>>> = OnceLock::new();
+static MESH_REGISTRY: OnceLock<Mutex<std::collections::HashMap<String, Value>>> = OnceLock::new();
 
 #[derive(Debug, Deserialize)]
 struct NativeRequest {
@@ -86,6 +87,12 @@ fn handle_request(request: NativeRequest) -> Result<NativeResponse, String> {
             payload: observe_locality(&request.payload),
             error: None,
         }),
+        "observe_visit" => Ok(NativeResponse {
+            ok: true,
+            handled: true,
+            payload: observe_visit(&request.payload),
+            error: None,
+        }),
         "project_locality" => Ok(NativeResponse {
             ok: true,
             handled: true,
@@ -108,6 +115,12 @@ fn handle_request(request: NativeRequest) -> Result<NativeResponse, String> {
             ok: true,
             handled: true,
             payload: recover_locality(&request.payload),
+            error: None,
+        }),
+        "observe_mesh_locality" => Ok(NativeResponse {
+            ok: true,
+            handled: true,
+            payload: observe_mesh_locality(&request.payload),
             error: None,
         }),
         _ => Ok(NativeResponse {
@@ -356,6 +369,57 @@ fn observe_locality(payload: &Map<String, Value>) -> Value {
     })
 }
 
+fn observe_visit(payload: &Map<String, Value>) -> Value {
+    let user_id = payload
+        .get("userId")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let visit = payload
+        .get("visit")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
+
+    let lat = visit
+        .get("metadata")
+        .and_then(Value::as_object)
+        .and_then(|metadata| metadata.get("latitude"))
+        .and_then(Value::as_f64);
+    let lon = visit
+        .get("metadata")
+        .and_then(Value::as_object)
+        .and_then(|metadata| metadata.get("longitude"))
+        .and_then(Value::as_f64);
+
+    if lat.is_none() || lon.is_none() {
+        return json!({});
+    }
+
+    let occurred_at = visit
+        .get("checkOutTime")
+        .and_then(Value::as_str)
+        .or_else(|| visit.get("checkInTime").and_then(Value::as_str))
+        .unwrap_or("2026-03-06T00:00:00Z");
+    let locality = classify_locality(lat.unwrap_or(33.5186), lon.unwrap_or(-86.8104));
+    let state = build_state(
+        &locality,
+        occurred_at,
+        Some(locality.display_name.clone()),
+        "established",
+    );
+
+    let agent_id = format!("native-agent:{user_id}");
+    save_snapshot(&agent_id, &state, occurred_at);
+
+    json!({
+        "receipt": {
+            "state": state,
+            "cloudUpdated": true,
+            "meshForwarded": true
+        }
+    })
+}
+
 fn project_locality(payload: &Map<String, Value>) -> Value {
     let state = payload
         .get("state")
@@ -537,8 +601,53 @@ fn recover_locality(payload: &Map<String, Value>) -> Value {
     })
 }
 
+fn observe_mesh_locality(payload: &Map<String, Value>) -> Value {
+    let key = payload
+        .get("key")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
+    let geohash = key
+        .get("geohashPrefix")
+        .and_then(Value::as_str)
+        .unwrap_or("unresolved");
+    let delta12 = payload
+        .get("delta12")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
+    let ttl_ms = payload
+        .get("ttlMs")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    let hop = payload
+        .get("hop")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+
+    let registry = mesh_registry();
+    let mut guard = registry.lock().expect("mesh registry mutex poisoned");
+    guard.insert(
+        geohash.to_string(),
+        json!({
+            "key": Value::Object(key),
+            "delta12": delta12,
+            "ttlMs": ttl_ms,
+            "hop": hop
+        }),
+    );
+
+    json!({
+        "observed": true
+    })
+}
+
 fn snapshot_registry() -> &'static Mutex<std::collections::HashMap<String, Value>> {
     SNAPSHOT_REGISTRY.get_or_init(|| Mutex::new(std::collections::HashMap::new()))
+}
+
+fn mesh_registry() -> &'static Mutex<std::collections::HashMap<String, Value>> {
+    MESH_REGISTRY.get_or_init(|| Mutex::new(std::collections::HashMap::new()))
 }
 
 fn save_snapshot(agent_id: &str, state: &Value, saved_at: &str) {
