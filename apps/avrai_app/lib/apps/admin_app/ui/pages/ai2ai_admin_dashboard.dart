@@ -15,6 +15,7 @@ import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart
 import 'package:avrai/apps/admin_app/ui/widgets/admin_collaborative_activity_widget.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/connections_list.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/learning_metrics_chart.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/locality_kernel_diagnostics_card.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/network_3d_visualization_widget.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/network_health_gauge.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/performance_issues_list.dart';
@@ -501,6 +502,8 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
             _buildCommunicationVisualizerSection(),
             const SizedBox(height: 24),
             _buildLiveMeshSection(),
+            const SizedBox(height: 24),
+            LocalityKernelDiagnosticsCard(activeAgents: _activeAgents),
             const SizedBox(height: 24),
             if (_healthReport != null)
               NetworkHealthGauge(healthReport: _healthReport!)

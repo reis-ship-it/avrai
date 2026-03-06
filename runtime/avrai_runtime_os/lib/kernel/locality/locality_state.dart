@@ -271,6 +271,51 @@ class LocalityPerceptionInput extends Equatable {
     this.localityKeyHint,
   });
 
+  Map<String, dynamic> toJson() => {
+        'agentId': agentId,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
+        'occurredAtUtc': occurredAtUtc.toIso8601String(),
+        if (topAlias != null) 'topAlias': topAlias,
+        if (motionContext != null) 'motionContext': motionContext,
+        if (meshContext != null) 'meshContext': meshContext,
+        if (geometryHint != null) 'geometryHint': geometryHint,
+        if (knownHomebase != null)
+          'knownHomebase': {
+            'lat': knownHomebase!.lat,
+            'lon': knownHomebase!.lon,
+          },
+        if (localityKeyHint != null)
+          'localityKeyHint': localityKeyHint!.toJson(),
+      };
+
+  factory LocalityPerceptionInput.fromJson(Map<String, dynamic> json) {
+    final knownHomebaseJson = json['knownHomebase'] as Map?;
+    return LocalityPerceptionInput(
+      agentId: (json['agentId'] as String?) ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      occurredAtUtc:
+          DateTime.tryParse((json['occurredAtUtc'] ?? '').toString()) ??
+              DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      topAlias: json['topAlias'] as String?,
+      motionContext: json['motionContext'] as String?,
+      meshContext: json['meshContext'] as String?,
+      geometryHint: json['geometryHint'] as String?,
+      knownHomebase: knownHomebaseJson == null
+          ? null
+          : (
+              lat: ((knownHomebaseJson['lat'] as num?)?.toDouble() ?? 0.0),
+              lon: ((knownHomebaseJson['lon'] as num?)?.toDouble() ?? 0.0),
+            ),
+      localityKeyHint: json['localityKeyHint'] == null
+          ? null
+          : LocalityAgentKeyV1.fromJson(
+              Map<String, dynamic>.from(json['localityKeyHint'] as Map),
+            ),
+    );
+  }
+
   @override
   List<Object?> get props => [
         agentId,
@@ -316,6 +361,47 @@ class LocalityObservation extends Equatable {
     this.topAlias,
   });
 
+  Map<String, dynamic> toJson() => {
+        'userId': userId,
+        'agentId': agentId,
+        'type': type.name,
+        'key': key.toJson(),
+        'occurredAtUtc': occurredAtUtc.toIso8601String(),
+        'source': source,
+        if (reportedCityCode != null) 'reportedCityCode': reportedCityCode,
+        if (inferredCityCode != null) 'inferredCityCode': inferredCityCode,
+        if (dwellMinutes != null) 'dwellMinutes': dwellMinutes,
+        if (qualityScore != null) 'qualityScore': qualityScore,
+        if (isRepeatVisit != null) 'isRepeatVisit': isRepeatVisit,
+        if (topAlias != null) 'topAlias': topAlias,
+      };
+
+  factory LocalityObservation.fromJson(Map<String, dynamic> json) {
+    return LocalityObservation(
+      userId: (json['userId'] as String?) ?? '',
+      agentId: (json['agentId'] as String?) ?? '',
+      type: LocalityObservationType.values.firstWhere(
+        (value) =>
+            value.name ==
+            (json['type'] ?? LocalityObservationType.visitComplete.name),
+        orElse: () => LocalityObservationType.visitComplete,
+      ),
+      key: LocalityAgentKeyV1.fromJson(
+        Map<String, dynamic>.from(json['key'] as Map? ?? const {}),
+      ),
+      occurredAtUtc:
+          DateTime.tryParse((json['occurredAtUtc'] ?? '').toString()) ??
+              DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      source: (json['source'] as String?) ?? 'unknown',
+      reportedCityCode: json['reportedCityCode'] as String?,
+      inferredCityCode: json['inferredCityCode'] as String?,
+      dwellMinutes: (json['dwellMinutes'] as num?)?.toInt(),
+      qualityScore: (json['qualityScore'] as num?)?.toDouble(),
+      isRepeatVisit: json['isRepeatVisit'] as bool?,
+      topAlias: json['topAlias'] as String?,
+    );
+  }
+
   LocalityAgentUpdateEventV1 toUpdateEvent() {
     return LocalityAgentUpdateEventV1(
       key: key,
@@ -357,6 +443,22 @@ class LocalityUpdateReceipt extends Equatable {
     this.meshForwarded = false,
   });
 
+  Map<String, dynamic> toJson() => {
+        'state': state.toJson(),
+        'cloudUpdated': cloudUpdated,
+        'meshForwarded': meshForwarded,
+      };
+
+  factory LocalityUpdateReceipt.fromJson(Map<String, dynamic> json) {
+    return LocalityUpdateReceipt(
+      state: LocalityState.fromJson(
+        Map<String, dynamic>.from(json['state'] as Map? ?? const {}),
+      ),
+      cloudUpdated: json['cloudUpdated'] as bool? ?? false,
+      meshForwarded: json['meshForwarded'] as bool? ?? false,
+    );
+  }
+
   @override
   List<Object?> get props => [state, cloudUpdated, meshForwarded];
 }
@@ -372,6 +474,20 @@ class LocalitySyncRequest extends Equatable {
     this.allowMesh = true,
   });
 
+  Map<String, dynamic> toJson() => {
+        'agentId': agentId,
+        'allowCloud': allowCloud,
+        'allowMesh': allowMesh,
+      };
+
+  factory LocalitySyncRequest.fromJson(Map<String, dynamic> json) {
+    return LocalitySyncRequest(
+      agentId: (json['agentId'] as String?) ?? '',
+      allowCloud: json['allowCloud'] as bool? ?? true,
+      allowMesh: json['allowMesh'] as bool? ?? true,
+    );
+  }
+
   @override
   List<Object?> get props => [agentId, allowCloud, allowMesh];
 }
@@ -384,6 +500,18 @@ class LocalitySyncResult extends Equatable {
     required this.synced,
     required this.message,
   });
+
+  Map<String, dynamic> toJson() => {
+        'synced': synced,
+        'message': message,
+      };
+
+  factory LocalitySyncResult.fromJson(Map<String, dynamic> json) {
+    return LocalitySyncResult(
+      synced: json['synced'] as bool? ?? false,
+      message: (json['message'] as String?) ?? '',
+    );
+  }
 
   @override
   List<Object?> get props => [synced, message];
@@ -403,6 +531,31 @@ class LocalityProjectionRequest extends Equatable {
     this.includeAttribution = false,
     this.includePrediction = false,
   });
+
+  Map<String, dynamic> toJson() => {
+        'audience': audience.name,
+        'state': state.toJson(),
+        'includeGeometry': includeGeometry,
+        'includeAttribution': includeAttribution,
+        'includePrediction': includePrediction,
+      };
+
+  factory LocalityProjectionRequest.fromJson(Map<String, dynamic> json) {
+    return LocalityProjectionRequest(
+      audience: LocalityProjectionAudience.values.firstWhere(
+        (value) =>
+            value.name ==
+            (json['audience'] ?? LocalityProjectionAudience.user.name),
+        orElse: () => LocalityProjectionAudience.user,
+      ),
+      state: LocalityState.fromJson(
+        Map<String, dynamic>.from(json['state'] as Map? ?? const {}),
+      ),
+      includeGeometry: json['includeGeometry'] as bool? ?? false,
+      includeAttribution: json['includeAttribution'] as bool? ?? false,
+      includePrediction: json['includePrediction'] as bool? ?? false,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -437,6 +590,39 @@ class LocalityPointQuery extends Equatable {
     this.includePrediction = false,
   });
 
+  Map<String, dynamic> toJson() => {
+        'latitude': latitude,
+        'longitude': longitude,
+        'occurredAtUtc': occurredAtUtc.toIso8601String(),
+        if (agentId != null) 'agentId': agentId,
+        if (topAlias != null) 'topAlias': topAlias,
+        'audience': audience.name,
+        'includeGeometry': includeGeometry,
+        'includeAttribution': includeAttribution,
+        'includePrediction': includePrediction,
+      };
+
+  factory LocalityPointQuery.fromJson(Map<String, dynamic> json) {
+    return LocalityPointQuery(
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      occurredAtUtc:
+          DateTime.tryParse((json['occurredAtUtc'] ?? '').toString()) ??
+              DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      agentId: json['agentId'] as String?,
+      topAlias: json['topAlias'] as String?,
+      audience: LocalityProjectionAudience.values.firstWhere(
+        (value) =>
+            value.name ==
+            (json['audience'] ?? LocalityProjectionAudience.user.name),
+        orElse: () => LocalityProjectionAudience.user,
+      ),
+      includeGeometry: json['includeGeometry'] as bool? ?? false,
+      includeAttribution: json['includeAttribution'] as bool? ?? false,
+      includePrediction: json['includePrediction'] as bool? ?? false,
+    );
+  }
+
   @override
   List<Object?> get props => [
         latitude,
@@ -466,6 +652,28 @@ class LocalityProjection extends Equatable {
     this.metadata = const <String, dynamic>{},
   });
 
+  Map<String, dynamic> toJson() => {
+        'primaryLabel': primaryLabel,
+        'confidenceBucket': confidenceBucket,
+        'nearBoundary': nearBoundary,
+        'activeToken': activeToken.toJson(),
+        'metadata': metadata,
+      };
+
+  factory LocalityProjection.fromJson(Map<String, dynamic> json) {
+    return LocalityProjection(
+      primaryLabel: (json['primaryLabel'] as String?) ?? '',
+      confidenceBucket: (json['confidenceBucket'] as String?) ?? 'low',
+      nearBoundary: json['nearBoundary'] as bool? ?? false,
+      activeToken: LocalityToken.fromJson(
+        Map<String, dynamic>.from(json['activeToken'] as Map? ?? const {}),
+      ),
+      metadata: Map<String, dynamic>.from(
+        json['metadata'] as Map? ?? const <String, dynamic>{},
+      ),
+    );
+  }
+
   @override
   List<Object?> get props =>
       [primaryLabel, confidenceBucket, nearBoundary, activeToken, metadata];
@@ -485,6 +693,28 @@ class LocalityPointResolution extends Equatable {
     this.localityCode,
     this.displayName,
   });
+
+  Map<String, dynamic> toJson() => {
+        'state': state.toJson(),
+        'projection': projection.toJson(),
+        if (cityCode != null) 'cityCode': cityCode,
+        if (localityCode != null) 'localityCode': localityCode,
+        if (displayName != null) 'displayName': displayName,
+      };
+
+  factory LocalityPointResolution.fromJson(Map<String, dynamic> json) {
+    return LocalityPointResolution(
+      state: LocalityState.fromJson(
+        Map<String, dynamic>.from(json['state'] as Map? ?? const {}),
+      ),
+      projection: LocalityProjection.fromJson(
+        Map<String, dynamic>.from(json['projection'] as Map? ?? const {}),
+      ),
+      cityCode: json['cityCode'] as String?,
+      localityCode: json['localityCode'] as String?,
+      displayName: json['displayName'] as String?,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -506,6 +736,23 @@ class LocalityKernelSnapshot extends Equatable {
     required this.state,
     required this.savedAtUtc,
   });
+
+  Map<String, dynamic> toJson() => {
+        'agentId': agentId,
+        'state': state.toJson(),
+        'savedAtUtc': savedAtUtc.toIso8601String(),
+      };
+
+  factory LocalityKernelSnapshot.fromJson(Map<String, dynamic> json) {
+    return LocalityKernelSnapshot(
+      agentId: (json['agentId'] as String?) ?? '',
+      state: LocalityState.fromJson(
+        Map<String, dynamic>.from(json['state'] as Map? ?? const {}),
+      ),
+      savedAtUtc: DateTime.tryParse((json['savedAtUtc'] ?? '').toString()) ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
+  }
 
   @override
   List<Object?> get props => [agentId, state, savedAtUtc];
@@ -554,6 +801,16 @@ class LocalityRecoveryRequest extends Equatable {
 
   const LocalityRecoveryRequest({required this.agentId});
 
+  Map<String, dynamic> toJson() => {
+        'agentId': agentId,
+      };
+
+  factory LocalityRecoveryRequest.fromJson(Map<String, dynamic> json) {
+    return LocalityRecoveryRequest(
+      agentId: (json['agentId'] as String?) ?? '',
+    );
+  }
+
   @override
   List<Object?> get props => [agentId];
 }
@@ -566,6 +823,20 @@ class LocalityRecoveryResult extends Equatable {
     required this.state,
     required this.recoveredFromSnapshot,
   });
+
+  Map<String, dynamic> toJson() => {
+        'state': state.toJson(),
+        'recoveredFromSnapshot': recoveredFromSnapshot,
+      };
+
+  factory LocalityRecoveryResult.fromJson(Map<String, dynamic> json) {
+    return LocalityRecoveryResult(
+      state: LocalityState.fromJson(
+        Map<String, dynamic>.from(json['state'] as Map? ?? const {}),
+      ),
+      recoveredFromSnapshot: json['recoveredFromSnapshot'] as bool? ?? false,
+    );
+  }
 
   @override
   List<Object?> get props => [state, recoveredFromSnapshot];

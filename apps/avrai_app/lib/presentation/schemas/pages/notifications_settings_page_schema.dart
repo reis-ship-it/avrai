@@ -137,7 +137,8 @@ PageSchema buildNotificationsSettingsPageSchema({
       ),
       CtaSectionSchema(
         title: 'Test Notifications',
-        body: 'Send a test notification to confirm your current delivery settings.',
+        body:
+            'Send a test notification to confirm your current delivery settings.',
         primaryLabel: 'Send Test Notification',
         onPrimaryTap: onSendTestNotification,
       ),

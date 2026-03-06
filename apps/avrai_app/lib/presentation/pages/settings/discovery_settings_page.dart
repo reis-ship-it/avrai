@@ -1,36 +1,18 @@
-/// Discovery Settings Page
-///
-/// Part of Feature Matrix Phase 1: Critical UI/UX
-/// Section 1.2: Device Discovery UI
-///
-/// Allows users to control device discovery settings and privacy preferences.
-///
-/// Features:
-/// - Enable/disable discovery toggle
-/// - Discovery method preferences (WiFi, Bluetooth, etc.)
-/// - Privacy settings (personality data sharing)
-/// - Auto-discovery options
-/// - Discovery range settings
-/// - Privacy explanations
-///
-/// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
-import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/discovery_settings_page_schema.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
-import 'package:get_it/get_it.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 
-/// Settings page for device discovery configuration
 class DiscoverySettingsPage extends StatefulWidget {
   const DiscoverySettingsPage({super.key});
 
@@ -42,7 +24,6 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   final _storageService = StorageService.instance;
   static const String _logName = 'DiscoverySettingsPage';
 
-  // Discovery settings
   bool _discoveryEnabled = false;
   bool _autoDiscovery = false;
   bool _sharePersonalityData = true;
@@ -105,335 +86,59 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Discovery Settings',
-      constrainBody: false,
-      body: ListView(
-        children: [
-          _buildHeaderSection(),
-          _buildMainToggle(),
-          if (_discoveryEnabled) ...[
-            _buildEventModeToggle(),
-            _buildDiscoveryMethodsSection(),
-            _buildPrivacySection(),
-            _buildAdvancedSection(),
-          ],
-          _buildInfoSection(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEventModeToggle() {
-    return AppSurface(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: EdgeInsets.zero,
-      child: SwitchListTile(
-        title: const Text(
-          'Event Mode (Broadcast-First)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        subtitle: Text(
-          _eventModeEnabled
-              ? 'Uses connectionless room sensing; deep sync only in short check-in windows'
-              : 'Normal discovery behavior',
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        value: _eventModeEnabled,
-        onChanged: (value) async {
-          setState(() {
-            _eventModeEnabled = value;
-          });
-          await _saveSetting('event_mode_enabled', value);
-        },
-        activeThumbColor: AppColors.primary,
-        secondary: Icon(
-          _eventModeEnabled
-              ? Icons.local_activity
-              : Icons.local_activity_outlined,
-          color: _eventModeEnabled ? AppColors.primary : AppColors.grey300,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection() {
-    return AppSurface(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(16),
-      color: AppColors.primary.withValues(alpha: 0.1),
-      borderColor: AppColors.primary.withValues(alpha: 0.24),
-      child: const AppPageHeader(
-        title: 'Device Discovery',
-        subtitle: 'Find nearby avrai-enabled devices',
-        leadingIcon: Icons.radar,
-        showDivider: false,
-      ),
-    );
-  }
-
-  Widget _buildMainToggle() {
-    return AppSurface(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: EdgeInsets.zero,
-      child: SwitchListTile(
-        title: const Text(
-          'Enable Discovery',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        subtitle: Text(
-          _discoveryEnabled
-              ? 'Actively discovering nearby devices'
-              : 'Discovery is turned off',
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        value: _discoveryEnabled,
-        onChanged: (value) async {
+    return AppSchemaPage(
+      schema: buildDiscoverySettingsPageSchema(
+        discoveryEnabled: _discoveryEnabled,
+        eventModeEnabled: _eventModeEnabled,
+        sharePersonalityData: _sharePersonalityData,
+        discoverWiFi: _discoverWiFi,
+        discoverBluetooth: _discoverBluetooth,
+        discoverMultipeer: _discoverMultipeer,
+        autoDiscovery: _autoDiscovery,
+        onDiscoveryEnabledChanged: (value) async {
           setState(() {
             _discoveryEnabled = value;
           });
           await _saveSetting('discovery_enabled', value);
           await _applyDiscoveryRuntime(value);
         },
-        activeThumbColor: AppColors.primary,
-        secondary: Icon(
-          _discoveryEnabled ? Icons.radar : Icons.radar_outlined,
-          color: _discoveryEnabled ? AppColors.primary : AppColors.grey300,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDiscoveryMethodsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
-          child: Text(
-            'Discovery Methods',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-        AppSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              SwitchListTile(
-                title: const Text('WiFi Direct'),
-                subtitle: const Text(
-                  'Discover devices over WiFi (pilot lane, off by default)',
-                ),
-                value: _discoverWiFi,
-                onChanged: (value) async {
-                  setState(() {
-                    _discoverWiFi = value;
-                  });
-                  await _saveSetting('discover_wifi', value);
-                },
-                activeThumbColor: AppColors.primary,
-                secondary: const Icon(Icons.wifi, color: AppColors.primary),
-              ),
-              const Divider(height: 1),
-              SwitchListTile(
-                title: const Text('Bluetooth'),
-                subtitle: const Text('Discover devices via Bluetooth'),
-                value: _discoverBluetooth,
-                onChanged: (value) async {
-                  setState(() {
-                    _discoverBluetooth = value;
-                  });
-                  await _saveSetting('discover_bluetooth', value);
-                },
-                activeThumbColor: AppColors.primary,
-                secondary:
-                    const Icon(Icons.bluetooth, color: AppColors.primary),
-              ),
-              const Divider(height: 1),
-              SwitchListTile(
-                title: const Text('Multipeer'),
-                subtitle: const Text('iOS Multipeer Connectivity'),
-                value: _discoverMultipeer,
-                onChanged: (value) async {
-                  setState(() {
-                    _discoverMultipeer = value;
-                  });
-                  await _saveSetting('discover_multipeer', value);
-                },
-                activeThumbColor: AppColors.primary,
-                secondary: const Icon(Icons.devices, color: AppColors.primary),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPrivacySection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
-          child: Row(
-            children: [
-              Text(
-                'Privacy Settings',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              SizedBox(width: 8),
-              Icon(
-                Icons.lock_outline,
-                size: 20,
-                color: AppColors.textSecondary,
-              ),
-            ],
-          ),
-        ),
-        AppSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              SwitchListTile(
-                title: const Text('Share Personality Data'),
-                subtitle: const Text(
-                  'Allow AI personality data to be discoverable (anonymized)',
-                ),
-                value: _sharePersonalityData,
-                onChanged: (value) async {
-                  setState(() {
-                    _sharePersonalityData = value;
-                  });
-                  await _saveSetting('share_personality_data', value);
-                },
-                activeThumbColor: AppColors.primary,
-                secondary: const Icon(
-                  Icons.psychology,
-                  color: AppColors.primary,
-                ),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(
-                  Icons.info_outline,
-                  color: AppColors.primary,
-                ),
-                title: const Text('Privacy Information'),
-                subtitle: const Text('Learn about data sharing and privacy'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _showPrivacyInfoDialog,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAdvancedSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(32, 24, 32, 12),
-          child: Text(
-            'Advanced',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-        AppSurface(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: EdgeInsets.zero,
-          child: SwitchListTile(
-            title: const Text('Auto-Discovery'),
-            subtitle: const Text(
-              'Automatically start discovery when app opens',
-            ),
-            value: _autoDiscovery,
-            onChanged: (value) async {
-              setState(() {
-                _autoDiscovery = value;
-              });
-              await _saveSetting('auto_discovery', value);
-            },
-            activeThumbColor: AppColors.primary,
-            secondary: const Icon(
-              Icons.autorenew,
-              color: AppColors.primary,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoSection() {
-    return const AppSurface(
-      margin: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.lightbulb_outline,
-                size: 20,
-                color: AppColors.warning,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'About Discovery',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Text(
-            '• Discovery uses device radios (WiFi/Bluetooth) and may affect battery life\n'
-            '• Only avrai-enabled devices can be discovered\n'
-            '• All data shared is anonymized and encrypted\n'
-            '• You can stop discovery at any time\n'
-            '• Discovery requires location permissions on some platforms',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-        ],
+        onEventModeChanged: (value) async {
+          setState(() {
+            _eventModeEnabled = value;
+          });
+          await _saveSetting('event_mode_enabled', value);
+        },
+        onSharePersonalityDataChanged: (value) async {
+          setState(() {
+            _sharePersonalityData = value;
+          });
+          await _saveSetting('share_personality_data', value);
+        },
+        onDiscoverWiFiChanged: (value) async {
+          setState(() {
+            _discoverWiFi = value;
+          });
+          await _saveSetting('discover_wifi', value);
+        },
+        onDiscoverBluetoothChanged: (value) async {
+          setState(() {
+            _discoverBluetooth = value;
+          });
+          await _saveSetting('discover_bluetooth', value);
+        },
+        onDiscoverMultipeerChanged: (value) async {
+          setState(() {
+            _discoverMultipeer = value;
+          });
+          await _saveSetting('discover_multipeer', value);
+        },
+        onAutoDiscoveryChanged: (value) async {
+          setState(() {
+            _autoDiscovery = value;
+          });
+          await _saveSetting('auto_discovery', value);
+        },
+        onShowPrivacyInfo: _showPrivacyInfoDialog,
       ),
     );
   }
@@ -465,25 +170,25 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               _buildPrivacyPoint(
                 Icons.shield_outlined,
                 'Anonymization',
-                'No personal information (name, email, phone) is ever shared during discovery.',
+                'No personal information is shared during discovery.',
               ),
               const SizedBox(height: 12),
               _buildPrivacyPoint(
                 Icons.lock,
                 'Encryption',
-                'All discovery data is encrypted using end-to-end encryption.',
+                'Discovery data is encrypted end to end.',
               ),
               const SizedBox(height: 12),
               _buildPrivacyPoint(
                 Icons.psychology,
-                'AI Personality Only',
-                'Only anonymized AI personality patterns are shared - never your actual conversations or data.',
+                'Preference Signals Only',
+                'AVRAI only exchanges anonymized preference signals, never raw conversations or private notes.',
               ),
               const SizedBox(height: 12),
               _buildPrivacyPoint(
                 Icons.verified_user,
                 'You Control Discovery',
-                'Discovery can be turned on/off anytime. When off, your device is invisible to others.',
+                'You can turn discovery on or off at any time. When off, your device is not discoverable.',
               ),
               const SizedBox(height: 16),
               Container(
@@ -502,7 +207,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'All discovery follows ai2ai privacy principles from OUR_GUTS.md',
+                        'Discovery only shares anonymized signals and never raw personal content.',
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,

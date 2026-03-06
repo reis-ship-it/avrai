@@ -17,6 +17,7 @@ import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart'
 import 'package:avrai_runtime_os/kernel/locality/locality_inference_head.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_kernel_stub.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_projection_service.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';

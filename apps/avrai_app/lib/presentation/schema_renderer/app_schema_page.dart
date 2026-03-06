@@ -243,6 +243,19 @@ class AppSchemaPage extends StatelessWidget {
       );
     }
 
+    if (item is CheckboxSettingItemSchema) {
+      return CheckboxListTile(
+        secondary: item.icon == null ? null : Icon(item.icon),
+        title: Text(item.title),
+        subtitle: item.subtitle == null ? null : Text(item.subtitle!),
+        value: item.value,
+        onChanged: item.onChanged == null
+            ? null
+            : (value) => item.onChanged!(value ?? false),
+        controlAffinity: ListTileControlAffinity.leading,
+      );
+    }
+
     if (item is DropdownSettingItemSchema) {
       return AppSettingRow(
         title: item.title,

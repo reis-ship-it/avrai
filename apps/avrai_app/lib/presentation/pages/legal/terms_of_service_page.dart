@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/terms_of_service_page_schema.dart';
 import 'package:avrai_runtime_os/legal/terms_of_service.dart';
 import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
-/// Terms of Service Page
-///
-/// Agent 2: Phase 5, Week 18-19 - Legal Document UI
-///
-/// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-///
-/// Features:
-/// - Terms of Service display
-/// - Version number
-/// - Effective date
-/// - Accept button
 class TermsOfServicePage extends StatefulWidget {
   final bool requireAcceptance;
 
@@ -55,9 +43,7 @@ class _TermsOfServicePageState extends State<TermsOfServicePage> {
           _hasAccepted = accepted;
         });
       }
-    } catch (e) {
-      // Ignore errors, assume not accepted
-    }
+    } catch (_) {}
   }
 
   Future<void> _acceptTerms() async {
@@ -74,8 +60,8 @@ class _TermsOfServicePageState extends State<TermsOfServicePage> {
 
       await _legalService.acceptTermsOfService(
         userId: authState.user.id,
-        ipAddress: null, // In production, get from request
-        userAgent: null, // In production, get from request
+        ipAddress: null,
+        userAgent: null,
       );
 
       setState(() {
@@ -85,20 +71,7 @@ class _TermsOfServicePageState extends State<TermsOfServicePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Terms of Service accepted'),
-            backgroundColor: AppColors.electricGreen,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: AppColors.white,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
+          const SnackBar(content: Text('Terms of Service accepted')),
         );
         if (widget.requireAcceptance) {
           Navigator.pop(context, true);
@@ -114,150 +87,16 @@ class _TermsOfServicePageState extends State<TermsOfServicePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Terms of Service',
-      constrainBody: false,
-      backgroundColor: AppColors.background,
-      body: Column(
-        children: [
-          // Header Info
-          Container(
-            padding: const EdgeInsets.all(20),
-            color: AppColors.surface,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.description, color: AppTheme.primaryColor),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Version ${TermsOfService.version}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            'Effective: ${_formatDate(TermsOfService.effectiveDate)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_hasAccepted)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check_circle,
-                                size: 16, color: AppColors.electricGreen),
-                            SizedBox(width: 4),
-                            Text(
-                              'Accepted',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Terms Content
-          const Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                TermsOfService.content,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                  height: 1.6,
-                ),
-              ),
-            ),
-          ),
-
-          // Accept Button (if required or not yet accepted)
-          if (widget.requireAcceptance || !_hasAccepted) ...[
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.grey300)),
-              ),
-              child: Column(
-                children: [
-                  if (_error != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.error_outline,
-                              color: AppColors.error, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _error!,
-                              style: const TextStyle(
-                                  color: AppColors.error, fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  ElevatedButton(
-                    onPressed: _isSubmitting ? null : _acceptTerms,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: AppColors.white,
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.white),
-                            ),
-                          )
-                        : const Text('I Accept the Terms of Service'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+    return AppSchemaPage(
+      schema: buildTermsOfServicePageSchema(
+        version: TermsOfService.version,
+        effectiveDate: _formatDate(TermsOfService.effectiveDate),
+        paragraphs: splitLegalContent(TermsOfService.content),
+        hasAccepted: _hasAccepted,
+        requireAcceptance: widget.requireAcceptance,
+        isSubmitting: _isSubmitting,
+        error: _error,
+        onAccept: _acceptTerms,
       ),
     );
   }
