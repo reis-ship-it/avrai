@@ -18,7 +18,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai_runtime_os/services/matching/group_formation_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Group Formation Page
 ///
@@ -538,7 +538,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
     required VoidCallback onTap,
     bool showCompatibility = false,
   }) {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 12),
       radius: 12,
       color: isSelected
@@ -640,7 +640,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 12),
       radius: 12,
       color: isSelected

@@ -1,16 +1,31 @@
 import 'dart:developer' as developer;
-import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
+
+import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
+import 'package:avrai_runtime_os/ai/facts_index.dart';
+import 'package:avrai_runtime_os/ai/personality_learning.dart' as pl;
 import 'package:avrai_runtime_os/ai2ai/models/personality_chat_message.dart';
-import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
-import 'package:avrai_network/network/message_encryption_service.dart';
+import 'package:avrai_runtime_os/data/repositories/hybrid_search_repository.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_learning_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
-import 'package:avrai_runtime_os/ai/personality_learning.dart' as pl;
-import 'package:avrai_runtime_os/ai/facts_index.dart';
+import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
+import 'package:avrai_runtime_os/services/geographic/metro_experience_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:avrai_runtime_os/services/user/human_chat_prompt_composer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:avrai_network/network/message_encryption_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/data/repositories/hybrid_search_repository.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:uuid/uuid.dart';
+
+import 'aspirational_intent_parser.dart';
+import 'aspirational_dna_engine.dart';
 
 /// PersonalityAgentChatService
 ///
@@ -32,6 +47,10 @@ class PersonalityAgentChatService {
   final LLMService _llmService;
   final pl.PersonalityLearning _personalityLearning;
   final HybridSearchRepository? _searchRepository;
+  final AspirationalIntentParser _aspirationalParser;
+  final AspirationalDNAEngine _aspirationalDNAEngine;
+  final HumanChatPromptComposer _promptComposer;
+  final EntitySignatureService? _entitySignatureService;
 
   PersonalityAgentChatService({
     AgentIdService? agentIdService,
@@ -40,13 +59,65 @@ class PersonalityAgentChatService {
     required LLMService llmService,
     pl.PersonalityLearning? personalityLearning,
     HybridSearchRepository? searchRepository,
+    AspirationalIntentParser? aspirationalParser,
+    AspirationalDNAEngine? aspirationalDNAEngine,
+    HumanChatPromptComposer? promptComposer,
+    EntitySignatureService? entitySignatureService,
   })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _languageLearningService =
             languageLearningService ?? LanguagePatternLearningService(),
         _llmService = llmService,
         _personalityLearning = personalityLearning ?? pl.PersonalityLearning(),
-        _searchRepository = searchRepository;
+        _searchRepository = searchRepository,
+        _aspirationalParser = aspirationalParser ??
+            AspirationalIntentParser(llmService: llmService),
+        _aspirationalDNAEngine =
+            aspirationalDNAEngine ?? AspirationalDNAEngine(),
+        _promptComposer = promptComposer ?? const HumanChatPromptComposer(),
+        _entitySignatureService = entitySignatureService ??
+            (GetIt.instance.isRegistered<EntitySignatureService>()
+                ? GetIt.instance<EntitySignatureService>()
+                : null);
+
+  /// Intercepts chat to look for aspirational states ("I want to be more grungy")
+  /// and saves them for the String Theory engine.
+  Future<void> _extractAndSaveAspirationalState(
+      String userId, String message) async {
+    try {
+      // Use the new mock parser instead of direct LLM calls for now
+      final targetDimensions = await _aspirationalParser.parseIntent(message);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          'aspirational_state_$userId', jsonEncode(targetDimensions));
+
+      developer.log('Aspirational state saved: $targetDimensions',
+          name: _logName);
+
+      // Physically alter the underlying DNA
+      final currentProfile =
+          await _personalityLearning.getCurrentPersonality(userId);
+      if (currentProfile != null) {
+        final evolvedProfile = _aspirationalDNAEngine.applyAspirationalShift(
+            currentProfile, targetDimensions);
+
+        // Save the physically altered DNA back to storage
+        await _personalityLearning.updatePersonality(
+            userId, evolvedProfile.dimensions);
+
+        developer.log('Aspirational state successfully merged into DNA!',
+            name: _logName);
+      } else {
+        developer.log(
+            'Failed to apply aspirational state: Could not fetch current profile for user $userId',
+            name: _logName);
+      }
+    } catch (e) {
+      developer.log('Failed to extract and apply aspirational state: $e',
+          name: _logName);
+    }
+  }
 
   /// Main chat method - handles user message and returns agent response
   ///
@@ -63,6 +134,18 @@ class PersonalityAgentChatService {
     try {
       developer.log('Processing chat message from user: $userId',
           name: _logName);
+
+      // --- Aspirational State Interception (String Theory Intentional Superposition) ---
+      // We check if the user is expressing a desire to change their vibe.
+      if (message.toLowerCase().contains('want to be') ||
+          message.toLowerCase().contains('make me more') ||
+          message.toLowerCase().contains('i wish i was')) {
+        developer.log(
+            'Aspirational intent detected. Analyzing target dimensions...',
+            name: _logName);
+        await _extractAndSaveAspirationalState(userId, message);
+      }
+      // --------------------------------------------------------------------------------
 
       // Convert userId → agentId
       final agentId = await _agentIdService.getUserAgentId(userId);
@@ -87,17 +170,19 @@ class PersonalityAgentChatService {
 
       // Build conversation history for context
       final history = await _getConversationHistory(userId, agentId);
+      final chronologicalHistory = [...history]
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      final recentHistory = chronologicalHistory.length <= 10
+          ? chronologicalHistory
+          : chronologicalHistory.sublist(chronologicalHistory.length - 10);
       final historyMessages = <ChatMessage>[];
-      for (final msg in history.take(10)) {
+      for (final msg in recentHistory) {
         final decrypted = await getDecryptedMessageAsync(msg, agentId, userId);
         historyMessages.add(ChatMessage(
           role: msg.isFromUser ? ChatRole.user : ChatRole.assistant,
           content: decrypted,
         ));
       }
-
-      // Add current user message
-      historyMessages.add(ChatMessage(role: ChatRole.user, content: message));
 
       // Add search results to user message if available
       String userMessage = message;
@@ -106,8 +191,11 @@ class PersonalityAgentChatService {
         userMessage = '$message\n\n$searchContext';
       }
 
-      // Update last message with search context if available
-      if (searchResults != null && searchResults.spots.isNotEmpty) {
+      // Update the most recent stored user message with the safe search summary.
+      if (historyMessages.isNotEmpty &&
+          searchResults != null &&
+          searchResults.spots.isNotEmpty &&
+          historyMessages.last.role == ChatRole.user) {
         historyMessages[historyMessages.length - 1] = ChatMessage(
           role: ChatRole.user,
           content: userMessage,
@@ -121,59 +209,32 @@ class PersonalityAgentChatService {
       // Get language style summary
       final languageStyle =
           await _languageLearningService.getLanguageStyleSummary(userId);
+      final metroContext = await _resolveMetroContext(currentLocation);
+      final structuredFacts = await _loadStructuredFacts(userId);
+      final userSignatureSummary = await _loadUserSignatureSummary(
+        userId: userId,
+        personality: personality,
+        metroContext: metroContext,
+      );
 
-      // Phase 11 Section 5: Use generateWithContext() for structured facts integration
-      // This automatically retrieves structured facts and includes them in context
-      String response;
-      try {
-        // Use generateWithContext() with conversation history for enriched context
-        response = await _llmService.generateWithContext(
-          query:
-              userMessage, // Use userMessage which may include search context
-          userId: userId,
-          messages: historyMessages, // Include conversation history
-          temperature: 0.7,
-          maxTokens: 500,
-        );
-      } catch (e) {
-        developer.log(
-          'generateWithContext failed, falling back to chat() with manual context: $e',
-          name: _logName,
-        );
-        // Fallback: Manually retrieve structured facts and build context
-        Map<String, dynamic> enrichedPreferences = {};
-        try {
-          if (GetIt.instance.isRegistered<FactsIndex>()) {
-            final factsIndex = GetIt.instance<FactsIndex>();
-            final facts = await factsIndex.retrieveFacts(userId: userId);
+      final prompt = _promptComposer.compose(
+        historyMessages: historyMessages,
+        userId: userId,
+        personality: personality,
+        languageStyle: languageStyle,
+        userSignatureSummary: userSignatureSummary,
+        structuredFacts: structuredFacts,
+        metroContext: metroContext,
+        currentLocation: currentLocation,
+      );
 
-            // Merge structured facts into preferences
-            enrichedPreferences = {
-              'traits': facts.traits,
-              'places': facts.places,
-              'social_graph': facts.socialGraph,
-            };
-          }
-        } catch (factsError) {
-          developer.log('Error retrieving structured facts: $factsError',
-              name: _logName);
-        }
-
-        // Generate agent response with fallback context
-        response = await _llmService.chat(
-          messages: historyMessages,
-          context: LLMContext(
-            userId: userId,
-            location: currentLocation,
-            personality: personality,
-            preferences:
-                enrichedPreferences.isNotEmpty ? enrichedPreferences : null,
-            languageStyle: languageStyle.isNotEmpty ? languageStyle : null,
-          ),
-          temperature: 0.7,
-          maxTokens: 500,
-        );
-      }
+      final response = await _llmService.chat(
+        messages: prompt.messages,
+        context: prompt.context,
+        dispatchPolicy: const LLMDispatchPolicy.humanChat(),
+        temperature: 0.7,
+        maxTokens: 500,
+      );
 
       // Encrypt and save agent response
       await _saveMessage(
@@ -195,6 +256,107 @@ class PersonalityAgentChatService {
         stackTrace: stackTrace,
       );
       rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> _loadStructuredFacts(String userId) async {
+    try {
+      if (!GetIt.instance.isRegistered<FactsIndex>()) {
+        return null;
+      }
+
+      final factsIndex = GetIt.instance<FactsIndex>();
+      final facts = await factsIndex.retrieveFacts(userId: userId);
+      return <String, dynamic>{
+        'traits': facts.traits,
+        'places': facts.places,
+        'social_graph': facts.socialGraph,
+      };
+    } catch (e, st) {
+      developer.log(
+        'Error retrieving structured facts for human chat',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<String?> _loadUserSignatureSummary({
+    required String userId,
+    required PersonalityProfile? personality,
+    required MetroExperienceContext? metroContext,
+  }) async {
+    if (_entitySignatureService == null || personality == null) {
+      return null;
+    }
+
+    try {
+      final signature = await _entitySignatureService.buildUserSignature(
+        user: UnifiedUser(
+          id: userId,
+          email: '$userId@local.avrai',
+          location: metroContext?.displayName,
+          createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+          updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+        ),
+        personality: personality,
+      );
+      return signature.summary;
+    } catch (e, st) {
+      developer.log(
+        'Failed to load user signature summary: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<String?> getUserSignatureSummary({
+    required String userId,
+    Position? currentLocation,
+  }) async {
+    final personality =
+        await _personalityLearning.getCurrentPersonality(userId);
+    final metroContext = await _resolveMetroContext(currentLocation);
+    return _loadUserSignatureSummary(
+      userId: userId,
+      personality: personality,
+      metroContext: metroContext,
+    );
+  }
+
+  Future<MetroExperienceContext?> _resolveMetroContext(
+    Position? currentLocation,
+  ) async {
+    try {
+      final getIt = GetIt.instance;
+      final prefs = getIt.isRegistered<SharedPreferencesCompat>()
+          ? getIt<SharedPreferencesCompat>()
+          : await SharedPreferencesCompat.getInstance();
+      final geoHierarchyService = getIt.isRegistered<GeoHierarchyService>()
+          ? getIt<GeoHierarchyService>()
+          : GeoHierarchyService();
+      final metroService = MetroExperienceService(
+        geoHierarchyService: geoHierarchyService,
+        prefs: prefs,
+      );
+
+      return await metroService.resolveBestEffort(
+        latitude: currentLocation?.latitude,
+        longitude: currentLocation?.longitude,
+      );
+    } catch (e, st) {
+      developer.log(
+        'Failed to resolve metro context',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
     }
   }
 
@@ -225,22 +387,25 @@ class PersonalityAgentChatService {
   /// Format search results for LLM context
   String _formatSearchResultsForContext(HybridSearchResult results) {
     final buffer = StringBuffer();
-    buffer.writeln('\nSearch Results Available:');
+    buffer.writeln('Search results available:');
     buffer.writeln(
         'Found ${results.totalCount} spots (${results.communityCount} from community, ${results.externalCount} external)');
-    buffer.writeln('\nTop Results:');
+    buffer.writeln('Top results:');
 
     for (int i = 0; i < results.spots.take(5).length; i++) {
       final spot = results.spots[i];
       buffer.writeln('${i + 1}. ${spot.name} - ${spot.category}');
       if (spot.description.isNotEmpty) {
-        buffer.writeln(
-            '   ${spot.description.substring(0, spot.description.length > 100 ? 100 : spot.description.length)}...');
+        final sanitizedDescription =
+            spot.description.replaceAll(RegExp(r'\s+'), ' ').trim();
+        final maxLength = sanitizedDescription.length > 100
+            ? 100
+            : sanitizedDescription.length;
+        buffer.writeln('   ${sanitizedDescription.substring(0, maxLength)}...');
       }
     }
 
-    buffer.writeln(
-        '\nYou can reference these spots in your response. Present them naturally in the user\'s language style.');
+    buffer.writeln('Reference these naturally if relevant.');
 
     return buffer.toString();
   }

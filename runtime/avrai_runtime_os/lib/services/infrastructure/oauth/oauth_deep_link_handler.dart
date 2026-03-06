@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:app_links/app_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:avrai_runtime_os/services/infrastructure/oauth/oauth_runtime.dart';
 
 /// OAuth deep-link runtime for callback capture.
@@ -20,9 +21,13 @@ class OAuthDeepLinkHandler implements OAuthRuntime {
   /// Start listening for deep links.
   @override
   void startListening() {
+    if (_linkSubscription != null) {
+      return;
+    }
+
     _linkSubscription = _appLinks.uriLinkStream.listen(
       (Uri uri) {
-        _handleDeepLink(uri);
+        handleDeepLink(uri);
       },
       onError: (err) {
         developer.log('Deep link error: $err', name: _logName);
@@ -32,7 +37,8 @@ class OAuthDeepLinkHandler implements OAuthRuntime {
     developer.log('Started listening for OAuth deep links', name: _logName);
   }
 
-  void _handleDeepLink(Uri uri) {
+  @visibleForTesting
+  void handleDeepLink(Uri uri) {
     developer.log('Received deep link: $uri', name: _logName);
 
     if (uri.scheme == 'avrai' && uri.host == 'oauth') {
@@ -59,7 +65,7 @@ class OAuthDeepLinkHandler implements OAuthRuntime {
       final initialLink = await _appLinks.getInitialLink();
       if (initialLink != null) {
         developer.log('Initial deep link: $initialLink', name: _logName);
-        _handleDeepLink(initialLink);
+        handleDeepLink(initialLink);
       }
       return initialLink;
     } catch (e) {

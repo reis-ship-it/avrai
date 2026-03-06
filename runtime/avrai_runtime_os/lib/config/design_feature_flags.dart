@@ -1,6 +1,9 @@
 class DesignFeatureFlags {
   const DesignFeatureFlags._();
 
+  static const bool enableImmersiveShell =
+      bool.fromEnvironment('ENABLE_PORTAL_SHELL', defaultValue: false);
+
   static const bool enableKnotBirthExperience =
       bool.fromEnvironment('ENABLE_KNOT_BIRTH_EXPERIENCE', defaultValue: true);
 

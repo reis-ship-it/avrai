@@ -14,6 +14,7 @@ import 'package:avrai/apps/admin_app/ui/pages/communications_viewer_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/clubs_communities_viewer_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/ai_live_map_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/beta_feedback_viewer_page.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/admin_federated_rounds_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
@@ -37,7 +38,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 10, vsync: this);
+    _tabController = TabController(length: 11, vsync: this);
     _initializeServices();
     _loadDashboardData();
   }
@@ -209,6 +210,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
           Tab(icon: Icon(Icons.group), text: 'Clubs'),
           Tab(icon: Icon(Icons.map), text: 'AI Map'),
           Tab(icon: Icon(Icons.category), text: 'Knots'),
+          Tab(icon: Icon(Icons.bug_report), text: 'Feedback'),
         ],
       ),
       actions: [
@@ -255,6 +257,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
           ClubsCommunitiesViewerPage(godModeService: _godModeService),
           AILiveMapPage(godModeService: _godModeService),
           const KnotVisualizerPage(),
+          const BetaFeedbackViewerPage(),
         ],
       ),
     );
@@ -365,6 +368,53 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
                   AppColors.textSecondary,
                 ),
               ],
+            ),
+            const SizedBox(height: 24),
+
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.login, color: AppTheme.primaryColor),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Auth Mix',
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildAuthMixSection(
+                      title: 'Signup Provider',
+                      counts: _dashboardData!.authMix.signupProviderCounts,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildAuthMixSection(
+                      title: 'Last Sign-In Provider',
+                      counts: _dashboardData!
+                          .authMix.lastSignInProviderCounts.totalCounts,
+                      recentCounts: _dashboardData!
+                          .authMix.lastSignInProviderCounts.recentCounts,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildAuthMixSection(
+                      title: 'Last Sign-In Platform',
+                      counts: _dashboardData!
+                          .authMix.lastSignInPlatformCounts.totalCounts,
+                      recentCounts: _dashboardData!
+                          .authMix.lastSignInPlatformCounts.recentCounts,
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -545,6 +595,82 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
         ),
       ),
     );
+  }
+
+  Widget _buildAuthMixSection({
+    required String title,
+    required Map<String, int> counts,
+    Map<String, int>? recentCounts,
+  }) {
+    if (counts.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'No auth mix data yet.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+        ],
+      );
+    }
+
+    final sortedEntries = counts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        ...sortedEntries.map((entry) {
+          final recentValue = recentCounts?[entry.key];
+          final recentSuffix =
+              recentValue == null ? '' : ' • 7d ${recentValue.toString()}';
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _labelize(entry.key),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                Text(
+                  'Total ${entry.value}$recentSuffix',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  String _labelize(String value) {
+    return value
+        .split(RegExp(r'[_\s]+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) =>
+            '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
+        .join(' ');
   }
 
   String _formatTime(DateTime time) {

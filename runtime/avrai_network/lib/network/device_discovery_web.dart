@@ -37,6 +37,7 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
 
   // WebRTC signaling server configuration
   final WebRTCSignalingConfig _signalingConfig;
+  final Set<String> _activeAdvertisingPeerIds = <String>{};
 
   WebDeviceDiscovery({WebRTCSignalingConfig? signalingConfig})
     : _signalingConfig = signalingConfig ?? WebRTCSignalingConfig();
@@ -185,6 +186,94 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
     } catch (e) {
       developer.log('Error getting user agent: $e', name: _logName);
       return 'Unknown Browser';
+    }
+  }
+
+  /// Register a peer on signaling server for WebRTC/WebSocket transport.
+  Future<bool> registerAdvertisingPeer({
+    required String peerId,
+    required String personalityDataJson,
+    required bool spotsEnabled,
+    String? deviceName,
+    String? fallbackTransport,
+  }) async {
+    final registered = await _postAdvertisingSignalEvent(
+      message: <String, dynamic>{
+        'type': 'register',
+        'peer_id': peerId,
+        'device_name': deviceName ?? 'avra-web-peer',
+        'personality_data_json': personalityDataJson,
+        'spots_enabled': spotsEnabled,
+        'fallback_transport': fallbackTransport ?? 'ble',
+      },
+    );
+    if (registered) {
+      _activeAdvertisingPeerIds.add(peerId);
+    }
+    return registered;
+  }
+
+  /// Unregister a peer from signaling server for WebRTC/WebSocket transport.
+  Future<bool> unregisterAdvertisingPeer(String peerId) async {
+    final unregistered = await _postAdvertisingSignalEvent(
+      message: <String, dynamic>{
+        'type': 'unregister',
+        'peer_id': peerId,
+      },
+    );
+    if (unregistered) {
+      _activeAdvertisingPeerIds.remove(peerId);
+    }
+    return unregistered;
+  }
+
+  Future<bool> _postAdvertisingSignalEvent({
+    required Map<String, dynamic> message,
+    Duration postTimeout = const Duration(seconds: 2),
+  }) async {
+    final signalingUrl = _signalingConfig.getSignalingServerUrl();
+    if (signalingUrl.isEmpty) {
+      developer.log('No signaling URL configured for advertising registration', name: _logName);
+      return false;
+    }
+
+    if (message.isEmpty) {
+      developer.log('Cannot post empty signaling message', name: _logName);
+      return false;
+    }
+
+    try {
+      final ws = WebSocket(signalingUrl);
+      final openCompleter = Completer<void>();
+      ws.addEventListener(
+        'open',
+        ((Event _) {
+          openCompleter.complete();
+        }).toJS,
+      );
+      ws.addEventListener(
+        'error',
+        ((Event error) {
+          if (!openCompleter.isCompleted) {
+            openCompleter.completeError(error);
+          }
+        }).toJS,
+      );
+
+      await openCompleter.future.timeout(postTimeout);
+      final encodedMessage = base64Encode(
+        utf8.encode(jsonEncode(message)),
+      );
+      ws.send(encodedMessage.toJS);
+      await Future<void>.delayed(postTimeout);
+      ws.close();
+      return true;
+    } catch (e) {
+      developer.log(
+        'Error posting advertising signal event (${message['type']}): $e',
+        name: _logName,
+      );
+      return false;
     }
   }
 

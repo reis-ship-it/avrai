@@ -17,7 +17,7 @@ import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
 import 'package:avrai_core/models/quantum/group_matching_result.dart';
 import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Group Results Page
 ///
@@ -313,7 +313,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
     final compatibility = matchedSpot.groupCompatibility;
     final compatibilityPercent = (compatibility * 100).toStringAsFixed(0);
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 16),
       radius: 12,
       borderColor: AppColors.primary.withValues(alpha: 0.3),

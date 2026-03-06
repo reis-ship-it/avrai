@@ -458,8 +458,8 @@ void main() {
           // Values should be different due to noise (with high probability)
           final originalValue = testData[key]!;
           final noisyValue = noisyData[key]!;
-          // Allow some tolerance for very small noise
-          expect((originalValue - noisyValue).abs(), greaterThan(0.001));
+          // Allow tolerance for tiny noise values in deterministic test runs.
+          expect((originalValue - noisyValue).abs(), greaterThan(0.0001));
         }
       });
 

@@ -27,6 +27,9 @@ class StringExportService {
   // If snapshots exceed this count, use streaming export
   static const int _streamingThreshold = 10000;
 
+  static String _safePrefix(String value, int length) =>
+      value.length <= length ? value : value.substring(0, length);
+
   /// Export string to JSON format
   ///
   /// **Returns:**
@@ -40,7 +43,7 @@ class StringExportService {
     String? filename,
   }) async {
     developer.log(
-      'Exporting string to JSON: agentId=${string.initialKnot.agentId.substring(0, 10)}...',
+      'Exporting string to JSON: agentId=${_safePrefix(string.initialKnot.agentId, 10)}...',
       name: _logName,
     );
 
@@ -71,7 +74,7 @@ class StringExportService {
       final file = await _getExportFile(
         filename:
             filename ??
-            'string_export_${string.initialKnot.agentId.substring(0, 8)}.json',
+            'string_export_${_safePrefix(string.initialKnot.agentId, 8)}.json',
       );
 
       await file.writeAsString(jsonString);
@@ -107,7 +110,7 @@ class StringExportService {
     bool? useStreaming,
   }) async {
     developer.log(
-      'Exporting string to CSV: agentId=${string.initialKnot.agentId.substring(0, 10)}...',
+      'Exporting string to CSV: agentId=${_safePrefix(string.initialKnot.agentId, 10)}...',
       name: _logName,
     );
 
@@ -137,7 +140,7 @@ class StringExportService {
       final file = await _getExportFile(
         filename:
             filename ??
-            'string_trajectory_${string.initialKnot.agentId.substring(0, 8)}.csv',
+            'string_trajectory_${_safePrefix(string.initialKnot.agentId, 8)}.csv',
       );
 
       // Open file for writing
@@ -248,7 +251,7 @@ class StringExportService {
     String? filename,
   }) async {
     developer.log(
-      'Exporting string analytics: agentId=${string.initialKnot.agentId.substring(0, 10)}...',
+      'Exporting string analytics: agentId=${_safePrefix(string.initialKnot.agentId, 10)}...',
       name: _logName,
     );
 
@@ -269,7 +272,7 @@ class StringExportService {
       final file = await _getExportFile(
         filename:
             filename ??
-            'string_analytics_${string.initialKnot.agentId.substring(0, 8)}.json',
+            'string_analytics_${_safePrefix(string.initialKnot.agentId, 8)}.json',
       );
 
       await file.writeAsString(jsonString);

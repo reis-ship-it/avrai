@@ -62,7 +62,8 @@ The world model runs on-device. If feature extraction takes 200ms and the energy
 1. **Building the state encoder without freshness weights**: The model will treat stale features as current, producing subtly wrong predictions that are hard to debug.
 2. **Forgetting the evolution cascade (7.1.2 dependency)**: Phase 3 defines what the state encoder reads; Phase 7.1.2 ensures it reads a CONSISTENT state. If quantum vibe updates but knot invariants don't cascade-update, the state is internally inconsistent.
 3. **Hardcoding feature dimensions**: Use the `StateFeatureVector` model, not raw arrays. When new features are added later, the vector extends cleanly.
+4. **Treating LLM inputs as trusted**: Every LLM entry point (`TupleExtractionEngine`, `AICommandProcessor`) accepts user-sourced or external content. Without `PromptSanitizationService` (3.10.1), prompt injection can break context boundaries and have the LLM execute unintended instructions. Sanitization is defense-in-depth alongside the Air Gap.
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 external validation for unified perception. Previous: 1.0)
+**Last Updated:** March 5, 2026 -- Version 1.2 (added prompt injection hardening rationale 3.10, updated pitfalls. Previous: 1.1 Zeng et al. 2026)

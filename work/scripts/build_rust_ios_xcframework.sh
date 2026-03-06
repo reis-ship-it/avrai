@@ -14,8 +14,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-RUST_DIR="$PROJECT_ROOT/native/knot_math"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+RUST_DIR="$PROJECT_ROOT/engine/avrai_knot/native/knot_math"
 OUT_DIR="$RUST_DIR/ios"
 XCFRAMEWORK_PATH="$OUT_DIR/knot_math.xcframework"
 HEADERS_DIR="$OUT_DIR/Headers"
@@ -23,7 +23,7 @@ HEADERS_DIR="$OUT_DIR/Headers"
 cd "$RUST_DIR"
 
 echo "🔨 Building knot_math for iOS (static libs)..."
-"$PROJECT_ROOT/scripts/build_rust_ios.sh"
+"$SCRIPT_DIR/build_rust_ios.sh"
 
 # Ensure headers dir exists (xcframework requires a headers directory per slice).
 mkdir -p "$HEADERS_DIR"
@@ -52,10 +52,18 @@ rm -rf "$XCFRAMEWORK_PATH"
 echo "🧬 Creating universal simulator library (arm64 + x86_64)..."
 xcrun lipo -create "$SIM_ARM64_LIB" "$SIM_X86_64_LIB" -output "$SIM_UNIVERSAL_LIB"
 
+# CocoaPods generated xcconfig will look for -lknot_math.
+# We need the generated .a files inside the xcframework to match this name.
+SIM_UNIVERSAL_RENAMED_LIB="$OUT_DIR/libknot_math.a"
+cp "$SIM_UNIVERSAL_LIB" "$SIM_UNIVERSAL_RENAMED_LIB"
+
 xcodebuild -create-xcframework \
   -library "$DEVICE_LIB" -headers "$HEADERS_DIR" \
-  -library "$SIM_UNIVERSAL_LIB" -headers "$HEADERS_DIR" \
+  -library "$SIM_UNIVERSAL_RENAMED_LIB" -headers "$HEADERS_DIR" \
   -output "$XCFRAMEWORK_PATH"
+
+# cleanup
+rm "$SIM_UNIVERSAL_RENAMED_LIB"
 
 echo "✅ XCFramework created at: $XCFRAMEWORK_PATH"
 

@@ -143,10 +143,14 @@ void main() {
 
     group('Consent Summary', () {
       test('getConsentSummary should return correct counts', () async {
-        // Default: all 4 enabled
+        // Default: all tracked sources enabled
         var summary = await service.getConsentSummary();
-        expect(summary.enabledCount, equals(4));
-        expect(summary.totalCount, equals(4));
+        final initialConsents = await service.getAllConsents();
+        expect(
+          summary.enabledCount,
+          equals(initialConsents.values.where((v) => v).length),
+        );
+        expect(summary.totalCount, equals(initialConsents.length));
         expect(summary.allEnabled, isTrue);
         expect(summary.allDisabled, isFalse);
 
@@ -155,7 +159,11 @@ void main() {
         await service.setEnabled(CrossAppDataSource.health, false);
 
         summary = await service.getConsentSummary();
-        expect(summary.enabledCount, equals(2));
+        final updatedConsents = await service.getAllConsents();
+        expect(
+          summary.enabledCount,
+          equals(updatedConsents.values.where((v) => v).length),
+        );
         expect(summary.allEnabled, isFalse);
         expect(summary.allDisabled, isFalse);
 

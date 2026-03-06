@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_data_service.dart';
@@ -22,7 +24,14 @@ import '../../helpers/platform_channel_helper.dart';
 /// Status: Phase 8 Complete - End-to-End Verification
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   setUpAll(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Initialize dependency injection for tests
     try {
       await setupTestStorage();
@@ -389,5 +398,5 @@ void main() {
       expect(personalityQuantum.isNotEmpty, isTrue);
       expect(preferencesQuantum.isNotEmpty, isTrue);
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

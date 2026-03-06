@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/user/preferences_profile.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
@@ -19,7 +21,14 @@ import '../../helpers/platform_channel_helper.dart';
 /// Status: Phase 8.8 - PreferencesProfile Initialization
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   setUpAll(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Initialize dependency injection for tests
     try {
       await setupTestStorage();
@@ -176,5 +185,5 @@ void main() {
       expect(loadedProfile.categoryPreferences['Art'], equals(0.7));
       expect(loadedProfile.eventsAnalyzed, equals(10));
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

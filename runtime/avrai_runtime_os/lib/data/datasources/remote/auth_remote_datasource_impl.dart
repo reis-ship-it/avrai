@@ -23,6 +23,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<void> signInWithGoogle() async {
+    final auth = _auth;
+    if (auth == null) {
+      throw Exception(
+          'Authentication backend not available. Please check your Supabase configuration.');
+    }
+
+    try {
+      await auth.signInWithGoogle();
+    } catch (e) {
+      throw Exception(_mapOAuthError(e));
+    }
+  }
+
+  @override
+  Future<void> signInWithApple() async {
+    final auth = _auth;
+    if (auth == null) {
+      throw Exception(
+          'Authentication backend not available. Please check your Supabase configuration.');
+    }
+
+    try {
+      await auth.signInWithApple();
+    } catch (e) {
+      throw Exception(_mapOAuthError(e));
+    }
+  }
+
+  @override
   Future<local.User?> signUp(String email, String password, String name) async {
     final auth = _auth;
     if (auth == null) {
@@ -36,6 +66,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       // Re-throw with more context for common Supabase errors
       final errorString = e.toString().toLowerCase();
+      if (errorString.contains('signup_confirmation_required')) {
+        throw Exception(
+            'signup_confirmation_required: Check your email to finish creating your account.');
+      }
       if (errorString.contains('user already registered') ||
           errorString.contains('email already exists')) {
         throw Exception(
@@ -98,11 +132,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> updatePassword(
       String currentPassword, String newPassword) async {
     final auth = _auth;
-    if (auth == null) return;
+    if (auth == null) {
+      throw Exception(
+          'Authentication backend not available. Please check your Supabase configuration.');
+    }
     try {
       await auth.updatePassword(currentPassword, newPassword);
     } catch (_) {
-      // Ignore errors if backend not available
+      rethrow;
     }
   }
 
@@ -127,5 +164,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       default:
         return local.UserRole.user;
     }
+  }
+
+  String _mapOAuthError(Object error) {
+    final errorString = error.toString().toLowerCase();
+    if (errorString.contains('cancel')) {
+      return 'Sign-in was cancelled.';
+    }
+    if (errorString.contains('duplicate') ||
+        errorString.contains('already registered') ||
+        errorString.contains('already exists') ||
+        errorString.contains('identity')) {
+      return 'An account with this email already exists. Sign in with your existing method for now.';
+    }
+    if (errorString.contains('network') || errorString.contains('connection')) {
+      return 'Network error. Please check your internet connection and try again.';
+    }
+
+    return 'Unable to start OAuth sign-in. Please try again.';
   }
 }

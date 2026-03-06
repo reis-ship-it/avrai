@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:avrai_runtime_os/services/places/google_places_cache_service.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import '../../fixtures/model_factories.dart';
@@ -14,11 +15,17 @@ void main() {
     setUp(() async {
       // Use in-memory storage for tests
       await TestStorageHelper.initTestStorage();
-      // Clear cache store before each test for isolation
-      final box = TestStorageHelper.getBox('google_places_cache');
+      await GetStorage.init('google_places_cache');
+      // Clear cache store before each test for isolation.
+      final box = GetStorage('google_places_cache');
       await box.erase();
 
       service = GooglePlacesCacheService();
+    });
+
+    tearDown(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await GetStorage('google_places_cache').erase();
     });
 
     // Removed: Property assignment tests

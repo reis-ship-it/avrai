@@ -41,7 +41,7 @@ void main() {
       expect(find.text('Discovery Settings'), findsOneWidget);
       expect(find.text('Enable Discovery'), findsOneWidget);
       expect(find.text('Device Discovery'), findsOneWidget);
-      expect(find.text('Find nearby SPOTS-enabled devices'), findsOneWidget);
+      expect(find.text('Find nearby avrai-enabled devices'), findsOneWidget);
 
       final mainToggleFinder = find.byType(SwitchListTile).first;
       final mainToggle = tester.widget<SwitchListTile>(mainToggleFinder);

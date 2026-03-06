@@ -101,7 +101,7 @@ class AppUsagePlugin(private val context: Context) : MethodChannel.MethodCallHan
      * - startTime: Start of the query range
      * - endTime: End of the query range
      */
-    private fun getUsageStats(startTime: Long, endTime: Long): Map<String, Any> {
+    private fun getUsageStats(startTime: Long, endTime: Long): Map<String, Any?> {
         if (!checkUsageStatsPermission()) {
             return mapOf(
                 "error" to "permission_denied",

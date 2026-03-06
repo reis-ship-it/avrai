@@ -7,11 +7,14 @@
 // Provides quantum-matched reservation recommendations using full entanglement.
 
 import 'dart:developer' as developer;
+
+import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
 // ExpertiseEvent import removed - not directly used
 import 'package:avrai_core/models/quantum_entity_state.dart';
 import 'package:avrai_core/models/quantum_entity_type.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_quantum_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
@@ -28,6 +31,8 @@ import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_knot/services/knot/integrated_knot_recommendation_engine.dart';
 import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:get_it/get_it.dart';
 
 /// Reservation Recommendation
 ///
@@ -56,6 +61,8 @@ class ReservationRecommendation {
 
   /// AI-generated reason for recommendation
   final String? aiReason;
+  final bool usedSignaturePrimary;
+  final ExpertiseEvent? event;
 
   const ReservationRecommendation({
     required this.targetId,
@@ -66,6 +73,8 @@ class ReservationRecommendation {
     this.quantumState,
     this.recommendedTime,
     this.aiReason,
+    this.usedSignaturePrimary = false,
+    this.event,
   });
 }
 
@@ -99,12 +108,15 @@ class ReservationRecommendationService {
   // Phase 6.2 Enhancement: Knot Theory Integration
   final PersonalityKnotService? _knotService; // Knot generation/retrieval
   // ignore: unused_field - Reserved for future group reservation optimization
-  final KnotEvolutionStringService? _stringService; // Individual user evolution strings
+  final KnotEvolutionStringService?
+      _stringService; // Individual user evolution strings
   // ignore: unused_field - Reserved for future group reservation optimization
   final KnotFabricService? _fabricService; // Group fabric stability
   // ignore: unused_field - Reserved for future group reservation optimization
-  final KnotWorldsheetService? _worldsheetService; // 4D quantum worldsheets/planes
+  final KnotWorldsheetService?
+      _worldsheetService; // 4D quantum worldsheets/planes
   final IntegratedKnotRecommendationEngine? _knotEngine; // Knot compatibility
+  final EntitySignatureService? _entitySignatureService;
 
   ReservationRecommendationService({
     required ReservationQuantumService quantumService,
@@ -122,6 +134,7 @@ class ReservationRecommendationService {
     KnotFabricService? fabricService,
     KnotWorldsheetService? worldsheetService,
     IntegratedKnotRecommendationEngine? knotEngine,
+    EntitySignatureService? entitySignatureService,
   })  : _quantumService = quantumService,
         _atomicClock = atomicClock,
         _entanglementService = entanglementService,
@@ -135,7 +148,11 @@ class ReservationRecommendationService {
         _stringService = stringService,
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
-        _knotEngine = knotEngine;
+        _knotEngine = knotEngine,
+        _entitySignatureService = entitySignatureService ??
+            (GetIt.instance.isRegistered<EntitySignatureService>()
+                ? GetIt.instance<EntitySignatureService>()
+                : null);
 
   /// Get quantum-matched reservations for user
   ///
@@ -203,8 +220,33 @@ class ReservationRecommendationService {
 
           // Combine quantum and knot compatibility
           // Formula: C_combined = 0.7 * C_quantum + 0.3 * C_knot
-          final compatibility =
-              (0.7 * quantumCompatibility) + (0.3 * knotCompatibility);
+          final fallbackCompatibility =
+              ((0.7 * quantumCompatibility) + (0.3 * knotCompatibility))
+                  .clamp(0.0, 1.0)
+                  .toDouble();
+          var compatibility = fallbackCompatibility;
+          String? fitReason;
+          var usedSignaturePrimary = false;
+
+          final signatureEvent = target['eventObject'];
+          if (_entitySignatureService != null &&
+              signatureEvent is ExpertiseEvent) {
+            try {
+              final match = await _entitySignatureService.matchUserToEvent(
+                user: _buildSignatureUser(userId),
+                event: signatureEvent,
+                fallbackScore: fallbackCompatibility,
+              );
+              compatibility = match.finalScore;
+              fitReason = match.summary;
+              usedSignaturePrimary = match.usedSignaturePrimary;
+            } catch (e) {
+              developer.log(
+                'Signature reservation fallback for target ${target['id']}: $e',
+                name: _logName,
+              );
+            }
+          }
 
           // Only include if above threshold
           if (compatibility >= _minCompatibilityThreshold) {
@@ -218,6 +260,9 @@ class ReservationRecommendationService {
               compatibility: compatibility,
               quantumState: targetQuantumState,
               recommendedTime: _getRecommendedTime(target),
+              aiReason: fitReason,
+              usedSignaturePrimary: usedSignaturePrimary,
+              event: signatureEvent is ExpertiseEvent ? signatureEvent : null,
             ));
           }
         } catch (e) {
@@ -838,7 +883,9 @@ class ReservationRecommendationService {
           compatibility: rec.compatibility,
           quantumState: rec.quantumState,
           recommendedTime: rec.recommendedTime,
-          aiReason: reason,
+          aiReason: _combineReasons(rec.aiReason, reason),
+          usedSignaturePrimary: rec.usedSignaturePrimary,
+          event: rec.event,
         ));
       }
     }
@@ -870,6 +917,7 @@ class ReservationRecommendationService {
 
             targets.add({
               'id': event.id,
+              'eventObject': event,
               'type': 'event',
               'title': event.title,
               'description': event.description,
@@ -912,6 +960,29 @@ class ReservationRecommendationService {
       );
       return [];
     }
+  }
+
+  UnifiedUser _buildSignatureUser(String userId) {
+    return UnifiedUser(
+      id: userId,
+      email: '$userId@avrai.local',
+      createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+      updatedAt: DateTime.now(),
+      hasCompletedOnboarding: true,
+      hasReceivedStarterLists: true,
+    );
+  }
+
+  String? _combineReasons(String? signatureReason, String? aiReason) {
+    final trimmedSignature = signatureReason?.trim();
+    final trimmedAi = aiReason?.trim();
+    if (trimmedSignature == null || trimmedSignature.isEmpty) {
+      return trimmedAi;
+    }
+    if (trimmedAi == null || trimmedAi.isEmpty) {
+      return trimmedSignature;
+    }
+    return '$trimmedSignature $trimmedAi';
   }
 
   /// Create quantum state for target (event/spot/business)

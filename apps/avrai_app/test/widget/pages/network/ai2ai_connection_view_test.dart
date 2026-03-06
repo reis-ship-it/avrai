@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
 import 'package:avrai/presentation/pages/network/ai2ai_connection_view.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 /// Widget tests for AI2AIConnectionView
@@ -73,7 +74,7 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
       // Verify we rendered the provided connections.
-      expect(find.byType(Card), findsNWidgets(2));
+      expect(find.byType(AppSurface), findsAtLeastNWidgets(2));
       expect(find.text('Compatibility'), findsNWidgets(2));
 
       final connection1 = ConnectionMetrics.initial(

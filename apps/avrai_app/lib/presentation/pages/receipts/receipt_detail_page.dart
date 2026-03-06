@@ -12,7 +12,7 @@ import 'package:avrai_runtime_os/services/ledgers/ledger_receipts_service_v0.dar
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ReceiptDetailPage extends StatefulWidget {
   final String ledgerRowId;
@@ -168,7 +168,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
   }
 
   Widget _summaryCard(LedgerReceiptV0 receipt) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +213,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
       _ => AppColors.grey600,
     };
 
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,7 +264,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
   Widget _payloadCard(LedgerReceiptV0 receipt) {
     final payloadPretty =
         const JsonEncoder.withIndent('  ').convert(receipt.event.payload);
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

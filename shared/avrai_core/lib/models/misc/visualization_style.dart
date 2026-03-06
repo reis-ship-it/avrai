@@ -369,9 +369,9 @@ class VisualizationStyleFactory {
   }) {
     return KnotVisualizationStyle(
       type: type,
-      primaryColor: 0xFF000000,
-      secondaryColor: 0xFF000000,
-      glowColor: 0xFF000000,
+      primaryColor: 0x00FF66,
+      secondaryColor: 0x66FF99,
+      glowColor: 0x00FF66,
       lod: lod,
       autoRotate: autoRotate,
     );
@@ -382,7 +382,7 @@ class VisualizationStyleFactory {
     VisualizationLOD lod = VisualizationLOD.medium,
   }) {
     return FabricVisualizationStyle(
-      highlightColor: 0xFF000000,
+      highlightColor: 0xFFFFFF,
       lod: lod,
     );
   }
@@ -392,8 +392,8 @@ class VisualizationStyleFactory {
     VisualizationLOD lod = VisualizationLOD.medium,
   }) {
     return WorldsheetVisualizationStyle(
-      primaryColor: 0xFF000000,
-      secondaryColor: 0xFF000000,
+      primaryColor: 0x00FF66,
+      secondaryColor: 0x66FF99,
       lod: lod,
     );
   }
@@ -401,9 +401,9 @@ class VisualizationStyleFactory {
   /// Create network style using brand colors
   static NetworkVisualizationStyle networkFromBrand() {
     return NetworkVisualizationStyle(
-      nodeColor: 0xFF000000,
-      edgeColor: 0xFF000000,
-      centerColor: 0xFF000000,
+      nodeColor: 0x00FF66,
+      edgeColor: 0x00FF66,
+      centerColor: 0xFFFFFF,
     );
   }
 }

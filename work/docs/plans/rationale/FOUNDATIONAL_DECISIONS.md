@@ -506,23 +506,203 @@ Both must be high for the agent to be happy. An agent that understands the user 
 
 ---
 
+---
+
+### Decision 22: Cognitive Kernel as Stable OS Layer (Phase 12)
+
+**Phase:** 12.1-12.2  
+**Why:** The three-prong architecture (apps → runtime → engine) already encodes OS-like layering in its dependency rules. The foundational decision to formalize this into an actual kernel process is: **the runtime must own agent state and cognitive resources as a durable process, not as a service registry inside another application's memory space.**
+
+**The core reasoning:**
+- GetIt DI container is a service locator inside one Flutter process. When iOS suspends the app, all cognitive state goes dark. This is incompatible with an OS, which must persist.
+- A separate OS process with its own PID (Android `:avrai_runtime` bound service; iOS XPC service; Linux daemon) gives the runtime the same durability guarantee that a real OS provides: process crash does not lose state; host can restart without losing cognitive continuity.
+- The platform adapter pattern (one thin shim per host OS, all delegating to the same Rust kernel) is the same pattern that lets Android run on ARM, x86, and RISC-V without changing the Android framework. AVRAI should have the same portability.
+
+**What it covers:**
+- Rust cognitive kernel runs headless (without Flutter)
+- Platform adapters hold hardware capability grants on behalf of the kernel
+- Flutter app becomes a kernel client, not the kernel host
+- Stable cognitive syscall API (perceive, plan, commit, observe, recover) is a versioned contract, not an implementation detail
+
+**What breaks if ignored:** AVRAI remains a Flutter app that happens to have good ML. It cannot be packaged as infrastructure. AI companies cannot integrate with it (no stable API to call). It dies when the app is backgrounded. It cannot run on a home server or in a container.
+
+**Alternatives considered:**
+- **Keep everything in Flutter, add background service later**: deferred OS work always becomes harder as coupling grows. The three-prong boundary rules already enforce the correct dependency direction — the kernel extraction simply makes that boundary a real process boundary, not just an import rule.
+- **Build the OS separately from the app**: rejected because 80% of the runtime layer already exists. Extraction is the correct path, not greenfield.
+
+---
+
+### Decision 23: Delegation Through Hardware Is Sufficient OS Authority (Phase 12)
+
+**Phase:** 12.2  
+**Why:** A common objection to calling AVRAI an OS is "it doesn't own the hardware." This decision formally resolves that objection.
+
+**The reasoning:** Android doesn't own ARM silicon — it delegates through Linux. The JVM doesn't own any hardware — it runs on any OS. Both are unambiguously OS-like because they provide a mandatory mediation layer that everything above them depends on. Authority over a resource domain is what makes an OS, not ownership of the physical substrate.
+
+AVRAI's resource domain is **AI cognition**: behavioral memory, inference compute, agent identity, AI-to-AI communication. If every AI company and application that wants access to these resources must call AVRAI's stable API, AVRAI has OS-level authority over that domain — regardless of what silicon it runs on.
+
+**Implication:** Platform adapters (12.2) are sufficient. AVRAI does not need to own iOS/Android/Linux hardware. It needs to own the capability grants that those OSes provide (BLE, Neural Engine, background execution, network) and make them available to the cognitive kernel as delegated resources.
+
+**What breaks if ignored:** Confusion about whether AVRAI is "really" an OS will derail architectural decisions during Phase 12. This decision makes the definition explicit and non-negotiable: authority over a domain is the criterion, not hardware ownership.
+
+---
+
+### Decision 24: Beta Validates Product; OS Phase Validates Platform (Phase 12)
+
+**Phase:** Cross-cutting (beta and Phase 12)  
+**Why:** The OS work (Phase 12) must not start until beta has validated product-market fit. This is a sequencing decision with significant consequence.
+
+**The reasoning:**
+- Building OS infrastructure before proving users want the product is the same mistake as the legacy plan's "build features, bolt on ML later." You'd be building infrastructure for a product that might need to change.
+- Beta produces the first real behavioral data that trains the reality model — which is required for Phase 12.4 (reality model baseline). Beta comes first not just strategically but architecturally.
+- The cognitive syscall API (12.3.1) should be designed with knowledge of how users actually interact with the system. Beta provides that knowledge.
+
+**What it covers:** Phase 12 has a hard gate: beta must validate product-market fit before Phase 12.1 begins. The swarm simulation (v0.3 Sprint) provides the synthetic baseline for Phase 12.4 — but real beta data improves it dramatically.
+
+**What breaks if ignored:** Phase 12 infrastructure is built for a product that doesn't exist yet. If beta reveals the core loop needs fundamental changes, OS infrastructure built on the pre-pivot product is wasted.
+
+### Decision 25: Air Gap as Privacy Physics — Gas/Liquid/Solid Permeability Model
+
+**Phase:** Cross-cutting (all phases). Air Gap is the oldest privacy invariant in the system.  
+**Why:** AVRAI's privacy model needs to be both rock-solid (raw data NEVER persists) and user-controllable (different people want different levels of context sharing). These two goals are in tension if privacy is treated as a policy toggle. Decision 25 resolves the tension by making privacy a law of physics (the Air Gap always enforces the boundary) while making permeability a user-configurable property of that boundary.
+
+**The core reasoning:**
+- A policy-based privacy model ("don't store raw data unless user opts in") is fragile: it can be broken by a bug, a bad deployment, a security hole, or a confused developer who doesn't read the policy. Policies break.
+- A physics-based model (the only architectural path for data to reach storage IS the TupleExtractionEngine, which destroys the raw payload) is structurally enforced. You cannot accidentally bypass it any more than you can accidentally bypass the laws of thermodynamics.
+- But a physics model without user control is paternalistic: users who want their AI agent to learn from ALL of their context (health, calendar, home, physical presence) deserve that richness. A completely opaque Air Gap that rejects all external signals is not serving users.
+
+**The gas/liquid/solid model solves this:** Three permeability states give users intuitive control over how much of their reality the Air Gap allows through:
+- **Gas:** maximum permeability, maximum personalization. Default. Raw data still cannot persist.
+- **Liquid:** filtered permeability, domain-by-domain control. For cautious users.
+- **Solid:** opaque, for specific domains where the user wants complete separation.
+
+**What the model covers:**
+- App data permeability (Phase 12.5 Plugin Framework — which local apps can contribute signals)
+- Physical identity permeability (Phase 12.8 — physical-to-digital matching opt-in)
+- Per-domain solid settings (work/relationships/health can each be independently solidified)
+- The permeability setting controls WHAT passes through the Air Gap, never WHETHER the Air Gap exists. The TupleExtractionEngine is always the crossing point.
+
+**What breaks if ignored:** Users who want rich personalization but get opaque privacy will choose competitors. Users who want privacy but get data leakage lose trust permanently. The gas/liquid/solid model prevents both failure modes by giving users a visceral, correct mental model of how their data moves.
+
+**Alternatives considered:**
+- **Binary opt-in/opt-out per feature:** Too granular to manage; users stop caring and click "allow all." Gas/liquid/solid gives coarser but more meaningful control.
+- **Differential privacy only:** DP is for aggregate output, not for controlling what the model learns. The Air Gap and DP are complementary, not alternatives.
+- **User-controlled consent scopes per app:** Phase 12.3.3 already does this. Gas/liquid/solid is a higher-level abstraction that sits above per-app consent.
+
+**Implementation:**
+- `AirGapContract` and `TupleExtractionEngine` are the physics layer (already implemented)
+- `AirGapPermeabilityService` (Phase 2, extend for plugin framework and physical identity) manages per-domain permeability state
+- UI: gas/liquid/solid visualized as a material-design state toggle in privacy settings, not a checkbox list
+
+---
+
+---
+
+### Decision 26: Transport Backend Abstraction (Polymorphic Transport Layer)
+
+**Phase:** 3.7A (companion to 3.7 mesh unification)  
+**Why:** The runtime has 93+ transport files across BLE, mesh, and Supabase realtime — each with its own parameter shapes, orchestration patterns, and lifecycle management. Adding new transports (DTN wormhole routing, future protocols) requires touching the orchestrator directly. This coupling means the orchestrator must *know* about every transport, which violates the principle that intelligence infrastructure should be transport-agnostic.
+
+**The decision:** Define a `TransportBackend` abstract interface that all transports implement. The interface has: `initialize`, `shutdown`, `send`, `startDiscovery`, `stopDiscovery`, `inboundMessages`, `discoveredPeers`, and a `capabilities` set (`Set<TransportCapability>`). A `TransportOrchestrator` selects backends based on capabilities and target requirements.
+
+**The core reasoning:**
+- The energy function (Phase 4) and MPC planner (Phase 6) need to make *learned* transport decisions — "is BLE or mesh better for this message right now?" The transport interface provides the abstraction on which learned routing operates. Without it, transport routing is hardcoded in orchestration lanes.
+- Phase 8.2's hybrid sync strategy (BLE for small gradients, cloud for checkpoints) is naturally expressed as capability-based transport selection, not if-else branches.
+- The `TransportCapability` set is the key design element: each backend declares what it can do (`rssiProximity`, `storeAndForward`, `realtime`, `highBandwidth`, etc.) and the orchestrator selects based on capabilities, not transport identity. New transports register and work without code changes.
+
+**What breaks if ignored:** Every new transport requires modifying `VibeConnectionOrchestrator` (or its successor). DTN wormhole routing (Phase 6.6) requires custom integration. Phase 8.2's hybrid sync strategy is implemented as scattered if-else logic instead of declarative capability matching.
+
+**Alternatives considered:**
+- **Keep transport-specific code inline:** Rejected because the current 93-file transport layer already demonstrates this approach's scalability problems.
+- **Declarative routing table (OpenClaw-style):** Rejected because static routing tables contradict Decision #1 (intelligence-first). Transport routing should be *learned* by the energy function, with the interface providing the infrastructure for that learning.
+
+**Phase 12 note:** Phase 12's Rust kernel will likely define its own transport abstraction. The Dart `TransportBackend` concept and capability model inform that design, even though the Dart implementation may be replaced.
+
+---
+
+### Decision 27: Subsystem Isolation (Decomposed Orchestrator Architecture)
+
+**Phase:** 7.10 (prerequisite for 10.9.12 self-healing)  
+**Why:** `VibeConnectionOrchestrator` is a 1000+ line god object with 70+ imports and 30+ mutable state variables. It owns discovery, connection lifecycle, learning insight dispatch, event mode, BLE inbox processing, mesh forwarding, and replay guard — all in one class. Phase 10.9.12 requires every *subsystem* to auto-create healing cycles and feed break telemetry back into learning metrics. If there is no subsystem boundary, there is nothing to attach break detection to.
+
+**The decision:** Decompose the orchestrator into isolated `RuntimeSubsystem` instances (discovery, connection, learning, event mode, etc.) that communicate through typed events (`Stream<RuntimeEvent>`), not shared mutable state. A thin `SubsystemOrchestrator` manages lifecycle and routes events between subsystems.
+
+**The core reasoning:**
+- Self-healing (10.9.12) requires fault isolation: if discovery fails, connection lifecycle should continue to function for existing connections. With one monolithic class, any failure potentially corrupts all state.
+- Each subsystem owns its state and can be independently restarted. This makes the self-healing loop concrete: restart the broken subsystem, not the entire orchestrator.
+- The decomposition is incremental — each subsystem is extracted one at a time, with the old orchestrator wrapping subsystem calls during transition. No big-bang rewrite.
+
+**What breaks if ignored:** Phase 10.9.12's universal break-to-learning healing loop cannot be implemented because there are no subsystem boundaries to detect breaks across. Self-healing remains blocked, which blocks autonomous adaptation features from production.
+
+**Connection to Decision #26:** Subsystems use `TransportOrchestrator` (from Decision #26) for transport operations and `TransportRuntimeContext` for shared state. The transport layer and the subsystem layer are complementary: transports handle *how messages move*, subsystems handle *what the runtime does with them*.
+
+---
+
+### Decision 28: Connection Capability Model (Declarative AI2AI Permissions)
+
+**Phase:** 8.2A (architecture decision within Phase 8)  
+**Why:** AI2AI permission logic is currently scattered as ad-hoc boolean checks across `ConnectionOrchestrator`, `DiscoveryManager`, `ConnectionManager`, and various lane files. As Phase 8 adds richer interactions (insight exchange, group negotiation, expert discovery, gradient sharing), these scattered checks become unmaintainable. A missed permission check is a privacy violation.
+
+**The decision:** Define a `ConnectionCapabilityProfile` per peer that consolidates all permissions into a single queryable object. The orchestrator calls `canDo(capability)` instead of scattered if-checks. Capabilities have constraints (rate limits, trust level requirements, consent gates, expiry) that are evaluated compositionally.
+
+**The core reasoning:**
+- The capability model is a *governance structure*, not a scoring formula. It answers "is this interaction allowed?" (constraint), not "how good is this interaction?" (scoring). This keeps Decision #1 (intelligence-first) intact — the energy function handles scoring, the capability model handles permission boundaries.
+- The Air Gap (Decision #25) operates at the *data level* (what can cross the boundary). The capability model operates at the *connection level* (what can this specific AI2AI connection do). They are complementary.
+- Capability evolution (trust builds over time, tightens after violations) creates a natural adaptive permission system that the energy function can learn to optimize.
+
+**What breaks if ignored:** AI2AI permissions remain scattered, making security audit nearly impossible. New Phase 8 interactions require finding and adding checks in multiple files. Privacy violations from missed checks become likely as the interaction surface grows.
+
+---
+
+### Decision 29: Zero Trust as Security Architecture
+
+**Phase:** Cross-cutting (all phases). Zero trust is an architectural principle, not a single feature.  
+**Why:** AVRAI operates in the age of agentic AI — autonomous agents that call APIs, use tools, communicate with other agents, and take actions in the real world. Every new capability adds a new attack surface. Traditional perimeter-based security ("hard crunchy outside, soft chewy center") fails because: (1) AI agents use non-human identities that proliferate faster than human accounts, (2) agent actions are autonomous and can cause damage before a human notices, (3) the attack surface spans app, engine, and runtime layers, and (4) "harvest now, decrypt later" attacks mean even encrypted traffic is vulnerable if credentials are static.
+
+Zero trust replaces perimeter security with four principles:
+1. **Verify then trust** — nothing gets access until it proves it should (continuous verification, not just login)
+2. **Just-in-time, not just-in-case** — grant minimum privileges, only when needed, then revoke (dynamic credentials via `SecretVaultService`)
+3. **Pervasive controls** — security at every layer, not just the network edge (engine validates inputs independently of runtime; action gateway inspects every agent action)
+4. **Assume breach** — design as if the attacker is already inside (immutable audit logs, anomaly detection, kill switches, defense-in-depth)
+
+**What it covers:**
+- Dynamic credential lifecycle with JIT provisioning and automatic rotation (Phase 2.7)
+- Continuous session re-verification with step-up auth for high-impact operations (Phase 2.8)
+- LLM input sanitization and prompt injection hardening at every entry point (Phase 3.10)
+- Zero trust tool registry with signed manifests and runtime verification (Phase 6.3.5-6.3.6)
+- AI action gateway as inspection layer between planner intent and action execution (Phase 6.10)
+- Immutable, tamper-evident audit log persistence (Phase 10.9.26)
+- Engine-layer security boundaries with independent input validation (Phase 10.9.27)
+- BLE anti-spoofing with challenge-response authentication (Phase 10.9.28)
+- Zero trust compliance dashboard for real-time posture visibility (Phase 10.9.29)
+
+**What breaks if ignored:** Static credentials become permanent backdoors. LLM inputs are unsanitized attack vectors. Agent actions execute without inspection — a poisoned model or prompt injection can cause damage before anyone notices. Audit logs exist only in console output and vanish on restart. The engine trusts whatever the runtime passes it, eliminating defense-in-depth. BLE discovery is spoofable. Admins have no visibility into zero trust posture.
+
+**Connection to existing decisions:**
+- Decision #4 (on-device/privacy): Zero trust extends on-device privacy with credential lifecycle and continuous verification
+- Decision #25 (Air Gap): Zero trust adds defense-in-depth layers around the Air Gap (sanitization before extraction, anomaly detection after)
+- Decision #28 (Connection Capability Model): Zero trust adds authentication and authorization to the capability model's permission structure
+
+---
+
 ## Quick Reference: Key Decisions by Phase Relevance
 
 | Phase | Most Relevant Decisions |
 |------:|------------------------|
 | 1 | #1 (intelligence-first), #5 (Drift over ObjectBox), #7 (chat-as-accelerator), #8 (AI2AI only -- organic discovery mesh), #12 (doors -- discovered locations) |
-| 2 | #4 (on-device/privacy), #15 (post-quantum) |
-| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities) |
+| 2 | #4 (on-device/privacy), #15 (post-quantum), #25 (air gap as privacy physics), #29 (zero trust -- credential vault, continuous verification) |
+| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities), #26 (transport backend abstraction), #29 (zero trust -- prompt injection hardening) |
 | 4 | #2 (energy-based), #3 (VICReg), #11 (feature flag replacement), #14 (bilateral energy) |
 | 5 | #3 (VICReg), #4 (on-device), #7 (chat-as-accelerator) |
-| 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline) |
-| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device) |
-| 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory) |
+| 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline), #29 (zero trust -- action gateway, tool registry) |
+| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device), #27 (subsystem isolation) |
+| 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory), #26 (transport abstraction for hybrid sync), #28 (connection capability model) |
 | 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline) |
-| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization) |
+| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization), #27 (subsystem isolation for 10.9 self-healing), #29 (zero trust -- audit persistence, engine boundaries, BLE hardening, compliance dashboard) |
 | 11 | #6 (ONNX/quantum-ready), #3 (VICReg for JEPA) |
+| 12 | #22 (cognitive kernel as OS layer), #23 (delegation = OS authority), #24 (beta before OS), #25 (air gap permeability), #4 (on-device/privacy), #6 (ONNX/quantum-ready), #8 (AI2AI only), #26 (transport interface informs Rust kernel), #29 (zero trust -- external caller auth uses credential vault) |
 
 ---
 
-**Last Updated:** February 11, 2026  
-**Version:** 1.4 (added Zeng et al. 2026 external validation to Decisions #1, #2, #9 -- academic consensus validates anti-fragmentation, energy-based over reasoning-only, unified perception. Previous: 1.3 Decisions #17-#21)
+**Last Updated:** March 5, 2026  
+**Version:** 1.8 (added Decision #29: Zero Trust as Security Architecture. Previous: 1.7 Decisions #26-#28)

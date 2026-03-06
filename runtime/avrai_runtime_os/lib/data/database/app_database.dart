@@ -12,6 +12,7 @@ import 'tables/users_table.dart';
 import 'tables/linked_devices_table.dart';
 import 'tables/transfer_progress_table.dart';
 import 'tables/sync_state_table.dart';
+import 'tables/ai2ai_state_tables.dart';
 
 part 'app_database.g.dart';
 
@@ -32,6 +33,10 @@ part 'app_database.g.dart';
   TransferProgress,
   SyncState,
   SyncQueue,
+  DwellEvents,
+  Pheromones,
+  Archetypes,
+  PersonalityKnots,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -315,6 +320,52 @@ class AppDatabase extends _$AppDatabase {
       itemsTransferred: Value(itemsTransferred),
       lastUpdateAt: Value(DateTime.now()),
     ));
+  }
+
+  // ============================================================
+  // AI2AI STATE OPERATIONS (Pheromones, Soul, DNA, Dwells)
+  // ============================================================
+
+  /// Insert or update a DwellEvent
+  Future<void> upsertDwellEvent(DwellEventsCompanion event) async {
+    await into(dwellEvents).insertOnConflictUpdate(event);
+  }
+
+  /// Get all DwellEvents
+  Future<List<DwellEvent>> getAllDwellEvents() async {
+    return select(dwellEvents).get();
+  }
+
+  /// Insert or update a Pheromone (KnowledgeVector)
+  Future<void> upsertPheromone(PheromonesCompanion pheromone) async {
+    await into(pheromones).insertOnConflictUpdate(pheromone);
+  }
+
+  /// Get Pheromones by queue type
+  Future<List<Pheromone>> getPheromonesByQueue(String queueType) async {
+    return (select(pheromones)..where((p) => p.queueType.equals(queueType)))
+        .get();
+  }
+
+  /// Insert or update an Archetype (Soul)
+  Future<void> upsertArchetype(ArchetypesCompanion archetype) async {
+    await into(archetypes).insertOnConflictUpdate(archetype);
+  }
+
+  /// Get all Archetypes
+  Future<List<Archetype>> getAllArchetypes() async {
+    return select(archetypes).get();
+  }
+
+  /// Insert or update a Personality Knot (DNA)
+  Future<void> upsertPersonalityKnot(PersonalityKnotsCompanion knot) async {
+    await into(personalityKnots).insertOnConflictUpdate(knot);
+  }
+
+  /// Get a Personality Knot
+  Future<PersonalityKnot?> getPersonalityKnot(String userId) async {
+    return (select(personalityKnots)..where((k) => k.userId.equals(userId)))
+        .getSingleOrNull();
   }
 
   // ============================================================

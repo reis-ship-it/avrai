@@ -1,6 +1,7 @@
 # MBE Systems - Complete Explanation
 
 **Created:** November 21, 2025  
+**Updated:** March 2026 - *Note: This document served as the foundation for the new formal Sequoia-style business plan found at `AVRAI_SEQUOIA_BUSINESS_PLAN.md`.*
 **Purpose:** Clear explanation of Monetization, Business & Expertise systems  
 **Audience:** Anyone who needs to understand how these systems work
 

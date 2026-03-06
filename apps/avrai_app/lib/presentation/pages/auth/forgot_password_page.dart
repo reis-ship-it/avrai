@@ -43,7 +43,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             setState(() => _isSubmitting = false);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Reset link sent to ${state.email}'),
+                content: Text(
+                    'Reset link sent to ${state.email}. Finish resetting from the email link.'),
                 backgroundColor: AppColors.success,
               ),
             );
@@ -66,7 +67,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Enter your email address and we\'ll send you a link to reset your password.',
+                  'Enter your email address and we\'ll send you a reset link. You\'ll finish resetting your password from that email link.',
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 24),

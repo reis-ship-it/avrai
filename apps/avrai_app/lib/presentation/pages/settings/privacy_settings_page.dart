@@ -1,16 +1,19 @@
 // MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
 import 'package:avrai_runtime_os/controllers/sync_controller.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});
@@ -72,8 +75,13 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     try {
       final enabled = _storageService.getBool('ai2ai_learning_enabled') ?? true;
       _ai2aiLearning = enabled;
-    } catch (_) {
-      // Default: enabled.
+    } catch (e, st) {
+      developer.log(
+        'Failed to load AI2AI learning preference, defaulting to enabled',
+        name: 'PrivacySettingsPage',
+        error: e,
+        stackTrace: st,
+      );
       _ai2aiLearning = true;
     }
   }
@@ -83,8 +91,13 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     Future<void>(() async {
       try {
         await _storageService.setBool('ai2ai_learning_enabled', value);
-      } catch (_) {
-        // Ignore.
+      } catch (e, st) {
+        developer.log(
+          'Failed to persist AI2AI learning preference',
+          name: 'PrivacySettingsPage',
+          error: e,
+          stackTrace: st,
+        );
       }
     });
   }
@@ -94,8 +107,13 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       final enabled =
           _storageService.getBool('user_runtime_learning_enabled') ?? true;
       _userRuntimeLearning = enabled;
-    } catch (_) {
-      // Default: enabled.
+    } catch (e, st) {
+      developer.log(
+        'Failed to load user runtime learning preference, defaulting to enabled',
+        name: 'PrivacySettingsPage',
+        error: e,
+        stackTrace: st,
+      );
       _userRuntimeLearning = true;
     }
   }
@@ -105,8 +123,13 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     Future<void>(() async {
       try {
         await _storageService.setBool('user_runtime_learning_enabled', value);
-      } catch (_) {
-        // Ignore.
+      } catch (e, st) {
+        developer.log(
+          'Failed to persist user runtime learning preference',
+          name: 'PrivacySettingsPage',
+          error: e,
+          stackTrace: st,
+        );
       }
     });
   }
@@ -214,7 +237,11 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       );
     } catch (e) {
       // Password not available in secure storage
-      debugPrint('Password not available in secure storage: $e');
+      developer.log(
+        'Password not available in secure storage',
+        name: 'PrivacySettingsPage',
+        error: e,
+      );
     }
 
     // If password is not available, prompt user
@@ -317,8 +344,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // OUR_GUTS.md Commitment
-            const PortalSurface(
+            AppSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +354,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                       Icon(Icons.verified_user, color: AppTheme.successColor),
                       SizedBox(width: 8),
                       Text(
-                        'OUR_GUTS.md Commitment',
+                        'Privacy commitment',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.successColor,
@@ -338,20 +364,31 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '"Privacy and Control Are Non-Negotiable" - You own your data, you control your experience, and you decide what to share.',
+                    'You own your data, you control your experience, and you decide what AVRAI can share or retain.',
                     style: TextStyle(color: AppTheme.successColor),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
+            AppSurface(
+              color: AppColors.grey100,
+              child: Semantics(
+                label: 'Privacy data sharing summary',
+                child: Text(
+                  'What AVRAI shares: AI2AI learning exchanges only anonymized signals, not your raw chat content.',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
 
             // Core Privacy Controls
-            Text(
-              'Core Privacy Controls',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            const AppPageHeader(
+              title: 'Core Privacy Controls',
+              subtitle:
+                  'Choose how your profile, location, and learning data are shared or retained.',
+              leadingIcon: Icons.privacy_tip_outlined,
             ),
             const SizedBox(height: 16),
 
@@ -433,7 +470,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
             // Sync Now button (only show if sync is enabled)
             if (_cloudSyncEnabled)
-              PortalSurface(
+              AppSurface(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: EdgeInsets.zero,
                 child: ListTile(
@@ -528,7 +565,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             ),
             const SizedBox(height: 16),
 
-            PortalSurface(
+            AppSurface(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
@@ -566,7 +603,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
             const SizedBox(height: 24),
 
             // Reset Settings
-            PortalSurface(
+            AppSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,6 +629,9 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   ElevatedButton(
                     onPressed: _resetPrivacySettings,
                     // Use global ElevatedButtonTheme
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                    ),
                     child: const Text('Reset to Defaults'),
                   ),
                 ],
@@ -610,7 +650,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 8),
       child: SwitchListTile(
         title: Text(title),
@@ -630,7 +670,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     ValueChanged<String?> onChanged,
     IconData icon,
   ) {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Icon(icon, color: AppTheme.primaryColor),
@@ -733,8 +773,13 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   await _storageService.setBool('ai2ai_learning_enabled', true);
                   await _storageService.setBool(
                       'user_runtime_learning_enabled', true);
-                } catch (_) {
-                  // Ignore.
+                } catch (e, st) {
+                  developer.log(
+                    'Failed to persist reset privacy defaults',
+                    name: 'PrivacySettingsPage',
+                    error: e,
+                    stackTrace: st,
+                  );
                 }
               });
               ScaffoldMessenger.of(context).showSnackBar(

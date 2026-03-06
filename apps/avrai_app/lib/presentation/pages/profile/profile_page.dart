@@ -34,7 +34,7 @@ import 'package:avrai_runtime_os/services/device/wearable_data_service.dart';
 import 'package:avrai/presentation/widgets/knot/dynamic_knot_widget.dart';
 import 'package:avrai/presentation/pages/knot/knot_meditation_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // User Info Card
-                PortalSurface(
+                AppSurface(
                   child: Padding(
                     padding: EdgeInsets.all(spacing.md),
                     child: Column(
@@ -227,11 +227,39 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    state.user.displayName ?? 'User',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        state.user.displayName ?? 'User',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall,
+                                      ),
+                                      if (state.user.isBetaTester) ...[
+                                        SizedBox(width: spacing.xs),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primary
+                                                .withValues(alpha: 0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            border: Border.all(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.5)),
+                                          ),
+                                          child: const Text(
+                                            'BETA PIONEER',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                   Text(
                                     state.user.email,
@@ -352,6 +380,24 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildPartnershipsSection(context, state.user.id),
 
                 SizedBox(height: spacing.lg),
+
+                // Beta Feedback (Prominent)
+                AppSurface(
+                  margin: EdgeInsets.only(bottom: spacing.md),
+                  padding: EdgeInsets.zero,
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.bug_report, color: AppColors.primary),
+                    title: const Text('Beta Feedback',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: const Text(
+                        'Share your thoughts, ideas, or report bugs'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      context.go('/profile/beta-feedback');
+                    },
+                  ),
+                ),
 
                 // Settings Section
                 Text(
@@ -697,7 +743,7 @@ class _ProfilePageState extends State<ProfilePage> {
     required VoidCallback onTap,
   }) {
     final spacing = context.spacing;
-    return PortalSurface(
+    return AppSurface(
       margin: EdgeInsets.only(bottom: spacing.xs),
       padding: EdgeInsets.zero,
       child: ListTile(

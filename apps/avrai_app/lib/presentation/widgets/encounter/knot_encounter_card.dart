@@ -5,18 +5,18 @@ import 'package:avrai/theme/colors.dart';
 import 'package:flutter/material.dart' hide Colors;
 
 /// A subtle, non-intrusive card that logs a topological encounter.
-/// 
-/// Instead of pushing a loud push notification, these stack quietly in a 
+///
+/// Instead of pushing a loud push notification, these stack quietly in a
 /// "Resonance Log" or can optionally surface as a silent local notification
-/// for very high matches. 
-/// 
-/// If the resonance is very high, it offers an optional "Sync" button to 
+/// for very high matches.
+///
+/// If the resonance is very high, it offers an optional "Sync" button to
 /// trigger an immediate deep-dive or mesh connection.
 class KnotEncounterCard extends StatelessWidget {
   final double confidenceScore;
   final DateTime timestamp;
   final VoidCallback? onSyncPressed;
-  
+
   const KnotEncounterCard({
     super.key,
     required this.confidenceScore,
@@ -27,11 +27,11 @@ class KnotEncounterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isHighResonance = confidenceScore >= 0.8;
-    
+
     // Determine messaging based on the math score
     String title;
     String subtitle;
-    
+
     if (confidenceScore >= 0.9) {
       title = "Deep Resonance Detected";
       subtitle = "Near-identical topological match passed by.";
@@ -49,21 +49,23 @@ class KnotEncounterCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: AppColors.black.withOpacity(0.4),
+        color: AppColors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(24.0),
         border: Border.all(
-          color: isHighResonance 
-              ? AppColors.electricGreen.withOpacity(0.5) 
+          color: isHighResonance
+              ? AppColors.electricGreen.withValues(alpha: 0.5)
               : AppColors.grey800,
           width: 1.0,
         ),
-        boxShadow: isHighResonance ? [
-          BoxShadow(
-            color: AppColors.electricGreen.withOpacity(0.1),
-            blurRadius: 20.0,
-            spreadRadius: 2.0,
-          )
-        ] : null,
+        boxShadow: isHighResonance
+            ? [
+                BoxShadow(
+                  color: AppColors.electricGreen.withValues(alpha: 0.1),
+                  blurRadius: 20.0,
+                  spreadRadius: 2.0,
+                )
+              ]
+            : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24.0),
@@ -77,13 +79,13 @@ class KnotEncounterCard extends StatelessWidget {
                 ProgressiveConfidenceWidget(
                   confidence: confidenceScore,
                   size: 60.0,
-                  primaryColor: isHighResonance 
-                      ? AppColors.electricGreen 
+                  primaryColor: isHighResonance
+                      ? AppColors.electricGreen
                       : AppColors.primary,
                 ),
-                
+
                 const SizedBox(width: 16.0),
-                
+
                 // Text Context
                 Expanded(
                   child: Column(
@@ -94,7 +96,9 @@ class KnotEncounterCard extends StatelessWidget {
                         style: TextStyle(
                           color: AppColors.white,
                           fontSize: 16.0,
-                          fontWeight: isHighResonance ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isHighResonance
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 4.0),
@@ -116,7 +120,7 @@ class KnotEncounterCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Optional Sync Action
                 if (isHighResonance && onSyncPressed != null) ...[
                   const SizedBox(width: 12.0),
@@ -139,10 +143,10 @@ class KnotEncounterCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: AppColors.electricGreen.withOpacity(0.15),
+            color: AppColors.electricGreen.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(30.0),
             border: Border.all(
-              color: AppColors.electricGreen.withOpacity(0.5),
+              color: AppColors.electricGreen.withValues(alpha: 0.5),
             ),
           ),
           child: Row(

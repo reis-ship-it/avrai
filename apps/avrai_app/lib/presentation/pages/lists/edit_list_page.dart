@@ -4,7 +4,7 @@ import 'package:avrai_core/models/misc/list.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class EditListPage extends StatefulWidget {
   final SpotList list;
@@ -195,7 +195,7 @@ class _EditListPageState extends State<EditListPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Basic Information
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +270,7 @@ class _EditListPageState extends State<EditListPage> {
                 const SizedBox(height: 16),
 
                 // Privacy Settings
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,7 +315,7 @@ class _EditListPageState extends State<EditListPage> {
                 const SizedBox(height: 16),
 
                 // List Stats
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

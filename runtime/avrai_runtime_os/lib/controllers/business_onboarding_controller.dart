@@ -58,7 +58,8 @@ class BusinessOnboardingController
   final BusinessAccountService _businessAccountService;
   final BusinessSharedAgentService? _sharedAgentService;
   // ignore: unused_field
-  final AtomicClockService _atomicClock; // Reserved for future timestamp-based business tracking
+  final AtomicClockService
+      _atomicClock; // Reserved for future timestamp-based business tracking
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final PersonalityKnotService? _personalityKnotService;
@@ -78,7 +79,10 @@ class BusinessOnboardingController
             businessAccountService ?? GetIt.instance<BusinessAccountService>(),
         _sharedAgentService =
             sharedAgentService ?? GetIt.instance<BusinessSharedAgentService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()

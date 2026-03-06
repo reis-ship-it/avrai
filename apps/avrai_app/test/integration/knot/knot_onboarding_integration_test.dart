@@ -10,6 +10,7 @@
 // 4. Onboarding group creation with knots
 // 5. Knot discovery page integration
 
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/controllers/agent_initialization_controller.dart';
@@ -128,6 +129,9 @@ class MockRustLibApi implements RustLibApi {
 
 /// Integration tests for knot-based onboarding features
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   group('Knot Onboarding Integration Tests', () {
     late AgentInitializationController controller;
     late PersonalityKnotService personalityKnotService;
@@ -137,6 +141,10 @@ void main() {
     late String testAgentId;
 
     setUpAll(() async {
+      if (!runHeavyIntegrationTests) {
+        return;
+      }
+
       // Initialize Rust library for tests (mock mode) - MUST be before DI init
       try {
         RustLib.initMock(api: MockRustLibApi());
@@ -737,5 +745,5 @@ void main() {
         }
       });
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

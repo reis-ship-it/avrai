@@ -13,6 +13,7 @@ import 'package:avrai/presentation/pages/spots/spots_page.dart';
 import 'package:avrai/presentation/pages/lists/lists_page.dart';
 import 'package:avrai/presentation/pages/map/map_page.dart';
 import 'package:avrai/presentation/pages/profile/profile_page.dart';
+import 'package:avrai/presentation/pages/profile/beta_feedback_page.dart';
 import 'package:avrai/apps/consumer_app/ui/pages/profile/ai_personality_status_page.dart';
 import 'package:avrai/presentation/pages/chat/unified_chat_page.dart';
 import 'package:avrai/presentation/pages/chat/friend_chat_view.dart';
@@ -400,6 +401,10 @@ class AppRouter {
               builder: (c, s) => const UserReservationAnalyticsPage(),
             ),
             GoRoute(
+              path: 'profile/beta-feedback',
+              builder: (c, s) => const BetaFeedbackPage(),
+            ),
+            GoRoute(
               path: 'profile/ai-status',
               builder: (c, s) => const AIPersonalityStatusPage(),
             ),
@@ -741,16 +746,9 @@ class AppRouter {
                   birthday: birthday,
                   age: age,
                   homebase: extra?['homebase'] as String?,
-                  favoritePlaces: (extra?['favoritePlaces'] as List<dynamic>?)
-                          ?.cast<String>() ??
-                      const [],
-                  preferences: (extra?['preferences'] as Map<String, dynamic>?)
-                          ?.map((k, v) => MapEntry(
-                              k, (v as List<dynamic>).cast<String>())) ??
+                  openResponses: (extra?['openResponses'] as Map<String, dynamic>?)
+                          ?.map((k, v) => MapEntry(k, v.toString())) ??
                       const {},
-                  baselineLists: (extra?['baselineLists'] as List<dynamic>?)
-                          ?.cast<String>() ??
-                      const [],
                   // Note: respectedFriends and socialMediaConnected are passed via extras
                   // but AILoadingPage loads data from OnboardingDataService, so these are
                   // primarily for fallback/verification. The page will use saved onboarding data.

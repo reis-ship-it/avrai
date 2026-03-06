@@ -2,7 +2,20 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'dev.flutter.flutter-gradle-plugin'
-    id 'com.google.gms.google-services'
+}
+
+def hasGoogleServicesJson =
+        file('google-services.json').exists() ||
+        file('src/google-services.json').exists() ||
+        file('src/debug/google-services.json').exists() ||
+        file('src/Debug/google-services.json').exists() ||
+        file('src/release/google-services.json').exists() ||
+        file('src/Release/google-services.json').exists()
+
+if (hasGoogleServicesJson) {
+    apply plugin: 'com.google.gms.google-services'
+} else {
+    logger.lifecycle('google-services.json not found; skipping com.google.gms.google-services plugin for this build.')
 }
 
 def localProperties = new Properties()
@@ -41,7 +54,7 @@ def googleMapsApiKey =
 android {
     namespace "com.avrai.app"
     compileSdkVersion 36
-    ndkVersion "27.0.12077973"
+    ndkVersion "28.2.13676358"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -55,8 +68,9 @@ android {
 
     sourceSets {
         main.java.srcDirs += ['src/main/kotlin', 'src/main/java']
-        // Include Signal FFI libraries and wrapper library
-        main.jniLibs.srcDirs = ['src/main/jniLibs', '../../runtime/avrai_network/native/signal_ffi/android']
+        // Include Signal FFI libraries and wrapper library from repo runtime/.
+        // app/build.gradle is under apps/avrai_app/android/app, so runtime is 4 levels up.
+        main.jniLibs.srcDirs = ['src/main/jniLibs', '../../../../runtime/avrai_network/native/signal_ffi/android']
     }
 
     defaultConfig {
@@ -85,7 +99,7 @@ android {
         // IMPORTANT: use += so we don't clobber Flutter's own placeholders
         // (e.g. ${applicationName}).
         manifestPlaceholders += [
-                appAuthRedirectScheme: "com.avrai.app"
+                appAuthRedirectScheme: "avrai"
         ]
     }
 
@@ -135,6 +149,8 @@ dependencies {
     // Add missing notification resources
     implementation 'androidx.core:core:1.12.0'
     
+    // MLC-LLM Android Engine (optional; transport and core app flows remain functional without it)
+
     // Core library desugaring (required by flutter_local_notifications)
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

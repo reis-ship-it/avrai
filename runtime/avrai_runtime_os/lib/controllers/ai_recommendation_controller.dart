@@ -9,6 +9,8 @@ import 'package:avrai_runtime_os/ai/knowledge_lifecycle/claim_lifecycle_contract
 import 'package:avrai_runtime_os/controllers/base/workflow_controller.dart';
 import 'package:avrai_runtime_os/controllers/base/controller_result.dart';
 import 'package:avrai_runtime_os/controllers/conviction_shadow_gate.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/matching/preferences_profile_service.dart';
 import 'package:avrai_runtime_os/services/events/event_recommendation_service.dart'
@@ -92,6 +94,7 @@ class AIRecommendationController
       _quantumEntanglementService; // Reserved for future quantum compatibility calculations
   final QuantumMatchingAILearningService? _aiLearningService;
   final ConvictionGateEvaluator _convictionGateEvaluator;
+  final LocalityKernelContract? _localityKernel;
 
   AIRecommendationController({
     PersonalityLearning? personalityLearning,
@@ -107,6 +110,7 @@ class AIRecommendationController
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
     ConvictionGateEvaluator? convictionGateEvaluator,
+    LocalityKernelContract? localityKernel,
   })  : _personalityLearning = personalityLearning ??
             (() {
               // Use same pattern as injection_container.dart
@@ -119,7 +123,10 @@ class AIRecommendationController
         _eventRecommendationService = eventRecommendationService ??
             event_rec_service.EventRecommendationService(),
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()
@@ -147,6 +154,10 @@ class AIRecommendationController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
+                : null),
+        _localityKernel = localityKernel ??
+            (GetIt.instance.isRegistered<LocalityKernelContract>()
+                ? GetIt.instance<LocalityKernelContract>()
                 : null),
         _convictionGateEvaluator =
             convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
@@ -209,6 +220,39 @@ class AIRecommendationController
       // Step 2: Get agentId for privacy protection
       final agentId = await _agentIdService.getUserAgentId(userId);
 
+      LocalityState? localityState;
+      LocalityProjection? localityProjection;
+      final localityKernel = _localityKernel;
+      if (localityKernel != null) {
+        try {
+          localityState = await localityKernel.resolveWhere(
+            LocalityPerceptionInput(
+              agentId: agentId,
+              occurredAtUtc: DateTime.now().toUtc(),
+              latitude: context.latitude,
+              longitude: context.longitude,
+              topAlias: context.location,
+            ),
+          );
+          localityProjection = localityKernel.project(
+            LocalityProjectionRequest(
+              audience: LocalityProjectionAudience.user,
+              state: localityState,
+            ),
+          );
+          developer.log(
+            '✅ Resolved locality state ${localityState.activeToken.id} '
+            '(confidence=${localityState.confidence.toStringAsFixed(2)})',
+            name: _logName,
+          );
+        } catch (e) {
+          developer.log(
+            '⚠️ Could not resolve locality state: $e',
+            name: _logName,
+          );
+        }
+      }
+
       // Step 3: Load PersonalityProfile
       PersonalityProfile? personalityProfile;
       try {
@@ -266,11 +310,13 @@ class AIRecommendationController
       // Step 6: Get event recommendations
       List<event_rec_service.EventRecommendation> eventRecommendations = [];
       try {
+        final recommendationLocation =
+            context.location ?? localityProjection?.primaryLabel;
         eventRecommendations =
             await _eventRecommendationService.getPersonalizedRecommendations(
           user: user,
           category: context.category,
-          location: context.location,
+          location: recommendationLocation,
           maxResults: context.maxResults,
           explorationRatio: context.explorationRatio,
         );
@@ -429,6 +475,8 @@ class AIRecommendationController
         personalityProfile: personalityProfile,
         preferencesProfile: preferencesProfile,
         convictionGateDecision: convictionGateDecision,
+        localityState: localityState,
+        localityProjection: localityProjection,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -583,6 +631,8 @@ class RecommendationInput {
 class RecommendationContext {
   final String? category;
   final String? location;
+  final double? latitude;
+  final double? longitude;
   final int maxResults;
   final double explorationRatio;
   final double minRelevanceScore;
@@ -594,6 +644,8 @@ class RecommendationContext {
   const RecommendationContext({
     this.category,
     this.location,
+    this.latitude,
+    this.longitude,
     this.maxResults = 20,
     this.explorationRatio = 0.3,
     this.minRelevanceScore = 0.3,
@@ -606,6 +658,8 @@ class RecommendationContext {
   RecommendationContext copyWith({
     String? category,
     String? location,
+    double? latitude,
+    double? longitude,
     int? maxResults,
     double? explorationRatio,
     double? minRelevanceScore,
@@ -617,6 +671,8 @@ class RecommendationContext {
     return RecommendationContext(
       category: category ?? this.category,
       location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       maxResults: maxResults ?? this.maxResults,
       explorationRatio: explorationRatio ?? this.explorationRatio,
       minRelevanceScore: minRelevanceScore ?? this.minRelevanceScore,
@@ -640,6 +696,8 @@ class RecommendationResult extends ControllerResult {
   final PersonalityProfile? personalityProfile;
   final PreferencesProfile? preferencesProfile;
   final ConvictionGateDecision? convictionGateDecision;
+  final LocalityState? localityState;
+  final LocalityProjection? localityProjection;
 
   const RecommendationResult({
     required super.success,
@@ -652,6 +710,8 @@ class RecommendationResult extends ControllerResult {
     this.personalityProfile,
     this.preferencesProfile,
     this.convictionGateDecision,
+    this.localityState,
+    this.localityProjection,
   });
 
   /// Create successful recommendation result
@@ -662,6 +722,8 @@ class RecommendationResult extends ControllerResult {
     PersonalityProfile? personalityProfile,
     PreferencesProfile? preferencesProfile,
     ConvictionGateDecision? convictionGateDecision,
+    LocalityState? localityState,
+    LocalityProjection? localityProjection,
   }) {
     return RecommendationResult(
       success: true,
@@ -671,11 +733,17 @@ class RecommendationResult extends ControllerResult {
       personalityProfile: personalityProfile,
       preferencesProfile: preferencesProfile,
       convictionGateDecision: convictionGateDecision,
+      localityState: localityState,
+      localityProjection: localityProjection,
       metadata: {
         'timestamp': DateTime.now().toIso8601String(),
         'eventCount': events.length,
         'spotCount': spots.length,
         'listCount': lists.length,
+        if (localityProjection != null)
+          'localityLabel': localityProjection.primaryLabel,
+        if (localityState != null)
+          'localityToken': localityState.activeToken.id,
       },
     );
   }

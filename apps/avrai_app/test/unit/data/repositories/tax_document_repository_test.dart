@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:avrai_runtime_os/data/repositories/tax_document_repository.dart';
 import 'package:avrai_core/models/payment/tax_document.dart';
 import '../../../helpers/test_storage_helper.dart';
@@ -22,19 +23,24 @@ import '../../../helpers/test_storage_helper.dart';
 /// - TaxDocument: Tax document model
 
 void main() {
+  const boxName = 'tax_documents_repo_test';
+
   group('TaxDocumentRepository', () {
     late TaxDocumentRepository repository;
     late TaxDocument testDocument;
     late DateTime testDate;
 
-    setUp(() async {
-      // Use in-memory storage for tests
+    setUpAll(() async {
       await TestStorageHelper.initTestStorage();
-      // Clear storage before each test for isolation
-      final box = TestStorageHelper.getBox('tax_documents');
+      await GetStorage.init(boxName);
+    });
+
+    setUp(() async {
+      // Clear storage before each test for isolation.
+      final box = GetStorage(boxName);
       await box.erase();
 
-      repository = TaxDocumentRepository();
+      repository = TaxDocumentRepository(storeName: boxName);
       testDate = DateTime(2025, 12, 1, 14, 0);
 
       testDocument = TaxDocument(
@@ -46,6 +52,11 @@ void main() {
         status: TaxStatus.generated,
         generatedAt: testDate,
       );
+    });
+
+    tearDownAll(() async {
+      await GetStorage(boxName).erase();
+      await TestStorageHelper.clearTestStorage();
     });
 
     group('saveTaxDocument', () {

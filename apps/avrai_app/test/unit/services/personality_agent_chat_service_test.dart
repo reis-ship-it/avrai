@@ -13,8 +13,8 @@
 /// - Privacy: agentId/userId conversion validation
 library;
 
-import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/services/user/personality_agent_chat_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
@@ -23,9 +23,20 @@ import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_lea
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart' as pl;
 import 'package:avrai_runtime_os/data/repositories/hybrid_search_repository.dart';
+import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 import 'package:avrai_core/models/personality_profile.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:avrai_runtime_os/services/user/aspirational_intent_parser.dart';
+import 'package:avrai_runtime_os/services/user/aspirational_dna_engine.dart';
 
 import '../../helpers/test_helpers.dart';
+import '../../helpers/test_storage_helper.dart';
 
 // Mock classes
 class MockAgentIdService extends Mock implements AgentIdService {}
@@ -43,6 +54,13 @@ class MockPersonalityLearning extends Mock implements pl.PersonalityLearning {}
 class MockHybridSearchRepository extends Mock
     implements HybridSearchRepository {}
 
+class MockAspirationalIntentParser extends Mock
+    implements AspirationalIntentParser {}
+
+class MockAspirationalDNAEngine extends Mock implements AspirationalDNAEngine {}
+
+class MockGeoHierarchyService extends Mock implements GeoHierarchyService {}
+
 void main() {
   // Register fallback values for mocktail
   setUpAll(() {
@@ -54,6 +72,7 @@ void main() {
     );
     registerFallbackValue(
         PersonalityProfile.initial('agent_test_user', userId: 'test_user'));
+    registerFallbackValue(const LLMDispatchPolicy.humanChat());
     registerFallbackValue(HybridSearchResult(
       spots: [],
       communityCount: 0,
@@ -72,13 +91,35 @@ void main() {
     late MockLLMService mockLLMService;
     late MockPersonalityLearning mockPersonalityLearning;
     late MockHybridSearchRepository mockSearchRepository;
+    late MockAspirationalIntentParser mockAspirationalParser;
+    late MockAspirationalDNAEngine mockAspirationalDNAEngine;
+    late MockGeoHierarchyService mockGeoHierarchyService;
 
     const String testUserId = 'user_123';
     const String testAgentId = 'agent_abc123def456ghi789jkl012mno345pqr678';
     const String testChatId = 'chat_$testAgentId}_$testUserId';
 
+    setUpAll(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      SharedPreferences.setMockInitialValues({});
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('plugins.flutter.io/path_provider'),
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'getApplicationDocumentsDirectory') {
+            return '.';
+          }
+          return null;
+        },
+      );
+    });
+
     setUp(() async {
       TestHelpers.setupTestEnvironment();
+      await TestStorageHelper.initTestStorage();
+      await GetStorage.init('personality_chat_messages');
+      await GetStorage('personality_chat_messages').erase();
 
       // Initialize mocks
       mockAgentIdService = MockAgentIdService();
@@ -87,10 +128,20 @@ void main() {
       mockLLMService = MockLLMService();
       mockPersonalityLearning = MockPersonalityLearning();
       mockSearchRepository = MockHybridSearchRepository();
+      mockAspirationalParser = MockAspirationalIntentParser();
+      mockAspirationalDNAEngine = MockAspirationalDNAEngine();
+      mockGeoHierarchyService = MockGeoHierarchyService();
 
       // Setup default mock behaviors
       when(() => mockAgentIdService.getUserAgentId(testUserId))
           .thenAnswer((_) async => testAgentId);
+
+      when(() => mockAspirationalParser.parseIntent(any()))
+          .thenAnswer((_) async => <String, double>{});
+
+      when(() => mockAspirationalDNAEngine.applyAspirationalShift(any(), any()))
+          .thenAnswer((invocation) =>
+              invocation.positionalArguments[0] as PersonalityProfile);
 
       when(() => mockEncryptionService.encryptionType)
           .thenReturn(EncryptionType.aes256gcm);
@@ -124,12 +175,24 @@ void main() {
               'agent_$testUserId',
               userId: testUserId));
 
+      when(() => mockPersonalityLearning.updatePersonality(any(), any()))
+          .thenAnswer((_) async => {});
+
       when(() => mockLLMService.chat(
             messages: any(named: 'messages'),
             context: any(named: 'context'),
+            dispatchPolicy: any(named: 'dispatchPolicy'),
             temperature: any(named: 'temperature'),
             maxTokens: any(named: 'maxTokens'),
           )).thenAnswer((_) async => 'This is a test response from the agent.');
+
+      when(() => mockLLMService.generateWithContext(
+            query: any(named: 'query'),
+            userId: any(named: 'userId'),
+            messages: any(named: 'messages'),
+            temperature: any(named: 'temperature'),
+            maxTokens: any(named: 'maxTokens'),
+          )).thenThrow(Exception('Use fallback path for tests'));
 
       // Create service with mocks
       service = PersonalityAgentChatService(
@@ -139,10 +202,28 @@ void main() {
         llmService: mockLLMService,
         personalityLearning: mockPersonalityLearning,
         searchRepository: mockSearchRepository,
+        aspirationalParser: mockAspirationalParser,
+        aspirationalDNAEngine: mockAspirationalDNAEngine,
       );
+
+      final getIt = GetIt.instance;
+      if (getIt.isRegistered<GeoHierarchyService>()) {
+        getIt.unregister<GeoHierarchyService>();
+      }
+      if (getIt.isRegistered<SharedPreferencesCompat>()) {
+        getIt.unregister<SharedPreferencesCompat>();
+      }
     });
 
     tearDown(() async {
+      final getIt = GetIt.instance;
+      if (getIt.isRegistered<GeoHierarchyService>()) {
+        getIt.unregister<GeoHierarchyService>();
+      }
+      if (getIt.isRegistered<SharedPreferencesCompat>()) {
+        getIt.unregister<SharedPreferencesCompat>();
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 100));
       TestHelpers.teardownTestEnvironment();
     });
 
@@ -160,6 +241,8 @@ void main() {
             llmService: mockLLMService,
             personalityLearning: mockPersonalityLearning,
             searchRepository: mockSearchRepository,
+            aspirationalParser: mockAspirationalParser,
+            aspirationalDNAEngine: mockAspirationalDNAEngine,
           ),
           returnsNormally,
         );
@@ -196,6 +279,7 @@ void main() {
         verify(() => mockLLMService.chat(
               messages: any(named: 'messages'),
               context: any(named: 'context'),
+              dispatchPolicy: any(named: 'dispatchPolicy'),
               temperature: any(named: 'temperature'),
               maxTokens: any(named: 'maxTokens'),
             )).called(1);
@@ -221,6 +305,7 @@ void main() {
                     return msgs.length >= 2;
                   })),
               context: any(named: 'context'),
+              dispatchPolicy: any(named: 'dispatchPolicy'),
               temperature: any(named: 'temperature'),
               maxTokens: any(named: 'maxTokens'),
             )).called(greaterThan(1));
@@ -232,6 +317,66 @@ void main() {
 
         // Assert - service should still process (may return empty or default response)
         expect(response, isA<String>());
+      });
+
+      test('should inject metro context into runtime prompt construction',
+          () async {
+        final prefs = await SharedPreferencesCompat.getInstance();
+        final getIt = GetIt.instance;
+        getIt.registerSingleton<SharedPreferencesCompat>(prefs);
+        getIt.registerSingleton<GeoHierarchyService>(mockGeoHierarchyService);
+
+        when(() => mockGeoHierarchyService.lookupLocalityByPoint(
+              lat: any(named: 'lat'),
+              lon: any(named: 'lon'),
+            )).thenAnswer((_) async => (
+              localityCode: 'brooklyn-williamsburg',
+              cityCode: 'us-nyc',
+              displayName: 'Williamsburg'
+            ));
+
+        await service.chat(
+          testUserId,
+          'What should I do tonight?',
+          currentLocation: Position(
+            longitude: -73.956,
+            latitude: 40.718,
+            timestamp: DateTime(2026),
+            accuracy: 5,
+            altitude: 0,
+            altitudeAccuracy: 0,
+            heading: 0,
+            headingAccuracy: 0,
+            speed: 0,
+            speedAccuracy: 0,
+          ),
+        );
+
+        verify(() => mockLLMService.chat(
+              messages: any(
+                named: 'messages',
+                that: predicate((List<ChatMessage> messages) {
+                  if (messages.isEmpty) {
+                    return false;
+                  }
+                  final systemMessage = messages.first;
+                  return systemMessage.role == ChatRole.system &&
+                      systemMessage.content.contains('Local context: NYC') &&
+                      systemMessage.content.contains('Dense, fast');
+                }),
+              ),
+              context: any(
+                named: 'context',
+                that: predicate((LLMContext context) {
+                  final metroContext = context.preferences?['metro_context']
+                      as Map<String, dynamic>?;
+                  return metroContext?['metro_key'] == 'nyc';
+                }),
+              ),
+              dispatchPolicy: any(named: 'dispatchPolicy'),
+              temperature: any(named: 'temperature'),
+              maxTokens: any(named: 'maxTokens'),
+            )).called(1);
       });
     });
 
@@ -441,6 +586,7 @@ void main() {
         when(() => mockLLMService.chat(
               messages: any(named: 'messages'),
               context: any(named: 'context'),
+              dispatchPolicy: any(named: 'dispatchPolicy'),
               temperature: any(named: 'temperature'),
               maxTokens: any(named: 'maxTokens'),
             )).thenThrow(Exception('LLM service unavailable'));
@@ -483,5 +629,11 @@ void main() {
             )).called(greaterThan(0));
       });
     });
+  });
+
+  tearDownAll(() async {
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    await GetStorage('personality_chat_messages').erase();
+    await TestStorageHelper.clearTestStorage();
   });
 }

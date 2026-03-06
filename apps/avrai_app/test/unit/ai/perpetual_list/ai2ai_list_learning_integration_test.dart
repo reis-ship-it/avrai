@@ -177,7 +177,7 @@ void main() {
 
         // These should never be shared with the network
         expect(sensitiveCategories.contains('adult_entertainment'), isTrue);
-        expect(sensitiveCategories.contains('cannabis_dispensary'), isTrue);
+        expect(sensitiveCategories.contains('cannabis_dispensaries'), isTrue);
       });
     });
 

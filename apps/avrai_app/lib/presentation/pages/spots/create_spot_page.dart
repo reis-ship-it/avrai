@@ -6,7 +6,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/common/success_animation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class CreateSpotPage extends StatefulWidget {
   const CreateSpotPage({super.key});
@@ -241,7 +241,7 @@ class _CreateSpotPageState extends State<CreateSpotPage> {
               const SizedBox(height: 24),
 
               // Location Section
-              PortalSurface(
+              AppSurface(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(

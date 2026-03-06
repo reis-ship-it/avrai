@@ -21,12 +21,111 @@ import 'package:geolocator/geolocator.dart';
 import 'package:avrai/presentation/widgets/common/offline_indicator_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai/presentation/pages/events/events_browse_page.dart';
-import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';
 import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai_runtime_os/config/design_feature_flags.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/pages/feed/daily_serendipity_drop_feed.dart';
+import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
+import 'package:avrai/presentation/pages/chat/world_model_ai_page.dart';
+import 'package:avrai/presentation/pages/explore/explore_page.dart';
+import 'package:avrai/presentation/widgets/portal/turbine_loader.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+class DailySerendipityDropFeedWrapper extends StatefulWidget {
+  const DailySerendipityDropFeedWrapper({super.key});
+
+  @override
+  State<DailySerendipityDropFeedWrapper> createState() =>
+      _DailySerendipityDropFeedWrapperState();
+}
+
+class _DailySerendipityDropFeedWrapperState
+    extends State<DailySerendipityDropFeedWrapper> {
+  DailySerendipityDrop? _drop;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDrop();
+  }
+
+  Future<void> _loadDrop() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final dropJson = prefs.getString('latest_daily_serendipity_drop');
+
+      if (dropJson != null) {
+        setState(() {
+          _drop = DailySerendipityDrop.fromJson(jsonDecode(dropJson));
+          _isLoading = false;
+        });
+      } else {
+        // Create a realistic-looking empty state or default drop if none exists
+        setState(() {
+          _drop = DailySerendipityDrop(
+            date: DateTime.now(),
+            llmContextualInsight:
+                "Your AI is still learning your resonance patterns. Walk around the city to gather more serendipitous encounters.",
+            event: DropEvent(
+              id: 'ev_0',
+              title: "Discover the City",
+              subtitle: "Start moving to find events",
+              locationName: "Anywhere",
+              time: DateTime.now().add(const Duration(hours: 2)),
+              archetypeAffinity: 0.5,
+            ),
+            spot: DropSpot(
+              id: 'sp_0',
+              title: "Explore Hidden Gems",
+              subtitle: "We'll suggest spots once we know your vibe",
+              category: "Exploration",
+              distanceMiles: 0.0,
+              archetypeAffinity: 0.5,
+            ),
+            community: DropCommunity(
+              id: 'co_0',
+              title: "Local Groups",
+              subtitle: "Connect to find communities",
+              memberCount: 0,
+              commonInterests: ["Discovery"],
+              archetypeAffinity: 0.5,
+            ),
+            club: DropClub(
+              id: 'cl_0',
+              title: "Secret Clubs",
+              subtitle: "Awaiting your first physical interaction",
+              applicationStatus: "Locked",
+              vibe: "Unknown",
+              archetypeAffinity: 0.5,
+            ),
+          );
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: TurbineLoader());
+    }
+
+    if (_drop == null) {
+      return const Center(
+          child: Text("No daily drop available.",
+              style: TextStyle(color: AppColors.white)));
+    }
+
+    return DailySerendipityDropFeed(drop: _drop!);
+  }
+}
 
 class HomePage extends StatefulWidget {
   final int initialTabIndex;
@@ -44,9 +143,10 @@ class _HomePageState extends State<HomePage> {
   late int _currentIndex;
 
   final List<Widget> _pages = [
-    const MapTab(),
+    const DailySerendipityDropFeedWrapper(),
+    const ExplorePage(),
     const SpotsTab(),
-    const ExploreTab(),
+    const AITab(),
   ];
 
   @override
@@ -79,7 +179,7 @@ class _HomePageState extends State<HomePage> {
               title: 'avrai',
               showNavigationBar: false,
               constrainBody: false,
-              body: Center(child: CircularProgressIndicator()),
+              body: Center(child: TurbineLoader()),
             );
           }
 
@@ -98,69 +198,85 @@ class _HomePageState extends State<HomePage> {
       title: 'avrai',
       showNavigationBar: false,
       constrainBody: false,
-      body: Column(
+      body: Stack(
         children: [
-          // Phase 7 Week 35: Full OfflineIndicatorWidget integration
-          StreamBuilder<List<ConnectivityResult>>(
-            stream: Connectivity().onConnectivityChanged,
-            initialData: const [ConnectivityResult.none],
-            builder: (context, snapshot) {
-              final connectivityResults =
-                  snapshot.data ?? [ConnectivityResult.none];
-              final isOffline =
-                  connectivityResults.contains(ConnectivityResult.none);
-
-              if (!isOffline) return const SizedBox.shrink();
-
-              return OfflineIndicatorWidget(
-                isOffline: isOffline,
-                onRetry: () async {
-                  // Retry connectivity check
-                  final connectivity = Connectivity();
-                  final result = await connectivity.checkConnectivity();
-                  final isNowOnline = !result.contains(ConnectivityResult.none);
-
-                  if (isNowOnline && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Connection restored!'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  }
-                },
-                showDismiss: true,
-              );
-            },
-          ),
           // Main content
-          Expanded(
-            child: IndexedStack(
-              index: _currentIndex,
-              children: _pages,
+          Positioned.fill(
+            child: Builder(
+              builder: (context) {
+                return AdaptivePaneLayout(
+                  primary: IndexedStack(
+                    index: _currentIndex,
+                    children: _pages,
+                  ),
+                  secondary: null,
+                );
+              },
+            ),
+          ),
+          // Phase 7 Week 35: Full OfflineIndicatorWidget integration
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: StreamBuilder<List<ConnectivityResult>>(
+                stream: Connectivity().onConnectivityChanged,
+                initialData: const [ConnectivityResult.none],
+                builder: (context, snapshot) {
+                  final connectivityResults =
+                      snapshot.data ?? [ConnectivityResult.none];
+                  final isOffline =
+                      connectivityResults.contains(ConnectivityResult.none);
+
+                  return AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: isOffline
+                        ? OfflineIndicatorWidget(
+                            isOffline: isOffline,
+                            onRetry: () async {
+                              // Retry connectivity check
+                              final connectivity = Connectivity();
+                              final result =
+                                  await connectivity.checkConnectivity();
+                              final isNowOnline =
+                                  !result.contains(ConnectivityResult.none);
+
+                              if (isNowOnline && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Connection restored!'),
+                                    backgroundColor: AppColors.success,
+                                  ),
+                                );
+                              }
+                            },
+                            showDismiss: true,
+                          )
+                        : const SizedBox.shrink(),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.transparent,
+        elevation: 0,
         currentIndex: _currentIndex,
         onTap: (index) {
-          if (index == 3) {
-            // Settings tab - navigate to profile/settings
-            context.go('/profile');
-          } else {
-            setState(() => _currentIndex = index);
-          }
+          setState(() => _currentIndex = index);
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppTheme.primaryColor,
         unselectedItemColor: AppColors.textSecondary,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.place), label: 'Spots'),
+          BottomNavigationBarItem(icon: Icon(Icons.bolt), label: 'Daily Drop'),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.place), label: 'Spots'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'AI'),
         ],
       ),
       floatingActionButton: DesignFeatureFlags.enableWorldPlanesRoute
@@ -196,7 +312,7 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: spacing.xs),
             Text(
-              'Create lists of places and share them with others',
+              'Explore places, events, and communities with guidance from your AI.',
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
@@ -252,7 +368,7 @@ class _SpotsTabState extends State<SpotsTab> {
   @override
   Widget build(BuildContext context) {
     return AdaptivePlatformPageScaffold(
-      title: 'My Lists',
+      title: 'Spots',
       constrainBody: false,
       leading: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
@@ -287,7 +403,7 @@ class _SpotsTabState extends State<SpotsTab> {
         children: [
           // Search bar below app bar
           CustomSearchBar(
-            hintText: 'Search lists...',
+            hintText: 'Search saved spots and lists...',
             onChanged: (value) {
               context.read<ListsBloc>().add(SearchLists(value));
             },
@@ -300,7 +416,7 @@ class _SpotsTabState extends State<SpotsTab> {
                 children: [
                   // Tab bar
                   Container(
-                    color: AppColors.grey100,
+                    color: AppColors.transparent,
                     child: const TabBar(
                       labelColor: AppTheme.primaryColor,
                       unselectedLabelColor: AppColors.textSecondary,
@@ -319,8 +435,7 @@ class _SpotsTabState extends State<SpotsTab> {
                         BlocBuilder<ListsBloc, ListsState>(
                           builder: (context, state) {
                             if (state is ListsLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
+                              return const Center(child: TurbineLoader());
                             }
 
                             if (state is ListsLoaded) {
@@ -397,8 +512,7 @@ class _SpotsTabState extends State<SpotsTab> {
                         BlocBuilder<SpotsBloc, SpotsState>(
                           builder: (context, state) {
                             if (state is SpotsLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
+                              return const Center(child: TurbineLoader());
                             }
 
                             if (state is SpotsLoaded) {
@@ -434,7 +548,7 @@ class _SpotsTabState extends State<SpotsTab> {
                                 itemCount: state.respectedSpots.length,
                                 itemBuilder: (context, index) {
                                   final spot = state.respectedSpots[index];
-                                  return PortalSurface(
+                                  return AppSurface(
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 8),
                                     padding: EdgeInsets.zero,
@@ -559,123 +673,12 @@ class _SpotsTabState extends State<SpotsTab> {
   }
 }
 
-class ExploreTab extends StatefulWidget {
-  const ExploreTab({super.key});
-
-  @override
-  State<ExploreTab> createState() => _ExploreTabState();
-}
-
-class _ExploreTabState extends State<ExploreTab>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class AITab extends StatelessWidget {
+  const AITab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Explore',
-      constrainBody: false,
-      leading: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is Authenticated) {
-            return IconButton(
-              icon: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppTheme.primaryColor,
-                child: Text(
-                  state.user.displayName?.substring(0, 1).toUpperCase() ??
-                      state.user.email.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                _showProfileMenu(context);
-              },
-            );
-          }
-          return const SizedBox.shrink();
-        },
-      ),
-      materialBottom: TabBar(
-        controller: _tabController,
-        tabs: const [
-          Tab(icon: Icon(Icons.people), text: 'Users'),
-          Tab(icon: Icon(Icons.smart_toy), text: 'AI'),
-          Tab(icon: Icon(Icons.event), text: 'Events'),
-          Tab(icon: Icon(Icons.groups), text: 'Communities'),
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          UsersSubTab(),
-          AISubTab(),
-          EventsSubTab(),
-          CommunitiesDiscoverPage(showAppBar: false),
-        ],
-      ),
-    );
-  }
-
-  void _showProfileMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is Authenticated) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppTheme.primaryColor,
-                      child: Text(
-                        state.user.displayName?.substring(0, 1).toUpperCase() ??
-                            state.user.email.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    title: Text(state.user.displayName ?? 'User'),
-                    subtitle: Text(state.user.email),
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Sign Out'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.read<AuthBloc>().add(SignOutRequested());
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
-      ),
-    );
+    return const WorldModelAiPage();
   }
 }
 
@@ -721,7 +724,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: TurbineLoader());
     }
 
     if (_error != null) {
@@ -790,7 +793,7 @@ class _UsersSubTabState extends State<UsersSubTab> {
         itemCount: _publicLists.length,
         itemBuilder: (context, index) {
           final list = _publicLists[index];
-          return PortalSurface(
+          return AppSurface(
             margin: const EdgeInsets.only(bottom: 12),
             padding: EdgeInsets.zero,
             child: ListTile(
@@ -1068,11 +1071,7 @@ class _AISubTabState extends State<AISubTab> {
                       SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              AppTheme.primaryColor),
-                        ),
+                        child: TurbineLoader(size: 16),
                       ),
                       SizedBox(width: 8),
                       Text(
@@ -1106,7 +1105,7 @@ class _AISubTabState extends State<AISubTab> {
     required Color color,
     VoidCallback? onTap,
   }) {
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,

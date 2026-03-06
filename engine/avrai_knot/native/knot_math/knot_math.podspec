@@ -21,26 +21,16 @@ developer-machine dylib path at runtime.
   # CocoaPods runs this from the pod's root directory (`native/knot_math`).
   s.prepare_command  = <<-CMD
     set -e
-    bash ../../scripts/build_rust_ios_xcframework.sh
+    bash ../../../../work/scripts/build_rust_ios_xcframework.sh
   CMD
 
   # The XCFramework output is created under `native/knot_math/ios/`.
   s.vendored_frameworks = 'ios/knot_math.xcframework'
   s.preserve_paths      = 'ios/knot_math.xcframework', 'ios/Headers'
 
-  # CRITICAL:
-  # Dart FFI (and flutter_rust_bridge) resolves symbols via dlsym at runtime.
-  # With static libraries, the linker can dead-strip "unused" symbols unless
-  # we force-load the library. We do this per SDK to avoid arch mismatch.
-  s.user_target_xcconfig = {
-    # NOTE:
-    # These flags are applied to the *Runner* target, not the pod target, so we
-    # must use variables available to the app build settings.
-    #
-    # `$(SRCROOT)` for Runner points to `ios/`, so this resolves to the repo's
-    # `native/knot_math/` folder when building from the Flutter project.
-    'OTHER_LDFLAGS[sdk=iphoneos*]' => '$(inherited) -Wl,-force_load,"$(SRCROOT)/../native/knot_math/ios/knot_math.xcframework/ios-arm64/libknot_math.a"',
-    'OTHER_LDFLAGS[sdk=iphonesimulator*]' => '$(inherited) -Wl,-force_load,"$(SRCROOT)/../native/knot_math/ios/knot_math.xcframework/ios-arm64_x86_64-simulator/libknot_math.a"',
-  }
+  # NOTE:
+  # The XCFramework above is linked via CocoaPods directly.
+  # Avoid explicit `-force_load` flags to prevent duplicate symbol collisions
+  # when CocoaPods also stages an XCFramework intermediate copy.
 end
 

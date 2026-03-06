@@ -6,7 +6,7 @@ import 'package:avrai_core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 import 'package:avrai_runtime_os/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -132,7 +132,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
 
                         // Title
                         Text(
-                          'Help Your AI\nUnderstand You',
+                          'Make Recommendations\nMore Relevant',
                           textAlign: TextAlign.center,
                           style: textTheme.headlineMedium?.copyWith(
                             color: isDark
@@ -145,7 +145,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
 
                         // Subtitle
                         Text(
-                          'Enable learning from your daily activities to get spot suggestions that truly match your life.',
+                          'Choose which signals AVRAI can use to make suggestions feel more useful, timely, and under your control.',
                           textAlign: TextAlign.center,
                           style: textTheme.bodyLarge?.copyWith(
                             color: isDark
@@ -194,7 +194,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                             ),
                           ),
                           child: const Text(
-                            'Enable Smart Learning',
+                            'Enable Recommended Sources',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -209,7 +209,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                         child: TextButton(
                           onPressed: _handleProceed,
                           child: Text(
-                            'Continue with selected sources',
+                            'Continue with current choices',
                             style: TextStyle(
                               color: isDark
                                   ? AppColors.white.withValues(alpha: 0.6)
@@ -227,7 +227,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildExampleInsights(bool isDark, TextTheme textTheme) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       radius: 16,
       color: isDark
@@ -248,7 +248,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Example Insights',
+                'How this helps',
                 style: textTheme.titleSmall?.copyWith(
                   color: isDark ? AppColors.white : AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
@@ -258,20 +258,20 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
           ),
           const SizedBox(height: 12),
           _buildExampleItem(
-            '📅',
-            '"You\'re free Friday evening - here are great spots nearby!"',
+            Icons.schedule_outlined,
+            'If your schedule opens up, AVRAI can surface timely plans nearby.',
             isDark,
             textTheme,
           ),
           _buildExampleItem(
-            '❤️',
-            '"After your morning run, try this healthy cafe!"',
+            Icons.favorite_border,
+            'Activity patterns can help AVRAI suggest places that fit the moment.',
             isDark,
             textTheme,
           ),
           _buildExampleItem(
-            '🎵',
-            '"Your music suggests a chill vibe - check out this lounge!"',
+            Icons.music_note_outlined,
+            'Preference signals help recommendations feel calmer and more personal.',
             isDark,
             textTheme,
           ),
@@ -281,7 +281,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildExampleItem(
-    String emoji,
+    IconData icon,
     String text,
     bool isDark,
     TextTheme textTheme,
@@ -291,7 +291,13 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
+          Icon(
+            icon,
+            size: 16,
+            color: isDark
+                ? AppColors.white.withValues(alpha: 0.7)
+                : AppColors.textSecondary,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -300,7 +306,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                 color: isDark
                     ? AppColors.white.withValues(alpha: 0.7)
                     : AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
+                height: 1.4,
               ),
             ),
           ),
@@ -314,7 +320,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Choose Data Sources',
+          'Choose data sources',
           style: textTheme.titleSmall?.copyWith(
             color: isDark ? AppColors.white : AppColors.textPrimary,
             fontWeight: FontWeight.w600,
@@ -339,7 +345,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   ) {
     final isEnabled = _consents[source] ?? true;
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       radius: 12,
@@ -389,17 +395,17 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
   }
 
   Widget _buildPrivacyNote(bool isDark, TextTheme textTheme) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       radius: 12,
-      color: AppColors.electricBlue.withValues(alpha: isDark ? 0.15 : 0.08),
-      borderColor: AppColors.electricBlue.withValues(alpha: 0.25),
+      color: AppColors.primary.withValues(alpha: isDark ? 0.14 : 0.06),
+      borderColor: AppColors.primary.withValues(alpha: 0.18),
       child: Row(
         children: [
           Icon(
             Icons.lock_outline,
             size: 24,
-            color: AppColors.electricBlue,
+            color: AppColors.primary,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -407,7 +413,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '100% On-Device',
+                  'Private by default',
                   style: textTheme.titleSmall?.copyWith(
                     color: isDark ? AppColors.white : AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -415,7 +421,7 @@ class _CrossAppLearningPageState extends State<CrossAppLearningPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Your data never leaves your phone. All learning happens locally.',
+                  'You can change these sources any time, and AVRAI keeps the focus on local processing and user control.',
                   style: textTheme.bodySmall?.copyWith(
                     color: isDark
                         ? AppColors.white.withValues(alpha: 0.6)

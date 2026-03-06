@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({super.key});
@@ -38,7 +39,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Privacy Note
-            const PortalSurface(
+            const AppSurface(
               color: AppColors.grey100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +59,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Per OUR_GUTS.md: "Privacy and Control Are Non-Negotiable". You control all notification settings and data usage.',
+                    'You control notification delivery, quiet hours, and how AVRAI uses your activity for updates.',
                     style: TextStyle(color: AppTheme.primaryColor),
                   ),
                 ],
@@ -67,11 +68,11 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             const SizedBox(height: 24),
 
             // Main Notification Types
-            Text(
-              'Notification Types',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            const AppPageHeader(
+              title: 'Notification Types',
+              subtitle:
+                  'Choose which updates you receive and how they should reach you during the beta.',
+              leadingIcon: Icons.notifications_outlined,
             ),
             const SizedBox(height: 16),
 
@@ -161,7 +162,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             ),
             const SizedBox(height: 16),
 
-            PortalSurface(
+            AppSurface(
               child: Column(
                 children: [
                   SwitchListTile(
@@ -202,7 +203,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             const SizedBox(height: 24),
 
             // Test Notification
-            PortalSurface(
+            AppSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -240,7 +241,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 8),
       child: SwitchListTile(
         title: Text(title),

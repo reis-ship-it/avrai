@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:battery_plus/battery_plus.dart';
-import 'package:avrai_runtime_os/services/passive_collection/smart_passive_collection_service.dart';
-import 'package:avrai_runtime_os/services/passive_collection/dwell_event_intake_adapter.dart';
 
 /// Represents a batch processing job that requires LLM context/processing power.
 abstract class MicroBatchJob {
@@ -14,29 +12,6 @@ abstract class MicroBatchJob {
 
   /// Execute the heavy LLM job.
   Future<void> execute();
-}
-
-/// A specific job that takes raw physical dwells and pushes them through the Air Gap.
-class ProcessDwellEventsJob extends MicroBatchJob {
-  final SmartPassiveCollectionService _collectionService;
-  final DwellEventIntakeAdapter _intakeAdapter;
-
-  ProcessDwellEventsJob(
-    this._collectionService, 
-    this._intakeAdapter
-  ) : super('process_dwells', 'Flush Dwell Queue to Air Gap');
-
-  @override
-  Future<void> execute() async {
-    final dwells = _collectionService.flushForBatchProcessing();
-    if (dwells.isEmpty) {
-      developer.log('No dwells to process.', name: 'ProcessDwellEventsJob');
-      return;
-    }
-
-    developer.log('Ingesting ${dwells.length} dwell events through the Air Gap...', name: 'ProcessDwellEventsJob');
-    await _intakeAdapter.ingestBatch(dwells);
-  }
 }
 
 /// Service that schedules heavy LLM jobs (like processing dwells or updating Knots)

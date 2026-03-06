@@ -18,7 +18,7 @@ set -euo pipefail
 # - RUN_ID                        (defaults to random uuid)
 # - SIGNAL_SMOKE_COMMUNITY_ID     (enables community stream portion)
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../apps/avrai_app" && pwd)"
 TEST_PATH="integration_test/signal_two_device_transport_smoke_test.dart"
 
 if [[ -z "${SUPABASE_URL:-}" || -z "${SUPABASE_ANON_KEY:-}" ]]; then
@@ -35,6 +35,8 @@ if [[ -z "${A_EMAIL:-}" || -z "${A_PASSWORD:-}" || -z "${B_EMAIL:-}" || -z "${B_
   echo "Missing A_EMAIL/A_PASSWORD or B_EMAIL/B_PASSWORD"
   exit 1
 fi
+
+export RUN_SIGNAL_NATIVE_TESTS=true
 
 RUN_ID="${RUN_ID:-$(python3 -c 'import uuid; print(uuid.uuid4())')}"
 export RUN_ID
@@ -58,6 +60,8 @@ echo "DEVICE_B=${DEVICE_B} (role B)"
 if [[ -n "${SIGNAL_SMOKE_COMMUNITY_ID:-}" ]]; then
   echo "SIGNAL_SMOKE_COMMUNITY_ID=${SIGNAL_SMOKE_COMMUNITY_ID}"
 fi
+
+cd "${ROOT_DIR}"
 
 set +e
 

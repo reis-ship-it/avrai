@@ -79,7 +79,10 @@ class ListCreationController
     QuantumMatchingAILearningService? aiLearningService,
     ConvictionGateEvaluator? convictionGateEvaluator,
   })  : _listsRepository = listsRepository ?? GetIt.instance<ListsRepository>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _locationTimingService = locationTimingService ??
             (GetIt.instance.isRegistered<LocationTimingQuantumStateService>()
                 ? GetIt.instance<LocationTimingQuantumStateService>()

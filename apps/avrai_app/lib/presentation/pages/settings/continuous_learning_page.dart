@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_status_widget.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_progress_widget.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_data_widget.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_controls_widget.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/ai/continuous_learning_system.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Continuous Learning Page
 ///
@@ -249,48 +250,14 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return PortalSurface(
+    return AppSurface(
       color: AppColors.primary.withValues(alpha: 0.1),
       borderColor: AppColors.primary.withValues(alpha: 0.24),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: AppColors.primary,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Continuous Learning',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'See how your AI continuously learns',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: const AppPageHeader(
+        title: 'Continuous Learning',
+        subtitle: 'See how your AI continuously learns',
+        leadingIcon: Icons.auto_awesome,
+        showDivider: false,
       ),
     );
   }
@@ -307,7 +274,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return const PortalSurface(
+    return const AppSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

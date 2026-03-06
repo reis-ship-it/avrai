@@ -5,8 +5,17 @@
 // SignalFfi.xcframework currently ships an arm64 simulator slice.
 // Exclude x86_64 so CocoaPods selects the available slice.
 ARCHS[sdk=iphonesimulator*] = arm64
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = i386 x86_64
 IPHONEOS_DEPLOYMENT_TARGET = 17.0
 
 // Used by `ios/Runner/Info.plist` for `GMSApiKey`.
 // Provide a real value via untracked `ios/Flutter/Secrets.xcconfig` or CI secrets.
 GOOGLE_MAPS_IOS_API_KEY=
+
+// Note: MLC native libraries are optional for transport-only smoke matrices.
+// Keep these flags out of transport verification builds to avoid duplicate-symbol
+// collisions with knot_math dependencies.
+// Keep tokenizers/sentencepiece libraries out of transport-only smoke builds to avoid
+// duplicate-symbol collisions with knot_math.
+OTHER_LDFLAGS = $(inherited) -Wl,-all_load -lmodel_iphone -ltvm_runtime -ltvm_ffi_static
+LIBRARY_SEARCH_PATHS = $(inherited) "$(SRCROOT)/dist/lib"

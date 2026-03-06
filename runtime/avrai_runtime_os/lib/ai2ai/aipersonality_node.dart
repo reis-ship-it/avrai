@@ -1,8 +1,10 @@
 import 'package:avrai_core/models/user/user_vibe.dart';
+import 'package:avrai_core/models/personality_knot.dart';
 
 class AIPersonalityNode {
   final String nodeId;
   final UserVibe vibe;
+  final PersonalityKnot? knot; // Added for Hex Math Exchange
   final DateTime lastSeen;
   final double trustScore;
   final Map<String, dynamic> learningHistory;
@@ -10,6 +12,7 @@ class AIPersonalityNode {
   AIPersonalityNode({
     required this.nodeId,
     required this.vibe,
+    this.knot,
     required this.lastSeen,
     required this.trustScore,
     required this.learningHistory,

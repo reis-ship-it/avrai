@@ -10,7 +10,7 @@ import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Payment Success Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -204,7 +204,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 const SizedBox(height: 40),
 
                 // Event Preview Card
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

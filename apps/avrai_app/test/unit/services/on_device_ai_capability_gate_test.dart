@@ -31,7 +31,7 @@ void main() {
       isLowPowerMode: false,
     ));
     expect(res.eligible, isTrue);
-    expect(res.recommendedTier, OfflineLlmTier.llama8b);
+    expect(res.recommendedTier, OfflineLlmTier.phi4);
     expect(res.allowOnDeviceLoraTraining, isTrue);
   });
 }

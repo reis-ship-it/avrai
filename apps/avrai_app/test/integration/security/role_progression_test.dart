@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/app.dart';
@@ -41,9 +43,16 @@ import '../../helpers/platform_channel_helper.dart';
 /// - Role progression: <3 seconds
 /// - Access control validation: <100ms
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Avoid path_provider / GetStorage.init in tests.
     await setupTestStorage();
 
@@ -174,7 +183,7 @@ void main() {
       await _testRoleBasedFeatures(
           tester, authRepository, listsRepository, null, null);
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }
 
 /// Create test user with specified initial role

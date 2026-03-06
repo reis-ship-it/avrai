@@ -274,7 +274,7 @@ void main() {
 
         verify(() => mockAgentIdService.getUserAgentId(userId)).called(1);
         verify(() => mockStorageService.getString('waitlist_$entryId'))
-            .called(1);
+            .called(2);
       });
 
       test('should return null when entry does not exist', () async {

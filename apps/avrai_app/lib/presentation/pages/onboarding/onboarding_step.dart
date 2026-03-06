@@ -9,7 +9,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/services/user/permissions_persistence_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class PermissionsPage extends StatefulWidget {
   const PermissionsPage({super.key});
@@ -683,7 +683,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
       builder: (context) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.security, color: AppColors.electricBlue),
+            Icon(Icons.security, color: AppColors.primary),
             SizedBox(width: 12),
             Expanded(child: Text('Enable Permissions')),
           ],
@@ -898,7 +898,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
         children: [
           // Summary banner
           if (_statuses.isNotEmpty)
-            PortalSurface(
+            AppSurface(
               padding: const EdgeInsets.all(16),
               radius: 12,
               color: allGranted
@@ -933,18 +933,18 @@ class _PermissionsPageState extends State<PermissionsPage> {
 
           // Platform-specific info note (shown when permissions are not granted)
           if (!allGranted && _statuses.isNotEmpty)
-            PortalSurface(
+            AppSurface(
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               radius: 8,
-              color: AppColors.electricBlue.withValues(alpha: 0.1),
-              borderColor: AppColors.electricBlue.withValues(alpha: 0.3),
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderColor: AppColors.primary.withValues(alpha: 0.3),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     Icons.info_outline,
-                    color: AppColors.electricBlue,
+                    color: AppColors.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -1033,7 +1033,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                       final status = entry.value;
                       final isGranted = status.isGranted;
 
-                      return PortalSurface(
+                      return AppSurface(
                         margin: const EdgeInsets.only(bottom: 8),
                         radius: 8,
                         borderColor: isGranted
@@ -1205,7 +1205,7 @@ class _PermissionItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: AppColors.electricBlue),
+        Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

@@ -7,18 +7,21 @@ import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai_runtime_os/services/locality_agents/onboarding_locality_lists.dart';
 
 class FriendsRespectPage extends StatefulWidget {
   final List<String> respectedLists;
   final Function(List<String>) onRespectedListsChanged;
   final String? userId;
+  final String? selectedHomebase;
 
   const FriendsRespectPage({
     super.key,
     required this.respectedLists,
     required this.onRespectedListsChanged,
     this.userId,
+    this.selectedHomebase,
   });
 
   @override
@@ -31,161 +34,24 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   List<String> _selectedLists = [];
   final Map<String, int> _respectCounts = {};
   late final OnboardingSuggestionEventStore _eventStore;
-
-  // Enhanced mock data with user profiles
-  final List<Map<String, dynamic>> _localPublicLists = [
-    {
-      'name': 'Brooklyn Coffee Crawl',
-      'creator': 'Sarah M.',
-      'spots': 12,
-      'respects': 127,
-      'category': 'Food & Drink',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'coffee expert',
-        'locations': ['Brooklyn', 'Zambia'],
-        'hostedEventsCount': 14,
-        'differentSpotsCount': 3,
-      },
-    },
-    {
-      'name': 'Hidden Gems in Williamsburg',
-      'creator': 'Mike T.',
-      'spots': 8,
-      'respects': 89,
-      'category': 'Culture & Arts',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'street art enthusiast',
-        'locations': ['Williamsburg', 'Bushwick'],
-        'hostedEventsCount': 8,
-        'differentSpotsCount': 5,
-      },
-    },
-    {
-      'name': 'Best Sunset Spots',
-      'creator': 'Emma L.',
-      'spots': 15,
-      'respects': 203,
-      'category': 'Outdoor & Nature',
-      'location': 'Manhattan, NY',
-      'userProfile': {
-        'expertise': 'photography lover',
-        'locations': ['Manhattan', 'Brooklyn'],
-        'hostedEventsCount': 22,
-        'differentSpotsCount': 7,
-      },
-    },
-    {
-      'name': 'Vintage Shopping Guide',
-      'creator': 'Alex K.',
-      'spots': 6,
-      'respects': 156,
-      'category': 'Activities',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'vintage curator',
-        'locations': ['Brooklyn', 'Manhattan'],
-        'hostedEventsCount': 12,
-        'differentSpotsCount': 4,
-      },
-    },
-    {
-      'name': 'Cozy Reading Nooks',
-      'creator': 'David R.',
-      'spots': 10,
-      'respects': 94,
-      'category': 'Culture & Arts',
-      'location': 'Manhattan, NY',
-      'userProfile': {
-        'expertise': 'bookworm',
-        'locations': ['Manhattan'],
-        'hostedEventsCount': 6,
-        'differentSpotsCount': 2,
-      },
-    },
-    {
-      'name': 'Late Night Food Spots',
-      'creator': 'Lisa P.',
-      'spots': 9,
-      'respects': 178,
-      'category': 'Food & Drink',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'foodie',
-        'locations': ['Brooklyn', 'Manhattan'],
-        'hostedEventsCount': 18,
-        'differentSpotsCount': 6,
-      },
-    },
-    {
-      'name': 'Street Art Tour',
-      'creator': 'Carlos M.',
-      'spots': 14,
-      'respects': 245,
-      'category': 'Culture & Arts',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'street art guide',
-        'locations': ['Brooklyn', 'Manhattan'],
-        'hostedEventsCount': 31,
-        'differentSpotsCount': 8,
-      },
-    },
-    {
-      'name': 'Dog-Friendly Parks',
-      'creator': 'Jenny W.',
-      'spots': 7,
-      'respects': 112,
-      'category': 'Outdoor & Nature',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'dog lover',
-        'locations': ['Brooklyn', 'Manhattan'],
-        'hostedEventsCount': 9,
-        'differentSpotsCount': 3,
-      },
-    },
-    {
-      'name': 'Jazz & Blues Venues',
-      'creator': 'Marcus J.',
-      'spots': 11,
-      'respects': 167,
-      'category': 'Entertainment',
-      'location': 'Manhattan, NY',
-      'userProfile': {
-        'expertise': 'jazz musician',
-        'locations': ['Manhattan', 'Brooklyn'],
-        'hostedEventsCount': 25,
-        'differentSpotsCount': 4,
-      },
-    },
-    {
-      'name': 'Weekend Brunch Spots',
-      'creator': 'Rachel S.',
-      'spots': 13,
-      'respects': 189,
-      'category': 'Food & Drink',
-      'location': 'Brooklyn, NY',
-      'userProfile': {
-        'expertise': 'brunch connoisseur',
-        'locations': ['Brooklyn', 'Manhattan', 'Queens'],
-        'hostedEventsCount': 16,
-        'differentSpotsCount': 5,
-      },
-    },
-  ];
+  late final List<Map<String, dynamic>> _localPublicLists;
 
   @override
   void initState() {
     super.initState();
     _selectedLists = List.from(widget.respectedLists);
 
+    final cityKey =
+        OnboardingLocalityLists.resolveCity(widget.selectedHomebase);
+    final cityLists = OnboardingLocalityLists.getListsForCity(cityKey);
+    _localPublicLists = cityLists.isNotEmpty
+        ? cityLists
+        : OnboardingLocalityLists.getDefaultLists();
+
     _eventStore = GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()
         ? GetIt.instance<OnboardingSuggestionEventStore>()
         : OnboardingSuggestionEventStore();
 
-    // Initialize respect counts from the mock data
     for (var list in _localPublicLists) {
       _respectCounts[list['name'] as String] = list['respects'] as int;
     }
@@ -286,9 +152,9 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Respect lists created by people in your local area. These lists will appear in your spots page after onboarding.',
+            'Curated lists for your area. Add any that interest you and they\'ll appear in your spots page.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
+                  color: AppColors.grey500,
                 ),
           ),
           const SizedBox(height: 24),
@@ -331,9 +197,9 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Lists created by people in your area',
+                  'Curated by avrai for your area',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.grey600,
+                        color: AppColors.grey500,
                       ),
                 ),
                 const SizedBox(height: 16),
@@ -347,7 +213,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                       final listName = list['name'] as String;
                       final isSelected = _selectedLists.contains(listName);
 
-                      return PortalSurface(
+                      return AppSurface(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: EdgeInsets.zero,
                         child: Column(
@@ -382,7 +248,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                       const Icon(
                                         Icons.location_on,
                                         size: 12,
-                                        color: AppColors.grey600,
+                                        color: AppColors.grey500,
                                       ),
                                       const SizedBox(width: 2),
                                       Expanded(
@@ -390,7 +256,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                           list['location'] as String,
                                           style: const TextStyle(
                                             fontSize: 11,
-                                            color: AppColors.grey600,
+                                            color: AppColors.grey500,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -399,7 +265,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                                         '${list['spots']} spots',
                                         style: const TextStyle(
                                           fontSize: 11,
-                                          color: AppColors.grey600,
+                                          color: AppColors.grey500,
                                         ),
                                       ),
                                     ],
@@ -484,7 +350,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
     final hostedEventsCount = userProfile['hostedEventsCount'] as int;
     final differentSpotsCount = userProfile['differentSpotsCount'] as int;
 
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(6),
       color: AppColors.grey50,
       borderColor: AppColors.grey200,
@@ -505,7 +371,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
             'Hosted $hostedEventsCount events at $differentSpotsCount spots',
             style: const TextStyle(
               fontSize: 9,
-              color: AppColors.grey600,
+              color: AppColors.grey500,
             ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
@@ -516,9 +382,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   }
 
   void _showListDetails(Map<String, dynamic> list) {
-    // Mock spots data for the list
-    List<Map<String, dynamic>> spots =
-        _getMockSpotsForList(list['name'] as String);
+    List<Map<String, dynamic>> spots = _getSpotsForList(list);
 
     showModalBottomSheet(
       context: context,
@@ -575,7 +439,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                           'by ${list['creator']} • ${list['spots']} spots • ${list['respects']} respects',
                           style: const TextStyle(
                             fontSize: 14,
-                            color: AppColors.grey600,
+                            color: AppColors.grey500,
                           ),
                         ),
                       ],
@@ -591,7 +455,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                 itemCount: spots.length,
                 itemBuilder: (context, index) {
                   final spot = spots[index];
-                  return PortalSurface(
+                  return AppSurface(
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: EdgeInsets.zero,
                     child: ListTile(
@@ -612,7 +476,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                         spot['description'] as String,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: AppColors.grey600,
+                          color: AppColors.grey500,
                         ),
                       ),
                       trailing: const Icon(
@@ -631,212 +495,17 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
     );
   }
 
-  List<Map<String, dynamic>> _getMockSpotsForList(String listName) {
-    // Mock spots data based on list name - matching the exact spot counts
-    switch (listName) {
-      case 'Brooklyn Coffee Crawl': // 12 spots
-        return [
-          {
-            'name': 'Blue Bottle Coffee',
-            'description': 'Artisanal coffee with a minimalist vibe',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Devoción',
-            'description': 'Colombian coffee in a beautiful space',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Sey Coffee',
-            'description': 'Light-roasted specialty coffee',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Variety Coffee',
-            'description': 'Cozy neighborhood coffee shop',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Partners Coffee',
-            'description': 'Local roaster with great pastries',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Toby\'s Estate',
-            'description': 'Australian-style coffee shop',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Brooklyn Roasting Company',
-            'description': 'Industrial-chic coffee spot',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Cafe Grumpy',
-            'description': 'Brooklyn-born coffee chain',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Stumptown Coffee',
-            'description': 'Portland-style coffee experience',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Joe Coffee',
-            'description': 'Classic NYC coffee shop',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'La Colombe',
-            'description': 'Philadelphia-based coffee roaster',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Gregorys Coffee',
-            'description': 'Modern coffee shop with great vibes',
-            'category': 'Food & Drink'
-          },
-        ];
-      case 'Hidden Gems in Williamsburg': // 8 spots
-        return [
-          {
-            'name': 'Domino Park',
-            'description': 'Waterfront park with great views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Brooklyn Flea',
-            'description': 'Vintage and artisanal market',
-            'category': 'Activities'
-          },
-          {
-            'name': 'McCarren Park',
-            'description': 'Large park with sports facilities',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Bedford Avenue',
-            'description': 'Main shopping and dining street',
-            'category': 'Activities'
-          },
-          {
-            'name': 'East River State Park',
-            'description': 'Hidden waterfront gem',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Bushwick Inlet Park',
-            'description': 'Peaceful green space',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'N 6th Street',
-            'description': 'Trendy shopping district',
-            'category': 'Activities'
-          },
-          {
-            'name': 'Berry Street',
-            'description': 'Local favorite dining street',
-            'category': 'Food & Drink'
-          },
-        ];
-      case 'Best Sunset Spots': // 15 spots
-        return [
-          {
-            'name': 'Brooklyn Bridge Park',
-            'description': 'Iconic NYC skyline views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'DUMBO Waterfront',
-            'description': 'Perfect sunset photography spot',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'High Line Park',
-            'description': 'Elevated park with city views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Central Park',
-            'description': 'Classic NYC sunset location',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Battery Park',
-            'description': 'Harbor views and Statue of Liberty',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Riverside Park',
-            'description': 'Hudson River sunset views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Fort Tryon Park',
-            'description': 'Elevated views of the Hudson',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Prospect Park',
-            'description': 'Brooklyn\'s answer to Central Park',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Brooklyn Heights Promenade',
-            'description': 'Famous skyline vista',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Governors Island',
-            'description': 'Island escape with harbor views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Gantry Plaza State Park',
-            'description': 'Queens waterfront views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Astoria Park',
-            'description': 'East River sunset spot',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Rockaway Beach',
-            'description': 'Ocean sunset views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Pelham Bay Park',
-            'description': 'Bronx waterfront views',
-            'category': 'Outdoor & Nature'
-          },
-          {
-            'name': 'Van Cortlandt Park',
-            'description': 'Northern Bronx green space',
-            'category': 'Outdoor & Nature'
-          },
-        ];
-      default:
-        return [
-          {
-            'name': 'Sample Spot 1',
-            'description': 'A great place to visit',
-            'category': 'Activities'
-          },
-          {
-            'name': 'Sample Spot 2',
-            'description': 'Another amazing location',
-            'category': 'Food & Drink'
-          },
-          {
-            'name': 'Sample Spot 3',
-            'description': 'Worth checking out',
-            'category': 'Culture & Arts'
-          },
-        ];
-    }
+  List<Map<String, dynamic>> _getSpotsForList(Map<String, dynamic> list) {
+    final spotsList = list['spotsList'] as List<Map<String, String>>?;
+    if (spotsList == null) return [];
+    final category = list['category'] as String? ?? 'Activities';
+    return spotsList
+        .map((s) => {
+              'name': s['name'] ?? '',
+              'description': s['location'] ?? '',
+              'category': category,
+            })
+        .toList();
   }
 
   IconData _getSpotIcon(String category) {

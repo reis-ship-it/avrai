@@ -10,7 +10,7 @@ void main() {
         (WidgetTester tester) async {
       // Arrange
       final widget = WidgetTestHelpers.createTestableWidget(
-        child: const AI2AIAdminDashboard(),
+        child: const AI2AIAdminDashboard(useThreeJsVisualizations: false),
       );
 
       // Act

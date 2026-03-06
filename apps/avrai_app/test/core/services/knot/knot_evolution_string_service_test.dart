@@ -86,10 +86,26 @@ void main() {
         expect(string1.snapshots.first.timestamp, equals(DateTime(2025, 1, 2)));
 
         // Test: Empty history - return string with current knot
+        final testKnotAgent2 = PersonalityKnot(
+          agentId: 'agent-2',
+          invariants: KnotInvariants(
+            jonesPolynomial: [1.0, 2.0],
+            alexanderPolynomial: [1.0],
+            crossingNumber: 3,
+            writhe: 1,
+            signature: 0,
+            bridgeNumber: 1,
+            braidIndex: 1,
+            determinant: 1,
+          ),
+          braidData: [8.0, 0.0, 1.0],
+          createdAt: DateTime(2025, 1, 1),
+          lastUpdated: DateTime(2025, 1, 1),
+        );
         when(() => mockStorageService.loadEvolutionHistory('agent-2'))
             .thenAnswer((_) async => []);
         when(() => mockStorageService.loadKnot('agent-2'))
-            .thenAnswer((_) async => testKnot);
+            .thenAnswer((_) async => testKnotAgent2);
 
         final string2 = await service.createStringFromHistory('agent-2');
 

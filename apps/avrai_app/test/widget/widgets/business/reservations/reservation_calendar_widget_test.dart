@@ -44,7 +44,7 @@ void main() {
       );
 
       // Check that calendar is displayed
-      expect(find.text('${now.year}'), findsOneWidget);
+      expect(find.textContaining('${now.year}'), findsOneWidget);
       expect(find.byIcon(Icons.chevron_left), findsOneWidget);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
@@ -67,7 +67,7 @@ void main() {
       final currentYear = now.year;
 
       // Check initial month
-      expect(find.text('$currentYear'), findsOneWidget);
+      expect(find.textContaining('$currentYear'), findsOneWidget);
 
       // Tap next month button
       await tester.tap(find.byIcon(Icons.chevron_right));

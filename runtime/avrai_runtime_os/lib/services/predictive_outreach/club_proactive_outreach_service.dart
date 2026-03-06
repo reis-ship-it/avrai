@@ -9,7 +9,10 @@
 /// 2. Club → Users (event invitations)
 
 import 'dart:developer' as developer;
+
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/community/club_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/predictive_outreach/future_compatibility_prediction_service.dart';
@@ -113,20 +116,27 @@ class ClubProactiveOutreachService {
           );
 
           if (outreachScore >= 0.75) {
-            final clubProfile = await _personalityLearning
-                .getCurrentPersonality(club.founderId);
-            if (clubProfile != null) {
-              await _ai2aiCommunication.sendOutreachMessage(
-                fromAgentId: clubProfile.agentId,
-                toAgentId: candidate.agentId,
-                messageType: OutreachMessageType.clubMembershipInvitation,
-                payload: {
-                  'club_id': clubId,
-                  'compatibility_score': outreachScore,
-                  'stability_improvement': stabilityPred.stabilityImprovement,
-                  'reasoning': 'Would improve club fabric stability',
-                },
+            if (await _isHighChurnRisk(candidate.agentId)) {
+              developer.log(
+                'Skipping membership outreach for high-churn-risk candidate: ${candidate.agentId}',
+                name: _logName,
               );
+            } else {
+              final clubProfile = await _personalityLearning
+                  .getCurrentPersonality(club.founderId);
+              if (clubProfile != null) {
+                await _ai2aiCommunication.sendOutreachMessage(
+                  fromAgentId: clubProfile.agentId,
+                  toAgentId: candidate.agentId,
+                  messageType: OutreachMessageType.clubMembershipInvitation,
+                  payload: {
+                    'club_id': clubId,
+                    'compatibility_score': outreachScore,
+                    'stability_improvement': stabilityPred.stabilityImprovement,
+                    'reasoning': 'Would improve club fabric stability',
+                  },
+                );
+              }
             }
           }
         } catch (e) {
@@ -141,6 +151,24 @@ class ClubProactiveOutreachService {
         stackTrace: stackTrace,
         name: _logName,
       );
+    }
+  }
+
+  /// Returns true when the Markov predictor flags a candidate as high churn risk.
+  /// Silently returns false if no predictor is registered.
+  Future<bool> _isHighChurnRisk(String agentId) async {
+    try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<EngagementPhasePredictor>()) return false;
+      final risk = await sl<EngagementPhasePredictor>()
+          .predictChurnRisk(agentId, withinDays: 7);
+      return risk > 0.6;
+    } catch (e) {
+      developer.log(
+        'Churn risk check failed for $agentId, defaulting to false: $e',
+        name: _logName,
+      );
+      return false;
     }
   }
 

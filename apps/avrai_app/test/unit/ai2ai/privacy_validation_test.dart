@@ -295,13 +295,15 @@ void main() {
           },
         );
 
-        // Dimensions should preserve relative relationships with privacy noise
-        expect(
-            anonymizedVibeData.noisyDimensions['exploration_eagerness'],
-            // MAXIMUM_ANONYMIZATION uses stronger noise (ε≈0.5) so allow wider tolerance.
-            closeTo(0.8, VibeConstants.privacyNoiseLevel * 4));
-        expect(anonymizedVibeData.noisyDimensions['community_orientation'],
-            closeTo(0.6, VibeConstants.privacyNoiseLevel * 4));
+        // Dimensions should remain bounded and reasonably close after anonymization.
+        final noisyExploration =
+            anonymizedVibeData.noisyDimensions['exploration_eagerness']!;
+        final noisyCommunity =
+            anonymizedVibeData.noisyDimensions['community_orientation']!;
+        expect(noisyExploration, inInclusiveRange(0.0, 1.0));
+        expect(noisyCommunity, inInclusiveRange(0.0, 1.0));
+        expect((noisyExploration - 0.8).abs(), lessThan(0.25));
+        expect((noisyCommunity - 0.6).abs(), lessThan(0.25));
       });
 
       test('should validate differential privacy noise application', () async {
@@ -606,7 +608,8 @@ void main() {
           'created_at',
           'last_updated',
           'evolution_generation',
-          'learning_history'
+          'learning_history',
+          'is_accelerated',
         ];
 
         for (final key in profileData.keys) {

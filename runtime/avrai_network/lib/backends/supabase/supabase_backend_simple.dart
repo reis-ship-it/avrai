@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import '../../interfaces/backend_interface.dart';
 import '../../interfaces/auth_backend.dart';
@@ -143,6 +144,7 @@ class SupabaseAuthBackendSimple implements AuthBackend {
       );
 
       if (response.user != null) {
+        await _syncAuthTracking(response.user!, fallbackProvider: 'email');
         return _convertSupabaseUser(response.user!);
       }
       return null;
@@ -167,11 +169,19 @@ class SupabaseAuthBackendSimple implements AuthBackend {
       final response = await _client.auth.signUp(
         email: email,
         password: password,
-        data: {'name': name},
+        data: {'name': name, 'signup_provider': 'email'},
       );
 
-      if (response.user != null) {
+      if (response.user != null && response.session != null) {
+        await _syncAuthTracking(
+          response.user!,
+          fallbackProvider: 'email',
+          signupProvider: 'email',
+        );
         return _convertSupabaseUser(response.user!);
+      }
+      if (response.user != null && response.session == null) {
+        throw Exception('signup_confirmation_required');
       }
       return null;
     } catch (e, st) {
@@ -204,6 +214,7 @@ class SupabaseAuthBackendSimple implements AuthBackend {
     try {
       final user = _client.auth.currentUser;
       if (user != null) {
+        await _syncAuthTracking(user);
         return _convertSupabaseUser(user);
       }
       return null;
@@ -220,9 +231,14 @@ class SupabaseAuthBackendSimple implements AuthBackend {
 
   @override
   Stream<User?> authStateChanges() {
-    return _client.auth.onAuthStateChange.map((event) {
+    return _client.auth.onAuthStateChange.asyncMap((event) async {
       final user = event.session?.user;
-      return user != null ? _convertSupabaseUser(user) : null;
+      if (user == null) {
+        return null;
+      }
+
+      await _syncAuthTracking(user);
+      return _convertSupabaseUser(user);
     });
   }
 
@@ -382,57 +398,57 @@ class SupabaseAuthBackendSimple implements AuthBackend {
   @override
   Future<User?> signInWithGoogle() async {
     try {
-      // OAuth implementation would go here
-      developer.log(
-        'Google sign in not implemented yet',
-        name: 'SupabaseAuthBackendSimple',
+      await _client.auth.signInWithOAuth(
+        supa.OAuthProvider.google,
+        redirectTo: _redirectUriFor('google'),
       );
       return null;
-    } catch (e) {
+    } catch (e, st) {
       developer.log(
-        'Google sign in failed: $e',
+        'Google sign in failed',
         name: 'SupabaseAuthBackendSimple',
         error: e,
+        stackTrace: st,
       );
-      return null;
+      rethrow;
     }
   }
 
   @override
   Future<User?> signInWithApple() async {
     try {
-      // OAuth implementation would go here
-      developer.log(
-        'Apple sign in not implemented yet',
-        name: 'SupabaseAuthBackendSimple',
+      await _client.auth.signInWithOAuth(
+        supa.OAuthProvider.apple,
+        redirectTo: _redirectUriFor('apple'),
       );
       return null;
-    } catch (e) {
+    } catch (e, st) {
       developer.log(
-        'Apple sign in failed: $e',
+        'Apple sign in failed',
         name: 'SupabaseAuthBackendSimple',
         error: e,
+        stackTrace: st,
       );
-      return null;
+      rethrow;
     }
   }
 
   @override
   Future<User?> signInWithFacebook() async {
     try {
-      // OAuth implementation would go here
-      developer.log(
-        'Facebook sign in not implemented yet',
-        name: 'SupabaseAuthBackendSimple',
+      await _client.auth.signInWithOAuth(
+        supa.OAuthProvider.facebook,
+        redirectTo: _redirectUriFor('facebook'),
       );
       return null;
-    } catch (e) {
+    } catch (e, st) {
       developer.log(
-        'Facebook sign in failed: $e',
+        'Facebook sign in failed',
         name: 'SupabaseAuthBackendSimple',
         error: e,
+        stackTrace: st,
       );
-      return null;
+      rethrow;
     }
   }
 
@@ -510,6 +526,94 @@ class SupabaseAuthBackendSimple implements AuthBackend {
       updatedAt: _toDateTime(supabaseUser.updatedAt),
       isOnline: true,
     );
+  }
+
+  Future<void> _syncAuthTracking(
+    supa.User user, {
+    String? fallbackProvider,
+    String? signupProvider,
+  }) async {
+    try {
+      final provider = _detectProvider(
+        user,
+        fallbackProvider: fallbackProvider,
+      );
+      final response = await _client
+          .from('users')
+          .select('signup_provider')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      final existingSignupProvider = response is Map<String, dynamic>
+          ? response['signup_provider']
+          : null;
+      final update = <String, dynamic>{
+        'id': user.id,
+        'email': user.email,
+        'name': (user.userMetadata?['name'] as String?) ?? user.email ?? 'User',
+        'last_sign_in_provider': provider,
+        'last_sign_in_platform': _currentPlatformName(),
+        'last_sign_in_at': DateTime.now().toUtc().toIso8601String(),
+      };
+
+      final resolvedSignupProvider = signupProvider ?? provider;
+      if (existingSignupProvider == null ||
+          existingSignupProvider.toString().trim().isEmpty) {
+        update['signup_provider'] = resolvedSignupProvider;
+      }
+
+      await _client.from('users').upsert(update, onConflict: 'id');
+    } catch (e, st) {
+      developer.log(
+        'Auth provider tracking update skipped',
+        name: 'SupabaseAuthBackendSimple',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  String _detectProvider(supa.User user, {String? fallbackProvider}) {
+    final appMetadata = user.appMetadata;
+    final provider = appMetadata['provider'] as String?;
+    if (provider != null && provider.isNotEmpty) {
+      return provider;
+    }
+
+    final providers = appMetadata['providers'];
+    if (providers is List && providers.isNotEmpty) {
+      final first = providers.first?.toString();
+      if (first != null && first.isNotEmpty) {
+        return first;
+      }
+    }
+
+    return fallbackProvider ?? 'email';
+  }
+
+  String _currentPlatformName() {
+    if (kIsWeb) {
+      return 'web';
+    }
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return 'android';
+      case TargetPlatform.iOS:
+        return 'ios';
+      case TargetPlatform.macOS:
+        return 'macos';
+      case TargetPlatform.windows:
+        return 'windows';
+      case TargetPlatform.linux:
+        return 'linux';
+      case TargetPlatform.fuchsia:
+        return 'fuchsia';
+    }
+  }
+
+  String _redirectUriFor(String provider) {
+    return 'avrai://oauth?platform=${Uri.encodeQueryComponent(provider)}';
   }
 
   DateTime _toDateTime(dynamic value) {

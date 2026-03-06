@@ -1,7 +1,7 @@
 name: avrai_runtime_os
 description: AVRAI runtime OS containing orchestration, device integration, and intake routing.
 publish_to: 'none'
-version: 0.1.0
+version: 0.5.0-beta
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -33,7 +33,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   crypto: ^3.0.3
   cryptography: ^2.9.0
-  device_calendar: ^3.9.0
+  device_calendar: ^4.0.0
   dio: ^5.4.0
   drift: ^2.14.0
   equatable: ^2.0.5
@@ -54,7 +54,6 @@ dependencies:
   health: ^13.2.1
   http: ^1.1.0
   injectable: ^2.3.2
-  llama_flutter_android: ^0.1.1
   ndef_record: ^1.4.1
   nfc_manager: ^4.1.1
   nfc_manager_ndef: ^1.1.0
@@ -74,3 +73,10 @@ dependencies:
   vector_math: ^2.1.4
   wifi_iot: ^0.3.19
   wifi_scan: ^0.4.1+2
+  spotify: ^0.13.8
+
+dev_dependencies:
+  build_runner: any
+  drift_dev: any
+  flutter_test:
+    sdk: flutter

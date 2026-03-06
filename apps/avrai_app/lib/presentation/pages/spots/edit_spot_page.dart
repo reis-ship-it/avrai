@@ -5,7 +5,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class EditSpotPage extends StatefulWidget {
   final Spot spot;
@@ -263,7 +263,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Basic Information
-                PortalSurface(
+                AppSurface(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -336,7 +336,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
                 const SizedBox(height: 16),
 
                 // Location Information
-                PortalSurface(
+                AppSurface(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(

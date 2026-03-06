@@ -94,7 +94,10 @@ class EventAttendanceController
         _preferencesService =
             preferencesService ?? GetIt.instance<PreferencesProfileService>(),
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()

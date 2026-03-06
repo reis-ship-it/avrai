@@ -11,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/misc/list.dart';
 import 'package:avrai_runtime_os/data/datasources/local/onboarding_completion_service.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai_runtime_os/ai/list_generator_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/domain/usecases/lists/create_list_usecase.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_data_service.dart';
@@ -22,7 +21,7 @@ import 'package:avrai/presentation/widgets/knot/knot_audio_loading_widget.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_runtime_os/domain/usecases/spots/create_spot_usecase.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'dart:async';
 
 class _PendingDelay {
@@ -40,9 +39,7 @@ class AILoadingPage extends StatefulWidget {
   final DateTime? birthday;
   final int? age;
   final String? homebase;
-  final List<String> favoritePlaces;
-  final Map<String, List<String>> preferences;
-  final List<String> baselineLists; // Add baseline lists parameter
+  final Map<String, String> openResponses;
   final Function() onLoadingComplete;
 
   const AILoadingPage({
@@ -51,9 +48,7 @@ class AILoadingPage extends StatefulWidget {
     this.birthday,
     this.age,
     this.homebase,
-    this.favoritePlaces = const [],
-    this.preferences = const {},
-    this.baselineLists = const [], // Add baseline lists with default empty list
+    this.openResponses = const {},
     required this.onLoadingComplete,
   });
 
@@ -170,14 +165,12 @@ class _AILoadingPageState extends State<AILoadingPage>
       // Use actual onboarding data passed to this widget
       String userName = widget.userName;
       String? homebase = widget.homebase;
-      List<String> favoritePlaces = widget.favoritePlaces;
-      Map<String, List<String>> preferences = widget.preferences;
+      Map<String, String> openResponses = widget.openResponses;
 
       _logger.info('🎯 AI Loading Data:', tag: 'AILoadingPage');
       _logger.debug('  User: $userName', tag: 'AILoadingPage');
       _logger.debug('  Homebase: $homebase', tag: 'AILoadingPage');
-      _logger.debug('  Favorite Places: $favoritePlaces', tag: 'AILoadingPage');
-      _logger.debug('  Preferences: $preferences', tag: 'AILoadingPage');
+      _logger.debug('  Open Responses: $openResponses', tag: 'AILoadingPage');
 
       // If no data was passed, use fallback values
       if (homebase == null || homebase.isEmpty) {
@@ -185,24 +178,11 @@ class _AILoadingPageState extends State<AILoadingPage>
         _logger.warn('⚠️ Using fallback homebase: $homebase',
             tag: 'AILoadingPage');
       }
-      if (favoritePlaces.isEmpty) {
-        favoritePlaces = [
-          "Central Park",
-          "Brooklyn Bridge",
-          "Times Square",
-          "Empire State Building",
-          "Statue of Liberty"
-        ];
-        _logger.warn('⚠️ Using fallback favorite places: $favoritePlaces',
-            tag: 'AILoadingPage');
-      }
-      if (preferences.isEmpty) {
-        preferences = {
-          'Food & Drink': ['Coffee & Tea', 'Fine Dining', 'Craft Beer'],
-          'Activities': ['Live Music', 'Theaters', 'Shopping'],
-          'Outdoor & Nature': ['Parks', 'Hiking Trails', 'Scenic Views']
+      if (openResponses.isEmpty) {
+        openResponses = {
+          'about_me': 'I love exploring cities and finding hidden coffee shops.'
         };
-        _logger.warn('⚠️ Using fallback preferences: $preferences',
+        _logger.warn('⚠️ Using fallback open responses: $openResponses',
             tag: 'AILoadingPage');
       }
 
@@ -235,9 +215,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 age: widget.age,
                 birthday: widget.birthday,
                 homebase: widget.homebase,
-                favoritePlaces: widget.favoritePlaces,
-                preferences: widget.preferences,
-                baselineLists: widget.baselineLists,
+                openResponses: widget.openResponses,
                 respectedFriends: [],
                 socialMediaConnected: {},
                 completedAt: DateTime.now(),
@@ -257,9 +235,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 age: widget.age,
                 birthday: widget.birthday,
                 homebase: widget.homebase,
-                favoritePlaces: widget.favoritePlaces,
-                preferences: widget.preferences,
-                baselineLists: widget.baselineLists,
+                openResponses: widget.openResponses,
                 respectedFriends: [],
                 socialMediaConnected: {},
                 completedAt: DateTime.now(),
@@ -603,7 +579,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 ),
 
                 // Info section
-                PortalSurface(
+                AppSurface(
                   padding: EdgeInsets.all(spacing.md),
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
@@ -651,30 +627,29 @@ class _AILoadingPageState extends State<AILoadingPage>
                   padding: EdgeInsets.only(bottom: spacing.lg),
                   child: ElevatedButton(
                     onPressed: _canContinue
-                        ? () {
-                            // Allow user to skip remaining processing
+                        ? () async {
                             _logger.info('User chose to continue immediately',
                                 tag: 'AILoadingPage');
-                            // Mark onboarding as complete before navigating
                             _logger.info(
                                 '🔄 [AI_LOADING_BUTTON] User clicked Continue, marking onboarding complete...',
                                 tag: 'AILoadingPage');
-                            _markOnboardingCompleted().then((_) {
+                            try {
+                              await _markOnboardingCompleted();
                               _logger.info(
                                   '✅ [AI_LOADING_BUTTON] Onboarding marked complete, calling onLoadingComplete...',
                                   tag: 'AILoadingPage');
-                              if (mounted) {
-                                widget.onLoadingComplete();
-                              }
-                            }).catchError((e) {
+                            } catch (e, st) {
                               _logger.error(
-                                  '❌ [AI_LOADING_BUTTON] Error marking onboarding complete: $e',
-                                  tag: 'AILoadingPage');
-                              // Still call callback to allow navigation
-                              if (mounted) {
-                                widget.onLoadingComplete();
-                              }
-                            });
+                                '❌ [AI_LOADING_BUTTON] Error marking onboarding complete',
+                                error: e,
+                                stackTrace: st,
+                                tag: 'AILoadingPage',
+                              );
+                            }
+
+                            if (mounted) {
+                              widget.onLoadingComplete();
+                            }
                           }
                         : null, // Disable until ready
                     style: ElevatedButton.styleFrom(
@@ -965,27 +940,15 @@ class _AILoadingPageState extends State<AILoadingPage>
     try {
       if (!mounted) return;
 
-      // Use baseline lists if provided, otherwise generate list names
-      List<String> generatedLists;
-      if (widget.baselineLists.isNotEmpty) {
-        _logger.info(
-            '📋 Using ${widget.baselineLists.length} baseline lists from onboarding',
-            tag: 'AILoadingPage');
-        generatedLists = widget.baselineLists;
+      // Use open responses or generate generic list names
+      List<String> generatedLists = [];
+      if (widget.openResponses.isNotEmpty) {
+        // Simple fallback generation based on what they wrote (mocked for now)
+        generatedLists = ['My Favorites', 'Coffee Spots', 'Weekend Vibes'];
       } else {
-        _logger.info('🔄 Generating AI list names...', tag: 'AILoadingPage');
-        final userName = widget.userName;
-        final homebase = widget.homebase ?? 'New York';
-        final favoritePlaces = widget.favoritePlaces;
-        final preferences = widget.preferences;
-
-        generatedLists = await AIListGeneratorService.generatePersonalizedLists(
-          userName: userName,
-          age: widget.age,
-          homebase: homebase,
-          favoritePlaces: favoritePlaces,
-          preferences: preferences,
-        );
+        _logger.info('🔄 Generating generic list names...',
+            tag: 'AILoadingPage');
+        generatedLists = ['Exploration', 'Food & Drink'];
       }
 
       if (generatedLists.isEmpty) return;

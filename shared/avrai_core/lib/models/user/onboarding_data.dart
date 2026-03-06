@@ -28,6 +28,10 @@ class OnboardingData {
   /// Baseline lists the user wants to start with
   final List<String> baselineLists;
 
+  /// Open-ended text responses for the conversational AI onboarding (Air Gapped SLM digestion)
+  /// Example: {"coffee": "I love small dark roasts", "about_me": "I'm a grungy techie"}
+  final Map<String, String> openResponses;
+
   /// Respected friends/connections the user mentioned
   final List<String> respectedFriends;
 
@@ -62,6 +66,7 @@ class OnboardingData {
     this.favoritePlaces = const [],
     this.preferences = const {},
     this.baselineLists = const [],
+    this.openResponses = const {},
     this.respectedFriends = const [],
     this.socialMediaConnected = const {},
     required this.completedAt,
@@ -81,6 +86,7 @@ class OnboardingData {
       'favoritePlaces': favoritePlaces,
       'preferences': preferences,
       'baselineLists': baselineLists,
+      'openResponses': openResponses,
       'respectedFriends': respectedFriends,
       'socialMediaConnected': socialMediaConnected,
       'completedAt': completedAt.toIso8601String(),
@@ -109,6 +115,13 @@ class OnboardingData {
           ) ??
           {},
       baselineLists: List<String>.from(json['baselineLists'] ?? []),
+      openResponses: (json['openResponses'] as Map?)?.map(
+            (key, value) => MapEntry(
+              key.toString(),
+              value.toString(),
+            ),
+          ) ??
+          {},
       respectedFriends: List<String>.from(json['respectedFriends'] ?? []),
       socialMediaConnected: (json['socialMediaConnected'] as Map?)?.map(
             (key, value) => MapEntry(
@@ -144,6 +157,7 @@ class OnboardingData {
     List<String>? favoritePlaces,
     Map<String, List<String>>? preferences,
     List<String>? baselineLists,
+    Map<String, String>? openResponses,
     List<String>? respectedFriends,
     Map<String, bool>? socialMediaConnected,
     DateTime? completedAt,
@@ -160,6 +174,7 @@ class OnboardingData {
       favoritePlaces: favoritePlaces ?? this.favoritePlaces,
       preferences: preferences ?? this.preferences,
       baselineLists: baselineLists ?? this.baselineLists,
+      openResponses: openResponses ?? this.openResponses,
       respectedFriends: respectedFriends ?? this.respectedFriends,
       socialMediaConnected: socialMediaConnected ?? this.socialMediaConnected,
       completedAt: completedAt ?? this.completedAt,
@@ -205,6 +220,7 @@ class OnboardingData {
       'favoritePlaces': favoritePlaces,
       'preferences': preferences,
       'baselineLists': baselineLists,
+      'openResponses': openResponses,
       'respectedFriends': respectedFriends,
       'socialMediaConnected': socialMediaConnected,
     };

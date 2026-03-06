@@ -1,7 +1,7 @@
+import 'dart:typed_data';
 import 'package:avrai_network/network/device_discovery.dart';
-import 'package:avrai_network/network/models/anonymized_vibe_data.dart';
 
-Future<AnonymizedVibeData?> fetchPersonalityDataOverBle(
+Future<Uint8List?> fetchDnaPayloadOverBle(
   DiscoveredDevice device,
 ) async {
   // Non-IO / unsupported platforms.

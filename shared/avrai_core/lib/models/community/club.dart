@@ -1,6 +1,9 @@
 import 'package:avrai_core/models/community/community.dart';
 import 'package:avrai_core/models/community/club_hierarchy.dart';
 import 'package:avrai_core/models/geographic/geographic_expansion.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
+
+const Object _clubSentinel = Object();
 
 /// Club Model
 ///
@@ -79,6 +82,9 @@ class Club extends Community {
     super.currentLocalities,
     super.vibeCentroidDimensions,
     super.vibeCentroidContributors,
+    super.cityCode,
+    super.localityCode,
+    super.externalSyncMetadata,
     required super.updatedAt,
     this.isClub = true,
     this.leaders = const [],
@@ -135,6 +141,11 @@ class Club extends Community {
       activityLevel: community.activityLevel,
       originalLocality: community.originalLocality,
       currentLocalities: community.currentLocalities,
+      vibeCentroidDimensions: community.vibeCentroidDimensions,
+      vibeCentroidContributors: community.vibeCentroidContributors,
+      cityCode: community.cityCode,
+      localityCode: community.localityCode,
+      externalSyncMetadata: community.externalSyncMetadata,
       updatedAt: community.updatedAt,
       leaders: initialLeaders,
       adminTeam: adminTeam ?? [],
@@ -364,6 +375,9 @@ class Club extends Community {
     bool clearVibeCentroidDimensions = false,
     int? vibeCentroidContributors,
     DateTime? updatedAt,
+    Object? cityCode = _clubSentinel,
+    Object? localityCode = _clubSentinel,
+    Object? externalSyncMetadata = _clubSentinel,
     bool? isClub,
     List<String>? leaders,
     List<String>? adminTeam,
@@ -406,6 +420,13 @@ class Club extends Community {
       vibeCentroidContributors:
           vibeCentroidContributors ?? this.vibeCentroidContributors,
       updatedAt: updatedAt ?? this.updatedAt,
+      cityCode: cityCode == _clubSentinel ? this.cityCode : cityCode as String?,
+      localityCode: localityCode == _clubSentinel
+          ? this.localityCode
+          : localityCode as String?,
+      externalSyncMetadata: externalSyncMetadata == _clubSentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
       leaders: leaders ?? this.leaders,
       adminTeam: adminTeam ?? this.adminTeam,
       hierarchy: hierarchy ?? this.hierarchy,

@@ -15,7 +15,8 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Page for configuring device discovery settings
 class DiscoverySettingsPage extends StatefulWidget {
@@ -69,6 +70,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
     try {
       final scanInterval = int.parse(_scanIntervalController.text);
       final deviceTimeout = int.parse(_deviceTimeoutController.text);
+      var transportApplyWarning = false;
 
       // Save to storage
       await _storageService.setInt(_scanIntervalKey, scanInterval);
@@ -83,16 +85,22 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           scanInterval: Duration(seconds: scanInterval),
           deviceTimeout: Duration(minutes: deviceTimeout),
         );
-      } catch (e) {
-        // Service not available or not running, that's okay
+      } catch (_) {
+        // Settings are saved locally even if live transport apply fails.
+        transportApplyWarning = true;
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings saved successfully'),
-            backgroundColor: AppColors.electricGreen,
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(
+              transportApplyWarning
+                  ? 'Settings saved. Transport service will use them on next discovery start.'
+                  : 'Settings saved successfully',
+            ),
+            backgroundColor:
+                transportApplyWarning ? AppColors.warning : AppColors.success,
+            duration: const Duration(seconds: 3),
           ),
         );
         Navigator.of(context).pop();
@@ -157,24 +165,42 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Device Discovery Configuration',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+              const AppPageHeader(
+                title: 'Device Discovery Configuration',
+                subtitle:
+                    'Configure how often AVRAI scans for nearby devices and how long they remain in the list.',
+                leadingIcon: Icons.radar_outlined,
+                showDivider: false,
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Configure how often avrai scans for nearby devices and how long to keep discovered devices in the list.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+              const SizedBox(height: 16),
+              AppSurface(
+                radius: 10,
+                color: AppColors.primary.withValues(alpha: 0.05),
+                padding: const EdgeInsets.all(12),
+                child: Semantics(
+                  label: 'Discovery privacy summary',
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.privacy_tip, color: AppColors.primary),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Discovery uses anonymized compatibility signals only. '
+                          'You can stop discovery anytime from the AI2AI Network screen.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              PortalSurface(
+              AppSurface(
                 radius: 12,
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -224,7 +250,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              PortalSurface(
+              AppSurface(
                 radius: 12,
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -274,23 +300,29 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveSettings,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.electricGreen,
-                    foregroundColor: AppColors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              Semantics(
+                button: true,
+                label: 'Save discovery settings',
+                hint: 'Applies scan interval and device timeout values.',
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveSettings,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(48, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

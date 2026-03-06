@@ -7,8 +7,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_core/models/personality_profile.dart';
-import 'package:avrai/injection_container.dart' as di;
-import '../../../helpers/platform_channel_helper.dart';
 
 /// Mock Rust API for testing
 class MockRustLibApi implements RustLibApi {
@@ -130,14 +128,10 @@ void main() {
           // Already initialized, that's fine
         }
 
-        // Ensure StorageService uses test storage (avoids path_provider / GetStorage.init).
-        await setupTestStorage();
-
-        // Initialize dependency injection
-        await di.init();
-
-        knotService = di.sl<PersonalityKnotService>();
-        engine = di.sl<IntegratedKnotRecommendationEngine>();
+        // Keep this suite isolated from the global DI graph to avoid unrelated
+        // infra dependencies (e.g., AppDatabase) in pure knot unit tests.
+        knotService = PersonalityKnotService();
+        engine = IntegratedKnotRecommendationEngine(knotService: knotService);
       } catch (e) {
         // If initialization fails, log and rethrow
         // ignore: avoid_print

@@ -44,6 +44,7 @@ import 'package:avrai_runtime_os/services/matching/group_matching_service.dart';
 import 'package:avrai_runtime_os/controllers/group_matching_controller.dart';
 import 'package:avrai_runtime_os/services/matching/group_formation_service.dart';
 import 'package:avrai_runtime_os/services/quantum/third_party_data_privacy_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/quantum/prediction_api_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
 import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
@@ -540,6 +541,10 @@ Future<void> registerQuantumServices(GetIt sl) async {
           : null,
       ai2aiProtocol: sl.isRegistered<AnonymousCommunicationProtocol>()
           ? sl<AnonymousCommunicationProtocol>()
+          : null,
+      // Phase 1.5E: Markov engagement predictor — bridge to Phase 5
+      engagementPredictor: sl.isRegistered<EngagementPhasePredictor>()
+          ? sl<EngagementPhasePredictor>()
           : null,
     ),
   );

@@ -36,6 +36,7 @@ class AI2AIDiscoveryExecutionLane {
             session: session,
           ),
           extractPersonalityData: discovery.extractPersonalityData,
+          extractDnaPayload: discovery.extractDnaPayload,
           calculateProximity: discovery.calculateProximity,
           logger: logger,
           logName: logName,

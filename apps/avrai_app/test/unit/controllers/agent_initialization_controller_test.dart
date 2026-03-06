@@ -4,13 +4,16 @@ import 'package:avrai_runtime_os/controllers/social_media_data_collection_contro
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/preferences_profile.dart';
+import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/matching/preferences_profile_service.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_place_list_generator.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_recommendation_service.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_insight_service.dart';
+import 'package:avrai_core/models/signatures/entity_signature.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -18,6 +21,47 @@ import 'agent_initialization_controller_test.mocks.dart';
 
 class MockSocialMediaInsightService extends Mock
     implements SocialMediaInsightService {}
+
+class MockEntitySignatureService extends Mock
+    implements EntitySignatureService {
+  @override
+  Future<EntitySignature> initializeUserSignatureFromOnboarding({
+    required String userId,
+    required OnboardingData onboardingData,
+    required PersonalityProfile personality,
+    String? displayName,
+    String? email,
+    UserVibe? userVibe,
+  }) {
+    return super.noSuchMethod(
+      Invocation.method(
+        #initializeUserSignatureFromOnboarding,
+        [],
+        <Symbol, dynamic>{
+          #userId: userId,
+          #onboardingData: onboardingData,
+          #personality: personality,
+          #displayName: displayName,
+          #email: email,
+          #userVibe: userVibe,
+        },
+      ),
+      returnValue: Future<EntitySignature>.value(
+        EntitySignature(
+          signatureId: 'user:fallback',
+          entityId: 'fallback',
+          entityKind: SignatureEntityKind.user,
+          dna: const {'openness': 0.5},
+          pheromones: const {'openness': 0.5},
+          confidence: 0.5,
+          freshness: 0.5,
+          updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+          summary: 'fallback',
+        ),
+      ),
+    ) as Future<EntitySignature>;
+  }
+}
 
 @GenerateMocks([
   SocialMediaDataCollectionController,
@@ -39,6 +83,8 @@ void main() {
     late MockPersonalitySyncService mockSyncService;
     late MockAgentIdService mockAgentIdService;
     late MockSocialMediaInsightService mockSocialMediaInsightService;
+    late MockEntitySignatureService mockEntitySignatureService;
+    late EntitySignature mockUserSignature;
 
     setUp(() {
       mockSocialMediaDataController = MockSocialMediaDataCollectionController();
@@ -49,6 +95,18 @@ void main() {
       mockSyncService = MockPersonalitySyncService();
       mockAgentIdService = MockAgentIdService();
       mockSocialMediaInsightService = MockSocialMediaInsightService();
+      mockEntitySignatureService = MockEntitySignatureService();
+      mockUserSignature = EntitySignature(
+        signatureId: 'user:test_user_id',
+        entityId: 'test_user_id',
+        entityKind: SignatureEntityKind.user,
+        dna: const {'openness': 0.7},
+        pheromones: const {'openness': 0.68},
+        confidence: 0.86,
+        freshness: 0.91,
+        updatedAt: DateTime.now(),
+        summary: 'Explorer baseline seeded from onboarding.',
+      );
 
       controller = AgentInitializationController(
         socialMediaDataController: mockSocialMediaDataController,
@@ -59,6 +117,7 @@ void main() {
         syncService: mockSyncService,
         agentIdService: mockAgentIdService,
         socialMediaInsightService: mockSocialMediaInsightService,
+        entitySignatureService: mockEntitySignatureService,
       );
     });
 
@@ -135,6 +194,11 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).thenAnswer((_) async => mockPersonalityProfile);
+        when(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).thenAnswer((_) async => mockUserSignature);
         when(mockPreferencesService.initializeFromOnboarding(any))
             .thenAnswer((_) async => mockPreferencesProfile);
         when(mockPlaceListGenerator.generatePlaceLists(
@@ -176,6 +240,11 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).called(1);
+        verify(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).called(1);
         verify(mockPreferencesService.initializeFromOnboarding(any)).called(1);
       });
 
@@ -200,6 +269,7 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         ));
+        verifyZeroInteractions(mockEntitySignatureService);
       });
 
       test('should fail if personality profile initialization fails', () async {
@@ -235,6 +305,39 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).called(1);
+        verifyZeroInteractions(mockEntitySignatureService);
+      });
+
+      test('should fail if initial user signature creation fails', () async {
+        when(mockAgentIdService.getUserAgentId(userId))
+            .thenAnswer((_) async => agentId);
+        when(mockSocialMediaDataController.collectAllData(
+                userId: anyNamed('userId')))
+            .thenAnswer((_) async => SocialMediaDataResult.success(
+                  profileData: const {},
+                  follows: const [],
+                  primaryPlatform: null,
+                ));
+        when(mockPersonalityLearning.initializePersonalityFromOnboarding(
+          any,
+          onboardingData: anyNamed('onboardingData'),
+          socialMediaData: anyNamed('socialMediaData'),
+        )).thenAnswer((_) async => mockPersonalityProfile);
+        when(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).thenThrow(Exception('signature error'));
+
+        final result = await controller.initializeAgent(
+          userId: userId,
+          onboardingData: onboardingData,
+        );
+
+        expect(result.isSuccess, isFalse);
+        expect(result.errorCode, equals('USER_SIGNATURE_INIT_ERROR'));
+        expect(
+            result.error, contains('Failed to create initial user signature'));
       });
 
       test('should continue if social media data collection fails', () async {
@@ -252,6 +355,11 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).thenAnswer((_) async => mockPersonalityProfile);
+        when(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).thenAnswer((_) async => mockUserSignature);
         when(mockPreferencesService.initializeFromOnboarding(any))
             .thenAnswer((_) async => mockPreferencesProfile);
         when(mockPlaceListGenerator.generatePlaceLists(
@@ -309,6 +417,11 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).thenAnswer((_) async => mockPersonalityProfile);
+        when(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).thenAnswer((_) async => mockUserSignature);
         when(mockPreferencesService.initializeFromOnboarding(any))
             .thenThrow(Exception('Preferences initialization error'));
         when(mockPlaceListGenerator.generatePlaceLists(
@@ -361,6 +474,11 @@ void main() {
           onboardingData: anyNamed('onboardingData'),
           socialMediaData: anyNamed('socialMediaData'),
         )).thenAnswer((_) async => mockPersonalityProfile);
+        when(mockEntitySignatureService.initializeUserSignatureFromOnboarding(
+          userId: userId,
+          onboardingData: onboardingData,
+          personality: mockPersonalityProfile,
+        )).thenAnswer((_) async => mockUserSignature);
         when(mockPreferencesService.initializeFromOnboarding(any))
             .thenAnswer((_) async => mockPreferencesProfile);
 

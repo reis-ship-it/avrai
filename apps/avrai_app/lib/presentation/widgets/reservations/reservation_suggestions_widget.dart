@@ -13,10 +13,14 @@
 /// Uses AppColors/AppTheme for 100% design token compliance.
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/services/reservation/reservation_recommendation_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:go_router/go_router.dart';
 
 /// Widget displaying AI-powered reservation suggestions
@@ -192,6 +196,7 @@ class _ReservationSuggestionsWidgetState
       elevation: 2,
       child: InkWell(
         onTap: () {
+          _recordReservationIntent(suggestion);
           if (widget.onSuggestionSelected != null) {
             widget.onSuggestionSelected!(suggestion);
           } else {
@@ -234,7 +239,9 @@ class _ReservationSuggestionsWidgetState
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '${(suggestion.compatibility * 100).toStringAsFixed(0)}% match',
+                      suggestion.usedSignaturePrimary
+                          ? '${(suggestion.compatibility * 100).toStringAsFixed(0)}% signature fit'
+                          : '${(suggestion.compatibility * 100).toStringAsFixed(0)}% match',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -261,13 +268,17 @@ class _ReservationSuggestionsWidgetState
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    color: suggestion.usedSignaturePrimary
+                        ? AppTheme.primaryColor.withValues(alpha: 0.14)
+                        : AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.lightbulb_outline,
+                        suggestion.usedSignaturePrimary
+                            ? Icons.auto_awesome
+                            : Icons.lightbulb_outline,
                         size: 16,
                         color: AppTheme.primaryColor,
                       ),
@@ -312,6 +323,7 @@ class _ReservationSuggestionsWidgetState
                 children: [
                   TextButton.icon(
                     onPressed: () {
+                      _recordReservationIntent(suggestion);
                       if (widget.onSuggestionSelected != null) {
                         widget.onSuggestionSelected!(suggestion);
                       } else {
@@ -372,5 +384,19 @@ class _ReservationSuggestionsWidgetState
       'Sunday',
     ];
     return days[weekday - 1];
+  }
+
+  void _recordReservationIntent(ReservationRecommendation suggestion) {
+    final event = suggestion.event;
+    if (event == null || !di.sl.isRegistered<EntitySignatureService>()) {
+      return;
+    }
+
+    unawaited(
+      di.sl<EntitySignatureService>().recordEventReservationIntentSignal(
+            userId: widget.userId,
+            event: event,
+          ),
+    );
   }
 }

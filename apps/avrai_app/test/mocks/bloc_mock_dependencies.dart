@@ -6,6 +6,8 @@ library;
 
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_apple_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/get_current_user_usecase.dart';
@@ -27,6 +29,12 @@ import '../helpers/bloc_test_helpers.dart';
 
 // Auth Use Case Mocks
 class MockSignInUseCase extends Mock implements SignInUseCase {}
+
+class MockSignInWithGoogleUseCase extends Mock
+    implements SignInWithGoogleUseCase {}
+
+class MockSignInWithAppleUseCase extends Mock
+    implements SignInWithAppleUseCase {}
 
 class MockSignUpUseCase extends Mock implements SignUpUseCase {}
 
@@ -72,6 +80,10 @@ class MockHybridSearchRepository extends Mock
 class BlocMockFactory {
   // Auth mocks
   static MockSignInUseCase signInUseCase = MockSignInUseCase();
+  static MockSignInWithGoogleUseCase signInWithGoogleUseCase =
+      MockSignInWithGoogleUseCase();
+  static MockSignInWithAppleUseCase signInWithAppleUseCase =
+      MockSignInWithAppleUseCase();
   static MockSignUpUseCase signUpUseCase = MockSignUpUseCase();
   static MockSignOutUseCase signOutUseCase = MockSignOutUseCase();
   static MockGetCurrentUserUseCase getCurrentUserUseCase =
@@ -105,6 +117,8 @@ class BlocMockFactory {
   static void resetAll() {
     // Auth mocks
     reset(signInUseCase);
+    reset(signInWithGoogleUseCase);
+    reset(signInWithAppleUseCase);
     reset(signUpUseCase);
     reset(signOutUseCase);
     reset(getCurrentUserUseCase);
@@ -147,6 +161,10 @@ class MockBehaviorSetup {
   static void setupSuccessfulAuth() {
     when(() => BlocMockFactory.signInUseCase.call(any(), any()))
         .thenAnswer((_) async => TestDataFactory.createTestUser());
+    when(() => BlocMockFactory.signInWithGoogleUseCase.call())
+        .thenAnswer((_) async {});
+    when(() => BlocMockFactory.signInWithAppleUseCase.call())
+        .thenAnswer((_) async {});
 
     when(() => BlocMockFactory.signUpUseCase.call(any(), any(), any()))
         .thenAnswer((_) async => TestDataFactory.createTestUser());
@@ -163,6 +181,10 @@ class MockBehaviorSetup {
   static void setupAuthFailure() {
     when(() => BlocMockFactory.signInUseCase.call(any(), any()))
         .thenThrow(Exception('Invalid credentials'));
+    when(() => BlocMockFactory.signInWithGoogleUseCase.call())
+        .thenThrow(Exception('OAuth failed'));
+    when(() => BlocMockFactory.signInWithAppleUseCase.call())
+        .thenThrow(Exception('OAuth failed'));
 
     when(() => BlocMockFactory.signUpUseCase.call(any(), any(), any()))
         .thenThrow(Exception('Failed to create account'));

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_runtime_os/services/lists/list_preference_service.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/filters/age_aware_list_filter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// ListPreferencesPage - Settings page for AI-suggested list preferences
 ///
@@ -57,6 +58,13 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                const AppPageHeader(
+                  title: 'List Preferences',
+                  subtitle:
+                      'Choose when AI-suggested lists appear and how adventurous those suggestions should feel.',
+                  leadingIcon: Icons.tune,
+                ),
+                const SizedBox(height: 24),
                 // Timing preferences section
                 _buildSectionHeader(context, 'When to suggest lists'),
                 const SizedBox(height: 8),
@@ -108,7 +116,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   }
 
   Widget _buildTimeSlotToggles(BuildContext context) {
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       child: Column(
         children: TimeSlot.values.map((slot) {
@@ -161,7 +169,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   }
 
   Widget _buildFrequencySettings(BuildContext context) {
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
@@ -238,7 +246,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   Widget _buildExplorationSlider(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return PortalSurface(
+    return AppSurface(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -303,7 +311,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
       'nightlife',
     ];
 
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       child: Column(
         children: categories.map((category) {
@@ -329,7 +337,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return PortalSurface(
+    return AppSurface(
       child: Column(
         children: [
           Padding(
@@ -397,7 +405,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   }
 
   Widget _buildNotificationSettings(BuildContext context) {
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       child: SwitchListTile(
         title: const Text('Push notifications'),

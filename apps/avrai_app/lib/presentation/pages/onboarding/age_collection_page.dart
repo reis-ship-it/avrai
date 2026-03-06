@@ -3,7 +3,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:intl/intl.dart';
 
 class AgeCollectionPage extends StatefulWidget {
@@ -120,7 +120,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
           SizedBox(height: spacing.xl),
 
           // Birthday Input
-          PortalSurface(
+          AppSurface(
             padding: EdgeInsets.zero,
             child: InkWell(
               onTap: () => _selectDate(context),
@@ -176,7 +176,7 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
           if (_selectedBirthday != null) ...[
             SizedBox(height: spacing.lg),
             // Age Display
-            PortalSurface(
+            AppSurface(
               padding: EdgeInsets.all(spacing.md),
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
@@ -215,34 +215,6 @@ class _AgeCollectionPageState extends State<AgeCollectionPage> {
               ),
             ),
           ],
-
-          SizedBox(height: spacing.lg),
-
-          // Privacy Notice
-          PortalSurface(
-            padding: EdgeInsets.all(spacing.md),
-            color: AppColors.grey50,
-            borderColor: AppColors.grey200,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.lock_outline,
-                  color: AppColors.grey600,
-                  size: 20,
-                ),
-                SizedBox(width: spacing.sm),
-                Expanded(
-                  child: Text(
-                    'Your age is stored securely and used only to provide age-appropriate content. We respect your privacy per OUR_GUTS.md principles.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.grey700,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

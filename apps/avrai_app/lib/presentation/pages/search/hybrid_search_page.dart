@@ -10,6 +10,7 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class HybridSearchPage extends StatefulWidget {
   const HybridSearchPage({super.key});
@@ -79,6 +80,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
     context.read<HybridSearchBloc>().add(
           SearchHybridSpots(
             query: trimmedQuery,
+            userId: Supabase.instance.client.auth.currentUser?.id,
             includeExternal: _includeExternal,
             maxResults: _maxResults,
             filters: filters,
@@ -140,6 +142,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
               SearchNearbyHybridSpots(
                 latitude: position.latitude,
                 longitude: position.longitude,
+                userId: Supabase.instance.client.auth.currentUser?.id,
                 radius: _searchRadius,
                 includeExternal: _includeExternal,
                 maxResults: _maxResults,
@@ -175,42 +178,39 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
       constrainBody: false,
       body: Column(
         children: [
-          // Search Header with OUR_GUTS.md Info
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: const AppSurface(
               color: AppColors.grey100,
-              border: Border(
-                bottom: BorderSide(color: AppColors.grey200),
-              ),
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.info, color: AppColors.textSecondary, size: 20),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Community-First Search',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info,
+                          color: AppColors.textSecondary, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Community-First Search',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Per OUR_GUTS.md: Community spots are prioritized over external data sources for authentic, local knowledge.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                    ],
                   ),
-                ),
-              ],
+                  SizedBox(height: 4),
+                  Text(
+                    'Community results are ranked first, with outside sources filling gaps when they add useful context.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 

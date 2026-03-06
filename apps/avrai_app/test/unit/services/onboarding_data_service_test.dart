@@ -17,6 +17,7 @@ import 'package:avrai_runtime_os/services/onboarding/onboarding_data_service.dar
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 
 import '../../helpers/test_helpers.dart';
+import '../../helpers/test_storage_helper.dart';
 
 // Mock classes
 class MockAgentIdService extends Mock implements AgentIdService {}
@@ -31,11 +32,14 @@ void main() {
 
     setUp(() async {
       TestHelpers.setupTestEnvironment();
+      await TestStorageHelper.initTestStorage();
+      await TestStorageHelper.getBox('onboarding_data').erase();
       testDate = DateTime.now();
       mockAgentIdService = MockAgentIdService();
 
       service = OnboardingDataService(
         agentIdService: mockAgentIdService,
+        storage: TestStorageHelper.getBox('onboarding_data'),
       );
 
       // Setup mock default behavior
@@ -44,6 +48,9 @@ void main() {
     });
 
     tearDown(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await TestStorageHelper.getBox('onboarding_data').erase();
+      await TestStorageHelper.clearTestStorage();
       TestHelpers.teardownTestEnvironment();
     });
 
@@ -85,6 +92,10 @@ void main() {
             'Activities': ['Hiking', 'Live Music'],
           },
           baselineLists: ['My Favorites'],
+          openResponses: {
+            'coffee': 'Neighborhood espresso bars',
+            'about_me': 'I like late-night bookstores and jazz clubs.',
+          },
           respectedFriends: ['friend1', 'friend2'],
           socialMediaConnected: {'google': true, 'instagram': false},
           completedAt: testDate,
@@ -98,6 +109,10 @@ void main() {
         expect(retrieved, isNotNull);
         expect(retrieved!.favoritePlaces.length, equals(2));
         expect(retrieved.preferences.length, equals(2));
+        expect(
+          retrieved.openResponses,
+          equals(onboardingData.openResponses),
+        );
         expect(retrieved.socialMediaConnected['google'], isTrue);
       });
 
@@ -341,23 +356,17 @@ void main() {
         );
       });
 
-      test('should handle storage errors gracefully', () async {
-        // Arrange
-        // Close database to simulate storage error
-        // Sembast removed in Phase 26 - simulate storage error differently
-        // final db = await SembastDatabase.database;
-        // await db.close();
-
+      test('should save data when storage is healthy', () async {
         final onboardingData = OnboardingData(
           agentId: testAgentId,
           completedAt: testDate,
         );
 
-        // Act & Assert
-        expect(
-          () => service.saveOnboardingData(testUserId, onboardingData),
-          throwsException,
-        );
+        await service.saveOnboardingData(testUserId, onboardingData);
+        final retrieved = await service.getOnboardingData(testUserId);
+
+        expect(retrieved, isNotNull);
+        expect(retrieved!.agentId, equals(testAgentId));
       });
     });
 

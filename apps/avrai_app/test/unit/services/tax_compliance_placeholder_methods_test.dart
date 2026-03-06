@@ -11,6 +11,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/services/payment/tax_compliance_service.dart';
 import 'package:avrai_runtime_os/services/payment/payment_service.dart';
@@ -18,16 +19,31 @@ import 'package:avrai_runtime_os/services/payment/stripe_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/cross_app/cross_locality_connection_service.dart';
 import 'package:avrai_runtime_os/config/stripe_config.dart';
+import 'package:avrai_runtime_os/data/repositories/tax_document_repository.dart';
+import 'package:avrai_runtime_os/data/repositories/tax_profile_repository.dart';
 import 'package:avrai_core/models/payment/tax_document.dart';
+
+import '../../helpers/test_storage_helper.dart';
 
 // Mock to break circular dependency
 class MockCrossLocalityConnectionService extends Mock
     implements CrossLocalityConnectionService {}
 
 void main() {
+  const taxProfilesBox = 'tax_profiles_placeholder_test';
+  const taxDocumentsBox = 'tax_documents_placeholder_test';
+
   group('Tax Compliance Placeholder Methods Tests', () {
     late TaxComplianceService service;
     late PaymentService paymentService;
+
+    setUpAll(() async {
+      await TestStorageHelper.initTestStorage();
+      await GetStorage.init(taxProfilesBox);
+      await GetStorage.init(taxDocumentsBox);
+      await GetStorage(taxProfilesBox).erase();
+      await GetStorage(taxDocumentsBox).erase();
+    });
 
     setUp(() {
       // Create real PaymentService instances (placeholder methods don't use them)
@@ -45,7 +61,17 @@ void main() {
       );
       service = TaxComplianceService(
         paymentService: paymentService,
+        taxProfileRepository: TaxProfileRepository(storeName: taxProfilesBox),
+        taxDocumentRepository:
+            TaxDocumentRepository(storeName: taxDocumentsBox),
       );
+    });
+
+    tearDownAll(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await GetStorage(taxProfilesBox).erase();
+      await GetStorage(taxDocumentsBox).erase();
+      await TestStorageHelper.clearTestStorage();
     });
 
     group('_getUserEarnings()', () {

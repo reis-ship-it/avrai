@@ -41,6 +41,10 @@ void main() {
             'Food & Drink': ['Coffee', 'Craft Beer']
           },
           baselineLists: ['My Favorites'],
+          openResponses: {
+            'coffee': 'Small dark roasts',
+            'about_me': 'Builder who likes local music spots',
+          },
           respectedFriends: ['friend1', 'friend2'],
           socialMediaConnected: {'google': true, 'instagram': false},
           completedAt: testDate,
@@ -51,6 +55,10 @@ void main() {
         // Test business logic: restored data is valid and equal
         expect(restoredFull, equals(originalFull));
         expect(restoredFull.isValid, isTrue);
+        expect(
+          restoredFull.openResponses,
+          equals(originalFull.openResponses),
+        );
 
         // Test round-trip with minimal fields (nulls and empty collections)
         final originalMinimal = OnboardingData(
@@ -66,6 +74,7 @@ void main() {
         expect(restoredMinimal.isValid, isTrue);
         expect(restoredMinimal.favoritePlaces, isEmpty);
         expect(restoredMinimal.preferences, isEmpty);
+        expect(restoredMinimal.openResponses, isEmpty);
       });
     });
 

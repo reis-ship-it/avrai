@@ -5,7 +5,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Event Published Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.11)
@@ -86,13 +86,13 @@ avrai - know you belong.''';
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.electricGreen.withValues(alpha: 0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.check_circle,
                     size: 80,
-                    color: AppColors.electricGreen,
+                    color: AppColors.primary,
                   ),
                 ),
 
@@ -123,7 +123,7 @@ avrai - know you belong.''';
                 const SizedBox(height: 40),
 
                 // Event Preview Card
-                PortalSurface(
+                AppSurface(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -134,8 +134,7 @@ avrai - know you belong.''';
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: AppColors.electricGreen
-                                    .withValues(alpha: 0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(

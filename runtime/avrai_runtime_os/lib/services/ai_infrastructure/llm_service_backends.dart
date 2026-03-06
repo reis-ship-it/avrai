@@ -156,6 +156,20 @@ class DataCenterFailureException implements Exception {
   String toString() => 'DataCenterFailureException: $message';
 }
 
+/// Controls how the service is allowed to route requests across backends.
+class LLMDispatchPolicy {
+  final bool allowCloudFallbackOnLocalFailure;
+
+  const LLMDispatchPolicy({
+    required this.allowCloudFallbackOnLocalFailure,
+  });
+
+  const LLMDispatchPolicy.standard() : allowCloudFallbackOnLocalFailure = true;
+
+  const LLMDispatchPolicy.humanChat()
+      : allowCloudFallbackOnLocalFailure = false;
+}
+
 // ============================================================================
 // Backends (Cloud vs Local)
 // ============================================================================
@@ -170,6 +184,7 @@ abstract class LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat, // Optional JSON schema enforcement
   });
 
   Stream<String> chatStream({
@@ -193,6 +208,7 @@ class CloudGeminiBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     // Connectivity check before making request.
     final isOnline = await service._isOnline();
@@ -292,6 +308,7 @@ class CloudGeminiGenerationBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     final isOnline = await service._isOnline();
     if (!isOnline) {
@@ -308,7 +325,6 @@ class CloudGeminiGenerationBackend implements LlmBackend {
       'onboarding_data': <String, dynamic>{
         if (context?.preferences != null) 'preferences': context!.preferences,
       },
-      if (context?.userId != null) 'agentId': context!.userId,
     };
 
     final response = await service.client.functions
@@ -393,6 +409,7 @@ class CloudFailoverBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     try {
       return await primary.chat(
@@ -471,28 +488,14 @@ class CloudFailoverBackend implements LlmBackend {
   }
 }
 
-/// Local backend that calls into platform implementations.
-///
-/// This will be backed by:
-/// - iOS CoreML runner
-/// - Android llama.cpp runner
-class LocalPlatformLlmBackend implements LlmBackend {
-  static const MethodChannel _channel = MethodChannel('spots/local_llm');
+/// Unified Mobile/Edge backend using MLC-LLM (Machine Learning Compilation).
+/// Runs Qwen 2.5 3B / Llama 3.2 1B natively on iOS (Metal) and Android (Vulkan/OpenCL).
+class MlcLlmBackend implements LlmBackend {
+  static const MethodChannel _channel = MethodChannel('avrai/mlc_llm');
   static const EventChannel _streamChannel =
-      EventChannel('avra/local_llm_stream');
+      EventChannel('avrai/mlc_llm_stream');
 
   String? _loadedModelDir;
-
-  Future<Map<String, String>> _getActiveModelPointers() async {
-    final prefs = await SharedPreferencesCompat.getInstance();
-    final dir =
-        prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
-    final id = prefs.getString(LLMService._prefsKeyLocalLlmActiveModelId) ?? '';
-    return <String, String>{
-      'model_dir': dir,
-      'model_id': id,
-    };
-  }
 
   Future<void> _ensureLoaded(String modelDir) async {
     if (_loadedModelDir == modelDir) return;
@@ -502,12 +505,12 @@ class LocalPlatformLlmBackend implements LlmBackend {
         <String, dynamic>{'model_dir': modelDir},
       );
       if (ok != true) {
-        throw Exception('Local LLM loadModel returned false');
+        throw Exception('MLC-LLM loadModel returned false');
       }
       _loadedModelDir = modelDir;
     } on PlatformException catch (e) {
       throw Exception(
-          'Local LLM loadModel platform error: ${e.code} ${e.message}');
+          'MLC-LLM loadModel platform error: ${e.code} ${e.message}');
     }
   }
 
@@ -519,23 +522,22 @@ class LocalPlatformLlmBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
-    // Local is allowed offline; errors should be explicit.
     try {
-      final pointers = await _getActiveModelPointers();
-      final modelDir = pointers['model_dir'] ?? '';
+      final prefs = await SharedPreferencesCompat.getInstance();
+      final modelDir =
+          prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
       if (modelDir.isEmpty) {
-        throw Exception('Local model not installed (missing model_dir)');
+        throw Exception('MLC model not installed (missing model_dir)');
       }
       await _ensureLoaded(modelDir);
 
       final payload = <String, dynamic>{
-        'model_dir': modelDir,
-        'model_id': pointers['model_id'],
         'messages': messages.map((m) => m.toJson()).toList(),
-        'context': context?.toJson(),
         'temperature': temperature,
         'maxTokens': maxTokens,
+        if (responseFormat != null) 'response_format': responseFormat,
       };
 
       final res = await _channel
@@ -543,13 +545,13 @@ class LocalPlatformLlmBackend implements LlmBackend {
           .timeout(timeout);
 
       if (res == null || res.isEmpty) {
-        throw Exception('Empty local response');
+        throw Exception('Empty MLC-LLM response');
       }
       return res;
     } on PlatformException catch (e) {
-      throw Exception('Local LLM platform error: ${e.code} ${e.message}');
+      throw Exception('MLC-LLM platform error: ${e.code} ${e.message}');
     } on TimeoutException {
-      throw TimeoutException('Local LLM timed out');
+      throw TimeoutException('MLC-LLM timed out');
     }
   }
 
@@ -563,30 +565,23 @@ class LocalPlatformLlmBackend implements LlmBackend {
     required bool useRealSse,
     required bool autoFallback,
   }) async* {
-    // Local streaming uses EventChannel token stream.
-    // Emit cumulative text chunks for UI compatibility.
-    final pointers = await _getActiveModelPointers();
-    final modelDir = pointers['model_dir'] ?? '';
+    final prefs = await SharedPreferencesCompat.getInstance();
+    final modelDir =
+        prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
     if (modelDir.isEmpty) {
-      throw Exception('Local model not installed (missing model_dir)');
+      throw Exception('MLC model not installed (missing model_dir)');
     }
     await _ensureLoaded(modelDir);
 
     final payload = <String, dynamic>{
-      'model_dir': modelDir,
-      'model_id': pointers['model_id'],
       'messages': messages.map((m) => m.toJson()).toList(),
-      'context': context?.toJson(),
       'temperature': temperature,
       'maxTokens': maxTokens,
     };
 
     String acc = '';
-
     try {
-      // Kick off generation (native side starts emitting stream events).
       await _channel.invokeMethod<void>('startStream', payload);
-
       final stream = _streamChannel.receiveBroadcastStream();
       await for (final event in stream) {
         if (event is Map) {
@@ -600,93 +595,20 @@ class LocalPlatformLlmBackend implements LlmBackend {
           } else if (type == 'done') {
             return;
           } else if (type == 'error') {
-            throw Exception(
-                event['message']?.toString() ?? 'Local stream error');
+            throw Exception(event['message']?.toString() ?? 'MLC stream error');
           }
-        } else if (event is String) {
-          // Backward-compatible: treat as a token chunk
-          acc += event;
-          yield acc;
         }
       }
     } on PlatformException catch (e) {
-      throw Exception(
-          'Local LLM stream platform error: ${e.code} ${e.message}');
+      throw Exception('MLC stream platform error: ${e.code} ${e.message}');
     }
   }
 }
 
-/// Android implementation using `llama_flutter_android` (GGUF + token streaming).
-class AndroidLlamaFlutterAndroidBackend implements LlmBackend {
-  static const String _logName = 'AndroidLlamaBackend';
-
-  final llama.LlamaController _controller = llama.LlamaController();
-  String? _loadedModelPath;
-
-  Future<String> _findGgufPath(String modelDir) async {
-    final dir = Directory(modelDir);
-    if (!await dir.exists()) {
-      throw Exception('Model dir does not exist: $modelDir');
-    }
-
-    final files = dir
-        .listSync(recursive: true, followLinks: false)
-        .whereType<File>()
-        .where((f) => f.path.toLowerCase().endsWith('.gguf'))
-        .toList();
-
-    if (files.isEmpty) {
-      throw Exception('No .gguf file found under $modelDir');
-    }
-
-    // Prefer the largest .gguf in case multiple exist.
-    files.sort((a, b) => b.lengthSync().compareTo(a.lengthSync()));
-    return files.first.path;
-  }
-
-  Future<void> _ensureLoaded(String modelDir, {int contextSize = 4096}) async {
-    final prefs = await SharedPreferencesCompat.getInstance();
-    final activeDir =
-        prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
-    if (activeDir.isEmpty || activeDir != modelDir) {
-      // Safety: only load from active dir.
-      throw Exception('Local model dir is not active');
-    }
-
-    final ggufPath = await _findGgufPath(modelDir);
-    if (_loadedModelPath == ggufPath) {
-      return;
-    }
-
-    final alreadyLoaded = await _controller.isModelLoaded();
-    if (alreadyLoaded) {
-      // The plugin doesn’t expose unload + reload directly besides dispose.
-      await _controller.dispose();
-    }
-
-    final threads = (Platform.numberOfProcessors - 1).clamp(2, 8);
-
-    developer.log('Loading GGUF model: $ggufPath', name: _logName);
-    await _controller.loadModel(
-      modelPath: ggufPath,
-      threads: threads,
-      contextSize: contextSize,
-      // gpuLayers: null // CPU-only default for now.
-    );
-    _loadedModelPath = ggufPath;
-  }
-
-  List<llama.ChatMessage> _toLlamaMessages(List<ChatMessage> messages) {
-    return messages
-        .map(
-          (m) => llama.ChatMessage(
-            role: m.role.name,
-            content: m.content,
-          ),
-        )
-        .toList();
-  }
-
+/// Dedicated desktop node backend (macOS, Windows, Linux)
+/// Optimized for running larger models like Phi-4 Mini (3.8B) for high-density reasoning
+class DesktopPhi4LlmBackend implements LlmBackend {
+  // Stub implementation mirroring MLC, can use FFI or desktop channels
   @override
   Future<String> chat({
     required LLMService service,
@@ -695,35 +617,9 @@ class AndroidLlamaFlutterAndroidBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
-    final prefs = await SharedPreferencesCompat.getInstance();
-    final modelDir =
-        prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
-    if (modelDir.isEmpty) {
-      throw Exception('Local model not installed (missing model_dir)');
-    }
-
-    await _ensureLoaded(modelDir, contextSize: 4096);
-
-    final llamaMessages = _toLlamaMessages(messages);
-    final tokens = <String>[];
-
-    final sub = _controller
-        .generateChat(
-          messages: llamaMessages,
-          template: null, // Let plugin auto-detect from filename when possible.
-          temperature: temperature,
-          maxTokens: maxTokens,
-        )
-        .listen(tokens.add);
-
-    try {
-      await sub.asFuture<void>().timeout(timeout);
-    } finally {
-      await sub.cancel();
-    }
-
-    return tokens.join();
+    return "Desktop Phi-4 Backend Output (Stub)";
   }
 
   @override
@@ -736,26 +632,6 @@ class AndroidLlamaFlutterAndroidBackend implements LlmBackend {
     required bool useRealSse,
     required bool autoFallback,
   }) async* {
-    final prefs = await SharedPreferencesCompat.getInstance();
-    final modelDir =
-        prefs.getString(LLMService._prefsKeyLocalLlmActiveModelDir) ?? '';
-    if (modelDir.isEmpty) {
-      throw Exception('Local model not installed (missing model_dir)');
-    }
-
-    await _ensureLoaded(modelDir, contextSize: 4096);
-
-    final llamaMessages = _toLlamaMessages(messages);
-
-    String acc = '';
-    await for (final token in _controller.generateChat(
-      messages: llamaMessages,
-      template: null,
-      temperature: temperature,
-      maxTokens: maxTokens,
-    )) {
-      acc += token;
-      yield acc;
-    }
+    yield "Desktop Phi-4 Stream Output (Stub)";
   }
 }

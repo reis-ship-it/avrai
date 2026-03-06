@@ -6,20 +6,47 @@ import 'package:avrai_runtime_os/services/payment/payment_service.dart';
 import 'package:avrai_core/models/payment/tax_document.dart';
 import 'package:avrai_core/models/payment/tax_profile.dart';
 import 'package:avrai_core/models/payment/payment.dart';
+import 'package:avrai_runtime_os/data/repositories/tax_document_repository.dart';
+import 'package:avrai_runtime_os/data/repositories/tax_profile_repository.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:avrai_runtime_os/utils/secure_ssn_encryption.dart';
 
 import 'tax_compliance_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
+import '../../helpers/test_storage_helper.dart';
 
 @GenerateMocks([PaymentService, SecureSSNEncryption])
 void main() {
   // Initialize Flutter binding for platform channel access
   TestWidgetsFlutterBinding.ensureInitialized();
+  const taxProfilesBox = 'tax_profiles_service_test';
+  const taxDocumentsBox = 'tax_documents_service_test';
+
+  Future<void> safeEraseBox(String boxName) async {
+    final box = GetStorage(boxName);
+    for (var attempt = 0; attempt < 6; attempt++) {
+      try {
+        await box.erase();
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        return;
+      } catch (_) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    }
+  }
 
   group('TaxComplianceService', () {
     late TaxComplianceService service;
     late MockPaymentService mockPaymentService;
     late MockSecureSSNEncryption mockEncryption;
+
+    setUpAll(() async {
+      await TestStorageHelper.initTestStorage();
+      await GetStorage.init(taxProfilesBox);
+      await GetStorage.init(taxDocumentsBox);
+      await safeEraseBox(taxProfilesBox);
+      await safeEraseBox(taxDocumentsBox);
+    });
 
     setUp(() async {
       mockPaymentService = MockPaymentService();
@@ -32,6 +59,9 @@ void main() {
       service = TaxComplianceService(
         paymentService: mockPaymentService,
         encryption: mockEncryption,
+        taxProfileRepository: TaxProfileRepository(storeName: taxProfilesBox),
+        taxDocumentRepository:
+            TaxDocumentRepository(storeName: taxDocumentsBox),
       );
     });
 
@@ -164,6 +194,10 @@ void main() {
     });
 
     tearDownAll(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await safeEraseBox(taxProfilesBox);
+      await safeEraseBox(taxDocumentsBox);
+      await TestStorageHelper.clearTestStorage();
       await cleanupTestStorage();
     });
   });

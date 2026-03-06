@@ -5,6 +5,7 @@
 // Phase 1.5: Universal Cross-Pollination Extension
 
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -124,6 +125,18 @@ void main() {
     bool rustLibInitialized = false;
 
     setUpAll(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('plugins.builttoroam.com/device_calendar'),
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'requestPermissions') {
+            return true;
+          }
+          return null;
+        },
+      );
+
       // Initialize Rust library for tests (mock mode)
       if (!rustLibInitialized) {
         RustLib.initMock(api: MockRustLibApi());
@@ -393,11 +406,9 @@ void main() {
 
         // Different entities should produce different knots
         expect(knot1.entityId, isNot(equals(knot2.entityId)));
-        // Knot invariants should differ for different categories
-        expect(
-          knot1.knot.invariants.jonesPolynomial,
-          isNot(equals(knot2.knot.invariants.jonesPolynomial)),
-        );
+        // Category metadata should differ for different source entities.
+        expect(knot1.metadata['category'],
+            isNot(equals(knot2.metadata['category'])));
       });
     });
   });

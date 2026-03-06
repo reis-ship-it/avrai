@@ -80,8 +80,7 @@ class _FloatingTextWidgetState extends State<FloatingTextWidget>
     final letters = widget.text.split('');
 
     for (int i = 0; i < letters.length; i++) {
-      // Skip animation setup for spaces
-      if (letters[i] == ' ') {
+      if (letters[i] == '\n' || letters[i] == ' ') {
         _entranceControllers.add(AnimationController(vsync: this));
         _floatControllers.add(AnimationController(vsync: this));
         _entranceAnimations.add(const AlwaysStoppedAnimation(1.0));
@@ -179,7 +178,10 @@ class _FloatingTextWidgetState extends State<FloatingTextWidget>
       children: List.generate(letters.length, (index) {
         final letter = letters[index];
 
-        // Handle spaces without animation
+        if (letter == '\n') {
+          return SizedBox(width: double.infinity, height: 0);
+        }
+
         if (letter == ' ') {
           return SizedBox(
             width: textStyle.fontSize != null ? textStyle.fontSize! * 0.3 : 12,
@@ -196,7 +198,6 @@ class _FloatingTextWidgetState extends State<FloatingTextWidget>
             final entrance = _entranceAnimations[index].value;
             final float = _floatAnimations[index].value;
 
-            // Calculate float offset using sine wave
             final floatOffset =
                 math.sin(float * 2 * math.pi) * widget.floatDistance;
 

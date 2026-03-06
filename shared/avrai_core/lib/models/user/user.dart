@@ -17,6 +17,7 @@ class User {
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool? isOnline;
+  final bool isBetaTester;
   // Legacy fields used in integration tests
   final List<String> curatedLists = const [];
   final List<String> collaboratedLists = const [];
@@ -31,6 +32,7 @@ class User {
     required this.createdAt,
     required this.updatedAt,
     this.isOnline,
+    this.isBetaTester = false,
   });
 
   User copyWith({
@@ -42,6 +44,7 @@ class User {
     DateTime? createdAt,
     DateTime? updatedAt,
     Object? isOnline = const _Sentinel(),
+    bool? isBetaTester,
   }) {
     return User(
       id: id ?? this.id,
@@ -53,6 +56,7 @@ class User {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isOnline: isOnline is _Sentinel ? this.isOnline : isOnline as bool?,
+      isBetaTester: isBetaTester ?? this.isBetaTester,
     );
   }
 
@@ -66,6 +70,7 @@ class User {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'isOnline': isOnline,
+      'is_beta_tester': isBetaTester,
     };
   }
 
@@ -84,6 +89,7 @@ class User {
       updatedAt:
           DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
       isOnline: json['isOnline'],
+      isBetaTester: json['is_beta_tester'] ?? false,
     );
   }
 

@@ -1,6 +1,13 @@
+# ⚠️ DEPRECATED - AVRAI PIVOT
+**Notice:** This document is heavily tied to the deprecated "SPOTS" consumer/event branding and the old 10% platform fee monetization model. It has been formally deprecated. 
+**Useful Elements Retained:** The core problems (loneliness epidemic, privacy concerns), AI2AI offline-first tech, quantum matching, and physiological tracking have been migrated to the new AVRAI Enterprise & Research Business Plan.
+
+---
+
 # SPOTS: Business Overview for Potential Partners
 
 **Date:** December 2025  
+**Updated:** March 2026 - *Note: This document served as the foundation for the formal business plan found at `AVRAI_SEQUOIA_BUSINESS_PLAN.md`.*
 **Purpose:** Executive summary for business partnerships and investment opportunities
 
 ---

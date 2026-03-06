@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
 
@@ -262,7 +262,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
             const SizedBox(height: 24),
 
             // Lists intro
-            PortalSurface(
+            AppSurface(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
               child: Row(
@@ -308,7 +308,7 @@ class _BaselineListsPageState extends State<BaselineListsPage>
                 itemBuilder: (context, index) {
                   final listName = _generatedLists[index];
                   final isSelected = _selectedLists.contains(listName);
-                  return PortalSurface(
+                  return AppSurface(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: EdgeInsets.zero,
                     child: ListTile(

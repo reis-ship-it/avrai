@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 import 'dart:typed_data';

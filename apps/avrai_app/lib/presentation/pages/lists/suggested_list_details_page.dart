@@ -1,7 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dart';
 
 /// SuggestedListDetailsPage - Detail view for an AI-suggested list
 ///
@@ -300,7 +307,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
               itemCount: suggestedList.places.length,
               itemBuilder: (context, index) {
                 final place = suggestedList.places[index];
-                return PortalSurface(
+                return AppSurface(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: EdgeInsets.zero,
                   child: ListTile(
@@ -383,10 +390,11 @@ class SuggestedListDetailsPage extends StatelessWidget {
   }
 
   void _dismissList(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('List dismissed'),
-        behavior: SnackBarBehavior.floating,
+    unawaited(
+      showUndoableNegativeFeedback(
+        context: context,
+        message: 'List dismissed',
+        onCommit: _recordNegativePreference,
       ),
     );
     Navigator.of(context).pop();
@@ -410,5 +418,27 @@ class SuggestedListDetailsPage extends StatelessWidget {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  Future<void> _recordNegativePreference() async {
+    if (!di.sl.isRegistered<EntitySignatureService>()) {
+      return;
+    }
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+    await di.sl<EntitySignatureService>().recordNegativePreferenceSignal(
+          userId: userId,
+          title: suggestedList.title,
+          subtitle: suggestedList.description,
+          category: suggestedList.theme,
+          tags: <String>[
+            suggestedList.theme,
+            ...suggestedList.triggerReasons,
+          ],
+          intent: NegativePreferenceIntent.hardNotInterested,
+          entityType: 'suggested_list',
+        );
   }
 }

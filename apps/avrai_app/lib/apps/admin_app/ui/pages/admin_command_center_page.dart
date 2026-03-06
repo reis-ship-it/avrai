@@ -237,6 +237,14 @@ class _AdminCommandCenterPageState extends State<AdminCommandCenterPage> {
           ),
           _buildNavCard(
             context,
+            icon: Icons.monitor_heart_outlined,
+            title: 'Signature + Source Health',
+            subtitle:
+                'Live categories for strong, weak, stale, fallback, review, and bundles',
+            route: AdminRoutePaths.signatureHealth,
+          ),
+          _buildNavCard(
+            context,
             icon: Icons.settings_suggest,
             title: 'URK Kernel Console',
             subtitle: 'Control-plane governance, thresholds, and policy events',

@@ -18,9 +18,48 @@ interface LLMRequest {
     vibe?: any
     ai2aiInsights?: any[]
     connectionMetrics?: any
+    languageStyle?: string
+    conversationPreferences?: Record<string, any>
   }
   temperature?: number
   maxTokens?: number
+}
+
+function appendSafeContext(systemContext: string, context?: LLMRequest['context']): string {
+  if (!context) return systemContext
+
+  let next = systemContext
+  if (context.location) {
+    next += `\n\nApproximate location: ${context.location.lat}, ${context.location.lng}`
+  }
+
+  const prefs = context.preferences ?? {}
+  if (Array.isArray(prefs.traits) && prefs.traits.length > 0) {
+    next += `\n\nKnown preference signals: ${prefs.traits.slice(0, 8).join(', ')}`
+  }
+  if (typeof prefs.known_places_count === 'number') {
+    next += `\nKnown places count: ${prefs.known_places_count}`
+  }
+  if (typeof prefs.social_graph_count === 'number') {
+    next += `\nSocial graph count: ${prefs.social_graph_count}`
+  }
+  if (prefs.personality?.archetype) {
+    next += `\nPersonality archetype: ${prefs.personality.archetype}`
+  }
+  if (Array.isArray(prefs.personality?.dominant_traits) && prefs.personality.dominant_traits.length > 0) {
+    next += `\nDominant traits: ${prefs.personality.dominant_traits.slice(0, 5).join(', ')}`
+  }
+
+  const conversationPreferences = context.conversationPreferences as Record<string, unknown> | undefined
+  if (conversationPreferences?.display_name && conversationPreferences?.summary) {
+    next += `\n\nLocal context: ${String(conversationPreferences.display_name)}. ${String(conversationPreferences.summary)}`
+  }
+
+  if (typeof context.languageStyle === 'string' && context.languageStyle.trim().length > 0) {
+    next += `\n\nCommunication style guidance: ${context.languageStyle.trim()}`
+  }
+
+  return next
 }
 
 serve(async (req) => {
@@ -66,85 +105,28 @@ Key principles:
 - Help with creating lists, finding spots, and discovering new places
 - Personalize responses based on user's personality and preferences`
 
-    if (context) {
-      // Basic context
-      if (context.location) {
-        systemContext += `\n\nUser's current location: ${context.location.lat}, ${context.location.lng}`
-      }
-      if (context.preferences) {
-        systemContext += `\n\nUser preferences: ${JSON.stringify(context.preferences)}`
-      }
-      if (context.recentSpots && context.recentSpots.length > 0) {
-        systemContext += `\n\nUser recently visited: ${context.recentSpots.map((s: any) => s.name || s).join(', ')}`
-      }
-      
-      // Personality integration
-      if (context.personality) {
-        const p = context.personality
-        systemContext += `\n\nUser Personality Profile:
-- Archetype: ${p.archetype || 'developing'}
-- Evolution Generation: ${p.evolutionGeneration || 1}
-- Authenticity Score: ${((p.authenticity || 0.5) * 100).toFixed(0)}%
-- Dominant Traits: ${(p.dominantTraits || []).join(', ') || 'developing'}
-- Personality Dimensions: ${JSON.stringify(p.dimensions || {})}
-- Dimension Confidence: ${JSON.stringify(p.dimensionConfidence || {})}
+    systemContext = appendSafeContext(systemContext, context)
 
-Use this personality profile to personalize your responses. Match your tone and recommendations to their personality archetype and dominant traits.`
-      }
-      
-      // Vibe integration
-      if (context.vibe) {
-        const v = context.vibe
-        systemContext += `\n\nUser Vibe Profile:
-- Vibe Archetype: ${v.archetype || 'neutral'}
-- Overall Energy: ${((v.overallEnergy || 0.5) * 100).toFixed(0)}%
-- Social Preference: ${((v.socialPreference || 0.5) * 100).toFixed(0)}%
-- Exploration Tendency: ${((v.explorationTendency || 0.5) * 100).toFixed(0)}%
-- Temporal Context: ${v.temporalContext || 'unknown'}
-
-Adjust your recommendations based on their vibe. High energy users might want active spots, high social preference users might want community spaces, high exploration users might want unique/novel places.`
-      }
-      
-      // AI2AI insights integration
-      if (context.ai2aiInsights && context.ai2aiInsights.length > 0) {
-        systemContext += `\n\nAI2AI Learning Insights (from network learning):
-${context.ai2aiInsights.map((insight: any) => 
-  `- ${insight.type}: Learning quality ${((insight.learningQuality || 0) * 100).toFixed(0)}%, Dimension insights: ${JSON.stringify(insight.dimensionInsights || {})}`
-).join('\n')}
-
-Use these insights to enhance your recommendations. The AI2AI network has learned patterns that can inform better suggestions.`
-      }
-      
-      // Connection metrics integration
-      if (context.connectionMetrics) {
-        const cm = context.connectionMetrics
-        systemContext += `\n\nAI2AI Connection Status:
-- Compatibility: ${((cm.currentCompatibility || 0) * 100).toFixed(0)}%
-- Learning Effectiveness: ${((cm.learningEffectiveness || 0) * 100).toFixed(0)}%
-- AI Pleasure Score: ${((cm.aiPleasureScore || 0) * 100).toFixed(0)}%
-- Status: ${cm.status || 'unknown'}
-
-The user's AI personality is actively learning from the network. Consider this in your recommendations.`
-      }
-      
-      // Language style integration (Phase 2.4)
-      if (context.languageStyle) {
-        systemContext += `\n\n${context.languageStyle}
-
-Important: Match the user's communication style gradually. Don't copy exactly, but adapt your responses to feel natural to them. The style should influence your tone, vocabulary choices, and phrasing, but your responses should still be authentic and helpful.`
-      }
+    const embeddedSystemMessages = messages
+      .filter((msg) => msg.role === 'system' && msg.content.trim().length > 0)
+      .map((msg) => msg.content.trim())
+    if (embeddedSystemMessages.length > 0) {
+      systemContext += `\n\nAdditional system guidance:\n${embeddedSystemMessages.join('\n')}`
     }
 
     // Convert messages to Gemini format
-    const geminiMessages = messages.map((msg) => ({
+    const geminiMessages = messages
+      .filter((msg) => msg.role !== 'system')
+      .map((msg) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }],
     }))
 
-    // Add system context as first user message
+    // Gemini does not expose a true system role in this endpoint, so we pass
+    // consolidated system guidance as a dedicated leading instruction message.
     geminiMessages.unshift({
       role: 'user',
-      parts: [{ text: systemContext }],
+      parts: [{ text: `SYSTEM INSTRUCTIONS:\n${systemContext}` }],
     })
 
     // Call Gemini API with streaming enabled

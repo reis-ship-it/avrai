@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'dart:developer' as developer;
+import 'dart:convert';
 
 import 'package:avrai_core/constants/vibe_constants.dart';
 import 'package:avrai_core/models/business/business_account.dart';
@@ -123,11 +124,39 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     required BusinessAccount business,
   }) async {
     final userProfile = await _getOrCreateUserProfile(userId);
-    final userDims = _ensureAllDimensions(userProfile.dimensions);
+    
+    if (userProfile.isAccelerated) {
+      _logger.debug('User $userId has an Accelerated Profile. Bypassing 14-day training wheels.', tag: _logName);
+    }
+    
+    // SPIKE 1: Future State Interpolation
+    Map<String, double> targetDims;
+    try {
+      final prefs = await _personalityLearning.getPrefs();
+      final storedData = prefs.getString('aspirational_state_$userId');
+      if (storedData != null && storedData.isNotEmpty) {
+        final decoded = jsonDecode(storedData) as Map<String, dynamic>;
+        final Map<String, double> dnaShifts = {};
+        decoded.forEach((key, value) {
+          dnaShifts[key] = (value as num).toDouble();
+        });
+        
+        final futureProfile = userProfile.evolve(newDimensions: userProfile.dimensions.map((key, val) {
+           final shift = dnaShifts[key] ?? 0.0;
+           return MapEntry(key, (val + shift).clamp(0.0, 1.0));
+        }));
+        
+        targetDims = _ensureAllDimensions(futureProfile.dimensions);
+      } else {
+        targetDims = _ensureAllDimensions(userProfile.dimensions);
+      }
+    } catch (e) {
+       targetDims = _ensureAllDimensions(userProfile.dimensions);
+    }
 
     final businessDims = _inferBusinessVibeDimensions(business);
 
-    final quantum = _quantumFidelity(userDims, businessDims);
+    final quantum = _quantumFidelity(targetDims, businessDims);
 
     final knotScores = await _tryKnotScores(
       entityA: await _tryEntityKnotForPerson(userProfile),
@@ -181,18 +210,52 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     required ExpertiseEvent event,
   }) async {
     final userProfile = await _getOrCreateUserProfile(userId);
-    final userDims = _ensureAllDimensions(userProfile.dimensions);
+    
+    if (userProfile.isAccelerated) {
+      _logger.debug('User $userId has an Accelerated Profile. Bypassing 14-day training wheels.', tag: _logName);
+    }
+    
+    // SPIKE 1: Future State Interpolation
+    // If the user has an aspirational future state stored, we calculate a vector
+    // that pulls them towards it, rather than just matching their present state.
+    // This allows the engine to suggest events that help them become who they want to be.
+    Map<String, double> targetDims;
+    try {
+      final prefs = await _personalityLearning.getPrefs();
+      final storedData = prefs.getString('aspirational_state_$userId');
+      if (storedData != null && storedData.isNotEmpty) {
+        final decoded = jsonDecode(storedData) as Map<String, dynamic>;
+        final Map<String, double> dnaShifts = {};
+        decoded.forEach((key, value) {
+          dnaShifts[key] = (value as num).toDouble();
+        });
+        
+        // Temporarily apply shifts to create the future state vector
+        // Using a 50% pull towards the future state for matching
+        final futureProfile = userProfile.evolve(newDimensions: userProfile.dimensions.map((key, val) {
+           final shift = dnaShifts[key] ?? 0.0;
+           return MapEntry(key, (val + shift).clamp(0.0, 1.0));
+        }));
+        
+        targetDims = _ensureAllDimensions(futureProfile.dimensions);
+        _logger.debug('Using Future State Interpolation for user $userId', tag: _logName);
+      } else {
+        targetDims = _ensureAllDimensions(userProfile.dimensions);
+      }
+    } catch (e) {
+       targetDims = _ensureAllDimensions(userProfile.dimensions);
+    }
 
     // Best-available event "vibe" proxy: host personality vector.
     // (Later: replace with a dedicated EventVibeProfile derived from host + attendees + event attributes.)
     final hostProfile = await _getOrCreateUserProfile(event.host.id);
     final eventDims = _ensureAllDimensions(hostProfile.dimensions);
 
-    final quantum = _quantumFidelity(userDims, eventDims);
+    final quantum = _quantumFidelity(targetDims, eventDims);
 
     // User knot ↔ event knot (entity knot) yields topological + weave components when available.
     final knotScores = await _tryKnotScores(
-      entityA: await _tryEntityKnotForPerson(userProfile),
+      entityA: await _tryEntityKnotForPerson(userProfile), // Note: We still use the *real* knot for topology
       entityB: await _tryEntityKnotForEvent(event),
     );
 

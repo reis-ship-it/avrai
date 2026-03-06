@@ -4,7 +4,7 @@ import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai_runtime_os/controllers/profile_update_controller.dart';
 import 'package:avrai_core/models/user/user.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:get_it/get_it.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -130,7 +130,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             SizedBox(height: spacing.lg),
             if (_error != null) ...[
-              PortalSurface(
+              AppSurface(
                 padding: EdgeInsets.all(spacing.sm),
                 radius: radius.sm,
                 color: AppTheme.errorColor.withValues(alpha: 0.1),

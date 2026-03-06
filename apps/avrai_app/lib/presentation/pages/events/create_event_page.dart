@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/expertise/expertise_level.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
@@ -11,6 +13,7 @@ import 'package:avrai/presentation/pages/events/event_review_page.dart';
 import 'package:avrai/presentation/widgets/events/locality_selection_widget.dart';
 import 'package:avrai/presentation/widgets/events/geographic_scope_indicator_widget.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_scope_service.dart';
+import 'package:avrai_runtime_os/services/intake/organizer_sync_connection_advisor.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 /// Event Creation Form Page
@@ -34,10 +37,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
   final _formKey = GlobalKey<FormState>();
   final _eventService = ExpertiseEventService();
   final _geographicScopeService = GeographicScopeService();
+  final OrganizerSyncConnectionAdvisor _syncAdvisor =
+      GetIt.instance<OrganizerSyncConnectionAdvisor>();
 
   // Form fields
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _sourceUrlController = TextEditingController();
+  final _sourceLabelController = TextEditingController();
   String? _selectedCategory;
   ExpertiseEventType? _selectedEventType;
   DateTime? _startTime;
@@ -47,6 +54,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
   int _maxAttendees = 20;
   double? _price;
   bool _isPublic = true;
+  bool _wantsExternalSync = false;
+  ExternalConnectionMode _connectionMode = ExternalConnectionMode.url;
 
   // State
   bool _isLoading = false;
@@ -73,6 +82,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
     _titleController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
+    _sourceUrlController.dispose();
+    _sourceLabelController.dispose();
     super.dispose();
   }
 
@@ -447,6 +458,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
           maxAttendees: _maxAttendees,
           price: _price,
           isPublic: _isPublic,
+          wantsExternalSync: _wantsExternalSync,
+          sourceUrl: _sourceUrlController.text.trim().isEmpty
+              ? null
+              : _sourceUrlController.text.trim(),
+          sourceLabel: _sourceLabelController.text.trim().isEmpty
+              ? null
+              : _sourceLabelController.text.trim(),
+          connectionMode: _connectionMode,
         ),
       ),
     );
@@ -837,6 +856,146 @@ class _CreateEventPageState extends State<CreateEventPage> {
               ),
               const SizedBox(height: 16),
 
+              SwitchListTile(
+                title: const Text('Keep this synced from another source'),
+                subtitle: const Text(
+                  'Use this if the event already lives on a website, calendar, Facebook page, or email workflow.',
+                ),
+                value: _wantsExternalSync,
+                onChanged: (value) {
+                  setState(() {
+                    _wantsExternalSync = value;
+                  });
+                },
+                activeThumbColor: AppTheme.primaryColor,
+              ),
+              if (_wantsExternalSync) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.primaryColor.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'One-way sync into AVRAI',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'AVRAI will read updates from your source. It will not publish changes back out.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _sourceUrlController,
+                        decoration: InputDecoration(
+                          labelText: 'Source URL or feed',
+                          hintText: 'Paste the page, feed, or calendar URL',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.grey100,
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _sourceLabelController,
+                        decoration: InputDecoration(
+                          labelText: 'Source label (optional)',
+                          hintText:
+                              'Facebook page, campus calendar, newsletter',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.grey100,
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<ExternalConnectionMode>(
+                        initialValue: _connectionMode,
+                        decoration: InputDecoration(
+                          labelText: 'Preferred connection type',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.grey100,
+                        ),
+                        items: ExternalConnectionMode.values.map((mode) {
+                          return DropdownMenuItem(
+                            value: mode,
+                            child: Text(_connectionModeLabel(mode)),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+                          setState(() {
+                            _connectionMode = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Builder(
+                        builder: (context) {
+                          final advice = _syncAdvisor.advise(
+                            sourceUrl: _sourceUrlController.text.trim(),
+                            providerLabel: _sourceLabelController.text.trim(),
+                          );
+                          return Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.background,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.link,
+                                  size: 18,
+                                  color: AppTheme.primaryColor,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Suggested path: ${advice.label}. ${advice.helperText}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // Public/Private Toggle
               SwitchListTile(
                 title: const Text('Public Event'),
@@ -934,5 +1093,22 @@ class _CreateEventPageState extends State<CreateEventPage> {
     final hour = dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
     final period = dateTime.hour >= 12 ? 'PM' : 'AM';
     return '$hour:${dateTime.minute.toString().padLeft(2, '0')} $period';
+  }
+
+  String _connectionModeLabel(ExternalConnectionMode mode) {
+    switch (mode) {
+      case ExternalConnectionMode.url:
+        return 'Website URL';
+      case ExternalConnectionMode.feed:
+        return 'Calendar/feed';
+      case ExternalConnectionMode.api:
+        return 'API';
+      case ExternalConnectionMode.oauth:
+        return 'Connected account';
+      case ExternalConnectionMode.emailList:
+        return 'Email list';
+      case ExternalConnectionMode.manual:
+        return 'Manual review';
+    }
   }
 }

@@ -1,7 +1,7 @@
 name: avrai
 description: Offline-first social discovery app for meaningful places
 publish_to: 'none'
-version: 1.2.0+5
+version: 0.5.0-beta+6
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -20,6 +20,8 @@ dependencies:
     path: ../../shared/avrai_core
   avrai_runtime_os:
     path: ../../runtime/avrai_runtime_os
+  avrai_knot:
+    path: ../../engine/avrai_knot
   
   # UI Components
   cupertino_icons: ^1.0.2
@@ -52,7 +54,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   wifi_scan: ^0.4.1+2
   add_2_calendar: ^3.0.1
-  device_calendar: ^3.9.0
+  device_calendar: ^4.0.0
   nowplaying: ^3.0.3
   
   # Sharing and URL launching
@@ -157,6 +159,7 @@ dependencies:
   cryptography: ^2.9.0
   image_picker: ^1.2.1
   meta: any
+  spotify: ^0.13.8
 
 dev_dependencies:
   flutter_test:
@@ -198,3 +201,7 @@ flutter:
 
   shaders:
     - shaders/portal_world.frag
+
+dependency_overrides:
+  # Temporary for 4.x device_calendar compatibility while preserving notification timezone
+  timezone: ^0.10.1

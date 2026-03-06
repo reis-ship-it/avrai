@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
+import 'package:avrai_core/models/signatures/entity_signature.dart';
+import 'package:avrai_core/models/signatures/signature_match_result.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_core/models/spots/spot_vibe.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
@@ -10,6 +12,7 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai/quantum/location_compatibility_calculator.dart';
 import 'package:avrai_runtime_os/services/calling_score/calling_score_calculator.dart';
 import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_knot/services/knot/entity_knot_service.dart';
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:geolocator/geolocator.dart';
@@ -39,6 +42,7 @@ class SpotVibeMatchingService {
   final UserVibeAnalyzer _vibeAnalyzer;
   final CallingScoreCalculator? _callingScoreCalculator;
   final FeatureFlagService? _featureFlags;
+  final EntitySignatureService? _entitySignatureService;
   final EntityKnotService? _entityKnotService;
   final PersonalityKnotService? _personalityKnotService;
 
@@ -46,11 +50,13 @@ class SpotVibeMatchingService {
     required UserVibeAnalyzer vibeAnalyzer,
     CallingScoreCalculator? callingScoreCalculator,
     FeatureFlagService? featureFlags,
+    EntitySignatureService? entitySignatureService,
     EntityKnotService? entityKnotService,
     PersonalityKnotService? personalityKnotService,
   })  : _vibeAnalyzer = vibeAnalyzer,
         _callingScoreCalculator = callingScoreCalculator,
         _featureFlags = featureFlags,
+        _entitySignatureService = entitySignatureService,
         _entityKnotService = entityKnotService,
         _personalityKnotService = personalityKnotService;
 
@@ -81,30 +87,105 @@ class SpotVibeMatchingService {
     UnifiedLocation? spotLocation, // Optional: for location entanglement
     double? timingCompatibility, // Optional: timing compatibility
   }) async {
+    final result = await calculateSpotUserCompatibilityResult(
+      user: user,
+      spot: spot,
+      userPersonality: userPersonality,
+      spotVibe: spotVibe,
+      userLocation: userLocation,
+      spotLocation: spotLocation,
+      timingCompatibility: timingCompatibility,
+    );
+    return result.finalScore;
+  }
+
+  Future<SignatureMatchResult> calculateSpotUserCompatibilityResult({
+    required UnifiedUser user,
+    required Spot spot,
+    required PersonalityProfile userPersonality,
+    SpotVibe? spotVibe,
+    UnifiedLocation? userLocation,
+    UnifiedLocation? spotLocation,
+    double? timingCompatibility,
+  }) async {
+    final legacyCompatibility = await _calculateLegacySpotUserCompatibility(
+      user: user,
+      spot: spot,
+      userPersonality: userPersonality,
+      spotVibe: spotVibe,
+      userLocation: userLocation,
+      spotLocation: spotLocation,
+      timingCompatibility: timingCompatibility,
+    );
+    if (_entitySignatureService == null) {
+      return SignatureMatchResult(
+        entityId: spot.id,
+        entityKind: SignatureEntityKind.spot,
+        dnaScore: legacyCompatibility,
+        pheromoneScore: legacyCompatibility,
+        signatureScore: legacyCompatibility,
+        finalScore: legacyCompatibility,
+        fallbackScore: legacyCompatibility,
+        confidence: 0.5,
+        freshness: 0.5,
+        mode: SignatureScoreMode.fallback,
+        summary: 'Fallback spot score only.',
+      );
+    }
+
     try {
-      // Get user vibe from AI2AI system
+      return await _entitySignatureService.matchUserToSpot(
+        user: user,
+        spot: spot,
+        fallbackScore: legacyCompatibility,
+        personality: userPersonality,
+      );
+    } catch (e, st) {
+      developer.log(
+        'Error applying signature-first spot compatibility: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return SignatureMatchResult(
+        entityId: spot.id,
+        entityKind: SignatureEntityKind.spot,
+        dnaScore: legacyCompatibility,
+        pheromoneScore: legacyCompatibility,
+        signatureScore: legacyCompatibility,
+        finalScore: legacyCompatibility,
+        fallbackScore: legacyCompatibility,
+        confidence: 0.5,
+        freshness: 0.5,
+        mode: SignatureScoreMode.fallback,
+        summary: 'Fallback spot score only.',
+      );
+    }
+  }
+
+  Future<double> _calculateLegacySpotUserCompatibility({
+    required UnifiedUser user,
+    required Spot spot,
+    required PersonalityProfile userPersonality,
+    SpotVibe? spotVibe,
+    UnifiedLocation? userLocation,
+    UnifiedLocation? spotLocation,
+    double? timingCompatibility,
+  }) async {
+    try {
       final userVibe = await _vibeAnalyzer.compileUserVibe(
         user.id,
         userPersonality,
       );
-
-      // Get spot vibe (from business account or inferred)
       final vibe = spotVibe ?? _inferSpotVibe(spot);
-
-      // Calculate vibe compatibility (personality compatibility)
       final vibeCompatibility = vibe.calculateVibeCompatibility(userVibe);
-
-      // Calculate knot compatibility bonus (optional enhancement)
       final knotBonus = await _calculateKnotCompatibilityBonus(
         user: user,
         userPersonality: userPersonality,
         spot: spot,
       );
-
-      // Enhanced compatibility: 85% vibe + 15% knot bonus
       final baseCompatibility = vibeCompatibility * 0.85 + knotBonus * 0.15;
 
-      // If location information is available and feature flag is enabled, use enhanced compatibility with location entanglement
       final locationEntanglementEnabled = _featureFlags != null
           ? await _featureFlags.isEnabled(
               QuantumFeatureFlags.locationEntanglement,
@@ -116,14 +197,11 @@ class SpotVibeMatchingService {
       if (locationEntanglementEnabled &&
           userLocation != null &&
           spotLocation != null) {
-        // Calculate location compatibility
         final locationCompatibility =
             LocationCompatibilityCalculator.calculateLocationCompatibility(
           locationA: userLocation,
           locationB: spotLocation,
         );
-
-        // Use enhanced compatibility formula: 0.5 * (vibe+knot) + 0.3 * location + 0.2 * timing
         final enhancedCompatibility =
             LocationCompatibilityCalculator.calculateEnhancedCompatibility(
           personalityCompatibility: baseCompatibility,
@@ -143,20 +221,20 @@ class SpotVibeMatchingService {
         return enhancedCompatibility;
       }
 
-      // Fallback to vibe+knot compatibility if location not available
       developer.log(
-        'Spot-User compatibility (with knot): ${spot.name} <-> ${user.id}: '
+        'Spot-User compatibility (legacy vibe+knot): ${spot.name} <-> ${user.id}: '
         'vibe=${(vibeCompatibility * 100).toStringAsFixed(1)}%, '
         'knot=${(knotBonus * 100).toStringAsFixed(1)}%, '
         'total=${(baseCompatibility * 100).toStringAsFixed(1)}%',
         name: _logName,
       );
-
       return baseCompatibility;
     } catch (e) {
-      developer.log('Error calculating spot-user compatibility: $e',
-          name: _logName);
-      return 0.5; // Neutral fallback
+      developer.log(
+        'Error calculating legacy spot-user compatibility: $e',
+        name: _logName,
+      );
+      return 0.5;
     }
   }
 

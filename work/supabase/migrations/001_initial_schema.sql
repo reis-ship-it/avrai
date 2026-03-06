@@ -11,7 +11,11 @@ CREATE TABLE IF NOT EXISTS public.users (
     bio TEXT,
     location TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    signup_provider TEXT,
+    last_sign_in_provider TEXT,
+    last_sign_in_platform TEXT,
+    last_sign_in_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Create spots table
@@ -197,8 +201,17 @@ CREATE TRIGGER update_spot_lists_updated_at BEFORE UPDATE ON public.spot_lists
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.users (id, email, name)
-    VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'name', ''));
+    INSERT INTO public.users (id, email, name, signup_provider)
+    VALUES (
+        NEW.id,
+        NEW.email,
+        COALESCE(NEW.raw_user_meta_data->>'name', ''),
+        COALESCE(
+            NEW.raw_user_meta_data->>'signup_provider',
+            NEW.raw_app_meta_data->>'provider',
+            CASE WHEN NEW.email IS NOT NULL THEN 'email' ELSE NULL END
+        )
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

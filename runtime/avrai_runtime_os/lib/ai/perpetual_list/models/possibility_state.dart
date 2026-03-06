@@ -155,6 +155,9 @@ enum TrajectoryType {
 
   /// AI2AI network is influencing personality
   networkInfluenced,
+
+  /// User explicitly requested this future state
+  aspirational,
 }
 
 /// Direction of change along a trajectory

@@ -11,6 +11,9 @@ import 'package:avrai_runtime_os/services/security/message_encryption_service.da
 /// Realtime events only notify `messageId`; the ciphertext is fetched by messageId.
 class DmMessageStore {
   static const String _logName = 'DmMessageStore';
+  static const String _dmTransportBlobsTable = 'dm_transport_blobs';
+  static const String _dmTransportEdgeFunction = 'dm-transport-enqueue-v1';
+  static const String _dmTransportEnqueueRpc = 'dm_transport_enqueue_v1';
 
   final SupabaseService _supabase;
 
@@ -32,7 +35,7 @@ class DmMessageStore {
     }
 
     try {
-      await _supabase.client.from('dm_message_blobs').insert({
+      await _supabase.client.from(_dmTransportBlobsTable).insert({
         'message_id': messageId,
         'from_user_id': fromUserId,
         'to_user_id': toUserId,
@@ -86,6 +89,110 @@ class DmMessageStore {
     }
   }
 
+  /// Server-authoritative DM enqueue.
+  ///
+  /// Writes ciphertext + payloadless notification atomically via RPC.
+  Future<void> enqueueDm({
+    required String messageId,
+    required String fromUserId,
+    required String toUserId,
+    required String senderAgentId,
+    required String recipientAgentId,
+    required EncryptedMessage encrypted,
+    required DateTime sentAt,
+    String recipientDeviceId = 'legacy',
+  }) async {
+    if (!_supabase.isAvailable) {
+      throw Exception('Supabase not available');
+    }
+
+    try {
+      // Preferred path: edge function centralizes DM enqueue in one server-owned API.
+      var edgeOk = false;
+      try {
+        final edgeRes = await _supabase.client.functions.invoke(
+          _dmTransportEdgeFunction,
+          body: <String, Object?>{
+            'message_id': messageId,
+            'from_user_id': fromUserId,
+            'to_user_id': toUserId,
+            'sender_agent_id': senderAgentId,
+            'recipient_agent_id': recipientAgentId,
+            'encryption_type': encrypted.encryptionType.name,
+            'ciphertext_base64': encrypted.toBase64(),
+            'sent_at': sentAt.toUtc().toIso8601String(),
+            'recipient_device_id': recipientDeviceId,
+          },
+        );
+
+        final edgeData = edgeRes.data;
+        edgeOk = edgeRes.status == 200 &&
+            ((edgeData is Map && edgeData['ok'] == true) ||
+                (edgeData is String && edgeData.contains('"ok":true')));
+      } catch (_) {
+        edgeOk = false;
+      }
+
+      if (!edgeOk) {
+        await _supabase.client.rpc(
+          _dmTransportEnqueueRpc,
+          params: <String, dynamic>{
+            'p_message_id': messageId,
+            'p_from_user_id': fromUserId,
+            'p_to_user_id': toUserId,
+            'p_sender_agent_id': senderAgentId,
+            'p_recipient_agent_id': recipientAgentId,
+            'p_encryption_type': encrypted.encryptionType.name,
+            'p_ciphertext_base64': encrypted.toBase64(),
+            'p_sent_at': sentAt.toUtc().toIso8601String(),
+            'p_recipient_device_id': recipientDeviceId,
+          },
+        );
+      }
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.security,
+          eventType: 'signal_dm_enqueued_server_authoritative',
+          occurredAt: sentAt,
+          entityType: 'dm_message',
+          entityId: messageId,
+          payload: <String, Object?>{
+            'message_id': messageId,
+            'to_user_id': toUserId,
+            'from_user_id': fromUserId,
+            'sender_agent_id': senderAgentId,
+            'recipient_agent_id': recipientAgentId,
+            'encryption_type': encrypted.encryptionType.name,
+            'recipient_device_id': recipientDeviceId,
+          },
+        ));
+      }
+    } catch (e, st) {
+      developer.log(
+        'Failed to enqueue DM server-authoritative',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      if (LedgerAuditV0.isEnabled) {
+        unawaited(LedgerAuditV0.tryAppend(
+          domain: LedgerDomainV0.security,
+          eventType: 'signal_dm_enqueue_server_authoritative_failed',
+          occurredAt: DateTime.now(),
+          entityType: 'dm_message',
+          entityId: messageId,
+          payload: <String, Object?>{
+            'message_id': messageId,
+            'to_user_id': toUserId,
+            'from_user_id': fromUserId,
+            'error': e.toString(),
+          },
+        ));
+      }
+      rethrow;
+    }
+  }
+
   Future<DmMessageBlob?> getDmBlob(String messageId) async {
     if (!_supabase.isAvailable) {
       throw Exception('Supabase not available');
@@ -93,7 +200,7 @@ class DmMessageStore {
 
     try {
       final row = await _supabase.client
-          .from('dm_message_blobs')
+          .from(_dmTransportBlobsTable)
           .select()
           .eq('message_id', messageId)
           .maybeSingle();

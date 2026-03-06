@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:crypto/crypto.dart';

@@ -1,11 +1,17 @@
 package com.avrai.app
 
 import android.app.ActivityManager
+import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.Context
+import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.PowerManager
 import android.os.StatFs
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.avrai.app.services.BleInboxStore
 import com.avrai.app.services.BLEForegroundService
@@ -18,6 +24,7 @@ import java.io.File
 class MainActivity: FlutterActivity() {
   private var localLlmEventSink: EventChannel.EventSink? = null
   private var localLlmModelDir: String? = null
+  private var engine: Any? = null
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
@@ -126,6 +133,19 @@ class MainActivity: FlutterActivity() {
 
     MethodChannel(
       flutterEngine.dartExecutor.binaryMessenger,
+      CHANNEL_WIFI_DIRECT,
+    ).setMethodCallHandler { call, result ->
+      when (call.method) {
+        "scanPeers" -> {
+          scanWifiDirectPeers(result)
+        }
+        "isSupported" -> result.success(isWifiP2pSupported())
+        else -> result.notImplemented()
+      }
+    }
+
+    MethodChannel(
+      flutterEngine.dartExecutor.binaryMessenger,
       CHANNEL_DEVICE_CAPABILITIES,
     ).setMethodCallHandler { call, result ->
       when (call.method) {
@@ -186,11 +206,25 @@ class MainActivity: FlutterActivity() {
             localLlmModelDir = null
             result.success(false)
           } else {
-            // Basic validation: directory exists and contains at least one .gguf.
-            val dir = File(modelDir)
-            val ok = dir.exists() && dir.isDirectory && (dir.listFiles()?.any { it.name.endsWith(".gguf") } == true)
-            localLlmModelDir = if (ok) modelDir else null
-            result.success(ok)
+            val clazz = try {
+              Class.forName("ai.mlc.mlcllm.MLCEngine")
+            } catch (_: ClassNotFoundException) {
+              null
+            }
+            if (clazz == null) {
+              localLlmModelDir = null
+              result.error("mlc_runtime_missing", "MLC-LLM Android runtime is not available in this build", null)
+            } else {
+              try {
+                engine = clazz.getConstructor(String::class.java).newInstance(modelDir)
+                localLlmModelDir = modelDir
+                result.success(true)
+              } catch (e: Exception) {
+                localLlmModelDir = null
+                engine = null
+                result.error("mlc_runtime_error", "Failed to initialize MLCEngine", e.toString())
+              }
+            }
           }
         }
         "generate" -> {
@@ -200,7 +234,30 @@ class MainActivity: FlutterActivity() {
           } else if (localLlmModelDir == null || localLlmModelDir != modelDir) {
             result.error("not_ready", "Local LLM not loaded", null)
           } else {
-            result.error("not_ready", "Local LLM not yet active on Android", null)
+            try {
+              // Get the underlying MLCEngine object
+              val mlcEngine = engine
+              if (mlcEngine == null) {
+                 result.error("not_ready", "Engine is null", null)
+                 return@setMethodCallHandler
+              }
+
+              // Use Kotlin reflection to invoke the chat method based on current mlc4j library format
+              val messages = call.argument<List<Map<String, String>>>("messages") ?: emptyList()
+              val responseFormat = call.argument<String>("response_format")
+              
+              // This is a stub that allows the app to compile while passing the correct types
+              // We are using reflection here to avoid compile-time dependency errors if mlc4j updates
+              val chatMethod = mlcEngine.javaClass.getMethod("chat", String::class.java)
+              
+              // For a simple single prompt implementation (we concatenate the messages for now)
+              val prompt = messages.joinToString("\n") { "${it["role"]}: ${it["content"]}" }
+              val rawOutput = chatMethod.invoke(mlcEngine, prompt) as String
+              
+              result.success(rawOutput)
+            } catch (e: Exception) {
+              result.error("generate_error", "Failed to generate text: ${e.message}", e.toString())
+            }
           }
         }
         "startStream" -> {
@@ -339,13 +396,150 @@ class MainActivity: FlutterActivity() {
     }
   }
 
+  private fun isWifiP2pSupported(): Boolean {
+    return packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)
+  }
+
+  private fun scanWifiDirectPeers(result: MethodChannel.Result) {
+    if (!isWifiP2pSupported()) {
+      result.success(
+        mapOf(
+          "status" to "unsupported",
+          "reason" to "WiFi Direct is not available on this device",
+          "peers" to emptyList<Any>(),
+          "fallback_transport" to "bluetooth",
+        ),
+      )
+      return
+    }
+
+    val manager = getSystemService(Context.WIFI_P2P_SERVICE) as? WifiP2pManager
+    if (manager == null) {
+      result.success(
+        mapOf(
+          "status" to "unsupported",
+          "reason" to "WiFi P2P system service unavailable",
+          "peers" to emptyList<Any>(),
+          "fallback_transport" to "bluetooth",
+        ),
+      )
+      return
+    }
+
+    val p2pChannel = manager.initialize(this, mainLooper, null)
+    val peers = mutableListOf<Map<String, Any?>>()
+    val timeoutHandler = Handler(Looper.getMainLooper())
+    var completed = false
+    var receiverRegistered = false
+
+    lateinit var peerReceiver: BroadcastReceiver
+
+    fun finalizeScan(
+      status: String,
+      reason: String?,
+      discoveredPeers: List<Map<String, Any?>> = peers,
+    ) {
+      if (completed) return
+      completed = true
+
+      timeoutHandler.removeCallbacksAndMessages(null)
+
+      if (receiverRegistered) {
+        try {
+          unregisterReceiver(peerReceiver)
+          receiverRegistered = false
+        } catch (_: Exception) {}
+      }
+
+      try {
+        manager.stopPeerDiscovery(
+          p2pChannel,
+          object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {}
+            override fun onFailure(reason: Int) {}
+          },
+        )
+      } catch (_: Exception) {}
+
+      val payload = hashMapOf<String, Any>(
+        "status" to status,
+        "peers" to discoveredPeers,
+        "fallback_transport" to "bluetooth",
+      )
+      if (reason != null) {
+        payload["reason"] = reason
+      }
+
+      result.success(payload)
+    }
+
+    peerReceiver = object : BroadcastReceiver() {
+      override fun onReceive(context: Context?, intent: Intent?) {
+        if (intent?.action != WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) return
+
+        manager.requestPeers(
+          p2pChannel,
+          WifiP2pManager.PeerListListener { peerList ->
+            peers.clear()
+
+            peerList?.deviceList?.forEach { peer ->
+              val deviceId = peer.deviceAddress
+              if (deviceId.isNullOrBlank()) return@forEach
+
+              peers.add(
+                mapOf(
+                  "device_id" to deviceId,
+                  "device_name" to (peer.deviceName ?: "WiFi Direct Device"),
+                  "device_type" to "wifi_direct",
+                  "spots_enabled" to true,
+                ),
+              )
+            }
+
+            finalizeScan(
+              if (peers.isNotEmpty()) "ok" else "empty",
+              if (peers.isNotEmpty()) null else "No SPOTS-capable WiFi Direct peers discovered",
+            )
+          },
+        )
+      }
+    }
+
+    registerReceiver(
+      peerReceiver,
+      IntentFilter(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION),
+    )
+    receiverRegistered = true
+
+    timeoutHandler.postDelayed(
+      {
+        finalizeScan("timeout", "WiFi Direct peer discovery timed out")
+      },
+      3500L,
+    )
+
+    manager.discoverPeers(
+      p2pChannel,
+      object : WifiP2pManager.ActionListener {
+        override fun onSuccess() {
+          // Wait for peers changed broadcast; fallback timer will finalize if none found.
+        }
+
+        override fun onFailure(reason: Int) {
+          finalizeScan("error", "WiFi P2P discovery failed (code=$reason)")
+        }
+      },
+    )
+  }
+
   companion object {
     private const val CHANNEL_BLE_FOREGROUND = "avra/ble_foreground"
     private const val CHANNEL_BLE_PERIPHERAL = "avra/ble_peripheral"
     private const val CHANNEL_BLE_INBOX = "avra/ble_inbox"
+    private const val CHANNEL_WIFI_DIRECT = "avra/wifi_direct"
     private const val CHANNEL_DEVICE_CAPABILITIES = "avra/device_capabilities"
-    private const val CHANNEL_LOCAL_LLM = "avra/local_llm"
-    private const val CHANNEL_LOCAL_LLM_STREAM = "avra/local_llm_stream"
+    private const val CHANNEL_LOCAL_LLM = "avrai/mlc_llm"
+    private const val CHANNEL_LOCAL_LLM_STREAM = "avrai/mlc_llm_stream"
     private const val CHANNEL_APP_USAGE = "com.avrai.app_usage"
   }
 } 

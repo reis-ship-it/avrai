@@ -12,7 +12,7 @@ import 'package:avrai/presentation/widgets/partnerships/partnership_card.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Management Page
 ///
@@ -339,7 +339,7 @@ class PartnershipDetailsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Business Info
-              PortalSurface(
+              AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
@@ -394,7 +394,7 @@ class PartnershipDetailsPage extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Status
-              PortalSurface(
+              AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,7 +423,7 @@ class PartnershipDetailsPage extends StatelessWidget {
 
               // Agreement Terms
               if (partnership.agreement != null) ...[
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

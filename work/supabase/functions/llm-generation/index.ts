@@ -3,7 +3,6 @@
 // Generates LLM responses with distilled context from retrieval layer
 
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 interface RequestBody {
   query: string
@@ -18,14 +17,6 @@ interface RequestBody {
   personalityProfile?: any
 }
 
-function supabaseAdmin() {
-  const url = Deno.env.get('SUPABASE_URL')!
-  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  return createClient(url, serviceKey, {
-    auth: { persistSession: false },
-  })
-}
-
 function buildPrompt(
   query: string,
   structuredContext: any,
@@ -35,6 +26,10 @@ function buildPrompt(
   const traits = structuredContext?.traits?.join(', ') || 'none'
   const placesCount = structuredContext?.places?.length || 0
   const socialCount = structuredContext?.social_graph?.length || 0
+  const archetype = personalityProfile?.archetype || 'unknown'
+  const dominantTraits = Array.isArray(personalityProfile?.dominantTraits)
+    ? personalityProfile.dominantTraits.slice(0, 5).join(', ')
+    : 'unknown'
 
   return `
 User query: ${query}
@@ -44,8 +39,9 @@ Structured context:
 - Places: ${placesCount} places
 - Social graph: ${socialCount} connections
 
-Dimension scores: ${JSON.stringify(dimensionScores || {})}
-Personality profile: ${JSON.stringify(personalityProfile || {})}
+Personality archetype: ${archetype}
+Dominant traits: ${dominantTraits}
+Dimension score count: ${Object.keys(dimensionScores || {}).length}
 
 Provide a helpful recommendation based on this context.
 `
@@ -134,33 +130,6 @@ serve(async (req) => {
 
     const generatedText = data.candidates[0].content?.parts?.[0]?.text || 
       'I apologize, but I could not generate a response.'
-
-    // Store response in database if agentId is provided
-    if (structuredContext?.agentId) {
-      try {
-        const supabase = supabaseAdmin()
-        
-        // Create llm_responses table if it doesn't exist (will be created via migration)
-        // For now, we'll attempt to insert, but won't fail if table doesn't exist
-        await supabase
-          .from('llm_responses')
-          .insert({
-            agent_id: structuredContext.agentId,
-            query: query,
-            response: generatedText,
-            created_at: new Date().toISOString(),
-          })
-          .then(({ error }) => {
-            if (error) {
-              // Table might not exist yet, log but don't fail
-              console.log('Note: llm_responses table may not exist yet:', error.message)
-            }
-          })
-      } catch (e) {
-        // Don't fail the request if storing fails
-        console.log('Note: Could not store LLM response:', e)
-      }
-    }
 
     return new Response(
       JSON.stringify({

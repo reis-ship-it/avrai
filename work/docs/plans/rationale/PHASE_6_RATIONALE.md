@@ -56,8 +56,11 @@ System 1 is TRAINED from System 2's outputs (distillation). Over time, System 2'
 ### Why SLM Is "The Mouth, Not the Brain" (6.7)
 The world model handles all decisions in ~6ms. A 1-3B SLM takes ~125ms per inference. If the SLM made decisions, the app would be 20,000x slower. The SLM's only job: translate numeric outputs into natural language. "Your quantum state compatibility is 0.87" → "This spot resonates with your adventurous side."
 
-### Why Mesh-Fallback Communication (6.6)
-The MPC planner's action space includes "message_friend." If the user is offline but the friend is nearby on BLE mesh, the action should still be possible. Mesh-fallback ensures the planner's action space reflects reality, not just connectivity state.
+### Why Mesh-Fallback Communication & DTN Wormholes (6.6)
+The MPC planner's action space includes "message_friend" and "drop_business_pheromone." If the user is offline but the friend is nearby on BLE mesh, the action must still be possible. Mesh-fallback ensures the planner's action space reflects reality, not just connectivity state.
+More importantly, **Delay-Tolerant Networking (DTN)** allows messages to bridge massive geographic gaps (like NYC to LA). 
+- **The Wormhole:** If an offline user passes an online user, the online user anonymously relays the encrypted message to the cloud.
+- **Cultural Seed Dispersal:** As pheromones decay spatially, their underlying "scent vibes" are captured by travelers and injected into new cities, allowing local communities to organically pick up on foreign cultural trends (just like real life) without spamming the network with irrelevant out-of-state ads. This honors the user's "Exploration Note" (Replicator vs. Escapee).
 
 ### Why List Actions in MPC Space (6.1.6-6.1.8)
 Creating a list is a valid recommendation. After visiting 3 similar spots, the planner might predict: "suggesting 'Create a list of your favorites' produces lower energy (better outcome) than suggesting a 4th similar spot." This models the desire to organize, not just consume. Lists also create conditional dependencies: saving a spot to a jazz list changes the user's state, making jazz events more likely next.
@@ -67,6 +70,12 @@ Business-expert matching isn't one-shot -- it's a relationship that unfolds: `ou
 
 ### Why Creator-Side Intelligence (6.1.13-6.1.15)
 The MPC planner shouldn't just help consumers -- it should help community hosts and event creators too. Creator-side planning is strategic: before hosting an event, the planner can predict optimal outcomes for different parameter choices (time, venue, capacity, pricing). Event parameter optimization BEFORE creation is more valuable than post-hoc analysis because it shapes the event itself rather than explaining why it underperformed. Creator feedback loops (predicted vs actual outcomes) are essential for improving creator-side predictions over time; without them, the planner would never learn which parameters actually drive success.
+
+### Why Zero Trust Tool Registry (6.3.5-6.3.6)
+The static tool list in 6.3.2 tells the agent what tools exist. But zero trust says: don't trust a tool just because it's listed — verify it before every invocation. `ToolRegistryService` (6.3.5) applies the same signed-manifest pattern as `KernelRegistry` (1.1E.12) to tools: each tool has a signed manifest declaring its capabilities, and the runtime verifies the signature before invocation. Tool capability constraints (6.3.6) enforce least privilege — a tool that says it can "search" cannot also "delete." This becomes critical when MCP tool calls or external APIs are added: every tool interaction is an attack surface that must be verified, scoped, and audited.
+
+### Why AI Action Gateway (6.10)
+The MPC planner generates action sequences. The agent executes them. But what sits between intent and action? In most agentic systems: nothing. That's the gap. The `AgentActionGateway` (6.10.1) is the zero trust inspection layer — every action passes through it before execution. It enforces action policies, scans for data leakage, detects anomalous action sequences, and provides an immutable audit trail. Think of it as an AI firewall: it doesn't stop the agent from being intelligent, but it prevents a compromised or poisoned agent from causing damage. The gateway's kill switch (6.10.6) connects to the digital twins intervention console (10.9.25) — if an admin sees an agent running out of control, they can halt all actions instantly.
 
 ### Why Re-Engagement Guardrails (6.2.12-6.2.15)
 Re-engagement must be a strategic response (strategy selection), not a spam trigger. The MPC planner evaluates multiple re-engagement strategies and may decide "do nothing" is the best action -- natural breaks are healthy, and users who stepped away intentionally shouldn't be pestered. The 1/week frequency guardrail plus silent mode after 3 failures prevents annoyance: users who ignore multiple re-engagement attempts get a cooling-off period rather than escalating notifications. Returning users get a temporary exploration boost because their taste may have drifted during absence; the planner should not assume they want the same things as before. Dormancy prediction from Phase 5.1.11 feeds these guardrails: knowing *when* someone is likely to return informs *whether* and *how* to re-engage.
@@ -80,6 +89,8 @@ Re-engagement must be a strategic response (strategy selection), not a spam trig
 - [ ] System 1 distillation is producing microsecond inference
 - [ ] Guardrail objectives are enforced (at minimum: diversity, safety, doors)
 - [ ] Agent architecture (6.3) has persistent memory and tool registry
+- [ ] `AgentActionGateway` (6.10) is operational between planner and action execution
+- [ ] Tool registry uses signed manifests with runtime verification (6.3.5)
 
 **Before starting Phase 8 (Ecosystem Intelligence):**
 - [ ] MPC planner handles `connect_ai2ai` as a candidate action
@@ -94,7 +105,9 @@ Re-engagement must be a strategic response (strategy selection), not a spam trig
 2. **Making the SLM a decision-maker**: If the SLM influences recommendations (not just explains them), you've bypassed the world model and added 20,000x latency.
 3. **Ignoring the exploration-exploitation balance for new users**: Without guardrails 6.2.9-6.2.11, new users get the model's "best guess" rather than diverse recommendations that help it LEARN what they like.
 4. **Forgetting that System 1 needs retraining as System 2 improves**: System 1 is distilled from System 2. When the energy function improves (new outcome data), System 2 improves, and System 1 needs re-distillation.
+5. **Treating the action gateway as optional**: Without the `AgentActionGateway` (6.10), there is no inspection between what the planner decides and what the agent does. A poisoned model or prompt injection that bypasses sanitization can execute arbitrary actions unchecked. The gateway is the last line of defense.
+6. **Using a static tool list instead of verified registry**: A static list (6.3.2) becomes a liability when external tools are added. Every unverified tool is a potential supply chain attack vector. Signed manifests (6.3.5) are non-negotiable for any tool the agent can invoke.
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 context -- planning/actor is the critical capability gap in their framework and in most recommendation systems. Previous: 1.0 v12 gap fill)
+**Last Updated:** March 5, 2026 -- Version 1.2 (added zero trust tool registry 6.3.5-6.3.6, AI action gateway 6.10, updated pre-flight checklist and pitfalls. Previous: 1.1 Zeng et al. 2026 context)

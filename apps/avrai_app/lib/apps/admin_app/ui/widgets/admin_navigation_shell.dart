@@ -69,6 +69,12 @@ class AdminNavigationShell extends StatelessWidget {
                       selected: _isActive(AdminRoutePaths.ai2ai),
                     ),
                     _NavTile(
+                      icon: Icons.monitor_heart_outlined,
+                      label: 'Signature Health',
+                      route: AdminRoutePaths.signatureHealth,
+                      selected: _isActive(AdminRoutePaths.signatureHealth),
+                    ),
+                    _NavTile(
                       icon: Icons.settings_suggest,
                       label: 'URK Kernel',
                       route: AdminRoutePaths.urkKernels,

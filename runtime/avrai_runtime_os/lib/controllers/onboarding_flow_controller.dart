@@ -56,7 +56,8 @@ class OnboardingFlowController
   final AgentIdService _agentIdService;
   final LegalDocumentService _legalDocumentService;
   // ignore: unused_field
-  final AtomicClockService _atomicClock; // Reserved for future timestamp-based onboarding tracking
+  final AtomicClockService
+      _atomicClock; // Reserved for future timestamp-based onboarding tracking
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final PersonalityKnotService? _personalityKnotService;
@@ -76,7 +77,10 @@ class OnboardingFlowController
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
         _legalDocumentService =
             legalDocumentService ?? GetIt.instance<LegalDocumentService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()
@@ -142,6 +146,7 @@ class OnboardingFlowController
         favoritePlaces: data.favoritePlaces,
         preferences: data.preferences,
         baselineLists: data.baselineLists,
+        openResponses: data.openResponses,
         respectedFriends: data.respectedFriends,
         socialMediaConnected: data.socialMediaConnected,
         completedAt: data.completedAt,

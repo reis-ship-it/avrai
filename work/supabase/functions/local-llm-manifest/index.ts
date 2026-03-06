@@ -39,55 +39,38 @@ serve(async (req) => {
     // These should point at Supabase Storage public URLs.
     // Keep weights out of the repo; configure URLs/hashes via env.
     // Tiered artifacts (prefer llama8b when available).
-    const androidUrl8b = Deno.env.get('LOCAL_LLM_ANDROID_GGUF_URL') ?? ''
-    const androidSha2568b = Deno.env.get('LOCAL_LLM_ANDROID_GGUF_SHA256') ?? ''
-    const androidSize8b = Number(Deno.env.get('LOCAL_LLM_ANDROID_GGUF_SIZE_BYTES') ?? '0')
+    
+    // NEW: MLC-LLM Zip format for Qwen 3B (Unified for iOS and Android)
+    const mlcZipUrl3b = Deno.env.get('LOCAL_LLM_MLC_ZIP_URL_3B') ?? ''
+    const mlcZipSha2563b = Deno.env.get('LOCAL_LLM_MLC_ZIP_SHA256_3B') ?? ''
+    const mlcZipSize3b = Number(Deno.env.get('LOCAL_LLM_MLC_ZIP_SIZE_BYTES_3B') ?? '0')
 
-    const androidUrl3b = Deno.env.get('LOCAL_LLM_ANDROID_GGUF_URL_3B') ?? ''
-    const androidSha2563b = Deno.env.get('LOCAL_LLM_ANDROID_GGUF_SHA256_3B') ?? ''
-    const androidSize3b = Number(Deno.env.get('LOCAL_LLM_ANDROID_GGUF_SIZE_BYTES_3B') ?? '0')
-
-    const iosUrl8b = Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_URL') ?? ''
-    const iosSha2568b = Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_SHA256') ?? ''
-    const iosSize8b = Number(Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_SIZE_BYTES') ?? '0')
-
-    const iosUrl3b = Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_URL_3B') ?? ''
-    const iosSha2563b = Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_SHA256_3B') ?? ''
-    const iosSize3b = Number(Deno.env.get('LOCAL_LLM_IOS_COREML_ZIP_SIZE_BYTES_3B') ?? '0')
-
-    // macOS (Apple Silicon CoreML)
+    // macOS (Apple Silicon CoreML - Desktop Node)
     const macosCoreMLUrl8b = Deno.env.get('LOCAL_LLM_MACOS_COREML_ZIP_URL') ?? ''
     const macosCoreMLSha2568b = Deno.env.get('LOCAL_LLM_MACOS_COREML_ZIP_SHA256') ?? ''
     const macosCoreMLSize8b = Number(Deno.env.get('LOCAL_LLM_MACOS_COREML_ZIP_SIZE_BYTES') ?? '0')
 
-    // macOS (Intel GGUF fallback - optional)
-    const macosIntelUrl8b = Deno.env.get('LOCAL_LLM_MACOS_INTEL_GGUF_URL') ?? ''
-    const macosIntelSha2568b = Deno.env.get('LOCAL_LLM_MACOS_INTEL_GGUF_SHA256') ?? ''
-    const macosIntelSize8b = Number(Deno.env.get('LOCAL_LLM_MACOS_INTEL_GGUF_SIZE_BYTES') ?? '0')
-
     const artifacts: any[] = []
     if (tier === 'small3b') {
-      if (androidUrl3b && androidSha2563b && androidSize3b > 0) {
+      // Return the new unified MLC Zip format for Qwen 3B (works on both iOS and Android)
+      if (mlcZipUrl3b && mlcZipSha2563b && mlcZipSize3b > 0) {
         artifacts.push({
-          platform: 'android_gguf',
-          url: androidUrl3b,
-          sha256: androidSha2563b,
-          size_bytes: androidSize3b,
-          file_name: 'model.gguf',
-          is_zip: false,
+          platform: 'ios_coreml_zip', // We hijack the existing ZIP extraction flow in Dart
+          url: mlcZipUrl3b,
+          sha256: mlcZipSha2563b,
+          size_bytes: mlcZipSize3b,
+          file_name: 'qwen_mlc.zip',
+          is_zip: true,
         })
-      }
-      if (iosUrl3b && iosSha2563b && iosSize3b > 0) {
         artifacts.push({
-          platform: 'ios_coreml_zip',
-          url: iosUrl3b,
-          sha256: iosSha2563b,
-          size_bytes: iosSize3b,
-          file_name: 'model_coreml.zip',
+          platform: 'android_gguf', // We hijack the Android flow to also use the ZIP
+          url: mlcZipUrl3b,
+          sha256: mlcZipSha2563b,
+          size_bytes: mlcZipSize3b,
+          file_name: 'qwen_mlc.zip',
           is_zip: true,
         })
       }
-      // macOS 3B tier support can be added here if needed
     } else {
       if (androidUrl8b && androidSha2568b && androidSize8b > 0) {
       artifacts.push({

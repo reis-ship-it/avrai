@@ -1,13 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:avrai_runtime_os/services/infrastructure/search_cache_service.dart';
 import 'package:avrai_runtime_os/data/repositories/hybrid_search_repository.dart';
 import '../../helpers/platform_channel_helper.dart';
+import '../../helpers/test_storage_helper.dart';
 
 /// Search Cache Service Tests
 /// Tests search caching functionality for performance optimization
 void main() {
   group('SearchCacheService Tests', () {
     late SearchCacheService service;
+
+    setUpAll(() async {
+      await TestStorageHelper.initTestStorage();
+      await GetStorage.init('search_cache');
+      await GetStorage('search_cache').erase();
+    });
 
     setUp(() {
       service = SearchCacheService();
@@ -165,6 +173,9 @@ void main() {
     });
 
     tearDownAll(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await GetStorage('search_cache').erase();
+      await TestStorageHelper.clearTestStorage();
       await cleanupTestStorage();
     });
   });

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/presentation/pages/home/home_page.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/portal/turbine_loader.dart';
 import 'package:avrai_core/models/user/user.dart';
 import '../../helpers/widget_test_helpers.dart';
 import '../../../helpers/test_helpers.dart';
@@ -45,7 +45,7 @@ void main() {
       );
       await tester.pumpWidget(widget1);
       await tester.pump();
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(TurbineLoader), findsOneWidget);
 
       mockAuthBloc.setState(Unauthenticated());
       final widget2 = WidgetTestHelpers.createTestableWidget(

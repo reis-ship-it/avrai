@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/widgets/settings/federated_learning_settings_section.dart';
 import 'package:avrai/presentation/widgets/settings/federated_learning_status_widget.dart';
 import 'package:avrai/presentation/widgets/settings/privacy_metrics_widget.dart';
 import 'package:avrai/presentation/widgets/settings/federated_participation_history_widget.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Federated Learning Page
 ///
@@ -87,48 +88,14 @@ class FederatedLearningPage extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return PortalSurface(
-      color: AppColors.electricGreen.withValues(alpha: 0.1),
-      borderColor: AppColors.electricGreen.withValues(alpha: 0.24),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.electricGreen.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.school,
-              color: AppColors.electricGreen,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Privacy-Preserving AI Training',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Help improve AI without sharing your data',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+    return AppSurface(
+      color: AppColors.primary.withValues(alpha: 0.1),
+      borderColor: AppColors.primary.withValues(alpha: 0.24),
+      child: const AppPageHeader(
+        title: 'Privacy-Preserving AI Training',
+        subtitle: 'Help improve AI without sharing your data',
+        leadingIcon: Icons.school,
+        showDivider: false,
       ),
     );
   }
@@ -145,7 +112,7 @@ class FederatedLearningPage extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return const PortalSurface(
+    return const AppSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

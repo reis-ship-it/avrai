@@ -3,6 +3,8 @@ import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:avrai_network/network/device_discovery.dart';
 
 /// Represents a raw environmental ping captured by the passive listener.
 class PassivePing {
@@ -34,12 +36,17 @@ class DwellEvent {
   /// The math-based "DNA" strings encountered while dwelling here
   final List<String> encounteredAgentIds;
 
+  /// Optional health integration (Apple Health/Garmin) for true "excitement" measurement
+  /// Added in v0.4.1 as a stub for future simulation/training passes
+  final double? biometricArousal;
+
   DwellEvent({
     required this.startTime,
     required this.endTime,
     required this.latitude,
     required this.longitude,
     List<String>? encounteredAgentIds,
+    this.biometricArousal,
   }) : encounteredAgentIds = encounteredAgentIds ?? [];
 }
 
@@ -51,9 +58,16 @@ class SmartPassiveCollectionService {
   static const String _logName = 'SmartPassiveCollection';
   
   final DeviceMotionService _motionService;
+  final DeviceDiscoveryService? _deviceDiscoveryService;
   
   StreamSubscription<MotionData>? _motionSub;
+  StreamSubscription<Position>? _locationSub;
   bool _isActive = false;
+
+  // Activity tracking state
+  int _highMotionTicks = 0;
+  int _lowMotionTicks = 0;
+  bool _isCurrentlyActive = false; // true = high motion (walking/driving), false = low motion (dwelling)
 
   // The in-memory buffer before flushing to SQLite/Drift
   final List<PassivePing> _rawPingBuffer = [];
@@ -67,17 +81,19 @@ class SmartPassiveCollectionService {
 
   SmartPassiveCollectionService({
     required DeviceMotionService motionService,
-  }) : _motionService = motionService;
+    DeviceDiscoveryService? deviceDiscoveryService,
+  }) : _motionService = motionService,
+       _deviceDiscoveryService = deviceDiscoveryService;
 
   void start() {
     if (_isActive) return;
     _isActive = true;
     
-    // In a real implementation, this would also start background location 
-    // and background BLE scanning. For Spike 1, we simulate the logic.
-    
-    // We listen to motion, NOT to turn off BLE when still, but to adjust polling frequency.
+    // We listen to motion to adjust BLE polling frequency based on activity.
     _motionSub = _motionService.motionStream.listen(_handleMotionData);
+    
+    // Hook up physical location stream
+    _startLocationStream();
     
     developer.log('Smart Passive Collection started', name: _logName);
   }
@@ -86,10 +102,52 @@ class SmartPassiveCollectionService {
     _isActive = false;
     _motionSub?.cancel();
     _motionSub = null;
+    _locationSub?.cancel();
+    _locationSub = null;
     developer.log('Smart Passive Collection stopped', name: _logName);
   }
 
-  /// Simulate receiving a background ping (from Location or BLE callback)
+  Future<void> _startLocationStream() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        developer.log('Location services are disabled.', name: _logName);
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          developer.log('Location permissions are denied', name: _logName);
+          return;
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        developer.log('Location permissions are permanently denied', name: _logName);
+        return;
+      }
+
+      const LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.medium,
+        distanceFilter: 20, // Send an update only if moved 20 meters
+      );
+
+      _locationSub = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position position) {
+        recordPing(PassivePing(
+          timestamp: position.timestamp,
+          latitude: position.latitude,
+          longitude: position.longitude,
+        ));
+      });
+      
+      developer.log('Started physical location stream for passive collection', name: _logName);
+    } catch (e) {
+      developer.log('Error starting location stream: $e', name: _logName);
+    }
+  }
+
   void recordPing(PassivePing ping) {
     if (!_isActive) return;
     
@@ -98,9 +156,40 @@ class SmartPassiveCollectionService {
   }
 
   void _handleMotionData(MotionData motion) {
-    // If the user is shaking the phone or moving rapidly, we might temporarily
-    // increase the BLE scan frequency, but we never turn it off entirely
-    // because serendipity happens in stillness (e.g. coffee shops).
+    if (!_isActive || _deviceDiscoveryService == null) return;
+    
+    // Evaluate motion "energy" using rotation
+    final motionEnergy = motion.rotation.alpha.abs() + motion.rotation.beta.abs() + motion.rotation.gamma.abs();
+
+    if (motion.shake || motionEnergy > 1.5) {
+      _highMotionTicks++;
+      _lowMotionTicks = 0;
+    } else {
+      _lowMotionTicks++;
+      _highMotionTicks = 0;
+    }
+
+    // Motion data runs at ~60fps, so 180 ticks is roughly 3 seconds
+    if (_highMotionTicks > 180 && !_isCurrentlyActive) {
+      _isCurrentlyActive = true;
+      developer.log('High activity detected (moving). Reducing BLE scan frequency to save battery.', name: _logName);
+      
+      // Moving fast -> lower chance of serendipitous dwell encounter -> scan less
+      _deviceDiscoveryService.updateScanConfig(
+        scanInterval: const Duration(seconds: 30),
+        scanWindow: const Duration(seconds: 3),
+      );
+    } else if (_lowMotionTicks > 300 && _isCurrentlyActive) {
+      // 300 ticks = ~5 seconds of stillness
+      _isCurrentlyActive = false;
+      developer.log('Low activity detected (dwelling). Increasing BLE scan frequency to catch walk-bys.', name: _logName);
+      
+      // Sitting still -> high chance of serendipity -> scan more frequently
+      _deviceDiscoveryService.updateScanConfig(
+        scanInterval: const Duration(seconds: 5),
+        scanWindow: const Duration(seconds: 4),
+      );
+    }
   }
 
   /// Extremely lightweight, non-LLM algorithm to compress raw pings into Dwell Events.

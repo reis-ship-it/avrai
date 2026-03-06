@@ -22,14 +22,14 @@ class RecessedMapContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final portal = context.portal;
-    final cornerRadius = portal.recessedMapCornerRadius;
+    final immersive = context.immersive;
+    final cornerRadius = immersive.recessedMapCornerRadius;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(cornerRadius),
         border: Border.all(
           color: AppColors.white.withValues(alpha: 0.1), // Subtle edge
-          width: portal.recessedMapBorderWidth,
+          width: immersive.recessedMapBorderWidth,
         ),
         // The "Recessed" Shadow effect
         boxShadow: [
@@ -58,7 +58,7 @@ class RecessedMapContainer extends StatelessWidget {
                     colors: [
                       AppColors.transparent,
                       AppColors.black.withValues(
-                        alpha: portal.recessedMapVignetteAlpha,
+                        alpha: immersive.recessedMapVignetteAlpha,
                       ),
                     ],
                     stops: const [0.7, 1.0], // Only darken the corners

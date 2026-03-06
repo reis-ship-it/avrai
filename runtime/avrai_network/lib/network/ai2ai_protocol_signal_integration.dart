@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 // Signal Protocol Integration for AI2AIProtocol
 // Phase 14: Signal Protocol Implementation - Option 1
 //

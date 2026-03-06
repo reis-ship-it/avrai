@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/community/community.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -36,6 +40,10 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage> {
   final CommunityService _communityService = di.sl<CommunityService>();
+  final EntitySignatureService? _entitySignatureService =
+      di.sl.isRegistered<EntitySignatureService>()
+          ? di.sl<EntitySignatureService>()
+          : null;
 
   bool _isLoading = true;
   bool _isMember = false;
@@ -44,6 +52,7 @@ class _CommunityPageState extends State<CommunityPage> {
   Community? _community;
   CommunityMetrics? _communityMetrics;
   double? _weaveFit;
+  bool _hasRecordedViewSignal = false;
 
   @override
   void initState() {
@@ -93,12 +102,36 @@ class _CommunityPageState extends State<CommunityPage> {
         _weaveFit = weaveFit;
         _isLoading = false;
       });
+      if (!_hasRecordedViewSignal) {
+        _hasRecordedViewSignal = true;
+        unawaited(_recordCommunityViewSignal(community));
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = 'Failed to load community: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _recordCommunityViewSignal(Community community) async {
+    if (_entitySignatureService == null) {
+      return;
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      return;
+    }
+
+    try {
+      await _entitySignatureService.recordCommunityViewSignal(
+        user: _toUnifiedUser(authState.user),
+        community: community,
+      );
+    } catch (_) {
+      // Best-effort only.
     }
   }
 
@@ -123,6 +156,14 @@ class _CommunityPageState extends State<CommunityPage> {
 
     try {
       await _communityService.addMember(_community!, authState.user.id);
+      if (_entitySignatureService != null) {
+        unawaited(
+          _entitySignatureService.recordCommunityJoinSignal(
+            user: _toUnifiedUser(authState.user),
+            community: _community!,
+          ),
+        );
+      }
 
       // Reload community to get updated data
       await _loadCommunity();
@@ -209,6 +250,19 @@ class _CommunityPageState extends State<CommunityPage> {
       MaterialPageRoute(
         builder: (context) => const CreateCommunityEventPage(),
       ),
+    );
+  }
+
+  UnifiedUser _toUnifiedUser(dynamic user) {
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+      hasCompletedOnboarding: true,
+      location: _community?.localityCode ?? _community?.cityCode,
     );
   }
 

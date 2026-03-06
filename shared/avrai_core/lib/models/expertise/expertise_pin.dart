@@ -39,37 +39,37 @@ class ExpertisePin extends Equatable {
   int getPinColor() {
     // Category-specific color mapping using AppColors
     final categoryColors = {
-      'Coffee': 0xFF000000, // Brown -> grey700
-      'Restaurants': 0xFF000000, // Red -> error
-      'Bookstores': 0xFF000000, // Blue -> electricGreen
-      'Parks': 0xFF000000, // Green -> electricGreen
-      'Museums': 0xFF000000, // Purple -> grey600
-      'Shopping': 0xFF000000, // Pink -> grey500
-      'Bars': 0xFF000000, // Amber -> warning
-      'Hotels': 0xFF000000, // Teal -> grey400
-      'Thai Food': 0xFF000000, // Orange -> warning
-      'Vintage': 0xFF000000, // Indigo -> grey600
+      'Coffee': 0xFF4D4D4D, // grey700
+      'Restaurants': 0xFFFF4D4D, // error
+      'Bookstores': 0xFF00FF66, // electricGreen
+      'Parks': 0xFF00FF66, // electricGreen
+      'Museums': 0xFF6E6E6E, // grey600
+      'Shopping': 0xFF8A8A8A, // grey500
+      'Bars': 0xFFFFC107, // warning
+      'Hotels': 0xFFB3B3B3, // grey400
+      'Thai Food': 0xFFFFC107, // warning
+      'Vintage': 0xFF6E6E6E, // grey600
     };
 
-    return categoryColors[category] ?? 0xFF000000;
+    return categoryColors[category] ?? 0xFF8A8A8A;
   }
 
   /// Get pin icon based on category
   int getPinIcon() {
     final categoryIcons = {
-      'Coffee': 0,
-      'Restaurants': 0,
-      'Bookstores': 0,
-      'Parks': 0,
-      'Museums': 0,
-      'Shopping': 0,
-      'Bars': 0,
-      'Hotels': 0,
-      'Thai Food': 0,
-      'Vintage': 0,
+      'Coffee': 0xe38d, // Icons.local_cafe
+      'Restaurants': 0xe532, // Icons.restaurant
+      'Bookstores': 0xe3dd, // Icons.menu_book
+      'Parks': 0xe478, // Icons.park
+      'Museums': 0xe414, // Icons.museum
+      'Shopping': 0xe59a, // Icons.shopping_bag
+      'Bars': 0xe38c, // Icons.local_bar
+      'Hotels': 0xe322, // Icons.hotel
+      'Thai Food': 0xe506, // Icons.ramen_dining
+      'Vintage': 0xe15d, // Icons.checkroom
     };
 
-    return categoryIcons[category] ?? 0;
+    return categoryIcons[category] ?? 0xe4c9; // Icons.place
   }
 
   /// Get display title for the pin

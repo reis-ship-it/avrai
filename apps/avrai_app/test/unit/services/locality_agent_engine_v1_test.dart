@@ -108,7 +108,8 @@ void main() {
 
       final inferred =
           await engine.inferVector12(agentId: 'agent_abc', key: key);
-      expect(inferred[0], closeTo(0.6, 1e-6)); // 0.5 + 0.1
+      // Includes locality smoothing weights before personal delta application.
+      expect(inferred[0], closeTo(0.525, 1e-6));
     });
   });
 }

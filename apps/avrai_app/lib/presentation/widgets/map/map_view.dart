@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:get_it/get_it.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -23,6 +24,8 @@ import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_city_pack_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai/presentation/widgets/map/geo_synco_summary_card.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/places/neighborhood_boundary_service.dart';
 import 'package:avrai_core/models/geographic/neighborhood_boundary.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
@@ -411,6 +414,42 @@ class _MapViewState extends State<MapView> {
     if (!_showBoundaries) return;
 
     try {
+      final sl = GetIt.instance;
+      final localityKernel = sl.isRegistered<LocalityKernelContract>()
+          ? sl<LocalityKernelContract>()
+          : null;
+      if (localityKernel != null) {
+        final resolution = await localityKernel.resolvePoint(
+          LocalityPointQuery(
+            latitude: lat,
+            longitude: lon,
+            occurredAtUtc: DateTime.now().toUtc(),
+            audience: LocalityProjectionAudience.admin,
+            includeGeometry: true,
+            includeAttribution: true,
+          ),
+        );
+
+        if (!mounted) return;
+
+        final cityCode = resolution.cityCode;
+        final localityCode = resolution.localityCode;
+        if (cityCode != null && cityCode.isNotEmpty) {
+          // ignore: unawaited_futures
+          unawaited(GeoCityPackService().ensureLatestInstalled(cityCode));
+          setState(() {
+            _selectedBoundaryCityCode = cityCode;
+            _selectedBoundaryLocalityName =
+                localityCode != null && localityCode.isNotEmpty
+                    ? resolution.displayName
+                    : null;
+            _selectedBoundaryLocalityCode = localityCode;
+          });
+          await _loadBoundaryOverlays();
+          return;
+        }
+      }
+
       final locality = await _geoHierarchyService.lookupLocalityByPoint(
         lat: lat,
         lon: lon,

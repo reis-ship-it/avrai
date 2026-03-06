@@ -10,7 +10,7 @@ import 'package:avrai_runtime_os/services/ledgers/ledger_receipts_service_v0.dar
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ReceiptsPage extends StatefulWidget {
   const ReceiptsPage({super.key});
@@ -80,7 +80,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
                 final id = r.event.id ?? '';
                 final subtitle =
                     '${r.event.domain.wireName} • ${r.event.occurredAt.toLocal()}';
-                return PortalSurface(
+                return AppSurface(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   padding: EdgeInsets.zero,

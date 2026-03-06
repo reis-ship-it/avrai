@@ -15,6 +15,10 @@ import 'package:avrai_runtime_os/services/device/world_orientation_service.dart'
 /// The view is "World-Locked" using sensor fusion, meaning if you turn
 /// your phone North, you see the virtual North.
 class PortalShaderWidget extends StatefulWidget {
+  /// Global rotation notifier for parallax effects in other widgets
+  static final ValueNotifier<Quaternion> rotationNotifier =
+      ValueNotifier(Quaternion.identity());
+
   const PortalShaderWidget({super.key});
 
   @override
@@ -27,8 +31,13 @@ class _PortalShaderWidgetState extends State<PortalShaderWidget>
   ui.FragmentProgram? _program;
 
   // Day/Night Cycle (0.0 = Night, 1.0 = Day)
-  // Hardcoded for now, can be hooked to real time
-  final double _dayCycle = 1.0;
+  // Synced to real-world system time
+  double get _dayCycle {
+    final now = DateTime.now();
+    final hours = now.hour + now.minute / 60.0 + now.second / 3600.0;
+    // Sine wave mapping: 0:00 -> ~0.0 (Night), 12:00 -> 1.0 (Day)
+    return (math.sin((hours - 6) / 24.0 * 2 * math.pi) + 1.0) / 2.0;
+  }
 
   StreamSubscription<WorldOrientationFrame>? _orientationSubscription;
   final WorldOrientationService _orientationService = WorldOrientationService();
@@ -51,6 +60,7 @@ class _PortalShaderWidgetState extends State<PortalShaderWidget>
       _repaint.uprightCorrection = _computeUprightCorrection(frame.deviceDown);
       // Update orientation and repaint; no setState needed.
       _repaint.cameraRotation = frame.worldRotation;
+      PortalShaderWidget.rotationNotifier.value = frame.worldRotation;
     });
   }
 

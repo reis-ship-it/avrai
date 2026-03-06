@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:avrai_network/network/ble_personality_fetcher.dart';
 import 'package:avrai_network/network/device_discovery_factory.dart';
 import 'package:avrai_network/network/models/anonymized_vibe_data.dart';
@@ -218,10 +219,27 @@ class DeviceDiscoveryService {
         return device.personalityData;
       }
 
-      // Option B: if not present in the scan payload, try a follow-up BLE GATT read.
-      return await fetchPersonalityDataOverBle(device);
+      return null;
     } catch (e) {
       developer.log('Error extracting personality data: $e', name: _logName);
+      return null;
+    }
+  }
+
+  /// Extract the binary DNA math payload from a discovered device
+  /// Returns the Uint8List payload encoded by DnaEncoderService
+  Future<Uint8List?> extractDnaPayload(
+    DiscoveredDevice device,
+  ) async {
+    try {
+      if (!device.isSpotsEnabled) {
+        return null;
+      }
+
+      // Read the binary payload via follow-up BLE GATT read.
+      return await fetchDnaPayloadOverBle(device);
+    } catch (e) {
+      developer.log('Error extracting DNA payload: $e', name: _logName);
       return null;
     }
   }

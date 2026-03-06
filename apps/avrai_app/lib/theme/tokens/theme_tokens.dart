@@ -104,9 +104,9 @@ class AppMotion extends ThemeExtension<AppMotion> {
   final Duration slow;
 
   const AppMotion({
-    this.fast = const Duration(milliseconds: 180),
-    this.normal = const Duration(milliseconds: 300),
-    this.slow = const Duration(milliseconds: 450),
+    this.fast = const Duration(milliseconds: 160),
+    this.normal = const Duration(milliseconds: 240),
+    this.slow = const Duration(milliseconds: 360),
   });
 
   @override
@@ -134,7 +134,200 @@ class AppMotion extends ThemeExtension<AppMotion> {
 }
 
 @immutable
-class PortalTokens extends ThemeExtension<PortalTokens> {
+class AppLayoutTokens extends ThemeExtension<AppLayoutTokens> {
+  final double maxPhoneContentWidth;
+  final double maxTabletContentWidth;
+  final double maxDesktopContentWidth;
+
+  const AppLayoutTokens({
+    this.maxPhoneContentWidth = 480,
+    this.maxTabletContentWidth = 760,
+    this.maxDesktopContentWidth = 980,
+  });
+
+  @override
+  AppLayoutTokens copyWith({
+    double? maxPhoneContentWidth,
+    double? maxTabletContentWidth,
+    double? maxDesktopContentWidth,
+  }) {
+    return AppLayoutTokens(
+      maxPhoneContentWidth: maxPhoneContentWidth ?? this.maxPhoneContentWidth,
+      maxTabletContentWidth:
+          maxTabletContentWidth ?? this.maxTabletContentWidth,
+      maxDesktopContentWidth:
+          maxDesktopContentWidth ?? this.maxDesktopContentWidth,
+    );
+  }
+
+  @override
+  AppLayoutTokens lerp(ThemeExtension<AppLayoutTokens>? other, double t) {
+    if (other is! AppLayoutTokens) return this;
+    return AppLayoutTokens(
+      maxPhoneContentWidth:
+          lerpDouble(maxPhoneContentWidth, other.maxPhoneContentWidth, t),
+      maxTabletContentWidth:
+          lerpDouble(maxTabletContentWidth, other.maxTabletContentWidth, t),
+      maxDesktopContentWidth:
+          lerpDouble(maxDesktopContentWidth, other.maxDesktopContentWidth, t),
+    );
+  }
+}
+
+@immutable
+class AppTypographyTokens extends ThemeExtension<AppTypographyTokens> {
+  final double display;
+  final double headline;
+  final double title;
+  final double body;
+  final double label;
+  final double bodyLineHeight;
+  final FontWeight strongWeight;
+  final FontWeight regularWeight;
+
+  const AppTypographyTokens({
+    this.display = 34,
+    this.headline = 28,
+    this.title = 20,
+    this.body = 16,
+    this.label = 13,
+    this.bodyLineHeight = 1.45,
+    this.strongWeight = FontWeight.w700,
+    this.regularWeight = FontWeight.w400,
+  });
+
+  @override
+  AppTypographyTokens copyWith({
+    double? display,
+    double? headline,
+    double? title,
+    double? body,
+    double? label,
+    double? bodyLineHeight,
+    FontWeight? strongWeight,
+    FontWeight? regularWeight,
+  }) {
+    return AppTypographyTokens(
+      display: display ?? this.display,
+      headline: headline ?? this.headline,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      label: label ?? this.label,
+      bodyLineHeight: bodyLineHeight ?? this.bodyLineHeight,
+      strongWeight: strongWeight ?? this.strongWeight,
+      regularWeight: regularWeight ?? this.regularWeight,
+    );
+  }
+
+  @override
+  AppTypographyTokens lerp(
+      ThemeExtension<AppTypographyTokens>? other, double t) {
+    if (other is! AppTypographyTokens) return this;
+    return AppTypographyTokens(
+      display: lerpDouble(display, other.display, t),
+      headline: lerpDouble(headline, other.headline, t),
+      title: lerpDouble(title, other.title, t),
+      body: lerpDouble(body, other.body, t),
+      label: lerpDouble(label, other.label, t),
+      bodyLineHeight: lerpDouble(bodyLineHeight, other.bodyLineHeight, t),
+      strongWeight: t < 0.5 ? strongWeight : other.strongWeight,
+      regularWeight: t < 0.5 ? regularWeight : other.regularWeight,
+    );
+  }
+}
+
+@immutable
+class AppSurfaceTokens extends ThemeExtension<AppSurfaceTokens> {
+  final double defaultBorderWidth;
+  final double strongBorderWidth;
+  final double shadowBlur;
+  final Offset shadowOffset;
+
+  const AppSurfaceTokens({
+    this.defaultBorderWidth = 1,
+    this.strongBorderWidth = 1.5,
+    this.shadowBlur = 12,
+    this.shadowOffset = const Offset(0, 4),
+  });
+
+  @override
+  AppSurfaceTokens copyWith({
+    double? defaultBorderWidth,
+    double? strongBorderWidth,
+    double? shadowBlur,
+    Offset? shadowOffset,
+  }) {
+    return AppSurfaceTokens(
+      defaultBorderWidth: defaultBorderWidth ?? this.defaultBorderWidth,
+      strongBorderWidth: strongBorderWidth ?? this.strongBorderWidth,
+      shadowBlur: shadowBlur ?? this.shadowBlur,
+      shadowOffset: shadowOffset ?? this.shadowOffset,
+    );
+  }
+
+  @override
+  AppSurfaceTokens lerp(ThemeExtension<AppSurfaceTokens>? other, double t) {
+    if (other is! AppSurfaceTokens) return this;
+    return AppSurfaceTokens(
+      defaultBorderWidth:
+          lerpDouble(defaultBorderWidth, other.defaultBorderWidth, t),
+      strongBorderWidth:
+          lerpDouble(strongBorderWidth, other.strongBorderWidth, t),
+      shadowBlur: lerpDouble(shadowBlur, other.shadowBlur, t),
+      shadowOffset: Offset.lerp(shadowOffset, other.shadowOffset, t)!,
+    );
+  }
+}
+
+@immutable
+class AppSemanticColorTokens extends ThemeExtension<AppSemanticColorTokens> {
+  final Color focus;
+  final Color selection;
+  final Color success;
+  final Color warning;
+  final Color error;
+
+  const AppSemanticColorTokens({
+    required this.focus,
+    required this.selection,
+    required this.success,
+    required this.warning,
+    required this.error,
+  });
+
+  @override
+  AppSemanticColorTokens copyWith({
+    Color? focus,
+    Color? selection,
+    Color? success,
+    Color? warning,
+    Color? error,
+  }) {
+    return AppSemanticColorTokens(
+      focus: focus ?? this.focus,
+      selection: selection ?? this.selection,
+      success: success ?? this.success,
+      warning: warning ?? this.warning,
+      error: error ?? this.error,
+    );
+  }
+
+  @override
+  AppSemanticColorTokens lerp(
+      ThemeExtension<AppSemanticColorTokens>? other, double t) {
+    if (other is! AppSemanticColorTokens) return this;
+    return AppSemanticColorTokens(
+      focus: Color.lerp(focus, other.focus, t)!,
+      selection: Color.lerp(selection, other.selection, t)!,
+      success: Color.lerp(success, other.success, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      error: Color.lerp(error, other.error, t)!,
+    );
+  }
+}
+
+@immutable
+class AppImmersiveTokens extends ThemeExtension<AppImmersiveTokens> {
   final double slateBlur;
   final double slateCornerRadius;
   final double slateBorderWidth;
@@ -142,25 +335,19 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
   final double recessedMapCornerRadius;
   final double recessedMapBorderWidth;
   final double recessedMapVignetteAlpha;
-  final double maxPhoneContentWidth;
-  final double maxTabletContentWidth;
-  final double maxDesktopContentWidth;
 
-  const PortalTokens({
-    this.slateBlur = 25,
-    this.slateCornerRadius = 32,
-    this.slateBorderWidth = 1.5,
+  const AppImmersiveTokens({
+    this.slateBlur = 18,
+    this.slateCornerRadius = 24,
+    this.slateBorderWidth = 1.25,
     this.edgePadding = 12,
-    this.recessedMapCornerRadius = 20,
+    this.recessedMapCornerRadius = 18,
     this.recessedMapBorderWidth = 1,
-    this.recessedMapVignetteAlpha = 0.6,
-    this.maxPhoneContentWidth = 480,
-    this.maxTabletContentWidth = 760,
-    this.maxDesktopContentWidth = 980,
+    this.recessedMapVignetteAlpha = 0.55,
   });
 
   @override
-  PortalTokens copyWith({
+  AppImmersiveTokens copyWith({
     double? slateBlur,
     double? slateCornerRadius,
     double? slateBorderWidth,
@@ -168,11 +355,8 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
     double? recessedMapCornerRadius,
     double? recessedMapBorderWidth,
     double? recessedMapVignetteAlpha,
-    double? maxPhoneContentWidth,
-    double? maxTabletContentWidth,
-    double? maxDesktopContentWidth,
   }) {
-    return PortalTokens(
+    return AppImmersiveTokens(
       slateBlur: slateBlur ?? this.slateBlur,
       slateCornerRadius: slateCornerRadius ?? this.slateCornerRadius,
       slateBorderWidth: slateBorderWidth ?? this.slateBorderWidth,
@@ -183,18 +367,13 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
           recessedMapBorderWidth ?? this.recessedMapBorderWidth,
       recessedMapVignetteAlpha:
           recessedMapVignetteAlpha ?? this.recessedMapVignetteAlpha,
-      maxPhoneContentWidth: maxPhoneContentWidth ?? this.maxPhoneContentWidth,
-      maxTabletContentWidth:
-          maxTabletContentWidth ?? this.maxTabletContentWidth,
-      maxDesktopContentWidth:
-          maxDesktopContentWidth ?? this.maxDesktopContentWidth,
     );
   }
 
   @override
-  PortalTokens lerp(ThemeExtension<PortalTokens>? other, double t) {
-    if (other is! PortalTokens) return this;
-    return PortalTokens(
+  AppImmersiveTokens lerp(ThemeExtension<AppImmersiveTokens>? other, double t) {
+    if (other is! AppImmersiveTokens) return this;
+    return AppImmersiveTokens(
       slateBlur: lerpDouble(slateBlur, other.slateBlur, t),
       slateCornerRadius:
           lerpDouble(slateCornerRadius, other.slateCornerRadius, t),
@@ -215,12 +394,6 @@ class PortalTokens extends ThemeExtension<PortalTokens> {
         other.recessedMapVignetteAlpha,
         t,
       ),
-      maxPhoneContentWidth:
-          lerpDouble(maxPhoneContentWidth, other.maxPhoneContentWidth, t),
-      maxTabletContentWidth:
-          lerpDouble(maxTabletContentWidth, other.maxTabletContentWidth, t),
-      maxDesktopContentWidth:
-          lerpDouble(maxDesktopContentWidth, other.maxDesktopContentWidth, t),
     );
   }
 }
@@ -235,6 +408,9 @@ Duration lerpDuration(Duration a, Duration b, double t) {
 }
 
 extension ThemeTokenContext on BuildContext {
+  AppLayoutTokens get layout =>
+      Theme.of(this).extension<AppLayoutTokens>() ?? const AppLayoutTokens();
+
   AppSpacing get spacing =>
       Theme.of(this).extension<AppSpacing>() ?? const AppSpacing();
 
@@ -244,6 +420,24 @@ extension ThemeTokenContext on BuildContext {
   AppMotion get motion =>
       Theme.of(this).extension<AppMotion>() ?? const AppMotion();
 
-  PortalTokens get portal =>
-      Theme.of(this).extension<PortalTokens>() ?? const PortalTokens();
+  AppTypographyTokens get typography =>
+      Theme.of(this).extension<AppTypographyTokens>() ??
+      const AppTypographyTokens();
+
+  AppSurfaceTokens get surfaceTokens =>
+      Theme.of(this).extension<AppSurfaceTokens>() ?? const AppSurfaceTokens();
+
+  AppSemanticColorTokens get semanticColors =>
+      Theme.of(this).extension<AppSemanticColorTokens>() ??
+      const AppSemanticColorTokens(
+        focus: Colors.black,
+        selection: Colors.black54,
+        success: Colors.green,
+        warning: Colors.orange,
+        error: Colors.red,
+      );
+
+  AppImmersiveTokens get immersive =>
+      Theme.of(this).extension<AppImmersiveTokens>() ??
+      const AppImmersiveTokens();
 }

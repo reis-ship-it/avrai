@@ -43,9 +43,7 @@ class _TurbineLoaderState extends State<TurbineLoader>
   Widget build(BuildContext context) {
     final ringColor =
         widget.isDark ? const Color(0xFFE0E0E0) : const Color(0xFF404040);
-    final coreColor = widget.isDark
-        ? AppColors.electricGreen
-        : AppColors.electricGreen; // Always electric green core
+    final coreColor = AppColors.primary;
 
     return SizedBox(
       width: widget.size,

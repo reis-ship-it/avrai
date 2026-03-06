@@ -15,12 +15,11 @@ import 'package:avrai_runtime_os/services/passive_collection/smart_passive_colle
 class DwellEventPayload extends RawDataPayload {
   final String _content;
 
-  DwellEventPayload({
-    required String sourceId,
-    required DateTime capturedAt,
+  const DwellEventPayload({
+    required super.sourceId,
+    required super.capturedAt,
     required String rawContent,
-  })  : _content = rawContent,
-        super(capturedAt: capturedAt, sourceId: sourceId);
+  })  : _content = rawContent;
 
   @override
   String get rawContent => _content;

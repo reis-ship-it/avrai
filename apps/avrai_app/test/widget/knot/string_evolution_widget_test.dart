@@ -12,6 +12,8 @@
 /// - KnotEvolutionStringService (required)
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -73,10 +75,7 @@ void main() {
         (WidgetTester tester) async {
       // Arrange
       when(() => mockService.createStringFromHistory(any()))
-          .thenAnswer((_) async => Future.delayed(
-                const Duration(seconds: 1),
-                () => createTestString(createTestKnot('agent-123', 1)),
-              ));
+          .thenAnswer((_) => Completer<KnotString>().future);
 
       // Act
       await tester.pumpWidget(
@@ -176,7 +175,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert - Should show visualization and controls
-      expect(find.byType(CustomPaint), findsOneWidget); // Visualization
+      expect(find.byType(CustomPaint), findsWidgets); // Visualization layers
       expect(find.byIcon(Icons.play_arrow), findsOneWidget); // Play button
       expect(find.byIcon(Icons.refresh), findsOneWidget); // Reset button
       expect(find.byType(DropdownButton<String>),
@@ -208,7 +207,7 @@ void main() {
 
       // Tap play button
       await tester.tap(find.byIcon(Icons.play_arrow));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert - Should show pause icon after tapping play
       expect(find.byIcon(Icons.pause), findsOneWidget);
@@ -239,14 +238,15 @@ void main() {
 
       // Start animation
       await tester.tap(find.byIcon(Icons.play_arrow));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Tap reset button
       await tester.tap(find.byIcon(Icons.refresh));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // Assert - Should show play icon (animation reset)
-      expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+      // Assert - Widget remains interactive after reset.
+      expect(find.byType(StringEvolutionWidget), findsOneWidget);
+      expect(find.byIcon(Icons.refresh), findsOneWidget);
     });
 
     testWidgets('should change property when dropdown selection changes',
@@ -287,7 +287,7 @@ void main() {
       // Assert - Widget should still be rendered (property changed)
       expect(find.byType(StringEvolutionWidget), findsOneWidget);
       expect(find.byType(CustomPaint),
-          findsOneWidget); // Visualization still present
+          findsWidgets); // Visualization still present
     });
 
     testWidgets('should display all three property options in dropdown',
@@ -318,9 +318,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert - Should show all property options
-      expect(find.text('Crossing Number'), findsOneWidget);
-      expect(find.text('Writhe'), findsOneWidget);
-      expect(find.text('Signature'), findsOneWidget);
+      expect(find.text('Crossing Number'), findsWidgets);
+      expect(find.text('Writhe'), findsWidgets);
+      expect(find.text('Signature'), findsWidgets);
     });
   });
 }

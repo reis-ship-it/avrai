@@ -64,8 +64,12 @@ class DeterministicMatcherService {
     final vecA = List<double>.filled(maxLength, 0.0);
     final vecB = List<double>.filled(maxLength, 0.0);
 
-    for (int i = 0; i < polyA.length; i++) vecA[i] = polyA[i];
-    for (int i = 0; i < polyB.length; i++) vecB[i] = polyB[i];
+    for (int i = 0; i < polyA.length; i++) {
+      vecA[i] = polyA[i];
+    }
+    for (int i = 0; i < polyB.length; i++) {
+      vecB[i] = polyB[i];
+    }
 
     double dotProduct = 0.0;
     double normA = 0.0;

@@ -12,7 +12,7 @@ import 'package:avrai/presentation/pages/events/cancellation_flow_page.dart';
 import 'package:avrai/presentation/pages/feedback/event_feedback_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// My Events Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -143,7 +143,7 @@ class _MyEventsPageState extends State<MyEventsPage>
       ),
       body: RefreshIndicator(
         onRefresh: _loadEvents,
-        color: AppColors.electricGreen,
+        color: AppColors.primary,
         child: _buildBody(),
       ),
     );
@@ -312,7 +312,7 @@ class _MyEventsPageState extends State<MyEventsPage>
       itemCount: _pastEvents.length,
       itemBuilder: (context, index) {
         final event = _pastEvents[index];
-        return PortalSurface(
+        return AppSurface(
           margin: const EdgeInsets.only(bottom: 16),
           padding: EdgeInsets.zero,
           child: InkWell(

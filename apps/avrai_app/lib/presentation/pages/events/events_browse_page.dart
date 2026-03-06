@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
@@ -14,8 +16,12 @@ import 'package:avrai_runtime_os/services/cross_app/cross_locality_connection_se
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/community/club_service.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_core/models/user/user.dart' as user_model;
+import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:go_router/go_router.dart';
 
 /// Event Discovery UI - Browse/Search Page
@@ -53,6 +59,8 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   // TODO: Replace with CommunityEventService when Agent 1 creates it
   // final CommunityEventService _communityEventService = CommunityEventService();
   final EventMatchingService _matchingService = EventMatchingService();
+  final EntitySignatureService _entitySignatureService =
+      di.sl<EntitySignatureService>();
   final CrossLocalityConnectionService _connectionService =
       CrossLocalityConnectionService();
   final TextEditingController _searchController = TextEditingController();
@@ -333,29 +341,52 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
     );
   }
 
+  void _handleEventSelection(ExpertiseEvent event) {
+    final currentUser = context.read<AuthBloc>().state;
+    final user = currentUser is Authenticated ? currentUser.user : null;
+    if (user != null) {
+      unawaited(
+        _entitySignatureService.recordEventBrowseSelectionSignal(
+          userId: user.id,
+          event: event,
+        ),
+      );
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsPage(event: event),
+      ),
+    );
+  }
+
   Future<List<ExpertiseEvent>> _sortEventsByMatchingScore(
     List<ExpertiseEvent> events,
     UnifiedUser user,
   ) async {
     try {
-      // Calculate matching scores for each event
-      final eventScores = <String, double>{};
-
-      for (final event in events) {
-        try {
-          final eventLocality = _extractLocality(event.location) ?? '';
-          final score = await _matchingService.calculateMatchingScore(
-            expert: event.host,
-            user: user,
-            category: event.category,
-            locality: eventLocality,
-          );
-          eventScores[event.id] = score;
-        } catch (e) {
-          // If matching fails, use default score
-          eventScores[event.id] = 0.0;
-        }
-      }
+      final scoreEntries = await Future.wait(
+        events.map((event) async {
+          try {
+            final eventLocality = _extractLocality(event.location) ?? '';
+            final fallbackScore = await _matchingService.calculateMatchingScore(
+              expert: event.host,
+              user: user,
+              category: event.category,
+              locality: eventLocality,
+            );
+            final match = await _entitySignatureService.matchUserToEvent(
+              user: user,
+              event: event,
+              fallbackScore: fallbackScore.clamp(0.0, 1.0),
+            );
+            return MapEntry(event.id, match.finalScore);
+          } catch (_) {
+            return MapEntry(event.id, 0.0);
+          }
+        }),
+      );
+      final eventScores = Map<String, double>.fromEntries(scoreEntries);
 
       // Sort by matching score (highest first)
       events.sort((a, b) {
@@ -574,11 +605,29 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
       backgroundColor: AppColors.background,
       body: RefreshIndicator(
         onRefresh: _loadEvents,
-        color: AppColors.electricGreen,
+        color: AppColors.primary,
         child: Column(
           children: [
-            // Search Bar
-            _buildSearchBar(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: AppSurface(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppPageHeader(
+                      title: 'Browse Events',
+                      subtitle:
+                          'Find nearby events, community gatherings, and timely plans without the prototype-era noise.',
+                      leadingIcon: Icons.event_outlined,
+                      showDivider: false,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSearchBar(),
+                  ],
+                ),
+              ),
+            ),
 
             // Scope Tabs
             EventScopeTabWidget(
@@ -604,114 +653,99 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: AppColors.background,
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search events...',
-          hintStyle: const TextStyle(color: AppColors.textHint),
-          prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
-          filled: true,
-          fillColor: AppColors.grey100,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.grey300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.grey300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide:
-                const BorderSide(color: AppTheme.primaryColor, width: 2),
-          ),
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Search by title, category, or location',
+        hintStyle: const TextStyle(color: AppColors.textHint),
+        prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+        filled: true,
+        fillColor: AppColors.grey100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.grey300),
         ),
-        style: const TextStyle(color: AppColors.textPrimary),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.grey300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
       ),
+      style: const TextStyle(color: AppColors.textPrimary),
     );
   }
 
   Widget _buildFilters() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: AppColors.surface,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            // Category Filter
-            _buildFilterChip(
-              label: _selectedCategory ?? 'All Categories',
-              onTap: () => _showCategoryFilter(),
-            ),
-            const SizedBox(width: 8),
-
-            // Location Filter
-            _buildFilterChip(
-              label: _selectedLocation ?? 'All Locations',
-              onTap: () => _showLocationFilter(),
-            ),
-            const SizedBox(width: 8),
-
-            // Date Filter
-            _buildFilterChip(
-              label: _dateFilters[_selectedDateFilter] ?? _dateFilters['all']!,
-              onTap: () => _showDateFilter(),
-            ),
-            const SizedBox(width: 8),
-
-            // Price Filter
-            _buildFilterChip(
-              label:
-                  _priceFilters[_selectedPriceFilter] ?? _priceFilters['all']!,
-              onTap: () => _showPriceFilter(),
-            ),
-            const SizedBox(width: 8),
-
-            // Clear Filters
-            if (_hasActiveFilters())
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: AppSurface(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
               _buildFilterChip(
-                label: 'Clear',
-                onTap: () => _clearFilters(),
-                isClear: true,
+                label: _selectedCategory ?? 'All Categories',
+                onTap: () => _showCategoryFilter(),
               ),
-          ],
+              const SizedBox(width: 8),
+              _buildFilterChip(
+                label: _selectedLocation ?? 'All Locations',
+                onTap: () => _showLocationFilter(),
+              ),
+              const SizedBox(width: 8),
+              _buildFilterChip(
+                label:
+                    _dateFilters[_selectedDateFilter] ?? _dateFilters['all']!,
+                onTap: () => _showDateFilter(),
+              ),
+              const SizedBox(width: 8),
+              _buildFilterChip(
+                label: _priceFilters[_selectedPriceFilter] ??
+                    _priceFilters['all']!,
+                onTap: () => _showPriceFilter(),
+              ),
+              const SizedBox(width: 8),
+              if (_hasActiveFilters())
+                _buildFilterChip(
+                  label: 'Clear',
+                  onTap: () => _clearFilters(),
+                  isClear: true,
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCommunityDiscoveryCta() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      color: AppColors.surface,
-      child: Row(
-        children: [
-          const Icon(Icons.group_outlined, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Discover communities ranked by true compatibility',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: AppSurface(
+        child: Row(
+          children: [
+            const Icon(Icons.group_outlined, color: AppColors.textSecondary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Discover communities ranked by compatibility if you want a steadier social starting point.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
             ),
-          ),
-          const SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: () => context.push('/communities/discover'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.electricGreen,
-              foregroundColor: AppColors.black,
+            const SizedBox(width: 10),
+            OutlinedButton(
+              onPressed: () => context.push('/communities/discover'),
+              child: const Text('Open'),
             ),
-            child: const Text('Discover'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -728,30 +762,16 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         decoration: BoxDecoration(
           color: isClear
               ? AppColors.error.withValues(alpha: 0.1)
-              : AppColors.grey200,
+              : AppColors.grey100,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isClear
-                ? AppColors.error
-                : (_selectedCategory != null ||
-                        _selectedLocation != null ||
-                        _selectedDateFilter != null ||
-                        _selectedPriceFilter != null)
-                    ? AppTheme.primaryColor
-                    : AppColors.grey300,
+            color: isClear ? AppColors.error : AppColors.grey300,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isClear
-                ? AppColors.error
-                : (_selectedCategory != null ||
-                        _selectedLocation != null ||
-                        _selectedDateFilter != null ||
-                        _selectedPriceFilter != null)
-                    ? AppTheme.primaryColor
-                    : AppColors.textPrimary,
+            color: isClear ? AppColors.error : AppColors.textPrimary,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -1105,27 +1125,13 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 currentUser: unifiedUser,
                 // TODO: Get upgrade eligibility from CommunityEvent when Agent 1 creates it
                 isEligibleForUpgrade: false,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetailsPage(event: event),
-                    ),
-                  );
-                },
+                onTap: () => _handleEventSelection(event),
               )
             else
               ExpertiseEventWidget(
                 event: event,
                 currentUser: unifiedUser,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetailsPage(event: event),
-                    ),
-                  );
-                },
+                onTap: () => _handleEventSelection(event),
               ),
           ],
         );

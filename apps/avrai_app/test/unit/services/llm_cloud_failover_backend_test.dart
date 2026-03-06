@@ -16,6 +16,7 @@ final class _ThrowingBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     throw DataCenterFailureException('primary down');
   }
@@ -45,6 +46,7 @@ final class _RecordingBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     chatCalls += 1;
     return 'ok';

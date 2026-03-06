@@ -53,6 +53,9 @@ i18n is a prerequisite for global locality intelligence, not just cosmetic:
 
 - **Locality agent language context**: Cross-region knowledge transfer (e.g., spot similarity across regions) requires weighting by language context. Locality agents trained on one language family may transfer poorly to another; explicit language context enables proper weighting.
 
+### Why Zero Trust Hardening in 10.9 (10.9.26-10.9.29)
+Phase 10.9 already handles adversarial hardening, red-team gates, and admin observability. The zero trust additions close remaining gaps: **immutable audit log persistence** (10.9.26) upgrades `AuditLogService` from console-only logging to tamper-evident persistent storage — without this, audit trails are lost on app restart and an attacker can act without leaving a trace. **Engine-layer security boundaries** (10.9.27) apply defense-in-depth to the engine packages that currently trust whatever the runtime passes them — in a zero trust model, every layer verifies independently. **BLE anti-spoofing** (10.9.28) closes a device discovery gap where an attacker could impersonate a legitimate BLE device without proving identity key ownership. **Zero trust compliance dashboard** (10.9.29) gives admins real-time visibility into zero trust posture — you can't manage what you can't see.
+
 ### Why Accessibility (10.4)
 "Every spot is a door" must apply literally to users with disabilities:
 
@@ -76,4 +79,4 @@ i18n is a prerequisite for global locality intelligence, not just cosmetic:
 
 ---
 
-**Last Updated:** February 10, 2026 (v12 gap fill)
+**Last Updated:** March 5, 2026 -- Version 1.1 (added zero trust hardening rationale 10.9.26-10.9.29. Previous: v12 gap fill)

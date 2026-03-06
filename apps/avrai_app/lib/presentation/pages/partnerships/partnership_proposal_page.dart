@@ -14,7 +14,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Proposal Page
 ///
@@ -327,7 +327,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
   Widget _buildBusinessCard(BusinessAccount business, double? compatibility) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: PortalSurface(
+      child: AppSurface(
         radius: 12,
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -584,7 +584,7 @@ class _PartnershipProposalFormPageState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Partner Info
-                PortalSurface(
+                AppSurface(
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [

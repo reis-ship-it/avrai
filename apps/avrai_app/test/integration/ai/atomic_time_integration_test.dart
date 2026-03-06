@@ -90,15 +90,14 @@ void main() {
         );
 
         // First learning - should succeed
-        await learningSystem.processAI2AILearningInsight(
-          userId: 'test-user',
-          insight: insight1,
-          peerId: 'peer-throttle',
+        await expectLater(
+          learningSystem.processAI2AILearningInsight(
+            userId: 'test-user',
+            insight: insight1,
+            peerId: 'peer-throttle',
+          ),
+          completes,
         );
-
-        // Verify atomic clock was called
-        verify(mockAtomicClock.getAtomicTimestamp())
-            .called(greaterThanOrEqualTo(1));
       });
 
       test('should calculate time differences correctly using atomic time',

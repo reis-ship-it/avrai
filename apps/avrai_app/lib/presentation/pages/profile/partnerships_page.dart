@@ -8,7 +8,7 @@ import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_visibility_toggle.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnerships Detail Page
 ///
@@ -173,7 +173,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
   }
 
   Widget _buildExpertiseBoostSection() {
-    return PortalSurface(
+    return AppSurface(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -63,7 +63,8 @@ class PartnershipProposalController
   final PartnershipService _partnershipService;
   final BusinessService _businessService;
   // ignore: unused_field
-  final AtomicClockService _atomicClock; // Reserved for future timestamp-based proposal tracking
+  final AtomicClockService
+      _atomicClock; // Reserved for future timestamp-based proposal tracking
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final CrossEntityCompatibilityService? _knotCompatibilityService;
@@ -82,7 +83,10 @@ class PartnershipProposalController
   })  : _partnershipService =
             partnershipService ?? GetIt.instance<PartnershipService>(),
         _businessService = businessService ?? GetIt.instance<BusinessService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _knotCompatibilityService = knotCompatibilityService ??
             (GetIt.instance.isRegistered<CrossEntityCompatibilityService>()
                 ? GetIt.instance<CrossEntityCompatibilityService>()

@@ -4,6 +4,8 @@ RETURNS TRIGGER AS $$
 DECLARE
   email_col_exists boolean;
   name_col_exists boolean;
+  signup_provider_col_exists boolean;
+  resolved_signup_provider text;
 BEGIN
   SELECT EXISTS (
     SELECT 1 FROM information_schema.columns 
@@ -15,7 +17,26 @@ BEGIN
     WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'name'
   ) INTO name_col_exists;
 
-  IF email_col_exists AND name_col_exists THEN
+  SELECT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'signup_provider'
+  ) INTO signup_provider_col_exists;
+
+  resolved_signup_provider := COALESCE(
+    NEW.raw_user_meta_data->>'signup_provider',
+    NEW.raw_app_meta_data->>'provider',
+    CASE WHEN NEW.email IS NOT NULL THEN 'email' ELSE NULL END
+  );
+
+  IF email_col_exists AND name_col_exists AND signup_provider_col_exists THEN
+    INSERT INTO public.users (id, email, name, signup_provider)
+    VALUES (
+      NEW.id,
+      NEW.email,
+      COALESCE(NEW.raw_user_meta_data->>'name', ''),
+      resolved_signup_provider
+    );
+  ELSIF email_col_exists AND name_col_exists THEN
     INSERT INTO public.users (id, email, name)
     VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'name', ''));
   ELSIF email_col_exists THEN

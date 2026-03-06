@@ -28,6 +28,8 @@ import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 /// - Time (t dimension) - how the group evolves over time
 class KnotWorldsheetService {
   static const String _logName = 'KnotWorldsheetService';
+  static String _safePrefix(String value, int length) =>
+      value.length <= length ? value : value.substring(0, length);
 
   final KnotStorageService _storageService;
   final KnotEvolutionStringService _stringService;
@@ -74,7 +76,7 @@ class KnotWorldsheetService {
           userStrings[userId] = string;
         } else {
           developer.log(
-            '⚠️ No string found for user: ${userId.substring(0, 10)}...',
+            '⚠️ No string found for user: ${_safePrefix(userId, 10)}...',
             name: _logName,
           );
         }
@@ -171,9 +173,16 @@ class KnotWorldsheetService {
     required DateTime time,
   }) async {
     try {
+      final existingFabric = await _storageService.loadFabric(groupId);
+      if (existingFabric == null || existingFabric.userKnots.isEmpty) {
+        return null;
+      }
+      final userIds = existingFabric.userKnots
+          .map((knot) => knot.agentId)
+          .toList();
       final worldsheet = await createWorldsheet(
         groupId: groupId,
-        userIds: [], // Will be loaded from fabric
+        userIds: userIds,
         startTime: time.subtract(const Duration(days: 1)),
         endTime: time.add(const Duration(days: 1)),
       );
@@ -200,9 +209,16 @@ class KnotWorldsheetService {
     required DateTime time,
   }) async {
     try {
+      final existingFabric = await _storageService.loadFabric(groupId);
+      if (existingFabric == null || existingFabric.userKnots.isEmpty) {
+        return [];
+      }
+      final userIds = existingFabric.userKnots
+          .map((knot) => knot.agentId)
+          .toList();
       final worldsheet = await createWorldsheet(
         groupId: groupId,
-        userIds: [], // Will be loaded from fabric
+        userIds: userIds,
       );
 
       if (worldsheet == null) {

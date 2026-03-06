@@ -9,10 +9,28 @@
 // Note: Device calendar integration tests require platform-specific mocking
 // and are covered in integration tests.
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:avrai_runtime_os/services/analytics/calendar_tracking_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  const calendarChannel =
+      MethodChannel('plugins.builttoroam.com/device_calendar');
+
+  setUpAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(calendarChannel, (methodCall) async {
+      if (methodCall.method == 'requestPermissions') {
+        return false;
+      }
+      return null;
+    });
+  });
+
+  tearDownAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(calendarChannel, null);
+  });
 
   group('CalendarTrackingService', () {
     late CalendarTrackingService service;

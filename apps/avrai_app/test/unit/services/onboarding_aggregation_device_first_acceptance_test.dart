@@ -81,7 +81,7 @@ void main() {
     expect(edge.lastFunctionName, equals('onboarding-aggregation'));
     final body = edge.lastBody!;
     expect(body['agentId'], equals('agent_user_1'));
-    expect(body['mappingSource'], equals('device'));
+    expect(body['mappingSource'], equals('device_inferred'));
 
     final sentDims = Map<String, double>.from(body['dimensions'] as Map);
     expect(sentDims, isNotEmpty);

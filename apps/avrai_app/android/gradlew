@@ -62,27 +62,6 @@ cd "$SAVED" >/dev/null
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
-# Ensure Gradle runs with the wrapper's project directory when invoked via an
-# absolute path from elsewhere (e.g. from the repo root).
-#
-# Without this, Gradle uses the current working directory as the project root
-# and fails with:
-#   "Directory '.../SPOTS' does not contain a Gradle build."
-#
-# Only inject a project-dir if the caller didn't already set one.
-has_project_dir=false
-for arg in "$@"; do
-  case "$arg" in
-    -p|--project-dir|-p=*|--project-dir=*)
-      has_project_dir=true
-      break
-      ;;
-  esac
-done
-if [ "$has_project_dir" = "false" ] && [ ! -f "$PWD/settings.gradle" ] && [ -f "$APP_HOME/settings.gradle" ]; then
-  set -- -p "$APP_HOME" "$@"
-fi
-
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then

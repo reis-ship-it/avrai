@@ -1,16 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/data/datasources/local/onboarding_completion_service.dart';
+import '../../../../helpers/test_storage_helper.dart';
 
 /// Onboarding Completion Service Tests
 /// Tests onboarding completion tracking
 void main() {
   group('OnboardingCompletionService', () {
-    setUp(() {
-      // No-op: Sembast removed in Phase 26
+    setUp(() async {
+      await TestStorageHelper.initTestStorage();
+      OnboardingCompletionService.clearAllCache();
     });
 
     tearDown(() async {
-      // No-op: Sembast removed in Phase 26
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await TestStorageHelper.clearTestStorage();
+      OnboardingCompletionService.clearAllCache();
     });
 
     group('isOnboardingCompleted', () {
@@ -34,6 +38,7 @@ void main() {
         const userId = 'user-123';
 
         await OnboardingCompletionService.markOnboardingCompleted(userId);
+        await Future<void>.delayed(const Duration(milliseconds: 200));
         final isCompleted =
             await OnboardingCompletionService.isOnboardingCompleted(userId);
 

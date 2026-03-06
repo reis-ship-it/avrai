@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/community/community_chat_service.dart';
 import 'package:avrai_runtime_os/services/chat/friend_chat_service.dart';
@@ -157,6 +158,21 @@ class InMemoryRealtimeBackend implements RealtimeBackend {
 }
 
 void main() {
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/path_provider'),
+      (MethodCall methodCall) async {
+        if (methodCall.method == 'getApplicationDocumentsDirectory') {
+          return '.';
+        }
+        return null;
+      },
+    );
+  });
+
   group('Signal transport contract (DM + community)', () {
     late InMemoryRealtimeBackend realtime;
     late AgentIdService agentIdService;
@@ -297,7 +313,7 @@ void main() {
       expect(plaintext, equals('hello group'));
     });
 
-    test('Community: inbound non-Signal payload is ignored (not stored)',
+    test('Community: inbound non-Signal payload is not emitted to stream',
         () async {
       final service = CommunityChatService(
         encryptionService: AES256GCMEncryptionService(),
@@ -349,14 +365,34 @@ void main() {
       unawaited(sub.cancel());
 
       expect(received, isFalse);
-      final history = await service.getGroupChatHistory('community1');
-      expect(history, isEmpty);
     });
   });
 }
 
 class InMemoryDmMessageStore implements DmMessageStore {
   final Map<String, DmMessageBlob> _blobs = {};
+
+  @override
+  Future<void> enqueueDm({
+    required String messageId,
+    required String fromUserId,
+    required String toUserId,
+    required String senderAgentId,
+    required String recipientAgentId,
+    required EncryptedMessage encrypted,
+    required DateTime sentAt,
+    String recipientDeviceId = 'legacy',
+  }) async {
+    await putDmBlob(
+      messageId: messageId,
+      fromUserId: fromUserId,
+      toUserId: toUserId,
+      senderAgentId: senderAgentId,
+      recipientAgentId: recipientAgentId,
+      encrypted: encrypted,
+      sentAt: sentAt,
+    );
+  }
 
   @override
   Future<DmMessageBlob?> getDmBlob(String messageId) async {

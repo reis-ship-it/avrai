@@ -542,6 +542,8 @@ class EvolutionFunctionParams {
 /// - Predict future evolution
 class KnotEvolutionStringService {
   static const String _logName = 'KnotEvolutionStringService';
+  static String _safePrefix(String value, int length) =>
+      value.length <= length ? value : value.substring(0, length);
 
   final KnotStorageService _storageService;
   // TODO(Phase 5.3): Integrate physics service for evolution dynamics
@@ -560,7 +562,7 @@ class KnotEvolutionStringService {
   Future<KnotString?> createStringFromHistory(String agentId) async {
     try {
       developer.log(
-        'Creating string from evolution history for agentId: ${agentId.substring(0, 10)}...',
+        'Creating string from evolution history for agentId: ${_safePrefix(agentId, 10)}...',
         name: _logName,
       );
 

@@ -10,6 +10,8 @@ import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart'
     as admin_models
     show
         AggregatePrivacyMetrics,
+        AuthMixBucket,
+        AuthMixSummary,
         GodModeDashboardData,
         GodModeFederatedRoundInfo,
         RoundParticipant,
@@ -106,6 +108,7 @@ class AdminAnalyticsService {
 
       // Get aggregate privacy metrics (mean privacy score across all users)
       final aggregatePrivacyMetrics = await getAggregatePrivacyMetrics();
+      final authMix = await _getAuthMixSummary(client);
 
       return admin_models.GodModeDashboardData(
         totalUsers: totalUsers,
@@ -115,6 +118,7 @@ class AdminAnalyticsService {
         totalCommunications: totalCommunications,
         systemHealth: systemHealth,
         aggregatePrivacyMetrics: aggregatePrivacyMetrics,
+        authMix: authMix,
         lastUpdated: DateTime.now(),
       );
     } catch (e) {
@@ -201,6 +205,92 @@ class AdminAnalyticsService {
     // PrivacyPreservationStats currently only has averageAnonymization
     // Use it as a proxy for overall privacy score, or calculate from network metrics
     return stats.averageAnonymization;
+  }
+
+  Future<admin_models.AuthMixSummary> _getAuthMixSummary(dynamic client) async {
+    try {
+      final response = await client.from('users').select(
+          'signup_provider,last_sign_in_provider,last_sign_in_platform,last_sign_in_at');
+      final rows = List<Map<String, dynamic>>.from(response as List);
+      final recentThreshold = DateTime.now().toUtc().subtract(
+            const Duration(days: 7),
+          );
+
+      final signupProviderCounts = <String, int>{};
+      final totalProviderCounts = <String, int>{};
+      final recentProviderCounts = <String, int>{};
+      final totalPlatformCounts = <String, int>{};
+      final recentPlatformCounts = <String, int>{};
+
+      for (final row in rows) {
+        final signupProvider =
+            _normalizedBucket(row['signup_provider'], fallback: 'email');
+        final lastSignInProvider = _normalizedBucket(
+            row['last_sign_in_provider'],
+            fallback: 'unknown');
+        final lastSignInPlatform = _normalizedBucket(
+            row['last_sign_in_platform'],
+            fallback: 'unknown');
+        final lastSignInAt = _tryParseDate(row['last_sign_in_at']);
+        final isRecent =
+            lastSignInAt != null && !lastSignInAt.isBefore(recentThreshold);
+
+        _increment(signupProviderCounts, signupProvider);
+        _increment(totalProviderCounts, lastSignInProvider);
+        _increment(totalPlatformCounts, lastSignInPlatform);
+
+        if (isRecent) {
+          _increment(recentProviderCounts, lastSignInProvider);
+          _increment(recentPlatformCounts, lastSignInPlatform);
+        }
+      }
+
+      return admin_models.AuthMixSummary(
+        signupProviderCounts: signupProviderCounts,
+        lastSignInProviderCounts: admin_models.AuthMixBucket(
+          totalCounts: totalProviderCounts,
+          recentCounts: recentProviderCounts,
+        ),
+        lastSignInPlatformCounts: admin_models.AuthMixBucket(
+          totalCounts: totalPlatformCounts,
+          recentCounts: recentPlatformCounts,
+        ),
+      );
+    } catch (e, st) {
+      developer.log(
+        'Auth mix summary unavailable',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return admin_models.AuthMixSummary.empty();
+    }
+  }
+
+  void _increment(Map<String, int> counts, String key) {
+    counts.update(key, (value) => value + 1, ifAbsent: () => 1);
+  }
+
+  String _normalizedBucket(
+    dynamic value, {
+    required String fallback,
+  }) {
+    final text = value?.toString().trim().toLowerCase();
+    if (text == null || text.isEmpty) {
+      return fallback;
+    }
+
+    return text;
+  }
+
+  DateTime? _tryParseDate(dynamic value) {
+    if (value is DateTime) {
+      return value.toUtc();
+    }
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value)?.toUtc();
+    }
+    return null;
   }
 
   /// Get all federated learning rounds with participant details

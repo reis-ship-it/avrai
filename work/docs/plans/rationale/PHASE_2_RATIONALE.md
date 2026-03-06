@@ -53,6 +53,12 @@ Signal Protocol is fully implemented but NOT yet the default. Activating it:
 ### Why Differential Privacy Budget Tracking (2.2.3)
 When you add Laplace noise to protect privacy, you spend "privacy budget" (epsilon). Without tracking cumulative epsilon per user, you can't prove privacy guarantees. Every gradient shared (Phase 8), every vibe signature exchanged (AI2AI), every cloud upload consumes epsilon. Track it from day one.
 
+### Why Zero Trust Credential Infrastructure (2.7)
+AVRAI's AI agents use non-human identities and communicate autonomously. In the age of agentic AI, every agent credential is an attack surface. Static credentials (API keys baked into builds, agent IDs stored permanently) violate the core zero trust principle: never trust, always verify. `SecretVaultService` (2.7.1) introduces dynamic credential lifecycle — just-in-time provisioning, automatic rotation, and scoped access grants. This mirrors how a zero trust credential vault works: credentials are checked out when needed, scoped to the minimum required access, and automatically expire. Certificate pinning (2.7.5) closes the gap where all non-Signal HTTP traffic is currently unpinned — a man-in-the-middle could intercept Supabase API calls without it.
+
+### Why Continuous Verification (2.8)
+Traditional authentication is a single checkpoint: verify once at login, then trust forever. Zero trust replaces this with continuous re-verification. `ContinuousVerificationService` (2.8.1) re-validates session integrity at regular intervals — detecting device compromise, session token theft, and anomalous behavior. Step-up authentication (2.8.2) ensures that high-impact operations (data export, account deletion, admin actions) require re-authentication even within an active session. Session binding to device fingerprint (2.8.3) prevents stolen session tokens from being usable on a different device. Together, these implement the "assume breach" principle: even if an attacker gets a valid session token, continuous verification limits the damage window.
+
 ### Why Data Transparency (2.1.8-2.1.8C)
 **"What My AI Knows" page:** Users need to see what data their AI uses to make recommendations. This builds trust, supports informed consent, and aligns with GDPR spirit -- not just the letter. Knowing "my AI knows I prefer jazz on weekends" is different from abstract legalese. The page surfaces categories (personality data, visit history, preferences, mesh signals) without exposing raw records.
 
@@ -71,6 +77,11 @@ When you add Laplace noise to protect privacy, you spend "privacy budget" (epsil
 - [ ] `SignalProtocolService.getSessionStats()` API exists (2.4.6) -- required by state encoder feature 3.1.14
 - [ ] Consent infrastructure allows opt-in for personality learning and outcome tracking
 
+**Before starting Phase 6 (MPC Planner / Agent):**
+- [ ] `SecretVaultService` is operational with JIT credential provisioning (2.7.1-2.7.2)
+- [ ] Certificate pinning is active for Supabase and external API endpoints (2.7.5)
+- [ ] `ContinuousVerificationService` is running with configurable verification interval (2.8.1)
+
 **Before starting Phase 8 (Federated Learning):**
 - [ ] Differential privacy (Laplace noise) is implemented for gradient sharing (2.2.1)
 - [ ] Privacy budget tracking (epsilon accounting) is active (2.2.3)
@@ -87,7 +98,9 @@ When you add Laplace noise to protect privacy, you spend "privacy budget" (epsil
 1. **Treating consent as a checkbox**: Consent UX must be clear about what each consent covers. "We collect data" is not valid consent under GDPR.
 2. **Forgetting consent-revocation world model handling (2.1.9)**: When a user revokes outcome tracking consent, their episodic memory must be purged. But DP guarantees mean existing model weights are safe.
 3. **Assuming TLS is enough for cloud transport (2.5.6)**: TLS 1.3 uses ECDHE, which is quantum-vulnerable. Application-layer encryption is needed until PQ-TLS is available from Supabase.
+4. **Treating zero trust as a perimeter problem**: Zero trust is NOT "build a better firewall." It's "assume the firewall is already breached and design accordingly." Credential rotation (2.7.3), continuous verification (2.8.1), and session binding (2.8.3) are the defense-in-depth controls that limit damage when (not if) a breach occurs.
+5. **Hardcoding credentials during development**: Developers under time pressure will embed API keys in source code. CI gate (2.7.4) catches this automatically. No exceptions.
 
 ---
 
-**Last Updated:** February 10, 2026 -- Version 1.1 (v12 gap fill: added Data Transparency rationale 2.1.8-2.1.8C)
+**Last Updated:** March 5, 2026 -- Version 1.2 (added zero trust credential infrastructure 2.7, continuous verification 2.8, updated pre-flight checklist and pitfalls. Previous: 1.1 v12 gap fill)

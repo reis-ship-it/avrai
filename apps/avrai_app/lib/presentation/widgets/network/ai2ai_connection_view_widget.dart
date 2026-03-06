@@ -17,9 +17,10 @@
 /// Uses AppColors and AppTheme for consistent styling per design token requirements.
 library;
 
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
@@ -54,6 +55,8 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   List<ConnectionMetrics> _activeConnections = [];
   Timer? _refreshTimer;
   bool _isLoading = true;
+  String? _loadError;
+  String? _loadGuidance;
 
   @override
   void initState() {
@@ -78,14 +81,19 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _loadError = null;
+          _loadGuidance = null;
         });
       }
     } catch (e) {
       developer.log('Error initializing orchestrator: $e',
           name: 'AI2AIConnectionViewWidget');
+      final issue = _mapConnectionIssue(e);
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _loadError = issue.$1;
+          _loadGuidance = issue.$2;
         });
       }
     }
@@ -103,11 +111,29 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
   Future<void> _refreshConnections() async {
     if (_orchestrator == null) return;
 
-    final connections = _orchestrator!.getActiveConnections();
-    if (mounted) {
-      setState(() {
-        _activeConnections = connections;
-      });
+    try {
+      final connections = _orchestrator!.getActiveConnections();
+      if (mounted) {
+        setState(() {
+          _activeConnections = connections;
+          _loadError = null;
+          _loadGuidance = null;
+        });
+      }
+    } catch (e, st) {
+      developer.log(
+        'Error refreshing AI2AI connections',
+        name: 'AI2AIConnectionViewWidget',
+        error: e,
+        stackTrace: st,
+      );
+      final issue = _mapConnectionIssue(e);
+      if (mounted) {
+        setState(() {
+          _loadError = issue.$1;
+          _loadGuidance = issue.$2;
+        });
+      }
     }
   }
 
@@ -125,91 +151,151 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
       );
     }
 
-    if (_activeConnections.isEmpty) {
-      return _buildEmptyState();
-    }
-
     return RefreshIndicator(
       onRefresh: _refreshConnections,
-      child: ListView.builder(
+      child: ListView(
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _activeConnections.length,
-        itemBuilder: (context, index) {
-          return _buildConnectionCard(_activeConnections[index]);
-        },
+        children: [
+          if (_loadError != null) _buildTransportIssueBanner(),
+          if (_activeConnections.isEmpty)
+            _buildEmptyState()
+          else
+            ..._activeConnections.map(_buildConnectionCard),
+        ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AppColors.grey100,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.link_off,
-                size: 64,
-                color: AppColors.grey400,
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: AppColors.grey100,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.link_off,
+              size: 64,
+              color: AppColors.grey400,
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'No Active AI Connections',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Your AI hasn\'t connected with other AIs yet.\n'
+            'Enable device discovery to find compatible AIs.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.electricGreen.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.electricGreen.withValues(alpha: 0.3),
+                width: 1,
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'No Active AI Connections',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Your AI hasn\'t connected with other AIs yet.\n'
-              'Enable device discovery to find compatible AIs.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.electricGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.electricGreen.withValues(alpha: 0.3),
-                  width: 1,
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: AppColors.electricGreen,
+                  size: 20,
                 ),
-              ),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: AppColors.electricGreen,
-                    size: 20,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'AI connections are fleeting and managed automatically by your AI personality',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'AI connections are fleeting and managed automatically by your AI personality',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransportIssueBanner() {
+    return Semantics(
+      label: 'AI2AI connection status error',
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.error.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    color: AppColors.error, size: 18),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Connection status unavailable',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _loadError ?? 'Unable to load current AI2AI connection state.',
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            if (_loadGuidance != null && _loadGuidance!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                _loadGuidance!,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: Semantics(
+                button: true,
+                label: 'Retry loading AI2AI connections',
+                child: TextButton.icon(
+                  onPressed: _refreshConnections,
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Retry'),
+                ),
               ),
             ),
           ],
@@ -521,18 +607,25 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _enableHumanConnection(connection),
-              icon: const Icon(Icons.people),
-              label: const Text('Enable Human Conversation'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.electricGreen,
-                foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          Semantics(
+            button: true,
+            label: 'Enable human to human conversation',
+            hint:
+                'Turns this AI compatibility into a direct human chat connection.',
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _enableHumanConnection(connection),
+                icon: const Icon(Icons.people),
+                label: const Text('Enable Human Conversation'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.electricGreen,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  minimumSize: const Size(48, 48),
                 ),
               ),
             ),
@@ -647,6 +740,26 @@ class _AI2AIConnectionViewWidgetState extends State<AI2AIConnectionViewWidget> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+    );
+  }
+
+  (String, String) _mapConnectionIssue(Object error) {
+    final message = error.toString().toLowerCase();
+    if (message.contains('permission')) {
+      return (
+        'AI2AI permissions are incomplete.',
+        'Grant required Nearby/Bluetooth/Location permissions, then refresh.'
+      );
+    }
+    if (message.contains('offline') || message.contains('network')) {
+      return (
+        'Network appears offline for AI2AI updates.',
+        'Reconnect to internet or nearby transport, then retry.'
+      );
+    }
+    return (
+      'Connection metrics failed to refresh.',
+      'Retry now. If this keeps failing, reopen AI2AI settings and verify discovery services are enabled.'
     );
   }
 }

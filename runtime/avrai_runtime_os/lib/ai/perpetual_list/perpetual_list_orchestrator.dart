@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/models.dart';
 import 'engines/trigger_engine.dart';
@@ -112,9 +114,24 @@ class PerpetualListOrchestrator {
       userAge: userAge,
     );
 
-    // 3. Generate possibility space
+    // 3. Check for aspirational state (Intentional Superposition) from chat
+    Map<String, double>? aspirationalDimensions;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final aspirationalJson = prefs.getString('aspirational_state_$userId');
+      if (aspirationalJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(aspirationalJson);
+        aspirationalDimensions = decoded.map((k, v) => MapEntry(k, (v as num).toDouble()));
+        developer.log('Loaded aspirational dimensions for user $userId', name: _logName);
+      }
+    } catch (e) {
+      developer.log('Error loading aspirational dimensions: $e', name: _logName);
+    }
+
+    // 4. Generate possibility space
     final possibilities = await _possibilityEngine.generatePossibilitySpace(
       context: context,
+      aspirationalDimensions: aspirationalDimensions,
     );
 
     // Store possibilities for later collapse

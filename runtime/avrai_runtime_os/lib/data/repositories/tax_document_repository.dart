@@ -10,10 +10,12 @@ import 'package:avrai_runtime_os/data/repositories/repository_patterns.dart';
 class TaxDocumentRepository extends SimplifiedRepositoryBase {
   static const AppLogger _logger =
       AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
-  static const String _storeName = 'tax_documents';
+  static const String _defaultStoreName = 'tax_documents';
+  final String _storeName;
 
-  TaxDocumentRepository()
-      : super(connectivity: null); // Local-only, no connectivity needed
+  TaxDocumentRepository({String? storeName})
+      : _storeName = storeName ?? _defaultStoreName,
+        super(connectivity: null); // Local-only, no connectivity needed
 
   GetStorage get _box => GetStorage(_storeName);
 

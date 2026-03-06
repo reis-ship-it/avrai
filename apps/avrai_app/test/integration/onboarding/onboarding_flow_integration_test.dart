@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/app.dart';
@@ -30,9 +32,16 @@ import '../../helpers/platform_channel_helper.dart';
 /// - Test helpers for widget testing
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Avoid path_provider / GetStorage.init in tests.
     await setupTestStorage();
 
@@ -216,7 +225,7 @@ void main() {
         expect(find.byType(OnboardingPage), findsWidgets);
       }
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }
 
 /// Test complete onboarding flow through all steps

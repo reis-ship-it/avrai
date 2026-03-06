@@ -13,8 +13,10 @@
 /// - Error Handling: Invalid inputs, encryption errors
 library;
 
-import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/services/chat/friend_chat_service.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
@@ -28,6 +30,19 @@ class MockMessageEncryptionService extends Mock
 void main() {
   // Register fallback values for mocktail
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/path_provider'),
+      (MethodCall methodCall) async {
+        if (methodCall.method == 'getApplicationDocumentsDirectory') {
+          return '.';
+        }
+        return null;
+      },
+    );
+
     registerFallbackValue(
       EncryptedMessage(
         encryptedContent: Uint8List(0),
@@ -47,6 +62,10 @@ void main() {
 
     setUp(() async {
       TestHelpers.setupTestEnvironment();
+      await GetStorage.init('friend_chat_messages');
+      await GetStorage.init('friend_chat_outbox');
+      await GetStorage('friend_chat_messages').erase();
+      await GetStorage('friend_chat_outbox').erase();
 
       // Initialize mocks
       mockEncryptionService = MockMessageEncryptionService();
@@ -77,6 +96,9 @@ void main() {
     });
 
     tearDown(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await GetStorage('friend_chat_messages').erase();
+      await GetStorage('friend_chat_outbox').erase();
       TestHelpers.teardownTestEnvironment();
     });
 

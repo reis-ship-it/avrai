@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
+
 import 'package:crypto/crypto.dart';
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/admin/permissions/admin_access_control.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_runtime_os/ml/predictive_analytics.dart';
 import 'package:avrai_core/models/user/user.dart';
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart'
     as admin_models show AIDataSnapshot, ActiveAIAgentData, PredictionAction;
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
+import 'package:avrai_runtime_os/services/prediction/markov_transition_store.dart';
 
 /// Cache entry for AI snapshot data
 class _CachedAISnapshot {
@@ -191,6 +195,126 @@ class AdminSystemMonitoringService {
     return 'ai_$hash';
   }
 
+  /// Phase 1.5E.10 — Markov engagement predictor health metrics.
+  ///
+  /// Returns aggregate cold-start quality metrics across the provided agent IDs.
+  /// These are the primary beta ML health metrics before Phase 5 replaces the
+  /// Markov chain with the neural TransitionPredictor.
+  ///
+  /// **Metrics surfaced:**
+  /// - Average real observations per agent (higher = more personalized matrix)
+  /// - % of agents past the 20-observation threshold (where personal matrix
+  ///   contributes more than the 100-count synthetic prior)
+  /// - Distribution of agents across [UserEngagementPhase] states
+  ///
+  /// **Scope:** On-device SharedPreferences only. Each device only holds data
+  /// for the agents who have run on that device. Fleet-wide aggregation requires
+  /// server-side telemetry (post-beta, Phase 5 readiness gate).
+  Future<MarkovHealthReport> getMarkovHealthReport({
+    required List<String> agentIds,
+  }) async {
+    _accessControl.requireAuthorization();
+
+    final sl = GetIt.instance;
+    final hasStore = sl.isRegistered<MarkovTransitionStore>();
+    final hasPredictor = sl.isRegistered<EngagementPhasePredictor>();
+
+    if (!hasStore || !hasPredictor || agentIds.isEmpty) {
+      developer.log(
+        'Markov health report: predictor not registered or no agents provided',
+        name: _logName,
+      );
+      return MarkovHealthReport.empty();
+    }
+
+    try {
+      final store = sl<MarkovTransitionStore>();
+      final predictor = sl<EngagementPhasePredictor>();
+
+      final phaseCounts = <UserEngagementPhase, int>{
+        for (final p in UserEngagementPhase.values) p: 0,
+      };
+      int totalObservations = 0;
+      int agentsAboveThreshold = 0;
+      final List<AgentMarkovSummary> agentSummaries = [];
+
+      for (final agentId in agentIds) {
+        try {
+          final observations = await store.totalRealObservations(agentId);
+          totalObservations += observations;
+          if (observations >= MarkovHealthReport.personalMatrixThreshold) {
+            agentsAboveThreshold++;
+          }
+
+          // Classify current phase from the Markov next-phase distribution
+          // (uses quietPeriod row as the conservative churn estimate)
+          final churnRisk = await predictor.predictChurnRisk(agentId);
+          final matrix = await store.getTransitionMatrix(agentId);
+
+          // Determine most-probable current phase by inspecting which phase's
+          // own row shows the highest self-continuation probability — this is
+          // a proxy for "where the agent likely is now".
+          UserEngagementPhase estimatedPhase = UserEngagementPhase.exploring;
+          double bestSelfProb = -1.0;
+          for (final phase in UserEngagementPhase.values) {
+            final selfProb = matrix[phase]?[phase] ?? 0.0;
+            if (selfProb > bestSelfProb) {
+              bestSelfProb = selfProb;
+              estimatedPhase = phase;
+            }
+          }
+
+          phaseCounts[estimatedPhase] = (phaseCounts[estimatedPhase] ?? 0) + 1;
+
+          agentSummaries.add(AgentMarkovSummary(
+            agentId: agentId,
+            realObservations: observations,
+            estimatedPhase: estimatedPhase,
+            churnRisk: churnRisk,
+          ));
+        } catch (e) {
+          developer.log(
+            'Error computing Markov health for agent $agentId: $e',
+            name: _logName,
+          );
+        }
+      }
+
+      final validAgents = agentIds.length;
+      final avgObservations =
+          validAgents > 0 ? totalObservations / validAgents : 0.0;
+      final pctAboveThreshold =
+          validAgents > 0 ? agentsAboveThreshold / validAgents : 0.0;
+
+      final report = MarkovHealthReport(
+        agentCount: validAgents,
+        averageRealObservations: avgObservations,
+        percentAbovePersonalMatrixThreshold: pctAboveThreshold,
+        phaseDistribution: Map.unmodifiable(phaseCounts),
+        agentSummaries: List.unmodifiable(agentSummaries),
+        generatedAt: DateTime.now(),
+      );
+
+      developer.log(
+        'Markov health report: ${report.agentCount} agents, '
+        'avg obs=${report.averageRealObservations.toStringAsFixed(1)}, '
+        '${(report.percentAbovePersonalMatrixThreshold * 100).toStringAsFixed(0)}% above threshold, '
+        'phase dist=${phaseCounts.entries.map((e) => "${e.key.name}=${e.value}").join(", ")}',
+        name: _logName,
+      );
+
+      return report;
+    } catch (e, st) {
+      developer.log(
+        'Error generating Markov health report: $e',
+        error: e,
+        stackTrace: st,
+        name: _logName,
+      );
+      return MarkovHealthReport.empty();
+    }
+  }
+
   /// Get all active AI agents with location and predictions
   /// Privacy-preserving: Returns AI agent data with location and predicted actions
   /// Follows AdminPrivacyFilter principles (AI data only, no personal info)
@@ -304,4 +428,84 @@ class AdminSystemMonitoringService {
       return [];
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+// Phase 1.5E.10 — Markov health report models
+// -----------------------------------------------------------------------------
+
+/// Aggregate cold-start quality metrics for the Markov engagement predictor.
+///
+/// Used by admin tooling to assess beta ML health before Phase 5 replaces the
+/// Markov chain with the neural TransitionPredictor.
+///
+/// **When `percentAbovePersonalMatrixThreshold` approaches 1.0**, the synthetic
+/// prior has decayed enough that predictions reflect real user behavior —
+/// this is the primary readiness gate for Phase 5 training data sufficiency.
+class MarkovHealthReport {
+  /// Minimum real observations before personal matrix dominates the synthetic
+  /// prior (at 20 obs, personal data is ~17% of weight; at 100 obs, ~50%).
+  static const int personalMatrixThreshold = 20;
+
+  /// Number of agents included in this report.
+  final int agentCount;
+
+  /// Mean real observations across all agents.
+  final double averageRealObservations;
+
+  /// Fraction of agents with ≥ [personalMatrixThreshold] real observations.
+  final double percentAbovePersonalMatrixThreshold;
+
+  /// Count of agents estimated to be in each [UserEngagementPhase].
+  final Map<UserEngagementPhase, int> phaseDistribution;
+
+  /// Per-agent breakdown (ordered as passed to [AdminSystemMonitoringService.getMarkovHealthReport]).
+  final List<AgentMarkovSummary> agentSummaries;
+
+  /// When this report was generated.
+  final DateTime generatedAt;
+
+  const MarkovHealthReport({
+    required this.agentCount,
+    required this.averageRealObservations,
+    required this.percentAbovePersonalMatrixThreshold,
+    required this.phaseDistribution,
+    required this.agentSummaries,
+    required this.generatedAt,
+  });
+
+  /// Empty report returned when the predictor is not registered or no agents
+  /// were provided. Safe to display in the admin UI without null guards.
+  factory MarkovHealthReport.empty() => MarkovHealthReport(
+        agentCount: 0,
+        averageRealObservations: 0.0,
+        percentAbovePersonalMatrixThreshold: 0.0,
+        phaseDistribution: {
+          for (final p in UserEngagementPhase.values) p: 0,
+        },
+        agentSummaries: const [],
+        generatedAt: DateTime.now(),
+      );
+}
+
+/// Per-agent Markov chain summary within a [MarkovHealthReport].
+class AgentMarkovSummary {
+  /// Privacy-protected agent identifier.
+  final String agentId;
+
+  /// Total real phase transitions observed for this agent.
+  final int realObservations;
+
+  /// Best-estimate current engagement phase from the transition matrix.
+  final UserEngagementPhase estimatedPhase;
+
+  /// Churn risk within 7 days (0.0–1.0). > 0.6 triggers re-engagement gate.
+  final double churnRisk;
+
+  const AgentMarkovSummary({
+    required this.agentId,
+    required this.realObservations,
+    required this.estimatedPhase,
+    required this.churnRisk,
+  });
 }

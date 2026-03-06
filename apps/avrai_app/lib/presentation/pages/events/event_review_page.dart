@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/payment/sales_tax_service.dart';
 import 'package:avrai_runtime_os/controllers/event_creation_controller.dart';
+import 'package:avrai_runtime_os/services/intake/intake_models.dart';
+import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -32,6 +35,10 @@ class EventReviewPage extends StatefulWidget {
   final int maxAttendees;
   final double? price;
   final bool isPublic;
+  final bool wantsExternalSync;
+  final String? sourceUrl;
+  final String? sourceLabel;
+  final ExternalConnectionMode connectionMode;
 
   const EventReviewPage({
     super.key,
@@ -45,6 +52,10 @@ class EventReviewPage extends StatefulWidget {
     required this.maxAttendees,
     required this.price,
     required this.isPublic,
+    this.wantsExternalSync = false,
+    this.sourceUrl,
+    this.sourceLabel,
+    this.connectionMode = ExternalConnectionMode.url,
   });
 
   @override
@@ -54,6 +65,7 @@ class EventReviewPage extends StatefulWidget {
 class _EventReviewPageState extends State<EventReviewPage> {
   final _salesTaxService = GetIt.instance<SalesTaxService>();
   final _eventCreationController = GetIt.instance<EventCreationController>();
+  final _intakeOrchestrator = GetIt.instance<SourceIntakeOrchestrator>();
   bool _isLoading = false;
   String? _error;
   UnifiedUser? _currentUser;
@@ -215,6 +227,58 @@ class _EventReviewPageState extends State<EventReviewPage> {
 
       // Event created successfully
       if (mounted && result.event != null) {
+        if (widget.wantsExternalSync &&
+            ((widget.sourceUrl ?? '').isNotEmpty ||
+                (widget.sourceLabel ?? '').isNotEmpty)) {
+          final source = ExternalSourceDescriptor(
+            id: 'source-${DateTime.now().microsecondsSinceEpoch}',
+            ownerUserId: _currentUser!.id,
+            sourceProvider: (widget.sourceLabel ?? 'external').trim().isEmpty
+                ? 'external'
+                : (widget.sourceLabel ?? 'external').trim(),
+            sourceUrl: widget.sourceUrl,
+            connectionMode: widget.connectionMode,
+            entityHint: IntakeEntityType.event,
+            sourceLabel: widget.sourceLabel,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            cityCode: result.event!.cityCode,
+            localityCode: result.event!.localityCode,
+            syncState: ExternalSyncState.pending,
+          );
+          final reviewItem =
+              await _intakeOrchestrator.registerSourceForExistingEntity(
+            source: source,
+            entityType: IntakeEntityType.event,
+            entityId: result.event!.id,
+            rawPayload: <String, dynamic>{
+              'title': widget.title,
+              'description': widget.description,
+              'category': widget.category,
+              'location': widget.location,
+              'startTime': widget.startTime.toIso8601String(),
+              'endTime': widget.endTime.toIso8601String(),
+              'organizerName': _currentUser!.displayName ?? _currentUser!.email,
+              'sourceUrl': widget.sourceUrl,
+            },
+          );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  reviewItem == null
+                      ? 'Source sync connected. AVRAI will read updates in one direction.'
+                      : 'Source saved. AVRAI needs a quick review before trusting updates automatically.',
+                ),
+                backgroundColor: reviewItem == null
+                    ? AppTheme.successColor
+                    : AppTheme.warningColor,
+              ),
+            );
+          }
+        }
+
         // Navigate to success page
         Navigator.pushReplacement(
           context,
@@ -427,6 +491,60 @@ class _EventReviewPageState extends State<EventReviewPage> {
                   // Public/Private
                   _buildReviewRow(
                       'Visibility', widget.isPublic ? 'Public' : 'Private'),
+                  if (widget.wantsExternalSync) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(
+                                Icons.sync_alt,
+                                color: AppTheme.primaryColor,
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'External Sync',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'AVRAI will read updates from ${widget.sourceLabel ?? widget.sourceUrl ?? "your source"} in one direction only. It will never publish changes back out.',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          if ((widget.sourceUrl ?? '').isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.sourceUrl!,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
 
                   // Expertise Requirements

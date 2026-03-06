@@ -413,6 +413,7 @@ class GodModeDashboardData {
   final int totalCommunications;
   final double systemHealth;
   final AggregatePrivacyMetrics aggregatePrivacyMetrics;
+  final AuthMixSummary authMix;
   final DateTime lastUpdated;
 
   GodModeDashboardData({
@@ -423,8 +424,46 @@ class GodModeDashboardData {
     required this.totalCommunications,
     required this.systemHealth,
     required this.aggregatePrivacyMetrics,
+    required this.authMix,
     required this.lastUpdated,
   });
+}
+
+class AuthMixSummary {
+  final Map<String, int> signupProviderCounts;
+  final AuthMixBucket lastSignInProviderCounts;
+  final AuthMixBucket lastSignInPlatformCounts;
+
+  AuthMixSummary({
+    required this.signupProviderCounts,
+    required this.lastSignInProviderCounts,
+    required this.lastSignInPlatformCounts,
+  });
+
+  factory AuthMixSummary.empty() {
+    return AuthMixSummary(
+      signupProviderCounts: const {},
+      lastSignInProviderCounts: AuthMixBucket.empty(),
+      lastSignInPlatformCounts: AuthMixBucket.empty(),
+    );
+  }
+}
+
+class AuthMixBucket {
+  final Map<String, int> totalCounts;
+  final Map<String, int> recentCounts;
+
+  AuthMixBucket({
+    required this.totalCounts,
+    required this.recentCounts,
+  });
+
+  factory AuthMixBucket.empty() {
+    return AuthMixBucket(
+      totalCounts: const {},
+      recentCounts: const {},
+    );
+  }
 }
 
 /// Aggregate privacy metrics showing mean privacy scores across all users

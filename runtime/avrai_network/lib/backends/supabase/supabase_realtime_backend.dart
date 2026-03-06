@@ -17,6 +17,12 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
   static const String _dmMailboxPrefix = 'dm_mailbox:';
   static const String _communityStreamPrefix =
       'community_stream:'; // new (single stream)
+  static const String _dmTransportNotifyRpc = 'dm_transport_notify_v1';
+  // Postgres Changes subscribes to the base table; canonical API names are
+  // dm_transport_* but realtime publication remains on dm_notifications.
+  static const String _dmNotificationsBaseTable = 'dm_notifications';
+  static const String _dmTransportNotificationsTable =
+      'dm_transport_notifications';
 
   SupabaseRealtimeBackend(this._client);
 
@@ -257,7 +263,7 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
     // This avoids broadcast leakage and keeps message visibility scoped to the recipient.
     if (channelId.startsWith(_dmMailboxPrefix)) {
       final toUserId = channelId.substring(_dmMailboxPrefix.length);
-      final channelName = 'dm_notifications:$toUserId';
+      final channelName = 'dm_transport_notifications:$toUserId';
       final channel = _client.channel(channelName);
       final controller = StreamController<RealtimeMessage>.broadcast();
 
@@ -265,7 +271,7 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
           .onPostgresChanges(
             event: PostgresChangeEvent.insert,
             schema: 'public',
-            table: 'dm_notifications',
+            table: _dmNotificationsBaseTable,
             filter: PostgresChangeFilter(
               type: PostgresChangeFilterType.eq,
               column: 'to_user_id',
@@ -374,11 +380,21 @@ class SupabaseRealtimeBackend implements RealtimeBackend {
     // DM mailbox inserts into `public.private_messages` (RLS-protected).
     if (channelId.startsWith(_dmMailboxPrefix)) {
       final toUserId = channelId.substring(_dmMailboxPrefix.length);
-      // Payloadless notification; ciphertext is stored separately in dm_message_blobs.
-      await _client.from('dm_notifications').insert({
-        'to_user_id': toUserId,
-        'message_id': message.id,
-      });
+      // Server-authoritative payloadless notification enqueue.
+      try {
+        await _client.rpc(
+          _dmTransportNotifyRpc,
+          params: <String, dynamic>{
+            'p_to_user_id': toUserId,
+            'p_message_id': message.id,
+          },
+        );
+      } catch (_) {
+        await _client.from(_dmTransportNotificationsTable).insert({
+          'to_user_id': toUserId,
+          'message_id': message.id,
+        });
+      }
       return;
     }
 

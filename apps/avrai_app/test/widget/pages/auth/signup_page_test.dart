@@ -8,6 +8,8 @@ import 'package:avrai_core/models/user/user.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/get_current_user_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_apple_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/update_password_usecase.dart';
@@ -48,9 +50,10 @@ void main() {
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.text('Sign Up'), findsNWidgets(2));
       expect(find.byIcon(Icons.location_on), findsOneWidget);
-      expect(find.text('Join SPOTS'), findsOneWidget);
+      expect(find.text('Join avrai'), findsOneWidget);
       expect(find.text('Create your account to start discovering'),
           findsOneWidget);
+      expect(find.byKey(const Key('google_sign_in_button')), findsOneWidget);
       expect(find.byKey(const Key('name_field')), findsOneWidget);
       expect(find.byKey(const Key('email_field')), findsOneWidget);
       expect(find.byKey(const Key('password_field')), findsOneWidget);
@@ -92,7 +95,7 @@ void main() {
           find.byKey(const Key('email_field')), 'invalid-email');
       await _tapSignUp(tester);
       await tester.pump();
-      expect(find.text('Please enter a valid email'), findsOneWidget);
+      expect(find.text('Please enter a valid email address'), findsOneWidget);
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
       await tester.enterText(find.byKey(const Key('password_field')), '');
@@ -163,6 +166,25 @@ void main() {
       expect(find.text(errorMessage), findsOneWidget);
     });
 
+    testWidgets('should handle confirmation-required signup state',
+        (WidgetTester tester) async {
+      const confirmationMessage =
+          'Check your email to confirm your account before signing in.';
+      fakeAuthBloc.setState(AuthInitial());
+      final widget = _createTestableWidgetWithRealBloc(
+        child: const SignupPage(),
+        authBloc: fakeAuthBloc,
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      fakeAuthBloc.setState(SignupConfirmationRequired(
+        email: 'test@example.com',
+        message: confirmationMessage,
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text(confirmationMessage), findsOneWidget);
+    });
+
     testWidgets('should handle successful registration',
         (WidgetTester tester) async {
       // Test business logic: Successful registration state
@@ -176,7 +198,23 @@ void main() {
       expect(find.byType(SignupPage), findsOneWidget);
     });
 
-    testWidgets('should navigate back to login page and handle back button',
+    testWidgets('should dispatch Google OAuth event',
+        (WidgetTester tester) async {
+      fakeAuthBloc.setState(AuthInitial());
+      final widget = _createTestableWidgetWithRealBloc(
+        child: const SignupPage(),
+        authBloc: fakeAuthBloc,
+      );
+      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await tester.tap(find.byKey(const Key('google_sign_in_button')));
+      await tester.pump();
+      expect(
+        fakeAuthBloc.addedEvents.whereType<GoogleSignInRequested>().length,
+        equals(1),
+      );
+    });
+
+    testWidgets('should expose sign-in navigation action',
         (WidgetTester tester) async {
       // Test business logic: Navigation
       fakeAuthBloc.setState(AuthInitial());
@@ -185,11 +223,10 @@ void main() {
         authBloc: fakeAuthBloc,
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await tester.ensureVisible(find.text('Sign In'));
       await tester.tap(find.text('Sign In'));
       await tester.pump();
       expect(find.text('Sign In'), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.arrow_back));
-      await tester.pump();
       expect(find.byType(SignupPage), findsOneWidget);
     });
 
@@ -290,6 +327,10 @@ class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   @override
   final SignInUseCase signInUseCase;
   @override
+  final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  @override
+  final SignInWithAppleUseCase signInWithAppleUseCase;
+  @override
   final SignOutUseCase signOutUseCase;
   @override
   final SignUpUseCase signUpUseCase;
@@ -300,18 +341,26 @@ class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   _FakeAuthBloc({
     GetCurrentUserUseCase? getCurrentUserUseCase,
     SignInUseCase? signInUseCase,
+    SignInWithGoogleUseCase? signInWithGoogleUseCase,
+    SignInWithAppleUseCase? signInWithAppleUseCase,
     SignOutUseCase? signOutUseCase,
     SignUpUseCase? signUpUseCase,
     UpdatePasswordUseCase? updatePasswordUseCase,
   })  : getCurrentUserUseCase =
             getCurrentUserUseCase ?? _FakeGetCurrentUserUseCase(),
         signInUseCase = signInUseCase ?? _FakeSignInUseCase(),
+        signInWithGoogleUseCase =
+            signInWithGoogleUseCase ?? _FakeSignInWithGoogleUseCase(),
+        signInWithAppleUseCase =
+            signInWithAppleUseCase ?? _FakeSignInWithAppleUseCase(),
         signOutUseCase = signOutUseCase ?? _FakeSignOutUseCase(),
         signUpUseCase = signUpUseCase ?? _FakeSignUpUseCase(),
         updatePasswordUseCase =
             updatePasswordUseCase ?? _FakeUpdatePasswordUseCase(),
         super(AuthInitial()) {
     on<SignInRequested>(_onSignInRequested);
+    on<GoogleSignInRequested>(_onGoogleSignInRequested);
+    on<AppleSignInRequested>(_onAppleSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<AuthCheckRequested>(_onAuthCheckRequested);
@@ -345,6 +394,20 @@ class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     emit(AuthLoading());
   }
 
+  Future<void> _onGoogleSignInRequested(
+    GoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(OAuthInProgress('google'));
+  }
+
+  Future<void> _onAppleSignInRequested(
+    AppleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(OAuthInProgress('apple'));
+  }
+
   Future<void> _onSignOutRequested(
     SignOutRequested event,
     Emitter<AuthState> emit,
@@ -373,6 +436,12 @@ class _FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
 class _FakeAuthRepository implements AuthRepository {
   @override
   Future<User?> signIn(String email, String password) async => null;
+
+  @override
+  Future<void> signInWithGoogle() async {}
+
+  @override
+  Future<void> signInWithApple() async {}
 
   @override
   Future<User?> signUp(String email, String password, String name) async =>
@@ -405,6 +474,14 @@ class _FakeGetCurrentUserUseCase extends GetCurrentUserUseCase {
 
 class _FakeSignInUseCase extends SignInUseCase {
   _FakeSignInUseCase() : super(_FakeAuthRepository());
+}
+
+class _FakeSignInWithGoogleUseCase extends SignInWithGoogleUseCase {
+  _FakeSignInWithGoogleUseCase() : super(_FakeAuthRepository());
+}
+
+class _FakeSignInWithAppleUseCase extends SignInWithAppleUseCase {
+  _FakeSignInWithAppleUseCase() : super(_FakeAuthRepository());
 }
 
 class _FakeSignOutUseCase extends SignOutUseCase {

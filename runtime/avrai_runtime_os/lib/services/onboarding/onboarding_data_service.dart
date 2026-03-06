@@ -82,6 +82,7 @@ class OnboardingDataService {
         favoritePlaces: data.favoritePlaces,
         preferences: data.preferences,
         baselineLists: data.baselineLists,
+        openResponses: data.openResponses,
         respectedFriends: data.respectedFriends,
         socialMediaConnected: data.socialMediaConnected,
         completedAt: data.completedAt,

@@ -1,7 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 // MIGRATION_SHIM: Legacy ai_infrastructure path is temporarily retained while
 // runtime/app-layer LLM contracts are migrated in controlled slices.
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,11 +24,6 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
 import 'package:avrai_runtime_os/services/bert_squad/bert_squad_backend.dart';
 import 'package:avrai_runtime_os/services/bert_squad/query_classifier.dart';
 import 'package:http/http.dart' as http;
-// NOTE: This is Android-only at runtime. We keep the dependency optional in
-// practice by only using it when `TargetPlatform.android`. Some lint runners
-// may not see newly added pub deps, so we suppress URI resolution warnings.
-// ignore: uri_does_not_exist
-import 'package:llama_flutter_android/llama_flutter_android.dart' as llama;
 
 part 'llm_service_backends.dart';
 
@@ -90,11 +84,13 @@ class LLMService {
         _isOnlineOverride = isOnlineOverride;
 
   static LlmBackend _createLocalBackend() {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return AndroidLlamaFlutterAndroidBackend();
+    if (defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      return DesktopPhi4LlmBackend();
     }
-    // iOS and macOS both use LocalPlatformLlmBackend (method channel)
-    return LocalPlatformLlmBackend();
+    // iOS and Android use unified MLC-LLM engine
+    return MlcLlmBackend();
   }
 
   /// Create BERT-SQuAD backend if available (macOS only).
@@ -256,9 +252,11 @@ class LLMService {
   Future<String> chat({
     required List<ChatMessage> messages,
     LLMContext? context,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
     double temperature = 0.7,
     int maxTokens = 500,
     Duration? timeout,
+    String? responseFormat,
   }) async {
     final backend = await _selectBackend(messages: messages, context: context);
     // Treat the configured cloud backend as “cloud” even in tests where we
@@ -296,6 +294,7 @@ class LLMService {
         temperature: temperature,
         maxTokens: maxTokens,
         timeout: timeout ?? _defaultTimeout,
+        responseFormat: responseFormat,
       );
       if (isCloud) _recordSuccess();
       return result;
@@ -314,7 +313,7 @@ class LLMService {
       if (isCloud) _recordFailure();
 
       // If local failed and we are online, fall back to cloud once.
-      if (!isCloud) {
+      if (!isCloud && dispatchPolicy.allowCloudFallbackOnLocalFailure) {
         final online = await _isOnline();
         if (online) {
           developer.log('Local LLM failed; falling back to cloud once',
@@ -326,6 +325,7 @@ class LLMService {
             temperature: temperature,
             maxTokens: maxTokens,
             timeout: timeout ?? _defaultTimeout,
+            responseFormat: responseFormat,
           );
         }
       }
@@ -362,6 +362,7 @@ class LLMService {
   Future<String> generateRecommendation({
     required String userQuery,
     LLMContext? userContext,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
   }) async {
     return chat(
       messages: [
@@ -371,6 +372,7 @@ class LLMService {
         )
       ],
       context: userContext,
+      dispatchPolicy: dispatchPolicy,
     );
   }
 
@@ -383,6 +385,7 @@ class LLMService {
     required List<ChatMessage> conversationHistory,
     required String userMessage,
     LLMContext? context,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
   }) async {
     final messages = [
       ...conversationHistory,
@@ -392,6 +395,7 @@ class LLMService {
     return chat(
       messages: messages,
       context: context,
+      dispatchPolicy: dispatchPolicy,
     );
   }
 
@@ -399,6 +403,7 @@ class LLMService {
   Future<List<String>> suggestListNames({
     required String userIntent,
     LLMContext? context,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
   }) async {
     try {
       final prompt =
@@ -409,6 +414,7 @@ class LLMService {
           ChatMessage(role: ChatRole.user, content: prompt),
         ],
         context: context,
+        dispatchPolicy: dispatchPolicy,
         maxTokens: 200,
       );
 
@@ -432,6 +438,7 @@ class LLMService {
   Future<String> generateSpotRecommendations({
     required String query,
     LLMContext? context,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
   }) async {
     final prompt =
         'User is looking for: "$query". Provide helpful, concise recommendations for places to visit. Focus on authentic local spots.';
@@ -441,6 +448,7 @@ class LLMService {
         ChatMessage(role: ChatRole.user, content: prompt),
       ],
       context: context,
+      dispatchPolicy: dispatchPolicy,
       maxTokens: 300,
     );
   }
@@ -464,6 +472,7 @@ class LLMService {
     required String query,
     required String userId,
     List<ChatMessage>? messages,
+    LLMDispatchPolicy dispatchPolicy = const LLMDispatchPolicy.standard(),
     double temperature = 0.7,
     int maxTokens = 500,
   }) async {
@@ -505,6 +514,7 @@ class LLMService {
       return await chat(
         messages: messagesToSend,
         context: context,
+        dispatchPolicy: dispatchPolicy,
         temperature: temperature,
         maxTokens: maxTokens,
       );
@@ -522,6 +532,7 @@ class LLMService {
           ];
       return await chat(
         messages: messagesToSend,
+        dispatchPolicy: dispatchPolicy,
         temperature: temperature,
         maxTokens: maxTokens,
       );

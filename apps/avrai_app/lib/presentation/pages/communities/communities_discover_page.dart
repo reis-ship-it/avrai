@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai_core/models/community/community.dart';
+import 'package:avrai_core/models/signatures/signature_match_result.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -31,12 +36,17 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       GetIt.instance.isRegistered<CommunityService>()
           ? GetIt.instance<CommunityService>()
           : CommunityService();
+  final EntitySignatureService? _entitySignatureService =
+      GetIt.instance.isRegistered<EntitySignatureService>()
+          ? GetIt.instance<EntitySignatureService>()
+          : null;
 
   bool _isLoading = true;
   String? _error;
   List<Community> _communities = const [];
   Map<String, CommunityTrueCompatibilityBreakdown> _breakdownsByCommunityId =
       const {};
+  Map<String, SignatureMatchResult> _matchesByCommunityId = const {};
   final Set<String> _joiningCommunityIds = <String>{};
 
   @override
@@ -56,6 +66,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       setState(() {
         _communities = const [];
         _breakdownsByCommunityId = const {};
+        _matchesByCommunityId = const {};
         _isLoading = false;
       });
       return;
@@ -69,10 +80,17 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
 
       final breakdowns =
           await _scoreCommunitiesBounded(candidates, authState.user.id);
+      final matches = await _scoreCommunityMatchesBounded(
+        communities: candidates,
+        userId: authState.user.id,
+        fallbackBreakdowns: breakdowns,
+      );
 
       candidates.sort((a, b) {
-        final sa = breakdowns[a.id]?.combined ?? 0.5;
-        final sb = breakdowns[b.id]?.combined ?? 0.5;
+        final sa =
+            matches[a.id]?.finalScore ?? breakdowns[a.id]?.combined ?? 0.5;
+        final sb =
+            matches[b.id]?.finalScore ?? breakdowns[b.id]?.combined ?? 0.5;
         return sb.compareTo(sa);
       });
 
@@ -80,6 +98,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       setState(() {
         _communities = candidates.take(20).toList();
         _breakdownsByCommunityId = breakdowns;
+        _matchesByCommunityId = matches;
         _isLoading = false;
       });
     } catch (e) {
@@ -109,7 +128,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       ],
       body: RefreshIndicator(
         onRefresh: _load,
-        color: AppColors.electricGreen,
+        color: AppColors.primary,
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : authState is! Authenticated
@@ -135,14 +154,18 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
 
   Widget _buildCommunityCard(Community community, String userId) {
     final breakdown = _breakdownsByCommunityId[community.id];
-    final scoreText = breakdown == null
+    final match = _matchesByCommunityId[community.id];
+    final scoreText = (match?.finalScore ?? breakdown?.combined) == null
         ? '—'
-        : '${(breakdown.combined * 100).toStringAsFixed(0)}%';
+        : '${(((match?.finalScore ?? breakdown?.combined) ?? 0.5) * 100).toStringAsFixed(0)}%';
     final breakdownText = breakdown == null
         ? null
         : 'Q ${(breakdown.quantum * 100).toStringAsFixed(0)}% • '
             'Topo ${(breakdown.topological * 100).toStringAsFixed(0)}% • '
             'Weave ${(breakdown.weaveFit * 100).toStringAsFixed(0)}%';
+    final summaryText = match != null && match.usedSignaturePrimary
+        ? match.summary
+        : breakdownText;
     final isJoining = _joiningCommunityIds.contains(community.id);
 
     return Container(
@@ -170,13 +193,14 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.12),
+                  color: AppColors.grey100,
                   borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: AppColors.grey300),
                 ),
                 child: Text(
                   scoreText,
                   style: const TextStyle(
-                    color: AppColors.electricGreen,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -202,10 +226,10 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                   ),
             ),
           ],
-          if (breakdownText != null) ...[
+          if (summaryText != null) ...[
             const SizedBox(height: 10),
             Text(
-              breakdownText,
+              summaryText,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
@@ -217,7 +241,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => context.push('/community/${community.id}'),
+                  onPressed: () => _viewCommunity(community, userId),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.white,
                     side: const BorderSide(color: AppColors.grey300),
@@ -237,8 +261,9 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                           ? null
                           : () => _joinCommunity(community, userId),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.electricGreen,
-                    foregroundColor: AppColors.black,
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: AppColors.white,
+                    elevation: 0,
                   ),
                   child: isJoining
                       ? const SizedBox(
@@ -296,6 +321,51 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
     return result;
   }
 
+  Future<Map<String, SignatureMatchResult>> _scoreCommunityMatchesBounded({
+    required List<Community> communities,
+    required String userId,
+    required Map<String, CommunityTrueCompatibilityBreakdown>
+        fallbackBreakdowns,
+  }) async {
+    const maxConcurrency = 6;
+    if (communities.isEmpty) return const {};
+
+    final result = <String, SignatureMatchResult>{};
+    var nextIndex = 0;
+
+    Future<void> worker() async {
+      while (true) {
+        final i = nextIndex++;
+        if (i >= communities.length) return;
+        final community = communities[i];
+        final fallbackScore = fallbackBreakdowns[community.id]?.combined ?? 0.5;
+        try {
+          final match =
+              await _communityService.calculateUserCommunitySignatureMatch(
+            community: community,
+            userId: userId,
+            fallbackScore: fallbackScore,
+          );
+          if (match != null) {
+            result[community.id] = match;
+          }
+        } catch (_) {
+          // Best-effort rendering.
+        }
+      }
+    }
+
+    final workers = <Future<void>>[];
+    final n = communities.length < maxConcurrency
+        ? communities.length
+        : maxConcurrency;
+    for (var i = 0; i < n; i++) {
+      workers.add(worker());
+    }
+    await Future.wait(workers);
+    return result;
+  }
+
   Future<void> _joinCommunity(Community community, String userId) async {
     setState(() {
       _joiningCommunityIds.add(community.id);
@@ -304,7 +374,15 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
     try {
       await _communityService.addMember(community, userId);
       if (!mounted) return;
-
+      final authState = context.read<AuthBloc>().state;
+      if (_entitySignatureService != null && authState is Authenticated) {
+        unawaited(
+          _entitySignatureService.recordCommunityJoinSignal(
+            user: _toUnifiedUser(authState.user, community: community),
+            community: community,
+          ),
+        );
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Joined ${community.name}'),
@@ -333,6 +411,31 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         ),
       );
     }
+  }
+
+  void _viewCommunity(Community community, String userId) {
+    if (_entitySignatureService != null) {
+      unawaited(
+        _entitySignatureService.recordCommunityBrowseSelectionSignal(
+          userId: userId,
+          community: community,
+        ),
+      );
+    }
+    context.push('/community/${community.id}');
+  }
+
+  UnifiedUser _toUnifiedUser(dynamic user, {Community? community}) {
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+      hasCompletedOnboarding: true,
+      location: community?.localityCode ?? community?.cityCode,
+    );
   }
 
   Widget _buildSignedOutState() {

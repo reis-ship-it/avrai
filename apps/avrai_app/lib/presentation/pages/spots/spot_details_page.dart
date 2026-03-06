@@ -13,10 +13,12 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_sharing_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/ai/event_logger.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_service.dart';
@@ -24,7 +26,7 @@ import 'package:avrai_runtime_os/services/reservation/reservation_availability_s
 import 'package:avrai/presentation/pages/reservations/create_reservation_page.dart';
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class SpotDetailsPage extends StatefulWidget {
   final Spot spot;
@@ -37,6 +39,10 @@ class SpotDetailsPage extends StatefulWidget {
 
 class _SpotDetailsPageState extends State<SpotDetailsPage> {
   late EventLogger _eventLogger;
+  final EntitySignatureService? _entitySignatureService =
+      di.sl.isRegistered<EntitySignatureService>()
+          ? di.sl<EntitySignatureService>()
+          : null;
   DateTime? _viewStartTime;
   bool _isInitialized = false;
 
@@ -66,12 +72,34 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
         await _eventLogger.logSpotVisited(
           spotId: widget.spot.id,
         );
+
+        if (!mounted) return;
+        final authState = context.read<AuthBloc>().state;
+        if (_entitySignatureService != null && authState is Authenticated) {
+          await _entitySignatureService.recordSpotViewSignal(
+            user: _toUnifiedUser(authState.user),
+            spot: widget.spot,
+          );
+        }
       }
       _isInitialized = true;
     } catch (e) {
       // Event logging is non-critical, continue without it
       _isInitialized = false;
     }
+  }
+
+  UnifiedUser _toUnifiedUser(dynamic user) {
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+      hasCompletedOnboarding: true,
+      location: widget.spot.localityCode ?? widget.spot.cityCode,
+    );
   }
 
   Future<void> _checkReservationStatus() async {
@@ -201,7 +229,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Spot Header
-            PortalSurface(
+            AppSurface(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -291,7 +319,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
             const SizedBox(height: 16),
 
             // Location Information
-            PortalSurface(
+            AppSurface(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -344,7 +372,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
             const SizedBox(height: 16),
 
             // Additional Information
-            PortalSurface(
+            AppSurface(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

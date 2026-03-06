@@ -2,32 +2,80 @@
 
 **Date:** January 7, 2025  
 **Status:** ✅ Active Guide  
-**Purpose:** Step-by-step guide to update OAuth redirect URIs to `avrai://oauth` in all provider consoles
+**Purpose:** Step-by-step guide to align AVRAI OAuth redirect URIs with the app-auth callback standard `avrai://oauth`
 
 ---
 
 ## Overview
 
-This guide walks you through updating OAuth redirect URIs in each provider's developer console to use the new AVRAI deep link scheme: `avrai://oauth`.
+This guide walks you through updating app-auth OAuth redirect URIs to use the AVRAI deep link scheme `avrai://oauth`.
+
+For app authentication, the runtime callback returned to the app should look like:
+
+```text
+avrai://oauth?platform=google&code=...
+avrai://oauth?platform=apple&code=...
+```
+
+The console-side allow-list entry is still the base callback:
+
+```text
+avrai://oauth
+```
 
 ---
 
 ## Redirect URI Format
 
-**New Format:** `avrai://oauth`
+**Base Redirect URI:** `avrai://oauth`
+
+**Runtime Callback Shape:** `avrai://oauth?platform=[provider]&code=...&state=...`
 
 **Previous Format:** `spots://oauth/[platform]/callback`
 
 **Why Changed:**
 - Matches new app identity (`avrai://` instead of `spots://`)
 - Simpler format (no platform-specific paths)
-- Platform information passed via query parameter: `avrai://oauth?platform=google&code=...&state=...`
+- Platform information is carried back via query parameter: `avrai://oauth?platform=google&code=...&state=...`
+
+---
+
+## App Auth Scope
+
+- App-auth launch scope is `Google + Apple + email/password fallback`.
+- Do not add Facebook into the app-auth UI during this rollout.
+- Social-media OAuth remains separate from app authentication even though both reuse the same `avrai://oauth` deep-link runtime.
+
+## Duplicate Identity Policy
+
+- Beta launch policy: do **not** auto-link accounts yet.
+- If a Google or Apple sign-in returns an email that already belongs to an email/password account, keep the existing account as the source of truth.
+- User-facing support message: "Use your existing login method for now."
+- Revisit full provider linking only after launch unless live beta feedback makes it urgent.
+
+---
+
+## Required Consoles For Beta Auth
+
+### 1. Supabase Auth Dashboard
+
+**Where to Update:**
+- Supabase Dashboard → Authentication → URL Configuration
+- Supabase Dashboard → Authentication → Providers → Google / Apple
+
+**Steps:**
+
+1. Add `avrai://oauth` to the redirect allow-list.
+2. If the allow-list supports wildcards in your project settings, prefer `avrai://oauth*` so `?platform=...` returns are always accepted.
+3. Enable the `Google` provider and enter the Google client credentials.
+4. Enable the `Apple` provider and enter the Apple service credentials.
+5. Keep the site URL and recovery URLs unchanged unless you are intentionally changing web auth too.
 
 ---
 
 ## Provider-Specific Instructions
 
-### 1. Google Cloud Console
+### 2. Google Cloud Console
 
 **Where to Update:**
 - Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client IDs
@@ -56,7 +104,22 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 2. Facebook/Meta for Developers
+### 3. Apple Developer / App Store Connect
+
+**Where to Update:**
+- Apple Developer → Certificates, Identifiers & Profiles → Identifiers / Services IDs
+- App Store Connect / Xcode → Sign in with Apple capability
+
+**Steps:**
+
+1. Confirm the iOS bundle identifier is `com.avrai.app`.
+2. Enable the `Sign in with Apple` capability for the AVRAI app target.
+3. If you use a Services ID for Supabase Apple auth, make sure its return URL matches the value configured in Supabase.
+4. In Xcode, verify the Runner target keeps the `avrai` URL scheme so the app can reopen on `avrai://oauth`.
+
+---
+
+### 4. Facebook/Meta for Developers
 
 **Where to Update:**
 - Meta for Developers → Your App → Settings → Basic → App Domains
@@ -85,7 +148,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 3. Twitter/X Developer Portal
+### 5. Twitter/X Developer Portal
 
 **Where to Update:**
 - Twitter Developer Portal → Your App → Settings → User authentication settings
@@ -109,7 +172,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 4. Instagram Basic Display API
+### 6. Instagram Basic Display API
 
 **Where to Update:**
 - Meta for Developers → Your App → Products → Instagram Basic Display → Settings
@@ -130,7 +193,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 5. Reddit API
+### 7. Reddit API
 
 **Where to Update:**
 - Reddit Apps → Your App → Edit → Redirect URI
@@ -150,7 +213,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 6. TikTok for Developers
+### 8. TikTok for Developers
 
 **Where to Update:**
 - TikTok for Developers → Your App → Manage → Basic Information → Redirect URI
@@ -170,7 +233,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 7. LinkedIn Developer Portal
+### 9. LinkedIn Developer Portal
 
 **Where to Update:**
 - LinkedIn Developer Portal → Your App → Auth → Redirect URLs
@@ -190,7 +253,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 8. Pinterest Developers
+### 10. Pinterest Developers
 
 **Where to Update:**
 - Pinterest Developers → Your App → Settings → Redirect URIs
@@ -210,7 +273,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 9. Tumblr Developer
+### 11. Tumblr Developer
 
 **Where to Update:**
 - Tumblr Developer → Your App → Settings → Callback URL
@@ -229,7 +292,7 @@ This guide walks you through updating OAuth redirect URIs in each provider's dev
 
 ---
 
-### 10. Are.na Developer
+### 12. Are.na Developer
 
 **Where to Update:**
 - Are.na Developer → Your App → Settings → Redirect URI

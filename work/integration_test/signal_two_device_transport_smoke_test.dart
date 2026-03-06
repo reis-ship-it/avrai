@@ -29,8 +29,9 @@ import 'package:avrai_runtime_os/config/supabase_config.dart';
 import '../test/mocks/in_memory_flutter_secure_storage.dart';
 
 /// Two-device Signal smoke over the **real DM transport layer**:
-/// - `public.dm_message_blobs` (ciphertext, RLS: recipient-only read)
-/// - `public.dm_notifications` (payloadless realtime notify; only message_id)
+/// - `public.dm_transport_blobs` (canonical transport view; recipient-only read via base RLS)
+/// - `public.dm_transport_notifications` (canonical transport view; payloadless notify with message_id)
+/// - Realtime subscription still listens on `public.dm_notifications` (base table publication).
 ///
 /// This test is intentionally "scripted": it is meant to be run on **two devices**
 /// at the same time, each configured as role A or B.
@@ -108,9 +109,21 @@ void main() {
       // ignore: avoid_print
       print('✅ [signal_2dev:$role] Signed in as userId=$myUserId');
 
+      // Create an explicit DM invite token for this user. Peer can use this
+      // token to fetch our prekey bundle when no shared community exists.
+      final myInviteToken = (await client.rpc(
+        'create_dm_invite_token_v1',
+        params: <String, dynamic>{'expires_in_seconds': 3600},
+      ))
+          .toString();
+      if (myInviteToken.isEmpty) {
+        throw StateError('Failed to create DM invite token');
+      }
+
       // 2) Rendezvous over broadcast to learn peer userId + confirm prekey publish.
       final rendezvous = client.channel('signal_smoke_rendezvous:$runId');
       final peerUserIdCompleter = Completer<String>();
+      final peerInviteTokenCompleter = Completer<String>();
       final peerPrekeyReadyCompleter = Completer<void>();
 
       rendezvous.onBroadcast(
@@ -123,6 +136,12 @@ void main() {
             if (other == null || other.isEmpty || other == myUserId) return;
             if (!peerUserIdCompleter.isCompleted) {
               peerUserIdCompleter.complete(other);
+            }
+            final inviteToken = p['invite_token']?.toString();
+            if (inviteToken != null &&
+                inviteToken.isNotEmpty &&
+                !peerInviteTokenCompleter.isCompleted) {
+              peerInviteTokenCompleter.complete(inviteToken);
             }
           } catch (_) {}
         },
@@ -151,6 +170,7 @@ void main() {
               'run_id': runId,
               'user_id': myUserId,
               'role': role,
+              'invite_token': myInviteToken,
               'ts': DateTime.now().toUtc().toIso8601String(),
             },
           );
@@ -162,6 +182,13 @@ void main() {
         onTimeout: () {
           throw TimeoutException(
               'Timed out waiting for peer rendezvous (hello)');
+        },
+      );
+      final peerInviteToken = await peerInviteTokenCompleter.future.timeout(
+        const Duration(seconds: 60),
+        onTimeout: () {
+          throw TimeoutException(
+              'Timed out waiting for peer DM invite token in rendezvous hello');
         },
       );
       // ignore: avoid_print
@@ -208,6 +235,10 @@ void main() {
       );
 
       await signal.initialize();
+      await keyManager.cacheDmInviteToken(
+        targetUserId: peerUserId,
+        token: peerInviteToken,
+      );
       await signal.uploadPreKeyBundle(myUserId);
 
       await rendezvous.sendBroadcastMessage(
@@ -233,6 +264,7 @@ void main() {
       final dmNotifyChannel =
           client.channel('signal_smoke_dm_notifications:$runId:$myUserId');
       final receivedPlaintext = StreamController<String>.broadcast();
+      final dmSubscribed = Completer<void>();
 
       dmNotifyChannel.onPostgresChanges(
         event: PostgresChangeEvent.insert,
@@ -248,7 +280,12 @@ void main() {
             final messageId = payload.newRecord['message_id']?.toString() ?? '';
             if (messageId.isEmpty) return;
 
-            final blob = await dmStore.getDmBlob(messageId);
+            DmMessageBlob? blob;
+            for (var attempt = 0; attempt < 10; attempt++) {
+              blob = await dmStore.getDmBlob(messageId);
+              if (blob != null) break;
+              await Future<void>.delayed(const Duration(milliseconds: 250));
+            }
             if (blob == null) return;
             if (!blob.senderAgentId.contains(runId)) return;
 
@@ -287,7 +324,26 @@ void main() {
           }
         },
       );
-      dmNotifyChannel.subscribe();
+      dmNotifyChannel.subscribe((status, [error]) {
+        if (status == RealtimeSubscribeStatus.subscribed &&
+            !dmSubscribed.isCompleted) {
+          dmSubscribed.complete();
+        } else if (status == RealtimeSubscribeStatus.channelError &&
+            !dmSubscribed.isCompleted) {
+          dmSubscribed.completeError(
+            error ?? Exception('dm notification channel error'),
+          );
+        }
+      });
+
+      await dmSubscribed.future.timeout(
+        const Duration(seconds: 20),
+        onTimeout: () {
+          throw TimeoutException(
+            'Timed out waiting for DM notification channel subscribe',
+          );
+        },
+      );
 
       Future<void> sendDm({
         required String toUserId,
@@ -299,7 +355,7 @@ void main() {
           recipientId: toUserId,
         );
 
-        await dmStore.putDmBlob(
+        await dmStore.enqueueDm(
           messageId: messageId,
           fromUserId: myUserId,
           toUserId: toUserId,
@@ -311,11 +367,6 @@ void main() {
           ),
           sentAt: DateTime.now().toUtc(),
         );
-
-        await client.from('dm_notifications').insert({
-          'to_user_id': toUserId,
-          'message_id': messageId,
-        });
         if (LedgerAuditV0.isEnabled) {
           unawaited(LedgerAuditV0.tryAppend(
             domain: LedgerDomainV0.security,

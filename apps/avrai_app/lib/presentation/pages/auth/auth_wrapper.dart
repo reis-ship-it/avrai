@@ -35,7 +35,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         // Show login page for unauthenticated users
         // The router redirect will handle navigation to /login if needed
-        if (state is Unauthenticated) {
+        if (state is Unauthenticated || state is OAuthCancelledState) {
           return const LoginPage();
         }
 

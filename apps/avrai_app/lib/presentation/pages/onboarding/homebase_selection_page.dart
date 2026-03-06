@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
@@ -15,7 +18,7 @@ import 'package:geocoding/geocoding.dart'
     if (dart.library.html) 'package:avrai/presentation/pages/onboarding/web_geocoding_nominatim.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class HomebaseSelectionPage extends StatefulWidget {
   final String? selectedHomebase;
@@ -559,20 +562,44 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
     if (_isWidgetTestBinding) return;
 
     try {
-      final lookup = await _geoHierarchyService.lookupLocalityByPoint(
-        lat: center.latitude,
-        lon: center.longitude,
-      );
+      String? localityCode;
+      String? cityCode;
+      final sl = GetIt.instance;
+      final localityKernel = sl.isRegistered<LocalityKernelContract>()
+          ? sl<LocalityKernelContract>()
+          : null;
+      if (localityKernel != null) {
+        final resolution = await localityKernel.resolvePoint(
+          LocalityPointQuery(
+            latitude: center.latitude,
+            longitude: center.longitude,
+            occurredAtUtc: DateTime.now().toUtc(),
+            audience: LocalityProjectionAudience.admin,
+            includeGeometry: true,
+          ),
+        );
+        localityCode = resolution.localityCode;
+        cityCode = resolution.cityCode;
+      } else {
+        final lookup = await _geoHierarchyService.lookupLocalityByPoint(
+          lat: center.latitude,
+          lon: center.longitude,
+        );
+        localityCode = lookup?.localityCode;
+        cityCode = lookup?.cityCode;
+      }
 
       // If we can resolve a locality_code, render that polygon.
-      if (lookup != null) {
+      if (localityCode != null && localityCode.isNotEmpty) {
         // Best-effort: ensure the relevant city pack is installed so the user
         // keeps getting locality boundaries offline after onboarding.
         // ignore: unawaited_futures
-        unawaited(GeoCityPackService().ensureLatestInstalled(lookup.cityCode));
+        if (cityCode != null && cityCode.isNotEmpty) {
+          unawaited(GeoCityPackService().ensureLatestInstalled(cityCode));
+        }
 
         final poly = await _geoHierarchyService.getLocalityPolygon(
-          localityCode: lookup.localityCode,
+          localityCode: localityCode,
           simplifyTolerance: 0.01,
         );
         if (!mounted) return;
@@ -597,7 +624,7 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
       }
 
       // No overlay available (lookup null: outside coverage or Supabase/network).
-      if (lookup == null) {
+      if (localityCode == null || localityCode.isEmpty) {
         _logger.debug(
             'HomebaseSelectionPage: No locality at point (Supabase RPC or outside coverage)');
       }
@@ -630,7 +657,7 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
         children: [
           // Header
           Text(
-            'Where\'s your homebase?',
+            'What\'s your local?',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppTheme.primaryColor,
@@ -638,7 +665,7 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Position the marker over your homebase. Only the location name will appear on your profile.',
+            'Position the marker over your neighborhood. Only the location name will appear on your profile.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppColors.grey600,
                 ),
@@ -647,7 +674,7 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
 
           // Map Container
           Expanded(
-            child: PortalSurface(
+            child: AppSurface(
               padding: EdgeInsets.zero,
               radius: 16,
               borderColor: AppColors.grey300,

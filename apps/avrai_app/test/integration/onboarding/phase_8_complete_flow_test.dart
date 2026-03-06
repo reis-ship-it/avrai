@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/app.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -65,7 +67,14 @@ Future<void> navigateToBaselineListsStep(WidgetTester tester) async {
 }
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   setUpAll(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Initialize dependency injection for tests
     try {
       await setupTestStorage();
@@ -77,6 +86,10 @@ void main() {
   });
 
   setUp(() async {
+    if (!runHeavyIntegrationTests) {
+      return;
+    }
+
     // Reset onboarding completion state before each test
     // This ensures tests can actually run the onboarding flow
     try {
@@ -226,5 +239,5 @@ void main() {
       expect(profile, isNotNull,
           reason: 'PersonalityProfile should be created after onboarding');
     }, skip: _isFlutterTest);
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

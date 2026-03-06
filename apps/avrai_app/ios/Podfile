@@ -33,7 +33,7 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
   # knot_math Rust FFI (builds XCFramework during pod install)
-  pod 'knot_math', :path => '../../engine/avrai_knot/native/knot_math'
+  pod 'knot_math', :path => '../../../engine/avrai_knot/native/knot_math'
 
   # Signal Protocol native libs (vendored in-repo)
   # Split into multiple pods so CocoaPods XCFramework slice copying does not
@@ -58,13 +58,23 @@ post_install do |installer|
       # Fix module validation issues
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
 
+      # Fix for Flutter including arm64 in EXCLUDED_ARCHS for simulator
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386 x86_64'
+
       # SignalFfiNative ships only an arm64 simulator slice today.
       # If Xcode asks for x86_64 too, CocoaPods can't select a matching XCFramework
       # slice and the framework won't be copied into intermediates → link fails.
       if target.name == 'SignalFfiNative'
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
         config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
       end
     end
+  end
+
+  # Also force it on the Runner project
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386 x86_64'
+    end
+    aggregate_target.user_project.save
   end
 end

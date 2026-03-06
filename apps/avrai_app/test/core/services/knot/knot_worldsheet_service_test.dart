@@ -180,6 +180,11 @@ void main() {
               compatibilityScores: any(named: 'compatibilityScores'),
               relationships: any(named: 'relationships'),
             )).thenAnswer((_) async => testFabric);
+        when(() => mockStorageService.loadFabricSnapshots(
+              'group-2',
+              startTime: any(named: 'startTime'),
+              endTime: any(named: 'endTime'),
+            )).thenAnswer((_) async => <FabricSnapshot>[]);
 
         final worldsheetGenerated = await service.createWorldsheet(
           groupId: 'group-2',
@@ -189,7 +194,7 @@ void main() {
         expect(worldsheetGenerated, isNotNull);
         verify(() => mockFabricService.generateMultiStrandBraidFabric(
               userKnots: any(named: 'userKnots'),
-            )).called(1);
+            )).called(greaterThanOrEqualTo(1));
       });
 
       test(

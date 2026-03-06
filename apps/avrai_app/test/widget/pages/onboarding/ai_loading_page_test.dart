@@ -88,9 +88,8 @@ void main() {
         child: AILoadingPage(
           userName: 'Test User',
           homebase: 'New York',
-          favoritePlaces: const ['Central Park', 'Brooklyn Bridge'],
-          preferences: const {
-            'Food & Drink': ['Coffee & Tea'],
+          openResponses: const {
+            'about_me': 'I love tech and grunge style.',
           },
           onLoadingComplete: () {},
         ),
@@ -153,9 +152,8 @@ void main() {
           age: 25,
           birthday: DateTime(2000, 1, 1),
           homebase: 'Brooklyn',
-          favoritePlaces: const ['Park', 'Bridge'],
-          preferences: const {
-            'Activities': ['Music', 'Art'],
+          openResponses: const {
+            'hobby': 'Music and Art',
           },
           onLoadingComplete: () {},
         ),

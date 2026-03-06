@@ -62,6 +62,26 @@ class AuthRepositoryImpl extends SimplifiedRepositoryBase
   }
 
   @override
+  Future<void> signInWithGoogle() async {
+    if (remoteDataSource == null) {
+      throw Exception(
+          'Authentication service is not available. Please check your Supabase configuration and try again.');
+    }
+
+    await remoteDataSource!.signInWithGoogle();
+  }
+
+  @override
+  Future<void> signInWithApple() async {
+    if (remoteDataSource == null) {
+      throw Exception(
+          'Authentication service is not available. Please check your Supabase configuration and try again.');
+    }
+
+    await remoteDataSource!.signInWithApple();
+  }
+
+  @override
   Future<User?> signUp(String email, String password, String name) async {
     // Sign up is remote-only, but do not rely on Connectivity checks which may be flaky.
     if (remoteDataSource == null) {
@@ -87,7 +107,7 @@ class AuthRepositoryImpl extends SimplifiedRepositoryBase
   Future<void> signOut() async {
     try {
       // Try remote sign out first, but always clear local data regardless
-      if (remoteDataSource != null && await isOnline) {
+      if (remoteDataSource != null) {
         try {
           await remoteDataSource!.signOut();
         } catch (e) {

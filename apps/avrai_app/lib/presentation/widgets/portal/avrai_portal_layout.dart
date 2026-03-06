@@ -23,7 +23,7 @@ class AvraiPortalLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final portal = context.portal;
+    final immersive = context.immersive;
     return AdaptivePlatformPageScaffold(
       title: '',
       showNavigationBar: false,
@@ -43,7 +43,7 @@ class AvraiPortalLayout extends StatelessWidget {
             child: Padding(
               // THE NEGATIVE BORDER
               // 12px gap on all sides so the world is visible 360 degrees
-              padding: EdgeInsets.all(portal.edgePadding),
+              padding: EdgeInsets.all(immersive.edgePadding),
 
               // THE GLASS SLATE
               child: GlassSlate(

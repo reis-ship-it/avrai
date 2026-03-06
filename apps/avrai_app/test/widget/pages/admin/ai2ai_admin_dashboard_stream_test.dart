@@ -48,7 +48,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -77,7 +77,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -104,7 +104,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -128,7 +128,7 @@ void main() {
 
     group('Stream Cleanup', () {
       testWidgets('streams are disposed on page dispose', (tester) async {
-        const widget = AI2AIAdminDashboard();
+        const widget = AI2AIAdminDashboard(useThreeJsVisualizations: false);
 
         await tester.pumpWidget(
           const MaterialApp(
@@ -164,7 +164,7 @@ void main() {
           await tester.pumpWidget(
             const MaterialApp(
               home: Scaffold(
-                body: AI2AIAdminDashboard(),
+                body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
               ),
             ),
           );
@@ -194,7 +194,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -217,7 +217,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -251,7 +251,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -290,7 +290,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -327,7 +327,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -347,7 +347,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -371,7 +371,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );
@@ -399,7 +399,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(
-              body: AI2AIAdminDashboard(),
+              body: AI2AIAdminDashboard(useThreeJsVisualizations: false),
             ),
           ),
         );

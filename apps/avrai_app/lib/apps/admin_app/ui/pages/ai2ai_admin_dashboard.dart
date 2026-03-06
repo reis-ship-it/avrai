@@ -30,7 +30,12 @@ import 'package:vector_math/vector_math.dart' show Vector3;
 /// Admin Dashboard for AI2AI Network Monitoring
 /// Displays network health, connections, learning metrics, privacy, and performance.
 class AI2AIAdminDashboard extends StatefulWidget {
-  const AI2AIAdminDashboard({super.key});
+  const AI2AIAdminDashboard({
+    super.key,
+    this.useThreeJsVisualizations = true,
+  });
+
+  final bool useThreeJsVisualizations;
 
   @override
   State<AI2AIAdminDashboard> createState() => _AI2AIAdminDashboardState();
@@ -609,6 +614,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
           agents: _activeAgents,
           title: 'AI2AI Agent Globe',
           links: _topologyLinks,
+          useThreeJs: widget.useThreeJsVisualizations,
           temporalState: GlobeTemporalStateView(
             currentState: _meshTemporalState.label,
             progress: _meshTemporalProgress,
@@ -740,6 +746,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
               height: 360,
               width: double.infinity,
               showControls: true,
+              useThreeJs: widget.useThreeJsVisualizations,
               onNodeTapped: (agentId) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(

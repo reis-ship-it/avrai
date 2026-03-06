@@ -1,7 +1,12 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
+import 'package:avrai_runtime_os/services/integrations/spotify_airgap_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show StorageService, SharedPreferencesCompat;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
@@ -48,6 +53,18 @@ import 'package:avrai_runtime_os/services/community/community_chat_service.dart'
 import 'package:avrai_runtime_os/services/chat/dm_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_sender_key_service.dart';
+import 'package:avrai_runtime_os/services/signatures/builders/bundle_signature_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/builders/community_signature_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/builders/event_signature_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/builders/spot_signature_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/builders/user_signature_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/bundles/community_event_bundle_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/bundles/performer_venue_event_bundle_builder.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/services/signatures/signature_confidence_service.dart';
+import 'package:avrai_runtime_os/services/signatures/signature_freshness_tracker.dart';
+import 'package:avrai_runtime_os/services/signatures/signature_match_service.dart';
+import 'package:avrai_runtime_os/services/signatures/signature_repository.dart';
 import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart' as ai2ai;
 import 'package:avrai_runtime_os/services/business/business_expert_chat_service_ai2ai.dart';
 import 'package:avrai_runtime_os/services/business/business_business_chat_service_ai2ai.dart';
@@ -60,6 +77,7 @@ import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/oauth/oauth_runtime.dart';
+import 'package:avrai_runtime_os/services/admin/remote_source_health_service.dart';
 import 'package:avrai_runtime_os/data/repositories/hybrid_community_repository.dart';
 import 'package:avrai_runtime_os/data/repositories/local_community_repository.dart';
 import 'package:avrai_runtime_os/data/repositories/supabase_community_repository.dart';
@@ -111,7 +129,24 @@ import 'package:http/http.dart' as http;
 import 'package:avrai_runtime_os/config/supabase_config.dart';
 import 'package:avrai_runtime_os/config/google_places_config.dart';
 import 'package:avrai_runtime_os/services/matching/group_formation_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
+import 'package:avrai_runtime_os/services/prediction/markov_engagement_predictor.dart';
+import 'package:avrai_runtime_os/services/prediction/markov_transition_store.dart';
+import 'package:avrai_runtime_os/services/prediction/swarm_prior_loader.dart';
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
+
+import 'package:avrai_runtime_os/services/passive_collection/smart_passive_collection_service.dart';
+import 'package:avrai_runtime_os/services/passive_collection/dwell_event_intake_adapter.dart';
+import 'package:avrai_runtime_os/services/passive_collection/battery_adaptive_batch_scheduler.dart';
+import 'package:avrai_runtime_os/services/passive_collection/nightly_digestion_job.dart';
+import 'package:avrai_runtime_os/services/predictive_outreach/locality_federated_exchange_service.dart';
+import 'package:avrai_runtime_os/services/predictive_outreach/locality_federated_exchange_job.dart';
+import 'package:avrai_runtime_os/data/database/app_database.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/pheromone_mesh_routing_service.dart';
+import 'package:avrai_runtime_os/services/security/governance_kernel_service.dart';
+import 'package:avrai_knot/services/knot/archetype_pattern_learner.dart';
+import 'package:avrai_core/contracts/air_gap_contract.dart';
+import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
 
 /// AI/Network Services Registration Module
 ///
@@ -473,6 +508,115 @@ Future<void> registerAIServices(GetIt sl) async {
             storage: sl<StorageService>(),
           ));
 
+  if (!sl.isRegistered<SignatureFreshnessTracker>()) {
+    sl.registerLazySingleton<SignatureFreshnessTracker>(
+      () => const SignatureFreshnessTracker(),
+    );
+  }
+  if (!sl.isRegistered<SignatureConfidenceService>()) {
+    sl.registerLazySingleton<SignatureConfidenceService>(
+      () => const SignatureConfidenceService(),
+    );
+  }
+  if (!sl.isRegistered<SignatureRepository>()) {
+    sl.registerLazySingleton<SignatureRepository>(
+      () => SignatureRepository(
+        storageService: sl<StorageService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<UserSignatureBuilder>()) {
+    sl.registerLazySingleton<UserSignatureBuilder>(
+      () => UserSignatureBuilder(
+        confidenceService: sl<SignatureConfidenceService>(),
+        freshnessTracker: sl<SignatureFreshnessTracker>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<SpotSignatureBuilder>()) {
+    sl.registerLazySingleton<SpotSignatureBuilder>(
+      () => SpotSignatureBuilder(
+        confidenceService: sl<SignatureConfidenceService>(),
+        freshnessTracker: sl<SignatureFreshnessTracker>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<CommunitySignatureBuilder>()) {
+    sl.registerLazySingleton<CommunitySignatureBuilder>(
+      () => CommunitySignatureBuilder(
+        confidenceService: sl<SignatureConfidenceService>(),
+        freshnessTracker: sl<SignatureFreshnessTracker>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<EventSignatureBuilder>()) {
+    sl.registerLazySingleton<EventSignatureBuilder>(
+      () => EventSignatureBuilder(
+        confidenceService: sl<SignatureConfidenceService>(),
+        freshnessTracker: sl<SignatureFreshnessTracker>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<BundleSignatureBuilder>()) {
+    sl.registerLazySingleton<BundleSignatureBuilder>(
+      () => BundleSignatureBuilder(
+        confidenceService: sl<SignatureConfidenceService>(),
+        freshnessTracker: sl<SignatureFreshnessTracker>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<PerformerVenueEventBundleBuilder>()) {
+    sl.registerLazySingleton<PerformerVenueEventBundleBuilder>(
+      () => PerformerVenueEventBundleBuilder(
+        bundleSignatureBuilder: sl<BundleSignatureBuilder>(),
+        spotSignatureBuilder: sl<SpotSignatureBuilder>(),
+        userSignatureBuilder: sl<UserSignatureBuilder>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<CommunityEventBundleBuilder>()) {
+    sl.registerLazySingleton<CommunityEventBundleBuilder>(
+      () => CommunityEventBundleBuilder(
+        bundleSignatureBuilder: sl<BundleSignatureBuilder>(),
+        communitySignatureBuilder: sl<CommunitySignatureBuilder>(),
+        eventSignatureBuilder: sl<EventSignatureBuilder>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<SignatureMatchService>()) {
+    sl.registerLazySingleton<SignatureMatchService>(
+      () => const SignatureMatchService(),
+    );
+  }
+  if (!sl.isRegistered<RemoteSourceHealthService>()) {
+    sl.registerLazySingleton<RemoteSourceHealthService>(
+      () => RemoteSourceHealthService(
+        supabaseService: sl<SupabaseService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<EntitySignatureService>()) {
+    sl.registerLazySingleton<EntitySignatureService>(
+      () => EntitySignatureService(
+        repository: sl<SignatureRepository>(),
+        storageService: sl<StorageService>(),
+        matchService: sl<SignatureMatchService>(),
+        userSignatureBuilder: sl<UserSignatureBuilder>(),
+        spotSignatureBuilder: sl<SpotSignatureBuilder>(),
+        communitySignatureBuilder: sl<CommunitySignatureBuilder>(),
+        eventSignatureBuilder: sl<EventSignatureBuilder>(),
+        performerVenueEventBundleBuilder:
+            sl<PerformerVenueEventBundleBuilder>(),
+        communityEventBundleBuilder: sl<CommunityEventBundleBuilder>(),
+        userVibeAnalyzer: sl<UserVibeAnalyzer>(),
+        personalityLearning: sl<PersonalityLearning>(),
+        remoteSourceHealthService: sl.isRegistered<RemoteSourceHealthService>()
+            ? sl<RemoteSourceHealthService>()
+            : null,
+      ),
+    );
+  }
+
   // Event Recommendation Service (for AI recommendations)
   sl.registerLazySingleton<event_rec_service.EventRecommendationService>(
     () => event_rec_service.EventRecommendationService(
@@ -483,6 +627,7 @@ Future<void> registerAIServices(GetIt sl) async {
       agentIdService: sl<AgentIdService>(),
       knotFabricService: sl<KnotFabricService>(),
       knotStorageService: sl<KnotStorageService>(),
+      entitySignatureService: sl<EntitySignatureService>(),
       quantumMatchingController: sl.isRegistered<QuantumMatchingController>()
           ? sl<QuantumMatchingController>()
           : null,
@@ -510,6 +655,7 @@ Future<void> registerAIServices(GetIt sl) async {
       vibeAnalyzer: sl<UserVibeAnalyzer>(),
       entityKnotService: sl<EntityKnotService>(),
       personalityKnotService: sl<PersonalityKnotService>(),
+      entitySignatureService: sl<EntitySignatureService>(),
     ),
   );
 
@@ -697,6 +843,9 @@ Future<void> registerAIServices(GetIt sl) async {
           repository: sl.isRegistered<CommunityRepository>()
               ? sl<CommunityRepository>()
               : null,
+          entitySignatureService: sl.isRegistered<EntitySignatureService>()
+              ? sl<EntitySignatureService>()
+              : null,
         ));
   }
 
@@ -857,6 +1006,142 @@ Future<void> registerAIServices(GetIt sl) async {
       }
     }
   });
+
+  // ============================================================
+  // v0.2 Physical Connection Sprint Services
+  // ============================================================
+
+  if (!sl.isRegistered<SemanticKnowledgeStore>()) {
+    sl.registerLazySingleton<SemanticKnowledgeStore>(
+        () => InMemorySemanticStore());
+  }
+
+  if (!sl.isRegistered<AirGapContract>()) {
+    sl.registerLazySingleton<AirGapContract>(
+        () => TupleExtractionEngine(sl<SemanticKnowledgeStore>()));
+  }
+
+  if (!sl.isRegistered<GovernanceKernelService>()) {
+    sl.registerLazySingleton<GovernanceKernelService>(
+        () => GovernanceKernelService());
+  }
+
+  if (!sl.isRegistered<PheromoneMeshRoutingService>()) {
+    sl.registerLazySingleton<PheromoneMeshRoutingService>(
+      () => PheromoneMeshRoutingService(
+          governanceKernel: sl<GovernanceKernelService>()),
+    );
+  }
+
+  if (!sl.isRegistered<SmartPassiveCollectionService>()) {
+    sl.registerLazySingleton<SmartPassiveCollectionService>(
+      () => SmartPassiveCollectionService(
+        motionService: sl<DeviceMotionService>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<DwellEventIntakeAdapter>()) {
+    sl.registerLazySingleton<DwellEventIntakeAdapter>(
+      () => DwellEventIntakeAdapter(sl<AirGapContract>()),
+    );
+  }
+
+  if (!sl.isRegistered<ArchetypePatternLearner>()) {
+    sl.registerLazySingleton<ArchetypePatternLearner>(
+      () => ArchetypePatternLearner(),
+    );
+  }
+
+  if (!sl.isRegistered<BatteryAdaptiveBatchScheduler>()) {
+    sl.registerLazySingleton<BatteryAdaptiveBatchScheduler>(
+      () => BatteryAdaptiveBatchScheduler(),
+    );
+  }
+
+  if (!sl.isRegistered<NightlyDigestionJob>()) {
+    sl.registerLazySingleton<NightlyDigestionJob>(
+      () => NightlyDigestionJob(
+        sl<SmartPassiveCollectionService>(),
+        sl<DwellEventIntakeAdapter>(),
+        sl<AppDatabase>(),
+        sl<PheromoneMeshRoutingService>(),
+        sl<ArchetypePatternLearner>(),
+        sl<LLMService>(),
+        sl<SharedPreferences>(),
+      ),
+    );
+
+    // Register the job with the scheduler
+    Future.microtask(() {
+      sl<BatteryAdaptiveBatchScheduler>()
+          .scheduleJob(sl<NightlyDigestionJob>());
+    });
+  }
+
+  if (!sl.isRegistered<LocalityFederatedExchangeService>()) {
+    sl.registerLazySingleton<LocalityFederatedExchangeService>(
+      () => LocalityFederatedExchangeService(),
+    );
+  }
+
+  if (!sl.isRegistered<LocalityFederatedExchangeJob>()) {
+    sl.registerLazySingleton<LocalityFederatedExchangeJob>(
+      () => LocalityFederatedExchangeJob(
+        sl<LocalityFederatedExchangeService>(),
+        sl<AppDatabase>(),
+      ),
+    );
+
+    // Register the job with the scheduler
+    Future.microtask(() {
+      sl<BatteryAdaptiveBatchScheduler>()
+          .scheduleJob(sl<LocalityFederatedExchangeJob>());
+    });
+  }
+
+  // Integrations
+  if (!sl.isRegistered<SpotifyAirgapIntegrationService>()) {
+    sl.registerLazySingleton<SpotifyAirgapIntegrationService>(
+      () => SpotifyAirgapIntegrationService(
+        airGapEngine: sl<AirGapContract>() as TupleExtractionEngine,
+        knowledgeStore: sl<SemanticKnowledgeStore>(),
+      ),
+    );
+  }
+
+  // ============================================================
+  // Phase 1.5E: Beta Markov Engagement Predictor
+  // Bridge to Phase 5 TransitionPredictor — same interface, zero-code swap.
+  // FeatureFlagService.neural_transition_predictor_enabled flips to neural
+  // when Phase 5 is trained. All callers depend on EngagementPhasePredictor.
+  // ============================================================
+
+  if (!sl.isRegistered<SwarmPriorLoader>()) {
+    sl.registerLazySingleton<SwarmPriorLoader>(() => SwarmPriorLoader());
+  }
+
+  if (!sl.isRegistered<MarkovTransitionStore>()) {
+    sl.registerLazySingleton<MarkovTransitionStore>(
+      () => MarkovTransitionStore(
+        prefs: sl<SharedPreferences>(),
+        priorLoader: sl<SwarmPriorLoader>(),
+      ),
+    );
+  }
+
+  // Register EngagementPhasePredictor via feature flag.
+  // Default: MarkovEngagementPredictor (beta).
+  // Phase 5 swap: register NeuralTransitionPredictor and flip
+  //   FeatureFlagService.neural_transition_predictor_enabled = true.
+  if (!sl.isRegistered<EngagementPhasePredictor>()) {
+    sl.registerLazySingleton<EngagementPhasePredictor>(
+      () => MarkovEngagementPredictor(
+        store: sl<MarkovTransitionStore>(),
+        atomicClock: sl<AtomicClockService>(),
+      ),
+    );
+  }
 
   logger.debug('✅ [DI-AI] AI/network services registered');
 }

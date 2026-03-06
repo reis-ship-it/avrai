@@ -7,7 +7,8 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Public Handles Page
 ///
@@ -269,23 +270,16 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Text(
-              'Public Profile Analysis',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Optionally provide your public social media handles to enhance your AI personality. We\'ll analyze your public posts and interests (with your explicit consent).',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+            const AppPageHeader(
+              title: 'Public Profile Analysis',
+              subtitle:
+                  'Optionally provide your public social media handles to enhance your AI personality. We analyze only public posts and interests, and only with your explicit consent.',
+              leadingIcon: Icons.manage_accounts_outlined,
             ),
             const SizedBox(height: 24),
 
             // Consent Section
-            PortalSurface(
+            AppSurface(
               color: _consentGiven
                   ? AppColors.success.withValues(alpha: 0.1)
                   : AppColors.warning.withValues(alpha: 0.1),
@@ -355,7 +349,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
             const SizedBox(height: 16),
 
             // Instagram Handle
-            PortalSurface(
+            AppSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -382,7 +376,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
             const SizedBox(height: 12),
 
             // TikTok Handle
-            PortalSurface(
+            AppSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -409,7 +403,7 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
             const SizedBox(height: 12),
 
             // Twitter Handle
-            PortalSurface(
+            AppSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -474,9 +468,9 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
             const SizedBox(height: 24),
 
             // Privacy Info
-            PortalSurface(
-              color: AppColors.electricBlue.withValues(alpha: 0.1),
-              borderColor: AppColors.electricBlue,
+            AppSurface(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderColor: AppColors.primary,
               radius: 8,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,14 +479,14 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
                     children: [
                       const Icon(
                         Icons.info_outline,
-                        color: AppColors.electricBlue,
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Privacy & Analysis',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.electricBlue,
+                          color: AppColors.primary,
                         ),
                       ),
                     ],

@@ -13,6 +13,7 @@ import 'package:avrai_runtime_os/services/device_link/secure_bypass_service.dart
 import 'package:avrai_runtime_os/services/device_link/history_transfer_service.dart';
 import 'package:avrai_runtime_os/services/device_link/session_transfer_service.dart';
 import 'package:avrai_runtime_os/services/device_sync/sync_state_service.dart';
+import 'package:avrai_runtime_os/services/security/secure_vault_sync_service.dart';
 import 'package:avrai_runtime_os/data/database/app_database.dart';
 import 'package:avrai_runtime_os/data/objectbox/objectbox_store.dart';
 
@@ -140,6 +141,17 @@ Future<void> registerDeviceSyncServices(GetIt sl) async {
   // ============================================================
   // SYNC AND TRANSFER SERVICES
   // ============================================================
+
+  // Secure Vault Sync Service (Spike 5)
+  if (!sl.isRegistered<SecureVaultSyncService>()) {
+    sl.registerLazySingleton<SecureVaultSyncService>(
+      () => SecureVaultSyncService(
+        db: sl<AppDatabase>(),
+        supabase: sl<SupabaseService>(),
+      ),
+    );
+    logger.debug('✅ [DI-DeviceSync] SecureVaultSyncService registered');
+  }
 
   // Sync State Service
   if (!sl.isRegistered<SyncStateService>()) {

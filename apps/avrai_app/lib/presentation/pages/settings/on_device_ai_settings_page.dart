@@ -29,7 +29,7 @@ import 'package:avrai_runtime_os/ml/model_version_registry.dart';
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OnDeviceAiSettingsPage extends StatefulWidget {
@@ -238,8 +238,8 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
     final tier = switch (gate.recommendedTier) {
       OfflineLlmTier.none => 'Not eligible',
-      OfflineLlmTier.small3b => 'Eligible (small ~3B class)',
-      OfflineLlmTier.llama8b => 'Eligible (Llama 3.1 8B class)',
+      OfflineLlmTier.qwen3b => 'Eligible (small ~3B class)',
+      OfflineLlmTier.phi4 => 'Eligible (Llama 3.1 8B class)',
     };
 
     // macOS-specific: Show architecture info
@@ -271,7 +271,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
     final eligible = gate?.eligible ?? false;
     final allowLora = gate?.allowOnDeviceLoraTraining ?? false;
 
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +328,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
   }
 
   Widget _buildRefinementPicksCard() {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,8 +552,8 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       await provisioning.setPhase(LocalLlmProvisioningPhase.downloading);
       final tier =
           switch (_gateResult?.recommendedTier ?? OfflineLlmTier.none) {
-        OfflineLlmTier.llama8b => 'llama8b',
-        OfflineLlmTier.small3b => 'small3b',
+        OfflineLlmTier.phi4 => 'llama8b',
+        OfflineLlmTier.qwen3b => 'small3b',
         OfflineLlmTier.none => 'none',
       };
       if (tier == 'none') {
@@ -872,7 +872,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
     required IconData icon,
     required Color iconColor,
   }) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

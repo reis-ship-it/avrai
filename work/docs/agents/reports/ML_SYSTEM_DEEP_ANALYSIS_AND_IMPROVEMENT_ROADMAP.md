@@ -1804,7 +1804,7 @@ Every user gets an AI agent. The agent's capabilities scale with their device. T
 | Procedural memory | Nothing | **Build from scratch** -- learned strategy rules |
 | Memory consolidation | Nothing | **Build from scratch** -- nightly episode → knowledge compression |
 | Skill models (tools) | 4 ONNX models, all functional | Keep as-is, used as tools by the agent |
-| Language module | `model_pack_manager.dart` downloads Llama 8B | Switch to 1-3B model, use as interface not brain |
+| Language module | `mlc_llm` running Qwen 2.5 3B / Llama 3.2 1B | Used as JSON structural formatter and natural language translator, not as a brain |
 | Learning engine | `ContinuousLearningSystem`, `OnnxDimensionScorer.updateWithDeltas()` | Extend with on-device gradient updates for world model |
 | AI2AI communication | `EmbeddingDelta`, `FederatedLearningHooks`, `ConnectionOrchestrator` | Extend to share critic calibration + world model deltas |
 | Trigger system | `ContinuousLearningOrchestrator` (1s polling timer) | Replace with event-driven triggers (battery-efficient) |

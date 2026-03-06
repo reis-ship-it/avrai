@@ -13,7 +13,8 @@ import 'package:avrai/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:avrai/presentation/pages/brand/sponsorship_management_page.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Brand Dashboard Page
 ///
@@ -179,105 +180,94 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   }
 
   Widget _buildBrandHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      color: AppColors.surface,
-      child: Row(
-        children: [
-          if (_brandAccount!.logoUrl != null)
-            CircleAvatar(
-              radius: 32,
-              backgroundImage: NetworkImage(_brandAccount!.logoUrl!),
-            )
-          else
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-              child: const Icon(
-                Icons.business,
-                size: 32,
-                color: AppTheme.primaryColor,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AppSurface(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            if (_brandAccount!.logoUrl != null)
+              CircleAvatar(
+                radius: 32,
+                backgroundImage: NetworkImage(_brandAccount!.logoUrl!),
+              )
+            else
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                child: const Icon(
+                  Icons.business,
+                  size: 32,
+                  color: AppTheme.primaryColor,
+                ),
               ),
-            ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _brandAccount!.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppPageHeader(
+                    title: _brandAccount!.name,
+                    subtitle: _brandAccount!.brandType,
+                    showDivider: false,
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      _brandAccount!.brandType,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    if (_brandAccount!.categories.isNotEmpty) ...[
-                      const Text(' • ',
-                          style: TextStyle(color: AppColors.textSecondary)),
-                      Text(
-                        _brandAccount!.categories.join(', '),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                if (_brandAccount!.isVerified)
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.verified,
-                        size: 16,
-                        color: AppColors.electricGreen,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        'Verified Brand',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.electricGreen,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  )
-                else
                   Row(
                     children: [
-                      const Icon(
-                        Icons.pending,
-                        size: 16,
-                        color: AppColors.warning,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Verification: ${_brandAccount!.verificationStatus.displayName}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.warning,
-                          fontWeight: FontWeight.w500,
+                      if (_brandAccount!.categories.isNotEmpty) ...[
+                        Text(
+                          _brandAccount!.categories.join(', '),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
-              ],
+                  const SizedBox(height: 4),
+                  if (_brandAccount!.isVerified)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.verified,
+                          size: 16,
+                          color: AppTheme.primaryColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Verified Brand',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.pending,
+                          size: 16,
+                          color: AppColors.warning,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Verification: ${_brandAccount!.verificationStatus.displayName}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -301,7 +291,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               label: 'Total Returns',
               value: '\$${_totalReturns.toStringAsFixed(0)}',
               icon: Icons.trending_up,
-              color: AppColors.electricGreen,
+              color: AppTheme.primaryColor,
             ),
           ),
         ],
@@ -417,13 +407,13 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: PortalSurface(
+      child: AppSurface(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '📊 Performance Overview',
+              'Performance Overview',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -467,7 +457,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               '${roiPercentage.toStringAsFixed(0)}%',
               isTotal: true,
               color:
-                  roiPercentage > 0 ? AppColors.electricGreen : AppColors.error,
+                  roiPercentage > 0 ? AppTheme.primaryColor : AppColors.error,
             ),
 
             const SizedBox(height: 16),

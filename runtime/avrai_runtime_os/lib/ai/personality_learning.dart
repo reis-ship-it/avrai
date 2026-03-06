@@ -10,6 +10,8 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/expertise/golden_expert_ai_influence_service.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_dimension_mapper.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_classifier.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_vibe_analyzer.dart';
 import 'package:avrai_runtime_os/ai/quantum/quantum_vibe_engine.dart';
@@ -60,6 +62,10 @@ class PersonalityLearning {
 
   // Golden expert influence service
   final GoldenExpertAIInfluenceService _goldenExpertService;
+
+  // Phase 1.5E: Markov engagement phase tracking
+  final EngagementPhaseClassifier _phaseClassifier =
+      EngagementPhaseClassifier();
 
   // Callback for personality evolution events
   Function(String userId, PersonalityProfile evolvedProfile)?
@@ -223,6 +229,7 @@ class PersonalityLearning {
     String userId, {
     Map<String, dynamic>? onboardingData,
     Map<String, dynamic>? socialMediaData,
+    Map<String, double>? slmDimensions,
   }) async {
     // Convert userId → agentId for privacy protection
     final agentIdService = _resolveAgentIdService();
@@ -253,7 +260,17 @@ class PersonalityLearning {
           Map<String, double>.from(baseProfile.dimensionConfidence);
 
       // 1. Apply onboarding data (if provided)
-      if (onboardingData != null && onboardingData.isNotEmpty) {
+      if (slmDimensions != null && slmDimensions.isNotEmpty) {
+        // Use the dimensions synthesized by the SLM from open responses
+        slmDimensions.forEach((dimension, value) {
+          final currentValue = initialDimensions[dimension] ?? 0.5;
+          initialDimensions[dimension] =
+              (currentValue * 0.4 + value * 0.6).clamp(0.0, 1.0);
+          initialConfidence[dimension] =
+              0.6; // Higher confidence for direct text synthesis
+        });
+      } else if (onboardingData != null && onboardingData.isNotEmpty) {
+        // Legacy fallback mapping
         final onboardingInsights = _mapOnboardingToDimensions(onboardingData);
 
         // Apply insights to dimensions (60% onboarding, 40% default)
@@ -672,12 +689,59 @@ class PersonalityLearning {
         }
       }
 
+      // Phase 1.5E: Record Markov engagement phase transition (non-blocking).
+      // Classifies previous and new profile into UserEngagementPhase.
+      // If the phase changed, records the transition for:
+      //   1. Personalizing the Markov prediction matrix
+      //   2. Generating (state, action, next_state) training tuples for Phase 5
+      _recordEngagementPhaseTransition(profile, evolvedProfile, agentId);
+
       return evolvedProfile;
     } catch (e) {
       developer.log('Error evolving personality: $e', name: _logName);
       return _currentProfile!;
     } finally {
       _isLearning = false;
+    }
+  }
+
+  /// Phase 1.5E: Records a Markov engagement phase transition if the phase changed.
+  /// Fire-and-forget — never throws, never blocks personality evolution.
+  ///
+  /// City is extracted from `after.learningHistory['city']` when available so
+  /// the store can load the correct city-stratified swarm prior for blending.
+  void _recordEngagementPhaseTransition(
+    PersonalityProfile before,
+    PersonalityProfile after,
+    String agentId,
+  ) {
+    try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<EngagementPhasePredictor>()) return;
+
+      final previousPhase = _phaseClassifier.classifyFromProfile(before);
+      final newPhase = _phaseClassifier.classifyFromProfile(after);
+
+      if (previousPhase != newPhase) {
+        // Pull city from learning history for city-stratified prior selection.
+        // Null is fine — store will fall back to the default population prior.
+        final city = after.learningHistory['city'] as String?;
+
+        sl<EngagementPhasePredictor>()
+            .recordTransition(previousPhase, newPhase, agentId, city: city)
+            .catchError((Object e) {
+          developer.log(
+            'Non-critical: error recording phase transition: $e',
+            name: _logName,
+          );
+        });
+      }
+    } catch (e) {
+      // Non-critical — never surface errors from Markov tracking to the caller
+      developer.log(
+        'Non-critical: phase transition classification error: $e',
+        name: _logName,
+      );
     }
   }
 
@@ -937,6 +1001,11 @@ class PersonalityLearning {
     _currentProfile = null;
 
     developer.log('Personality reset completed', name: _logName);
+  }
+
+  // Add a getter to access preferences for future state interpolation
+  Future<PreferencesLike> getPrefs() async {
+    return _prefs;
   }
 
   // Private helper methods
@@ -1270,6 +1339,106 @@ class PersonalityLearning {
     final newAuthenticity =
         (_currentProfile!.authenticity + authenticityChange).clamp(0.0, 1.0);
     return newAuthenticity;
+  }
+
+  Future<void> updatePersonality(
+      String userId, Map<String, double> newDimensions,
+      {bool isAccelerated = false}) async {
+    // Get agentId for privacy protection
+    final agentIdService = _resolveAgentIdService();
+    final agentId = await agentIdService.getUserAgentId(userId);
+
+    // Load profile for this specific agentId
+    PersonalityProfile profile;
+    if (_currentProfile != null && _currentProfile!.agentId == agentId) {
+      profile = _currentProfile!;
+    } else {
+      final loadedProfile = await _loadPersonalityProfile(agentId);
+      if (loadedProfile != null) {
+        profile = loadedProfile;
+      } else {
+        profile = await initializePersonality(userId);
+      }
+    }
+
+    try {
+      developer.log(
+          'Manually updating personality dimensions for user: $userId',
+          name: _logName);
+
+      // Create learning history entry for manual update
+      final learningData = {
+        'total_interactions': 1,
+        'learning_source': 'manual_update',
+        'dimension_changes': newDimensions,
+      };
+
+      // Create new confidence map (assume high confidence for manual updates)
+      final newConfidence =
+          Map<String, double>.from(profile.dimensionConfidence);
+      for (final key in newDimensions.keys) {
+        newConfidence[key] =
+            0.8; // High confidence for manual/aspirational shifts
+      }
+
+      // Evolve the personality
+      final evolvedProfile = profile.evolve(
+        newDimensions: newDimensions,
+        newConfidence: newConfidence,
+        additionalLearning: learningData,
+      );
+
+      // Apply acceleration flag if specified
+      final finalProfile = isAccelerated
+          ? PersonalityProfile(
+              agentId: evolvedProfile.agentId,
+              userId: evolvedProfile.userId,
+              dimensions: evolvedProfile.dimensions,
+              dimensionConfidence: evolvedProfile.dimensionConfidence,
+              archetype: evolvedProfile.archetype,
+              authenticity: evolvedProfile.authenticity,
+              createdAt: evolvedProfile.createdAt,
+              lastUpdated: evolvedProfile.lastUpdated,
+              evolutionGeneration: evolvedProfile.evolutionGeneration,
+              learningHistory: evolvedProfile.learningHistory,
+              corePersonality: evolvedProfile.corePersonality,
+              contexts: evolvedProfile.contexts,
+              evolutionTimeline: evolvedProfile.evolutionTimeline,
+              currentPhaseId: evolvedProfile.currentPhaseId,
+              isInTransition: evolvedProfile.isInTransition,
+              activeTransition: evolvedProfile.activeTransition,
+              personalityKnot: evolvedProfile.personalityKnot,
+              knotEvolutionHistory: evolvedProfile.knotEvolutionHistory,
+              isAccelerated: true,
+            )
+          : evolvedProfile;
+
+      // Save updated profile locally
+      await _savePersonalityProfile(finalProfile);
+
+      if (_currentProfile == null || _currentProfile!.agentId == agentId) {
+        _currentProfile = finalProfile;
+      }
+
+      developer.log(
+          'Personality manually evolved to generation ${finalProfile.evolutionGeneration}${isAccelerated ? ' (Accelerated)' : ''}',
+          name: _logName);
+
+      // Sync to cloud if enabled (non-blocking)
+      _syncProfileToCloud(userId, finalProfile);
+
+      // Notify listeners
+      if (onPersonalityEvolved != null) {
+        try {
+          onPersonalityEvolved!(userId, finalProfile);
+        } catch (e) {
+          developer.log('Error in personality evolution callback: $e',
+              name: _logName);
+        }
+      }
+    } catch (e) {
+      developer.log('Error manually updating personality: $e', name: _logName);
+    }
   }
 
   // ---- Legacy/test API surface (no-op/simple implementations) ----

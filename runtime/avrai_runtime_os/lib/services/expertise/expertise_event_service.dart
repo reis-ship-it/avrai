@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/community/community_event.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
@@ -28,6 +29,9 @@ class ExpertiseEventService {
   final CrossLocalityConnectionService _crossLocalityService;
   final CommunityEventService _communityEventService;
   final LedgerRecorderServiceV0 _ledger;
+  final StorageService? _storageService;
+  bool _storageHydrated = false;
+  static const String _eventsStorageKey = 'expertise_events:all_v2';
 
   // Performance optimization: In-memory event cache for O(1) lookups
   // In production, this would be replaced with database queries with indexes
@@ -43,12 +47,14 @@ class ExpertiseEventService {
     CrossLocalityConnectionService? crossLocalityService,
     CommunityEventService? communityEventService,
     LedgerRecorderServiceV0? ledgerRecorder,
+    StorageService? storageService,
   })  : _geographicScopeService =
             geographicScopeService ?? GeographicScopeService(),
         _crossLocalityService =
             crossLocalityService ?? CrossLocalityConnectionService(),
         _communityEventService =
             communityEventService ?? CommunityEventService(),
+        _storageService = storageService ?? StorageService.instance,
         _ledger = ledgerRecorder ??
             LedgerRecorderServiceV0(
               supabaseService: SupabaseService(),
@@ -234,6 +240,72 @@ class ExpertiseEventService {
       _logger.error('Error creating event', error: e, tag: _logName);
       rethrow;
     }
+  }
+
+  /// Materialize an imported event into the existing recommendation path.
+  Future<ExpertiseEvent> importExternalEvent({
+    required String ownerUserId,
+    required String title,
+    required String description,
+    required String category,
+    String? location,
+    double? latitude,
+    double? longitude,
+    String? cityCode,
+    String? localityCode,
+    DateTime? startTime,
+    DateTime? endTime,
+    required ExternalSyncMetadata metadata,
+  }) async {
+    final now = metadata.importedAt ?? DateTime.now();
+    final host = UnifiedUser(
+      id: ownerUserId,
+      email: 'imported+$ownerUserId@avrai.local',
+      displayName: metadata.sourceLabel ?? metadata.sourceProvider,
+      location: location,
+      createdAt: now,
+      updatedAt: now,
+      isOnline: false,
+    );
+    final event = ExpertiseEvent(
+      id: metadata.externalId?.isNotEmpty == true
+          ? 'imported_event_${metadata.externalId}'
+          : _generateEventId(),
+      title: title,
+      description: description,
+      category: category,
+      eventType: ExpertiseEventType.meetup,
+      host: host,
+      startTime: startTime ?? now.add(const Duration(hours: 2)),
+      endTime: endTime ?? now.add(const Duration(hours: 4)),
+      location: location,
+      latitude: latitude,
+      longitude: longitude,
+      cityCode: cityCode,
+      localityCode: localityCode,
+      createdAt: now,
+      updatedAt: now,
+      status: EventStatus.upcoming,
+      externalSyncMetadata: metadata,
+    );
+    await _saveEvent(event);
+    return event;
+  }
+
+  Future<ExpertiseEvent?> attachExternalSyncMetadata({
+    required String eventId,
+    required ExternalSyncMetadata metadata,
+  }) async {
+    final event = await getEventById(eventId);
+    if (event == null) {
+      return null;
+    }
+    final updated = event.copyWith(
+      externalSyncMetadata: metadata,
+      updatedAt: metadata.lastSyncedAt ?? DateTime.now(),
+    );
+    await _saveEvent(updated);
+    return updated;
   }
 
   /// Copy & Repeat: Duplicate an event for easy re-hosting
@@ -840,17 +912,83 @@ class ExpertiseEventService {
   }
 
   Future<void> _saveEvent(ExpertiseEvent event) async {
+    await _hydrateIfNeeded();
     // In production, save to database
     // Performance optimization: Update cache when event is saved
     _cacheEvent(event);
+    await _persistEventsBestEffort();
   }
 
   Future<List<ExpertiseEvent>> _getAllEvents() async {
+    await _hydrateIfNeeded();
     // In production, query database
     // Performance optimization: Return cached events if available
     // This is a workaround until database integration
     _cleanExpiredCache();
     return _eventCache.values.toList();
+  }
+
+  Future<void> _hydrateIfNeeded() async {
+    if (_storageHydrated) return;
+    _storageHydrated = true;
+    if (_storageService == null) return;
+
+    try {
+      final rawList =
+          _storageService.getObject<List<dynamic>>(_eventsStorageKey) ??
+              const [];
+      for (final item in rawList) {
+        if (item is! Map<String, dynamic>) {
+          continue;
+        }
+        final eventJson = item['event'];
+        final hostJson = item['host'];
+        if (eventJson is! Map<String, dynamic> ||
+            hostJson is! Map<String, dynamic>) {
+          continue;
+        }
+        final event = ExpertiseEvent.fromJson(
+          eventJson,
+          UnifiedUser.fromJson(hostJson),
+        );
+        _cacheEvent(event);
+      }
+    } catch (e, st) {
+      _logger.warning(
+        'Failed to hydrate persisted events: ${e.toString()}',
+        tag: _logName,
+      );
+      _logger.error(
+        'Event hydration failed',
+        error: e,
+        stackTrace: st,
+        tag: _logName,
+      );
+    }
+  }
+
+  Future<void> _persistEventsBestEffort() async {
+    if (_storageService == null) return;
+    try {
+      final serialized = _eventCache.values
+          .map((event) => <String, dynamic>{
+                'event': event.toJson(),
+                'host': event.host.toJson(),
+              })
+          .toList();
+      await _storageService.setObject(_eventsStorageKey, serialized);
+    } catch (e, st) {
+      _logger.warning(
+        'Failed to persist expertise events: ${e.toString()}',
+        tag: _logName,
+      );
+      _logger.error(
+        'Event persistence failed',
+        error: e,
+        stackTrace: st,
+        tag: _logName,
+      );
+    }
   }
 
   /// Performance optimization: Cache event for O(1) lookups

@@ -17,7 +17,7 @@ import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Brand Sponsorship Checkout Page
 ///
@@ -191,7 +191,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
             // Contribution Type Selection
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: PortalSurface(
+              child: AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +237,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
                 _contributionType == SponsorshipType.hybrid) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: PortalSurface(
+                child: AppSurface(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +325,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
             if (totalContribution > 0) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: PortalSurface(
+                child: AppSurface(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

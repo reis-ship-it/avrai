@@ -39,6 +39,7 @@ class SearchCacheService {
     required String query,
     double? latitude,
     double? longitude,
+    String? userId,
     int maxResults = 50,
     bool includeExternal = true,
   }) async {
@@ -47,6 +48,7 @@ class SearchCacheService {
         query: query,
         latitude: latitude,
         longitude: longitude,
+        userId: userId,
         maxResults: maxResults,
         includeExternal: includeExternal,
       );
@@ -103,6 +105,7 @@ class SearchCacheService {
     required String query,
     double? latitude,
     double? longitude,
+    String? userId,
     int maxResults = 50,
     bool includeExternal = true,
     required HybridSearchResult result,
@@ -112,6 +115,7 @@ class SearchCacheService {
         query: query,
         latitude: latitude,
         longitude: longitude,
+        userId: userId,
         maxResults: maxResults,
         includeExternal: includeExternal,
       );
@@ -264,13 +268,16 @@ class SearchCacheService {
     required String query,
     double? latitude,
     double? longitude,
+    String? userId,
     int maxResults = 50,
     bool includeExternal = true,
   }) {
     final location = latitude != null && longitude != null
         ? '${latitude.toStringAsFixed(3)},${longitude.toStringAsFixed(3)}'
         : 'no_location';
-    return '${query.toLowerCase()}_${location}_${maxResults}_$includeExternal';
+    final personalizationKey = userId == null ? 'anon' : 'user_$userId';
+    return '${query.toLowerCase()}_${location}_${maxResults}_$includeExternal'
+        '_$personalizationKey';
   }
 
   Duration _determineExpiry(String query) {
@@ -389,6 +396,7 @@ class SearchCacheService {
       'total_count': result.totalCount,
       'search_duration_ms': result.searchDuration.inMilliseconds,
       'sources': result.sources,
+      'metadata': result.metadata?.map((entry) => entry.toJson()).toList(),
     };
   }
 
@@ -401,6 +409,10 @@ class SearchCacheService {
       totalCount: data['total_count'],
       searchDuration: Duration(milliseconds: data['search_duration_ms']),
       sources: Map<String, int>.from(data['sources']),
+      metadata: (data['metadata'] as List<dynamic>?)
+          ?.map((entry) =>
+              SpotWithMetadata.fromJson(Map<String, dynamic>.from(entry)))
+          .toList(),
     );
   }
 }

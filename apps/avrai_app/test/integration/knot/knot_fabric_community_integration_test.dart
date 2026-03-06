@@ -9,6 +9,7 @@
 // 3. Community discovery from fabric clusters
 // 4. Fabric-based community insights
 
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
@@ -139,6 +140,9 @@ class MockRustLibApi implements RustLibApi {
 
 /// Integration tests for knot fabric community features
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   group('Knot Fabric Community Integration Tests', () {
     late CommunityService communityService;
     late KnotFabricService knotFabricService;
@@ -612,7 +616,7 @@ void main() {
         expect(health, isNull);
       });
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }
 
 // Helper functions

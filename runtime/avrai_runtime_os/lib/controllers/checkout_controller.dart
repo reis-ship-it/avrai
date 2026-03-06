@@ -101,7 +101,10 @@ class CheckoutController
         _salesTaxService = salesTaxService ?? GetIt.instance<SalesTaxService>(),
         _legalService = legalService,
         _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _knotFabricService = knotFabricService ??
             (GetIt.instance.isRegistered<KnotFabricService>()
                 ? GetIt.instance<KnotFabricService>()

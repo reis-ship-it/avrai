@@ -18,7 +18,7 @@ void main() {
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
       expect(find.text('Privacy Settings'), findsOneWidget);
-      expect(find.text('OUR_GUTS.md Commitment'), findsOneWidget);
+      expect(find.text('Privacy commitment'), findsOneWidget);
       expect(find.text('Core Privacy Controls'), findsOneWidget);
       expect(find.byType(PrivacySettingsPage), findsOneWidget);
     });

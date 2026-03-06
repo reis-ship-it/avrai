@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
-import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
-import 'package:avrai/presentation/routes/app_router.dart';
-import 'package:avrai/presentation/pages/bootloader_page.dart';
-import 'package:avrai/presentation/widgets/portal/avrai_portal_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_scroll_physics.dart';
+
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
+import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
+import 'package:avrai/presentation/routes/app_router.dart';
+import 'package:avrai/presentation/widgets/shell/app_shell_host.dart';
+import 'package:avrai/presentation/widgets/shell/immersive_scroll_behavior.dart';
+import 'package:avrai/theme/app_theme.dart';
+import 'package:avrai_runtime_os/config/design_feature_flags.dart';
 
 class SpotsApp extends StatelessWidget {
   const SpotsApp({super.key});
@@ -50,18 +50,16 @@ class SpotsApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
             debugShowCheckedModeBanner: false,
-            scrollBehavior: const PortalScrollBehavior(),
+            scrollBehavior: DesignFeatureFlags.enableImmersiveShell
+                ? const ImmersiveScrollBehavior()
+                : const MaterialScrollBehavior(),
             builder: (context, child) {
               final routeChild = child ?? const SizedBox.shrink();
-              final isDark = Theme.of(context).brightness == Brightness.dark;
-              return BootloaderPage(
-                child: AvraiPortalLayout(
-                  isDark: isDark,
-                  child: ColoredBox(
-                    color: AppColors.transparent,
-                    child: routeChild,
-                  ),
-                ),
+              return AppShellHost(
+                variant: DesignFeatureFlags.enableImmersiveShell
+                    ? AppShellVariant.immersive
+                    : AppShellVariant.standard,
+                child: routeChild,
               );
             },
             routerConfig:

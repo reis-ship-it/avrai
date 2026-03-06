@@ -33,11 +33,13 @@ class StringTheoryPossibilityEngine {
   ///
   /// [context] - Current list generation context
   /// [branchCount] - Number of possibilities to generate (default: 5)
+  /// [aspirationalDimensions] - Optional explicit user-requested future state from chat
   ///
   /// Returns list of PossibilityState with normalized probabilities
   Future<List<PossibilityState>> generatePossibilitySpace({
     required ListGenerationContext context,
     int branchCount = defaultBranchCount,
+    Map<String, double>? aspirationalDimensions,
   }) async {
     developer.log(
       'Generating possibility space with $branchCount branches',
@@ -46,6 +48,11 @@ class StringTheoryPossibilityEngine {
 
     final currentDimensions = context.personality.dimensions;
     final possibilities = <PossibilityState>[];
+
+    // 0. Aspirational trajectory (if the user explicitly set a goal in chat)
+    if (aspirationalDimensions != null && aspirationalDimensions.isNotEmpty) {
+      possibilities.add(_createAspirationalState(currentDimensions, aspirationalDimensions));
+    }
 
     // 1. Stable trajectory (current state continues)
     possibilities.add(_createStableState(currentDimensions));
@@ -190,6 +197,34 @@ class StringTheoryPossibilityEngine {
       probability: 0.35, // Highest probability - status quo
       trajectory: TrajectoryInfo.stable(),
       confidenceBounds: ConfidenceInterval.high(),
+    );
+  }
+
+  /// Create an aspirational state based on explicit user chat goals
+  PossibilityState _createAspirationalState(
+    Map<String, double> current,
+    Map<String, double> aspirational,
+  ) {
+    final newDimensions = Map<String, double>.from(current);
+    
+    // Blend current with aspirational (move strongly toward the goal)
+    for (final entry in aspirational.entries) {
+      final currentVal = newDimensions[entry.key] ?? 0.5;
+      // 50% jump toward the target dimension
+      newDimensions[entry.key] = currentVal + (entry.value - currentVal) * 0.5;
+    }
+
+    return PossibilityState(
+      id: const Uuid().v4(),
+      dimensions: newDimensions,
+      probability: 0.30, // High probability because it's explicitly user-requested
+      trajectory: TrajectoryInfo(
+        type: TrajectoryType.aspirational,
+        direction: TrajectoryDirection.increasing,
+        momentum: 0.8,
+        description: 'User aspirational state (Intentional Superposition)',
+      ),
+      confidenceBounds: ConfidenceInterval.moderate(),
     );
   }
 

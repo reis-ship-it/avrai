@@ -4,6 +4,8 @@
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 // Phase 2: Knot Weaving
 
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
@@ -11,6 +13,9 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   group('Knot Weaving Integration Tests', () {
     late PersonalityKnotService personalityKnotService;
     late KnotWeavingService knotWeavingService;
@@ -18,6 +23,10 @@ void main() {
     bool rustLibInitialized = false;
 
     setUpAll(() async {
+      if (!runHeavyIntegrationTests) {
+        return;
+      }
+
       await setupTestStorage();
 
       // Initialize Rust library once for all tests
@@ -232,5 +241,5 @@ void main() {
         expect(after, isNull);
       });
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

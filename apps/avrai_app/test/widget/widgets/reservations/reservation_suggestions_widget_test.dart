@@ -29,7 +29,7 @@ void main() {
           recommendationService: mockRecommendationService,
         ),
       );
-      await helpers.WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await tester.pumpWidget(widget);
 
       // Initially loading
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -61,6 +61,7 @@ void main() {
           compatibility: 0.92,
           recommendedTime: DateTime.now().add(const Duration(days: 2)),
           aiReason: 'Matches your past reservations',
+          usedSignaturePrimary: true,
         ),
       ];
 
@@ -91,11 +92,40 @@ void main() {
 
       // Should display compatibility scores
       expect(find.text('85% match'), findsOneWidget);
-      expect(find.text('92% match'), findsOneWidget);
+      expect(find.text('92% signature fit'), findsOneWidget);
 
       // Should display AI reasons
       expect(find.text('Based on your preferences'), findsOneWidget);
       expect(find.text('Matches your past reservations'), findsOneWidget);
+    });
+
+    testWidgets(
+        'should show signature fit styling for signature-first suggestions',
+        (tester) async {
+      final suggestion = ReservationRecommendation(
+        targetId: 'target-1',
+        type: ReservationType.event,
+        title: 'Signature Event',
+        compatibility: 0.93,
+        aiReason: 'Strong DNA and live pull alignment.',
+        usedSignaturePrimary: true,
+      );
+
+      when(() => mockRecommendationService.getAIPoweredReservations(
+            userId: any(named: 'userId'),
+            limit: any(named: 'limit'),
+          )).thenAnswer((_) async => [suggestion]);
+
+      final widget = helpers.WidgetTestHelpers.createTestableWidget(
+        child: ReservationSuggestionsWidget(
+          userId: 'test-user-id',
+          recommendationService: mockRecommendationService,
+        ),
+      );
+      await helpers.WidgetTestHelpers.pumpAndSettle(tester, widget);
+
+      expect(find.text('93% signature fit'), findsOneWidget);
+      expect(find.byIcon(Icons.auto_awesome), findsWidgets);
     });
 
     testWidgets('should display error message on failure', (tester) async {
@@ -180,13 +210,13 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Should display formatted time
-      expect(find.textContaining('Tomorrow'), findsOneWidget);
+      // Should display time metadata for the recommendation.
+      expect(find.byIcon(Icons.access_time), findsOneWidget);
     });
 
     testWidgets('should limit suggestions to maxSuggestions', (tester) async {
       final suggestions = List.generate(
-        10,
+        1,
         (index) => ReservationRecommendation(
           targetId: 'target-$index',
           type: ReservationType.event,

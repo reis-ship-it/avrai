@@ -11,7 +11,7 @@ import 'package:avrai_core/models/misc/cross_app_learning_insight.dart'
     hide PermissionStatus;
 import 'package:avrai_runtime_os/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Step 3: Combined Permissions page.
 ///
@@ -518,39 +518,84 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
               ),
             ),
 
+          if (_hasCheckedPermissions &&
+              _isLocationGranted &&
+              !_isAI2AIFullyGranted)
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.35)),
+              ),
+              child: Semantics(
+                label: 'AI2AI permissions guidance',
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, color: AppColors.warning),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'You can continue with location access, but AI2AI discovery may be limited until Bluetooth and WiFi permissions are granted.',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
           const SizedBox(height: 24),
 
           // Action Buttons
           if (!_isLocationGranted || !_isAI2AIFullyGranted)
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isLoading ? null : _requestAllPermissions,
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.security),
-                label: Text(
-                    _isLoading ? 'Requesting...' : 'Enable All Permissions'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+            Semantics(
+              button: true,
+              label: 'Enable all required permissions',
+              hint:
+                  'Requests location, Bluetooth, and WiFi permissions for AI2AI functionality.',
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _requestAllPermissions,
+                  icon: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.security),
+                  label: Text(
+                      _isLoading ? 'Requesting...' : 'Enable All Permissions'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    minimumSize: const Size(48, 48),
+                  ),
                 ),
               ),
             ),
 
           const SizedBox(height: 12),
 
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _openSettings,
-              icon: const Icon(Icons.settings),
-              label: const Text('Open System Settings'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+          Semantics(
+            button: true,
+            label: 'Open system settings for permissions',
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _openSettings,
+                icon: const Icon(Icons.settings),
+                label: const Text('Open System Settings'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  minimumSize: const Size(48, 48),
+                ),
               ),
             ),
           ),
@@ -619,7 +664,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
         statusText = isRequired ? 'Required' : 'Not granted';
     }
 
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.zero,
       borderColor: status == _PermissionGroupStatus.granted
           ? AppColors.success.withValues(alpha: 0.5)
@@ -768,7 +813,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
         const SizedBox(height: 16),
 
         // Cross-App Consent Toggles
-        PortalSurface(
+        AppSurface(
           padding: EdgeInsets.zero,
           child: Column(
             children: [

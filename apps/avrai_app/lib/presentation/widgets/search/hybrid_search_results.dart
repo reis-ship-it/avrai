@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +11,21 @@ import 'package:avrai/presentation/widgets/common/standard_loading_widget.dart';
 import 'package:avrai/presentation/widgets/common/source_indicator_widget.dart';
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+IconData _resolveSourceIcon(int codePoint) {
+  final icon = <int, IconData>{
+    Icons.verified.codePoint: Icons.verified,
+    Icons.public.codePoint: Icons.public,
+    Icons.group.codePoint: Icons.group,
+    Icons.map.codePoint: Icons.map,
+    Icons.location_on.codePoint: Icons.location_on,
+  }[codePoint];
+  return icon ?? Icons.info_outline;
+}
 
 class HybridSearchResults extends StatelessWidget {
   const HybridSearchResults({super.key});
@@ -107,7 +123,7 @@ class HybridSearchResults extends StatelessWidget {
                   itemCount: state.spots.length,
                   itemBuilder: (context, index) {
                     final spot = state.spots[index];
-                    return _buildSpotCard(context, spot);
+                    return _buildSpotCard(context, state, spot, index);
                   },
                 ),
               ),
@@ -192,8 +208,15 @@ class HybridSearchResults extends StatelessWidget {
     );
   }
 
-  Widget _buildSpotCard(BuildContext context, Spot spot) {
+  Widget _buildSpotCard(
+    BuildContext context,
+    HybridSearchLoaded state,
+    Spot spot,
+    int index,
+  ) {
     final indicator = spot.getSourceIndicator();
+    final metadata =
+        index < state.metadata.length ? state.metadata[index] : null;
     // Check if spot accepts reservations (community spots can, external spots can't)
     final isReservable = !spot.metadata.containsKey('is_external') ||
         spot.metadata['is_external'] != true;
@@ -205,7 +228,7 @@ class HybridSearchResults extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: Color(indicator.badgeColor),
           child: Icon(
-            IconData(indicator.badgeIcon, fontFamily: 'MaterialIcons'),
+            _resolveSourceIcon(indicator.badgeIcon),
             color: AppColors.white,
             size: 20,
           ),
@@ -230,6 +253,19 @@ class HybridSearchResults extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
+            if (metadata != null) ...[
+              Text(
+                metadata.matchReason,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 6),
+            ],
             Text(
               spot.description,
               maxLines: 2,
@@ -238,6 +274,27 @@ class HybridSearchResults extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
+                if (metadata != null) ...[
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      metadata.usedSignaturePrimary
+                          ? 'Fit ${(metadata.relevanceScore * 100).round()}%'
+                          : 'Fallback ${(metadata.relevanceScore * 100).round()}%',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -257,6 +314,21 @@ class HybridSearchResults extends StatelessWidget {
                   Text(
                     '${spot.rating}',
                     style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+                if (metadata?.distance != null) ...[
+                  const SizedBox(width: 8),
+                  const Icon(Icons.near_me,
+                      size: 16, color: AppColors.textSecondary),
+                  const SizedBox(width: 2),
+                  Text(
+                    metadata!.distance! < 1000
+                        ? '${metadata.distance!.round()}m'
+                        : '${(metadata.distance! / 1000).toStringAsFixed(1)}km',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
                 if (spot.address != null) ...[
@@ -283,6 +355,7 @@ class HybridSearchResults extends StatelessWidget {
                 isAvailable: true,
                 compact: true,
                 onTap: () {
+                  _recordSpotReservationIntent(spot);
                   // Quick reservation action
                   context.push(
                     '/reservations/create',
@@ -306,6 +379,7 @@ class HybridSearchResults extends StatelessWidget {
                 icon: const Icon(Icons.event_available, size: 20),
                 tooltip: 'Quick Reserve',
                 onPressed: () {
+                  _recordSpotReservationIntent(spot);
                   context.push(
                     '/reservations/create',
                     extra: {
@@ -320,6 +394,7 @@ class HybridSearchResults extends StatelessWidget {
           ],
         ),
         onTap: () {
+          _recordSpotSearchSelection(spot, state.searchQuery ?? '');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -329,5 +404,42 @@ class HybridSearchResults extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _recordSpotSearchSelection(Spot spot, String query) {
+    final userId = _currentUserId();
+    if (userId == null || !di.sl.isRegistered<EntitySignatureService>()) {
+      return;
+    }
+
+    unawaited(
+      di.sl<EntitySignatureService>().recordSpotSearchSelectionSignal(
+            userId: userId,
+            spot: spot,
+            query: query,
+          ),
+    );
+  }
+
+  void _recordSpotReservationIntent(Spot spot) {
+    final userId = _currentUserId();
+    if (userId == null || !di.sl.isRegistered<EntitySignatureService>()) {
+      return;
+    }
+
+    unawaited(
+      di.sl<EntitySignatureService>().recordSpotReservationIntentSignal(
+            userId: userId,
+            spot: spot,
+          ),
+    );
+  }
+
+  String? _currentUserId() {
+    try {
+      return Supabase.instance.client.auth.currentUser?.id;
+    } catch (_) {
+      return null;
+    }
   }
 }

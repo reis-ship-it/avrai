@@ -21,6 +21,7 @@ import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/matching/vibe_compatibility_service.dart';
 import 'package:get_it/get_it.dart';
 
@@ -62,6 +63,7 @@ class EventRecommendationService {
   final StorageService? _storageService;
   final KnotFabricService? _knotFabricService;
   final KnotStorageService? _knotStorageService;
+  final EntitySignatureService? _entitySignatureService;
   final WorkflowController<MatchingInput, QuantumMatchingResult>?
       _quantumMatchingController;
   final UrkStageBEventOpsShadowRuntimeValidator _runtimeValidator;
@@ -80,6 +82,7 @@ class EventRecommendationService {
     StorageService? storageService,
     KnotFabricService? knotFabricService,
     KnotStorageService? knotStorageService,
+    EntitySignatureService? entitySignatureService,
     WorkflowController<MatchingInput, QuantumMatchingResult>?
         quantumMatchingController,
     UrkStageBEventOpsShadowRuntimeValidator runtimeValidator =
@@ -100,6 +103,7 @@ class EventRecommendationService {
         _storageService = storageService ?? resolveDefaultStorageService(),
         _knotFabricService = knotFabricService,
         _knotStorageService = knotStorageService,
+        _entitySignatureService = entitySignatureService,
         _quantumMatchingController = quantumMatchingController,
         _runtimeValidator = runtimeValidator,
         _userRuntimeIntakeContract = userRuntimeIntakeContract,
@@ -536,7 +540,7 @@ class EventRecommendationService {
     String? category,
     String? location,
   }) async {
-    double score = 0.0;
+    double fallbackScore = 0.0;
 
     // 1. Matching score (35% weight, reduced from 40% to make room for knot compatibility)
     final matchingScore = await _matchingService.calculateMatchingScore(
@@ -545,30 +549,52 @@ class EventRecommendationService {
       category: event.category,
       locality: _extractLocality(event.location) ?? '',
     );
-    score += matchingScore * 0.35;
+    fallbackScore += matchingScore * 0.35;
 
     // 2. Preference match (35% weight, reduced from 40%)
     final preferenceScore = _calculatePreferenceScore(
       event: event,
       preferences: preferences,
     );
-    score += preferenceScore * 0.35;
+    fallbackScore += preferenceScore * 0.35;
 
     // 3. Cross-locality boost (15% weight, reduced from 20%)
     final crossLocalityScore = await _calculateCrossLocalityScore(
       event: event,
       user: user,
     );
-    score += crossLocalityScore * 0.15;
+    fallbackScore += crossLocalityScore * 0.15;
 
     // 4. Knot compatibility (15% weight - optional enhancement)
     final knotScore = await _calculateKnotCompatibilityScore(
       event: event,
       user: user,
     );
-    score += knotScore * 0.15;
+    fallbackScore += knotScore * 0.15;
 
-    return score.clamp(0.0, 1.0);
+    final clampedFallback = fallbackScore.clamp(0.0, 1.0);
+    if (_entitySignatureService == null) {
+      return clampedFallback;
+    }
+
+    try {
+      final personality = _personalityLearning == null
+          ? null
+          : await _personalityLearning.getCurrentPersonality(user.id);
+      final match = await _entitySignatureService.matchUserToEvent(
+        user: user,
+        event: event,
+        fallbackScore: clampedFallback,
+        personality: personality,
+      );
+      return match.finalScore;
+    } catch (e) {
+      _logger.warn(
+        'Event signature scoring failed, using fallback: $e',
+        tag: _logName,
+      );
+      return clampedFallback;
+    }
   }
 
   /// Calculate knot compatibility score for event recommendation

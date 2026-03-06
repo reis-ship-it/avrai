@@ -161,6 +161,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
             ),
           ),
         ),
@@ -193,6 +194,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
             ),
           ),
         ),
@@ -236,6 +238,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
             ),
           ),
         ),
@@ -271,6 +274,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
               showControls: true,
             ),
           ),
@@ -307,6 +311,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
               showControls: true,
             ),
           ),
@@ -345,6 +350,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
               showControls: true,
             ),
           ),
@@ -389,6 +395,7 @@ void main() {
             body: Worldsheet4DWidget(
               worldsheet: worldsheet,
               visualizationService: mockService,
+              useThreeJs: false,
               showControls: false,
             ),
           ),

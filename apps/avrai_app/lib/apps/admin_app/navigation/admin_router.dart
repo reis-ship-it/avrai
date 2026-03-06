@@ -11,6 +11,7 @@ import 'package:avrai/apps/admin_app/ui/pages/ai2ai_admin_dashboard.dart';
 import 'package:avrai/apps/admin_app/ui/pages/admin_command_center_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/research_center_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/reality_system_oversight_page.dart';
+import 'package:avrai/apps/admin_app/ui/pages/signature_source_health_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/urk_kernel_console_page.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/admin_navigation_shell.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
@@ -22,6 +23,7 @@ class AdminRouter {
   static const String commandCenter = AdminRoutePaths.commandCenter;
   static const String urkKernels = AdminRoutePaths.urkKernels;
   static const String ai2ai = AdminRoutePaths.ai2ai;
+  static const String signatureHealth = AdminRoutePaths.signatureHealth;
   static const String researchCenter = AdminRoutePaths.researchCenter;
   static const String realitySystemReality =
       AdminRoutePaths.realitySystemReality;
@@ -93,6 +95,10 @@ class AdminRouter {
             GoRoute(
               path: ai2ai,
               builder: (context, state) => const AI2AIAdminDashboard(),
+            ),
+            GoRoute(
+              path: signatureHealth,
+              builder: (context, state) => const SignatureSourceHealthPage(),
             ),
             GoRoute(
               path: researchCenter,

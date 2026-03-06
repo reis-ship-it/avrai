@@ -8,7 +8,10 @@
 /// to find users who would benefit from attending events.
 
 import 'dart:developer' as developer;
+
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/events/event_matching_service.dart';
 import 'package:avrai_runtime_os/services/events/event_recommendation_service.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
@@ -167,21 +170,28 @@ class EventProactiveOutreachService {
             currentCompatibility: candidate.compatibilityScore,
           );
 
-          // 6. If score is high enough, send AI2AI outreach
+          // 6. Gate on churn risk, then send AI2AI outreach
           if (outreachScore >= 0.75) {
-            await _sendEventOutreach(
-              event: event,
-              hostAgentId: hostProfile.agentId,
-              candidate: candidate,
-              outreachScore: outreachScore,
-              optimalTiming: timingRec.optimalTime,
-              reasoning: _generateEventOutreachReasoning(
-                stringPrediction,
-                quantumTrajectory,
-                matchingScore,
-                candidate,
-              ),
-            );
+            if (await _isHighChurnRisk(candidate.agentId)) {
+              developer.log(
+                'Skipping event outreach for high-churn-risk candidate: ${candidate.agentId}',
+                name: _logName,
+              );
+            } else {
+              await _sendEventOutreach(
+                event: event,
+                hostAgentId: hostProfile.agentId,
+                candidate: candidate,
+                outreachScore: outreachScore,
+                optimalTiming: timingRec.optimalTime,
+                reasoning: _generateEventOutreachReasoning(
+                  stringPrediction,
+                  quantumTrajectory,
+                  matchingScore,
+                  candidate,
+                ),
+              );
+            }
           }
         } catch (e) {
           developer.log(
@@ -203,6 +213,24 @@ class EventProactiveOutreachService {
         stackTrace: stackTrace,
         name: _logName,
       );
+    }
+  }
+
+  /// Returns true when the Markov predictor flags a candidate as high churn risk.
+  /// Silently returns false if no predictor is registered.
+  Future<bool> _isHighChurnRisk(String agentId) async {
+    try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<EngagementPhasePredictor>()) return false;
+      final risk = await sl<EngagementPhasePredictor>()
+          .predictChurnRisk(agentId, withinDays: 7);
+      return risk > 0.6;
+    } catch (e) {
+      developer.log(
+        'Churn risk check failed for $agentId, defaulting to false: $e',
+        name: _logName,
+      );
+      return false;
     }
   }
 

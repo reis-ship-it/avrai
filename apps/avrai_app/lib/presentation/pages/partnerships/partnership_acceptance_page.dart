@@ -12,7 +12,7 @@ import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.da
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Acceptance Page
 ///
@@ -227,7 +227,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
             // Event Preview
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: PortalSurface(
+              child: AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +261,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
             // Partnership Details
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: PortalSurface(
+              child: AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,7 +367,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
                         showLockStatus: false,
                       )
                     else
-                      const PortalSurface(
+                      const AppSurface(
                         padding: EdgeInsets.all(16),
                         child: Text(
                           'Revenue split will be calculated after event details are finalized',

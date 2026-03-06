@@ -8,7 +8,7 @@ import 'package:avrai/presentation/widgets/brand/roi_chart_widget.dart';
 import 'package:avrai/presentation/widgets/brand/performance_metrics_widget.dart';
 import 'package:avrai/presentation/widgets/brand/brand_exposure_widget.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Brand Analytics Page
 ///
@@ -274,7 +274,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: PortalSurface(
+              child: AppSurface(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,7 +372,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
               ..._analytics!.topPerformingEvents.take(5).map((event) => Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: PortalSurface(
+                    child: AppSurface(
                       padding: EdgeInsets.zero,
                       child: ListTile(
                         leading: Container(

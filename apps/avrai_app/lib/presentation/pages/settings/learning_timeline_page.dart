@@ -6,7 +6,7 @@ import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
 import 'package:avrai_runtime_os/services/cross_app/cross_app_learning_insight_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Page displaying the timeline of cross-app learning events
 ///
@@ -246,7 +246,7 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
 
           // Content
           Expanded(
-            child: PortalSurface(
+            child: AppSurface(
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.all(12),
               color: isDark ? AppColors.grey800 : AppColors.white,

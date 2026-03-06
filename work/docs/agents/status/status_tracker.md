@@ -35,6 +35,88 @@ To avoid drift and contradictory “status snapshots” across docs:
 
 ## 📊 **Current Status**
 
+### **v0.5 Beta Day 12-14 Gate (Release Readiness)**
+**Status:** ✅ **Deterministic gate passing**  
+**Last Updated:** March 4, 2026  
+**Gate command (canonical for beta):**
+- `work/scripts/run_beta_gate_tests.sh`
+- Runs: `flutter test --coverage --fail-fast --concurrency=1 test/unit test/widget test/core`
+
+**Evidence:**
+- Gate run result: pass.
+- Coverage snapshot: `31.48%` line coverage (`apps/avrai_app/coverage/lcov.info`).
+- Focused beta-critical smoke subset (integration) pass:
+  - `test/integration/basic_integration_test.dart`
+  - `test/integration/ai2ai/routing_test.dart`
+  - `test/integration/ai2ai/secure_network_test.dart`
+  - `test/integration/database/predictive_outreach_schema_test.dart`
+
+**Policy:**
+- Heavy environment-dependent suites are executed separately (not default beta blocker):
+  - `RUN_HEAVY_INTEGRATION_TESTS=true flutter test test/integration test/performance test/platform`
+
+**Sign-off checklist (release owner):**
+- [x] Deterministic beta gate pass
+- [x] Beta-critical smoke subset pass
+- [x] Build + Supabase parity checks pass
+- [x] Final human Go/No-Go recorded (**Go**)
+
+### **Advanced AI Services + Privacy Architecture Additions (Phases 2.6, 3.9, 6.8, 6.9, 8.10, 11.5-11.7, 12.5 ext., 12.8)**
+**Status:** 📋 **Planned — Staggered Execution (Phase-gated)**  
+**Tier:** Cross-cutting additions to existing phases. Each section gated behind its parent phase.
+
+| Section | Name | Gates On | Status |
+|---------|------|----------|--------|
+| 2.6 | Air Gap Permeability Model (gas/liquid/solid) | Phase 2 infra ready | 📋 Planned |
+| 3.9 | Affective State Inference (VAD output on state encoder) | Phase 3 feature extractor | 📋 Planned |
+| 6.8 | Intrinsic Curiosity Module | Phases 4+5+6 MPC operational | 📋 Planned |
+| 6.9 | Memory-Augmented Inference | Phases 5+6 transition predictor + planner | 📋 Planned |
+| 8.10 | Federated Active Learning | Phases 8.1+6.8 ICM | 📋 Planned |
+| 11.5 | Causal Inference Engine | 12+ months real user data | 📋 Research gate |
+| 11.6 | Continual Learning (anti-forgetting) | Production ONNX models stable | 📋 Research gate |
+| 11.7 | Neuro-Symbolic Integration | Phase 1-10 feature set stable | 📋 Research gate |
+| 12.5 ext. | Local App Plugin Framework | Phase 12.5 External API | 📋 Planned (post-beta) |
+| 12.8 | Physical-to-Digital Face Matching | Ethical review + user demand | 📋 Long-term opt-in |
+
+**Philosophy:** `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` (Section 5.1-5.3)  
+**Foundational Decision:** #25 (Air Gap as privacy physics)
+
+---
+
+### **Phase 12: AVRAI OS — Cognitive Kernel, Platform Adapters & External API**
+**Status:** 📋 **Planned — Not Started (Post-Production)**  
+**Tier:** Post-Production. Does NOT start until beta validates product-market fit.  
+**Primary plan:** `docs/MASTER_PLAN.md#phase-12-avrai-os`  
+**Rationale:** `docs/plans/rationale/PHASE_12_OS_RATIONALE.md`  
+**North star:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` (Section 7)  
+**Duration:** 24-40 weeks total across 7 sections  
+**Dependencies before start:**
+- [ ] Phases 1-8 complete (world model pipeline operational)
+- [ ] Beta launched and product-market fit validated
+- [ ] Phase 9 monetization model established
+- [ ] v0.3 Synthetic Swarm Sprint complete (provides Phase 12.4 baseline)
+
+**Sections:**
+| Section | Name | Status | Gate |
+|---------|------|--------|------|
+| 12.1 | Cognitive Kernel Extraction | ⏸️ Blocked (pre-beta) | Headless integration test passes |
+| 12.2 | Platform Adapters | ⏸️ Blocked (pre-beta) | All platform adapters pass contract test suite |
+| 12.3 | Cognitive Syscall API & Permission Model | ⏸️ Blocked (pre-beta) | v1 syscall API contract tests pass; permission enforcement verified |
+| 12.4 | Reality Model Baseline | ⏸️ Blocked (pre-swarm) | Cold-start quality gate passes |
+| 12.5 | External API Surface + Local App Plugin Framework | ⏸️ Blocked (pre-12.4) | All five API surfaces pass integration test suite |
+| 12.6 | Multi-Device / Headless Runtime | ⏸️ Blocked (pre-12.5) | Headless test suite passes on Linux + Docker + web |
+| 12.7 | Third-Party SDK & Distribution | ⏸️ Blocked (pre-12.6) | All SDK formats published; one external partner live |
+| 12.8 | Physical-to-Digital Face Matching (Opt-In) | ⏸️ Blocked (ethical review gate) | Ethical review passes; user demand validated |
+
+**Packaging formats target (Phase 12.7 complete):**
+- pub.dev (Dart), Maven Central (Android), Swift Package Manager (iOS)
+- crates.io (Rust), PyPI (Python), npm (WASM/JS)
+- Docker Hub + GHCR (OCI container), GitHub releases (systemd + apt/brew)
+- gRPC .proto definitions (language-agnostic)
+- Apache 2.0 open-source community edition
+
+---
+
 ### **Cross‑cutting: Architecture Stabilization + Repo Hygiene (Store‑ready)**
 **Status:** ✅ **Complete (Engineering)**  
 **What changed:** Removed `packages/* → package:spots/...` imports via package-owned canonicals + app shims, and moved app-dependent services out of packages.  
@@ -223,19 +305,20 @@ To avoid drift and contradictory “status snapshots” across docs:
 **Primary plan context:** Phase 14 “Sender Keys” group messaging (community chat)  
 **Why:** admins can rotate sender keys without dropping honest members; revocations can still use hard rotation (no grace).
 
-**Pending validation (blocked on hardware availability): Cross-platform 2-device Signal DM smoke over real transport**
-- **Status**: ⏳ Ready in repo; waiting on iOS + Android physical devices
+**2-device Signal DM smoke over real transport (emulator matrix complete)**
+- **Status**: ✅ Android 2-emulator matrix complete for discovery/session/DM/recovery; physical cross-platform run remains optional follow-up
 - **Goal**: Prove iOS↔Android Signal DM encrypt/decrypt over the *actual* Supabase “payloadless realtime” transport:
   - Ciphertext → `public.dm_message_blobs` (RLS: recipient-only read)
   - Notify → `public.dm_notifications` (realtime insert; payload = message_id only)
 - **Artifacts**
   - Integration test: `integration_test/signal_two_device_transport_smoke_test.dart`
   - Runner script: `scripts/smoke/run_signal_two_device_transport_smoke.sh`
-- **Run (when devices available)**:
+- **Run (executed on emulators)**:
   - Requires: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, two device ids (`flutter devices`), and two test accounts.
   - Optional: set `SIGNAL_SMOKE_COMMUNITY_ID` to also exercise community stream + sender-key flow.
   - Audit receipts: runner sets `SPOTS_LEDGER_AUDIT=true` and `SPOTS_LEDGER_AUDIT_CORRELATION_ID=$RUN_ID` so the run can be queried as a single ordered trail in `ledger_events_v0`.
   - Expected ordering checklist: `docs/agents/reports/agent_cursor/phase_23/2026-01-02_ble_signal_ledgers_receipts_backup_plan_execution_complete.md`
+  - Completion evidence: `work/docs/agents/reports/agent_cursor/phase_7/2026-03-04_day6_8_emulator_matrix_completion.md`
 
 **Repo changes (source of truth):**
 - Client “silent refresh” + anti-stale behavior:

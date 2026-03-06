@@ -189,12 +189,13 @@ class CrossAppConsentService {
   Future<CrossAppConsentSummary> getConsentSummary() async {
     final consents = await getAllConsents();
     final enabledCount = consents.values.where((v) => v).length;
+    final totalCount = consents.length;
 
     return CrossAppConsentSummary(
       consents: consents,
       enabledCount: enabledCount,
-      totalCount: CrossAppDataSource.values.length,
-      allEnabled: enabledCount == CrossAppDataSource.values.length,
+      totalCount: totalCount,
+      allEnabled: enabledCount == totalCount,
       allDisabled: enabledCount == 0,
     );
   }

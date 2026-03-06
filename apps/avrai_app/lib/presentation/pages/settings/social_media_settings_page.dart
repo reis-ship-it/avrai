@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Social Media Settings Page
 /// Allows users to manage their social media connections
@@ -59,22 +60,15 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Manage Social Media Connections',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Connect your social accounts to enhance your AI personality and discover friends who use avrai.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+            const AppPageHeader(
+              title: 'Manage Social Media Connections',
+              subtitle:
+                  'Connect your social accounts to enhance your AI personality and discover friends who use avrai.',
+              leadingIcon: Icons.hub_outlined,
             ),
             const SizedBox(height: 16),
             // Friend Discovery Link
-            PortalSurface(
+            AppSurface(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               padding: EdgeInsets.zero,
               child: InkWell(
@@ -125,7 +119,7 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                 children: _connectedPlatforms.entries.map((entry) {
                   final platform = entry.key;
                   final isConnected = entry.value;
-                  return PortalSurface(
+                  return AppSurface(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: EdgeInsets.zero,
                     child: ListTile(
@@ -165,9 +159,9 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
               ),
             ),
             const SizedBox(height: 16),
-            PortalSurface(
-              color: AppColors.electricBlue.withValues(alpha: 0.1),
-              borderColor: AppColors.electricBlue,
+            AppSurface(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderColor: AppColors.primary,
               radius: 8,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,14 +170,14 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                     children: [
                       const Icon(
                         Icons.info_outline,
-                        color: AppColors.electricBlue,
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Privacy & Data Usage',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.electricBlue,
+                          color: AppColors.primary,
                         ),
                       ),
                     ],

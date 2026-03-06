@@ -193,6 +193,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`
 - `docs/plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`
 - `docs/GITHUB_ENFORCEMENT_SETUP.md`
+- `docs/plans/rationale/PHASE_12_OS_RATIONALE.md` (Phase 12: AVRAI OS — cognitive kernel, platform adapters, external API, packaging formats, north star)
 
 ---
 
@@ -221,6 +222,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 | 9 | Business Operations & Monetization | Parallel | Phase 2 (compliance) | 6-8 weeks |
 | 10 | Feature Completion, Stub Cleanup, Codebase Reorganization & Polish | Parallel | Varies (10.5 immediate; 10.6 after Phases 4/7) | 4-6 weeks |
 | 11 | Industry Integrations, JEPA & Platform Expansion | Tier 3 | Phases 8, 9 | 12-20 weeks |
+| 12 | AVRAI OS — Cognitive Kernel, Platform Adapters & External API | Post-Production | Phases 1-8 complete; beta validates PMF; Phase 9 monetization model established | 24-40 weeks |
 
 ---
 
@@ -243,6 +245,7 @@ Build the `(state_before, action, next_state, outcome)` tuple storage system.
 | 1.1.4 | Implement state snapshot capture (current personality 12D + quantum vibe 24D + knot invariants + decoherence phase + locality vector) | Uses existing services |
 | 1.1.5 | Implement memory pruning (keep last N episodes per action type, compress old episodes into summary statistics) | New |
 | 1.1.6 | Register in `injection_container.dart` | Existing pattern |
+| 1.1.7 | **Contextual Root-Cause Memory.** When logging an `EpisodicTuple` for a failed outcome, explicitly separate the `Core DNA` (Personality Knot) from the `Pheromones` (temporary state vectors). The transition predictor learns *why* it failed (e.g., user disliked the park because the "social fatigue" pheromone was active, not because their core personality dislikes parks), enabling immediate re-recommendation once the temporary negative pheromone subsides, bypassing long-term time decay | New |
 
 ### 1.1A Semantic Memory (Vector Store -- Knowledge)
 
@@ -460,6 +463,38 @@ New businesses joining the platform have no patron history, no reservation data,
 | 1.5D.3 | **Ship pre-trained model weights in app binary.** The pre-trained energy function and transition predictor weights ship with the app (part of the ~1MB ONNX model budget from Appendix D). Every new install starts with a globally-informed model, not a blank slate. On-device training personalizes from there |
 | 1.5D.4 | **Federated global model updates.** As the user base grows, the federated aggregation server (Phase 8.1.3) produces improved global model weights. New installs receive the LATEST global model (via app update or cloud sync), which encodes collective learning from all prior users. This is the mechanism by which user #100,000 benefits from user #1's learning |
 
+#### 1.5E Beta Markov Engagement Predictor (Bridge to Phase 5)
+
+A discrete Markov chain over behavioral macro-states that operates during beta before the `TransitionPredictor` (Phase 5.1) is trained. It provides functioning trajectory prediction from zero real-user data by seeding from the existing Multi-City Swarm Simulation, then personalizes as real beta observations accumulate. When Phase 5 is ready, a single `FeatureFlagService` flip replaces the implementation with no caller changes.
+
+**Design contract:** Both `MarkovEngagementPredictor` (beta) and the future `NeuralTransitionPredictor` (Phase 5) implement `EngagementPhasePredictor` — an abstract interface that defines `predictNextPhase()`, `predictChurnRisk()`, and `recordTransition()`. All callers depend on the interface only.
+
+**`UserEngagementPhase` macro-states:**
+
+| Phase | Criteria |
+|-------|----------|
+| `onboarding` | < 5 meaningful interactions |
+| `exploring` | Active visits, low commitment (< 2 communities joined) |
+| `connecting` | Joining communities, making AI2AI connections |
+| `embedding` | Regular return visits, attending events, stable personality |
+| `quietPeriod` | Engagement dropped below 30% of 30-day rolling average |
+| `churning` | No meaningful activity for 7+ days |
+
+| Task | Description |
+|------|-------------|
+| 1.5E.1 | **Define `EngagementPhasePredictor` abstract interface.** Three methods: `predictNextPhase(current, {agentId})`, `predictChurnRisk(agentId, {withinDays})`, `recordTransition(from, to, agentId)`. Both the Markov beta implementation and the Phase 5 neural implementation satisfy this contract. File: `runtime/avrai_runtime_os/lib/services/prediction/engagement_phase_predictor.dart` |
+| 1.5E.2 | **Implement `EngagementPhaseClassifier`.** Classifies a `PersonalityProfile` + interaction history → `UserEngagementPhase` using rule-based thresholds over existing fields: interaction count, community join count, connection count, engagement level (from `UserJourneyTrackingService`). File: `runtime/avrai_runtime_os/lib/services/prediction/engagement_phase_classifier.dart` |
+| 1.5E.3 | **Implement `MarkovTransitionStore`.** On-device SharedPreferences persistence for transition counts keyed by `agentId`. Schema: `Map<String, int>` where key = `"fromPhase:toPhase"`. Includes city-stratified synthetic prior counts loaded at first use from `SwarmPriorLoader`. The prior is treated as 100 synthetic observations that decay in relative weight as real observations accumulate |
+| 1.5E.4 | **Implement `SwarmPriorLoader`.** Extracts city-stratified Markov transition priors from the existing `SwarmSimulationEngine` by: (1) mapping `RoutineState` + `trustMeter` → `UserEngagementPhase`, (2) running a condensed 30-day simulation per city (NYC, Denver, Atlanta), (3) counting observed transitions per city. Bakes output as a bundled JSON asset so app startup does not re-run simulation. File: `runtime/avrai_runtime_os/lib/services/prediction/swarm_prior_loader.dart` |
+| 1.5E.5 | **Implement `MarkovEngagementPredictor`.** Implements `EngagementPhasePredictor`. Prediction = `(real_counts[from][to] + synthetic_prior[from][to]) / (total_real[from] + 100)`. Churn risk = `P(quietPeriod) + P(churning)` from next-phase distribution. Records transitions as `(agentId, from, to, timestamp)` in `MarkovTransitionStore` AND as standard `(state, action, next_state)` episodic tuples for Phase 5 training. File: `runtime/avrai_runtime_os/lib/services/prediction/markov_engagement_predictor.dart` |
+| 1.5E.6 | **Wire into `PersonalityLearning.evolveFromUserAction()`.** After the existing evolution logic saves the new profile, classify previous and new phase. If phase changed: call `recordTransition()`. This is the primary observation feed. |
+| 1.5E.7 | **Wire into `PredictionAPIService.getUserJourneyPredictions()`.** Replace the simplified `evolutionFactor * 0.1` scalar model with real churn risk and next-phase distribution from `EngagementPhasePredictor`. |
+| 1.5E.8 | **Wire into proactive outreach services.** `CommunityProactiveOutreachService`, `ClubProactiveOutreachService`, `EventProactiveOutreachService`: add churn risk gate — if `predictChurnRisk(agentId) > 0.6`, shift to re-engagement recommendation strategy. |
+| 1.5E.9 | **Register in DI and add feature flag.** Register `EngagementPhasePredictor`, `MarkovTransitionStore`, `SwarmPriorLoader`, `EngagementPhaseClassifier` in `injection_container_ai.dart`. Add `FeatureFlagService` flag `markov_engagement_predictor_enabled` (default true). Add `neural_transition_predictor_enabled` flag (default false, flipped when Phase 5 is ready). |
+| 1.5E.10 | **Track cold-start quality metric.** Log how many real transitions each user has accumulated. Surface in `AdminSystemMonitoringService` as: average transitions per user, % of users with > 20 real transitions (where personal matrix dominates synthetic prior), distribution of users per phase. This is the primary beta ML health metric before Phase 5. |
+
+> **Transition plan (Phase 5 readiness):** When `TransitionPredictor` (Phase 5.1) is trained on the real transition tuples collected here, implement `NeuralTransitionPredictor` satisfying `EngagementPhasePredictor`, register it, flip `FeatureFlagService.neural_transition_predictor_enabled = true`. All callers (proactive outreach, PredictionAPIService, PersonalityLearning hook) are unchanged. The Markov chain retires with no code changes to consumers. The real transition tuples collected during beta ARE the training data for Phase 5 -- see Cross-Phase Connections for the data contract.
+
 ### 1.6 Quick-Win Data & Model Improvements (Tier 1-3 from Roadmap)
 
 These are high-ROI items from the ML Roadmap (Section 17, Tiers 1-3) that can start immediately and directly improve data quality for all downstream world model training. They don't require the world model architecture -- they fix the existing pipeline.
@@ -605,6 +640,46 @@ PQXDH (hybrid X3DH + ML-KEM/Kyber) is already implemented and REQUIRED in `Signa
 | 2.5.8 | **Post-quantum readiness dashboard.** Add a diagnostic endpoint (admin-only, not user-facing) that reports: (a) % of active sessions with PQXDH coverage, (b) Kyber prekey inventory health, (c) BLE mesh PQ status, (d) Cloud transport PQ status, (e) On-device storage PQ status. Wire into `AdminSystemMonitoringService`. Target: 100% PQXDH session coverage within 30 days of Phase 2.5 completion | LOW -- monitoring, not protection | New |
 
 > **Why this matters NOW, not later:** The "harvest now, decrypt later" attack means adversaries can record encrypted traffic TODAY and decrypt it YEARS from now when quantum computers are available. Signal Protocol sessions, BLE advertisements, and cloud API calls recorded today are all vulnerable if they used ECDH-only key exchange. PQXDH protects against this for Signal sessions, but the other transport layers (BLE discovery, cloud TLS, gradient sharing) need the same treatment. This is the one quantum-related priority that has a deadline driven by attackers, not by your feature roadmap.
+
+### 2.6 Air Gap Permeability Model (Gas / Liquid / Solid)
+
+The `TupleExtractionEngine` and `AirGapContract` (already implemented in `engine/reality_engine/lib/memory/air_gap/`) provide the physics of AVRAI's privacy: raw external data can only reach the reality model through a single chokepoint that destroys the raw payload and returns only semantic tuples. This section extends the Air Gap with user-controllable permeability — the gas/liquid/solid model — so the same architectural invariant supports both rich personalization and fine-grained privacy control.
+
+**See also:** Philosophy Section 5.1-5.2, Foundational Decision #25, Phase 12.5.8-12.5.12 (Plugin Framework), Phase 12.8.6 (Physical Identity permeability)
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 2.6.1 | **Define permeability states formally.** Three states, each mapping to a TupleExtractionEngine behavior: (a) **Gas** — TupleExtractionEngine processes all inbound payloads from any consented source. (b) **Liquid** — TupleExtractionEngine filters inbound payloads by domain whitelist (e.g., "allow health apps, block social media"). (c) **Solid** — TupleExtractionEngine rejects all payloads from the blocked domain; the rejection happens before extraction, so no processing occurs. | New |
+| 2.6.2 | **Implement `AirGapPermeabilityService`.** Stores per-domain permeability state (gas/liquid/solid) in `FlutterSecureStorage`. Domains: `health`, `calendar`, `social_media`, `location`, `iot_home`, `physical_identity`, `cross_app_behavior`. Each domain has an independent permeability setting. Default: gas for all domains | New |
+| 2.6.3 | **Wire permeability check into `TupleExtractionEngine`.** Before processing any `RawDataPayload`, `TupleExtractionEngine` calls `AirGapPermeabilityService.isPermeable(payload.sourceId)`. If solid: reject immediately (`PrivacyBreachException` not raised — this is intentional rejection, not a breach). If liquid: check domain whitelist. If gas: proceed normally | Extends `TupleExtractionEngine`, `AirGapContract` |
+| 2.6.4 | **Permeability settings UI.** In privacy settings, show a gas/liquid/solid selector per domain — use a visual material-state metaphor (particle density illustration) rather than a checkbox list. Explain each domain in plain language: "Health apps (Apple Health, Fitbit) — helps your AI understand how energy levels affect your preferences." | New |
+| 2.6.5 | **Permeability audit log.** Log all solid-state rejections with: timestamp, source domain, rejection reason. Show aggregate in "What My AI Knows" page (2.1.8): "Your AI has blocked 14 signals from Social Media this week." This makes the Air Gap's work visible — users understand it's protecting them | Extends 2.1.8 |
+| 2.6.6 | **GDPR integration.** Data deletion (2.1.1) respects permeability state: domains with solid settings have never contributed data; deletion confirmation shows "Social Media: no data stored (Air Gap solid)." Consent revocation (2.1.4) for a domain automatically sets that domain's permeability to solid | Extends 2.1.1, 2.1.4 |
+
+### 2.7 Zero Trust Credential Infrastructure
+
+AVRAI's AI agents use non-human identities (`agentId`) and communicate over encrypted channels (Signal Protocol), but credentials today are static: API keys via `--dart-define`, agent IDs generated once and stored in `FlutterSecureStorage`, no automatic rotation, no just-in-time provisioning. Zero trust requires that every credential is dynamic, scoped, and short-lived.
+
+**See also:** Foundational Decision #29 (Zero Trust as Security Architecture), Phase 10.9.20 (red-team gate), Phase 12.3.5 (external caller authentication)
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 2.7.1 | **Implement `SecretVaultService`.** Centralized credential lifecycle management backed by Supabase with encrypted storage. Supports: credential generation, scoped access grants, automatic rotation on configurable intervals, revocation, and audit logging of every check-out/check-in. All services that currently read API keys from `--dart-define` or `FlutterSecureStorage` must migrate to `SecretVaultService` | New |
+| 2.7.2 | **Just-in-time credential provisioning.** `SecretVaultService.checkout(scope, ttl)` returns a short-lived credential valid only for the requested scope and duration. Credentials auto-expire; no permanent grants. Agent-to-agent credentials (used in AI2AI communication) are provisioned per-session, not stored permanently | New |
+| 2.7.3 | **Automatic credential rotation.** All long-lived credentials (Supabase service keys, external API keys, agent identity keys) rotate on a configurable schedule (default: 30 days). Rotation is zero-downtime: new credential is provisioned before old credential expires. Rotation events logged to `AuditLogService` | New |
+| 2.7.4 | **Credential scanning CI gate.** CI pipeline scans all source files for hardcoded secrets (API keys, passwords, tokens). Builds fail if any are detected. Extends `DeploymentReadinessValidator` credential check (already exists) to run in CI, not just at deployment | Extends `DeploymentReadinessValidator` |
+| 2.7.5 | **Certificate pinning for HTTP clients.** Pin certificates for Supabase and all external API endpoints in Dart HTTP clients. Use backup pins for rotation. Log pin validation failures as security events to `AuditLogService` | Extends 2.5 |
+
+### 2.8 Continuous Verification
+
+Zero trust requires re-verification throughout a session, not just at login. AVRAI currently authenticates once via Supabase and trusts the session indefinitely.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 2.8.1 | **Implement `ContinuousVerificationService`.** Periodically re-validates session integrity: checks device posture (jailbreak detection, OS patch level), validates session token freshness, detects anomalous session behavior (impossible travel, IP changes). Configurable verification interval (default: 15 minutes) | New |
+| 2.8.2 | **Step-up authentication for high-impact operations.** Operations that modify security-critical state (data export, account deletion, admin actions, privacy setting changes, credential rotation) require re-authentication even within an active session. Uses biometric or password re-entry | Extends 2.1 |
+| 2.8.3 | **Session binding to device fingerprint.** Sessions are cryptographically bound to the device that created them. Session token includes device attestation hash; server rejects requests where device fingerprint doesn't match. Prevents session token theft from being usable on a different device | New |
+| 2.8.4 | **Anomaly-based session lockout.** `ContinuousVerificationService` monitors for: impossible travel (location change faster than physically possible), simultaneous sessions from different continents, rapid privilege escalation attempts. Triggers automatic session lockout with re-auth requirement | Extends 2.8.1 |
 
 ---
 
@@ -763,6 +838,28 @@ The codebase has two independent mesh pathways: `AdvancedAICommunication` (used 
 
 > **LeCun alignment:** In the world model framework, all information between agents flows through a single "perception module." Unifying the mesh ensures the world model has one coherent view of what the network provides, rather than two competing channels with different reliability guarantees.
 
+### 3.7A Transport Backend Interface (Unified Transport Abstraction)
+
+The runtime currently has 93+ transport files across `services/transport/ble/` and `services/transport/mesh/`, each transport with its own lane taxonomy, parameter shapes, and orchestration patterns. Supabase realtime is a third independent transport. When new transports arrive (DTN wormhole routing, future protocols), this fragmentation multiplies. A unified transport interface gives all backends a common shape so the orchestrator doesn't need to know which transport it's talking to.
+
+**Why in Phase 3:** This is companion infrastructure to 3.7 (mesh unification). Phase 3.7 unifies the *protocol layer* (one `AnonymousCommunicationProtocol`). Phase 3.7A unifies the *transport layer* (one `TransportBackend` interface that BLE, mesh, Supabase realtime, and future transports all implement). Together they give the world model one coherent information channel with transport-agnostic delivery.
+
+**Note:** This is NOT a declarative message routing table (which would be another form of hardcoded routing, contradicting Decision #1 intelligence-first). The transport interface provides the *infrastructure* on which the energy function (Phase 4) and MPC planner (Phase 6) can make learned transport decisions. The interface enables learned routing; it does not replace it.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 3.7A.1 | **Define `TransportBackend` abstract interface** in `avrai_network`. Methods: `initialize(ctx)`, `shutdown()`, `send(message, target)`, `startDiscovery(policy)`, `stopDiscovery()`. Streams: `inboundMessages`, `discoveredPeers`. Property: `capabilities` (`Set<TransportCapability>` — e.g., `rssiProximity`, `broadcastAdvertising`, `storeAndForward`, `realtime`, `highBandwidth`). The capabilities set lets the orchestrator reason about what each transport can do without hardcoding transport names | New, in `avrai_network` |
+| 3.7A.2 | **Implement `BleTransportBackend`** wrapping existing BLE discovery, advertising, and GATT session logic. Consolidates the relevant BLE lanes into internal methods of this class. Declares capabilities: `{rssiProximity, broadcastAdvertising, lowBandwidth}` | Wraps existing BLE transport |
+| 3.7A.3 | **Implement `MeshTransportBackend`** wrapping existing gossip forwarding, bloom filters, hop guards, and pheromone routing. Declares capabilities: `{multiHop, storeAndForward, lowBandwidth}` | Wraps existing mesh transport |
+| 3.7A.4 | **Implement `SupabaseRealtimeTransportBackend`** wrapping existing `SupabaseRealtimeBackend`. Declares capabilities: `{realtime, highBandwidth, cloudRequired}` | Wraps existing Supabase realtime |
+| 3.7A.5 | **Define `TransportRuntimeContext`** — scoped context object that bundles shared runtime state: `localNodeId`, `protocol`, `discovery`, `meshService`, `batteryScheduler`, `signalKeyManager`, `prefs`, `logger`, plus typed sub-registries (`NodeRegistry`, `BloomFilterRegistry`, `ReplayGuard`, `InsightDeduplicator`, `LearningThrottle`). Each sub-registry owns its data AND persistence logic. Replaces the 15-30 individual parameters currently threaded through orchestration lanes | New, in `avrai_runtime_os` |
+| 3.7A.6 | **Build `TransportOrchestrator`** that holds `List<TransportBackend>`, selects backends based on capabilities and target requirements, and delegates send/receive. Listens to all backends' `inboundMessages` streams and dispatches to the appropriate handler. Transport selection is capability-based (not hardcoded transport names), enabling future transports (DTN wormhole, etc.) to be added by implementing the interface and registering in DI | New |
+| 3.7A.7 | **Migrate `VibeConnectionOrchestrator` transport calls** to use `TransportOrchestrator` instead of directly referencing BLE/mesh/realtime services. The orchestrator talks to transports through the unified interface, not individual service references | Refactors existing |
+
+> **Phase 12 note:** Phase 12 plans a headless Rust kernel with platform adapters. The Dart `TransportBackend` interface serves Phases 3-10 (~6-12 months of active development). The *concept* transfers to Phase 12's Rust kernel even though the Dart implementation may be replaced. The interface shape and capability model inform the Rust transport abstraction design.
+
+> **DTN readiness:** The `WORMHOLE_DTN_ROUTING_PLAN.md` describes a new transport with unique capabilities (geographic store-and-forward, delay-tolerant delivery). With `TransportBackend`, adding DTN means implementing one interface and declaring capabilities like `{delayTolerant, storeAndForward, geographicRouting}`. Zero changes to the orchestrator or existing transports.
+
 ### 3.8 AI2AI Insight Extraction Upgrade
 
 Upgrade the existing AI2AI learning pipeline to produce world-model-compatible features.
@@ -773,6 +870,39 @@ Upgrade the existing AI2AI learning pipeline to produce world-model-compatible f
 | 3.8.2 | Define AI2AI insight feature schema: shared preference dimensions, conversation quality score, learning value, reciprocity measure | New |
 | 3.8.3 | Wire AI2AI insights as optional state encoder features (available only for users with active AI2AI sessions) | New |
 | 3.8.4 | Ensure `AI2AILearningOrchestrator` only feeds insights to world model after confidence threshold (currently >= 0.6, keep as initial value, learn from data later in Phase 4) | Extends existing |
+
+### 3.9 Affective State Inference (Derived State Output)
+
+Add a 3D affective state estimate (Valence, Arousal, Dominance — the VAD model) as an additional derived output of the state encoder pipeline. Affective state is not a new sensor — it is computed from behavioral signals already being extracted (movement patterns, social engagement, temporal rhythm, wearable physiology, language tone). This gives every downstream system — the energy function, the MPC planner, the SLM interface — access to the user's inferred emotional context without any camera or self-report.
+
+**Why affective state belongs in Phase 3 (not as a separate system):** The state encoder already produces a rich world-state representation. Affective state is a derived feature of that representation — a learned compression of behavioral signals into a 3-axis emotional context. It is not a separate ML system; it is a new output head on the existing state encoder.
+
+**Privacy note:** Affective state is inferred from behavioral signals, never from camera or microphone content. The Air Gap ensures raw audio/video never enters the model. VAD output stays on-device and is never egressed raw.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 3.9.1 | Define VAD feature schema: Valence (-1.0 to +1.0, negative-to-positive affect), Arousal (0.0 to 1.0, calm-to-activated), Dominance (0.0 to 1.0, submissive-to-dominant). These 3 dimensions capture the majority of emotional state variance per Russell's circumplex model | New |
+| 3.9.2 | Add `affective_state: VADVector` output head to `WorldModelFeatureExtractor` — computed from: wearable physiology (3D, from 3.1.10), language tone dimension (from 3.1.13), behavioral trajectory phase (from 3.1.12), social engagement patterns (from 3.1.15), temporal rhythm deviation (from 3.1.7 staleness vs. norm) | Extends 3.1 |
+| 3.9.3 | Add affective state as 3D input to `StateFeatureVector` (total now ~148-158D). Include in `FeatureFreshnessTracker` with staleness tolerance of 5 minutes | Extends 3.1, 3.1A |
+| 3.9.4 | Wire affective state into energy function (Phase 4): low-valence + low-arousal state should increase energy penalty for high-effort social doors; high-arousal + high-valence state should lower energy penalty for novel exploratory actions | Feeds Phase 4.1 |
+| 3.9.5 | Wire affective state into MPC planner (Phase 6): planner reads VAD before generating candidate action sequences; avoids recommending cognitively demanding doors when valence is negative or arousal is depleted | Feeds Phase 6.1 |
+| 3.9.6 | Wire affective state into SLM language interface (Phase 6.7): SLM generates explanations tonally calibrated to current affective state — gentler framing when valence is low, energetic framing when arousal is high | Feeds Phase 6.7 |
+| 3.9.7 | Affective context for clinical/behavioral health applications: expose `AffectiveStateService.getCurrentVAD()` as a queryable service for behavioral health apps that plug into the Local App Plugin Framework (Phase 12.5). Consent-gated per app; raw VAD values only shared with explicit user approval | Feeds Phase 12.5 |
+| 3.9.8 | Validate affective inference quality: compare VAD estimates against ground-truth signals (user-initiated mood logs, wearable physiological events) to calibrate the inference. Log `(estimated_vad, ground_truth_signal, behavioral_context)` as training tuples for ongoing calibration | New |
+
+### 3.10 LLM Input Sanitization & Prompt Injection Hardening (Zero Trust)
+
+Every LLM entry point is an attack surface. The `TupleExtractionEngine` passes user-sourced content to a local LLM. The `AICommandProcessor` accepts free-form user input. Future MCP tool calls will accept structured inputs from external sources. Zero trust requires that all LLM inputs are treated as untrusted and sanitized before processing.
+
+**See also:** Foundational Decision #29 (Zero Trust), Phase 6.10 (AI Action Gateway), Phase 10.9.20 (red-team gate)
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 3.10.1 | **Implement `PromptSanitizationService`.** Centralized input sanitization for all LLM entry points. Validates: context boundary integrity (user content cannot escape into system prompt), known injection patterns (role hijacking, instruction override, delimiter manipulation), input length bounds, and character encoding safety. Returns sanitized input or rejects with logged security event | New |
+| 3.10.2 | **Wire `PromptSanitizationService` into `TupleExtractionEngine`.** All `RawDataPayload.rawContent` passes through sanitization before reaching the local LLM. The Air Gap already destroys raw data after extraction; sanitization adds defense-in-depth before extraction | Extends `TupleExtractionEngine` |
+| 3.10.3 | **Wire `PromptSanitizationService` into `AICommandProcessor`.** User commands are sanitized before action parsing. Reject commands that contain injection patterns; log rejected commands as security events | Extends `AICommandProcessor` |
+| 3.10.4 | **Canary token injection detection.** Insert invisible canary tokens into system prompts. If a canary token appears in LLM output, it indicates the system prompt was leaked or manipulated. Log as critical security event and halt the request | New |
+| 3.10.5 | **Engine-layer input validation contracts.** Define formal input validation contracts for all engine services (`avrai_ai`, `avrai_knot`, `avrai_quantum`, `reality_engine`). Each service declares its input schema; inputs that don't conform are rejected with structured errors. The engine layer must not trust the runtime layer implicitly | New |
 
 ---
 
@@ -803,6 +933,7 @@ The energy function replaces ALL hardcoded scoring formulas. It takes state embe
 | 4.1.12 | **Symmetry/invariance critic stress suite.** Add perturbation tests (order/view/context reshuffles) and require critic score stability under invariant-preserving transformations before promotion |
 | 4.1.13 | **Warrant-gap instability metric.** Add a `WarrantGapScore` for critic confidence-to-outcome mismatch; block candidate promotion when gap exceeds configured bounds on any protected cohort |
 | 4.1.14 | **Collective-outcome critic term.** Add optional welfare regularizer for multi-entity recommendations so local gains that predict collective harm are penalized before planner consumption |
+| 4.1.15 | **Geopolitical/Abstract energy mapping.** Translate abstract macro-news tuples (e.g., supply chain shortages, transit strikes) into localized physical friction penalties within the energy function. This enables the planner to understand that an abstract global event creates a specific local energy cost (e.g., +5.0 friction for coffee shop actions during a shortage) | New |
 
 ### 4.2 Formula Replacement Schedule
 
@@ -888,6 +1019,10 @@ The energy function scores `(individual_state, action) → energy`. But for grou
 | 4.4.12 | **Define brand state encoder:** `BrandFeatures (brand quantum state + brand values + sponsorship history + category alignment + reach metrics) → MLP → BrandStateEmbed`. Brand quantum state already exists (`QuantumEntityType.brand`) but isn't used for bidirectional energy |
 | 4.4.13 | Define combined scoring: `final_energy = alpha * user_energy + (1 - alpha) * entity_energy`, where alpha is learned per action type (some actions are more about user benefit, others more about community/business health) |
 | 4.4.14 | Guardrail: if `entity_energy` is very high (bad for the community/list/business/brand), override even if `user_energy` is low (good for user). Protect community, list, business, and brand health -- this is the "doors" philosophy: don't open one person's door by closing another's |
+| 4.4.15 | **Implement `BusinessPheromoneSpatialDecay` logic** | In `PheromoneMeshRoutingService`, add decay logic that drops outbox pheromones based on the device's physical distance from the event location | New |
+| 4.4.16 | **Implement `BusinessPheromoneTTL` protocol** | Define multi-hop epidemic routing rules, max hop count enforcement, and 14-day cryptographic expiration inside `KnowledgeVector` for business/event marketing | New |
+| 4.4.17 | **Build `QuantumPartnershipEntanglement`** | Create cloud-side utility to entangle a Business entity vector with an Expert entity vector to generate a unique Event Pheromone for the physical mesh | New |
+| 4.4.18 | **Implement `EventPheromoneInjector`** | Add capability for venues/experts to inject their signed Event Pheromone into the local BLE mesh to seed the discovery radius | New |
 
 > **LeCun alignment:** LeCun's world model predicts future states for ALL agents, not just the ego agent. The transition predictor already predicts `next_user_state`; community energy requires predicting `next_community_state` when a member joins; business energy requires predicting `next_business_state` when a partnership forms. This uses the same transition predictor architecture with entity-specific state encoders. The multi-agent extension is critical for the business layer: unlike user-to-spot matching (one-sided), business partnerships and sponsorships are fundamentally bilateral -- both parties invest resources and expect returns.
 
@@ -1031,6 +1166,9 @@ Uses the transition predictor to simulate action sequences and pick the best one
 | 6.1.19 | **Volunteer pathway planning.** Include volunteer actions in MPC candidate space for community/event/business lanes and optimize for sustained positive community impact, not only short-term engagement |
 | 6.1.20 | **Nearby invite/install planner action.** Add planner action family for compliant nearby growth routes (`show_invite_qr`, `share_install_link`, `mesh_invite_ping`) with platform/legal constraints and consent checks |
 | 6.1.21 | **Unrestricted discovery action lane.** Add planner option `show_unfiltered_results` so users can access full discoverability views by explicit intent; personalization ranks but does not gate non-restricted entities |
+| 6.1.22 | **Direct Serendipity Integration (Deprecate Trojan Horse UX).** Wire the Daily Serendipity Drop (`NightlyDigestionJob`) directly to the MPC Planner's multi-step trajectory output. Replace the direct LLM prompt generation with a pipeline where the MPC Planner simulates 24 hours forward to find the lowest-energy action sequence, and the LLM merely translates the mathematical trajectory into the human-readable Serendipity Drop UI | Replaces LLM-only drop |
+| 6.1.23 | **Active "Second Chance" Triggers (Delta-Driven Re-evaluation).** Track core `PersonalityKnot` string evolution over time. When a user's knot complexity/volume grows by a configured threshold (e.g., +40% since last interaction), actively pull historical "Hard No" or "Failed" matching entities (spots, users, events) and force a re-evaluation through the MPC Planner. Rather than waiting for passive quantum decoherence (time decay), this uses quantified personal growth to actively ignite serendipitous second chances | New |
+| 6.1.24 | **Pheromone-Catalyzed Overrides (Context Beating Core).** Allow temporary Knowledge Vectors (`Pheromones`) shared via the BLE mesh to act as heavy multipliers in the MPC planner. If a historical DNA (core personality) mismatch exists, but current temporary pheromone overlap spikes (e.g., both users exhibiting high "social fatigue" and "rainy day coffee seeking"), the planner explicitly overrides the DNA mismatch to recommend the serendipitous connection for that specific temporal window | New |
 
 ### 6.2 Guardrail Objectives
 
@@ -1076,6 +1214,23 @@ The AI agent becomes autonomous: persistent memory, tool use, self-directed lear
 | 6.3.2 | Implement tool registry (the agent can invoke: search, recommend, schedule, message, navigate) | New |
 | 6.3.3 | Implement self-directed learning: agent identifies high-uncertainty areas and proactively collects data | Extends `AISelfImprovementSystem` |
 | 6.3.4 | Wire into `AIMasterOrchestrator` as the central intelligence loop | Extends existing |
+| 6.3.5 | **Zero trust tool registry with signed manifests.** Extend 6.3.2 from a static tool list to a `ToolRegistryService` with: signed tool manifests (same pattern as `KernelRegistry` in 1.1E.12), runtime verification before invocation (tool must be registered and manifest signature valid), per-invocation audit logging (tool name, input hash, output hash, caller agentId, timestamp), and tool sandboxing (tool execution cannot access resources outside its declared scope). Unknown or unregistered tools are rejected fail-closed | Extends 6.3.2, 1.1E.12 |
+| 6.3.6 | **Tool capability constraints.** Each registered tool declares its capability scope: what data it can read, what actions it can perform, what external services it can contact. `ToolRegistryService` enforces these constraints at runtime. A tool that attempts to exceed its declared scope is halted and the violation logged as a security event | New |
+
+### 6.10 AI Action Gateway (Zero Trust Inspection Layer)
+
+The MPC planner (6.1) generates action sequences and the agent (6.3) executes them. Zero trust requires an inspection layer between intent and action — an AI firewall that validates every action before execution. Without this, a compromised planner or poisoned model can take arbitrary actions.
+
+**See also:** Foundational Decision #29 (Zero Trust), Phase 3.10 (prompt injection hardening), Phase 10.9.20 (red-team gate)
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 6.10.1 | **Implement `AgentActionGateway`.** Sits between the MPC planner output and action execution. Every candidate action passes through the gateway before execution. The gateway enforces: action policy compliance (is this action type permitted in the current context?), data leakage scanning (does the action payload contain PII or sensitive data that shouldn't leave the device?), rate limiting (action frequency within bounds?), and anomaly detection (is this action sequence statistically unusual for this user/agent?) | New |
+| 6.10.2 | **Action policy engine.** Define declarative action policies: which action types are permitted, under what conditions, with what constraints. Policies are versioned and signed (same pattern as kernel manifests). The gateway evaluates policies before every action. Default policy: deny unless explicitly permitted | New |
+| 6.10.3 | **Data leakage scanner.** Before any outbound action (API call, message send, tool invocation, sub-agent spawn), scan the payload for PII patterns (email, phone, name, userId, location coordinates). Block actions that would leak PII and log the violation. Extends `PayloadValidationService` patterns from the security architecture | Extends security layer 4 |
+| 6.10.4 | **Action anomaly detector.** Build a baseline of normal action patterns per user/agent. Flag actions that deviate significantly: unusual action types, unusual frequency, unusual targets, unusual data volumes. Flagged actions require human confirmation (extends `AICommandProcessor` confirmation pattern) or are blocked in autonomous mode | New |
+| 6.10.5 | **Immutable action audit log.** Every action that passes through the gateway is logged immutably: action type, policy evaluation result (allow/deny/escalate), input hash, output hash, caller agentId, timestamp. Logs are append-only and integrity-verified. Extends `AuditLogService` with persistent storage (not just `developer.log()`) | Extends `AuditLogService` |
+| 6.10.6 | **Gateway kill switch.** Admin or user can instantly halt all agent actions via the gateway. Kill switch activation is immediate (no queued actions execute), logged, and requires explicit re-enablement. Connects to Phase 10.9.25 digital twins intervention controls | Extends 10.9.25 |
 
 ### 6.4 Offline Confirmation & Graceful Degradation
 
@@ -1115,6 +1270,11 @@ In LeCun's framework, the actor must be able to take actions even when parts of 
 | 6.6.3 | Implement message deduplication: when connectivity returns, deduplicate messages sent via mesh AND cloud (same message ID, prefer cloud timestamp) |
 | 6.6.4 | Update MPC planner action availability: the planner must know which actions are available offline. `message_friend` is available if friend is nearby on mesh OR message can be queued for later. `attend_event` is always available (on-device). `create_reservation` requires cloud (mark unavailable offline) |
 | 6.6.5 | Signal Protocol works the same over mesh as over cloud -- the transport layer is transparent to encryption. Verify this with integration tests |
+| 6.6.6 | **Implement `RoutingEnvelope`** | Add unencrypted header to mesh payloads (`KnowledgeVector`) including `originGeohash`, `geographicScope`, `currentHops`, `maxHops`, `expirationEpoch`, `isWormholeEligible`, and lightweight 12D `scentVibe` for efficient routing and discovery |
+| 6.6.7 | **Implement `SpatialDecayEnforcer` (Cultural Seed Dispersal)** | Compare origin to current Geohash. If out of bounds, drop the payload but extract `scentVibe` for the `ContextEngine` and `LocalityAgent`, governed by the user's "Exploration Note" persona (e.g. Replicator vs Escapee) |
+| 6.6.8 | **Build `WormholeRelayService`** | Background proxy service that detects `isWormholeEligible` mesh messages. If the carrier device has internet, it anonymously pushes the encrypted blob to the cloud queue on the sender's behalf to bridge geographic gaps |
+| 6.6.9 | **Implement Cloud Queue Self-Destruct & Receipts** | Ensure messages are instantly deleted from Supabase upon recipient download (with a 60-minute pg_cron hard backstop). Route Delivery Receipts (1 check) and Read Receipts (2 checks) back to sender via DTN/Wormhole |
+| 6.6.10 | **Implement Hop Tampering Protection** | Cryptographically sign `expirationEpoch` and `maxHops` with the sender's private key to prevent malicious nodes from resetting hop counts or extending message life in a DDoS attack |
 
 > **LeCun alignment:** The world model must have an accurate "action space" -- knowing which actions are available given current state (including connectivity state). An offline-aware MPC planner is a direct implementation of LeCun's "action-conditioned prediction" where the set of available actions changes with the environment.
 
@@ -1133,6 +1293,39 @@ The Small Language Model (SLM, 1-3B parameters) is NOT the brain -- it's the mou
 
 > **ML Roadmap Reference:** Section 16.2, Roadmap Item #41. The world model is ~20,000x faster than SLM reasoning for the same task (6ms vs. ~125s). The SLM's only job is turning numeric outputs into words. LLM cloud fallback (Gemini) remains available for users without Tier 3 devices or when SLM isn't downloaded.
 
+### 6.8 Intrinsic Curiosity Module (Self-Motivated Exploration)
+
+The current MPC planner explores domains where its variance head reports uncertainty (6.2.9-6.2.11). This is reactive exploration — the planner waits until it knows it doesn't know something. An Intrinsic Curiosity Module (ICM) makes exploration *generative*: the agent actively seeks novelty even in domains where it isn't currently uncertain, because encountering surprising outcomes is itself a learning signal that refines the world model.
+
+**Architecture:** ICM adds a prediction error bonus to the MPC energy function. The ICM learns to predict the feature representation of the user's next state given the current state + action. When the prediction error is HIGH (the agent was surprised), that action had high intrinsic reward — it revealed something genuinely new about the user's world. This bonus decays as the domain becomes familiar.
+
+**Why not replace 6.2.9 (Thompson sampling):** Thompson sampling handles uncertainty within known domains. ICM handles *unknown unknown* exploration — domains the planner hasn't even tried yet. They are complementary, not overlapping.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 6.8.1 | Implement `IntrinsicCuriosityModule`: forward model that predicts `next_state_embedding = f(current_state, action)` using a lightweight MLP (not the full transition predictor). Train on-device during nightly consolidation | New |
+| 6.8.2 | Implement ICM inverse model: `action_prediction = g(current_state, next_state)`. The inverse model learns only features relevant to action outcomes — filtering out environment noise from the prediction error signal | New |
+| 6.8.3 | ICM curiosity bonus: `curiosity_bonus = eta * ||predicted_next_state - actual_next_state||^2`. Add as additive bonus to MPC energy: `effective_energy = predicted_energy - curiosity_bonus`. Eta is a tunable hyperparameter (start: 0.1, learn from outcome data) | Extends Phase 6.1 energy calc |
+| 6.8.4 | Novelty decay: as the agent accumulates outcomes in a domain, the ICM's prediction error for that domain drops → curiosity bonus drops. This naturally terminates exploration of well-understood domains without any hardcoded schedule | New |
+| 6.8.5 | ICM training loop: during nightly consolidation (Phase 1.1C), fine-tune ICM forward + inverse models on the day's episodic memory tuples. ICM is never trained during real-time inference — only offline | Extends Phase 1.1C |
+| 6.8.6 | Episodic logging: log ICM prediction errors as `(state, action, predicted_next, actual_next, error_magnitude)` tuples. High-error domains are surfaced in admin monitoring as "active curiosity frontiers" — areas where the agent is currently learning the most | New |
+| 6.8.7 | Guardrail: ICM curiosity bonus cannot exceed 30% of base energy score. Prevents curiosity from overriding genuine user preference signals (explored novelty is still subject to the energy function's preference model) | Extends Phase 6.2 guardrails |
+
+### 6.9 Memory-Augmented Inference (External Read/Write During Planning)
+
+The MPC planner currently makes all decisions from the 145-155D state vector in working memory. Memory-Augmented Inference adds a differentiable read/write memory bank — a small, fast key-value structure the planner can query during a planning step. This gives the planner access to long-horizon context (episodic patterns from months ago, learned strategies from past situations) without expanding the state vector.
+
+**Relationship to existing memory:** This is NOT a replacement for `EpisodicMemoryStore` (Phase 1.1). The episodic store is the authoritative historical record; this memory bank is a *learned retrieval index* over that store. The planner can query it fast enough to use during real-time inference (<10ms).
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 6.9.1 | Implement `PlannerMemoryBank`: differentiable key-value memory with keys = 32D state embeddings, values = compressed strategy vectors. Capacity: 512 entries on Tier 3, 128 on Tier 2, 32 on Tier 1 | New |
+| 6.9.2 | Memory write protocol: during nightly consolidation, `EpisodicMemoryStore` exports high-salience episodes (defined as: outcome surprise > threshold, or mood valence shift > 0.3 after action) as key-value pairs into the `PlannerMemoryBank` | Extends Phase 1.1C |
+| 6.9.3 | Memory read during planning: at each MPC planning step, the planner queries the memory bank with the current state embedding → retrieves top-K similar past situations → uses retrieved strategy vectors as additive bias in energy scoring. Attention-weighted: closer past situations have higher influence | Extends Phase 6.1 planning loop |
+| 6.9.4 | Memory-augmented transition predictor: when the transition predictor (Phase 5.1) is uncertain (variance head high), memory bank retrieval acts as a fallback: "I've seen a situation like this before — here's what happened" replaces pure model prediction | Extends Phase 5.1 |
+| 6.9.5 | Memory bank expiry: entries older than 90 days are gradually downweighted (exponential decay, half-life 30 days). Entries reinforced by similar subsequent outcomes are upweighted. This gives the planner recency bias without discarding persistent patterns | New |
+| 6.9.6 | Tier gating: memory bank enabled on Tier 2+ devices. On Tier 1 and below, memory-augmented inference is disabled; planner runs in standard ONNX-only mode. Memory bank footprint < 4MB on-device | Uses Phase 7.6 |
+
 ---
 
 ## Phase 7: Orchestrator Restructuring & System Integration
@@ -1140,6 +1333,8 @@ The Small Language Model (SLM, 1-3B parameters) is NOT the brain -- it's the mou
 **Tier:** 2 (Depends on Phase 4 energy function)  
 **Duration:** 6-8 weeks  
 **Dependencies:** Phase 4 minimum, Phases 5-6 for full integration
+
+> **Architectural intent — RuntimeContext pattern:** Phase 7 orchestrator updates should adopt the `TransportRuntimeContext` introduced in Phase 3.7A.5 as the standard mechanism for passing shared runtime state. Where current orchestration lanes accept 15-30 individual parameters (e.g., `incoming_message_runtime_orchestration_lane.dart`'s `startBleInboxProcessing` method), the restructured versions should accept a single `TransportRuntimeContext` (for transport-related orchestration) or a domain-specific context object following the same pattern. This reduces method signature sprawl, makes orchestrator decomposition easier (subsystems share context, not parameter lists), and naturally scopes state ownership. The context pattern is NOT a global singleton — each subsystem gets its own scoped context initialized during `initialize()`.
 
 ### 7.1 Orchestrator Updates
 
@@ -1175,6 +1370,7 @@ Each orchestrator needs world model integration.
 | 7.3.2 | Add world model inference to `DeferredInitializationService` startup sequence | Extends existing |
 | 7.3.3 | Extend `FeatureFlagService` with world model feature flags (energy_function_enabled, transition_predictor_enabled, mpc_planner_enabled) | Extends existing |
 | 7.3.4 | Add world model metrics to `AdminSystemMonitoringService` | Extends existing |
+| 7.3.5 | **Autonomous Macro-News Crawler (Prong 2 Ingestion).** Create a cloud-based crawler that monitors global supply chains, weather APIs, and macro-news events for developments with physical local consequences (e.g., transit strikes, weather shifts, supply shortages). Format these findings as `RawDataPayload` objects and push them to the Prong 2 `POST /runtime/{id}/ingest` endpoint for processing through the Air Gap | New |
 
 ### 7.4 Agent Trigger System (Event-Driven Activation)
 
@@ -1404,6 +1600,28 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 >
 > **Non-negotiable constraint:** Interdisciplinary and creative framing is required for human-centered hypotheses, but production promotion remains evidence-gated and falsification-first.
 
+### 7.10 Subsystem Isolation (Orchestrator Decomposition)
+
+`VibeConnectionOrchestrator` (1000+ lines, 70+ imports, 30+ mutable state variables) is a god object that owns discovery, connection lifecycle, learning insight dispatch, event mode, BLE inbox processing, mesh forwarding, and replay guard — all in one class. This section decomposes it into isolated, independently testable subsystems that communicate through events, not shared mutable state.
+
+**Why now (not Phase 12):** Phase 10.9.12 requires every *subsystem* to auto-create healing cycles and feed break telemetry into learning metrics. If the entire transport/connection layer is one monolithic class, there is no subsystem boundary to attach break detection to. Subsystem isolation is a prerequisite for 10.9.12's universal break-to-learning healing loop, which in turn is a release gate for autonomous adaptation features. Without this decomposition, 10.9.12 cannot be implemented and self-healing remains blocked.
+
+**Relationship to 3.7A:** Phase 3.7A defines the transport interface (how the runtime talks to transports). Phase 7.10 defines the subsystem interface (how the runtime's own concerns are separated). These are complementary: subsystems use `TransportOrchestrator` (3.7A.6) for transport, and `TransportRuntimeContext` (3.7A.5) for shared state.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 7.10.1 | **Define `RuntimeSubsystem` abstract interface.** Methods: `initialize(ctx)`, `shutdown()`, `onEvent(RuntimeEvent)`. Stream: `events` (typed `Stream<RuntimeEvent>`). Each subsystem owns its state, initializes from context, emits events, and receives events from peer subsystems. Subsystems do NOT hold references to each other — communication is event-mediated | New, in `avrai_runtime_os` |
+| 7.10.2 | **Extract `DiscoverySubsystem`** from `VibeConnectionOrchestrator`. Owns: BLE scanning, personality advertisement parsing, bloom filter exchange, discovered node registry. Emits: `PeerDiscovered`, `PeerLost`, `BloomExchangeComplete`. Consumes: `TransportRuntimeContext` for node state. Removes ~200 lines and 8 state variables from the orchestrator | Refactors existing |
+| 7.10.3 | **Extract `ConnectionSubsystem`** from `VibeConnectionOrchestrator`. Owns: connection lifecycle (request, handshake, established, terminated), prekey exchange, session management. Emits: `ConnectionEstablished`, `ConnectionTerminated`, `SessionReady`. Consumes: `PeerDiscovered` events from `DiscoverySubsystem` | Refactors existing |
+| 7.10.4 | **Extract `LearningInsightSubsystem`** from `VibeConnectionOrchestrator`. Owns: AI2AI insight dispatch, deduplication (`_seenLearningInsightIds`), throttling (`_lastAi2AiLearningAtByPeerId`), result collection. Emits: `InsightReceived`, `InsightApplied`. Consumes: `SessionReady` events from `ConnectionSubsystem` | Refactors existing |
+| 7.10.5 | **Extract `EventModeSubsystem`** from `VibeConnectionOrchestrator`. Owns: event proximity mode, event-specific discovery policy, burst scanning. Emits: `EventModeActivated`, `EventModeDeactivated`, `EventProximityUpdate`. Isolated concern that currently interleaves with general discovery | Refactors existing |
+| 7.10.6 | **Build `SubsystemOrchestrator`** that holds `List<RuntimeSubsystem>`, manages lifecycle (`initializeAll`, `shutdownAll`), and routes events between subsystems. The orchestrator is thin — it dispatches events, not logic. Each subsystem is independently restartable (if one crashes, the orchestrator restarts it without affecting others). This is the self-healing surface that 10.9.12 attaches to | New |
+| 7.10.7 | **Wire 10.9.12 break detection per subsystem.** Each `RuntimeSubsystem` registers a break class with the healing loop. When a subsystem's `initialize()` throws, or its event stream errors, or its internal invariants fail, the `SubsystemOrchestrator` creates a healing cycle entry with subsystem identity, failure signature, and remediation action (restart, degrade, alert). This is the concrete implementation target for 10.9.12's "universal break-to-learning healing loop" | Prerequisite for 10.9.12 |
+
+> **Migration path:** The decomposition is incremental. Each subsystem is extracted one at a time from `VibeConnectionOrchestrator`. After extraction, the orchestrator delegates to the subsystem. When all subsystems are extracted, the orchestrator is replaced by `SubsystemOrchestrator`. At no point does the system have two competing implementations — the old orchestrator wraps subsystem calls during transition.
+
+> **Phase 12 alignment:** Phase 12 plans a headless Rust kernel. The subsystem isolation establishes the *logical boundaries* that the Rust kernel will enforce as process boundaries. The Dart subsystem interfaces inform the Rust cognitive syscall API design.
+
 ---
 
 ## Phase 8: Ecosystem Intelligence (AI2AI World Model)
@@ -1435,6 +1653,7 @@ This section operationalizes the always-on research/experiment loop so AVRAI can
 | 8.1.17 | Add federated dream-policy quarantine lane: share only vetted dream-derived candidates (`candidate_conviction` or higher), never raw dream episodes or speculative labels | Extends 1.1E.20, 7.7.16 |
 | 8.1.18 | Add cross-locality dream divergence exchange: publish DP-safe DreamEnv mismatch summaries and block import of dream-derived updates from divergent cohorts until recalibrated | Extends 7.9.44, 10.9.14 |
 | 8.1.19 | Add federated belief-tier consistency checks across `reality_model/universe_model/world_model`; reject updates that attempt tier escalation without dual-key evidence receipts | Extends 1.1E.21, 10.9.21 |
+| 8.1.20 | **Cross-Locality Dream Broadcasting.** Share unproven `dream` tier assumptions across localities via the `FederatedKnowledgeExchange` to test hypothesis boundaries. If a dream fails locally due to specific city constraints (e.g., car-centric sprawl), broadcast it to other nodes with different `CityProfile` attributes (e.g., high walkability) to learn its conditional contextual boundaries rather than discarding it entirely | Extends 5.2.22, 8.1.18 |
 
 ### 8.2 Gradient Bandwidth Budget
 
@@ -1449,6 +1668,27 @@ BLE throughput is ~100KB/s. World model gradients must fit within this constrain
 | 8.2.5 | Test gradient sharing under realistic BLE conditions: multiple peers, interference, partial transfers, reconnections | Integration test |
 
 > **LeCun alignment:** Federated learning in LeCun's framework assumes agents can share learned representations efficiently. The bandwidth constraint is real-world physics that the architecture must respect. Quantized, sparse gradients are standard practice and don't meaningfully degrade convergence.
+
+### 8.2A Connection Capability Model (Declarative AI2AI Permissions)
+
+Current AI2AI permission logic is scattered across `ConnectionOrchestrator`, `DiscoveryManager`, `ConnectionManager`, and various lane files as ad-hoc boolean checks (e.g., "is this peer trusted?", "has the user opted in?", "does the connection have sufficient history?"). As Phase 8 adds richer AI2AI interactions (insight exchange 8.5, group negotiation 8.6, expert discovery 8.4, gradient sharing 8.1), these scattered checks become unmaintainable and error-prone.
+
+A `ConnectionCapabilityProfile` consolidates all permissions for a given AI2AI connection into a single declarative object. The orchestrator asks `canDo(capability)` instead of scattered if-checks, and constraints (rate limits, trust levels, consent gates) are evaluated in one place.
+
+**Why here (not earlier):** The capability model requires knowing what capabilities exist. Phases 8.1-8.6 define the full set of AI2AI interactions. This section defines the permission model that governs them, so it must be designed alongside those interactions.
+
+**Relationship to Air Gap (Decision #25):** The capability model operates at the *connection* level (what can this specific AI2AI connection do?). The Air Gap operates at the *data* level (what can cross the boundary?). They are complementary: a connection might have `gradientSharing` capability granted, but the Air Gap's permeability setting controls what data the gradient actually contains.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 8.2A.1 | **Define `ConnectionCapability` enum.** Values: `personalityInsightExchange`, `gradientSharing`, `expertiseDiscovery`, `groupNegotiation`, `learningInsightSharing`, `meshForwarding`, `organicDiscoverySignal`, `localityUpdate`. Each capability represents a distinct type of AI2AI interaction that requires separate consent and trust evaluation | New |
+| 8.2A.2 | **Define `ConnectionCapabilityProfile` model.** Fields: `peerId`, `granted` (Set), `denied` (Set), `constraints` (Map from capability to constraint). Method: `canDo(capability)` — checks granted/denied sets, evaluates time-based and rate-based constraints. Profiles are persisted per peer and evolve as trust builds | New |
+| 8.2A.3 | **Define `CapabilityConstraint` model.** Fields: `maxPerHour` (rate limit), `requiresTrustLevel` (minimum Signal session age or interaction count), `requiresConsent` (user must explicitly opt in), `expiresAt` (temporary grants). Constraints are composable: a capability can have multiple constraints that must all pass | New |
+| 8.2A.4 | **Build `ConnectionCapabilityService`** that evaluates capability requests against profiles. Integrates with: `SignalProtocolService` (session age for trust), consent infrastructure (Phase 2.1), `AirGapPermeabilityService` (Phase 2.6 permeability state), and `BatteryAdaptiveBleScheduler` (resource availability). Returns `CapabilityDecision` (granted, denied with reason, deferred until condition met) | New |
+| 8.2A.5 | **Migrate existing scattered permission checks** to use `ConnectionCapabilityService.canDo()`. Target locations: `ConnectionOrchestrator` trust checks, `DiscoveryManager` filtering, `AI2AIProtocol` message validation, BLE inbox processing guards. This consolidation makes it possible to audit all AI2AI permissions in one place | Refactors existing |
+| 8.2A.6 | **Wire capability evolution into learning loop.** As AI2AI interactions produce positive outcomes (learning insights that improve accuracy, gradient sharing that improves model quality), capability constraints relax (trust level increases, rate limits expand). Negative outcomes (poisoned gradients detected, trust violations) tighten constraints. The energy function (Phase 4) can learn which capability configurations produce the best outcomes | Feeds Phase 4, extends Phase 8.3 |
+
+> **Intelligence-first alignment (Decision #1):** The capability model is a *governance structure*, not a scoring formula. It answers "is this interaction allowed?" not "how good is this interaction?" The energy function (Phase 8.3.1) answers the scoring question. The capability model provides the constraint space within which the energy function operates — similar to how MPC guardrails (Phase 6.2) constrain the planner.
 
 ### 8.3 AI2AI Network Intelligence
 
@@ -1574,6 +1814,23 @@ These notes document how locality happiness maps to quantum computing structures
 > **Doors philosophy:** Locality happiness is the ecosystem-level measure of "are we opening doors well?" A high-happiness locality means agents in that area are successfully guiding users to meaningful connections. A low-happiness locality means doors are being missed. The advisory system ensures no locality stays stuck -- it gets help from places where doors are being opened successfully. This is the ecosystem version of "being a good key."
 
 > **Agent happiness model:** The agent's happiness comes from two sources: (1) deeply understanding the user (learning satisfaction), and (2) successfully guiding the user to real-world activities they enjoy (fulfillment satisfaction). Locality happiness aggregates both: if agents are learning well AND users are following through on suggestions, the locality thrives. If not, the advisory system intervenes.
+
+### 8.10 Federated Active Learning
+
+Current federated learning (Phase 8.1) synchronizes model gradients from all devices with equal weight — every device contributes to every training round. This is data-efficient but not information-efficient: most gradients are redundant (device 500 saw the same pattern as device 499). Federated Active Learning (FAL) inverts this: devices selectively share only the observations that are most informative to the global model — the uncertain edge cases, the novel behavioral patterns, the distribution tails.
+
+**Why FAL belongs in Phase 8:** FAL is a protocol extension to the federated learning infrastructure (8.1). It requires the energy function (Phase 4) and transition predictor uncertainty head (Phase 5.1.4) already be operational — devices need to know *which of their observations are surprising* before they can decide which ones to contribute. FAL is thus naturally after Phases 4 and 5 are complete.
+
+**Privacy invariant:** FAL does not change WHAT is shared — only WHICH rounds a device participates in. Only DP-protected gradients are shared; raw observations stay on-device per Phase 8.1's invariants.
+
+| Task | Description | Extends |
+|------|-------------|---------|
+| 8.10.1 | **Implement `ActiveLearningSelector` on-device.** Before each federated round, the device evaluates its recent episodic buffer: compute ICM prediction error (from Phase 6.8) for each recent observation. Observations with error above `active_learning_threshold` are flagged as "high information" candidates for gradient contribution | Extends Phase 6.8, 8.1 |
+| 8.10.2 | **Round eligibility signal.** Device reports a scalar "information score" to the federated aggregation server (Phase 8.1.3) at the start of each round: `score = max(ICM_errors_in_buffer)`. Server selects the top-K highest-information devices for this round (K configurable, default 20% of connected devices). Low-information devices skip the round — their gradients would be redundant | Extends Phase 8.1.3 |
+| 8.10.3 | **Server-side active selection logic.** Aggregation server maintains a device contribution history: how often has this device been selected, what was its contribution quality (measured by gradient diversity vs. mean gradient)? Devices that have been consistently selected are temporarily down-weighted to ensure geographic and demographic diversity in training — preventing the federated model from overfitting to heavy-usage users | Extends Phase 8.1.3 |
+| 8.10.4 | **Convergence acceleration tracking.** Track model convergence rate with FAL vs. standard federated learning across both synthetic swarm data and real beta users. FAL should converge faster per gradient update (more informative) even if slower per wall-clock round (fewer participants). Log convergence metrics to admin dashboard | New |
+| 8.10.5 | **Minimum participation floor.** Every device participates in at least 1 federated round per 30 days, regardless of its information score. This prevents low-activity users from permanently drifting out of the global model's training distribution | Extends Phase 8.1.4 |
+| 8.10.6 | **Locality-aware active selection.** Federated aggregation ensures that active device selection is geographically balanced: no single locality contributes more than 30% of any training round's devices (prevents urban center overfitting). Locality balance is enforced at the server; devices don't need to know about each other | Extends Phase 8.9 locality system |
 
 ---
 
@@ -1901,6 +2158,10 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.23 | **Cross-layer correlation + SLO burn-rate command center.** Add correlation views that join user/business KPI shifts to runtime/model changes, with per-domain SLOs, burn-rate forecasting, and release/rollback risk scoring | 7.3.4, 8.8, 9.2.6, 10.9.3, 10.9.9 |
 | 10.9.24 | **Policy/lineage/SOC observability hardening.** Add live allow/deny/defer policy reasoning, immutable data provenance per decision, privacy SOC leak/anomaly detection, and incident-grade alert intelligence with runbook linkage | 2.1, 2.5, 7.7, 10.9.9, 10.9.10, 10.9.20 |
 | 10.9.25 | **Digital twins + intervention console.** Add entity twins (user/business/universe/world/reality model) with expected transitions, intervention controls (pause/safe-mode/human-review), and auditable control actions executed only via backend control plane | 6.1, 7.7, 7.9, 10.9.11, 10.9.18 |
+| 10.9.26 | **Immutable audit log persistence.** `AuditLogService` currently logs to `developer.log()` (console only). Implement persistent, tamper-evident audit storage: append-only table in Supabase with hash-chained entries (each entry includes hash of previous entry), integrity verification on read, retention policy (minimum 90 days), and admin query interface. Migrate all existing audit log calls to persistent storage | 6.10.5, 2.7.1 |
+| 10.9.27 | **Engine-layer security boundaries.** Add security infrastructure to engine packages (`avrai_ai`, `avrai_knot`, `avrai_quantum`, `reality_engine`): operation audit logging (what decisions were made, on what inputs, logged to `AuditLogService`), computation budgets (max iterations, max memory, timeout enforcement per operation), and input validation beyond clamping (reject malformed data with structured errors). The engine must not trust the runtime implicitly — defense in depth applies at every layer | 3.10.5, 5.2.25 |
+| 10.9.28 | **BLE anti-spoofing hardening.** Device discovery currently uses replay hash deduplication and Signal identity binding but lacks challenge-response authentication. Implement: challenge-response during BLE discovery handshake (before any data exchange), rotating BLE advertisement identifiers (prevent device tracking across sessions), and binding BLE discovery identity to Signal Protocol identity key (a BLE device must prove it controls the claimed identity key before session establishment) | 2.5.4, 8.2 |
+| 10.9.29 | **Zero trust compliance dashboard.** Admin-facing dashboard showing real-time zero trust posture: credential rotation status (which credentials are overdue), certificate pin validation results, continuous verification health, action gateway statistics (allow/deny/escalate rates), audit log integrity verification results, and red-team lane status. Connects to 10.9.22 admin command center | 10.9.22, 2.7.1, 2.8.1, 6.10.1 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -2293,7 +2554,52 @@ These represent a DEEPER level of quantum integration where the world model itse
 
 **Key architectural principle:** Keep intelligence functions PURE (no side effects, no stateful dependencies). ONNX models naturally enforce this. Pure functions are trivially convertible to quantum circuits. This is why the current approach is correct -- build classical, keep it clean, and the quantum migration will be a backend swap when hardware arrives.
 
-### 11.5 Obsolete Legacy Phases (Removed)
+### 11.5 Causal Inference Engine (Research Track)
+
+The world model today is correlational: it learns that "users who visit coffee shops on rainy mornings tend to like jazz events." It does NOT know whether the coffee shop causes the jazz preference, or whether both are caused by a third factor (introvert personality). A Causal Inference Engine adds do-calculus reasoning — the ability to distinguish correlation from causation in longitudinal behavioral data.
+
+**Why this matters:** Recommendations built on correlations break when users' circumstances change (moved to a new city, had a baby, career change). Causal models understand that "the coffee shop didn't cause the jazz preference — introvert personality caused both" and can still recommend jazz in the new city even without coffee shops. Correlation-based models fail at these life transitions.
+
+**When to build this:** After 12+ months of real user behavioral data. Causal inference requires observational longitudinal data with enough diversity to disentangle confounders. Synthetic swarm data (v0.3 Sprint) is insufficient — it doesn't have the natural variation of real-world life events.
+
+| Task | Description |
+|------|-------------|
+| 11.5.1 | **Structural Causal Model (SCM) for personality dimensions.** Define the causal graph: which personality dimensions causally influence which behavioral outcomes? Which environmental factors confound the relationship? Use expert knowledge (behavioral science, psychology) to initialize the graph structure; use data to estimate edge strengths | Research gate: 12+ months of real user data |
+| 11.5.2 | **Causal discovery from episodic data.** Apply constraint-based causal discovery (PC algorithm or FCI) to longitudinal episodic memory tuples. Identify which features in the state vector have genuine causal relationships vs. spurious correlations. Requires large-scale data analysis (minimum 10,000 users, 6+ months each) | Research gate: large user base + data volume |
+| 11.5.3 | **Intervention-aware recommendation.** Add a causal reasoning layer to the MPC planner (Phase 6.1): for high-stakes recommendations (a user considering a major life change), use do-calculus to compute `P(outcome | do(action))` rather than `P(outcome | action)`. The do-calculus version correctly accounts for confounders and gives better outcome predictions for novel situations | Extends Phase 6.1 |
+| 11.5.4 | **Life transition detection.** Build a trigger that detects significant life transitions from the behavioral time series (move to new city, new relationship, career change, new health diagnosis) — characterized by a sudden shift in the full state vector. On transition detection, temporarily increase the weight of causal reasoning vs. correlational reasoning for 90 days post-transition | New |
+| 11.5.5 | **Causal feature importance for explainability.** When the SLM (Phase 6.7) generates a recommendation explanation, optionally include causal attribution: "I recommend this because your love of solitude (a personality trait that's caused your past preferences) suggests you'll enjoy this solo experience" vs. "I recommend this because you liked similar places" (correlation). Admin dashboard: track which explanation type users find more accurate | Extends Phase 6.7, Phase 4.6 |
+
+### 11.6 Continual Learning — Catastrophic Forgetting Prevention (Research Track)
+
+Current model updates via nightly consolidation and federated learning (Phase 1.1C, Phase 8.1) treat training as episodic batch updates. This risks catastrophic forgetting: updating the transition predictor on new data can degrade its performance on old data if the data distributions differ. As AVRAI's user base grows and diversifies (new cities, new cultures, new use patterns), catastrophic forgetting becomes a real risk.
+
+**Current state:** Episodic memory (Phase 1.1) stores the historical record and prevents forgetting at the data level. But the ONNX models (energy function, transition predictor) are retrained periodically and don't have built-in forgetting prevention. This section adds that protection.
+
+| Task | Description |
+|------|-------------|
+| 11.6.1 | **Elastic Weight Consolidation (EWC) for ONNX model updates.** When fine-tuning energy function and transition predictor on new data, apply EWC: penalize changes to weights that are important for performance on old data. Fisher information matrix (estimated from old data) determines which weights to protect. This is the standard continual learning approach for preventing forgetting | Research gate: production ONNX models stable (Phase 4, 5 complete) |
+| 11.6.2 | **Progressive neural networks for user cohort expansion.** When AVRAI expands to a genuinely new cultural context (first deployment in a new country), freeze existing model columns and add lateral connections to new columns that handle the new distribution. Old columns = old cultures intact; new column = new culture learned. Gradually transfer knowledge between columns as the model encounters users at the intersection | Research gate: multi-cultural user base |
+| 11.6.3 | **Forgetting detection metric.** Measure catastrophic forgetting as part of the model update evaluation pipeline: before publishing any model update, run the full evaluation suite on a held-out "old data" benchmark. If performance on old data degrades by more than threshold (5%), block the update and investigate. This makes forgetting detectable rather than silent | Extends Phase 7.7 model evaluation |
+| 11.6.4 | **Memory replay buffer for continual training.** When training on new data, interleave old representative examples (sampled from episodic memory aggregates) to prevent forgetting. The replay buffer ensures the model never trains exclusively on the newest data and always "remembers" earlier patterns. Buffer size: ~10% of each training batch | Extends Phase 8.1 federated training |
+
+### 11.7 Neuro-Symbolic Integration — Explainable Reasoning Layer (Research Track)
+
+The current world model is end-to-end neural: it learns patterns from data but cannot explain its reasoning in human-verifiable logical terms. Neuro-Symbolic Integration adds a symbolic reasoning layer that operates in parallel with the neural model — providing logical, rule-based reasoning that can be audited, corrected, and explained.
+
+**The complementarity:** Neural networks handle pattern recognition from high-dimensional behavioral data (Phase 3). Symbolic reasoners handle logical rules, constraints, and deterministic relationships (e.g., "this spot is closed on Mondays — never recommend it on Mondays"). Neuro-Symbolic integration means BOTH are operating and their outputs are reconciled.
+
+**Why this belongs in Phase 11:** Building the symbolic reasoner requires the complete ontology of AVRAI's domain (all entity types, all action types, all relationships). That ontology only becomes clear after Phases 1-10 have crystallized the full feature set. The neuro-symbolic layer is thus a post-production addition that improves the mature system.
+
+| Task | Description |
+|------|-------------|
+| 11.7.1 | **Define AVRAI symbolic ontology.** Formalize the complete domain as first-order logic predicates: `isOpen(spot, time)`, `isAffordable(spot, user)`, `hasConflict(event_a, event_b)`, `isCompatible(user_a, user_b)`, `violatesSafety(spot, user_age)`. These predicates represent HARD constraints that the neural model can never violate | Research gate: Phases 1-10 feature set stable |
+| 11.7.2 | **Symbolic constraint enforcement layer.** Wrap the MPC planner's candidate generation (Phase 6.1) with a symbolic filter: before scoring candidates with the energy function, eliminate all candidates that violate any symbolic constraint. Neural network sees only the constraint-satisfying candidates. This replaces ad-hoc guardrails (Phase 6.2.1-6.2.5) with formal symbolic verification | Extends Phase 6.1, 6.2 |
+| 11.7.3 | **Neural-symbolic reconciliation.** When the energy function (neural) and the symbolic reasoner disagree (neural assigns low energy to a spot that satisfies all symbolic constraints; symbolic assigns constraint violation to a spot the neural model ranked highly), implement a reconciliation protocol: symbolic violations are ALWAYS enforced; neural disagreements with symbolic recommendations are flagged for admin review | New |
+| 11.7.4 | **Explainability via symbolic trace.** For any recommendation, generate a symbolic trace: "I recommended this spot because: (a) it matches your energy preference [neural], (b) it is open during your typical evening windows [symbolic], (c) it has no safety flags [symbolic], (d) it is compatible with your current affective state [neural+symbolic]." The trace makes every recommendation fully auditable | Extends Phase 4.6 explainability, Phase 6.7 SLM |
+| 11.7.5 | **Learned symbolic rules from behavioral data.** Use inductive logic programming (ILP) to DISCOVER new symbolic rules from episodic data: "users who visit spots with these features on these days tend to have significantly better outcomes." Discovered rules that are statistically robust become new symbolic predicates in the ontology. This makes the symbolic layer self-improving | Research gate: large episodic data volume |
+
+### 11.8 Obsolete Legacy Phases (Removed)
 
 These legacy phases are explicitly not carried forward:
 
@@ -2303,6 +2609,272 @@ These legacy phases are explicitly not carried forward:
 | 24 | Web App-Phone LLM Sync Hub | Invalidated by on-device world model. Small on-device models eliminate the need for syncing LLM updates via a web intermediary. |
 | 11 | User-AI Interaction Update (old) | Architecturally superseded by world model inference path (Phase 3). The layered ONNX + Gemini approach in `InferenceOrchestrator` is kept but now serves the world model. |
 | 20 | AI2AI Network Monitoring (premature) | Deferred to Phase 8.3. Monitoring a network that doesn't propagate correctly is waste. Fix propagation first (Phase 8.1-8.2), then monitor. |
+
+---
+
+## Phase 12: AVRAI OS — Cognitive Kernel, Platform Adapters & External API
+
+**Tier:** Post-Production (after beta validates product-market fit)  
+**Duration:** 24-40 weeks total (7 sections, sequentially gated)  
+**Dependencies:** Phases 1-8 complete; beta has validated core loop (on-device personality + AI2AI + real-world discovery); Phase 9 monetization model established; Phase 12.4 (reality model baseline) requires swarm simulation from v0.3 Sprint  
+**Why this phase:** Beta proves users want the product. Phase 12 makes AVRAI infrastructure that other software depends on — the mandatory mediation layer for AI cognition on any device. This is the transition from "a sophisticated Flutter app" to "a cognitive OS that AI companies integrate with."  
+**North Star:** AVRAI's Cognitive Kernel runs headless on any device (phone, home server, Raspberry Pi, cloud container). Every AI company and third-party developer that wants longitudinal behavioral context, local ground truth, or real-world action grounding calls AVRAI's stable cognitive syscall API. The Flutter app is one shell among many. The OS is the product.  
+**Rationale doc:** `docs/plans/rationale/PHASE_12_OS_RATIONALE.md`
+
+---
+
+### 12.1 Cognitive Kernel Extraction
+
+**Duration:** 6-8 weeks  
+**Goal:** Headless Rust kernel process that runs independently of Flutter. Flutter becomes a client.  
+**Beta relationship:** NOT required for beta. Beta behavioral data informs kernel API design.
+
+| Task | Description |
+|------|-------------|
+| 12.1.1 | Define kernel process boundary: what owns agent registry, AI2AI IPC table, cognitive resource scheduler |
+| 12.1.2 | Promote kernel API to stable versioned Rust contract: `perceive`, `plan`, `commit`, `observe`, `recover` (v1) |
+| 12.1.3 | Extract agent registry from GetIt DI container to kernel-owned process state |
+| 12.1.4 | Extract AI2AI IPC table (anonymous communication, trust network, node manager) to kernel-owned process |
+| 12.1.5 | Extract cognitive resource scheduler (inference queue, battery negotiation, BLE mesh state) to kernel |
+| 12.1.6 | Kernel integration test: kernel starts, accepts connections, runs inference, processes AI2AI messages — without Flutter process running |
+| 12.1.7 | Flutter app refactored to call kernel API via method channel / FFI — not import runtime packages directly |
+| 12.1.8 | Kernel self-healing: kernel restart must not lose agent state (durable state checkpoint before any restart) |
+
+**Gate to 12.2:** Headless integration test passes. Flutter app operates correctly as kernel client.
+
+---
+
+### 12.2 Platform Adapters
+
+**Duration:** 4-6 weeks  
+**Goal:** Thin native shim per platform that holds hardware capability grants and relays them to the kernel.
+
+| Task | Description |
+|------|-------------|
+| 12.2.1 | **Android adapter**: Bound service declared as `:avrai_runtime` in `AndroidManifest.xml`. Real OS process with own PID. AIDL/Binder IPC to kernel. Holds BLE + NNAPI + background execution grants. |
+| 12.2.2 | **iOS adapter**: BGTaskScheduler extension + XPC service. Holds CoreBluetooth + CoreML + background execution grants. iOS process isolation via XPC. |
+| 12.2.3 | **Linux/macOS adapter**: systemd (Linux) / launchd (macOS) daemon. Holds network + GPU/CPU grants. Packaging: `.service` unit file + install script. Primary path for Raspberry Pi / home server deployment. |
+| 12.2.4 | **WASM adapter**: Kernel compiled to WebAssembly. JavaScript/TypeScript bindings via wasm-bindgen. Primary path for browser and web shell environments. |
+| 12.2.5 | Adapter contract test suite: each adapter must pass all kernel API compatibility tests before merge. |
+| 12.2.6 | Adapter isolation test: adapter process crash must not corrupt kernel state. Kernel restarts cleanly. |
+
+**Gate to 12.3:** All target platform adapters pass contract test suite.
+
+---
+
+### 12.3 Cognitive Syscall API & Permission Model
+
+**Duration:** 4-6 weeks  
+**Goal:** Stable versioned API external callers can depend on. User-controlled permission model for what each caller can access.
+
+#### 12.3.1 Cognitive Syscall Table (v1)
+
+The five core syscalls, typed and versioned:
+
+```
+perceive(context: PerceptionRequest) → StateSnapshot
+  - Input: sensor context, location context, time context
+  - Output: current world model state snapshot for this agent
+  - Scope: local to calling agent's own state
+
+plan(goal: PlanningRequest) → ActionSequence
+  - Input: goal descriptor, horizon, constraints
+  - Output: MPC-planned action sequence with energy scores
+  - Scope: local planning only; no external data egress
+
+commit(action: CommitRequest) → OutcomeReceipt
+  - Input: chosen action from plan output
+  - Output: outcome receipt with episodic tuple ID
+  - Side effect: writes episodic tuple to memory store
+
+observe(event: ObservationRequest) → EpisodicEntry
+  - Input: observed event (real-world signal, AI2AI signal, etc.)
+  - Output: episodic entry written to memory
+  - Side effect: may trigger personality evolution cascade
+
+recover(incident: RecoveryRequest) → HealingState
+  - Input: incident descriptor (break type, severity, context)
+  - Output: healing state machine entry, recovery action scheduled
+```
+
+| Task | Description |
+|------|-------------|
+| 12.3.1 | Implement cognitive syscall table as stable Rust API (v1) with typed request/response structs |
+| 12.3.2 | Cognitive capability grant model: define capability classes (personality_context, reality_model, action_grounding, inference_routing) |
+| 12.3.3 | User-facing consent UI: "App X requests access to your personality context" — per-capability, per-app consent screen |
+| 12.3.4 | Permission enforcement at API boundary: requests without consent rejected with `PermissionDenied` |
+| 12.3.5 | External caller authentication: API key + device attestation for production; sandbox mode for development |
+| 12.3.6 | Rate limiting and abuse prevention per external caller (per-minute, per-day caps, circuit breaker) |
+| 12.3.7 | API versioning contract: v1 API must not break without a v2 migration path and deprecation period |
+
+**Gate to 12.4:** Syscall API passes contract tests. Permission model enforced. At least one external test caller successfully authenticated and rate-limited.
+
+---
+
+### 12.4 Reality Model Baseline
+
+**Duration:** 2-4 weeks  
+**Goal:** Energy function and transition predictor have a non-empty baseline before the external API is opened. API returns meaningful output for zero-user installations.  
+**Dependency:** v0.3 Synthetic Swarm Sprint (NYC/Denver/Atlanta simulation) must be complete.
+
+| Task | Description |
+|------|-------------|
+| 12.4.1 | Run NYC/Denver/Atlanta swarm simulation to completion; validate output quality against defined behavioral realism criteria |
+| 12.4.2 | Fine-tune energy function ONNX on swarm simulation data (VICReg training pipeline from Phase 4) |
+| 12.4.3 | Fine-tune transition predictor ONNX on swarm simulation data (training pipeline from Phase 5) |
+| 12.4.4 | Package baseline model weights (energy function + transition predictor) for distribution with OS |
+| 12.4.5 | Cold-start API test: brand-new installation with zero real user data returns plausible (not garbage) outputs from reality model API |
+| 12.4.6 | Baseline quality gate: API responses for sampled queries must score above minimum plausibility threshold before 12.5 opens |
+
+**Gate to 12.5:** Cold-start API test passes. Baseline quality gate passes.
+
+---
+
+### 12.5 External API Surface
+
+**Duration:** 6-8 weeks  
+**Goal:** Four API products that external AI companies and developers can integrate with.  
+**Target integrators:** AI companies (OpenAI, Anthropic, Perplexity, Google), healthcare apps, EdTech, enterprise SaaS, wearable platforms.
+
+#### API Products
+
+**Context Enrichment API** — for AI companies wanting personalization without storing raw data  
+- Returns: consent-gated personality vector summary, life context, behavioral pattern fingerprint  
+- Privacy guarantee: all outputs are locally computed, DP-anonymized before egress; raw behavioral data never leaves device  
+- Value: AI responses become dramatically more relevant without the AI company needing to surveil the user  
+
+**Reality Model API** — for AI companies wanting to eliminate local hallucination  
+- Returns: vibe-matched local place/event/community recommendations grounded in real behavioral data  
+- Value: eliminates the "bad local recommendations" failure mode that plagues all cloud AI  
+- Graceful degradation: falls back to external data sources (Google Places, Eventbrite) when local behavioral signal is thin  
+
+**Action Grounding API** — for AI companies wanting to convert recommendations to real-world outcomes  
+- Input: AI company recommendation payload (place, event, connection, action)  
+- Output: AVRAI handles timing, social connection via AI2AI mesh, reality validation, outcome feedback loop  
+- Value: AI companies go from "recommendation stopped at screen" to "recommendation produced measurable real-world outcome"  
+
+**Inference Routing API** — for cost reduction and quality routing  
+- Routes: simple/personal queries → on-device model (zero cost, private); complex reasoning → caller-specified cloud provider; web-grounded queries → Perplexity-style retrieval  
+- Value: AI companies only receive queries they're actually good at; users get faster, cheaper, more private responses for routine tasks  
+
+| Task | Description |
+|------|-------------|
+| 12.5.1 | Context Enrichment API: implement, consent-gate, DP-anonymize, version |
+| 12.5.2 | Reality Model API: implement with external data source fallback layer |
+| 12.5.3 | Action Grounding API: implement with AI2AI mesh integration and outcome receipt |
+| 12.5.4 | Inference Routing API: implement routing logic with provider configuration |
+| 12.5.5 | API versioning and backward compatibility contract (additive-only changes within a major version) |
+| 12.5.6 | Developer portal: documentation, sandbox environment, rate limit tiers, usage dashboard |
+| 12.5.7 | API integration test suite: end-to-end test for each API product with a simulated external caller |
+
+**Fifth API Product: Local App Plugin Framework** — for apps already installed on the device that want to contribute behavioral signal INTO the reality model and receive enriched context back. While the four APIs above serve external cloud services calling AVRAI, the Plugin Framework serves local apps running on the same device.
+
+**The core idea:** Any app on the user's device — health apps, calendar apps, smart home apps, habit trackers, IoT controller apps — can register as an AVRAI plugin. Data flows in both directions through the Air Gap (see Section 3.9.7, Phase 12.8): the app contributes raw behavioral signals inward; the AVRAI cognitive kernel returns enriched context outward. The Air Gap (TupleExtractionEngine) handles all privacy transformation — apps never get access to the raw reality model, and AVRAI never stores raw app data.
+
+**The gas/liquid/solid model governs this two-way flow.** See Air Gap Privacy State Model documentation in Phase 2 and philosophy documentation.
+
+| Task | Description |
+|------|-------------|
+| 12.5.8 | **Plugin manifest format.** Define a signed JSON manifest that local apps submit to register as AVRAI plugins: (a) app bundle ID + signature, (b) data contribution declaration (what behavioral signals the app wants to push through the Air Gap), (c) context subscription declaration (what enriched context the app wants to receive back), (d) user consent scope required | New |
+| 12.5.9 | **Plugin registration flow.** On-device: user sees "App X wants to connect to your AVRAI agent" consent prompt — per-app, per-capability. User controls which apps can contribute data and which can receive enriched context. Consent stored in `PermissionModel` (Phase 12.3.2) alongside external API permissions | Extends Phase 12.3.3 consent UI |
+| 12.5.10 | **Inbound data pipeline (app → Air Gap → reality model).** Registered apps can push `RawDataPayload` objects to the kernel via local IPC (AIDL on Android, XPC on iOS, named pipe on Linux). All inbound payloads pass through `TupleExtractionEngine` — raw data is transformed to semantic tuples and destroyed. Tuples are written to episodic memory. No plugin ever bypasses the Air Gap | Extends `TupleExtractionEngine`, `AirGapContract` |
+| 12.5.11 | **Outbound enriched context pipeline (reality model → app).** Apps that have subscribed to enriched context receive AVRAI OS outputs via the kernel's local IPC: current affective state (VAD, if user consented), behavioral pattern fingerprint (DP-anonymized summary), current recommended action category, and next-session timing prediction. All outputs are locally computed — no server involved | Extends Phase 12.3 syscall API |
+| 12.5.12 | **Plugin capability classes.** Define what different class tiers of plugins can access: (a) **Observer** — can contribute behavioral signals in, no enriched context out; (b) **Enriched** — can contribute and receive enriched context; (c) **Actuator** — can also trigger AVRAI cognitive actions (e.g., a smart home app that can instruct the agent to "open a door for a new activity" based on home state). Actuator class requires highest user consent level | New |
+| 12.5.13 | **IoT / smart home plugin examples.** Implement reference plugins for: (a) smart home devices (home state changes as behavioral signals — "user turned on reading lamp at 9pm" becomes a routine pattern), (b) wearable health apps (physiology as VAD input per Phase 3.9), (c) calendar apps (schedule context as temporal features). These demonstrate the plugin framework and provide out-of-box integrations | New |
+| 12.5.14 | **Plugin SDK for developers.** Ship a plugin SDK (included in Phase 12.7 SDK packages) that makes it trivial to build AVRAI OS plugins. SDK handles manifest signing, IPC setup, payload formatting, and Air Gap compliance. Plugin developers never write low-level IPC or privacy transformation code | Extends Phase 12.7.1-12.7.2 |
+
+**Gate to 12.6:** All five API surfaces (including Plugin Framework) pass integration test suite. Developer portal live with documentation.
+
+---
+
+### 12.6 Multi-Device / Headless Runtime
+
+**Duration:** 4-6 weeks  
+**Goal:** Kernel runs without UI on any target device. Home server, cloud, and web shell paths operational.
+
+| Task | Description |
+|------|-------------|
+| 12.6.1 | Headless mode: `avrai_runtime --headless` starts kernel, joins AI2AI mesh, runs world model, exposes API — no UI required |
+| 12.6.2 | **Home server / Raspberry Pi deployment**: systemd service + bash install script + apt/brew package. Tested on Raspberry Pi 4 (4GB) and a Linux x86 box. |
+| 12.6.3 | **Docker container image**: OCI-compliant container with kernel + Linux adapter. Tested on Docker Desktop and cloud container services (AWS ECS, GCP Cloud Run). |
+| 12.6.4 | **Web shell**: Flutter Web or React frontend consuming WASM kernel via same cognitive syscall API. Demonstrates device portability. |
+| 12.6.5 | CLI toolset: `avrai status`, `avrai logs`, `avrai test-connection`, `avrai reset` — for developers and server operators |
+| 12.6.6 | Multi-device personality sync (extends Phase 7.8 for OS-level sync): when same user has kernel running on phone + home server, personality state is reconciled via encrypted sync |
+| 12.6.7 | Headless regression test suite: all kernel API tests run headless without Flutter |
+
+**Gate to 12.7:** Headless test suite passes on Linux x86, Raspberry Pi, and Docker. Web shell connects to WASM kernel successfully.
+
+---
+
+### 12.7 Third-Party SDK & Distribution
+
+**Duration:** 4-6 weeks  
+**Goal:** Published SDK packages and distribution formats that make AVRAI OS accessible as infrastructure.
+
+#### Packaging & Distribution Formats (Complete Reference)
+
+| Format | Target Audience | Distribution Channel |
+|--------|----------------|---------------------|
+| **Dart package** | Flutter/Dart app developers building on AVRAI's OS layer | pub.dev |
+| **Kotlin/Android library** | Android-native developers | Maven Central |
+| **Swift Package** | iOS/macOS native developers | Swift Package Manager / CocoaPods |
+| **Rust crate** | Systems/server developers integrating kernel directly | crates.io |
+| **Python bindings** | AI company server-side integration (most common for ML teams) | PyPI |
+| **gRPC .proto definitions** | Language-agnostic integration (any language with gRPC support) | GitHub + docs portal |
+| **Docker OCI container** | Cloud/enterprise deployment, CI/CD, self-hosted | Docker Hub + GitHub Container Registry |
+| **systemd service + install script** | Linux home server / Raspberry Pi self-hosted | GitHub releases + apt/brew |
+| **WASM module + JS bindings** | Browser and JavaScript/TypeScript environments | npm |
+| **Open-source community edition** | Developers, researchers, civic applications — no commercial API access | GitHub (Apache 2.0) |
+
+| Task | Description |
+|------|-------------|
+| 12.7.1 | Mobile SDK: Dart package (pub.dev), Kotlin AAR (Maven Central), Swift Package (SPM). Wraps kernel API with platform-native ergonomics. |
+| 12.7.2 | Server SDK: Rust crate (crates.io) + Python bindings via PyO3 (PyPI). Primary integration path for AI company server-side use. |
+| 12.7.3 | gRPC service definition: `.proto` file defining all four external APIs. Language-agnostic. Published to docs portal + GitHub. |
+| 12.7.4 | npm/WASM package: JavaScript/TypeScript bindings for WASM kernel. Published to npm. |
+| 12.7.5 | Docker image: published to Docker Hub + GHCR. Semantic versioned. Automated build on release. |
+| 12.7.6 | Open-source community edition: headless runtime published as Apache 2.0. Includes baseline model weights. Excludes proprietary API keys and commercial network access. |
+| 12.7.7 | Partner onboarding program: application process, sandbox access, SLA tiers, commercial licensing |
+| 12.7.8 | Revenue model implementation (commercial API): per-call pricing for Context Enrichment, Reality Model, and Action Grounding APIs. Free tier for developers. |
+| 12.7.9 | SDK quality gate: each SDK must have automated integration tests that run against the kernel API on every release |
+
+**Gate to Phase 12 complete:** All SDK formats published. At least one external partner integrated and live. Revenue model implemented and tested.
+
+---
+
+### 12.8 Physical-to-Digital Identity Matching (Long-Term Opt-In)
+
+**Tier:** Post-production research. NOT required for Phase 12 complete. Gate is user demand + ethical review.  
+**Philosophy:** Humans occupy both physical and digital space. AVRAI's reality model knows the digital person deeply but is blind to the physical. This section adds an optional, fully opt-in bridge that maps a user's physical appearance to their digital presence — enabling local AI2AI discovery by physical proximity rather than digital proximity alone.
+
+**What this IS:** A biometric embedding (face vector) stored exclusively on-device, never uploaded, used only for local AI2AI matching. When two devices are physically proximate, their kernels can optionally exchange opaque embeddings to check if their users have met before or are likely compatible — without either party learning who the other is until both consent to mutual introduction.
+
+**What this IS NOT:** Surveillance, cloud face recognition, or any form of identification without consent. No raw image ever crosses the Air Gap. The embedding is a mathematical artifact that cannot be reversed to reconstruct the face. The user can revoke at any time by solidifying their Air Gap to "solid" state around physical identity.
+
+| Task | Description |
+|------|-------------|
+| 12.8.1 | **On-device biometric embedding pipeline.** User opts in via explicit consent screen. Device camera captures enrollment frames (minimum 20 frames, varied lighting). A local biometric model (FaceNet or MobileNetV3, running fully on-device) produces a 128D face embedding. Raw frames destroyed immediately after embedding computation — Air Gap enforced | New. Gate: user opt-in + ethical review |
+| 12.8.2 | **Embedding encryption and storage.** Face embedding stored in encrypted on-device secure enclave (iOS Secure Enclave / Android Keystore). The embedding key is derived from the user's device-bound key — the embedding cannot be extracted without the device + biometric unlock. Server never sees the embedding | New |
+| 12.8.3 | **Physical proximity matching via AI2AI.** When two consenting devices are within BLE range, their AI kernels can optionally exchange encrypted, commitment-scheme-protected embedding hashes (not embeddings). If the hashes match above threshold (same person has met these two users before), kernel notifies both agents. Neither device learns the other's embedding — only that a potential known-person match occurred | Extends Phase 8.2 AI2AI proximity |
+| 12.8.4 | **Mutual consent introduction flow.** If a proximity match occurs, both users' agents independently ask their users: "Someone near you might be compatible with you — want to let your agents verify?" Both users must confirm before any identity information is exchanged. If either declines, no information flows. This is consent-first, not automatic | New |
+| 12.8.5 | **Air Gap integration for physical signals.** The biometric embedding pipeline uses `TupleExtractionEngine` for its one permitted output: a presence signal ("physical presence detected") with no identity content. The signal contributes to the AI2AI mesh as a behavioral co-presence event — not as an identified face | Extends `TupleExtractionEngine` |
+| 12.8.6 | **Air Gap permeability control for physical identity.** Users control physical-identity Air Gap permeability independently of general Air Gap state: "gas" (default: participate in proximity matching), "liquid" (proximity matching only with known contacts), "solid" (no physical identity matching at all). This mirrors the gas/liquid/solid model for app data permeability | Extends Air Gap state model |
+| 12.8.7 | **Enrollment revocation.** User can revoke physical identity opt-in at any time: AVRAI deletes the on-device embedding, removes all derived presence signals from episodic memory, and broadcasts a revocation signal to any devices that had matched with this user (they delete their match record). Revocation is irreversible and near-instantaneous | New |
+| 12.8.8 | **Ethical review gate.** Before 12.8.1 is implemented, conduct independent ethical review: (a) Does the matching algorithm have demographic bias? (b) Is consent flow genuinely uncoercive? (c) Is the security model sound against adversarial hardware? Implementation blocked until review passes | Research gate |
+
+---
+
+### Phase 12 Prerequisite Gates Summary
+
+Before ANY of Phase 12 begins, these five gates from beta must be confirmed:
+
+| Gate | What It Proves | Who Confirms |
+|------|---------------|-------------|
+| **Gate 1: Kernel headless** (12.1.6) | Runtime is separable from the app; OS-tier process isolation achieved | Engineering integration test |
+| **Gate 2: Stable syscall API** (12.3.1) | External callers have a stable contract to depend on | API contract test suite |
+| **Gate 3: Permission model enforced** (12.3.4) | User consent is the gating mechanism for all external access | Privacy / security review |
+| **Gate 4: Reality model has baseline** (12.4.2-12.4.3) | API returns meaningful output for zero-user installations | Cold-start quality test |
+| **Gate 5: Packaging published** (12.7.1-12.7.5) | Developer can install and use AVRAI OS without cloning the repo | External developer dogfood test |
 
 ---
 
@@ -2425,6 +2997,13 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 | JEPA for Personality (Research) | 3-4 weeks | Phase 11.3 |
 | Quantum Hardware Readiness | Architecture notes (no active tasks) | Phase 11.4 (notes only) |
 | Post-Quantum Cryptography Hardening | 2-3 weeks | Phase 2.5 (8 tasks: session audit, rotation, exhaustion, BLE/federated/cloud PQ, dashboard) |
+| AVRAI OS — Cognitive Kernel Extraction | 6-8 weeks | Phase 12.1 (kernel boundary, headless process, Flutter becomes client) |
+| AVRAI OS — Platform Adapters | 4-6 weeks | Phase 12.2 (Android bound service, iOS XPC, Linux daemon, WASM) |
+| AVRAI OS — Cognitive Syscall API & Permission Model | 4-6 weeks | Phase 12.3 (perceive/plan/commit/observe/recover v1, consent gate) |
+| AVRAI OS — Reality Model Baseline | 2-4 weeks | Phase 12.4 (swarm simulation → energy function + transition predictor fine-tune) |
+| AVRAI OS — External API Surface | 6-8 weeks | Phase 12.5 (Context Enrichment, Reality Model, Action Grounding, Inference Routing APIs) |
+| AVRAI OS — Multi-Device / Headless Runtime | 4-6 weeks | Phase 12.6 (headless mode, home server, Docker, web shell, CLI) |
+| AVRAI OS — Third-Party SDK & Distribution | 4-6 weeks | Phase 12.7 (pub.dev, Maven, SPM, crates.io, PyPI, gRPC, npm, Docker, OSS edition) |
 
 ### B. Total Hardcoded Formula Count
 
@@ -2488,5 +3067,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** February 28, 2026 (v18 -- 3-Prong Concurrent Plan Separation Update. Added umbrella 3-prong target-end-state authority plus dedicated prong plans for Apps, Runtime OS, and Reality Model; extended Phase `10.10` with concurrent-execution governance task (`10.10.12`). Previous: v17 new-code placement enforcement update)  
+**Last Updated:** March 3, 2026 (v19 -- AVRAI OS Phase 12 added. Added Phase 12 (AVRAI OS — Cognitive Kernel, Platform Adapters & External API) with 7 sections (12.1-12.7), 5 prerequisite gates, complete packaging/distribution format matrix, external API surface spec (Context Enrichment, Reality Model, Action Grounding, Inference Routing), and north star OS vision. Updated Execution Index and Appendix A mapping. Previous: v18 3-Prong Concurrent Plan Separation Update)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

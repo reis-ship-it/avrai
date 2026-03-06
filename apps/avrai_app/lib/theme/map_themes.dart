@@ -85,7 +85,7 @@ class MapThemes {
   // Minimalist Theme (aligned to global palette)
   static const MapTheme minimalist = MapTheme(
     name: 'Minimalist',
-    primaryColor: AppColors.electricGreen,
+    primaryColor: AppColors.primary,
     secondaryColor: AppColors.grey600,
     accentColor: AppColors.grey400,
     backgroundColor: AppColors.white,

@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
@@ -61,6 +64,8 @@ import 'package:avrai_runtime_os/services/user/user_anonymization_service.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/pheromone_mesh_routing_service.dart';
+import 'package:avrai_runtime_os/services/security/governance_kernel_service.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 
 class VibeConnectionOrchestrator {
@@ -166,6 +171,9 @@ class VibeConnectionOrchestrator {
 
   // AI2AI learning throttling to avoid rapid drift from nearby noise.
   final Map<String, DateTime> _lastAi2AiLearningAtByPeerId = {};
+
+  // Pheromone Mesh Routing
+  final PheromoneMeshRoutingService _pheromoneRoutingService;
 
   // ========================================================================
   // Event Mode (broadcast-first) state
@@ -292,6 +300,7 @@ class VibeConnectionOrchestrator {
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
     KnotStorageService? knotStorageService,
+    GovernanceKernelService? governanceKernelService,
   })  : _vibeAnalyzer = vibeAnalyzer,
         _connectivity = connectivity,
         _realtimeService = realtimeService,
@@ -315,7 +324,11 @@ class VibeConnectionOrchestrator {
         ),
         _realtimeCoordinator = realtimeService != null
             ? RealtimeCoordinator(realtimeService)
-            : null;
+            : null,
+        _pheromoneRoutingService = PheromoneMeshRoutingService(
+          governanceKernel:
+              governanceKernelService ?? GovernanceKernelService(),
+        );
 
   void setRealtimeService(AI2AIBroadcastService service) {
     _realtimeService = service;
@@ -574,6 +587,7 @@ class VibeConnectionOrchestrator {
       isConnectionWorthy: _isConnectionWorthy,
       updateDiscoveredNodes: _updateDiscoveredNodes,
       maybeApplyPassiveAi2AiLearning: _maybeApplyPassiveAi2AiLearning,
+      maybeSwapPheromones: _maybeSwapPheromones,
       hotSessionOpenMs: _hotSessionOpenMs,
       hotVibeReadMs: _hotVibeReadMs,
       hotCompatMs: _hotCompatMs,
@@ -645,6 +659,36 @@ class VibeConnectionOrchestrator {
       logger: _logger,
       logName: _logName,
     );
+  }
+
+  Future<void> _maybeSwapPheromones({
+    required DiscoveredDevice device,
+    required BleGattSession? session,
+    required VibeCompatibilityResult compatibility,
+  }) async {
+    // If we have a high-compatibility match and a valid BLE session, we try to swap vectors.
+    // In a real implementation, we'd negotiate a characteristic write/read for the payload.
+    // For this spike, we simulate the secure outbox queue draining.
+
+    if (session == null) return;
+
+    final vectorsToSend = _pheromoneRoutingService.getVectorsForSwapping();
+    if (vectorsToSend.isEmpty) return;
+
+    _logger.debug(
+      'High compatibility match with ${device.deviceId}! Attempting to securely swap ${vectorsToSend.length} Pheromone Vectors via Epidemic Routing.',
+      tag: _logName,
+    );
+
+    // Simulate sending vectors to remote device over GATT...
+    // await session.writeStreamPayload(streamId: 2, payload: encodeVectors(vectorsToSend));
+
+    // Simulate receiving vectors from remote device...
+    // final incomingPayload = await session.readStreamPayload(streamId: 3);
+    // final incomingVectors = decodeVectors(incomingPayload);
+    // for (final v in incomingVectors) {
+    //   _pheromoneRoutingService.receiveFromMesh(v);
+    // }
   }
 
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(

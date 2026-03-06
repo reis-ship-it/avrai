@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../helpers/test_storage_helper.dart';
 
 final class _RecordingBackend implements LlmBackend {
   List<ChatMessage> lastMessages = const [];
@@ -17,6 +20,7 @@ final class _RecordingBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     lastMessages = List<ChatMessage>.from(messages);
     return 'ok';
@@ -50,6 +54,12 @@ final class _FakeBootstrap extends LocalLlmPostInstallBootstrapService {
 
 void main() {
   group('LLMService local system prompt injection', () {
+    setUpAll(() async {
+      await TestStorageHelper.initTestStorage();
+      await GetStorage.init('local_llm_bootstrap');
+      await GetStorage('local_llm_bootstrap').erase();
+    });
+
     setUp(() {
       // Ensure clean DI state for each test.
       final sl = GetIt.instance;
@@ -63,6 +73,12 @@ void main() {
       if (sl.isRegistered<LocalLlmPostInstallBootstrapService>()) {
         sl.unregister<LocalLlmPostInstallBootstrapService>();
       }
+    });
+
+    tearDownAll(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await GetStorage('local_llm_bootstrap').erase();
+      await TestStorageHelper.clearTestStorage();
     });
 
     test('prepends system prompt for local backend when available', () async {

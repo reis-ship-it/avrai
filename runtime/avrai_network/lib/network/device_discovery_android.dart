@@ -1,11 +1,12 @@
 import 'dart:developer' as developer;
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:wifi_iot/wifi_iot.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai_network/network/personality_data_codec.dart';
 import 'package:avrai_network/network/models/anonymized_vibe_data.dart';
@@ -15,6 +16,9 @@ import 'package:avrai_network/network/avra_broadcast_frame_v1.dart';
 /// Uses WiFi Direct and Bluetooth Low Energy (BLE) for device discovery
 class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
   static const String _logName = 'AndroidDeviceDiscovery';
+  static const MethodChannel _wifiDirectChannel = MethodChannel(
+    'avra/wifi_direct',
+  );
 
   bool _hasPermissions = false;
 
@@ -24,7 +28,9 @@ class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
   }
 
   @override
-  Future<bool> requestPermissions() async {
+  Future<bool> requestPermissions({
+    bool includeNearbyWifiPermission = false,
+  }) async {
     try {
       developer.log(
         'Requesting Android device discovery permissions',
@@ -40,18 +46,23 @@ class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
           .request();
 
       // Request nearby devices permission (Android 12+)
-      final nearbyDevicesStatus = await Permission.nearbyWifiDevices.request();
+      var nearbyWifiGranted = true;
+      if (includeNearbyWifiPermission) {
+        final nearbyDevicesStatus = await Permission.nearbyWifiDevices
+            .request();
+        nearbyWifiGranted = nearbyDevicesStatus.isGranted;
+      }
 
       _hasPermissions =
           locationStatus.isGranted &&
           bluetoothStatus.isGranted &&
           bluetoothConnectStatus.isGranted &&
-          nearbyDevicesStatus.isGranted;
+          nearbyWifiGranted;
 
       if (!_hasPermissions) {
         developer.log('Android permissions not granted', name: _logName);
         developer.log(
-          'Location: $locationStatus, Bluetooth: $bluetoothStatus, Nearby: $nearbyDevicesStatus',
+          'Location: $locationStatus, Bluetooth: $bluetoothStatus, Nearby: $nearbyWifiGranted',
           name: _logName,
         );
       }
@@ -76,7 +87,10 @@ class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
     }
 
     if (!_hasPermissions) {
-      final granted = await requestPermissions();
+      final wifiDirectEnabled = await _isWifiDirectEnabled();
+      final granted = await requestPermissions(
+        includeNearbyWifiPermission: wifiDirectEnabled,
+      );
       if (!granted) {
         developer.log(
           'Permissions not granted, cannot scan for devices',
@@ -102,12 +116,20 @@ class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
 
       // Scan for WiFi Direct devices
       try {
-        final wifiDevices = await _scanWiFiDirect();
-        devices.addAll(wifiDevices);
-        developer.log(
-          'Found ${wifiDevices.length} WiFi Direct devices',
-          name: _logName,
-        );
+        final wifiDirectEnabled = await _isWifiDirectEnabled();
+        if (wifiDirectEnabled) {
+          final wifiDevices = await _scanWiFiDirect();
+          devices.addAll(wifiDevices);
+          developer.log(
+            'Found ${wifiDevices.length} WiFi Direct devices',
+            name: _logName,
+          );
+        } else {
+          developer.log(
+            'WiFi Direct scan is disabled by transport flag (discover_wifi=false)',
+            name: _logName,
+          );
+        }
       } catch (e) {
         developer.log('Error scanning WiFi Direct: $e', name: _logName);
       }
@@ -255,36 +277,134 @@ class AndroidDeviceDiscovery extends DeviceDiscoveryPlatform {
     final devices = <DiscoveredDevice>[];
 
     try {
-      // Check if WiFi is enabled
+      // Check if WiFi is enabled before attempting WiFi Direct.
       if (!await WiFiForIoTPlugin.isEnabled()) {
-        developer.log('WiFi is not enabled', name: _logName);
+        developer.log(
+          'WiFi is not enabled; skipping WiFi Direct scan',
+          name: _logName,
+        );
         return [];
       }
 
-      // Note: wifi_iot plugin has limited WiFi Direct support
-      // For full WiFi Direct discovery, you may need platform channels
-      // This implementation uses available WiFi scanning as a fallback
+      final result = await _wifiDirectChannel.invokeMapMethod<String, dynamic>(
+        'scanPeers',
+      );
 
-      // Get current WiFi network info (as a proxy for WiFi Direct capability)
-      final currentSSID = await WiFiForIoTPlugin.getSSID();
-      final currentBSSID = await WiFiForIoTPlugin.getBSSID();
+      if (result == null) {
+        developer.log(
+          'WiFi Direct method channel returned no payload; fallback to BLE discovery',
+          name: _logName,
+        );
+        return [];
+      }
 
-      if (currentSSID != null && currentBSSID != null) {
-        developer.log('Current WiFi network: $currentSSID', name: _logName);
+      final status = result['status']?.toString();
+      if (status != null && status != 'ok') {
+        developer.log(
+          'WiFi Direct unavailable from native lane. status=$status reason=${result['reason']} transport=wifi_direct',
+          name: _logName,
+        );
+        return [];
+      }
 
-        // In a real implementation, you would:
-        // 1. Use WiFi Direct API to discover peers
-        // 2. Filter for SPOTS-enabled devices
-        // 3. Extract personality data from discovered peers
+      final peers = result['peers'];
+      if (peers is! List) {
+        developer.log(
+          'WiFi Direct response had no peer list; fallback to BLE discovery',
+          name: _logName,
+        );
+        return [];
+      }
 
-        // For now, this is a placeholder that shows the structure
-        // Full WiFi Direct requires native Android code via platform channels
+      for (final peer in peers) {
+        if (peer is! Map) continue;
+        final Map<dynamic, dynamic> peerData = peer;
+
+        final String deviceId =
+            peerData['device_id']?.toString() ??
+            peerData['id']?.toString() ??
+            '';
+        if (deviceId.isEmpty) {
+          continue;
+        }
+
+        final bool isSpotsEnabled = peerData['spots_enabled'] == true;
+        if (!isSpotsEnabled) {
+          continue;
+        }
+
+        final String deviceName =
+            peerData['device_name']?.toString() ??
+            peerData['name']?.toString() ??
+            'SPOTS WiFiDirect Device';
+
+        final int? signalStrength = peerData['signal_strength'] is num
+            ? (peerData['signal_strength'] as num).toInt()
+            : null;
+
+        AnonymizedVibeData? personalityData;
+        if (peerData['personality_data_json'] is String) {
+          personalityData = PersonalityDataCodec.decodeFromJson(
+            peerData['personality_data_json'] as String,
+          );
+        }
+        if (personalityData == null &&
+            peerData['personality_data_base64'] is String) {
+          personalityData = PersonalityDataCodec.decodeFromBase64(
+            peerData['personality_data_base64'] as String,
+          );
+        }
+
+        devices.add(
+          DiscoveredDevice(
+            deviceId: deviceId,
+            deviceName: deviceName,
+            type: DeviceType.wifiDirect,
+            isSpotsEnabled: true,
+            personalityData: personalityData,
+            signalStrength: signalStrength,
+            discoveredAt: DateTime.now(),
+            metadata: {
+              'scan_transport': 'wifi_direct',
+              'scan_status': status ?? 'ok',
+              'raw_peer': peerData.toString(),
+            },
+          ),
+        );
+      }
+
+      if (devices.isEmpty) {
+        developer.log(
+          'WiFi Direct returned no active peers; BLE remains primary transport',
+          name: _logName,
+        );
+      } else {
+        developer.log(
+          'WiFi Direct peers discovered: ${devices.length}',
+          name: _logName,
+        );
       }
     } catch (e) {
-      developer.log('Error in WiFi Direct scan: $e', name: _logName);
+      developer.log(
+        'Error in WiFi Direct scan; fallbacking to BLE: $e',
+        name: _logName,
+      );
     }
 
     return devices;
+  }
+
+  Future<bool> _isWifiDirectEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('discover_wifi') ?? false;
+    } catch (e) {
+      developer.log(
+        'Error reading discover_wifi preference: $e',
+        name: _logName,
+      );
+      return false;
+    }
   }
 
   /// Check if a BLE device is a SPOTS device

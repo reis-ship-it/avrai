@@ -9,6 +9,9 @@ import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/models/user.dart';
 import 'package:avrai_core/enums/user_enums.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_classifier.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
+import 'package:avrai_runtime_os/services/prediction/markov_engagement_predictor.dart';
 import 'package:avrai_runtime_os/services/quantum/meaningful_connection_metrics_service.dart';
 import 'package:avrai_runtime_os/services/quantum/user_journey_tracking_service.dart';
 import 'package:avrai_runtime_os/services/quantum/user_event_prediction_matching_service.dart';
@@ -64,6 +67,11 @@ class PredictionAPIService {
   // ignore: unused_field
   final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
+  // Phase 1.5E: Markov engagement trajectory predictor (bridge to Phase 5)
+  final EngagementPhasePredictor? _engagementPredictor;
+  final EngagementPhaseClassifier _phaseClassifier =
+      EngagementPhaseClassifier();
+
   PredictionAPIService({
     required AtomicClockService atomicClock,
     required MeaningfulConnectionMetricsService metricsService,
@@ -79,6 +87,7 @@ class PredictionAPIService {
     KnotWorldsheetService? worldsheetService,
     HybridEncryptionService? encryptionService,
     AnonymousCommunicationProtocol? ai2aiProtocol,
+    EngagementPhasePredictor? engagementPredictor,
   })  : _atomicClock = atomicClock,
         _metricsService = metricsService,
         _journeyService = journeyService,
@@ -92,7 +101,8 @@ class PredictionAPIService {
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
         _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol;
+        _ai2aiProtocol = ai2aiProtocol,
+        _engagementPredictor = engagementPredictor;
 
   /// Get meaningful connection predictions for an event
   ///
@@ -353,8 +363,40 @@ class PredictionAPIService {
       }
 
       // Get current journey state from personality dimensions
-      // In production, would use UserJourneyTrackingService to get actual journey state
       final currentJourneyState = currentPersonality.dimensions;
+
+      // Phase 1.5E: Get Markov engagement phase prediction for this user
+      UserEngagementPhase? currentPhase;
+      Map<UserEngagementPhase, double>? nextPhaseDistribution;
+      double churnRisk = 0.0;
+
+      final predictor = _engagementPredictor;
+      if (predictor != null) {
+        try {
+          currentPhase =
+              _phaseClassifier.classifyFromProfile(currentPersonality);
+          nextPhaseDistribution = await predictor.predictNextPhase(
+            currentPhase,
+            agentId: agentId,
+          );
+          if (predictor is MarkovEngagementPredictor) {
+            churnRisk =
+                predictor.churnRiskFromDistribution(nextPhaseDistribution);
+          } else {
+            churnRisk = await predictor.predictChurnRisk(agentId);
+          }
+          developer.log(
+            'Journey prediction: phase=${currentPhase.name}, '
+            'churnRisk=${churnRisk.toStringAsFixed(3)}',
+            name: _logName,
+          );
+        } catch (e) {
+          developer.log(
+            'Non-critical: Markov prediction unavailable: $e',
+            name: _logName,
+          );
+        }
+      }
 
       // Get upcoming events for journey prediction
       final now = DateTime.now();
@@ -375,29 +417,53 @@ class PredictionAPIService {
             eventId: event.id,
           );
 
-          // Predict post-event state (simplified evolution model)
+          // Predict post-event state using Markov engagement trajectory.
+          // When engagement predictor is available, scale evolution by:
+          // - embedding phase users: high evolution potential (0.15 max)
+          // - connecting phase users: moderate (0.10 max)
+          // - exploring users: conservative (0.07 max)
+          // - quiet/churning users: low (0.03 max — they need re-engagement, not deeper push)
           final predictedPostEventState =
               Map<String, double>.from(currentJourneyState);
 
-          // Apply journey evolution based on prediction score
-          final evolutionFactor =
-              prediction.predictionScore * 0.1; // Max 10% change
+          double evolutionFactor;
+          if (currentPhase != null) {
+            evolutionFactor = switch (currentPhase) {
+              UserEngagementPhase.embedding =>
+                prediction.predictionScore * 0.15,
+              UserEngagementPhase.connecting =>
+                prediction.predictionScore * 0.10,
+              UserEngagementPhase.exploring =>
+                prediction.predictionScore * 0.07,
+              UserEngagementPhase.onboarding =>
+                prediction.predictionScore * 0.05,
+              UserEngagementPhase.quietPeriod =>
+                prediction.predictionScore * 0.03,
+              UserEngagementPhase.churning => prediction.predictionScore * 0.02,
+            };
+          } else {
+            evolutionFactor = prediction.predictionScore * 0.10;
+          }
+
           for (final key in predictedPostEventState.keys) {
             predictedPostEventState[key] =
                 (predictedPostEventState[key]! * (1 + evolutionFactor))
                     .clamp(0.0, 1.0);
           }
 
-          // Predict connections (would use actual metrics - simplified for now)
+          // Predict connections — scale by embedding probability from Markov
+          final embeddingProbability =
+              nextPhaseDistribution?[UserEngagementPhase.embedding] ?? 0.5;
           final predictedConnections =
-              (prediction.predictionScore * 10).round();
+              (prediction.predictionScore * 10 * embeddingProbability).round();
 
-          // Predict continuation rate (would use actual metrics - simplified for now)
-          final predictedContinuationRate = prediction.predictionScore;
+          // Predict continuation rate — adjusted by churn risk
+          final predictedContinuationRate =
+              prediction.predictionScore * (1.0 - churnRisk * 0.5);
 
-          // Predict transformative impact (would use actual metrics - simplified for now)
+          // Predict transformative impact — high only when in embedding arc
           final predictedTransformativeImpact =
-              prediction.predictionScore * 0.8;
+              prediction.predictionScore * 0.8 * (1.0 - churnRisk);
 
           // Integrate fabric/worldsheet predictions if available
           if (_fabricService != null && _worldsheetService != null) {

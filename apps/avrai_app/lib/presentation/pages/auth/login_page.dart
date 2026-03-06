@@ -1,4 +1,5 @@
 // MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -6,8 +7,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
-import 'package:avrai/presentation/pages/business/business_login_page.dart';
+import 'package:avrai/presentation/pages/auth/forgot_password_page.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
 class LoginPage extends StatefulWidget {
@@ -36,9 +36,30 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isSubmitting = false;
   bool _acceptedInternalUseAgreement = false;
+  String? _errorMessage;
+
+  bool get _supportsAppleSignIn =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_clearError);
+    _passwordController.addListener(_clearError);
+  }
+
+  void _clearError() {
+    if (_errorMessage != null && mounted) {
+      setState(() => _errorMessage = null);
+    }
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_clearError);
+    _passwordController.removeListener(_clearError);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -55,18 +76,20 @@ class _LoginPageState extends State<LoginPage> {
           if (state is Authenticated) {
             final router = GoRouter.maybeOf(context);
             router?.go(widget.postAuthRoute);
+          } else if (state is OAuthCancelledState) {
+            if (mounted) {
+              setState(() {
+                _isSubmitting = false;
+                _errorMessage = state.message;
+              });
+            }
           } else if (state is AuthError) {
             if (mounted) {
               setState(() {
                 _isSubmitting = false;
+                _errorMessage = state.message;
               });
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppTheme.errorColor,
-              ),
-            );
           }
         },
         child: SafeArea(
@@ -113,28 +136,71 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 48),
 
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          final isBusy =
+                              state is AuthLoading || state is OAuthInProgress;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              OutlinedButton(
+                                key: const Key('google_sign_in_button'),
+                                onPressed: isBusy ? null : _handleGoogleSignIn,
+                                child: const Text('Continue with Google'),
+                              ),
+                              if (_supportsAppleSignIn) ...[
+                                const SizedBox(height: 12),
+                                OutlinedButton(
+                                  key: const Key('apple_sign_in_button'),
+                                  onPressed: isBusy ? null : _handleAppleSignIn,
+                                  child: const Text('Continue with Apple'),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: AppColors.grey300)),
+                          Flexible(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Text(
+                                'or continue with email',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: AppColors.grey600),
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: AppColors.grey300)),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
                       // Email Field
                       TextFormField(
                         key: const Key('email_field'),
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
-                          labelText: 'Email or username',
-                          prefixIcon: Icon(Icons.person_outline),
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email_outlined),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email or username';
+                            return 'Please enter your email';
                           }
-                          final v = value.trim();
-                          if (v.contains('@')) {
-                            return null; // basic email accepted
-                          }
-                          // Username: allow simple handles (3+ chars).
-                          final ok =
-                              RegExp(r'^[a-zA-Z0-9._-]{3,}$').hasMatch(v);
-                          if (!ok) {
-                            return 'Username must be 3+ chars (letters/numbers/._-)';
+                          final emailRegex = RegExp(
+                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                          );
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return 'Please enter a valid email address';
                           }
                           return null;
                         },
@@ -172,7 +238,47 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 8),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPasswordPage(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 32),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Forgot password?',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppTheme.primaryColor,
+                                    ),
+                          ),
+                        ),
+                      ),
+
+                      if (_errorMessage != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.error,
+                                  ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 16),
 
                       if (widget.requireInternalUseAgreement) ...[
                         Row(
@@ -247,56 +353,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 32),
-
-                      // Demo login button
-                      OutlinedButton(
-                        onPressed: () {
-                          _emailController.text = 'demo@avrai.app';
-                          _passwordController.text = 'password123';
-                          _handleLogin();
-                        },
-                        child: const Text('🧪 Demo Login'),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Business Login Button
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BusinessLoginPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.business, size: 18),
-                        label: const Text('Business Login'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondary,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Admin Login Button
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const GodModeLoginPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.admin_panel_settings, size: 18),
-                        label: const Text('Admin Login'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondary,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -334,5 +390,21 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
     }
+  }
+
+  void _handleGoogleSignIn() {
+    if (_isSubmitting) return;
+    setState(() {
+      _errorMessage = null;
+    });
+    context.read<AuthBloc>().add(GoogleSignInRequested());
+  }
+
+  void _handleAppleSignIn() {
+    if (_isSubmitting) return;
+    setState(() {
+      _errorMessage = null;
+    });
+    context.read<AuthBloc>().add(AppleSignInRequested());
   }
 }

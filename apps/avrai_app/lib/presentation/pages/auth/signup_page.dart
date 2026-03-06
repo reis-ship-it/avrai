@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -24,6 +25,11 @@ class _SignupPageState extends State<SignupPage> {
   bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
 
+  bool get _supportsAppleSignIn =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -43,6 +49,32 @@ class _SignupPageState extends State<SignupPage> {
           if (state is Authenticated) {
             final router = GoRouter.maybeOf(context);
             router?.go(AppRouter.home);
+          } else if (state is OAuthCancelledState) {
+            if (mounted) {
+              setState(() {
+                _isSubmitting = false;
+              });
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.warning,
+              ),
+            );
+          } else if (state is SignupConfirmationRequired) {
+            if (mounted) {
+              setState(() {
+                _isSubmitting = false;
+              });
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.success,
+              ),
+            );
+            final router = GoRouter.maybeOf(context);
+            router?.go('/login');
           } else if (state is AuthError) {
             if (mounted) {
               setState(() {
@@ -102,6 +134,53 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                       ),
                       const SizedBox(height: 32),
+
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          final isBusy =
+                              state is AuthLoading || state is OAuthInProgress;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              OutlinedButton(
+                                key: const Key('google_sign_in_button'),
+                                onPressed: isBusy ? null : _handleGoogleSignIn,
+                                child: const Text('Continue with Google'),
+                              ),
+                              if (_supportsAppleSignIn) ...[
+                                const SizedBox(height: 12),
+                                OutlinedButton(
+                                  key: const Key('apple_sign_in_button'),
+                                  onPressed: isBusy ? null : _handleAppleSignIn,
+                                  child: const Text('Continue with Apple'),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: AppColors.grey300)),
+                          Flexible(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Text(
+                                'or create an account with email',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: AppColors.grey600),
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: AppColors.grey300)),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
                       // Name Field
                       TextFormField(
@@ -289,5 +368,19 @@ class _SignupPageState extends State<SignupPage> {
                 _passwordController.text, _nameController.text.trim()),
           );
     }
+  }
+
+  void _handleGoogleSignIn() {
+    setState(() {
+      _isSubmitting = false;
+    });
+    context.read<AuthBloc>().add(GoogleSignInRequested());
+  }
+
+  void _handleAppleSignIn() {
+    setState(() {
+      _isSubmitting = false;
+    });
+    context.read<AuthBloc>().add(AppleSignInRequested());
   }
 }

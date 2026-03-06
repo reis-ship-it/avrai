@@ -18,7 +18,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai_runtime_os/ai/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ListDetailsPage extends StatefulWidget {
   final SpotList list;
@@ -291,7 +291,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     itemCount: spotsInList.length,
                     itemBuilder: (context, index) {
                       final spot = spotsInList[index];
-                      return PortalSurface(
+                      return AppSurface(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: EdgeInsets.zero,
                         child: ListTile(

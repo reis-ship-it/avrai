@@ -1,26 +1,20 @@
-/// AI2AI Connection View
-///
-/// Part of Feature Matrix Phase 1: Critical UI/UX Features
-///
-/// Displays active AI2AI connections and their metrics:
-/// - Connection status and quality ratings
-/// - Compatibility scores and learning effectiveness
-/// - AI pleasure scores
-/// - Connection duration and learning outcomes
-/// - Connection management actions
-///
-/// Uses AppColors and AppTheme for consistent styling per design token requirements.
-library;
-
-import 'package:flutter/material.dart';
+// AI2AI Connection View
+//
+// Part of Feature Matrix Phase 1: Critical UI/UX Features.
+// Displays active AI2AI connections and their metrics while keeping the
+// beta design aligned with neutral app primitives.
 import 'dart:async';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
+
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
+import 'package:get_it/get_it.dart';
 
 /// Page that displays active AI2AI connections
 class AI2AIConnectionView extends StatefulWidget {
@@ -40,6 +34,9 @@ class AI2AIConnectionView extends StatefulWidget {
 }
 
 class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
+  static String _safePrefix(String value, int length) =>
+      value.length <= length ? value : value.substring(0, length);
+
   List<ConnectionMetrics> _connections = [];
   Timer? _refreshTimer;
   VibeConnectionOrchestrator? _orchestrator;
@@ -141,7 +138,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Connection disconnected'),
-          backgroundColor: AppColors.electricGreen,
+          backgroundColor: AppColors.primary,
           duration: Duration(seconds: 2),
         ),
       );
@@ -186,33 +183,26 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   }
 
   Widget _buildHeader() {
-    return Row(
-      children: [
-        const Text(
-          'Active Connections',
-          style: TextStyle(
-            fontSize: 20,
+    return AppPageHeader(
+      title: 'Active Connections',
+      subtitle: 'Current AI2AI sessions and their connection health.',
+      leadingIcon: Icons.hub_outlined,
+      showDivider: false,
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          '${_connections.length}',
+          style: const TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.primary,
           ),
         ),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.electricGreen.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            '${_connections.length}',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.electricGreen,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -254,7 +244,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
     final qualityColor = _getQualityColor(qualityRating);
     final statusColor = _getStatusColor(connection.status);
 
-    return PortalSurface(
+    return AppSurface(
       radius: 12,
       padding: EdgeInsets.zero,
       child: InkWell(
@@ -292,7 +282,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Connection ${connection.connectionId.substring(0, 8)}',
+                          'Connection ${_safePrefix(connection.connectionId, 8)}',
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
@@ -329,7 +319,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                       'Compatibility',
                       '${(connection.currentCompatibility * 100).round()}%',
                       Icons.favorite,
-                      AppColors.electricGreen,
+                      AppColors.primary,
                     ),
                   ),
                   Expanded(
@@ -345,7 +335,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                       'AI Pleasure',
                       '${(connection.aiPleasureScore * 100).round()}%',
                       Icons.mood,
-                      AppColors.electricGreen,
+                      AppColors.primary,
                     ),
                   ),
                 ],
@@ -399,16 +389,16 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
                       icon: const Icon(
                         Icons.info_outline,
                         size: 16,
-                        color: AppColors.electricGreen,
+                        color: AppColors.primary,
                       ),
                       label: const Text(
                         'View Details',
                         style: TextStyle(
-                          color: AppColors.electricGreen,
+                          color: AppColors.primary,
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.electricGreen),
+                        side: const BorderSide(color: AppColors.primary),
                       ),
                     ),
                   ),
@@ -474,7 +464,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
   Color _getQualityColor(String rating) {
     switch (rating.toLowerCase()) {
       case 'excellent':
-        return AppColors.electricGreen;
+        return AppColors.success;
       case 'good':
         return AppColors.warning;
       case 'fair':
@@ -491,9 +481,9 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
       case ConnectionStatus.establishing:
         return AppColors.warning;
       case ConnectionStatus.active:
-        return AppColors.electricGreen;
+        return AppColors.success;
       case ConnectionStatus.learning:
-        return AppColors.electricGreen;
+        return AppColors.success;
       case ConnectionStatus.completing:
         return AppColors.warning;
       case ConnectionStatus.completed:

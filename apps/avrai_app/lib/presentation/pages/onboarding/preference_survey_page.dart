@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class PreferenceSurveyPage extends StatefulWidget {
   final Map<String, List<String>> preferences;
@@ -302,7 +302,7 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
     final selectedOptions = _preferences[category] ?? [];
     final isExpanded = _openSection == category;
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.zero,
       child: ExpansionTile(

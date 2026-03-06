@@ -1,6 +1,6 @@
 import 'package:avrai_core/models/spots/visit.dart';
 import 'package:avrai_core/models/misc/automatic_check_in.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:get_it/get_it.dart';
@@ -383,15 +383,18 @@ class AutomaticCheckInService {
         // Best-effort: update locality agents on completed visit.
         // This should never block checkout.
         try {
-          final ingestion = LocalityAgentIngestionServiceV1.tryGetFromDI();
-          if (ingestion != null) {
+          final sl = GetIt.instance;
+          final localityKernel = sl.isRegistered<LocalityKernelContract>()
+              ? sl<LocalityKernelContract>()
+              : null;
+          if (localityKernel != null) {
             final source = switch (activeCheckIn.triggerType) {
               CheckInTriggerType.geofence => 'geofence',
               CheckInTriggerType.bluetooth => 'bluetooth',
               CheckInTriggerType.unknown => 'unknown',
             };
             // ignore: unawaited_futures
-            ingestion.ingestVisit(
+            localityKernel.observeVisit(
                 userId: userId, visit: updatedVisit, source: source);
           }
         } catch (e) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/controllers/onboarding_flow_controller.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
@@ -22,11 +24,18 @@ class _AlwaysAcceptedLegalDocumentService extends LegalDocumentService {
 /// Tests verify that the controller works correctly when integrated
 /// with real services and the onboarding page workflow.
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   group('OnboardingFlowController Integration', () {
     late OnboardingFlowController controller;
     const testUserId = 'test_user_123';
 
     setUpAll(() async {
+      if (!runHeavyIntegrationTests) {
+        return;
+      }
+
       // Avoid path_provider / GetStorage.init in tests.
       await setupTestStorage();
 
@@ -282,5 +291,5 @@ void main() {
         // Core functionality should work without AVRAI services
       });
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

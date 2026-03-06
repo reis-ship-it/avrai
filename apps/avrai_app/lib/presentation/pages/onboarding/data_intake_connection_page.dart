@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_runtime_os/endpoints/intake/device_intake_router.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 
@@ -40,10 +40,6 @@ class _DataIntakeConnectionPageState extends State<DataIntakeConnectionPage> {
     _intakeRouter = DeviceIntakeRouter(engine);
   }
 
-  void _completeStep() {
-    widget.onComplete();
-  }
-
   @override
   Widget build(BuildContext context) {
     return AdaptivePlatformPageScaffold(
@@ -67,7 +63,7 @@ class _DataIntakeConnectionPageState extends State<DataIntakeConnectionPage> {
               'Instead, our Local AI scrubs them locally, extracts only the abstract meaning (e.g., "Prefers Coffee in Mornings"), and permanently destroys the raw text.',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: AppColors.grey500,
                 height: 1.5,
               ),
             ),
@@ -109,22 +105,6 @@ class _DataIntakeConnectionPageState extends State<DataIntakeConnectionPage> {
                 setState(() => _socialConnected = val);
               },
             ),
-            const SizedBox(height: 48),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _completeStep,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Continue',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-            ),
           ],
         ),
       ),
@@ -138,7 +118,7 @@ class _DataIntakeConnectionPageState extends State<DataIntakeConnectionPage> {
     required bool isConnected,
     required ValueChanged<bool> onToggle,
   }) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +157,7 @@ class _DataIntakeConnectionPageState extends State<DataIntakeConnectionPage> {
                   description,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: AppColors.grey500,
                   ),
                 ),
               ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -261,7 +261,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }) {
     final theme = Theme.of(context);
 
-    return PortalSurface(
+    return AppSurface(
       child: Row(
         children: [
           Container(

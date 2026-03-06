@@ -220,7 +220,10 @@ class ReservationCreationController
         _quantumController =
             quantumController ?? GetIt.instance<QuantumMatchingController>(),
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _availabilityService = availabilityService ??
             (GetIt.instance.isRegistered<ReservationAvailabilityService>()
                 ? GetIt.instance<ReservationAvailabilityService>()

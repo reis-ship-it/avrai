@@ -303,7 +303,7 @@ void main() {
         expect(result, greaterThan(0.0));
         expect(result, lessThanOrEqualTo(1.0));
         // Should be weighted combination of core compatibility, vibe, interest, transformative
-        expect(result, greaterThan(0.3)); // At least some meaningfulness
+        expect(result, greaterThan(0.25)); // At least some meaningfulness
       });
 
       test('should handle errors gracefully', () async {

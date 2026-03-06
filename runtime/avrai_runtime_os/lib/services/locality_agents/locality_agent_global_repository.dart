@@ -87,6 +87,12 @@ class LocalityAgentGlobalRepositoryV1 {
       vector12: vec.length == 12 ? vec : List<double>.filled(12, 0.5),
       sampleCount: (row['sample_count'] as num?)?.toInt() ?? 0,
       confidence12: conf?.length == 12 ? conf : null,
+      aggregateHappiness:
+          (row['aggregate_happiness'] as num?)?.toDouble() ?? 0.5,
+      happinessSampleCount:
+          (row['happiness_sample_count'] as num?)?.toInt() ?? 0,
+      happinessTrendSlope:
+          (row['happiness_trend_slope'] as num?)?.toDouble() ?? 0.0,
       updatedAtUtc: updatedAt.toUtc(),
     );
   }

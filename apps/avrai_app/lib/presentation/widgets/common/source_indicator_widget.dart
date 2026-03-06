@@ -2,6 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:avrai_core/models/spots/source_indicator.dart';
 import 'package:avrai/theme/colors.dart';
 
+IconData _resolveSourceIcon(int codePoint) {
+  final icon = <int, IconData>{
+    Icons.verified.codePoint: Icons.verified,
+    Icons.public.codePoint: Icons.public,
+    Icons.group.codePoint: Icons.group,
+    Icons.map.codePoint: Icons.map,
+    Icons.location_on.codePoint: Icons.location_on,
+  }[codePoint];
+  return icon ?? Icons.info_outline;
+}
+
 /// Widget to display source indicator badge for data transparency
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Users must know data sources
 class SourceIndicatorWidget extends StatelessWidget {
@@ -41,7 +52,7 @@ class SourceIndicatorWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              IconData(indicator.badgeIcon, fontFamily: 'MaterialIcons'),
+              _resolveSourceIcon(indicator.badgeIcon),
               size: 12,
               color: Color(indicator.badgeColor),
             ),
@@ -80,7 +91,7 @@ class SourceIndicatorWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    IconData(indicator.badgeIcon, fontFamily: 'MaterialIcons'),
+                    _resolveSourceIcon(indicator.badgeIcon),
                     size: 16,
                     color: Color(indicator.badgeColor),
                   ),

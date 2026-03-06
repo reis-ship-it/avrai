@@ -4,6 +4,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 
 import 'package:gradient_borders/gradient_borders.dart';
+import 'package:avrai_runtime_os/config/design_feature_flags.dart';
 
 /// A high-tech glass container with a chamfered metal edge.
 ///
@@ -28,17 +29,16 @@ class GlassSlate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final portal = context.portal;
-    final resolvedBlurSigma = blurSigma ?? portal.slateBlur;
+    final immersive = context.immersive;
+    final resolvedBlurSigma = blurSigma ?? 15.0; // Reduced from 25.0
     final resolvedBorderRadius = borderRadius ??
-        BorderRadius.all(Radius.circular(portal.slateCornerRadius));
+        BorderRadius.all(Radius.circular(immersive.slateCornerRadius));
 
     // Colors based on Day/Night mode
-    // Make the glass clearer (less tinted) so the background world reads as "behind glass"
-    // instead of being painted over. Keep a hint of tint for legibility.
+    // Lighter tint for a more effortless, airy feel
     final tintColor = isDark
-        ? AppColors.black.withValues(alpha: 0.22) // Smoked, but clearer
-        : AppColors.white.withValues(alpha: 0.08); // Mist glass
+        ? AppColors.black.withValues(alpha: 0.10) // Was 0.22
+        : AppColors.white.withValues(alpha: 0.05); // Was 0.08
 
     final borderGradient = isDark
         ? const LinearGradient(
@@ -66,33 +66,48 @@ class GlassSlate extends StatelessWidget {
         borderRadius: resolvedBorderRadius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.45),
-            blurRadius: 40,
-            offset: const Offset(0, 20),
-            spreadRadius: -10,
+            color: AppColors.black.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+            spreadRadius: -5,
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: resolvedBorderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: resolvedBlurSigma,
-            sigmaY: resolvedBlurSigma,
-          ),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              color: tintColor,
-              border: GradientBoxBorder(
-                gradient: borderGradient,
-                width: portal.slateBorderWidth,
+        child: DesignFeatureFlags.enableHeavyWorldPlaneEffects
+            ? BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: resolvedBlurSigma,
+                  sigmaY: resolvedBlurSigma,
+                ),
+                child: Container(
+                  padding: padding,
+                  decoration: BoxDecoration(
+                    color: tintColor,
+                    border: GradientBoxBorder(
+                      gradient: borderGradient,
+                      width: immersive.slateBorderWidth,
+                    ),
+                    borderRadius: resolvedBorderRadius,
+                  ),
+                  child: child,
+                ),
+              )
+            : Container(
+                padding: padding,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? AppColors.black.withValues(alpha: 0.85)
+                      : AppColors.white.withValues(alpha: 0.90),
+                  border: GradientBoxBorder(
+                    gradient: borderGradient,
+                    width: immersive.slateBorderWidth,
+                  ),
+                  borderRadius: resolvedBorderRadius,
+                ),
+                child: child,
               ),
-              borderRadius: resolvedBorderRadius,
-            ),
-            child: child,
-          ),
-        ),
       ),
     );
   }

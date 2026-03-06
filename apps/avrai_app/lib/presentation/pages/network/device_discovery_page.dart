@@ -23,7 +23,7 @@ import 'package:get_it/get_it.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Page displaying device discovery status and discovered devices
 class DeviceDiscoveryPage extends StatefulWidget {
@@ -149,7 +149,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
   }
 
   Widget _buildDiscoveryStatusCard() {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.all(16),
       radius: 12,
       padding: const EdgeInsets.all(16),
@@ -161,15 +161,14 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isScanning
-                      ? AppColors.electricGreen.withValues(alpha: 0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : AppColors.grey200,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   _isScanning ? Icons.radar : Icons.radar_outlined,
-                  color: _isScanning
-                      ? AppColors.electricGreen
-                      : AppColors.textSecondary,
+                  color:
+                      _isScanning ? AppColors.primary : AppColors.textSecondary,
                   size: 32,
                 ),
               ),
@@ -210,7 +209,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
               label: Text(_isScanning ? 'Stop Discovery' : 'Start Discovery'),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _isScanning ? AppColors.error : AppColors.electricGreen,
+                    _isScanning ? AppColors.error : AppColors.primary,
                 foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -323,7 +322,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
     final proximityColor = _getProximityColor(proximityScore);
     final proximityLabel = _getProximityLabel(proximityScore);
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 12),
       radius: 8,
       padding: const EdgeInsets.all(12),
@@ -396,7 +395,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.electricGreen.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
@@ -405,7 +404,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                   Icon(
                     Icons.psychology,
                     size: 14,
-                    color: AppColors.electricGreen,
+                    color: AppColors.primary,
                   ),
                   SizedBox(width: 4),
                   Text(
@@ -413,7 +412,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.electricGreen,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],

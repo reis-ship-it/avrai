@@ -108,11 +108,13 @@ void main() {
           earnedReason: 'Test',
         );
 
-        expect(coffeePin.getPinColor(), equals(AppColors.grey700));
-        expect(restaurantPin.getPinColor(), equals(AppColors.error));
-        expect(unknownPin.getPinColor(), equals(AppColors.grey500)); // Default
-        expect(coffeePin.getPinIcon(), equals(Icons.local_cafe));
-        expect(unknownPin.getPinIcon(), equals(Icons.place)); // Default
+        expect(coffeePin.getPinColor(), equals(AppColors.grey700.toARGB32()));
+        expect(restaurantPin.getPinColor(), equals(AppColors.error.toARGB32()));
+        expect(unknownPin.getPinColor(),
+            equals(AppColors.grey500.toARGB32())); // Default
+        expect(coffeePin.getPinIcon(), equals(Icons.local_cafe.codePoint));
+        expect(
+            unknownPin.getPinIcon(), equals(Icons.place.codePoint)); // Default
       });
     });
 

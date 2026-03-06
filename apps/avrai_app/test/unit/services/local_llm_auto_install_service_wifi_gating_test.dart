@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_auto_install_service.dart';
+import 'package:avrai_runtime_os/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -83,14 +86,29 @@ class _FakePacks extends LocalLlmModelPackManager {
   }
 }
 
+class _MockBootstrapService extends Mock
+    implements LocalLlmPostInstallBootstrapService {}
+
 void main() {
   group('LocalLlmAutoInstallService Wi‑Fi gating', () {
     setUp(() {
       MockGetStorage.reset();
+      final sl = GetIt.instance;
+      if (sl.isRegistered<LocalLlmPostInstallBootstrapService>()) {
+        sl.unregister<LocalLlmPostInstallBootstrapService>();
+      }
+      final bootstrap = _MockBootstrapService();
+      when(() => bootstrap.maybeBootstrapCurrentUser())
+          .thenAnswer((_) async {});
+      sl.registerSingleton<LocalLlmPostInstallBootstrapService>(bootstrap);
     });
 
     tearDown(() async {
       await LocalLlmAutoInstallService.resetWifiListenerForTests();
+      final sl = GetIt.instance;
+      if (sl.isRegistered<LocalLlmPostInstallBootstrapService>()) {
+        sl.unregister<LocalLlmPostInstallBootstrapService>();
+      }
     });
 
     test('queues for Wi‑Fi and then downloads when Wi‑Fi becomes available',

@@ -35,8 +35,11 @@ void main() {
       expect(find.textContaining('OUR_GUTS.md'), findsOneWidget);
       expect(find.byIcon(Icons.info_outline), findsNothing);
       expect(find.textContaining('Age:'), findsNothing);
-      final cardFinder = find.byType(Card);
-      expect(cardFinder, findsOneWidget);
+      final birthdayTapTarget = find.ancestor(
+        of: find.text('Tap to select your birthday'),
+        matching: find.byType(InkWell),
+      );
+      expect(birthdayTapTarget, findsOneWidget);
 
       // Smoke-check: selected birthday path renders without build errors.
       final widget2 = WidgetTestHelpers.createTestableWidget(

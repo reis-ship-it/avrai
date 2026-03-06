@@ -21,6 +21,7 @@ abstract class HybridSearchEvent extends Equatable {
 
 class SearchHybridSpots extends HybridSearchEvent {
   final String query;
+  final String? userId;
   final bool includeExternal;
   final int maxResults;
   final bool useCache;
@@ -29,6 +30,7 @@ class SearchHybridSpots extends HybridSearchEvent {
 
   SearchHybridSpots({
     required this.query,
+    this.userId,
     this.includeExternal = true,
     this.maxResults = 50,
     this.useCache = true,
@@ -39,6 +41,7 @@ class SearchHybridSpots extends HybridSearchEvent {
   @override
   List<Object?> get props => [
         query,
+        userId,
         includeExternal,
         maxResults,
         useCache,
@@ -50,6 +53,7 @@ class SearchHybridSpots extends HybridSearchEvent {
 class SearchNearbyHybridSpots extends HybridSearchEvent {
   final double latitude;
   final double longitude;
+  final String? userId;
   final int radius;
   final bool includeExternal;
   final int maxResults;
@@ -57,6 +61,7 @@ class SearchNearbyHybridSpots extends HybridSearchEvent {
   SearchNearbyHybridSpots({
     required this.latitude,
     required this.longitude,
+    this.userId,
     this.radius = 5000,
     this.includeExternal = true,
     this.maxResults = 50,
@@ -64,7 +69,7 @@ class SearchNearbyHybridSpots extends HybridSearchEvent {
 
   @override
   List<Object?> get props =>
-      [latitude, longitude, radius, includeExternal, maxResults];
+      [latitude, longitude, userId, radius, includeExternal, maxResults];
 }
 
 class GetSearchSuggestions extends HybridSearchEvent {
@@ -127,6 +132,7 @@ class HybridSearchSuggestionsLoaded extends HybridSearchState {
 
 class HybridSearchLoaded extends HybridSearchState {
   final List<Spot> spots;
+  final List<SpotWithMetadata> metadata;
   final String? searchQuery;
   final int communityCount;
   final int externalCount;
@@ -139,6 +145,7 @@ class HybridSearchLoaded extends HybridSearchState {
 
   HybridSearchLoaded({
     required this.spots,
+    this.metadata = const [],
     this.searchQuery,
     required this.communityCount,
     required this.externalCount,
@@ -153,6 +160,7 @@ class HybridSearchLoaded extends HybridSearchState {
   @override
   List<Object?> get props => [
         spots,
+        metadata,
         searchQuery,
         communityCount,
         externalCount,
@@ -340,6 +348,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
           query: event.query,
           latitude: position?.latitude,
           longitude: position?.longitude,
+          userId: event.userId,
           maxResults: event.maxResults,
           includeExternal: event.includeExternal && _externalDataEnabled,
         );
@@ -377,6 +386,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
           query: event.query,
           latitude: position?.latitude,
           longitude: position?.longitude,
+          userId: event.userId,
           maxResults: event.maxResults,
           includeExternal: event.includeExternal && _externalDataEnabled,
           filters: event.filters,
@@ -388,6 +398,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
           query: event.query,
           latitude: position?.latitude,
           longitude: position?.longitude,
+          userId: event.userId,
           maxResults: event.maxResults,
           includeExternal: event.includeExternal && _externalDataEnabled,
           result: result,
@@ -427,6 +438,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
 
       emit(HybridSearchLoaded(
         spots: result.spots,
+        metadata: result.metadata ?? const [],
         searchQuery: event.query,
         communityCount: result.communityCount,
         externalCount: result.externalCount,
@@ -494,6 +506,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
         query: 'nearby',
         latitude: event.latitude,
         longitude: event.longitude,
+        userId: event.userId,
         maxResults: event.maxResults,
         includeExternal: event.includeExternal && _externalDataEnabled,
       );
@@ -508,6 +521,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
         result = await hybridSearchUseCase.searchNearbySpots(
           latitude: event.latitude,
           longitude: event.longitude,
+          userId: event.userId,
           radius: event.radius,
           maxResults: event.maxResults,
           includeExternal: event.includeExternal && _externalDataEnabled,
@@ -518,6 +532,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
           query: 'nearby',
           latitude: event.latitude,
           longitude: event.longitude,
+          userId: event.userId,
           maxResults: event.maxResults,
           includeExternal: event.includeExternal && _externalDataEnabled,
           result: result,
@@ -532,6 +547,7 @@ class HybridSearchBloc extends Bloc<HybridSearchEvent, HybridSearchState> {
 
       emit(HybridSearchLoaded(
         spots: result.spots,
+        metadata: result.metadata ?? const [],
         searchQuery: 'Nearby (${event.radius}m)',
         communityCount: result.communityCount,
         externalCount: result.externalCount,

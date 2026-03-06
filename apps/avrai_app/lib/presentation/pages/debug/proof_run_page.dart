@@ -17,7 +17,7 @@ import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_network/network/device_discovery.dart'
     show DiscoveredDevice, DeviceType;
 
@@ -542,7 +542,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
     required String body,
     Widget? trailing,
   }) {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

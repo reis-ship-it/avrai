@@ -82,12 +82,28 @@ Battery and thermal constraints (5.2.2-5.2.9) ensure training doesn't degrade th
 
 ---
 
+## Beta Bridge: Markov Engagement Predictor (Phase 1.5E)
+
+Before the `TransitionPredictor` is trained, the beta ships a **`MarkovEngagementPredictor`** that satisfies the same abstract interface (`EngagementPhasePredictor`). This matters for Phase 5 in two ways:
+
+**1. The interface is designed here, not in Phase 5.**
+`EngagementPhasePredictor` defines `predictNextPhase()`, `predictChurnRisk()`, and `recordTransition()`. Phase 5's `NeuralTransitionPredictor` must implement this exact interface. The DI registration is the only thing that changes — all callers (proactive outreach, PredictionAPIService, PersonalityLearning hook) are unchanged.
+
+**2. Beta produces Phase 5's training data.**
+Every `recordTransition(from, to, agentId)` call writes a `(state, action, next_state)` tuple in the same format Phase 5's training pipeline expects. By the time Phase 5 is ready, real transition data from real beta users is already waiting. The Markov chain is simultaneously a working predictor and a labeled dataset generator.
+
+**Swarm prior seeding:** The `MarkovTransitionStore` starts with 100 synthetic transition counts extracted from the `SwarmSimulationEngine` (NYC, Denver, Atlanta city-stratified archetypes). These decay in relative weight as real user observations accumulate. After ~100 real interactions per user, the prior is < 50% of total weight and the matrix is primarily personal.
+
+**Transition plan:** When `TransitionPredictor` is trained on accumulated beta tuples, implement `NeuralTransitionPredictor` implementing `EngagementPhasePredictor`, register it in DI, flip `FeatureFlagService.neural_transition_predictor_enabled = true`. The Markov chain retires with zero changes to its callers.
+
+> **Reference:** `MASTER_PLAN.md` Phase 1.5E. Code lives in `runtime/avrai_runtime_os/lib/services/prediction/`.
+
 ## Common Pitfalls
 
-1. **Training the transition predictor without enough state transitions**: Each transition requires a BEFORE and AFTER state snapshot. If Phase 1 only captures outcomes without full state snapshots, you're missing half the training data.
+1. **Training the transition predictor without enough state transitions**: Each transition requires a BEFORE and AFTER state snapshot. If Phase 1 only captures outcomes without full state snapshots, you're missing half the training data. **The Markov bridge (1.5E) addresses this — it records transitions from beta before Phase 5 training begins.**
 2. **Ignoring the consolidation window dependency**: On-device training (5.2) runs during the nightly consolidation window (Phase 1.1C). Without 1.1C.6, there's no trigger for training.
 3. **Confusing drift with seasonal cycles**: Taste drift (5.1.9) is a permanent change; seasonal patterns (5.1.10) are recurring cycles. The model needs both to avoid over-reacting to summer→winter transitions.
 
 ---
 
-**Last Updated:** February 11, 2026 -- Version 1.1 (added Zeng et al. 2026 context -- autonomous self-reflection is a future research direction for Zeng; AVRAI has it as a concrete implementation. Previous: 1.0 v12 gap fill)
+**Last Updated:** March 4, 2026 -- Version 1.2 (added Beta Markov Bridge section — Phase 1.5E. Previous: 1.1 — Zeng et al. 2026 context) (added Zeng et al. 2026 context -- autonomous self-reflection is a future research direction for Zeng; AVRAI has it as a concrete implementation. Previous: 1.0 v12 gap fill)

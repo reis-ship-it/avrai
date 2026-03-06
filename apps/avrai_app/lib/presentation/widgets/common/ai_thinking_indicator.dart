@@ -111,10 +111,10 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.05),
+        color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.electricGreen.withValues(alpha: 0.2),
+          color: AppColors.primary.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
@@ -165,8 +165,11 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.electricGreen.withValues(alpha: 0.1),
+        color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.12),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -178,7 +181,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.electricGreen,
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -194,19 +197,17 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
           opacity: _pulseAnimation.value,
           child: Container(
             padding: EdgeInsets.all(size * 0.25),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.electricGreen,
-                  AppColors.electricGreen,
-                ],
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.16),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.24),
               ),
               shape: BoxShape.circle,
             ),
             child: Icon(
               _getStageIcon(),
               size: size,
-              color: AppColors.white,
+              color: AppColors.primary,
             ),
           ),
         );
@@ -225,8 +226,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
             value: progress,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.electricGreen),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
         const SizedBox(height: 8),
@@ -245,7 +245,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: AppColors.electricGreen,
+                color: AppColors.primary,
               ),
             ),
           ],
@@ -385,7 +385,7 @@ class AIThinkingDots extends StatefulWidget {
 
   const AIThinkingDots({
     super.key,
-    this.color = AppColors.electricGreen,
+    this.color = AppColors.primary,
     this.size = 8.0,
   });
 

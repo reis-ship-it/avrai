@@ -1,5 +1,6 @@
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/expertise/expertise_level.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 
@@ -103,6 +104,7 @@ class CommunityEvent extends ExpertiseEvent {
     required super.createdAt,
     required super.updatedAt,
     super.status,
+    super.externalSyncMetadata,
     this.isCommunityEvent = true,
     this.hostExpertiseLevel,
     this.engagementScore = 0.0,
@@ -335,6 +337,7 @@ class CommunityEvent extends ExpertiseEvent {
     DateTime? createdAt,
     DateTime? updatedAt,
     EventStatus? status,
+    Object? externalSyncMetadata = _communityEventSentinel,
     bool? isCommunityEvent,
     ExpertiseLevel? hostExpertiseLevel,
     double? engagementScore,
@@ -376,6 +379,9 @@ class CommunityEvent extends ExpertiseEvent {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
+      externalSyncMetadata: externalSyncMetadata == _communityEventSentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
       isCommunityEvent: isCommunityEvent ?? this.isCommunityEvent,
       hostExpertiseLevel: hostExpertiseLevel ?? this.hostExpertiseLevel,
       engagementScore: engagementScore ?? this.engagementScore,
@@ -419,3 +425,5 @@ class CommunityEvent extends ExpertiseEvent {
         communityBuildingIndicators,
       ];
 }
+
+const Object _communityEventSentinel = Object();

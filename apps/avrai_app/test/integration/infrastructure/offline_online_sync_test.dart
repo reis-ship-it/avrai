@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_core/models/misc/list.dart';
@@ -33,6 +35,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - Conflict resolution: <2 seconds
 /// - Cache access: <100ms
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Offline/Online Sync Integration Tests', () {
@@ -131,7 +136,7 @@ void main() {
       // Test cache management and storage optimization
       await _testCacheManagement(spotsRepository);
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }
 
 /// Test offline mode functionality (sync only, no widgets)

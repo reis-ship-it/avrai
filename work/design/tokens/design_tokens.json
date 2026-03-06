@@ -1,0 +1,80 @@
+{
+  "color": {
+    "neutral": {
+      "black": "#000000",
+      "white": "#FFFFFF",
+      "grey50": "#F8F8F8",
+      "grey100": "#F2F2F2",
+      "grey200": "#E6E6E6",
+      "grey300": "#D0D0D0",
+      "grey400": "#B2B2B2",
+      "grey500": "#8C8C8C",
+      "grey600": "#666666",
+      "grey700": "#474747",
+      "grey800": "#242424",
+      "grey900": "#111111"
+    },
+    "text": {
+      "primary": "#111111",
+      "secondary": "#666666",
+      "hint": "#8C8C8C",
+      "inverse": "#FFFFFF"
+    },
+    "surface": {
+      "background": "#FFFFFF",
+      "base": "#FFFFFF",
+      "muted": "#F8F8F8",
+      "elevated": "#FFFFFF",
+      "border": "#E6E6E6"
+    },
+    "semantic": {
+      "success": "#2E7D32",
+      "warning": "#B7791F",
+      "error": "#B42318",
+      "focus": "#111111",
+      "selection": "#474747"
+    }
+  },
+  "spacing": {
+    "xxs": 4,
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "radius": {
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24
+  },
+  "motion": {
+    "fast": 160,
+    "normal": 240,
+    "slow": 360
+  },
+  "layout": {
+    "maxPhoneContentWidth": 480,
+    "maxTabletContentWidth": 760,
+    "maxDesktopContentWidth": 980
+  },
+  "typography": {
+    "display": 34,
+    "headline": 28,
+    "title": 20,
+    "body": 16,
+    "label": 13,
+    "bodyLineHeight": 1.45
+  },
+  "border": {
+    "subtle": 1,
+    "strong": 1.5
+  },
+  "shadow": {
+    "softBlur": 12,
+    "softOffsetX": 0,
+    "softOffsetY": 4
+  }
+}

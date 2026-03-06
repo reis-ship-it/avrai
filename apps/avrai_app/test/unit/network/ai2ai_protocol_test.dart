@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_network/network/ai2ai_protocol.dart';
 import 'package:avrai_runtime_os/ai/privacy_protection.dart';
@@ -89,7 +92,6 @@ void main() {
 
         // Test behavior: message can be converted to JSON for transmission
         // JSON format used for testing legacy/debugging functionality
-        // ignore: deprecated_member_use
         final json = originalMessage.toJson();
         expect(json, isA<Map<String, dynamic>>());
         expect(json.containsKey('type'), isTrue);
@@ -258,9 +260,7 @@ void main() {
       );
 
       // JSON format used for testing legacy/debugging functionality
-      // ignore: deprecated_member_use
       final json = original.toJson();
-      // ignore: deprecated_member_use
       final restored = ProtocolMessage.fromJson(json);
 
       // Test behavior: round-trip preserves all critical protocol data

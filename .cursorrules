@@ -894,71 +894,29 @@ Match the investment to the task.
 
 ## 🧪 Experiment Data Requirements (MANDATORY)
 
-**CRITICAL:** All experiments MUST use real Big Five OCEAN data converted to AVRAI 12 dimensions.
+**CRITICAL (Effective March 1, 2026):** Legacy "Big Five OCEAN" dependencies are DEPRECATED. All experiments and baseline training must now utilize the **Synthetic Swarm Baseline** generated via Multi-City Swarm Simulation.
 
-### **Mandatory Rule (Effective December 30, 2025):**
+### **Mandatory Rule (Effective March 1, 2026):**
 
 **ALL experiments MUST:**
-1. ✅ **Use `load_and_convert_big_five_to_spots()` from `shared_data_model.py`**
-2. ✅ **Load raw Big Five OCEAN data (100k+ real examples)**
-3. ✅ **Convert to AVRAI 12 dimensions using `BigFiveToSpotsConverter`**
-4. ✅ **Document that experiments use real data (not synthetic)**
+1. ✅ **Use Swarm Simulation Data:** Base all foundational personality and behavioral models on simulated interactions from the NYC, Denver, or Atlanta swarm nodes.
+2. ✅ **Use `AtomicClockService` Timestamps:** ALL simulated actions, state changes, and trajectory updates MUST explicitly use `AtomicClockService.getAtomicTimestamp()` for strict quantum temporal tracking.
+3. ✅ **Ingest Real Local Events:** Swarm baseline data must be seeded with real historical locality events passed through the `TupleExtractionEngine` (Air Gap).
+4. ✅ **Measure Routine Enhancement:** Experiments must optimize for "Routine Enhancement" (gap filling) and dynamic friction, tracking "Trust/Disappointment" to prevent regression to the mean.
 
 **FORBIDDEN:**
-- ❌ **DO NOT use synthetic data generation for personality profiles**
-- ❌ **DO NOT use `generate_integrated_user_profile()` or similar synthetic generators**
-- ❌ **DO NOT hardcode personality dimensions**
+- ❌ **DO NOT use the legacy Big Five OCEAN datasets or converters.** (Pseudoscience deprecation).
+- ❌ **DO NOT use standard `DateTime.now()` in simulations or experiments.** (Always use `AtomicClockService`).
+- ❌ **DO NOT train agents merely to "break" routines indiscriminately.** (Focus on interstitial routine enhancement).
 
 ### **Historical Note:**
 
-**Experiments completed before December 30, 2025 used synthetic data.**
-- All new experiments must use real Big Five data
-- When referencing old experiments, clearly state they used synthetic data
-- When updating old experiments, migrate them to use real Big Five data
-
-### **Standard Pattern:**
-
-```python
-from shared_data_model import load_and_convert_big_five_to_spots
-from pathlib import Path
-
-# Get project root
-project_root = Path(__file__).parent.parent.parent.parent.parent
-
-# Load and convert Big Five OCEAN to AVRAI 12
-spots_profiles = load_and_convert_big_five_to_spots(
-    max_profiles=1000,  # Or None for all available
-    data_source='auto',  # Tries CSV first, then JSON
-    project_root=project_root
-)
-
-# Each profile has:
-# - user_id
-# - dimensions: {all 12 AVRAI dimensions}
-# - original_data.big_five: {OCEAN scores}
-```
-
-### **Data Sources:**
-
-1. **Primary:** `data/raw/big_five.csv` - Raw Big Five OCEAN data (100k+ examples)
-2. **Fallback:** `data/raw/big_five_spots.json` - Extracts original_data.big_five
-
-### **Conversion:**
-
-- Uses `BigFiveToSpotsConverter` from `work/scripts/personality_data/converters/big_five_to_spots.py`
-- Converts OCEAN (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) → AVRAI 12 dimensions
-- All values normalized to 0.0-1.0 range
-
-### **Documentation Requirement:**
-
-When creating or updating experiments:
-- ✅ State that experiments use real Big Five OCEAN data
-- ✅ Reference `load_and_convert_big_five_to_spots()` function
-- ✅ Note that experiments before December 30, 2025 used synthetic data
-- ✅ Include data source and conversion method in experiment documentation
+- **Pre-Dec 2025:** Used arbitrary synthetic data.
+- **Dec 2025 - Feb 2026:** Used Big Five OCEAN data converted to 12 dimensions (now deprecated).
+- **March 2026 Onward:** Uses Multi-City Synthetic Swarm Simulations (NYC, Denver, Atlanta) based on real-world events and JEPA-inferred behavioral embeddings.
 
 ---
 
-**Last Updated:** December 30, 2025  
+**Last Updated:** March 1, 2026  
 **Status:** Active - Mandatory for all AI assistants working on AVRAI
 

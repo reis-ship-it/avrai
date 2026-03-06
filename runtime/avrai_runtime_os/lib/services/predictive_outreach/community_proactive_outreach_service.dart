@@ -8,7 +8,10 @@
 /// to find users who would improve community fabric stability.
 
 import 'dart:developer' as developer;
+
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_knot/models/knot/knot_fabric.dart';
@@ -163,20 +166,27 @@ class CommunityProactiveOutreachService {
             currentWeaveFit: currentWeaveFit,
           );
 
-          // 8. If score is high enough, send AI2AI outreach
+          // 8. If score is high enough, gate on churn risk then send outreach
           if (outreachScore >= 0.75) {
-            await _sendAI2AIOutreach(
-              communityId: communityId,
-              userId: candidate.userId ?? candidate.agentId,
-              agentId: candidate.agentId,
-              outreachScore: outreachScore,
-              reasoning: _generateOutreachReasoning(
-                stringPrediction,
-                quantumTrajectory,
-                stabilityPred,
-                currentWeaveFit,
-              ),
-            );
+            if (await _isHighChurnRisk(candidate.agentId)) {
+              developer.log(
+                'Skipping standard outreach for high-churn-risk candidate: ${candidate.agentId}',
+                name: _logName,
+              );
+            } else {
+              await _sendAI2AIOutreach(
+                communityId: communityId,
+                userId: candidate.userId ?? candidate.agentId,
+                agentId: candidate.agentId,
+                outreachScore: outreachScore,
+                reasoning: _generateOutreachReasoning(
+                  stringPrediction,
+                  quantumTrajectory,
+                  stabilityPred,
+                  currentWeaveFit,
+                ),
+              );
+            }
           }
         } catch (e) {
           developer.log(
@@ -198,6 +208,26 @@ class CommunityProactiveOutreachService {
         stackTrace: stackTrace,
         name: _logName,
       );
+    }
+  }
+
+  /// Returns true when the Markov predictor flags a candidate as high churn risk
+  /// (> 0.6 within 7 days). Falls back to false when no predictor is registered,
+  /// so this gate is entirely additive — it can never block outreach without
+  /// the prediction service present.
+  Future<bool> _isHighChurnRisk(String agentId) async {
+    try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<EngagementPhasePredictor>()) return false;
+      final risk = await sl<EngagementPhasePredictor>()
+          .predictChurnRisk(agentId, withinDays: 7);
+      return risk > 0.6;
+    } catch (e) {
+      developer.log(
+        'Churn risk check failed for $agentId, defaulting to false: $e',
+        name: _logName,
+      );
+      return false;
     }
   }
 

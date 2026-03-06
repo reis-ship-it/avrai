@@ -15,7 +15,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Expertise Dashboard Page
 /// Shows user's complete expertise profile with all categories and progress
@@ -482,6 +482,24 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
     );
   }
 
+  IconData _resolveMaterialIcon(int codePoint) {
+    const fallback = Icons.place;
+    final icon = <int, IconData>{
+      Icons.local_cafe.codePoint: Icons.local_cafe,
+      Icons.restaurant.codePoint: Icons.restaurant,
+      Icons.menu_book.codePoint: Icons.menu_book,
+      Icons.park.codePoint: Icons.park,
+      Icons.museum.codePoint: Icons.museum,
+      Icons.shopping_bag.codePoint: Icons.shopping_bag,
+      Icons.local_bar.codePoint: Icons.local_bar,
+      Icons.hotel.codePoint: Icons.hotel,
+      Icons.ramen_dining.codePoint: Icons.ramen_dining,
+      Icons.checkroom.codePoint: Icons.checkroom,
+      Icons.place.codePoint: Icons.place,
+    }[codePoint];
+    return icon ?? fallback;
+  }
+
   Widget _buildCategoryCard(
     ExpertisePin primaryPin,
     List<ExpertisePin> allPins,
@@ -489,7 +507,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
   ) {
     final pinColor = Color(primaryPin.getPinColor());
 
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,8 +522,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  IconData(primaryPin.getPinIcon(),
-                      fontFamily: 'MaterialIcons'),
+                  _resolveMaterialIcon(primaryPin.getPinIcon()),
                   size: 24,
                   color: pinColor,
                 ),
@@ -686,7 +703,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
   }
 
   Widget _buildRequirementsSection() {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

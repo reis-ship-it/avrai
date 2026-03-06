@@ -114,6 +114,7 @@ class BertSquadBackend implements LlmBackend {
     required double temperature,
     required int maxTokens,
     required Duration timeout,
+    String? responseFormat,
   }) async {
     // BERT-SQuAD only supports single question-answer, not conversation
     if (messages.isEmpty) {

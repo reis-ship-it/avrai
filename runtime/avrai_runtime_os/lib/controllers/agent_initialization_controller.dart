@@ -9,10 +9,13 @@ import 'package:avrai_runtime_os/services/onboarding/onboarding_place_list_gener
 import 'package:avrai_runtime_os/services/onboarding/onboarding_geo_context_service.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_recommendation_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_ingestion_service_v1.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:avrai_runtime_os/services/onboarding/initial_dna_synthesis_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -99,6 +102,7 @@ class AgentInitializationController
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
   final QuantumMatchingAILearningService? _aiLearningService;
+  final EntitySignatureService? _entitySignatureService;
 
   AgentInitializationController({
     SocialMediaDataCollectionController? socialMediaDataController,
@@ -119,6 +123,7 @@ class AgentInitializationController
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
+    EntitySignatureService? entitySignatureService,
   })  : _socialMediaDataController = socialMediaDataController ??
             GetIt.instance<SocialMediaDataCollectionController>(),
         _personalityLearning =
@@ -149,7 +154,10 @@ class AgentInitializationController
             (GetIt.instance.isRegistered<SharedPreferencesCompat>()
                 ? GetIt.instance<SharedPreferencesCompat>()
                 : null),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _locationTimingService = locationTimingService ??
             (GetIt.instance.isRegistered<LocationTimingQuantumStateService>()
                 ? GetIt.instance<LocationTimingQuantumStateService>()
@@ -161,6 +169,10 @@ class AgentInitializationController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
+                : null),
+        _entitySignatureService = entitySignatureService ??
+            (GetIt.instance.isRegistered<EntitySignatureService>()
+                ? GetIt.instance<EntitySignatureService>()
                 : null);
 
   @override
@@ -265,6 +277,25 @@ class AgentInitializationController
         }
       }
 
+      // STEP 2.7: Synthesize Initial DNA from Open Responses
+      Map<String, double>? slmDimensions;
+      if (onboardingData.openResponses.isNotEmpty) {
+        try {
+          _logger.info(
+              '🧠 Synthesizing initial DNA from open responses via local SLM...',
+              tag: _logName);
+          final llmService = GetIt.instance<LLMService>();
+          final dnaService = InitialDNASynthesisService(llmService: llmService);
+          slmDimensions = await dnaService
+              .synthesizeInitialDNA(onboardingData.openResponses);
+          _logger.info('✅ Initial DNA synthesized successfully', tag: _logName);
+        } catch (e) {
+          _logger.warn(
+              '⚠️ Failed to synthesize initial DNA from open responses: $e',
+              tag: _logName);
+        }
+      }
+
       // STEP 3: Initialize PersonalityProfile
       PersonalityProfile? personalityProfile;
       try {
@@ -284,6 +315,7 @@ class AgentInitializationController
           userId,
           onboardingData: onboardingDataMap,
           socialMediaData: socialMediaData,
+          slmDimensions: slmDimensions,
         );
 
         _logger.info(
@@ -321,6 +353,41 @@ class AgentInitializationController
               tag: _logName);
           // Continue - personality update is non-blocking, use original profile
         }
+      }
+
+      // STEP 3.55: Create the initial persisted user signature from onboarding.
+      if (_entitySignatureService != null) {
+        try {
+          _logger.info(
+            '🧬 Creating initial user signature from onboarding baseline...',
+            tag: _logName,
+          );
+          await _entitySignatureService.initializeUserSignatureFromOnboarding(
+            userId: userId,
+            onboardingData: onboardingData,
+            personality: personalityProfile!,
+          );
+          _logger.info(
+            '✅ Initial user signature created from onboarding',
+            tag: _logName,
+          );
+        } catch (e, st) {
+          _logger.error(
+            '❌ Failed to create initial user signature: $e',
+            error: e,
+            stackTrace: st,
+            tag: _logName,
+          );
+          return AgentInitializationResult.failure(
+            error: 'Failed to create initial user signature: $e',
+            errorCode: 'USER_SIGNATURE_INIT_ERROR',
+          );
+        }
+      } else {
+        _logger.warn(
+          '⚠️ EntitySignatureService not available - skipping onboarding signature creation',
+          tag: _logName,
+        );
       }
 
       // STEP 3.6: Generate personality knot (Phase 3: Onboarding Integration)
@@ -416,10 +483,13 @@ class AgentInitializationController
 
               // Seed locality agent with homebase context (best-effort).
               try {
-                final ingestion =
-                    LocalityAgentIngestionServiceV1.tryGetFromDI();
-                if (ingestion != null) {
-                  await ingestion.seedHomebase(
+                final sl = GetIt.instance;
+                final localityKernel =
+                    sl.isRegistered<LocalityKernelContract>()
+                        ? sl<LocalityKernelContract>()
+                        : null;
+                if (localityKernel != null) {
+                  await localityKernel.seedHomebase(
                     userId: userId,
                     agentId: agentId,
                     latitude: geo.latitude!,

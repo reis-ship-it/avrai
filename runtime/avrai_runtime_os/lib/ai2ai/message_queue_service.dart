@@ -10,6 +10,9 @@ import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 /// **Phase 4:** Secure Encrypted Private AI2AI Network Implementation
 class MessageQueueService {
   static const String _logName = 'MessageQueueService';
+  static const String _wormholeQueueTable = 'wormhole_message_queue';
+  static const String _markExpiredRpc = 'mark_expired_wormhole_messages';
+  static const String _cleanupExpiredRpc = 'cleanup_expired_wormhole_messages';
 
   final SupabaseService _supabaseService;
   final AppLogger _logger = const AppLogger(
@@ -51,7 +54,7 @@ class MessageQueueService {
       }
 
       // Insert message into queue
-      await client.from('ai2ai_message_queue').insert({
+      await client.from(_wormholeQueueTable).insert({
         'message_id': messageId,
         'sender_agent_id': senderAgentId,
         'target_agent_id': targetAgentId,
@@ -90,11 +93,11 @@ class MessageQueueService {
 
       // Get pending messages for agent
       final response = await client
-          .from('ai2ai_message_queue')
+          .from(_wormholeQueueTable)
           .select()
           .eq('target_agent_id', agentId)
           .eq('status', 'pending')
-          .lt('expires_at', DateTime.now().toIso8601String())
+          .gt('expires_at', DateTime.now().toIso8601String())
           .order('timestamp', ascending: true)
           .limit(100); // Limit to prevent memory issues
 
@@ -129,7 +132,7 @@ class MessageQueueService {
         return; // Non-fatal if Supabase unavailable
       }
 
-      await client.from('ai2ai_message_queue').update({
+      await client.from(_wormholeQueueTable).update({
         'status': 'delivered',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('message_id', messageId);
@@ -159,7 +162,7 @@ class MessageQueueService {
 
       // Get current delivery attempts
       final response = await client
-          .from('ai2ai_message_queue')
+          .from(_wormholeQueueTable)
           .select('delivery_attempts')
           .eq('message_id', messageId)
           .single();
@@ -170,7 +173,7 @@ class MessageQueueService {
       // Update status based on attempts
       final status = newAttempts >= _maxDeliveryAttempts ? 'failed' : 'pending';
 
-      await client.from('ai2ai_message_queue').update({
+      await client.from(_wormholeQueueTable).update({
         'status': status,
         'delivery_attempts': newAttempts,
         'last_delivery_attempt': DateTime.now().toIso8601String(),
@@ -203,7 +206,7 @@ class MessageQueueService {
       }
 
       await client
-          .from('ai2ai_message_queue')
+          .from(_wormholeQueueTable)
           .delete()
           .eq('message_id', messageId);
 
@@ -230,10 +233,10 @@ class MessageQueueService {
       }
 
       // Mark expired messages
-      await client.rpc('mark_expired_ai2ai_messages');
+      await client.rpc(_markExpiredRpc);
 
       // Cleanup old expired messages (older than 7 days)
-      await client.rpc('cleanup_expired_ai2ai_messages');
+      await client.rpc(_cleanupExpiredRpc);
 
       _logger.debug('Expired messages cleaned up', tag: _logName);
     } catch (e, stackTrace) {
@@ -256,7 +259,7 @@ class MessageQueueService {
       }
 
       final response = await client
-          .from('ai2ai_message_queue')
+          .from(_wormholeQueueTable)
           .select('id')
           .eq('target_agent_id', agentId)
           .eq('status', 'pending');
@@ -278,7 +281,7 @@ class MessageQueueService {
 
       // Get oldest pending message
       final response = await client
-          .from('ai2ai_message_queue')
+          .from(_wormholeQueueTable)
           .select('message_id')
           .eq('target_agent_id', agentId)
           .eq('status', 'pending')

@@ -113,7 +113,10 @@ class EventCreationController
             geographicScopeService ?? GetIt.instance<GeographicScopeService>(),
         _geoHierarchyService =
             geoHierarchyService ?? GetIt.instance<GeoHierarchyService>(),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _personalityKnotService = personalityKnotService ??
             (GetIt.instance.isRegistered<PersonalityKnotService>()
                 ? GetIt.instance<PersonalityKnotService>()

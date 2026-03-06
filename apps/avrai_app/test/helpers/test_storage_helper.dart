@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../mocks/mock_storage_service.dart';
@@ -23,6 +24,9 @@ import '../mocks/mock_storage_service.dart';
 /// ```
 class TestStorageHelper {
   static bool _initialized = false;
+  static bool _pathProviderMocked = false;
+  static const MethodChannel _pathProviderChannel =
+      MethodChannel('plugins.flutter.io/path_provider');
 
   /// All GetStorage box names used by services
   ///
@@ -73,6 +77,25 @@ class TestStorageHelper {
     if (_initialized) return;
 
     TestWidgetsFlutterBinding.ensureInitialized();
+    if (!_pathProviderMocked) {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_pathProviderChannel,
+              (MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'getApplicationDocumentsDirectory':
+          case 'getApplicationSupportDirectory':
+          case 'getTemporaryDirectory':
+          case 'getLibraryDirectory':
+          case 'getExternalStorageDirectory':
+            return '/tmp';
+          case 'getExternalStorageDirectories':
+            return <String>['/tmp'];
+          default:
+            return '/tmp';
+        }
+      });
+      _pathProviderMocked = true;
+    }
 
     for (final name in _boxNames) {
       MockGetStorage.getInstance(boxName: name);

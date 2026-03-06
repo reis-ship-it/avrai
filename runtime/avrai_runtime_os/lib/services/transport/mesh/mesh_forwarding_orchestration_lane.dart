@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';

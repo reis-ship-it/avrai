@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:avrai_runtime_os/data/repositories/tax_profile_repository.dart';
 import 'package:avrai_core/models/payment/tax_profile.dart';
 import '../../../helpers/test_storage_helper.dart';
@@ -20,19 +21,24 @@ import '../../../helpers/test_storage_helper.dart';
 /// - TaxProfile: Tax profile model
 
 void main() {
+  const boxName = 'tax_profiles_repo_test';
+
   group('TaxProfileRepository', () {
     late TaxProfileRepository repository;
     late TaxProfile testProfile;
     late DateTime testDate;
 
-    setUp(() async {
-      // Use in-memory storage for tests
+    setUpAll(() async {
       await TestStorageHelper.initTestStorage();
-      // Clear storage before each test for isolation
-      final box = TestStorageHelper.getBox('tax_profiles');
+      await GetStorage.init(boxName);
+    });
+
+    setUp(() async {
+      // Clear storage before each test for isolation.
+      final box = GetStorage(boxName);
       await box.erase();
 
-      repository = TaxProfileRepository();
+      repository = TaxProfileRepository(storeName: boxName);
       testDate = DateTime(2025, 12, 1, 14, 0);
 
       testProfile = TaxProfile(
@@ -42,6 +48,11 @@ void main() {
         w9SubmittedAt: testDate,
         ssn: '123-45-6789',
       );
+    });
+
+    tearDownAll(() async {
+      await GetStorage(boxName).erase();
+      await TestStorageHelper.clearTestStorage();
     });
 
     group('saveTaxProfile', () {

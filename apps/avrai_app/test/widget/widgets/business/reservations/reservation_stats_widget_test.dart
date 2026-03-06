@@ -67,7 +67,7 @@ void main() {
       // Check that statistics are displayed
       expect(find.text('Statistics'), findsOneWidget);
       expect(find.text('3'), findsNWidgets(2)); // Total and one other stat
-      expect(find.text('1'), findsNWidgets(2)); // Pending and today
+      expect(find.text('1'), findsOneWidget); // Pending
       expect(find.text('2'), findsOneWidget); // Confirmed
     });
 

@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai_runtime_os/ai/privacy_protection.dart';
@@ -10,6 +13,10 @@ import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
 import 'package:avrai_runtime_os/ai2ai/services/ai2ai_broadcast_service.dart';
 import 'package:avrai_network/avra_network.dart';
+import 'package:get_it/get_it.dart';
+import 'package:avrai_knot/services/knot/deterministic_matcher_service.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_core/models/personality_knot.dart';
 
 /// Supports discovery of nearby AI personalities and prioritization
 class DiscoveryManager {
@@ -32,20 +39,53 @@ class DiscoveryManager {
     final anonymizedVibe = await PrivacyProtection.anonymizeUserVibe(userVibe);
     final nodes = await performDiscovery(anonymizedVibe);
 
-    final compatibility = await _analyzeCompatibility(userVibe, nodes);
+    final compatibility = await _analyzeCompatibility(userVibe, nodes,
+        localPersonality: personality);
     final prioritized = _prioritize(nodes, compatibility);
     return prioritized;
   }
 
   Future<Map<String, VibeCompatibilityResult>> _analyzeCompatibility(
-    UserVibe localVibe,
-    List<AIPersonalityNode> nodes,
-  ) async {
+      UserVibe localVibe, List<AIPersonalityNode> nodes,
+      {PersonalityProfile? localPersonality}) async {
     final result = <String, VibeCompatibilityResult>{};
+
+    // Phase 0.1 Pivot: Prepare local knot for deterministic matching if possible
+    PersonalityKnot? localKnot;
+    if (localPersonality != null) {
+      try {
+        final knotService =
+            GetIt.instance.isRegistered<PersonalityKnotService>()
+                ? GetIt.instance<PersonalityKnotService>()
+                : PersonalityKnotService();
+        localKnot = await knotService.generateKnot(localPersonality);
+      } catch (e) {
+        // Fallback to legacy analyzer if knot generation fails
+      }
+    }
+
     for (final node in nodes) {
-      final c =
-          await vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
-      result[node.nodeId] = c;
+      if (localKnot != null && node.knot != null) {
+        final matcher = DeterministicMatcherService();
+        final matchScore = matcher.calculateVibeMatch(localKnot, node.knot!);
+        result[node.nodeId] = VibeCompatibilityResult(
+          basicCompatibility: matchScore,
+          aiPleasurePotential: matchScore,
+          learningOpportunities: [],
+          connectionStrength: matchScore,
+          interactionStyle: AI2AIInteractionStyle.focusedExchange,
+          trustBuildingPotential: matchScore,
+          recommendedConnectionDuration: const Duration(seconds: 300),
+          connectionPriority:
+              matchScore >= VibeConstants.minimumCompatibilityThreshold
+                  ? ConnectionPriority.high
+                  : ConnectionPriority.low,
+        );
+      } else {
+        final c =
+            await vibeAnalyzer.analyzeVibeCompatibility(localVibe, node.vibe);
+        result[node.nodeId] = c;
+      }
     }
     return result;
   }

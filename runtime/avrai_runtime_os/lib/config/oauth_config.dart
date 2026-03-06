@@ -133,7 +133,17 @@ class OAuthConfig {
 
   // Redirect URI Configuration
   static const String redirectUriScheme = 'avrai';
-  static String getRedirectUri(String platform) => '$redirectUriScheme://oauth';
+  static const String redirectUriHost = 'oauth';
+  static const String redirectUriBase = '$redirectUriScheme://$redirectUriHost';
+
+  static String getRedirectUri(String platform) {
+    final normalizedPlatform = platform.trim().toLowerCase();
+    if (normalizedPlatform.isEmpty) {
+      return redirectUriBase;
+    }
+
+    return '$redirectUriBase?platform=${Uri.encodeQueryComponent(normalizedPlatform)}';
+  }
 
   // OAuth Scopes
   static const List<String> googleScopes = [

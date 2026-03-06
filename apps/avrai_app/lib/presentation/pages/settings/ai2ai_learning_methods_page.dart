@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_effectiveness_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_insights_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_recommendations_widget.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_learning_service.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// AI2AI Learning Methods Page
 ///
@@ -224,48 +225,14 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return PortalSurface(
+    return AppSurface(
       color: AppColors.primary.withValues(alpha: 0.1),
       borderColor: AppColors.primary.withValues(alpha: 0.24),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.psychology,
-              color: AppColors.primary,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AI2AI Learning Methods',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'See how your AI learns from other AIs',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: const AppPageHeader(
+        title: 'AI2AI Learning Methods',
+        subtitle: 'See how your AI learns from other AIs',
+        leadingIcon: Icons.psychology,
+        showDivider: false,
       ),
     );
   }
@@ -282,7 +249,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return const PortalSurface(
+    return const AppSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

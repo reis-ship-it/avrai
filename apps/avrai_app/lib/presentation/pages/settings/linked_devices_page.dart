@@ -3,9 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
 import 'package:avrai_runtime_os/crypto/signal/device_registration_service.dart';
-import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
 
 /// Linked Devices Page
 ///
@@ -235,7 +235,7 @@ class _DeviceCard extends StatelessWidget {
     final lastSeen = DateFormat.yMMMd().add_jm().format(device.lastSeenAt);
     final isActive = device.status == DeviceStatus.active;
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

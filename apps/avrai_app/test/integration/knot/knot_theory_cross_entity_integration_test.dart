@@ -7,6 +7,8 @@
 //
 // Part of Patent #31: Topological Knot Theory for Personality Representation
 
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -16,6 +18,9 @@ import '../../helpers/test_helpers.dart';
 import '../../helpers/integration_test_helpers.dart';
 
 void main() {
+  final runHeavyIntegrationTests =
+      Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+
   group('Knot Theory Cross-Entity Integration Tests', () {
     late EntityKnotService entityKnotService;
     late CrossEntityCompatibilityService compatibilityService;
@@ -23,6 +28,10 @@ void main() {
     bool rustLibInitialized = false;
 
     setUpAll(() async {
+      if (!runHeavyIntegrationTests) {
+        return;
+      }
+
       // Initialize Rust library once for all tests
       if (!rustLibInitialized) {
         try {
@@ -476,5 +485,5 @@ void main() {
         expect(paths, isEmpty);
       });
     });
-  });
+  }, skip: !runHeavyIntegrationTests);
 }

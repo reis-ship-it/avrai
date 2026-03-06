@@ -451,16 +451,12 @@ class FriendChatService {
     required String messageId,
   }) async {
     final agentIdService = _agentIdService;
-    final realtime = _realtimeBackend;
     final atomicClock = _atomicClock;
     final dmStore = _dmStore;
 
-    if (agentIdService == null ||
-        realtime == null ||
-        atomicClock == null ||
-        dmStore == null) {
+    if (agentIdService == null || atomicClock == null || dmStore == null) {
       throw Exception(
-        'Direct message transport not available (missing AgentIdService/RealtimeBackend/AtomicClockService/DmMessageStore)',
+        'Direct message transport not available (missing AgentIdService/AtomicClockService/DmMessageStore)',
       );
     }
 
@@ -478,8 +474,8 @@ class FriendChatService {
 
     final atomicTimestamp = await atomicClock.getAtomicTimestamp();
 
-    // 1) Store ciphertext blob (recipient can fetch by messageId).
-    await dmStore.putDmBlob(
+    // 1) Server-authoritative enqueue: writes blob + notification atomically.
+    await dmStore.enqueueDm(
       messageId: messageId,
       fromUserId: userId,
       toUserId: friendId,
@@ -487,25 +483,6 @@ class FriendChatService {
       recipientAgentId: recipientAgentId,
       encrypted: encrypted,
       sentAt: atomicTimestamp.serverTime,
-    );
-
-    await realtime.connect();
-    final inboxChannel = '$_dmMailboxChannelPrefix$friendId';
-
-    // 2) Send payloadless notification (realtime change only contains messageId).
-    await realtime.sendMessage(
-      inboxChannel,
-      RealtimeMessage(
-        id: messageId,
-        senderId: '',
-        content: messageId,
-        type: 'dm_notify',
-        timestamp: atomicTimestamp.serverTime,
-        metadata: <String, dynamic>{
-          'kind': 'dm_notify_v1',
-          'messageId': messageId,
-        },
-      ),
     );
   }
 

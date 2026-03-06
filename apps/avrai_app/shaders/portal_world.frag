@@ -80,10 +80,10 @@ void main() {
     if (rd.y > 0.0) {
         // SKY RENDER
         // Simple Gradient for now
-        vec3 skyTopDay = vec3(0.2, 0.5, 0.9);
-        vec3 skyHorizonDay = vec3(0.7, 0.8, 0.9);
+        vec3 skyTopDay = vec3(0.4, 0.6, 0.85); // Softer blue
+        vec3 skyHorizonDay = vec3(0.85, 0.75, 0.65); // Warm, nostalgic golden hour
         vec3 skyTopNight = vec3(0.05, 0.05, 0.15);
-        vec3 skyHorizonNight = vec3(0.1, 0.1, 0.25);
+        vec3 skyHorizonNight = vec3(0.15, 0.1, 0.2); // Slightly warmer night horizon
 
         vec3 skyTop = mix(skyTopNight, skyTopDay, uDayCycle);
         vec3 skyHorizon = mix(skyHorizonNight, skyHorizonDay, uDayCycle);
@@ -97,8 +97,8 @@ void main() {
         cloudUV += vec2(uTime * 0.05, uTime * 0.02); // Wind
         float clouds = fbm(cloudUV);
         
-        vec3 cloudColor = mix(vec3(0.8), vec3(1.0), uDayCycle);
-        float cloudAlpha = smoothstep(0.4, 0.8, clouds);
+        vec3 cloudColor = mix(vec3(0.85, 0.8, 0.75), vec3(1.0, 0.95, 0.9), uDayCycle); // Warmer clouds
+        float cloudAlpha = smoothstep(0.3, 0.9, clouds); // Softer, fluffier transition
         
         col = mix(col, cloudColor, cloudAlpha * 0.7 * (1.0 - smoothstep(0.0, 0.2, rd.y))); // Fade at horizon
 
@@ -124,8 +124,8 @@ void main() {
             
             float grassNoise = fbm(grassUV);
             
-            vec3 grassColorDay = vec3(0.1, 0.6, 0.1);
-            vec3 grassColorNight = vec3(0.02, 0.1, 0.05);
+            vec3 grassColorDay = vec3(0.35, 0.5, 0.3); // Muted, natural sage/olive
+            vec3 grassColorNight = vec3(0.05, 0.12, 0.08);
             vec3 grassColor = mix(grassColorNight, grassColorDay, uDayCycle);
             
             // Variation
@@ -135,7 +135,7 @@ void main() {
             float dist = length(pos - ro);
             float fogFactor = 1.0 - exp(-dist * 0.1);
             
-            vec3 horizonColor = mix(vec3(0.1, 0.1, 0.25), vec3(0.7, 0.8, 0.9), uDayCycle);
+            vec3 horizonColor = mix(vec3(0.15, 0.1, 0.2), vec3(0.85, 0.75, 0.65), uDayCycle);
             col = mix(grassColor, horizonColor, fogFactor);
         }
     }

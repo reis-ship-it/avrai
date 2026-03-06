@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -339,7 +339,7 @@ class _ProfileBasicsPageState extends State<ProfileBasicsPage> {
           const SizedBox(height: 32),
 
           // Info card
-          PortalSurface(
+          AppSurface(
             color: AppColors.grey600.withValues(alpha: 0.1),
             borderColor: AppColors.grey600.withValues(alpha: 0.3),
             child: Row(

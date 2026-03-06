@@ -12,6 +12,7 @@ class RealtimeAgentGlobeWidget extends StatefulWidget {
     required this.agents,
     required this.title,
     this.links = const <GlobeConnectionLink>[],
+    this.useThreeJs = true,
     this.temporalState,
     this.onTemporalStateRendered,
   });
@@ -19,6 +20,7 @@ class RealtimeAgentGlobeWidget extends StatefulWidget {
   final List<ActiveAIAgentData> agents;
   final String title;
   final List<GlobeConnectionLink> links;
+  final bool useThreeJs;
   final GlobeTemporalStateView? temporalState;
   final ValueChanged<GlobeTemporalRenderAck>? onTemporalStateRendered;
 
@@ -136,16 +138,25 @@ class _RealtimeAgentGlobeWidgetState extends State<RealtimeAgentGlobeWidget> {
             SizedBox(
               height: 360,
               width: double.infinity,
-              child: ThreeJsVisualizationWidget(
-                htmlFile: 'admin_agent_globe.html',
-                width: double.infinity,
-                height: 360,
-                showControls: true,
-                onReady: (bridge) {
-                  _bridge = bridge;
-                  _pushAgentsToGlobe();
-                },
-              ),
+              child: widget.useThreeJs
+                  ? ThreeJsVisualizationWidget(
+                      htmlFile: 'admin_agent_globe.html',
+                      width: double.infinity,
+                      height: 360,
+                      showControls: true,
+                      onReady: (bridge) {
+                        _bridge = bridge;
+                        _pushAgentsToGlobe();
+                      },
+                    )
+                  : Container(
+                      alignment: Alignment.center,
+                      color: AppColors.black,
+                      child: const Text(
+                        '3D globe disabled in this environment',
+                        style: TextStyle(color: AppColors.white),
+                      ),
+                    ),
             ),
             const SizedBox(height: 10),
             Wrap(

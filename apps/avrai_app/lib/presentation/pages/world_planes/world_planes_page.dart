@@ -7,7 +7,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/knot/worldsheet_4d_widget.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -114,7 +114,7 @@ class _WorldPlanesPageState extends State<WorldPlanesPage> {
 
   Widget _buildUnavailable(BuildContext context, WorldPlaneViewState? state) {
     final spacing = context.spacing;
-    return PortalSurface(
+    return AppSurface(
       padding: EdgeInsets.all(spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +172,7 @@ class _WorldPlanesPageState extends State<WorldPlanesPage> {
         SizedBox(
           height: 420,
           width: double.infinity,
-          child: PortalSurface(
+          child: AppSurface(
             padding: EdgeInsets.all(spacing.sm),
             child: Worldsheet4DWidget(
               worldsheet: state.worldsheet!,

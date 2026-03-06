@@ -41,6 +41,24 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
   List<ExpertisePin>? _pins;
   bool _isLoading = true;
 
+  IconData _resolveMaterialIcon(int codePoint) {
+    const fallback = Icons.place;
+    final icon = <int, IconData>{
+      Icons.local_cafe.codePoint: Icons.local_cafe,
+      Icons.restaurant.codePoint: Icons.restaurant,
+      Icons.menu_book.codePoint: Icons.menu_book,
+      Icons.park.codePoint: Icons.park,
+      Icons.museum.codePoint: Icons.museum,
+      Icons.shopping_bag.codePoint: Icons.shopping_bag,
+      Icons.local_bar.codePoint: Icons.local_bar,
+      Icons.hotel.codePoint: Icons.hotel,
+      Icons.ramen_dining.codePoint: Icons.ramen_dining,
+      Icons.checkroom.codePoint: Icons.checkroom,
+      Icons.place.codePoint: Icons.place,
+    }[codePoint];
+    return icon ?? fallback;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -335,7 +353,7 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              IconData(pin.getPinIcon(), fontFamily: 'MaterialIcons'),
+              _resolveMaterialIcon(pin.getPinIcon()),
               size: 20,
               color: pinColor,
             ),

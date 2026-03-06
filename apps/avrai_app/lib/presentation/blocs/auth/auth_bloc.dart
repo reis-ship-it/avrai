@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/user/user.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/get_current_user_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_apple_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/update_password_usecase.dart';
@@ -15,9 +17,11 @@ import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai_runtime_os/services/admin/admin_internal_use_agreement_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/oauth/oauth_deep_link_handler.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show StorageService, SharedPreferencesCompat;
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_network/interfaces/auth_backend.dart';
 
 // Events
 abstract class AuthEvent {}
@@ -37,6 +41,10 @@ class SignInRequested extends AuthEvent {
     this.adminInternalUseAgreementText = '',
   });
 }
+
+class GoogleSignInRequested extends AuthEvent {}
+
+class AppleSignInRequested extends AuthEvent {}
 
 class SignUpRequested extends AuthEvent {
   final String email;
@@ -63,12 +71,38 @@ class PasswordResetRequested extends AuthEvent {
   PasswordResetRequested(this.email);
 }
 
+class OAuthCallbackReceived extends AuthEvent {
+  final String platform;
+  final Map<String, String> params;
+
+  OAuthCallbackReceived({
+    required this.platform,
+    required this.params,
+  });
+}
+
+class OAuthCancelled extends AuthEvent {
+  final String platform;
+  final String message;
+
+  OAuthCancelled({
+    required this.platform,
+    required this.message,
+  });
+}
+
 // States
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
+
+class OAuthInProgress extends AuthState {
+  final String provider;
+
+  OAuthInProgress(this.provider);
+}
 
 class Authenticated extends AuthState {
   final User user;
@@ -85,6 +119,26 @@ class PasswordResetSent extends AuthState {
   PasswordResetSent(this.email);
 }
 
+class SignupConfirmationRequired extends AuthState {
+  final String email;
+  final String message;
+
+  SignupConfirmationRequired({
+    required this.email,
+    required this.message,
+  });
+}
+
+class OAuthCancelledState extends AuthState {
+  final String platform;
+  final String message;
+
+  OAuthCancelledState({
+    required this.platform,
+    required this.message,
+  });
+}
+
 class AuthError extends AuthState {
   final String message;
 
@@ -95,39 +149,183 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AppLogger _logger =
       const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final SignInUseCase signInUseCase;
+  final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final SignInWithAppleUseCase signInWithAppleUseCase;
   final SignUpUseCase signUpUseCase;
   final SignOutUseCase signOutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final UpdatePasswordUseCase updatePasswordUseCase;
+  final OAuthDeepLinkHandler? _oauthDeepLinkHandler;
+  Timer? _oauthTimeout;
+  String? _oauthInFlightProvider;
+  bool _isCompletingOAuth = false;
 
   AuthBloc({
     required this.signInUseCase,
+    required this.signInWithGoogleUseCase,
+    required this.signInWithAppleUseCase,
     required this.signUpUseCase,
     required this.signOutUseCase,
     required this.getCurrentUserUseCase,
     required this.updatePasswordUseCase,
-  }) : super(AuthInitial()) {
+  })  : _oauthDeepLinkHandler = di.sl.isRegistered<OAuthDeepLinkHandler>()
+            ? di.sl<OAuthDeepLinkHandler>()
+            : null,
+        super(AuthInitial()) {
     on<SignInRequested>(_onSignInRequested);
+    on<GoogleSignInRequested>(_onGoogleSignInRequested);
+    on<AppleSignInRequested>(_onAppleSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<UpdatePasswordRequested>(_onUpdatePasswordRequested);
+    on<PasswordResetRequested>(_onPasswordResetRequested);
+    on<OAuthCallbackReceived>(_onOAuthCallbackReceived);
+    on<OAuthCancelled>(_onOAuthCancelled);
+
+    _initializeOAuthBridge();
   }
 
-  /// Normalize a login identifier into an email address.
+  Future<void> _onPasswordResetRequested(
+    PasswordResetRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final authBackend = di.sl<AuthBackend>();
+      await authBackend.sendPasswordReset(event.email);
+      emit(PasswordResetSent(event.email));
+    } catch (e) {
+      _logger.error('Password reset failed', error: e, tag: 'AuthBloc');
+      emit(AuthError('Failed to send reset email. Please try again.'));
+    }
+  }
+
+  void _initializeOAuthBridge() {
+    final handler = _oauthDeepLinkHandler;
+    if (handler == null) {
+      return;
+    }
+
+    handler.onOAuthCallback = (platform, params) {
+      add(OAuthCallbackReceived(platform: platform, params: params));
+    };
+    handler.startListening();
+    unawaited(handler.getInitialLink());
+  }
+
+  Future<void> _onGoogleSignInRequested(
+    GoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    await _startOAuthFlow(
+      provider: 'google',
+      emit: emit,
+      launch: signInWithGoogleUseCase.call,
+    );
+  }
+
+  Future<void> _onAppleSignInRequested(
+    AppleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    await _startOAuthFlow(
+      provider: 'apple',
+      emit: emit,
+      launch: signInWithAppleUseCase.call,
+    );
+  }
+
+  Future<void> _startOAuthFlow({
+    required String provider,
+    required Emitter<AuthState> emit,
+    required Future<void> Function() launch,
+  }) async {
+    emit(OAuthInProgress(provider));
+    _oauthInFlightProvider = provider;
+    _isCompletingOAuth = false;
+    _oauthTimeout?.cancel();
+    _oauthTimeout = Timer(const Duration(minutes: 2), () {
+      add(OAuthCancelled(
+        platform: provider,
+        message: 'Sign-in was cancelled or timed out. Please try again.',
+      ));
+    });
+
+    try {
+      await launch();
+    } catch (e) {
+      _clearOAuthFlow();
+      emit(AuthError(_formatOAuthError(e, fallbackProvider: provider)));
+    }
+  }
+
+  Future<void> _onOAuthCallbackReceived(
+    OAuthCallbackReceived event,
+    Emitter<AuthState> emit,
+  ) async {
+    final provider = event.platform == 'unknown' || event.platform.isEmpty
+        ? (_oauthInFlightProvider ?? 'oauth')
+        : event.platform;
+
+    final callbackError = _readOAuthCallbackError(event.params);
+    if (callbackError != null) {
+      final isCancelled = callbackError.toLowerCase().contains('cancel') ||
+          callbackError.toLowerCase().contains('denied');
+      add(OAuthCancelled(
+        platform: provider,
+        message: isCancelled ? 'Sign-in was cancelled.' : callbackError,
+      ));
+      return;
+    }
+
+    if (_isCompletingOAuth) {
+      return;
+    }
+
+    _oauthInFlightProvider ??= provider;
+    _isCompletingOAuth = true;
+    emit(OAuthInProgress(provider));
+
+    for (var attempt = 0; attempt < 6; attempt++) {
+      final user = await getCurrentUserUseCase();
+      if (user != null) {
+        final isOffline = user.isOnline == false;
+        _clearOAuthFlow();
+        emit(Authenticated(user: user, isOffline: isOffline));
+        unawaited(_postLoginInit(
+          user: user,
+          password: null,
+          allowCloudLoad: false,
+        ));
+        return;
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    }
+
+    _clearOAuthFlow();
+    emit(AuthError(
+      'We returned from $provider sign-in, but the session did not finish loading. Please try again.',
+    ));
+  }
+
+  Future<void> _onOAuthCancelled(
+    OAuthCancelled event,
+    Emitter<AuthState> emit,
+  ) async {
+    _clearOAuthFlow();
+    emit(OAuthCancelledState(
+      platform: event.platform,
+      message: event.message,
+    ));
+  }
+
+  /// Normalize login input for the beta email/password flow.
   ///
-  /// The app supports logging in using either:
-  /// - an email (`user@example.com`)
-  /// - a username (`reis`) which maps to a deterministic dev email (`reis@avrai.app`)
-  ///
-  /// This keeps the backend auth model simple (email+password) while allowing a
-  /// friendlier UX on the login page.
-  String _normalizeEmailOrUsername(String value) {
-    final v = value.trim();
-    if (v.isEmpty) return v;
-    if (v.contains('@')) return v;
-    final safe = v.toLowerCase().replaceAll(RegExp(r'\s+'), '');
-    return '$safe@avrai.app';
+  /// Beta auth is intentionally email-first to match the real backend contract.
+  String _normalizeEmail(String value) {
+    return value.trim();
   }
 
   Future<void> _onSignInRequested(
@@ -136,7 +334,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final normalizedEmail = _normalizeEmailOrUsername(event.email);
+      final normalizedEmail = _normalizeEmail(event.email);
       _logger.info('🔐 AuthBloc: Attempting sign in for ${event.email}',
           tag: 'AuthBloc');
       final user = await signInUseCase(normalizedEmail, event.password);
@@ -167,6 +365,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final isOffline = user.isOnline == false;
         _logger.info('🔐 AuthBloc: User authenticated successfully',
             tag: 'AuthBloc');
+        _clearOAuthFlow();
 
         // Emit authenticated ASAP so routing/UI can proceed immediately.
         // All heavy post-login initialization runs in the background.
@@ -228,6 +427,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await signUpUseCase(event.email, event.password, event.name);
       if (user != null) {
         final isOffline = user.isOnline == false;
+        _clearOAuthFlow();
         emit(Authenticated(user: user, isOffline: isOffline));
       } else {
         emit(AuthError(
@@ -235,8 +435,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       _logger.error('🔐 AuthBloc: Sign up error', error: e, tag: 'AuthBloc');
-      // Extract user-friendly error message
       final errorMessage = e.toString().replaceFirst('Exception: ', '');
+      if (errorMessage.toLowerCase().contains('signup_confirmation_required')) {
+        emit(SignupConfirmationRequired(
+          email: event.email,
+          message:
+              'Check your email to confirm your account before signing in.',
+        ));
+        return;
+      }
       emit(AuthError(
           errorMessage.isEmpty ? 'Failed to create account' : errorMessage));
     }
@@ -273,6 +480,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       await signOutUseCase();
+      _clearOAuthFlow();
       try {
         final prefs = await SharedPreferencesCompat.getInstance();
         await AdminInternalUseAgreementService(
@@ -308,6 +516,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await getCurrentUserUseCase();
       if (user != null) {
         final isOffline = user.isOnline == false;
+        _clearOAuthFlow();
         emit(Authenticated(user: user, isOffline: isOffline));
 
         // Background init (no password available during auth-check).
@@ -398,6 +607,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _logger.debug('AuthBloc: AI2AI post-login init skipped: $e',
           tag: 'AuthBloc');
     }
+  }
+
+  String? _readOAuthCallbackError(Map<String, String> params) {
+    final error = params['error'];
+    final description = params['error_description'] ?? params['error_code'];
+    if (error == null || error.isEmpty) {
+      return null;
+    }
+
+    if (description != null && description.isNotEmpty) {
+      return '$error: $description';
+    }
+
+    return error;
+  }
+
+  String _formatOAuthError(Object error, {required String fallbackProvider}) {
+    final raw = error.toString().replaceFirst('Exception: ', '');
+    final normalized = raw.toLowerCase();
+    if (normalized.contains('cancel') || normalized.contains('denied')) {
+      return 'Sign-in with $fallbackProvider was cancelled.';
+    }
+    if (normalized.contains('identity') ||
+        normalized.contains('already exists') ||
+        normalized.contains('already registered') ||
+        normalized.contains('duplicate')) {
+      return 'This email already belongs to another sign-in method. Use your existing login method for now.';
+    }
+    if (normalized.contains('network') || normalized.contains('connection')) {
+      return 'Network error while starting $fallbackProvider sign-in. Please try again.';
+    }
+
+    return raw.isEmpty ? 'Unable to start $fallbackProvider sign-in.' : raw;
+  }
+
+  void _clearOAuthFlow() {
+    _oauthTimeout?.cancel();
+    _oauthTimeout = null;
+    _oauthInFlightProvider = null;
+    _isCompletingOAuth = false;
   }
 
   Future<void> _onUpdatePasswordRequested(
@@ -497,5 +746,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           : 'Failed to update password: ${e.toString()}';
       emit(AuthError(errorMessage));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _clearOAuthFlow();
+    if (_oauthDeepLinkHandler?.onOAuthCallback != null) {
+      _oauthDeepLinkHandler?.onOAuthCallback = null;
+    }
+    return super.close();
   }
 }

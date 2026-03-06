@@ -1,7 +1,7 @@
 name: avrai_core
 description: Core shared contracts, schemas, and primitives for the AVRAI 3-Prong architecture.
 publish_to: 'none'
-version: 0.1.0
+version: 0.5.0-beta
 
 environment:
   sdk: '>=3.5.0 <4.0.0'

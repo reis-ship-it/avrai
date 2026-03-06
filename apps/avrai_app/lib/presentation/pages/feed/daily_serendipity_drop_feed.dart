@@ -1,11 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/material.dart' hide Colors;
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
-import 'package:avrai/presentation/widgets/encounter/progressive_confidence_widget.dart';
 
-/// The core Feed UI for the Trojan Horse UX (Spike 6).
-/// Displays the LLM's nightly contextual insight and exactly 4 curated items.
+import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
+
+/// The core feed UI for the nightly serendipity drop.
 class DailySerendipityDropFeed extends StatelessWidget {
   final DailySerendipityDrop drop;
 
@@ -22,49 +22,45 @@ class DailySerendipityDropFeed extends StatelessWidget {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // Header
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24.0, 48.0, 24.0, 32.0),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Your Daily Drop',
-                      style: TextStyle(
-                        color: AppColors.electricGreen,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+                    const AppPageHeader(
+                      title: 'Your Daily Drop',
+                      subtitle:
+                          'A calm summary of what feels most worth your attention today.',
+                      leadingIcon: Icons.auto_awesome_outlined,
+                      showDivider: false,
                     ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      'Derived from your physical encounters yesterday.',
-                      style: TextStyle(
-                        color: AppColors.grey400,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    const SizedBox(height: 24.0),
-                    // The LLM's generated insight connecting the math to human reality
-                    Container(
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(color: AppColors.white.withOpacity(0.1)),
-                      ),
+                    const SizedBox(height: 16),
+                    AppSurface(
+                      color: AppColors.white.withValues(alpha: 0.04),
+                      borderColor: AppColors.white.withValues(alpha: 0.08),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.auto_awesome, color: AppColors.electricGreen, size: 24.0),
-                          const SizedBox(width: 16.0),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome_outlined,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               drop.llmContextualInsight,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppColors.white,
-                                fontSize: 16.0,
+                                fontSize: 15,
                                 height: 1.5,
                               ),
                             ),
@@ -76,27 +72,31 @@ class DailySerendipityDropFeed extends StatelessWidget {
                 ),
               ),
             ),
-
-            // The 4 Items
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  _buildSectionHeader('An Event to Attend'),
+                  _buildSectionHeader('Event'),
                   _buildItemCard(drop.event, Icons.calendar_today_rounded),
-                  const SizedBox(height: 24.0),
-                  
-                  _buildSectionHeader('A Spot to Check Out'),
-                  _buildItemCard(drop.spot, Icons.location_on_rounded),
-                  const SizedBox(height: 24.0),
-                  
-                  _buildSectionHeader('A Community to Join'),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Spot'),
+                  _buildItemCard(drop.spot, Icons.location_on_outlined),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Community'),
                   _buildItemCard(drop.community, Icons.people_outline_rounded),
-                  const SizedBox(height: 24.0),
-                  
-                  _buildSectionHeader('A Club to Look Into'),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Club'),
                   _buildItemCard(drop.club, Icons.shield_outlined),
-                  const SizedBox(height: 48.0), // Bottom padding
+                  const SizedBox(height: 24),
+                  if (drop.wildcard != null) ...[
+                    _buildSectionHeader('Wildcard'),
+                    _buildWildcardCard(drop.wildcard!),
+                    const SizedBox(height: 24),
+                  ],
+                  if (drop.latentCommunity != null) ...[
+                    _buildSectionHeader('Emerging Community'),
+                    _buildLatentCommunityCard(drop.latentCommunity!),
+                  ],
                 ]),
               ),
             ),
@@ -108,131 +108,338 @@ class DailySerendipityDropFeed extends StatelessWidget {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           color: AppColors.white,
-          fontSize: 20.0,
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 
   Widget _buildItemCard(DropItem item, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.black,
-        borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(
-          color: AppColors.electricGreen.withOpacity(0.3),
-          width: 1.0,
-        ),
-      ),
-      child: Stack(
+    return AppSurface(
+      color: AppColors.white.withValues(alpha: 0.03),
+      borderColor: AppColors.white.withValues(alpha: 0.08),
+      radius: 20,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Background Glow based on Archetype Affinity
-          Positioned(
-            right: -20,
-            top: -20,
-            child: ProgressiveConfidenceWidget(
-              confidence: item.archetypeAffinity,
-              size: 100.0,
-              primaryColor: AppColors.electricGreen.withOpacity(0.2),
-            ),
-          ),
-          
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: AppColors.electricGreen.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: Icon(icon, color: AppColors.electricGreen, size: 24.0),
-                        ),
-                        const SizedBox(width: 16.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4.0),
-                              Text(
-                                item.subtitle,
-                                style: TextStyle(
-                                  color: AppColors.grey400,
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-                    // Specific details based on type
-                    if (item is DropEvent) ...[
-                      _buildDetailRow(Icons.access_time, _formatTime(item.time)),
-                      _buildDetailRow(Icons.place_outlined, item.locationName),
-                    ] else if (item is DropSpot) ...[
-                      _buildDetailRow(Icons.category_outlined, item.category),
-                      _buildDetailRow(Icons.directions_walk, '${item.distanceMiles.toStringAsFixed(1)} miles away'),
-                    ] else if (item is DropCommunity) ...[
-                      _buildDetailRow(Icons.group, '${item.memberCount} members'),
-                      _buildDetailRow(Icons.favorite_border, item.commonInterests.join(', ')),
-                    ] else if (item is DropClub) ...[
-                      _buildDetailRow(Icons.assignment_ind_outlined, 'Status: ${item.applicationStatus}'),
-                      _buildDetailRow(Icons.waves, item.vibe),
-                    ],
-                    
-                    const SizedBox(height: 16.0),
-                    
-                    // The "Why"
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: AppColors.electricGreen.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: AppColors.electricGreen.withOpacity(0.2)),
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.timeline, color: AppColors.electricGreen, size: 14.0),
-                          const SizedBox(width: 6.0),
-                          Text(
-                            '${(item.archetypeAffinity * 100).toInt()}% Match with your resonance pattern',
-                            style: TextStyle(
-                              color: AppColors.electricGreen,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.subtitle,
+                      style: const TextStyle(
+                        color: AppColors.grey400,
+                        fontSize: 14,
                       ),
                     ),
                   ],
                 ),
+              ),
+              _buildAffinityChip(item.archetypeAffinity),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (item is DropEvent) ...[
+            _buildDetailRow(Icons.access_time, _formatTime(item.time)),
+            _buildDetailRow(Icons.place_outlined, item.locationName),
+          ] else if (item is DropSpot) ...[
+            _buildDetailRow(Icons.category_outlined, item.category),
+            _buildDetailRow(
+              Icons.directions_walk,
+              '${item.distanceMiles.toStringAsFixed(1)} miles away',
+            ),
+          ] else if (item is DropCommunity) ...[
+            _buildDetailRow(
+                Icons.group_outlined, '${item.memberCount} members'),
+            _buildDetailRow(
+              Icons.favorite_border,
+              item.commonInterests.join(', '),
+            ),
+          ] else if (item is DropClub) ...[
+            _buildDetailRow(
+              Icons.assignment_ind_outlined,
+              'Status: ${item.applicationStatus}',
+            ),
+            _buildDetailRow(Icons.waves_outlined, item.vibe),
+          ],
+          const SizedBox(height: 16),
+          AppSurface(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            color: AppColors.primary.withValues(alpha: 0.06),
+            borderColor: AppColors.primary.withValues(alpha: 0.14),
+            radius: 12,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.timeline, color: AppColors.primary, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item.signatureSummary?.trim().isNotEmpty == true
+                        ? item.signatureSummary!
+                        : '${(item.archetypeAffinity * 100).toInt()}% aligned with your recent pattern',
+                    style: const TextStyle(
+                      color: AppColors.grey200,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWildcardCard(DropWildcard item) {
+    return AppSurface(
+      color: AppColors.white.withValues(alpha: 0.03),
+      borderColor: AppColors.error.withValues(alpha: 0.22),
+      radius: 20,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.flash_on, color: AppColors.error),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.subtitle,
+                      style: const TextStyle(
+                        color: AppColors.grey400,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildCallout(
+            icon: Icons.psychology_alt_outlined,
+            title: 'Worth a second look',
+            titleColor: AppColors.error,
+            body: item.doubtReasoning,
+          ),
+          const SizedBox(height: 12),
+          _buildCallout(
+            icon: Icons.hub_outlined,
+            title: 'Why it still fits',
+            titleColor: AppColors.primary,
+            body: item.latentVibeMatch,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLatentCommunityCard(DropLatentCommunity item) {
+    return AppSurface(
+      color: AppColors.white.withValues(alpha: 0.03),
+      borderColor: AppColors.primaryLight.withValues(alpha: 0.2),
+      radius: 20,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.blur_on_outlined,
+                  color: AppColors.primaryLight,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.subtitle,
+                      style: const TextStyle(
+                        color: AppColors.grey400,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildDetailRow(
+            Icons.group_work_outlined,
+            '${item.discoveredMemberCount} people already fit this signal',
+          ),
+          const SizedBox(height: 12),
+          _buildCallout(
+            icon: Icons.key_outlined,
+            title: 'How to start it',
+            titleColor: AppColors.primaryLight,
+            body: item.founderPrompt,
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text('Start this community'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCallout({
+    required IconData icon,
+    required String title,
+    required Color titleColor,
+    required String body,
+  }) {
+    return AppSurface(
+      padding: const EdgeInsets.all(12),
+      color: titleColor.withValues(alpha: 0.06),
+      borderColor: titleColor.withValues(alpha: 0.16),
+      radius: 12,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: titleColor, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: titleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: const TextStyle(
+              color: AppColors.grey300,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAffinityChip(double affinity) {
+    return AppSurface(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      color: AppColors.primary.withValues(alpha: 0.08),
+      borderColor: AppColors.primary.withValues(alpha: 0.14),
+      radius: 999,
+      child: Text(
+        '${(affinity * 100).toInt()}%',
+        style: const TextStyle(
+          color: AppColors.primary,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.grey400, size: 16),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: AppColors.grey300,
+                fontSize: 14,
+                height: 1.35,
               ),
             ),
           ),
@@ -241,26 +448,10 @@ class DailySerendipityDropFeed extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.grey500, size: 16.0),
-          const SizedBox(width: 8.0),
-          Text(
-            text,
-            style: TextStyle(
-              color: AppColors.grey300,
-              fontSize: 14.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _formatTime(DateTime time) {
-    return '${time.hour}:${time.minute.toString().padLeft(2, '0')} ${time.hour >= 12 ? 'PM' : 'AM'}';
+    final hour =
+        time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:${time.minute.toString().padLeft(2, '0')} $period';
   }
 }

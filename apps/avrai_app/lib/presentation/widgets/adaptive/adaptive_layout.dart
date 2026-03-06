@@ -39,11 +39,11 @@ class AdaptivePageScaffold extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: Responsive.value(
             context: context,
-            xs: context.portal.maxPhoneContentWidth,
-            sm: context.portal.maxPhoneContentWidth,
-            md: context.portal.maxTabletContentWidth,
-            lg: context.portal.maxDesktopContentWidth,
-            xl: context.portal.maxDesktopContentWidth,
+            xs: context.layout.maxPhoneContentWidth,
+            sm: context.layout.maxPhoneContentWidth,
+            md: context.layout.maxTabletContentWidth,
+            lg: context.layout.maxDesktopContentWidth,
+            xl: context.layout.maxDesktopContentWidth,
           ),
         ),
         child: Padding(
@@ -106,7 +106,7 @@ class AdaptivePlatformPageScaffold extends StatelessWidget {
   final bool scrollable;
   final bool useSafeArea;
   final EdgeInsetsGeometry? padding;
-  final Color? backgroundColor;
+  final Color backgroundColor;
   final bool constrainBody;
   final bool showNavigationBar;
   final PreferredSizeWidget? materialBottom;
@@ -128,7 +128,7 @@ class AdaptivePlatformPageScaffold extends StatelessWidget {
     this.scrollable = false,
     this.useSafeArea = true,
     this.padding,
-    this.backgroundColor,
+    this.backgroundColor = Colors.transparent,
     this.constrainBody = true,
     this.showNavigationBar = true,
     this.materialBottom,
@@ -157,11 +157,12 @@ class AdaptivePlatformPageScaffold extends StatelessWidget {
         : (useSafeArea ? SafeArea(child: body) : body);
 
     if (_isCupertinoPlatform(platform)) {
-      final hasBackStack = Navigator.of(context).canPop();
+      final navigator = Navigator.maybeOf(context);
+      final hasBackStack = navigator?.canPop() ?? false;
       final resolvedLeading = leading ??
           (automaticallyImplyLeading && hasBackStack
               ? CupertinoNavigationBarBackButton(
-                  onPressed: () => Navigator.of(context).maybePop(),
+                  onPressed: () => navigator?.maybePop(),
                 )
               : null);
 

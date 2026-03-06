@@ -2,8 +2,8 @@ import 'package:avrai_runtime_os/services/device/device_capabilities.dart';
 
 enum OfflineLlmTier {
   none,
-  small3b,
-  llama8b,
+  qwen3b, // Mobile standard
+  phi4,   // Desktop / high-end tablet standard
 }
 
 class OnDeviceAiGateResult {
@@ -25,12 +25,11 @@ class OnDeviceAiGateResult {
 /// **Mid-to-high only strategy:** we intentionally set a higher bar.
 class OnDeviceAiCapabilityGate {
   // Baseline thresholds (mid/high range target).
-  static const int _minRamMbFor3b = 6 * 1024;
-  static const int _minRamMbFor8b = 8 * 1024;
+  static const int _minRamMbFor3b = 4 * 1024; // 4GB for Qwen 2.5 3B (takes ~2.2GB)
+  static const int _minRamMbFor4b = 6 * 1024; // 6GB for Phi-4 Mini (takes ~2.8GB)
 
-  static const int _minFreeDiskMbFor3b = 6 * 1024;
-  // Llama 3.1 8B + CoreML package + safety headroom.
-  static const int _minFreeDiskMbFor8b = 12 * 1024;
+  static const int _minFreeDiskMbFor3b = 4 * 1024;
+  static const int _minFreeDiskMbFor4b = 6 * 1024;
 
   static const int _minCpuCores = 6;
 
@@ -82,10 +81,10 @@ class OnDeviceAiCapabilityGate {
 
     // Pick tier based on resources.
     OfflineLlmTier tier = OfflineLlmTier.none;
-    if (ram >= _minRamMbFor8b && freeDisk >= _minFreeDiskMbFor8b) {
-      tier = OfflineLlmTier.llama8b;
+    if (ram >= _minRamMbFor4b && freeDisk >= _minFreeDiskMbFor4b) {
+      tier = OfflineLlmTier.phi4;
     } else if (ram >= _minRamMbFor3b && freeDisk >= _minFreeDiskMbFor3b) {
-      tier = OfflineLlmTier.small3b;
+      tier = OfflineLlmTier.qwen3b;
     } else {
       reasons.add(
         'Device below baseline for offline LLM (need ~${_minRamMbFor3b}MB RAM and ~${_minFreeDiskMbFor3b}MB free).',
@@ -97,15 +96,15 @@ class OnDeviceAiCapabilityGate {
 
     // LoRA training is heavier than inference; require higher bar.
     final allowLoraTraining =
-        eligible && tier == OfflineLlmTier.llama8b && ram >= _minRamMbFor8b;
+        eligible && tier == OfflineLlmTier.phi4 && ram >= _minRamMbFor4b;
 
-    if (eligible && tier == OfflineLlmTier.small3b) {
-      reasons.add('Eligible for offline inference (small model).');
+    if (eligible && tier == OfflineLlmTier.qwen3b) {
+      reasons.add('Eligible for offline inference (Qwen 3B model).');
       reasons.add(
           'LoRA training disabled on this tier (use memory + small learner model).');
     }
-    if (eligible && tier == OfflineLlmTier.llama8b) {
-      reasons.add('Eligible for offline inference (mid model).');
+    if (eligible && tier == OfflineLlmTier.phi4) {
+      reasons.add('Eligible for offline inference (Phi-4 model).');
       if (allowLoraTraining) {
         reasons.add(
             'Eligible for scheduled LoRA training (charging + idle only).');

@@ -26,6 +26,7 @@ import 'package:avrai_network/network/message_fragmentation.dart'
 /// - TTL integration with geographic scope
 /// - PKCS#7 padding for traffic analysis resistance
 /// - Backward compatible with JSON format during transition
+@Deprecated('v0.1 Pivot: Replaced by DNAEncoderService for passive AI2AI walk-bys. Do not use for background AI sync. (Human chat still uses Signal Protocol directly).')
 class AI2AIProtocol {
   static const String _logName = 'AI2AIProtocol';
   static const String _protocolVersion = '1.0';

@@ -1,16 +1,17 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/settings/cross_app_learning_insights_widget.dart';
 import 'package:avrai_core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/theme/colors.dart';
 
 import 'package:avrai_runtime_os/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai_runtime_os/services/cross_app/cross_app_learning_insight_service.dart';
-import 'package:avrai/presentation/widgets/settings/cross_app_learning_insights_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
-import 'package:avrai/injection_container.dart' as di;
 
 /// Settings page for managing cross-app tracking consent
 ///
@@ -121,7 +122,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
         const SizedBox(height: 12),
 
         // Pause/Resume Learning Toggle
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
           radius: 12,
@@ -187,7 +188,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
         ),
 
         // Clear Learning Data Button
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
           radius: 12,
@@ -232,7 +233,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
         ),
 
         // Clear Before Date Button
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
           radius: 12,
@@ -550,9 +551,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
   }
 
   Widget _buildHeader(bool isDark) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       radius: 12,
       color: isDark
@@ -561,36 +560,12 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
       borderColor: isDark
           ? AppColors.white.withValues(alpha: 0.12)
           : AppColors.black.withValues(alpha: 0.08),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.psychology_outlined,
-                color: AppColors.primary,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Help Your AI Learn',
-                style: textTheme.titleMedium?.copyWith(
-                  color: isDark ? AppColors.white : AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
+      child: const AppPageHeader(
+        title: 'Help Your AI Learn',
+        subtitle:
             'Your AI can learn from your daily activities to give you better spot suggestions. All data is processed locally on your device.',
-            style: textTheme.bodyMedium?.copyWith(
-              color: isDark
-                  ? AppColors.white.withValues(alpha: 0.7)
-                  : AppColors.textSecondary,
-            ),
-          ),
-        ],
+        leadingIcon: Icons.psychology_outlined,
+        showDivider: false,
       ),
     );
   }
@@ -624,7 +599,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
     final textTheme = Theme.of(context).textTheme;
     final isEnabled = _consents[source] ?? true;
 
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.zero,
       radius: 12,
@@ -681,7 +656,7 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
   Widget _buildPrivacyNote(bool isDark) {
     final textTheme = Theme.of(context).textTheme;
 
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(16),
       radius: 12,
       color: isDark

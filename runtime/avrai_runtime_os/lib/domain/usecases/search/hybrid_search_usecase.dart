@@ -16,6 +16,7 @@ class HybridSearchUseCase {
     required String query,
     double? latitude,
     double? longitude,
+    String? userId,
     int maxResults = 50,
     bool includeExternal = true,
     SearchFilters? filters,
@@ -25,6 +26,7 @@ class HybridSearchUseCase {
       query: query,
       latitude: latitude,
       longitude: longitude,
+      userId: userId,
       maxResults: maxResults,
       includeExternal: includeExternal,
       filters: filters,
@@ -37,6 +39,7 @@ class HybridSearchUseCase {
   Future<HybridSearchResult> searchNearbySpots({
     required double latitude,
     required double longitude,
+    String? userId,
     int radius = 5000,
     int maxResults = 50,
     bool includeExternal = true,
@@ -44,6 +47,7 @@ class HybridSearchUseCase {
     return await repository.searchNearbySpots(
       latitude: latitude,
       longitude: longitude,
+      userId: userId,
       radius: radius,
       maxResults: maxResults,
       includeExternal: includeExternal,

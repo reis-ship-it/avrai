@@ -32,6 +32,8 @@ void main() {
   group('AuthBloc', () {
     late AuthBloc authBloc;
     late MockSignInUseCase mockSignInUseCase;
+    late MockSignInWithGoogleUseCase mockSignInWithGoogleUseCase;
+    late MockSignInWithAppleUseCase mockSignInWithAppleUseCase;
     late MockSignUpUseCase mockSignUpUseCase;
     late MockSignOutUseCase mockSignOutUseCase;
     late MockGetCurrentUserUseCase mockGetCurrentUserUseCase;
@@ -100,6 +102,8 @@ void main() {
 
     setUp(() {
       mockSignInUseCase = BlocMockFactory.signInUseCase;
+      mockSignInWithGoogleUseCase = BlocMockFactory.signInWithGoogleUseCase;
+      mockSignInWithAppleUseCase = BlocMockFactory.signInWithAppleUseCase;
       mockSignUpUseCase = BlocMockFactory.signUpUseCase;
       mockSignOutUseCase = BlocMockFactory.signOutUseCase;
       mockGetCurrentUserUseCase = BlocMockFactory.getCurrentUserUseCase;
@@ -115,6 +119,8 @@ void main() {
 
       authBloc = AuthBloc(
         signInUseCase: mockSignInUseCase,
+        signInWithGoogleUseCase: mockSignInWithGoogleUseCase,
+        signInWithAppleUseCase: mockSignInWithAppleUseCase,
         signUpUseCase: mockSignUpUseCase,
         signOutUseCase: mockSignOutUseCase,
         getCurrentUserUseCase: mockGetCurrentUserUseCase,
@@ -274,6 +280,89 @@ void main() {
       );
     });
 
+    group('OAuth events', () {
+      blocTest<AuthBloc, AuthState>(
+        'emits OAuthInProgress when Google sign-in starts',
+        build: () {
+          when(() => mockSignInWithGoogleUseCase()).thenAnswer((_) async {});
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(GoogleSignInRequested()),
+        expect: () => [
+          isA<OAuthInProgress>()
+              .having((state) => state.provider, 'provider', 'google'),
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'emits OAuthInProgress when Apple sign-in starts',
+        build: () {
+          when(() => mockSignInWithAppleUseCase()).thenAnswer((_) async {});
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(AppleSignInRequested()),
+        expect: () => [
+          isA<OAuthInProgress>()
+              .having((state) => state.provider, 'provider', 'apple'),
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'emits AuthError when Google sign-in launch fails',
+        build: () {
+          when(() => mockSignInWithGoogleUseCase())
+              .thenThrow(Exception('OAuth failed'));
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(GoogleSignInRequested()),
+        expect: () => [
+          isA<OAuthInProgress>(),
+          isA<AuthError>(),
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'hydrates authenticated state after OAuth callback',
+        build: () {
+          when(() => mockSignInWithGoogleUseCase()).thenAnswer((_) async {});
+          when(() => mockGetCurrentUserUseCase())
+              .thenAnswer((_) async => TestDataFactory.createTestUser());
+          return authBloc;
+        },
+        act: (bloc) async {
+          bloc.add(GoogleSignInRequested());
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          bloc.add(OAuthCallbackReceived(
+            platform: 'google',
+            params: const {'platform': 'google', 'code': 'test'},
+          ));
+        },
+        wait: const Duration(milliseconds: 100),
+        expect: () => [
+          isA<OAuthInProgress>()
+              .having((state) => state.provider, 'provider', 'google'),
+          isA<OAuthInProgress>()
+              .having((state) => state.provider, 'provider', 'google'),
+          isA<Authenticated>(),
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'emits OAuthCancelledState when callback reports access denied',
+        build: () => authBloc,
+        act: (bloc) => bloc.add(OAuthCallbackReceived(
+          platform: 'google',
+          params: const {
+            'platform': 'google',
+            'error': 'access_denied',
+          },
+        )),
+        expect: () => [
+          isA<OAuthCancelledState>(),
+        ],
+      );
+    });
+
     group('SignUpRequested Event', () {
       const testEmail = 'newuser@example.com';
       const testPassword = 'newpassword123';
@@ -354,6 +443,29 @@ void main() {
           isA<AuthLoading>(),
           isA<AuthError>().having((state) => state.message, 'message',
               contains('Email already exists')),
+        ],
+      );
+
+      blocTest<AuthBloc, AuthState>(
+        'emits [AuthLoading, SignupConfirmationRequired] when sign up requires email confirmation',
+        build: () {
+          when(() =>
+              mockSignUpUseCase(
+                  testEmail, testPassword, testName)).thenThrow(Exception(
+              'signup_confirmation_required: Check your email to finish creating your account.'));
+          return authBloc;
+        },
+        act: (bloc) =>
+            bloc.add(SignUpRequested(testEmail, testPassword, testName)),
+        expect: () => [
+          isA<AuthLoading>(),
+          isA<SignupConfirmationRequired>()
+              .having((state) => state.email, 'email', testEmail)
+              .having(
+                (state) => state.message,
+                'message',
+                contains('Check your email'),
+              ),
         ],
       );
     });
@@ -695,6 +807,8 @@ void main() {
           // Create a new bloc instance for this test
           final testBloc = AuthBloc(
             signInUseCase: mockSignInUseCase,
+            signInWithGoogleUseCase: mockSignInWithGoogleUseCase,
+            signInWithAppleUseCase: mockSignInWithAppleUseCase,
             signUpUseCase: mockSignUpUseCase,
             signOutUseCase: mockSignOutUseCase,
             getCurrentUserUseCase: mockGetCurrentUserUseCase,
@@ -750,6 +864,8 @@ void main() {
           // Create a new bloc instance for this test
           final testBloc = AuthBloc(
             signInUseCase: mockSignInUseCase,
+            signInWithGoogleUseCase: mockSignInWithGoogleUseCase,
+            signInWithAppleUseCase: mockSignInWithAppleUseCase,
             signUpUseCase: mockSignUpUseCase,
             signOutUseCase: mockSignOutUseCase,
             getCurrentUserUseCase: mockGetCurrentUserUseCase,
@@ -789,6 +905,8 @@ void main() {
           // Create a new bloc instance for this test
           final testBloc = AuthBloc(
             signInUseCase: mockSignInUseCase,
+            signInWithGoogleUseCase: mockSignInWithGoogleUseCase,
+            signInWithAppleUseCase: mockSignInWithAppleUseCase,
             signUpUseCase: mockSignUpUseCase,
             signOutUseCase: mockSignOutUseCase,
             getCurrentUserUseCase: mockGetCurrentUserUseCase,

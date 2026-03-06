@@ -131,6 +131,14 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
     ),
   );
 
+  if (!sl.isRegistered<UniversalIntakeRepository>()) {
+    sl.registerLazySingleton<UniversalIntakeRepository>(
+      () => UniversalIntakeRepository(
+        storageService: sl<StorageService>(),
+      ),
+    );
+  }
+
   // Hybrid Search Repository (Phase 2) - Always available for offline search
   sl.registerLazySingleton(() => HybridSearchRepository(
         localDataSource: sl<SpotsLocalDataSource>(),
@@ -139,10 +147,13 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
         osmDataSource: sl<OpenStreetMapDataSource>(),
         googlePlacesCache: sl<GooglePlacesCacheService>(),
         connectivity: sl<Connectivity>(),
+        intakeRepository: sl<UniversalIntakeRepository>(),
       ));
 
   // Auth Use cases (Register after repositories)
   sl.registerLazySingleton(() => SignInUseCase(sl()));
+  sl.registerLazySingleton(() => SignInWithGoogleUseCase(sl()));
+  sl.registerLazySingleton(() => SignInWithAppleUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
@@ -252,6 +263,7 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
 
   // 3. ExpertiseEventService (foundational event service - used by Payment, AI)
   sl.registerLazySingleton<ExpertiseEventService>(() => ExpertiseEventService(
+        storageService: sl<StorageService>(),
         ledgerRecorder: sl<LedgerRecorderServiceV0>(),
       ));
   logger.debug('✅ [DI] ExpertiseEventService registered (shared)');

@@ -7,7 +7,7 @@ import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class FavoritePlacesPage extends StatefulWidget {
   final List<String> favoritePlaces;
@@ -446,7 +446,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
         final cities = _vibeCategories[region]!;
         final isRegionExpanded = _expandedRegions.contains(region);
 
-        return PortalSurface(
+        return AppSurface(
           margin: const EdgeInsets.only(bottom: 16),
           padding: EdgeInsets.zero,
           child: ExpansionTile(

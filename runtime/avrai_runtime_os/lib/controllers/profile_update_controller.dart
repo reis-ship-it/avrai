@@ -101,7 +101,10 @@ class ProfileUpdateController
             (GetIt.instance.isRegistered<PersonalitySyncService>()
                 ? GetIt.instance<PersonalitySyncService>()
                 : null),
-        _atomicClock = atomicClock ?? GetIt.instance<AtomicClockService>(),
+        _atomicClock = atomicClock ??
+            (GetIt.instance.isRegistered<AtomicClockService>()
+                ? GetIt.instance<AtomicClockService>()
+                : AtomicClockService()),
         _agentIdService = agentIdService ??
             (GetIt.instance.isRegistered<AgentIdService>()
                 ? GetIt.instance<AgentIdService>()

@@ -17,8 +17,8 @@ void main() {
         child: const AboutPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('About SPOTS'), findsOneWidget);
-      expect(find.text('SPOTS'), findsOneWidget);
+      expect(find.text('About avrai'), findsOneWidget);
+      expect(find.text('avrai'), findsOneWidget);
       expect(find.text('know you belong.'), findsOneWidget);
       expect(find.byType(AboutPage), findsOneWidget);
     });

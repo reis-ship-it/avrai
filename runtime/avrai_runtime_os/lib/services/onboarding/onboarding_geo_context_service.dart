@@ -1,3 +1,7 @@
+import 'package:get_it/get_it.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -15,14 +19,17 @@ class OnboardingGeoContextService {
 
   final GeoHierarchyService _geoHierarchyService;
   final SharedPreferencesCompat? _prefs;
+  final LocalityKernelContract? _localityKernel;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'avrai', minimumLevel: LogLevel.debug);
 
   OnboardingGeoContextService({
     required GeoHierarchyService geoHierarchyService,
     required SharedPreferencesCompat? prefs,
+    LocalityKernelContract? localityKernel,
   })  : _geoHierarchyService = geoHierarchyService,
-        _prefs = prefs;
+        _prefs = prefs,
+        _localityKernel = localityKernel;
 
   /// Resolve cached homebase geo context (best-effort)
   ///
@@ -36,6 +43,27 @@ class OnboardingGeoContextService {
     if (lat == null || lon == null) return const OnboardingGeoContextV1.empty();
 
     try {
+      final localityKernel = _resolveKernel();
+      if (localityKernel != null) {
+        final resolution = await localityKernel.resolvePoint(
+          LocalityPointQuery(
+            latitude: lat,
+            longitude: lon,
+            occurredAtUtc: DateTime.now().toUtc(),
+            audience: LocalityProjectionAudience.admin,
+            includeGeometry: true,
+            includeAttribution: true,
+          ),
+        );
+        return OnboardingGeoContextV1(
+          latitude: lat,
+          longitude: lon,
+          cityCode: resolution.cityCode,
+          localityCode: resolution.localityCode,
+          displayName: resolution.displayName,
+        );
+      }
+
       final locality = await _geoHierarchyService.lookupLocalityByPoint(
         lat: lat,
         lon: lon,
@@ -55,6 +83,13 @@ class OnboardingGeoContextService {
         longitude: lon,
       );
     }
+  }
+
+  LocalityKernelContract? _resolveKernel() {
+    if (_localityKernel != null) return _localityKernel;
+    final sl = GetIt.instance;
+    if (!sl.isRegistered<LocalityKernelContract>()) return null;
+    return sl<LocalityKernelContract>();
   }
 }
 

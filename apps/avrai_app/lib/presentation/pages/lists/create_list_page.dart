@@ -7,7 +7,7 @@ import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -241,7 +241,7 @@ class _CreateListPageState extends State<CreateListPage> {
               const SizedBox(height: 16),
 
               // Privacy Toggle
-              PortalSurface(
+              AppSurface(
                 padding: EdgeInsets.zero,
                 child: SwitchListTile(
                   title: const Text('Public List'),
@@ -288,7 +288,7 @@ class _CreateListPageState extends State<CreateListPage> {
               const SizedBox(height: 24),
 
               // Info Card
-              PortalSurface(
+              AppSurface(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.all(16),
                 child: Column(

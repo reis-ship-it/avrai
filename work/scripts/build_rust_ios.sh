@@ -5,8 +5,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-RUST_DIR="$PROJECT_ROOT/native/knot_math"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+RUST_DIR="$PROJECT_ROOT/engine/avrai_knot/native/knot_math"
 
 cd "$RUST_DIR"
 

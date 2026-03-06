@@ -9,6 +9,8 @@ environment:
 resolution: workspace
 
 dependencies:
+  flutter:
+    sdk: flutter
   avrai_core:
     path: ../../shared/avrai_core
   equatable: ^2.0.5
@@ -20,4 +22,6 @@ dependencies:
   path_provider: ^2.1.5
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   test: ^1.24.7

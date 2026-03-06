@@ -20,14 +20,15 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
 
 /// Settings page for device discovery configuration
 class DiscoverySettingsPage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   bool _discoveryEnabled = false;
   bool _autoDiscovery = false;
   bool _sharePersonalityData = true;
-  bool _discoverWiFi = true;
+  bool _discoverWiFi = false;
   bool _discoverBluetooth = true;
   bool _discoverMultipeer = true;
   bool _eventModeEnabled = false;
@@ -62,7 +63,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
       _autoDiscovery = _storageService.getBool('auto_discovery') ?? false;
       _sharePersonalityData =
           _storageService.getBool('share_personality_data') ?? true;
-      _discoverWiFi = _storageService.getBool('discover_wifi') ?? true;
+      _discoverWiFi = _storageService.getBool('discover_wifi') ?? false;
       _discoverBluetooth =
           _storageService.getBool('discover_bluetooth') ?? true;
       _discoverMultipeer =
@@ -124,7 +125,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildEventModeToggle() {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: EdgeInsets.zero,
       child: SwitchListTile(
@@ -152,69 +153,34 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           });
           await _saveSetting('event_mode_enabled', value);
         },
-        activeThumbColor: AppColors.electricGreen,
+        activeThumbColor: AppColors.primary,
         secondary: Icon(
           _eventModeEnabled
               ? Icons.local_activity
               : Icons.local_activity_outlined,
-          color:
-              _eventModeEnabled ? AppColors.electricGreen : AppColors.grey300,
+          color: _eventModeEnabled ? AppColors.primary : AppColors.grey300,
         ),
       ),
     );
   }
 
   Widget _buildHeaderSection() {
-    return PortalSurface(
+    return AppSurface(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(16),
-      color: AppColors.electricGreen.withValues(alpha: 0.1),
-      borderColor: AppColors.electricGreen.withValues(alpha: 0.24),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.radar,
-              size: 32,
-              color: AppColors.electricGreen,
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Device Discovery',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Find nearby avrai-enabled devices',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      color: AppColors.primary.withValues(alpha: 0.1),
+      borderColor: AppColors.primary.withValues(alpha: 0.24),
+      child: const AppPageHeader(
+        title: 'Device Discovery',
+        subtitle: 'Find nearby avrai-enabled devices',
+        leadingIcon: Icons.radar,
+        showDivider: false,
       ),
     );
   }
 
   Widget _buildMainToggle() {
-    return PortalSurface(
+    return AppSurface(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: EdgeInsets.zero,
       child: SwitchListTile(
@@ -243,11 +209,10 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           await _saveSetting('discovery_enabled', value);
           await _applyDiscoveryRuntime(value);
         },
-        activeThumbColor: AppColors.electricGreen,
+        activeThumbColor: AppColors.primary,
         secondary: Icon(
           _discoveryEnabled ? Icons.radar : Icons.radar_outlined,
-          color:
-              _discoveryEnabled ? AppColors.electricGreen : AppColors.grey300,
+          color: _discoveryEnabled ? AppColors.primary : AppColors.grey300,
         ),
       ),
     );
@@ -268,14 +233,16 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
             ),
           ),
         ),
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.zero,
           child: Column(
             children: [
               SwitchListTile(
                 title: const Text('WiFi Direct'),
-                subtitle: const Text('Discover devices over WiFi'),
+                subtitle: const Text(
+                  'Discover devices over WiFi (pilot lane, off by default)',
+                ),
                 value: _discoverWiFi,
                 onChanged: (value) async {
                   setState(() {
@@ -283,7 +250,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   });
                   await _saveSetting('discover_wifi', value);
                 },
-                activeThumbColor: AppColors.electricGreen,
+                activeThumbColor: AppColors.primary,
                 secondary: const Icon(Icons.wifi, color: AppColors.primary),
               ),
               const Divider(height: 1),
@@ -297,7 +264,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   });
                   await _saveSetting('discover_bluetooth', value);
                 },
-                activeThumbColor: AppColors.electricGreen,
+                activeThumbColor: AppColors.primary,
                 secondary:
                     const Icon(Icons.bluetooth, color: AppColors.primary),
               ),
@@ -312,7 +279,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   });
                   await _saveSetting('discover_multipeer', value);
                 },
-                activeThumbColor: AppColors.electricGreen,
+                activeThumbColor: AppColors.primary,
                 secondary: const Icon(Icons.devices, color: AppColors.primary),
               ),
             ],
@@ -347,7 +314,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
             ],
           ),
         ),
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.zero,
           child: Column(
@@ -364,7 +331,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
                   });
                   await _saveSetting('share_personality_data', value);
                 },
-                activeThumbColor: AppColors.electricGreen,
+                activeThumbColor: AppColors.primary,
                 secondary: const Icon(
                   Icons.psychology,
                   color: AppColors.primary,
@@ -403,7 +370,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
             ),
           ),
         ),
-        PortalSurface(
+        AppSurface(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.zero,
           child: SwitchListTile(
@@ -418,7 +385,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               });
               await _saveSetting('auto_discovery', value);
             },
-            activeThumbColor: AppColors.electricGreen,
+            activeThumbColor: AppColors.primary,
             secondary: const Icon(
               Icons.autorenew,
               color: AppColors.primary,
@@ -430,7 +397,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   }
 
   Widget _buildInfoSection() {
-    return const PortalSurface(
+    return const AppSurface(
       margin: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,7 +446,7 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
           children: [
             Icon(
               Icons.lock_outline,
-              color: AppColors.electricGreen,
+              color: AppColors.primary,
             ),
             SizedBox(width: 12),
             Text('Privacy & Security'),
@@ -522,14 +489,14 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.electricGreen.withValues(alpha: 0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
                   children: [
                     Icon(
                       Icons.check_circle,
-                      color: AppColors.electricGreen,
+                      color: AppColors.primary,
                       size: 20,
                     ),
                     SizedBox(width: 8),

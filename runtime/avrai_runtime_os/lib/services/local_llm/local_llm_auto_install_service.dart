@@ -201,8 +201,8 @@ class LocalLlmAutoInstallService {
       final caps = await _caps.getCapabilities();
       final gateResult = _gate.evaluate(caps);
       final tier = switch (gateResult.recommendedTier) {
-        OfflineLlmTier.llama8b => 'llama8b',
-        OfflineLlmTier.small3b => 'small3b',
+        OfflineLlmTier.phi4 => 'llama8b',
+        OfflineLlmTier.qwen3b => 'small3b',
         OfflineLlmTier.none => 'none',
       };
       if (tier == 'none') return;
@@ -326,8 +326,8 @@ class LocalLlmAutoInstallService {
         final caps = await _caps.getCapabilities();
         final gateResult = _gate.evaluate(caps);
         final tier = switch (gateResult.recommendedTier) {
-          OfflineLlmTier.llama8b => 'llama8b',
-          OfflineLlmTier.small3b => 'small3b',
+          OfflineLlmTier.phi4 => 'llama8b',
+          OfflineLlmTier.qwen3b => 'small3b',
           OfflineLlmTier.none => 'none',
         };
         if (tier == 'none') return;

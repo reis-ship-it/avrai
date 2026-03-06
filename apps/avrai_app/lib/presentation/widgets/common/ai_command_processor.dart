@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart'
     as llm
@@ -9,6 +7,7 @@ import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart'
         ChatMessage,
         ChatRole,
         LLMContext,
+        LLMDispatchPolicy,
         OfflineException,
         DataCenterFailureException;
 import 'package:avrai_core/models/personality_profile.dart';
@@ -163,56 +162,10 @@ class AICommandProcessor {
     // connectivity_plus always returns List<ConnectivityResult>
     final isOnline = !connectivityResult.contains(ConnectivityResult.none);
 
-    // #region agent log
-    // Debug mode: log connectivity check (no PII values)
-    try {
-      final payload = <String, dynamic>{
-        'id': 'log_${DateTime.now().millisecondsSinceEpoch}_H1',
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'sessionId': 'debug-session',
-        'runId': 'pre-fix-connectivity',
-        'hypothesisId': 'H1',
-        'location':
-            'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
-        'message': 'Connectivity check',
-        'data': {
-          'isOnline': isOnline,
-          'connectivityResultsCount': connectivityResult.length,
-          'hasNone': connectivityResult.contains(ConnectivityResult.none),
-        },
-      };
-      File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-          .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
-    } catch (_) {}
-    // #endregion
-
     // Try to get LLM service from GetIt if not provided
     // Note: _llmService instance field is not used in static context
     // It's kept for future instance-based usage
     final service = llmService ?? _tryGetLLMService();
-
-    // #region agent log
-    // Debug mode: log LLM service availability (no PII values)
-    try {
-      final payload = <String, dynamic>{
-        'id': 'log_${DateTime.now().millisecondsSinceEpoch}_H2',
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'sessionId': 'debug-session',
-        'runId': 'pre-fix-llm-service',
-        'hypothesisId': 'H2',
-        'location':
-            'lib/presentation/widgets/common/ai_command_processor.dart:processCommand',
-        'message': 'LLM service check',
-        'data': {
-          'hasService': service != null,
-          'hasProvidedService': llmService != null,
-          'commandLength': command.length,
-        },
-      };
-      File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-          .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
-    } catch (_) {}
-    // #endregion
 
     // Use LLM if available and online
     if (service != null && isOnline) {
@@ -237,63 +190,23 @@ class AICommandProcessor {
           }
 
           String response = '';
+          final commandMessages = _buildCommandMessages(command);
 
-          // Phase 11 Section 5: Use generateWithContext() for structured facts when userId available
-          if (userId != null) {
-            try {
-              // Try using generateWithContext() which automatically includes structured facts
-              response = await service.generateWithContext(
-                query: command,
-                userId: userId,
-                temperature: 0.7,
-                maxTokens: 500,
-              );
-            } catch (e) {
-              developer.log(
-                'generateWithContext failed, falling back to standard methods: $e',
-                name: _logName,
-              );
-              // Fallback to standard methods if generateWithContext fails
-              if (useStreaming) {
-                final stream = service.chatStream(
-                  messages: [
-                    llm.ChatMessage(role: llm.ChatRole.user, content: command)
-                  ],
-                  context: enhancedContext,
-                );
+          if (useStreaming) {
+            final stream = service.chatStream(
+              messages: commandMessages,
+              context: enhancedContext,
+            );
 
-                // Collect the final response
-                await for (final chunk in stream) {
-                  response = chunk;
-                }
-              } else {
-                response = await service.generateRecommendation(
-                  userQuery: command,
-                  userContext: enhancedContext,
-                );
-              }
+            await for (final chunk in stream) {
+              response = chunk;
             }
           } else {
-            // No userId available, use standard methods
-            // Phase 1 Integration: Use streaming if requested
-            if (useStreaming) {
-              final stream = service.chatStream(
-                messages: [
-                  llm.ChatMessage(role: llm.ChatRole.user, content: command)
-                ],
-                context: enhancedContext,
-              );
-
-              // Collect the final response
-              await for (final chunk in stream) {
-                response = chunk;
-              }
-            } else {
-              response = await service.generateRecommendation(
-                userQuery: command,
-                userContext: enhancedContext,
-              );
-            }
+            response = await service.chat(
+              messages: commandMessages,
+              context: enhancedContext,
+              dispatchPolicy: const llm.LLMDispatchPolicy.standard(),
+            );
           }
 
           return response;
@@ -617,36 +530,14 @@ class AICommandProcessor {
         // connectivity_plus always returns List<ConnectivityResult>
         final isOnline = !connectivityResult.contains(ConnectivityResult.none);
 
-        // #region agent log
-        // Debug mode: log connectivity check for LLM response (no PII values)
-        try {
-          final payload = <String, dynamic>{
-            'id': 'log_${DateTime.now().millisecondsSinceEpoch}_H3',
-            'timestamp': DateTime.now().millisecondsSinceEpoch,
-            'sessionId': 'debug-session',
-            'runId': 'pre-fix-llm-response-connectivity',
-            'hypothesisId': 'H3',
-            'location':
-                'lib/presentation/widgets/common/ai_command_processor.dart:_executeActionWithUI',
-            'message': 'Connectivity check for LLM response',
-            'data': {
-              'isOnline': isOnline,
-              'connectivityResultsCount': connectivityResult.length,
-            },
-          };
-          File('/Users/reisgordon/SPOTS/.cursor/debug.log').writeAsStringSync(
-              '${jsonEncode(payload)}\n',
-              mode: FileMode.append);
-        } catch (_) {}
-        // #endregion
-
         final service = llmService ?? _tryGetLLMService();
         if (service != null && isOnline) {
           try {
             // Get a natural language response about the action
-            final llmResponse = await service.generateRecommendation(
-              userQuery: command,
-              userContext: userContext,
+            final llmResponse = await service.chat(
+              messages: _buildActionFollowupMessages(command, successMsg),
+              context: userContext,
+              dispatchPolicy: const llm.LLMDispatchPolicy.standard(),
             );
             // Combine action result with LLM response
             return '$successMsg\n\n$llmResponse';
@@ -805,6 +696,37 @@ class AICommandProcessor {
 
     // Default response
     return _handleDefaultCommand(command);
+  }
+
+  static List<llm.ChatMessage> _buildCommandMessages(String command) {
+    return [
+      llm.ChatMessage(
+        role: llm.ChatRole.system,
+        content: 'You are AVRAI\'s action assistant. Help with explicit app '
+            'commands, task clarification, and action-oriented responses. '
+            'Prefer concrete next steps over open-ended conversation. '
+            'Do not behave like the main world-model companion chat.',
+      ),
+      llm.ChatMessage(role: llm.ChatRole.user, content: command),
+    ];
+  }
+
+  static List<llm.ChatMessage> _buildActionFollowupMessages(
+    String originalCommand,
+    String successMessage,
+  ) {
+    return [
+      llm.ChatMessage(
+        role: llm.ChatRole.system,
+        content: 'You are AVRAI\'s action assistant. Explain completed actions '
+            'briefly and clearly without adding unrelated conversational fluff.',
+      ),
+      llm.ChatMessage(
+        role: llm.ChatRole.user,
+        content:
+            'Original command: $originalCommand\nResult: $successMessage\nExplain the result briefly and suggest one reasonable next step if helpful.',
+      ),
+    ];
   }
 
   static String _handleCreateList(String command) {

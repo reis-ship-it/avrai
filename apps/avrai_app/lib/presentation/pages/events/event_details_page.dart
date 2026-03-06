@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/controllers/event_attendance_controller.dart';
+import 'package:avrai_runtime_os/services/intake/intake_models.dart';
+import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -21,6 +27,8 @@ import 'package:avrai_runtime_os/services/partnerships/partnership_service.dart'
 import 'package:avrai_runtime_os/services/fraud/fraud_detection_service.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Event Details Page
 /// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
@@ -47,13 +55,20 @@ class EventDetailsPage extends StatefulWidget {
 }
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
-  final ExpertiseEventService _eventService = ExpertiseEventService();
+  final ExpertiseEventService _eventService =
+      GetIt.instance<ExpertiseEventService>();
   final EventAttendanceController _attendanceController =
       GetIt.instance<EventAttendanceController>();
+  final SourceIntakeOrchestrator _intakeOrchestrator =
+      GetIt.instance<SourceIntakeOrchestrator>();
+  final EntitySignatureService? _entitySignatureService =
+      GetIt.instance.isRegistered<EntitySignatureService>()
+          ? GetIt.instance<EntitySignatureService>()
+          : null;
   final PartnershipService _partnershipService =
       GetIt.instance<PartnershipService>();
   final FraudDetectionService _fraudService = FraudDetectionService(
-    eventService: ExpertiseEventService(),
+    eventService: GetIt.instance<ExpertiseEventService>(),
   );
   bool _isLoading = false;
   bool _isRegistered = false;
@@ -68,9 +83,30 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   void initState() {
     super.initState();
     _currentEvent = widget.event;
+    unawaited(_recordEventViewSignal());
     _checkRegistrationStatus();
     _checkPartnerships();
     _checkFraudStatus();
+  }
+
+  Future<void> _recordEventViewSignal() async {
+    if (_currentEvent == null || _entitySignatureService == null) {
+      return;
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      return;
+    }
+
+    try {
+      await _entitySignatureService.recordEventViewSignal(
+        user: _toUnifiedUser(authState.user),
+        event: _currentEvent!,
+      );
+    } catch (_) {
+      // Signature refresh is best-effort and should not block the page.
+    }
   }
 
   Future<void> _checkFraudStatus() async {
@@ -129,16 +165,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       }
 
       final user = authState.user;
-
-      // Convert User to UnifiedUser (minimal conversion for now)
-      final unifiedUser = UnifiedUser(
-        id: user.id,
-        email: user.email,
-        displayName: user.displayName ?? user.name,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        isOnline: user.isOnline ?? false,
-      );
+      final unifiedUser = _toUnifiedUser(user);
 
       // Register via EventAttendanceController (handles validation, availability, preferences, etc.)
       final result = await _attendanceController.registerForEvent(
@@ -157,6 +184,14 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         _isRegistered = true;
         _isLoading = false;
       });
+      if (_currentEvent != null && _entitySignatureService != null) {
+        unawaited(
+          _entitySignatureService.recordEventAttendanceSignal(
+            user: unifiedUser,
+            event: _currentEvent!,
+          ),
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -196,15 +231,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       if (authState is! Authenticated) return;
 
       final user = authState.user;
-
-      final unifiedUser = UnifiedUser(
-        id: user.id,
-        email: user.email,
-        displayName: user.displayName ?? user.name,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        isOnline: user.isOnline ?? false,
-      );
+      final unifiedUser = _toUnifiedUser(user);
 
       await _eventService.cancelRegistration(_currentEvent!, unifiedUser);
 
@@ -236,6 +263,18 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     }
   }
 
+  UnifiedUser _toUnifiedUser(dynamic user) {
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+      hasCompletedOnboarding: true,
+    );
+  }
+
   Future<void> _loadEvents() async {
     // Reload event data after cancellation
     try {
@@ -249,6 +288,170 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       }
     } catch (e) {
       // Ignore errors
+    }
+  }
+
+  Future<void> _connectSourceToEvent() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated || _currentEvent == null) {
+      return;
+    }
+
+    final sourceUrlController = TextEditingController(
+      text: _currentEvent?.externalSyncMetadata?.sourceUrl,
+    );
+    final sourceLabelController = TextEditingController(
+      text: _currentEvent?.externalSyncMetadata?.sourceLabel,
+    );
+    var connectionMode = _currentEvent?.externalSyncMetadata?.connectionMode ??
+        ExternalConnectionMode.url;
+
+    final payload = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: AppColors.background,
+              title: const Text(
+                'Connect external source',
+                style: TextStyle(color: AppColors.textPrimary),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'AVRAI reads updates in one direction only. It will not publish changes back to the source.',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: sourceUrlController,
+                      decoration: const InputDecoration(
+                        labelText: 'Source URL or feed',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: sourceLabelController,
+                      decoration: const InputDecoration(
+                        labelText: 'Source label',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<ExternalConnectionMode>(
+                      initialValue: connectionMode,
+                      decoration: const InputDecoration(
+                        labelText: 'Connection type',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: ExternalConnectionMode.values.map((mode) {
+                        return DropdownMenuItem(
+                          value: mode,
+                          child: Text(mode.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() {
+                          connectionMode = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, <String, dynamic>{
+                    'sourceUrl': sourceUrlController.text.trim(),
+                    'sourceLabel': sourceLabelController.text.trim(),
+                    'connectionMode': connectionMode,
+                  }),
+                  child: const Text('Save sync'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    sourceUrlController.dispose();
+    sourceLabelController.dispose();
+
+    if (payload == null) {
+      return;
+    }
+
+    final sourceUrl = (payload['sourceUrl'] as String?)?.trim();
+    final sourceLabel = (payload['sourceLabel'] as String?)?.trim();
+    final mode = payload['connectionMode'] as ExternalConnectionMode? ??
+        ExternalConnectionMode.url;
+
+    final source = ExternalSourceDescriptor(
+      id: 'source-${DateTime.now().microsecondsSinceEpoch}',
+      ownerUserId: authState.user.id,
+      sourceProvider: sourceLabel != null && sourceLabel.isNotEmpty
+          ? sourceLabel
+          : 'external',
+      sourceUrl: sourceUrl?.isEmpty == true ? null : sourceUrl,
+      connectionMode: mode,
+      entityHint: IntakeEntityType.event,
+      sourceLabel: sourceLabel?.isEmpty == true ? null : sourceLabel,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      cityCode: _currentEvent!.cityCode,
+      localityCode: _currentEvent!.localityCode,
+      syncState: ExternalSyncState.pending,
+    );
+
+    final reviewItem =
+        await _intakeOrchestrator.registerSourceForExistingEntity(
+      source: source,
+      entityType: IntakeEntityType.event,
+      entityId: _currentEvent!.id,
+      rawPayload: <String, dynamic>{
+        'title': _currentEvent!.title,
+        'description': _currentEvent!.description,
+        'category': _currentEvent!.category,
+        'location': _currentEvent!.location,
+        'startTime': _currentEvent!.startTime.toIso8601String(),
+        'endTime': _currentEvent!.endTime.toIso8601String(),
+        'organizerName':
+            _currentEvent!.host.displayName ?? _currentEvent!.host.email,
+        'sourceUrl': source.sourceUrl,
+      },
+    );
+
+    final refreshed = await _eventService.getEventById(_currentEvent!.id);
+    if (refreshed != null && mounted) {
+      setState(() {
+        _currentEvent = refreshed;
+      });
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            reviewItem == null
+                ? 'External sync saved. AVRAI will keep reading updates from that source.'
+                : 'Sync saved, but AVRAI needs a quick review before trusting updates automatically.',
+          ),
+          backgroundColor: reviewItem == null
+              ? AppTheme.successColor
+              : AppTheme.warningColor,
+        ),
+      );
     }
   }
 
@@ -392,84 +595,71 @@ SPOTS - know you belong.''';
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header with Event Type Icon and Title
-            Container(
-              padding: const EdgeInsets.all(20),
-              color: AppColors.surface,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: AppSurface(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color:
+                                AppTheme.primaryColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            event.getEventTypeEmoji(),
+                            style: const TextStyle(fontSize: 32),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: AppPageHeader(
+                            title: event.title,
+                            subtitle: event.getEventTypeDisplayName(),
+                            showDivider: false,
+                          ),
+                        ),
+                        // Status Badge
+                        _buildStatusBadge(event),
+                      ],
+                    ),
+                    // Fraud Warning (if flagged)
+                    if (_hasFraudFlag) ...[
+                      const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: AppTheme.warningColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color:
+                                  AppTheme.warningColor.withValues(alpha: 0.3)),
                         ),
-                        child: Text(
-                          event.getEventTypeEmoji(),
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: const Row(
                           children: [
-                            Text(
-                              event.title,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              event.getEventTypeDisplayName(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
+                            Icon(Icons.warning,
+                                color: AppTheme.warningColor, size: 20),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'This event has been flagged for review. Please exercise caution.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      // Status Badge
-                      _buildStatusBadge(event),
                     ],
-                  ),
-                  // Fraud Warning (if flagged)
-                  if (_hasFraudFlag) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.warningColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color:
-                                AppTheme.warningColor.withValues(alpha: 0.3)),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.warning,
-                              color: AppTheme.warningColor, size: 20),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'This event has been flagged for review. Please exercise caution.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
-                ],
+                ),
               ),
             ),
 
@@ -479,164 +669,177 @@ SPOTS - know you belong.''';
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Description
-                  const Text(
-                    'Description',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                  AppSurface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Overview',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          event.description,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                            height: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildDetailRow(
+                          icon: Icons.calendar_today,
+                          label: 'Date & Time',
+                          value: '${_formatDateTime(event.startTime)}\n'
+                              'Duration: ${_formatDuration(event.startTime, event.endTime)}',
+                        ),
+                        const SizedBox(height: 16),
+                        if (event.location != null)
+                          _buildDetailRow(
+                            icon: Icons.location_on,
+                            label: 'Location',
+                            value: event.location!,
+                          ),
+                        if (event.location != null) const SizedBox(height: 16),
+                        _buildDetailRow(
+                          icon: Icons.attach_money,
+                          label: 'Price',
+                          value: event.isPaid
+                              ? '\$${event.price?.toStringAsFixed(2) ?? '0.00'}'
+                              : 'Free',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailRow(
+                          icon: Icons.people,
+                          label: 'Attendees',
+                          value: '${event.attendeeCount}/${event.maxAttendees}',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailRow(
+                          icon: Icons.category,
+                          label: 'Category',
+                          value: event.category,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    event.description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textPrimary,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Date & Time
-                  _buildDetailRow(
-                    icon: Icons.calendar_today,
-                    label: 'Date & Time',
-                    value: '${_formatDateTime(event.startTime)}\n'
-                        'Duration: ${_formatDuration(event.startTime, event.endTime)}',
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Location
-                  if (event.location != null)
-                    _buildDetailRow(
-                      icon: Icons.location_on,
-                      label: 'Location',
-                      value: event.location!,
-                    ),
-                  if (event.location != null) const SizedBox(height: 16),
-
-                  // Price
-                  _buildDetailRow(
-                    icon: Icons.attach_money,
-                    label: 'Price',
-                    value: event.isPaid
-                        ? '\$${event.price?.toStringAsFixed(2) ?? '0.00'}'
-                        : 'Free',
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Attendees
-                  _buildDetailRow(
-                    icon: Icons.people,
-                    label: 'Attendees',
-                    value: '${event.attendeeCount}/${event.maxAttendees}',
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Category
-                  _buildDetailRow(
-                    icon: Icons.category,
-                    label: 'Category',
-                    value: event.category,
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Host Information
-                  const Text(
-                    'Host',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppColors.grey200,
-                        child: event.host.photoUrl != null
-                            ? Image.network(event.host.photoUrl!)
-                            : Text(
-                                (event.host.displayName ?? event.host.email)[0]
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 20),
+                  AppSurface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Host',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
                           children: [
-                            Text(
-                              event.host.displayName ?? event.host.email,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor: AppColors.grey200,
+                              child: event.host.photoUrl != null
+                                  ? Image.network(event.host.photoUrl!)
+                                  : Text(
+                                      (event.host.displayName ??
+                                              event.host.email)[0]
+                                          .toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    event.host.displayName ?? event.host.email,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  if (event.host.expertiseMap
+                                      .containsKey(event.category)) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${event.category} Expert',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
-                            if (event.host.expertiseMap
-                                .containsKey(event.category)) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                '${event.category} Expert',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
                   // Spots (if event includes spots)
                   if (event.spots.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text(
-                      'Spots',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                    AppSurface(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Spots',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...event.spots.map((spot) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: ListTile(
+                                leading: const Icon(
+                                  Icons.place,
+                                  color: AppTheme.primaryColor,
+                                ),
+                                title: Text(
+                                  spot.name,
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                subtitle: spot.address != null
+                                    ? Text(
+                                        spot.address!,
+                                        style: const TextStyle(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      )
+                                    : null,
+                                tileColor: AppColors.grey100,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    ...event.spots.map((spot) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: const Icon(Icons.place,
-                              color: AppTheme.primaryColor),
-                          title: Text(
-                            spot.name,
-                            style:
-                                const TextStyle(color: AppColors.textPrimary),
-                          ),
-                          subtitle: spot.address != null
-                              ? Text(
-                                  spot.address!,
-                                  style: const TextStyle(
-                                      color: AppColors.textSecondary),
-                                )
-                              : null,
-                          tileColor: AppColors.grey100,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      );
-                    }),
                   ],
                 ],
               ),
@@ -909,6 +1112,27 @@ SPOTS - know you belong.''';
                       ),
                     ),
 
+                  if (userId != null && event.host.id == userId) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _connectSourceToEvent,
+                      icon: Icon(
+                        event.externalSyncMetadata == null
+                            ? Icons.sync_alt
+                            : Icons.check_circle_outline,
+                      ),
+                      label: Text(
+                        event.externalSyncMetadata == null
+                            ? 'Connect External Source'
+                            : 'Manage External Sync',
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.primaryColor,
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                    ),
+                  ],
+
                   if (_isLoading) ...[
                     const SizedBox(height: 16),
                     const CircularProgressIndicator(),
@@ -1030,7 +1254,7 @@ SPOTS - know you belong.''';
 
     switch (event.status) {
       case EventStatus.upcoming:
-        badgeColor = AppColors.electricGreen;
+        badgeColor = AppTheme.primaryColor;
         badgeText = 'Upcoming';
         break;
       case EventStatus.ongoing:

@@ -1,4 +1,7 @@
 import 'dart:math' as math;
+
+import 'package:avrai_core/models/signatures/signature_match_result.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_runtime_os/data/datasources/local/spots_local_datasource.dart';
@@ -6,7 +9,11 @@ import 'package:avrai_runtime_os/data/datasources/remote/spots_remote_datasource
 import 'package:avrai_runtime_os/data/datasources/remote/google_places_datasource.dart';
 import 'package:avrai_runtime_os/data/datasources/remote/openstreetmap_datasource.dart';
 import 'package:avrai_runtime_os/services/places/google_places_cache_service.dart';
+import 'package:avrai_runtime_os/services/intake/universal_intake_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get_it/get_it.dart';
+
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 
 /// Hybrid Search Repository
 /// OUR_GUTS.md: "Authenticity Over Algorithms" - Community data prioritized over external sources
@@ -21,6 +28,8 @@ class HybridSearchRepository {
   final OpenStreetMapDataSource? _osmDataSource;
   final GooglePlacesCacheService? _googlePlacesCache;
   final Connectivity? _connectivity;
+  final UniversalIntakeRepository? _intakeRepository;
+  final EntitySignatureService? _entitySignatureService;
 
   // Search analytics tracking (privacy-preserving)
   final Map<String, int> _searchAnalytics = {};
@@ -31,6 +40,17 @@ class HybridSearchRepository {
   // ignore: unused_field
   static const Duration _cacheExpiration = Duration(minutes: 5);
 
+  EntitySignatureService? get _signatureService {
+    if (_entitySignatureService != null) {
+      return _entitySignatureService;
+    }
+    final locator = GetIt.instance;
+    if (locator.isRegistered<EntitySignatureService>()) {
+      return locator<EntitySignatureService>();
+    }
+    return null;
+  }
+
   HybridSearchRepository({
     SpotsLocalDataSource? localDataSource,
     SpotsRemoteDataSource? remoteDataSource,
@@ -38,12 +58,16 @@ class HybridSearchRepository {
     OpenStreetMapDataSource? osmDataSource,
     GooglePlacesCacheService? googlePlacesCache,
     Connectivity? connectivity,
+    UniversalIntakeRepository? intakeRepository,
+    EntitySignatureService? entitySignatureService,
   })  : _localDataSource = localDataSource,
         _remoteDataSource = remoteDataSource,
         _googlePlacesDataSource = googlePlacesDataSource,
         _osmDataSource = osmDataSource,
         _googlePlacesCache = googlePlacesCache,
-        _connectivity = connectivity;
+        _connectivity = connectivity,
+        _intakeRepository = intakeRepository,
+        _entitySignatureService = entitySignatureService;
 
   /// Hybrid search with community-first prioritization
   /// OUR_GUTS.md: "Community, Not Just Places" - Local community knowledge comes first
@@ -51,6 +75,7 @@ class HybridSearchRepository {
     required String query,
     double? latitude,
     double? longitude,
+    String? userId,
     int maxResults = 50,
     bool includeExternal = true,
     SearchFilters? filters,
@@ -61,8 +86,8 @@ class HybridSearchRepository {
       final startTime = DateTime.now();
 
       // Check cache first
-      final cacheKey = _generateCacheKey(query, latitude, longitude, maxResults,
-          includeExternal, filters, sortOption);
+      final cacheKey = _generateCacheKey(query, latitude, longitude, userId,
+          maxResults, includeExternal, filters, sortOption);
       final cachedResult = _getCachedResult(cacheKey);
       if (cachedResult != null) {
         _logger.debug('Returning cached search result', tag: _logName);
@@ -103,14 +128,19 @@ class HybridSearchRepository {
           _applyFilters(communitySpots, filters, latitude, longitude);
       var filteredExternalSpots =
           _applyFilters(externalSpots, filters, latitude, longitude);
+      filteredCommunitySpots =
+          await _decorateImportedSpots(filteredCommunitySpots);
+      filteredExternalSpots =
+          await _decorateImportedSpots(filteredExternalSpots);
 
       // STEP 4: Combine and rank results with community-first prioritization
-      final rankedResults = _rankAndDeduplicateResults(
+      final rankedResults = await _rankAndDeduplicateResults(
         communitySpots: filteredCommunitySpots,
         externalSpots: filteredExternalSpots,
         query: query,
         userLatitude: latitude,
         userLongitude: longitude,
+        userId: userId,
         sortOption: sortOption,
       );
 
@@ -123,19 +153,13 @@ class HybridSearchRepository {
           tag: _logName);
 
       // Calculate distances for result metadata
-      final resultsWithMetadata = finalResults.map((spot) {
-        final distance = (latitude != null && longitude != null)
-            ? _calculateDistance(
-                spot.latitude, spot.longitude, latitude, longitude)
-            : null;
-        return SpotWithMetadata(
-          spot: spot,
-          distance: distance,
-          relevanceScore:
-              _calculateRelevanceScore(spot, query, latitude, longitude),
-          matchReason: _getMatchReason(spot, query),
-        );
-      }).toList();
+      final resultsWithMetadata = await _buildMetadataForResults(
+        spots: finalResults,
+        query: query,
+        userLatitude: latitude,
+        userLongitude: longitude,
+        userId: userId,
+      );
 
       final result = HybridSearchResult(
         spots: finalResults,
@@ -163,6 +187,7 @@ class HybridSearchRepository {
   Future<HybridSearchResult> searchNearbySpots({
     required double latitude,
     required double longitude,
+    String? userId,
     int radius = 5000,
     int maxResults = 50,
     bool includeExternal = true,
@@ -203,15 +228,27 @@ class HybridSearchRepository {
       }
 
       // STEP 3: Combine and rank by distance and community priority
-      final rankedResults = _rankByDistanceAndCommunityPriority(
-        communitySpots: communitySpots,
-        externalSpots: externalSpots,
+      final decoratedCommunitySpots =
+          await _decorateImportedSpots(communitySpots);
+      final decoratedExternalSpots =
+          await _decorateImportedSpots(externalSpots);
+      final rankedResults = await _rankByDistanceAndCommunityPriority(
+        communitySpots: decoratedCommunitySpots,
+        externalSpots: decoratedExternalSpots,
         userLatitude: latitude,
         userLongitude: longitude,
+        userId: userId,
       );
 
       final finalResults = rankedResults.take(maxResults).toList();
       final searchDuration = DateTime.now().difference(startTime);
+      final resultsWithMetadata = await _buildMetadataForResults(
+        spots: finalResults,
+        query: 'nearby',
+        userLatitude: latitude,
+        userLongitude: longitude,
+        userId: userId,
+      );
 
       return HybridSearchResult(
         spots: finalResults,
@@ -220,6 +257,7 @@ class HybridSearchRepository {
         totalCount: finalResults.length,
         searchDuration: searchDuration,
         sources: _getSourceBreakdown(finalResults),
+        metadata: resultsWithMetadata,
       );
     } catch (e) {
       _logger.error('Error in hybrid nearby search', error: e, tag: _logName);
@@ -251,6 +289,31 @@ class HybridSearchRepository {
     }
 
     return communitySpots;
+  }
+
+  Future<List<Spot>> _decorateImportedSpots(List<Spot> spots) async {
+    if (_intakeRepository == null || spots.isEmpty) {
+      return spots;
+    }
+
+    final metadataMap = await _intakeRepository.getSpotMetadataMap();
+    return spots.map((spot) {
+      final syncMetadata = metadataMap[spot.id];
+      if (syncMetadata == null) {
+        return spot;
+      }
+      return spot.copyWith(
+        metadata: <String, dynamic>{
+          ...spot.metadata,
+          'is_external': true,
+          'source_provider': syncMetadata.sourceProvider,
+          'source_url': syncMetadata.sourceUrl,
+        },
+        cityCode: syncMetadata.cityCode ?? spot.cityCode,
+        localityCode: syncMetadata.localityCode ?? spot.localityCode,
+        externalSyncMetadata: syncMetadata,
+      );
+    }).toList();
   }
 
   Future<List<Spot>> _searchExternalData({
@@ -341,14 +404,15 @@ class HybridSearchRepository {
     return externalSpots;
   }
 
-  List<Spot> _rankAndDeduplicateResults({
+  Future<List<Spot>> _rankAndDeduplicateResults({
     required List<Spot> communitySpots,
     required List<Spot> externalSpots,
     required String query,
     double? userLatitude,
     double? userLongitude,
+    String? userId,
     SearchSortOption sortOption = SearchSortOption.relevance,
-  }) {
+  }) async {
     // OUR_GUTS.md: "Authenticity Over Algorithms" - Community data always ranks higher
     final Map<String, Spot> deduplicatedSpots = {};
 
@@ -369,6 +433,13 @@ class HybridSearchRepository {
     }
 
     final results = deduplicatedSpots.values.toList();
+    final rankings = await _buildRankingDetailsMap(
+      spots: results,
+      query: query,
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+      userId: userId,
+    );
 
     // Sort based on sort option while maintaining community priority
     results.sort((a, b) {
@@ -384,19 +455,39 @@ class HybridSearchRepository {
       // Apply sorting based on option
       switch (sortOption) {
         case SearchSortOption.relevance:
-          final aRelevance =
-              _calculateRelevanceScore(a, query, userLatitude, userLongitude);
-          final bRelevance =
-              _calculateRelevanceScore(b, query, userLatitude, userLongitude);
+          final aRelevance = rankings[a.id]?.score ??
+              _calculateFallbackRelevanceScore(
+                a,
+                query,
+                userLatitude,
+                userLongitude,
+              );
+          final bRelevance = rankings[b.id]?.score ??
+              _calculateFallbackRelevanceScore(
+                b,
+                query,
+                userLatitude,
+                userLongitude,
+              );
           return bRelevance.compareTo(aRelevance);
 
         case SearchSortOption.distance:
           if (userLatitude == null || userLongitude == null) {
             // Fallback to relevance if no location
-            final aRelevance =
-                _calculateRelevanceScore(a, query, userLatitude, userLongitude);
-            final bRelevance =
-                _calculateRelevanceScore(b, query, userLatitude, userLongitude);
+            final aRelevance = rankings[a.id]?.score ??
+                _calculateFallbackRelevanceScore(
+                  a,
+                  query,
+                  userLatitude,
+                  userLongitude,
+                );
+            final bRelevance = rankings[b.id]?.score ??
+                _calculateFallbackRelevanceScore(
+                  b,
+                  query,
+                  userLatitude,
+                  userLongitude,
+                );
             return bRelevance.compareTo(aRelevance);
           }
           final aDistance = _calculateDistance(
@@ -426,12 +517,13 @@ class HybridSearchRepository {
     return results;
   }
 
-  List<Spot> _rankByDistanceAndCommunityPriority({
+  Future<List<Spot>> _rankByDistanceAndCommunityPriority({
     required List<Spot> communitySpots,
     required List<Spot> externalSpots,
     required double userLatitude,
     required double userLongitude,
-  }) {
+    String? userId,
+  }) async {
     final allSpots = [...communitySpots, ...externalSpots];
 
     // Remove duplicates while preserving community priority
@@ -450,6 +542,13 @@ class HybridSearchRepository {
     }
 
     final results = deduplicatedSpots.values.toList();
+    final rankings = await _buildRankingDetailsMap(
+      spots: results,
+      query: 'nearby',
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+      userId: userId,
+    );
 
     // Sort by community priority first, then distance
     results.sort((a, b) {
@@ -465,7 +564,14 @@ class HybridSearchRepository {
       final bDistance = _calculateDistance(
           b.latitude, b.longitude, userLatitude, userLongitude);
 
-      return aDistance.compareTo(bDistance);
+      final distanceCompare = aDistance.compareTo(bDistance);
+      if (distanceCompare != 0) {
+        return distanceCompare;
+      }
+
+      final aScore = rankings[a.id]?.score ?? 0.0;
+      final bScore = rankings[b.id]?.score ?? 0.0;
+      return bScore.compareTo(aScore);
     });
 
     return results;
@@ -525,43 +631,193 @@ class HybridSearchRepository {
         spot.metadata['is_external'] != true;
   }
 
-  double _calculateRelevanceScore(
+  double _calculateFallbackRelevanceScore(
       Spot spot, String query, double? userLat, double? userLon) {
     double score = 0.0;
+    final queryLower = query.toLowerCase();
 
     // Name match score
-    if (spot.name.toLowerCase().contains(query.toLowerCase())) {
-      score += 10.0;
+    if (queryLower.isNotEmpty && spot.name.toLowerCase().contains(queryLower)) {
+      score += 0.34;
     }
 
     // Category match score
-    if (spot.category.toLowerCase().contains(query.toLowerCase())) {
-      score += 5.0;
+    if (queryLower.isNotEmpty &&
+        spot.category.toLowerCase().contains(queryLower)) {
+      score += 0.16;
     }
 
     // Tag match score
     for (final tag in spot.tags) {
-      if (tag.toLowerCase().contains(query.toLowerCase())) {
-        score += 2.0;
+      if (queryLower.isNotEmpty && tag.toLowerCase().contains(queryLower)) {
+        score += 0.06;
       }
     }
+    score = score.clamp(0.0, 0.2);
 
-    // Community bonus (OUR_GUTS.md: "Authenticity Over Algorithms")
+    // Community bonus remains only a fallback nudge, not the primary ranker.
     if (_isCommunitySpot(spot)) {
-      score += 20.0;
+      score += 0.12;
     }
 
-    // Distance penalty (if location available)
+    // Distance matters as a bounded closeness bonus.
     if (userLat != null && userLon != null) {
       final distance =
           _calculateDistance(spot.latitude, spot.longitude, userLat, userLon);
-      score -= distance / 1000.0; // Penalty for each kilometer
+      final closeness = (1.0 - (distance / 20000.0)).clamp(0.0, 1.0);
+      score += closeness * 0.18;
     }
 
-    // Rating bonus
-    score += spot.rating * 2.0;
+    score += (spot.rating / 5.0).clamp(0.0, 1.0) * 0.18;
 
-    return score;
+    return score.clamp(0.0, 1.0);
+  }
+
+  Future<List<SpotWithMetadata>> _buildMetadataForResults({
+    required List<Spot> spots,
+    required String query,
+    double? userLatitude,
+    double? userLongitude,
+    String? userId,
+  }) async {
+    final rankings = await _buildRankingDetailsMap(
+      spots: spots,
+      query: query,
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+      userId: userId,
+    );
+
+    return spots.map((spot) {
+      final ranking = rankings[spot.id];
+      final distance = (userLatitude != null && userLongitude != null)
+          ? _calculateDistance(
+              spot.latitude,
+              spot.longitude,
+              userLatitude,
+              userLongitude,
+            )
+          : null;
+      return SpotWithMetadata(
+        spot: spot,
+        distance: distance,
+        relevanceScore: ranking?.score ??
+            _calculateFallbackRelevanceScore(
+              spot,
+              query,
+              userLatitude,
+              userLongitude,
+            ),
+        matchReason: ranking?.reason ?? _getMatchReason(spot, query),
+        usedSignaturePrimary: ranking?.usedSignaturePrimary ?? false,
+      );
+    }).toList();
+  }
+
+  Future<Map<String, _SpotRankingDetails>> _buildRankingDetailsMap({
+    required List<Spot> spots,
+    required String query,
+    double? userLatitude,
+    double? userLongitude,
+    String? userId,
+  }) async {
+    if (spots.isEmpty) {
+      return const <String, _SpotRankingDetails>{};
+    }
+
+    final entries = await Future.wait(
+      spots.map((spot) async {
+        final details = await _resolveRankingDetails(
+          spot: spot,
+          query: query,
+          userLatitude: userLatitude,
+          userLongitude: userLongitude,
+          userId: userId,
+        );
+        return MapEntry(spot.id, details);
+      }),
+    );
+    return Map<String, _SpotRankingDetails>.fromEntries(entries);
+  }
+
+  Future<_SpotRankingDetails> _resolveRankingDetails({
+    required Spot spot,
+    required String query,
+    double? userLatitude,
+    double? userLongitude,
+    String? userId,
+  }) async {
+    final fallbackScore = _calculateFallbackRelevanceScore(
+      spot,
+      query,
+      userLatitude,
+      userLongitude,
+    );
+    final signatureService = _signatureService;
+    if (userId == null || signatureService == null) {
+      return _SpotRankingDetails(
+        score: fallbackScore,
+        reason: _getMatchReason(spot, query),
+        usedSignaturePrimary: false,
+      );
+    }
+
+    try {
+      final match = await signatureService.matchUserToSpot(
+        user: _buildSignatureSearchUser(userId),
+        spot: spot,
+        fallbackScore: fallbackScore,
+      );
+      return _spotRankingDetailsFromMatch(
+        match: match,
+        fallbackReason: _getMatchReason(spot, query),
+      );
+    } catch (e) {
+      _logger.debug(
+        'Signature rerank fell back for spot ${spot.id}: $e',
+        tag: _logName,
+      );
+      return _SpotRankingDetails(
+        score: fallbackScore,
+        reason: _getMatchReason(spot, query),
+        usedSignaturePrimary: false,
+      );
+    }
+  }
+
+  _SpotRankingDetails _spotRankingDetailsFromMatch({
+    required SignatureMatchResult match,
+    required String fallbackReason,
+  }) {
+    final summary = match.summary.trim();
+    final combinedReason = summary.isEmpty
+        ? fallbackReason
+        : '$summary ${fallbackReason.trim()}'.trim();
+    return _SpotRankingDetails(
+      score: match.finalScore,
+      reason: combinedReason,
+      usedSignaturePrimary: match.usedSignaturePrimary,
+    );
+  }
+
+  UnifiedUser _buildSignatureSearchUser(String userId) {
+    return UnifiedUser(
+      id: userId,
+      email: '$userId@avrai.local',
+      createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+      updatedAt: DateTime.now(),
+      isOnline: false,
+      hasCompletedOnboarding: true,
+      hasReceivedStarterLists: true,
+      tags: const <String>[],
+      expertiseMap: const <String, String>{},
+      friends: const <String>[],
+      curatedLists: const <String>[],
+      collaboratedLists: const <String>[],
+      followedLists: const <String>[],
+      primaryRole: UserRole.follower,
+      isAgeVerified: false,
+    );
   }
 
   Map<String, int> _getSourceBreakdown(List<Spot> spots) {
@@ -690,6 +946,7 @@ class HybridSearchRepository {
     String query,
     double? lat,
     double? lon,
+    String? userId,
     int maxResults,
     bool includeExternal,
     SearchFilters? filters,
@@ -698,7 +955,9 @@ class HybridSearchRepository {
     final filterKey = filters != null
         ? '${filters.categories?.join(',')}_${filters.minRating}_${filters.maxDistance}_${filters.communityOnly}_${filters.reservationAvailable}'
         : 'none';
-    return '${query}_${lat}_${lon}_${maxResults}_${includeExternal}_${filterKey}_${sortOption.name}';
+    final personalizationKey = userId == null ? 'anon' : 'user_$userId';
+    return '${query}_${lat}_${lon}_${maxResults}_${includeExternal}'
+        '_${filterKey}_${sortOption.name}_$personalizationKey';
   }
 
   HybridSearchResult? _getCachedResult(String key) {
@@ -722,6 +981,16 @@ class HybridSearchRepository {
     final queryLower = query.toLowerCase();
     final reasons = <String>[];
 
+    if (queryLower.isEmpty || queryLower == 'nearby') {
+      if (_isCommunitySpot(spot)) {
+        reasons.add('community source');
+      }
+      if (spot.rating > 0) {
+        reasons.add('strong local rating');
+      }
+      return reasons.isEmpty ? 'local candidate' : reasons.join(', ');
+    }
+
     if (spot.name.toLowerCase().contains(queryLower)) {
       reasons.add('name match');
     }
@@ -737,6 +1006,18 @@ class HybridSearchRepository {
 
     return reasons.isEmpty ? 'general match' : reasons.join(', ');
   }
+}
+
+class _SpotRankingDetails {
+  final double score;
+  final String reason;
+  final bool usedSignaturePrimary;
+
+  const _SpotRankingDetails({
+    required this.score,
+    required this.reason,
+    required this.usedSignaturePrimary,
+  });
 }
 
 /// Search filters for advanced filtering
@@ -771,13 +1052,35 @@ class SpotWithMetadata {
   final double? distance; // in meters
   final double relevanceScore;
   final String matchReason;
+  final bool usedSignaturePrimary;
 
   const SpotWithMetadata({
     required this.spot,
     this.distance,
     required this.relevanceScore,
     required this.matchReason,
+    this.usedSignaturePrimary = false,
   });
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'spot': spot.toJson(),
+      'distance': distance,
+      'relevance_score': relevanceScore,
+      'match_reason': matchReason,
+      'used_signature_primary': usedSignaturePrimary,
+    };
+  }
+
+  factory SpotWithMetadata.fromJson(Map<String, dynamic> json) {
+    return SpotWithMetadata(
+      spot: Spot.fromJson(json['spot'] as Map<String, dynamic>),
+      distance: (json['distance'] as num?)?.toDouble(),
+      relevanceScore: (json['relevance_score'] as num?)?.toDouble() ?? 0.0,
+      matchReason: json['match_reason'] as String? ?? '',
+      usedSignaturePrimary: json['used_signature_primary'] as bool? ?? false,
+    );
+  }
 }
 
 /// Hybrid search result with source breakdown

@@ -6,6 +6,9 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/dna_encoder_service.dart';
+import 'package:get_it/get_it.dart';
 
 class PersonalityAdvertisingUpdateLane {
   const PersonalityAdvertisingUpdateLane._();
@@ -43,7 +46,16 @@ class PersonalityAdvertisingUpdateLane {
           await vibeAnalyzer.compileUserVibe(userId, updatedPersonality);
       final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
 
+      final knotService = GetIt.instance.isRegistered<PersonalityKnotService>() 
+          ? GetIt.instance<PersonalityKnotService>() 
+          : PersonalityKnotService();
+      final dnaEncoder = DnaEncoderService();
+      
+      final knot = await knotService.generateKnot(updatedPersonality);
+      final dnaPayload = dnaEncoder.encode(knot);
+
       final bool success = await advertisingService.updatePersonalityData(
+        payload: dnaPayload,
         personalityData: anonymized,
         nodeId: localBleNodeId(),
         eventModeEnabled: eventModeEnabled,

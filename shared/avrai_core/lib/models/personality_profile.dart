@@ -32,6 +32,10 @@ class PersonalityProfile {
   final PersonalityKnot? personalityKnot; // Topological knot representation
   final List<KnotSnapshot>? knotEvolutionHistory; // Knot evolution tracking
 
+  // NEW: v0.4.1 - Ecosystem Acceleration Flag
+  final bool
+      isAccelerated; // True if user bypassed 14-day observation via ecosystem integrations (e.g. Spotify)
+
   PersonalityProfile({
     required this.agentId,
     this.userId, // Optional for backward compatibility
@@ -53,6 +57,7 @@ class PersonalityProfile {
     // Phase 1: Knot theory integration (backward compatible)
     this.personalityKnot,
     this.knotEvolutionHistory,
+    this.isAccelerated = false,
   }) : corePersonality = corePersonality ??
             dimensions; // Default to dimensions for backward compat
 
@@ -100,6 +105,7 @@ class PersonalityProfile {
       // Phase 1: Knot theory (no knot initially, will be generated on demand)
       personalityKnot: null,
       knotEvolutionHistory: null,
+      isAccelerated: false,
     );
   }
 
@@ -143,6 +149,7 @@ class PersonalityProfile {
       activeTransition: null,
       personalityKnot: null,
       knotEvolutionHistory: null,
+      isAccelerated: false,
     );
   }
 
@@ -239,6 +246,7 @@ class PersonalityProfile {
       // Phase 1: Preserve knot-related fields
       personalityKnot: personalityKnot,
       knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: isAccelerated,
     );
   }
 
@@ -347,6 +355,7 @@ class PersonalityProfile {
       // Phase 1: Preserve knot-related fields
       personalityKnot: personalityKnot,
       knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: isAccelerated,
     );
   }
 
@@ -508,6 +517,7 @@ class PersonalityProfile {
       'last_updated': lastUpdated.toIso8601String(),
       'evolution_generation': evolutionGeneration,
       'learning_history': serializedLearningHistory,
+      'is_accelerated': isAccelerated,
     };
 
     // Phase 1: Knot theory integration (optional, backward compatible)
@@ -585,6 +595,7 @@ class PersonalityProfile {
       learningHistory: deserializedLearningHistory,
       personalityKnot: personalityKnot,
       knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: json['is_accelerated'] as bool? ?? false,
     );
   }
 
@@ -601,7 +612,9 @@ class PersonalityProfile {
 
   @override
   String toString() {
-    return 'PersonalityProfile(agentId: ${agentId.substring(0, 10)}..., archetype: $archetype, '
+    final agentIdPreview =
+        agentId.length <= 10 ? agentId : agentId.substring(0, 10);
+    return 'PersonalityProfile(agentId: ${agentIdPreview}..., archetype: $archetype, '
         'generation: $evolutionGeneration, authenticity: ${authenticity.toStringAsFixed(2)})';
   }
 }

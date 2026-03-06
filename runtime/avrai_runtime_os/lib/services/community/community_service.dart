@@ -9,6 +9,7 @@ import 'package:avrai_core/models/community/community.dart';
 import 'package:avrai_core/models/community/community_event.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/geographic/geographic_expansion.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_recorder_service_v0.dart';
@@ -26,6 +27,9 @@ import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/bridge/knot_math_bridge.dart/api.dart';
 import 'package:avrai_core/services/community_reader.dart';
+import 'package:avrai_core/models/signatures/signature_match_result.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 
 part 'community_service_compat_models.dart';
 
@@ -79,6 +83,7 @@ class CommunityService implements CommunityReader {
   final AtomicClockService _atomicClock;
   final CommunityRepository? _repository;
   final LedgerRecorderServiceV0 _ledger;
+  final EntitySignatureService? _entitySignatureService;
 
   CommunityService({
     GeographicExpansionService? expansionService,
@@ -88,10 +93,11 @@ class CommunityService implements CommunityReader {
     AtomicClockService? atomicClockService,
     CommunityRepository? repository,
     LedgerRecorderServiceV0? ledgerRecorder,
+    EntitySignatureService? entitySignatureService,
   })  : _expansionService = expansionService ?? GeographicExpansionService(),
         _knotFabricService = knotFabricService,
         _knotStorageService = knotStorageService,
-        _storageService = storageService,
+        _storageService = storageService ?? StorageService.instance,
         _atomicClock = atomicClockService ?? _resolveAtomicClockService(),
         _repository = repository,
         _ledger = ledgerRecorder ??
@@ -99,7 +105,8 @@ class CommunityService implements CommunityReader {
               supabaseService: SupabaseService(),
               agentIdService: AgentIdService(),
               storage: StorageService.instance,
-            );
+            ),
+        _entitySignatureService = entitySignatureService;
 
   Future<void> _tryLedgerAppendForUser({
     required String expectedOwnerUserId,
@@ -175,6 +182,58 @@ class CommunityService implements CommunityReader {
   Future<void> upsertCommunity(Community community) async {
     await _saveCommunity(community);
     _invalidateCommunityCaches(community.id);
+  }
+
+  /// Materialize an imported community into the existing discovery path.
+  Future<Community> importExternalCommunity({
+    required String ownerUserId,
+    required String name,
+    required String description,
+    required String category,
+    required String originalLocality,
+    String? cityCode,
+    String? localityCode,
+    required ExternalSyncMetadata externalSyncMetadata,
+  }) async {
+    final now = await _now();
+    final community = Community(
+      id: externalSyncMetadata.externalId?.isNotEmpty == true
+          ? 'imported_community_${externalSyncMetadata.externalId}'
+          : 'community_${now.microsecondsSinceEpoch}',
+      name: name,
+      description: description,
+      category: category,
+      originatingEventId: '',
+      originatingEventType: OriginatingEventType.expertiseEvent,
+      founderId: ownerUserId,
+      createdAt: now,
+      updatedAt: now,
+      originalLocality: originalLocality,
+      currentLocalities: originalLocality.isNotEmpty
+          ? <String>[originalLocality]
+          : const <String>[],
+      cityCode: cityCode,
+      localityCode: localityCode,
+      externalSyncMetadata: externalSyncMetadata,
+    );
+    await upsertCommunity(community);
+    return community;
+  }
+
+  Future<Community?> attachExternalSyncMetadata({
+    required String communityId,
+    required ExternalSyncMetadata metadata,
+  }) async {
+    final community = await getCommunityById(communityId);
+    if (community == null) {
+      return null;
+    }
+    final updated = community.copyWith(
+      externalSyncMetadata: metadata,
+      updatedAt: metadata.lastSyncedAt ?? DateTime.now(),
+    );
+    await upsertCommunity(updated);
+    return updated;
   }
 
   /// Auto-create community from successful event
@@ -1293,7 +1352,9 @@ class CommunityService implements CommunityReader {
       // Identify clusters
       final clusters = await _knotFabricService.identifyFabricClusters(fabric);
 
-      // Create communities from clusters
+      // Create potential communities from clusters (NOT saved automatically)
+      // Per philosophy: Humans MUST explicitly start/found communities.
+      // The AI only discovers the latent "Knot Tribe" and suggests it.
       final communities = <Community>[];
       for (final cluster in clusters) {
         // Extract **user IDs** from cluster knots (knot IDs are agentIds).
@@ -1305,18 +1366,19 @@ class CommunityService implements CommunityReader {
         if (memberIds.isEmpty) continue;
 
         final now = await _now();
-        // Create community from cluster
+        // Create an ephemeral community suggestion from the cluster
         final community = Community(
-          id: 'fabric_cluster_${cluster.clusterId}',
-          name: 'Knot Tribe ${cluster.clusterId}',
-          description: 'Community discovered from knot fabric analysis',
+          id: 'latent_cluster_${cluster.clusterId}',
+          name: 'Latent Knot Tribe ${cluster.clusterId}',
+          description:
+              'A latent community discovered by AI. Needs a human to officially open the door.',
           category: cluster.knotTypeDistribution.primaryType,
           originatingEventId:
               '', // No originating event for fabric-discovered communities
           originatingEventType: OriginatingEventType.communityEvent,
           memberIds: memberIds,
           memberCount: memberIds.length,
-          founderId: memberIds.first, // First member as founder
+          founderId: memberIds.first, // Suggested founder
           eventIds: const [],
           eventCount: 0,
           createdAt: now,
@@ -1326,11 +1388,11 @@ class CommunityService implements CommunityReader {
         );
 
         communities.add(community);
-        await _saveCommunity(community);
+        // await _saveCommunity(community); // REMOVED: Humans must start them
       }
 
       _logger.info(
-        'Discovered ${communities.length} communities from fabric',
+        'Discovered ${communities.length} latent communities from fabric (awaiting human creation)',
         tag: _logName,
       );
 
@@ -1521,7 +1583,51 @@ class CommunityService implements CommunityReader {
       userId: userId,
       memberSampleSize: memberSampleSize,
     );
-    return breakdown.combined;
+    final community = await getCommunityById(communityId);
+    if (community == null) {
+      return breakdown.combined;
+    }
+    final match = await calculateUserCommunitySignatureMatch(
+      community: community,
+      userId: userId,
+      fallbackScore: breakdown.combined,
+    );
+    return match?.finalScore ?? breakdown.combined;
+  }
+
+  Future<SignatureMatchResult?> calculateUserCommunitySignatureMatch({
+    required Community community,
+    required String userId,
+    required double fallbackScore,
+  }) async {
+    if (_entitySignatureService == null) {
+      return null;
+    }
+
+    try {
+      final personalityLearning = _tryGetPersonalityLearning();
+      final personality = personalityLearning == null
+          ? null
+          : await personalityLearning.getCurrentPersonality(userId);
+      final match = await _entitySignatureService.matchUserToCommunity(
+        user: UnifiedUser(
+          id: userId,
+          email: '$userId@local.avrai',
+          createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+          updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+        ),
+        community: community,
+        fallbackScore: fallbackScore,
+        personality: personality,
+      );
+      return match;
+    } catch (e) {
+      _logger.warn(
+        'Community signature scoring failed for $userId:${community.id}: $e',
+        tag: _logName,
+      );
+      return null;
+    }
   }
 
   /// Calculate a user's **true compatibility breakdown** with a community.

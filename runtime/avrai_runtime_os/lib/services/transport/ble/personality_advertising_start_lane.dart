@@ -4,6 +4,9 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_knot/services/knot/personality_knot_service.dart';
+import 'package:avrai_knot/services/knot/dna_encoder_service.dart';
+import 'package:get_it/get_it.dart';
 
 class PersonalityAdvertisingStartLane {
   const PersonalityAdvertisingStartLane._();
@@ -24,7 +27,18 @@ class PersonalityAdvertisingStartLane {
     final vibe = await vibeAnalyzer.compileUserVibe(userId, personality);
     final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
 
+    // V0.1 Pivot: Generate DNA math string payload for BLE
+    // We try to get the PersonalityKnotService from GetIt, fallback to creating it.
+    final knotService = GetIt.instance.isRegistered<PersonalityKnotService>() 
+        ? GetIt.instance<PersonalityKnotService>() 
+        : PersonalityKnotService();
+    final dnaEncoder = DnaEncoderService();
+    
+    final knot = await knotService.generateKnot(personality);
+    final dnaPayload = dnaEncoder.encode(knot);
+
     final bool advertisingStarted = await advertisingService.startAdvertising(
+      payload: dnaPayload,
       personalityData: anonymized,
       nodeId: localBleNodeId,
       eventModeEnabled: eventModeEnabled,

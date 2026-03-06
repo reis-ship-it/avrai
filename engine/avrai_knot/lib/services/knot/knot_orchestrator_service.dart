@@ -35,6 +35,8 @@ import 'package:avrai_knot/models/knot/braided_knot.dart';
 /// - Provide unified API for knot system
 class KnotOrchestratorService {
   static const String _logName = 'KnotOrchestratorService';
+  static String _safePrefix(String value, int length) =>
+      value.length <= length ? value : value.substring(0, length);
 
   final PersonalityKnotService _knotService;
   final KnotStorageService _storageService;
@@ -138,7 +140,7 @@ class KnotOrchestratorService {
   Future<KnotString?> createUserString(String agentId) async {
     try {
       developer.log(
-        'Creating string for user: ${agentId.substring(0, 10)}...',
+        'Creating string for user: ${_safePrefix(agentId, 10)}...',
         name: _logName,
       );
 
@@ -204,7 +206,7 @@ class KnotOrchestratorService {
       final string = await createUserString(agentId);
       if (string == null) {
         developer.log(
-          '⚠️ No string to export for agentId: ${agentId.substring(0, 10)}...',
+          '⚠️ No string to export for agentId: ${_safePrefix(agentId, 10)}...',
           name: _logName,
         );
         return null;
@@ -255,7 +257,7 @@ class KnotOrchestratorService {
       final string = await createUserString(agentId);
       if (string == null) {
         developer.log(
-          '⚠️ No string to export for agentId: ${agentId.substring(0, 10)}...',
+          '⚠️ No string to export for agentId: ${_safePrefix(agentId, 10)}...',
           name: _logName,
         );
         return null;
@@ -335,7 +337,7 @@ class KnotOrchestratorService {
           userKnots.add(knot);
         } else {
           developer.log(
-            '⚠️ No knot found for user: ${userId.substring(0, 10)}...',
+            '⚠️ No knot found for user: ${_safePrefix(userId, 10)}...',
             name: _logName,
           );
         }

@@ -8,7 +8,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Friend Discovery Page
 ///
@@ -273,7 +273,7 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
       body: Column(
         children: [
           // Header Card
-          PortalSurface(
+          AppSurface(
             margin: const EdgeInsets.all(16),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -389,7 +389,7 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
                         itemCount: _friendSuggestions.length,
                         itemBuilder: (context, index) {
                           final friend = _friendSuggestions[index];
-                          return PortalSurface(
+                          return AppSurface(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: EdgeInsets.zero,
                             child: ListTile(

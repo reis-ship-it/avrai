@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart'
-    show kDebugMode, defaultTargetPlatform, TargetPlatform;
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:go_router/go_router.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,12 +15,10 @@ import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state
 import 'package:avrai_runtime_os/services/ai_infrastructure/on_device_ai_capability_gate.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/pages/onboarding/favorite_places_page.dart';
+import 'package:avrai/presentation/pages/onboarding/open_intake_page.dart';
 import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
 import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
 import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
-import 'package:avrai/presentation/pages/onboarding/preference_survey_page.dart';
-import 'package:avrai/presentation/pages/onboarding/baseline_lists_page.dart';
 import 'package:avrai/presentation/pages/onboarding/data_intake_connection_page.dart';
 import 'package:avrai/presentation/pages/onboarding/onboarding_step.dart';
 import 'package:avrai/presentation/pages/onboarding/legal_acceptance_dialog.dart';
@@ -33,16 +31,13 @@ import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_connection_service.dart';
 import 'package:avrai_runtime_os/controllers/onboarding_flow_controller.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai_runtime_os/services/ledgers/proof_run_service_v0.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/portal/portal_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 enum OnboardingStepType {
   welcome,
   homebase,
-  favoritePlaces,
-  preferences,
-  baselineLists, // Add baseline lists step after preferences
+  openIntake,
   friends,
   permissions, // Includes age and legal
   socialMedia,
@@ -74,35 +69,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final AppLogger _logger =
       const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
   final PageController _pageController = PageController();
+  bool _showWelcome = true;
   int _currentPage = 0;
   DateTime? _selectedBirthday;
   String? _selectedHomebase;
-  List<String> _favoritePlaces = [];
-  Map<String, List<String>> _preferences = {};
-  List<String> _baselineLists = [];
+  Map<String, String> _openResponses = {};
   List<String> _respectedFriends = [];
   Map<String, bool> _connectedSocialPlatforms = {
-    // Core platforms
+    'Spotify': false,
     'Instagram': false,
     'Facebook': false,
-    'Twitter': false,
     'Google': false,
-    // New platforms
-    'Reddit': false,
-    'TikTok': false,
-    'Tumblr': false,
-    'YouTube': false,
-    'Pinterest': false,
-    'Are.na': false,
-  }; // Track social media connections
-  bool _isCompleting = false; // Guard to prevent multiple completion attempts
+    'Apple': false,
+    'Strava': false,
+  };
+  bool _isCompleting = false;
 
   final List<OnboardingStep> _steps = [
-    const OnboardingStep(
-      page: OnboardingStepType.welcome,
-      title: 'Welcome',
-      description: 'Get started with SPOTS',
-    ),
     const OnboardingStep(
       page: OnboardingStepType.permissions,
       title: 'Permissions & Legal',
@@ -114,20 +97,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description: 'Select your primary location',
     ),
     const OnboardingStep(
-      page: OnboardingStepType.favoritePlaces,
-      title: 'Favorite Places',
-      description: 'Tell us about your favorite spots',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.preferences,
-      title: 'What do you love?',
-      description:
-          'Set your preferences for vibe matching and spot recommendations',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.baselineLists,
-      title: 'Your Lists',
-      description: 'Create your starting lists (optional)',
+      page: OnboardingStepType.openIntake,
+      title: 'About You',
+      description: 'Tell us about yourself to seed your AI',
     ),
     const OnboardingStep(
       page: OnboardingStepType.socialMedia,
@@ -136,13 +108,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     ),
     const OnboardingStep(
       page: OnboardingStepType.friends,
-      title: 'Friends & Respect',
-      description: 'Connect with friends',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.dataIntake,
-      title: 'Data Intake & Privacy',
-      description: 'Connect your digital life securely via the Air Gap',
+      title: 'Starter Lists',
+      description: 'Choose local lists to start from',
     ),
     const OnboardingStep(
       page: OnboardingStepType.connectAndDiscover,
@@ -179,134 +146,83 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // If completing, show only a loading screen to prevent any rendering issues
     if (_isCompleting) {
-      return const AdaptivePlatformPageScaffold(
-        title: 'Welcome to avrai',
-        automaticallyImplyLeading: false,
-        constrainBody: false,
-        body: Center(
-          child: CircularProgressIndicator(),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_showWelcome) {
+      return PopScope(
+        canPop: false,
+        child: WelcomePage(
+          onContinue: () {
+            if (mounted) {
+              setState(() => _showWelcome = false);
+            }
+          },
         ),
       );
     }
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Welcome to avrai',
-      automaticallyImplyLeading: false,
-      constrainBody: false,
-      actions: [
-        if (kDebugMode)
-          IconButton(
-            icon: const Icon(Icons.fact_check_outlined),
-            tooltip: 'Start proof run (debug)',
-            onPressed: () async {
-              try {
-                final proof = GetIt.instance<ProofRunServiceV0>();
-                final existing = proof.getActiveRunId();
-                final runId = existing ??
-                    await proof.startRun(payload: const {
-                      'started_from': 'onboarding',
-                    });
-                if (!mounted || !context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Proof run active: ${runId.substring(0, 8)}…',
-                    ),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
-              } catch (e, st) {
-                developer.log(
-                  'Failed starting proof run from onboarding',
-                  name: 'OnboardingPage',
-                  error: e,
-                  stackTrace: st,
-                );
-                if (!mounted || !context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Proof run start failed: $e'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-              }
-            },
-          ),
-        TextButton(
-          onPressed: _currentPage > 0 && !_isCompleting
-              ? () {
-                  if (mounted && !_isCompleting) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (!_isCompleting) {
+          _goBack();
+        }
+      },
+      child: AdaptivePlatformPageScaffold(
+        title: '',
+        automaticallyImplyLeading: true,
+        constrainBody: false,
+        actions: const [],
+        body: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  if (!_isCompleting && mounted) {
                     setState(() {
-                      _currentPage--;
+                      _currentPage = index;
                     });
-                    _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
                   }
-                }
-              : null,
-          child: const Text('Back'),
-        ),
-      ],
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              physics: _isCompleting
-                  ? const NeverScrollableScrollPhysics()
-                  : const PageScrollPhysics(),
-              onPageChanged: (index) {
-                if (!_isCompleting && mounted) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                }
-              },
-              itemCount: _steps.length,
-              itemBuilder: (context, index) {
-                // Prevent building pages during completion
-                if (_isCompleting) {
-                  return const SizedBox.shrink();
-                }
-                return _buildStepContent(_steps[index]);
-              },
+                },
+                itemCount: _steps.length,
+                itemBuilder: (context, index) {
+                  if (_isCompleting) {
+                    return const SizedBox.shrink();
+                  }
+                  return _buildStepContent(_steps[index]);
+                },
+              ),
             ),
-          ),
-          _buildBottomNavigation(),
-        ],
+            _buildBottomNavigation(),
+          ],
+        ),
       ),
     );
+  }
+
+  void _goBack() {
+    if (!mounted || _isCompleting) return;
+    if (_currentPage > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      setState(() => _showWelcome = true);
+    }
   }
 
   Widget _buildStepContent(OnboardingStep step) {
     switch (step.page) {
       case OnboardingStepType.welcome:
-        return WelcomePage(
-          onContinue: () {
-            if (_currentPage < _steps.length - 1) {
-              setState(() {
-                _currentPage++;
-              });
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-          },
-          onSkip: () {
-            // Skip to last step (or could skip entirely)
-            if (_currentPage < _steps.length - 1) {
-              setState(() {
-                _currentPage = _steps.length - 1;
-              });
-              _pageController.jumpToPage(_steps.length - 1);
-            }
-          },
-        );
+        return const SizedBox.shrink();
       case OnboardingStepType.homebase:
         return HomebaseSelectionPage(
           onHomebaseChanged: (homebase) {
@@ -316,38 +232,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
           },
           selectedHomebase: _selectedHomebase,
         );
-      case OnboardingStepType.favoritePlaces:
-        return FavoritePlacesPage(
-          onPlacesChanged: (places) {
+      case OnboardingStepType.openIntake:
+        return OpenIntakePage(
+          openResponses: _openResponses,
+          onResponsesChanged: (responses) {
             setState(() {
-              _favoritePlaces = places;
+              _openResponses = responses;
             });
           },
-          favoritePlaces: _favoritePlaces,
-          userId: _getUserIdOrNull(),
-          userHomebase: _selectedHomebase,
-        );
-      case OnboardingStepType.preferences:
-        return PreferenceSurveyPage(
-          onPreferencesChanged: (preferences) {
-            setState(() {
-              _preferences = preferences;
-            });
-          },
-          preferences: _preferences,
-        );
-      case OnboardingStepType.baselineLists:
-        return BaselineListsPage(
-          baselineLists: _baselineLists,
-          onBaselineListsChanged: (lists) {
-            setState(() {
-              _baselineLists = lists;
-            });
-          },
-          userId: _getUserIdOrNull(),
-          userName: _getUserName(),
-          userPreferences: _preferences,
-          userFavoritePlaces: _favoritePlaces,
         );
       case OnboardingStepType.friends:
         return FriendsRespectPage(
@@ -358,6 +250,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           },
           respectedLists: _respectedFriends,
           userId: _getUserIdOrNull(),
+          selectedHomebase: _selectedHomebase,
         );
       case OnboardingStepType.permissions:
         return _PermissionsAndLegalPage(
@@ -415,9 +308,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
         return DataIntakeConnectionPage(
           onComplete: () {
             if (_currentPage < _steps.length - 1) {
-              setState(() {
-                _currentPage++;
-              });
               _pageController.nextPage(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -454,9 +344,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 tag: 'Onboarding');
                             _completeOnboarding();
                           } else {
-                            setState(() {
-                              _currentPage++;
-                            });
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
@@ -472,11 +359,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  String _getUserName() {
-    final authState = context.read<AuthBloc>().state;
-    return authState is Authenticated ? authState.user.name : 'User';
-  }
-
   String? _getUserIdOrNull() {
     final authState = context.read<AuthBloc>().state;
     return authState is Authenticated ? authState.user.id : null;
@@ -489,7 +371,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       return false;
     }
 
-    // Always allow proceeding from the last step (friends is optional)
+    // Always allow proceeding from the last step.
     if (_currentPage == _steps.length - 1) {
       _logger.debug('Can proceed: on last step', tag: 'Onboarding');
       return true;
@@ -505,14 +387,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       case OnboardingStepType.homebase:
         canProceed = _selectedHomebase != null && _selectedHomebase!.isNotEmpty;
         break;
-      case OnboardingStepType.favoritePlaces:
-        canProceed = _favoritePlaces.isNotEmpty;
-        break;
-      case OnboardingStepType.preferences:
-        canProceed = _preferences.isNotEmpty;
-        break;
-      case OnboardingStepType.baselineLists:
-        canProceed = true; // Optional step - users can skip or create lists
+      case OnboardingStepType.openIntake:
+        canProceed = true; // Optional text fields
         break;
       case OnboardingStepType.friends:
         canProceed = true; // Optional step
@@ -566,11 +442,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
 
     _isCompleting = true;
+    bool savedOnboardingData = false;
+    int? calculatedAge;
     try {
       _logger.info('🎯 Completing Onboarding:', tag: 'Onboarding');
       _logger.debug('  Homebase: $_selectedHomebase', tag: 'Onboarding');
-      _logger.debug('  Favorite Places: $_favoritePlaces', tag: 'Onboarding');
-      _logger.debug('  Preferences: $_preferences', tag: 'Onboarding');
+      _logger.debug('  Open Responses: $_openResponses', tag: 'Onboarding');
 
       // Get authenticated user
       final authState = context.read<AuthBloc>().state;
@@ -625,6 +502,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           age--;
         }
       }
+      calculatedAge = age;
 
       // Build onboarding data (agentId will be set by controller)
       final onboardingData = OnboardingData(
@@ -632,9 +510,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         age: age,
         birthday: _selectedBirthday,
         homebase: _selectedHomebase,
-        favoritePlaces: _favoritePlaces,
-        preferences: _preferences,
-        baselineLists: _baselineLists,
+        openResponses: _openResponses,
         respectedFriends: _respectedFriends,
         socialMediaConnected: _connectedSocialPlatforms,
         completedAt: DateTime.now(),
@@ -686,33 +562,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _logger.info(
           '✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
           tag: 'Onboarding');
-
-      // Proof run (debug): if a run is active, record that onboarding completed.
-      if (kDebugMode) {
-        try {
-          final proof = GetIt.instance<ProofRunServiceV0>();
-          final runId = proof.getActiveRunId();
-          if (runId != null && runId.isNotEmpty) {
-            await proof.recordMilestone(
-              runId: runId,
-              eventType: 'proof_onboarding_completed',
-              payload: <String, Object?>{
-                'homebase_set': _selectedHomebase != null,
-                'favorite_places_count': _favoritePlaces.length,
-                'baseline_lists_count': _baselineLists.length,
-                'respected_friends_count': _respectedFriends.length,
-              },
-            );
-          }
-        } catch (e, st) {
-          developer.log(
-            'Proof run onboarding receipt failed (non-fatal): $e',
-            name: 'OnboardingPage',
-            error: e,
-            stackTrace: st,
-          );
-        }
-      }
+      savedOnboardingData = true;
 
       // Ensure widget is still mounted before navigation
       if (!mounted) {
@@ -746,67 +596,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
         return;
       }
 
-      // Navigate to AI loading page using go_router
-      // Use postFrameCallback to ensure navigation happens after all rendering is complete
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        // Add another small delay in the callback to be extra safe
-        Future.delayed(const Duration(milliseconds: 50), () {
-          if (!mounted) {
-            _isCompleting = false;
-            return;
-          }
+      final routeExtras = <String, dynamic>{
+        'userName': authState.user.name,
+        'birthday': _selectedBirthday?.toIso8601String(),
+        'age': calculatedAge,
+        'homebase': _selectedHomebase,
+        'openResponses': _openResponses,
+      };
 
-          try {
-            final router = GoRouter.of(context);
-            if (const bool.fromEnvironment('FLUTTER_TEST')) {
-              // Helpful signal in integration test output.
-              // ignore: avoid_print
-              developer.log('TEST: OnboardingPage -> /ai-loading',
-                  name: 'onuoardingpage');
-            }
-
-            // Get user name from auth state
-            final authState = context.read<AuthBloc>().state;
-            final userName =
-                authState is Authenticated ? authState.user.name : 'User';
-
-            // Navigate to AI loading page with all onboarding data
-            _logger.info(
-                '🚀 [ONBOARDING_PAGE] Navigating to /ai-loading with onboarding data',
-                tag: 'Onboarding');
-            router.go('/ai-loading', extra: {
-              'userName': userName,
-              'birthday': _selectedBirthday?.toIso8601String(),
-              'age': age,
-              'homebase': _selectedHomebase,
-              'favoritePlaces': _favoritePlaces,
-              'preferences': _preferences,
-              'baselineLists': _baselineLists,
-              'respectedFriends': _respectedFriends,
-              'socialMediaConnected': _connectedSocialPlatforms,
-            });
-          } catch (navigationError) {
-            _logger.error(
-                '❌ [ONBOARDING_PAGE] Navigation error in postFrameCallback',
-                error: navigationError,
-                tag: 'Onboarding');
-            // Fallback navigation
-            if (mounted) {
-              try {
-                GoRouter.of(context).go('/home');
-              } catch (fallbackError) {
-                _logger.error(
-                    '❌ [ONBOARDING_PAGE] Fallback navigation also failed',
-                    error: fallbackError,
-                    tag: 'Onboarding');
-              }
-            }
-          }
-        });
-      });
-
-      // Note: Navigation happens in postFrameCallback
-      // The outer catch will handle any errors before navigation
+      try {
+        GoRouter.of(context).go('/ai-loading', extra: routeExtras);
+      } catch (e, st) {
+        _logger.error(
+          'Navigation to ai-loading failed',
+          error: e,
+          stackTrace: st,
+          tag: 'Onboarding',
+        );
+        rethrow;
+      }
     } catch (e) {
       _isCompleting = false; // Reset on error
       _logger.error('Error completing onboarding', error: e, tag: 'Onboarding');
@@ -814,16 +622,37 @@ class _OnboardingPageState extends State<OnboardingPage> {
       if (const bool.fromEnvironment('FLUTTER_TEST')) {
         rethrow;
       }
-      // Fallback: try direct navigation to home
-      try {
-        GoRouter.of(context).go('/home');
-      } catch (fallbackError) {
-        _logger.error('Fallback navigation also failed',
-            error: fallbackError, tag: 'Onboarding');
-        // Last resort: use Navigator
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+
+      if (savedOnboardingData && mounted) {
+        try {
+          final currentAuthState = context.read<AuthBloc>().state;
+          final userName = currentAuthState is Authenticated
+              ? currentAuthState.user.name
+              : 'User';
+          GoRouter.of(context).go('/ai-loading', extra: {
+            'userName': userName,
+            'birthday': _selectedBirthday?.toIso8601String(),
+            'age': calculatedAge,
+            'homebase': _selectedHomebase,
+            'openResponses': _openResponses,
+          });
+          return;
+        } catch (fallbackError) {
+          _logger.error(
+            'Fallback navigation to ai-loading also failed',
+            error: fallbackError,
+            tag: 'Onboarding',
+          );
         }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('We could not finish setup. Please try again.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
     }
   }
@@ -956,13 +785,13 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
             'Enable connectivity and accept terms to continue',
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.grey600,
+              color: AppColors.grey500,
             ),
           ),
           const SizedBox(height: 24),
 
           // Permissions Section
-          PortalSurface(
+          AppSurface(
             borderColor: AppColors.grey500.withValues(alpha: 0.2),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -993,7 +822,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
           const SizedBox(height: 20),
 
           // Age Verification Section
-          PortalSurface(
+          AppSurface(
             borderColor: AppColors.grey500.withValues(alpha: 0.2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1027,7 +856,7 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
           const SizedBox(height: 20),
 
           // Legal Acceptance Section
-          PortalSurface(
+          AppSurface(
             borderColor: (_legalAccepted
                     ? AppColors.success.withValues(alpha: 0.3)
                     : AppColors.grey500.withValues(alpha: 0.2))
@@ -1231,7 +1060,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
             'Enable ai2ai discovery to connect with nearby SPOTS users and their AI personalities',
           ),
           const SizedBox(height: 24),
-          PortalSurface(
+          AppSurface(
             padding: EdgeInsets.zero,
             child: SwitchListTile(
               title: const Text('Enable AI Discovery'),
@@ -1249,7 +1078,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
             ),
           ),
           const SizedBox(height: 16),
-          PortalSurface(
+          AppSurface(
             padding: EdgeInsets.zero,
             child: SwitchListTile(
               title: const Text('Enable Offline AI (downloads on Wi‑Fi)'),
@@ -1333,7 +1162,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
                   Text(
                     text,
                     style:
-                        const TextStyle(fontSize: 12, color: AppColors.grey600),
+                        const TextStyle(fontSize: 12, color: AppColors.grey500),
                   ),
                   if (phase == LocalLlmProvisioningPhase.downloading &&
                       progress != null)
@@ -1346,7 +1175,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
                           minHeight: 6,
                           backgroundColor: AppColors.grey200,
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.electricGreen,
+                            AppColors.primary,
                           ),
                         ),
                       ),
@@ -1358,7 +1187,7 @@ class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
           const SizedBox(height: 16),
           const Text(
             'When enabled, your anonymized personality data will be used to discover compatible AI personalities nearby. All connections are privacy-preserving and go through the AI layer.',
-            style: TextStyle(fontSize: 12, color: AppColors.grey600),
+            style: TextStyle(fontSize: 12, color: AppColors.grey500),
           ),
         ],
       ),
