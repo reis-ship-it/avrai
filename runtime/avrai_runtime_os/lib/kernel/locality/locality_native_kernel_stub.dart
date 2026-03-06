@@ -1,4 +1,5 @@
 import 'package:avrai_core/models/spots/visit.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_bridge_bindings.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
@@ -121,6 +122,52 @@ class InProcessLocalitySyscallTransport implements LocalitySyscallTransport {
       default:
         throw UnsupportedError('Unknown sync locality syscall: $syscall');
     }
+  }
+}
+
+class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
+  final LocalityNativeInvocationBridge nativeBridge;
+  final LocalitySyscallTransport fallbackTransport;
+
+  const FfiPreferredLocalitySyscallTransport({
+    required this.nativeBridge,
+    required this.fallbackTransport,
+  });
+
+  @override
+  Future<Map<String, dynamic>> invokeAsync({
+    required String syscall,
+    required Map<String, dynamic> payload,
+  }) async {
+    nativeBridge.initialize();
+    if (nativeBridge.isAvailable) {
+      return nativeBridge.invoke(
+        syscall: syscall,
+        payload: payload,
+      );
+    }
+    return fallbackTransport.invokeAsync(
+      syscall: syscall,
+      payload: payload,
+    );
+  }
+
+  @override
+  Map<String, dynamic> invokeSync({
+    required String syscall,
+    required Map<String, dynamic> payload,
+  }) {
+    nativeBridge.initialize();
+    if (nativeBridge.isAvailable) {
+      return nativeBridge.invoke(
+        syscall: syscall,
+        payload: payload,
+      );
+    }
+    return fallbackTransport.invokeSync(
+      syscall: syscall,
+      payload: payload,
+    );
   }
 }
 
