@@ -2,9 +2,9 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_global_repository.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_mesh_cache.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_update_emitter_v1.dart';
 
@@ -13,20 +13,40 @@ class LocalitySyncCoordinator {
 
   final LocalityAgentUpdateEmitterV1 _emitter;
   final LocalityAgentGlobalRepositoryV1 _globalRepository;
-  final LocalityAgentMeshCache? _meshCache;
+  final LocalityMemory _memory;
 
   LocalitySyncCoordinator({
     required LocalityAgentUpdateEmitterV1 emitter,
     required LocalityAgentGlobalRepositoryV1 globalRepository,
-    LocalityAgentMeshCache? meshCache,
+    required LocalityMemory memory,
   })  : _emitter = emitter,
         _globalRepository = globalRepository,
-        _meshCache = meshCache;
+        _memory = memory;
 
   Future<LocalityAgentGlobalStateV1> getGlobalState(
     LocalityAgentKeyV1 key,
-  ) {
-    return _globalRepository.getGlobalState(key);
+  ) async {
+    final cached = _memory.getGlobalState(key);
+    try {
+      final remote = await _globalRepository.getGlobalState(key);
+      final shouldUseCached =
+          remote.sampleCount == 0 && cached != null && cached.sampleCount > 0;
+      final resolved = shouldUseCached ? cached : remote;
+      await _memory.saveGlobalState(state: resolved);
+      return resolved;
+    } catch (e, st) {
+      developer.log(
+        'Failed to refresh global locality state: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return cached ?? LocalityAgentGlobalStateV1.empty(key);
+    }
+  }
+
+  List<List<double>> getNeighborMeshUpdates(LocalityAgentKeyV1 key) {
+    return _memory.getNeighborMeshUpdates(key);
   }
 
   Future<bool> emitObservation(LocalityObservation observation) async {
@@ -93,10 +113,8 @@ class LocalitySyncCoordinator {
     required int ttlMs,
     required int hop,
   }) async {
-    final meshCache = _meshCache;
-    if (meshCache == null) return false;
     try {
-      await meshCache.storeMeshUpdate(
+      await _memory.saveMeshUpdate(
         key: key,
         delta12: delta12,
         receivedAt: DateTime.now(),

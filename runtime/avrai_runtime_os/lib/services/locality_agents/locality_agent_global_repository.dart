@@ -12,24 +12,17 @@ import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 /// The repository is best-effort and always returns something usable.
 class LocalityAgentGlobalRepositoryV1 {
   static const String _logName = 'LocalityAgentGlobalRepositoryV1';
-  static const String _box = 'spots_ai';
 
   final SupabaseService _supabaseService;
-  final StorageService _storage;
 
   LocalityAgentGlobalRepositoryV1({
     required SupabaseService supabaseService,
-    required StorageService storage,
-  })  : _supabaseService = supabaseService,
-        _storage = storage;
+    StorageService? storage,
+  }) : _supabaseService = supabaseService;
 
-  String _cacheKey(LocalityAgentKeyV1 key) =>
-      'locality_agent_global_v1:${key.stableKey}';
-
-  /// Get global prior for [key], using cache if offline/unavailable.
+  /// Get global prior for [key] from the remote aggregation surface.
   Future<LocalityAgentGlobalStateV1> getGlobalState(
       LocalityAgentKeyV1 key) async {
-    // 1) Try remote
     try {
       final client = _supabaseService.tryGetClient();
       if (client != null) {
@@ -40,28 +33,11 @@ class LocalityAgentGlobalRepositoryV1 {
             .maybeSingle();
         if (row != null) {
           final mapped = (row as Map).cast<String, dynamic>();
-          final state = _fromSupabaseRow(mapped, key);
-          // best-effort cache
-          await _storage.setObject(_cacheKey(key), state.toJson(), box: _box);
-          return state;
+          return _fromSupabaseRow(mapped, key);
         }
       }
     } catch (e, st) {
-      developer.log('Global fetch failed (falling back to cache): $e',
-          name: _logName, error: e, stackTrace: st);
-    }
-
-    // 2) Cache fallback
-    try {
-      final cached = _storage.getObject<Map<String, dynamic>>(
-        _cacheKey(key),
-        box: _box,
-      );
-      if (cached != null) {
-        return LocalityAgentGlobalStateV1.fromJson(cached);
-      }
-    } catch (e, st) {
-      developer.log('Global cache read failed: $e',
+      developer.log('Global fetch failed (falling back to empty): $e',
           name: _logName, error: e, stackTrace: st);
     }
 

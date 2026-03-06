@@ -73,25 +73,6 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
     sl.registerLazySingleton<LocalityAgentGlobalRepositoryV1>(
       () => LocalityAgentGlobalRepositoryV1(
         supabaseService: sl<SupabaseService>(),
-        storage: sl<StorageService>(),
-      ),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentLocalStoreV1>()) {
-    sl.registerLazySingleton<LocalityAgentLocalStoreV1>(
-      () => LocalityAgentLocalStoreV1(storage: sl<StorageService>()),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentMeshCache>()) {
-    sl.registerLazySingleton<LocalityAgentMeshCache>(
-      () => LocalityAgentMeshCache(storage: sl<StorageService>()),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentEngineV1>()) {
-    sl.registerLazySingleton<LocalityAgentEngineV1>(
-      () => LocalityAgentEngineV1(
-        globalRepo: sl<LocalityAgentGlobalRepositoryV1>(),
-        localStore: sl<LocalityAgentLocalStoreV1>(),
       ),
     );
   }
@@ -110,7 +91,7 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
   if (!sl.isRegistered<LocalityInferenceHead>()) {
     sl.registerLazySingleton<LocalityInferenceHead>(
       () => LocalityInferenceHead(
-        engine: sl<LocalityAgentEngineV1>(),
+        memory: sl<LocalityMemory>(),
         syncCoordinator: sl<LocalitySyncCoordinator>(),
       ),
     );
@@ -120,9 +101,7 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       () => LocalitySyncCoordinator(
         emitter: sl<LocalityAgentUpdateEmitterV1>(),
         globalRepository: sl<LocalityAgentGlobalRepositoryV1>(),
-        meshCache: sl.isRegistered<LocalityAgentMeshCache>()
-            ? sl<LocalityAgentMeshCache>()
-            : null,
+        memory: sl<LocalityMemory>(),
       ),
     );
   }

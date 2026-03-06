@@ -29,6 +29,7 @@ class AppSchemaPage extends StatelessWidget {
       subtitle: schema.header.subtitle,
       leadingIcon: schema.header.leadingIcon,
       showNavigationBar: schema.showNavigationBar,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _buildSections(context),
