@@ -7,7 +7,11 @@ void main() {
     test('uses native bridge when available', () async {
       final bridge = _FakeNativeBridge(
         available: true,
-        response: <String, dynamic>{'path': 'native'},
+        response: <String, dynamic>{
+          'ok': true,
+          'handled': true,
+          'payload': <String, dynamic>{'path': 'native'},
+        },
       );
       final fallback = _FakeTransport(
         response: <String, dynamic>{'path': 'fallback'},
@@ -30,7 +34,11 @@ void main() {
     test('falls back when native bridge is unavailable', () async {
       final bridge = _FakeNativeBridge(
         available: false,
-        response: <String, dynamic>{'path': 'native'},
+        response: <String, dynamic>{
+          'ok': true,
+          'handled': true,
+          'payload': <String, dynamic>{'path': 'native'},
+        },
       );
       final fallback = _FakeTransport(
         response: <String, dynamic>{'path': 'fallback'},

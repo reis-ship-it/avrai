@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
-import 'package:avrai_runtime_os/services/lists/list_preference_service.dart';
-import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
-import 'package:avrai_runtime_os/ai/perpetual_list/filters/age_aware_list_filter.dart';
 import 'package:get_it/get_it.dart';
-
-/// ListPreferencesPage - Settings page for AI-suggested list preferences
-///
-/// Features:
-/// - Toggle categories on/off
-/// - Adjust timing preferences
-/// - Set exploration vs familiar balance
-/// - Opt-in for sensitive categories
-/// - Notification settings
-///
-/// Part of Phase 2.3: Preference Editing
+import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai_runtime_os/ai/perpetual_list/filters/age_aware_list_filter.dart';
+import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
+import 'package:avrai_runtime_os/services/lists/list_preference_service.dart';
 
 class ListPreferencesPage extends StatefulWidget {
   final int? userAge;
@@ -50,72 +42,74 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const AdaptivePlatformPageScaffold(
+        title: 'List Preferences',
+        body: AppLoadingState(label: 'Loading list preferences'),
+      );
+    }
+
     return AdaptivePlatformPageScaffold(
       title: 'List Preferences',
       constrainBody: false,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                const AppPageHeader(
-                  title: 'List Preferences',
-                  subtitle:
-                      'Choose when AI-suggested lists appear and how adventurous those suggestions should feel.',
-                  leadingIcon: Icons.tune,
-                ),
-                const SizedBox(height: 24),
-                // Timing preferences section
-                _buildSectionHeader(context, 'When to suggest lists'),
-                const SizedBox(height: 8),
-                _buildTimeSlotToggles(context),
-                const SizedBox(height: 24),
-
-                // Frequency section
-                _buildSectionHeader(context, 'Frequency'),
-                const SizedBox(height: 8),
-                _buildFrequencySettings(context),
-                const SizedBox(height: 24),
-
-                // Exploration balance section
-                _buildSectionHeader(context, 'Exploration vs Familiar'),
-                const SizedBox(height: 8),
-                _buildExplorationSlider(context),
-                const SizedBox(height: 24),
-
-                // Categories section
-                _buildSectionHeader(context, 'Categories'),
-                const SizedBox(height: 8),
-                _buildCategoryToggles(context),
-                const SizedBox(height: 24),
-
-                // Sensitive categories section (age-gated)
-                if ((widget.userAge ?? 18) >= 18) ...[
-                  _buildSectionHeader(context, 'Sensitive Categories'),
-                  const SizedBox(height: 8),
-                  _buildSensitiveCategoryToggles(context),
-                  const SizedBox(height: 24),
-                ],
-
-                // Notifications section
-                _buildSectionHeader(context, 'Notifications'),
-                const SizedBox(height: 8),
-                _buildNotificationSettings(context),
-              ],
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const AppSurface(
+            child: AppPageHeader(
+              title: 'List Preferences',
+              subtitle:
+                  'Choose when suggested lists appear and how adventurous those suggestions should feel.',
+              leadingIcon: Icons.tune_outlined,
+              showDivider: false,
             ),
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
           ),
+          const SizedBox(height: 16),
+          const AppInfoBanner(
+            title: 'Suggestion controls',
+            body:
+                'Use these settings to control timing, variety, categories, and list suggestion notifications.',
+            icon: Icons.list_alt_outlined,
+          ),
+          const SizedBox(height: 24),
+          AppSection(
+            title: 'When to suggest lists',
+            child: _buildTimeSlotToggles(),
+          ),
+          const SizedBox(height: 24),
+          AppSection(
+            title: 'Frequency',
+            child: _buildFrequencySettings(),
+          ),
+          const SizedBox(height: 24),
+          AppSection(
+            title: 'Exploration vs Familiar',
+            child: _buildExplorationSlider(context),
+          ),
+          const SizedBox(height: 24),
+          AppSection(
+            title: 'Categories',
+            child: _buildCategoryToggles(),
+          ),
+          if ((widget.userAge ?? 18) >= 18) ...[
+            const SizedBox(height: 24),
+            AppSection(
+              title: 'Sensitive Categories',
+              subtitle: 'These require explicit opt-in and are 18+ only.',
+              child: _buildSensitiveCategoryToggles(context),
+            ),
+          ],
+          const SizedBox(height: 24),
+          AppSection(
+            title: 'Notifications',
+            child: _buildNotificationSettings(),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildTimeSlotToggles(BuildContext context) {
+  Widget _buildTimeSlotToggles() {
     return AppSurface(
       padding: EdgeInsets.zero,
       child: Column(
@@ -168,14 +162,14 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
     }
   }
 
-  Widget _buildFrequencySettings(BuildContext context) {
+  Widget _buildFrequencySettings() {
     return AppSurface(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
           ListTile(
-            title: const Text('Max lists per day'),
-            subtitle: Text('Currently: ${_preferenceService.maxListsPerDay}'),
+            title: const Text('Max Lists Per Day'),
+            subtitle: Text('Currently ${_preferenceService.maxListsPerDay}'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -205,10 +199,11 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
               ],
             ),
           ),
+          const Divider(height: 1),
           ListTile(
-            title: const Text('Minimum hours between suggestions'),
+            title: const Text('Minimum Hours Between Suggestions'),
             subtitle:
-                Text('Currently: ${_preferenceService.minIntervalHours} hours'),
+                Text('Currently ${_preferenceService.minIntervalHours} hours'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -244,62 +239,48 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   }
 
   Widget _buildExplorationSlider(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return AppSurface(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Familiar',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
-                ),
-                Text(
-                  'Explore',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
-                ),
-              ],
-            ),
-            Slider(
-              value: _preferenceService.explorationBalance,
-              onChanged: (value) async {
-                await _preferenceService.setExplorationBalance(value);
-                setState(() {});
-              },
-            ),
-            Text(
-              _getExplorationDescription(_preferenceService.explorationBalance),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('Familiar'),
+              Text('Explore'),
+            ],
+          ),
+          Slider(
+            value: _preferenceService.explorationBalance,
+            onChanged: (value) async {
+              await _preferenceService.setExplorationBalance(value);
+              setState(() {});
+            },
+          ),
+          Text(
+            _getExplorationDescription(_preferenceService.explorationBalance),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
 
   String _getExplorationDescription(double balance) {
     if (balance < 0.3) {
-      return 'Mostly familiar places you love';
+      return 'Mostly familiar places you already like.';
     } else if (balance < 0.5) {
-      return 'Lean towards familiar with some new discoveries';
+      return 'Mostly familiar places with some new discovery.';
     } else if (balance < 0.7) {
-      return 'Balanced mix of familiar and new places';
+      return 'A balanced mix of familiar and new places.';
     } else if (balance < 0.9) {
-      return 'Lean towards new discoveries';
+      return 'Mostly new discoveries.';
     } else {
-      return 'Maximum exploration of new places';
+      return 'Maximum exploration of new places.';
     }
   }
 
-  Widget _buildCategoryToggles(BuildContext context) {
+  Widget _buildCategoryToggles() {
     final categories = [
       'restaurants',
       'cafes',
@@ -334,8 +315,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
 
   Widget _buildSensitiveCategoryToggles(BuildContext context) {
     final sensitiveCategories = AgeAwareListFilter.sensitiveCategories;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final errorColor = Theme.of(context).colorScheme.error;
 
     return AppSurface(
       child: Column(
@@ -344,14 +324,14 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Icon(Icons.warning_amber, color: colorScheme.error, size: 20),
+                Icon(Icons.warning_amber_outlined, color: errorColor, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'These categories require explicit opt-in and are 18+ only.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.error,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: errorColor,
+                        ),
                   ),
                 ),
               ],
@@ -363,7 +343,6 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
               value: _preferenceService.hasOptedIn(category),
               onChanged: (value) async {
                 if (value) {
-                  // Show confirmation dialog
                   final confirmed =
                       await _showOptInConfirmation(context, category);
                   if (confirmed == true) {
@@ -387,8 +366,7 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
       builder: (context) => AlertDialog(
         title: Text('Opt into ${_formatCategory(category)}?'),
         content: Text(
-          'This will allow AI-suggested lists to include ${_formatCategory(category).toLowerCase()} places. '
-          'You can opt out at any time.',
+          'This will allow suggested lists to include ${_formatCategory(category).toLowerCase()} places. You can opt out at any time.',
         ),
         actions: [
           TextButton(
@@ -404,12 +382,12 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
     );
   }
 
-  Widget _buildNotificationSettings(BuildContext context) {
+  Widget _buildNotificationSettings() {
     return AppSurface(
       padding: EdgeInsets.zero,
       child: SwitchListTile(
-        title: const Text('Push notifications'),
-        subtitle: const Text('Get notified when new lists are suggested'),
+        title: const Text('Push Notifications'),
+        subtitle: const Text('Get notified when new lists are suggested.'),
         value: _preferenceService.notificationsEnabled,
         onChanged: (value) async {
           await _preferenceService.setNotificationsEnabled(value);
