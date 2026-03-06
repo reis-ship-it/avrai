@@ -38,10 +38,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Discovery Settings'), findsOneWidget);
+      expect(find.text('Discovery Settings'), findsWidgets);
       expect(find.text('Enable Discovery'), findsOneWidget);
       expect(find.text('Device Discovery'), findsOneWidget);
-      expect(find.text('Find nearby avrai-enabled devices'), findsOneWidget);
+      expect(find.textContaining('Find nearby AVRAI-enabled devices'),
+          findsOneWidget);
 
       final mainToggleFinder = find.byType(SwitchListTile).first;
       final mainToggle = tester.widget<SwitchListTile>(mainToggleFinder);
@@ -50,14 +51,15 @@ void main() {
         await tester.pumpAndSettle();
       }
       expect(find.text('Discovery Methods'), findsOneWidget);
-      expect(find.text('WiFi Direct'), findsOneWidget);
+      expect(find.text('Wi-Fi Direct'), findsOneWidget);
       expect(find.text('Bluetooth'), findsOneWidget);
       expect(find.text('Multipeer'), findsOneWidget);
 
       for (var i = 0;
           i < 6 && find.text('Privacy Settings').evaluate().isEmpty;
           i++) {
-        await tester.drag(find.byType(ListView), const Offset(0, -250));
+        await tester.drag(
+            find.byType(SingleChildScrollView), const Offset(0, -250));
         await tester.pumpAndSettle();
       }
       expect(find.text('Privacy Settings'), findsOneWidget);
@@ -65,7 +67,8 @@ void main() {
       expect(find.text('Privacy Information'), findsOneWidget);
 
       for (var i = 0; i < 6 && find.text('Advanced').evaluate().isEmpty; i++) {
-        await tester.drag(find.byType(ListView), const Offset(0, -250));
+        await tester.drag(
+            find.byType(SingleChildScrollView), const Offset(0, -250));
         await tester.pumpAndSettle();
       }
       expect(find.text('Advanced'), findsOneWidget);
@@ -74,7 +77,8 @@ void main() {
       for (var i = 0;
           i < 10 && find.text('About Discovery').evaluate().isEmpty;
           i++) {
-        await tester.drag(find.byType(ListView), const Offset(0, -300));
+        await tester.drag(
+            find.byType(SingleChildScrollView), const Offset(0, -300));
         await tester.pumpAndSettle();
       }
       expect(find.text('About Discovery'), findsOneWidget);

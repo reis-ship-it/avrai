@@ -25,8 +25,8 @@ void main() {
         child: const NotificationsSettingsPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('Notifications'), findsOneWidget);
-      expect(find.text('Privacy First'), findsOneWidget);
+      expect(find.text('Notifications'), findsWidgets);
+      expect(find.text('Notification controls'), findsOneWidget);
       expect(find.text('Notification Types'), findsOneWidget);
       expect(find.byType(NotificationsSettingsPage), findsOneWidget);
     });

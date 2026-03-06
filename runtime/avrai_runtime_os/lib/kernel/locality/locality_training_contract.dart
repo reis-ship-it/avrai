@@ -28,6 +28,22 @@ class LocalityTrainingArtifact extends Equatable {
     this.calibration = const <String, dynamic>{},
   });
 
+  Map<String, dynamic> toJson() => {
+        'artifactId': artifactId,
+        'version': version,
+        'calibration': calibration,
+      };
+
+  factory LocalityTrainingArtifact.fromJson(Map<String, dynamic> json) {
+    return LocalityTrainingArtifact(
+      artifactId: (json['artifactId'] as String?) ?? '',
+      version: (json['version'] as String?) ?? '',
+      calibration: Map<String, dynamic>.from(
+        json['calibration'] as Map? ?? const <String, dynamic>{},
+      ),
+    );
+  }
+
   @override
   List<Object?> get props => [artifactId, version, calibration];
 }
@@ -44,6 +60,22 @@ class LocalitySimulationScenario extends Equatable {
     required this.localityCount,
     this.fuzzyBoundaries = true,
   });
+
+  Map<String, dynamic> toJson() => {
+        'scenarioId': scenarioId,
+        'cityProfile': cityProfile,
+        'localityCount': localityCount,
+        'fuzzyBoundaries': fuzzyBoundaries,
+      };
+
+  factory LocalitySimulationScenario.fromJson(Map<String, dynamic> json) {
+    return LocalitySimulationScenario(
+      scenarioId: (json['scenarioId'] as String?) ?? '',
+      cityProfile: (json['cityProfile'] as String?) ?? '',
+      localityCount: (json['localityCount'] as num?)?.toInt() ?? 0,
+      fuzzyBoundaries: json['fuzzyBoundaries'] as bool? ?? true,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -63,6 +95,26 @@ class LocalitySimulationBatch extends Equatable {
     required this.scenarios,
   });
 
+  Map<String, dynamic> toJson() => {
+        'batchId': batchId,
+        'scenarios': scenarios.map((scenario) => scenario.toJson()).toList(),
+      };
+
+  factory LocalitySimulationBatch.fromJson(Map<String, dynamic> json) {
+    final scenarios = (json['scenarios'] as List?)
+            ?.map(
+              (entry) => LocalitySimulationScenario.fromJson(
+                Map<String, dynamic>.from(entry as Map),
+              ),
+            )
+            .toList() ??
+        const <LocalitySimulationScenario>[];
+    return LocalitySimulationBatch(
+      batchId: (json['batchId'] as String?) ?? '',
+      scenarios: scenarios,
+    );
+  }
+
   @override
   List<Object?> get props => [batchId, scenarios];
 }
@@ -80,6 +132,20 @@ class LocalityEvaluationMetric extends Equatable {
 
   bool get passes => value >= target;
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'value': value,
+        'target': target,
+      };
+
+  factory LocalityEvaluationMetric.fromJson(Map<String, dynamic> json) {
+    return LocalityEvaluationMetric(
+      name: (json['name'] as String?) ?? '',
+      value: (json['value'] as num?)?.toDouble() ?? 0.0,
+      target: (json['target'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+
   @override
   List<Object?> get props => [name, value, target];
 }
@@ -96,6 +162,30 @@ class LocalityZeroReliabilityReport extends Equatable {
   });
 
   bool get passes => metrics.every((metric) => metric.passes);
+
+  Map<String, dynamic> toJson() => {
+        'evaluationId': evaluationId,
+        'metrics': metrics.map((metric) => metric.toJson()).toList(),
+        'calibration': calibration,
+      };
+
+  factory LocalityZeroReliabilityReport.fromJson(Map<String, dynamic> json) {
+    final metrics = (json['metrics'] as List?)
+            ?.map(
+              (entry) => LocalityEvaluationMetric.fromJson(
+                Map<String, dynamic>.from(entry as Map),
+              ),
+            )
+            .toList() ??
+        const <LocalityEvaluationMetric>[];
+    return LocalityZeroReliabilityReport(
+      evaluationId: (json['evaluationId'] as String?) ?? '',
+      metrics: metrics,
+      calibration: Map<String, dynamic>.from(
+        json['calibration'] as Map? ?? const <String, dynamic>{},
+      ),
+    );
+  }
 
   @override
   List<Object?> get props => [evaluationId, metrics, calibration];

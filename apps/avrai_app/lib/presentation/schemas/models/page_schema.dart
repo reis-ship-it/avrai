@@ -130,6 +130,19 @@ class ToggleSettingItemSchema extends SettingItemSchema {
   });
 }
 
+class CheckboxSettingItemSchema extends SettingItemSchema {
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const CheckboxSettingItemSchema({
+    required super.title,
+    super.subtitle,
+    super.icon,
+    required this.value,
+    this.onChanged,
+  });
+}
+
 class DropdownSettingItemSchema extends SettingItemSchema {
   final String value;
   final List<String> options;

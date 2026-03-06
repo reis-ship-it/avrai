@@ -18,7 +18,8 @@ PageSchema buildPrivacyPolicyPageSchema({
       body: hasAccepted
           ? 'You have already accepted the current Privacy Policy.'
           : 'Review how AVRAI collects, uses, and protects data.',
-      icon: hasAccepted ? Icons.check_circle_outline : Icons.privacy_tip_outlined,
+      icon:
+          hasAccepted ? Icons.check_circle_outline : Icons.privacy_tip_outlined,
       tone: hasAccepted ? SchemaTone.success : SchemaTone.neutral,
     ),
     KeyValueSectionSchema(

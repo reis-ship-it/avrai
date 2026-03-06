@@ -139,6 +139,20 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       () => sl<LocalityKernel>(),
     );
   }
+  if (!sl.isRegistered<LocalitySyscallTransport>()) {
+    sl.registerLazySingleton<LocalitySyscallTransport>(
+      () => InProcessLocalitySyscallTransport(
+        delegate: sl<LocalityKernelContract>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityNativeKernelStub>()) {
+    sl.registerLazySingleton<LocalityNativeKernelStub>(
+      () => LocalityNativeKernelStub(
+        transport: sl<LocalitySyscallTransport>(),
+      ),
+    );
+  }
   if (!sl.isRegistered<LocalityTrainingContract>()) {
     sl.registerLazySingleton<LocalityTrainingContract>(
       () => const SyntheticLocalityTrainingService(),

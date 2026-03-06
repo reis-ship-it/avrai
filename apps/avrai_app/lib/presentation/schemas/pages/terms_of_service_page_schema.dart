@@ -18,7 +18,8 @@ PageSchema buildTermsOfServicePageSchema({
       body: hasAccepted
           ? 'You have already accepted the current Terms of Service.'
           : 'Read the current terms that govern access to AVRAI.',
-      icon: hasAccepted ? Icons.check_circle_outline : Icons.description_outlined,
+      icon:
+          hasAccepted ? Icons.check_circle_outline : Icons.description_outlined,
       tone: hasAccepted ? SchemaTone.success : SchemaTone.neutral,
     ),
     KeyValueSectionSchema(
@@ -50,9 +51,8 @@ PageSchema buildTermsOfServicePageSchema({
       CtaSectionSchema(
         title: 'Acceptance',
         body: 'Accept the Terms of Service to continue.',
-        primaryLabel: isSubmitting
-            ? 'Submitting...'
-            : 'I Accept the Terms of Service',
+        primaryLabel:
+            isSubmitting ? 'Submitting...' : 'I Accept the Terms of Service',
         onPrimaryTap: isSubmitting ? null : onAccept,
       ),
     );

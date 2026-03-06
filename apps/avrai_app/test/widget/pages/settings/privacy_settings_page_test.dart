@@ -17,7 +17,7 @@ void main() {
         child: const PrivacySettingsPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('Privacy Settings'), findsOneWidget);
+      expect(find.text('Privacy Settings'), findsWidgets);
       expect(find.text('Privacy commitment'), findsOneWidget);
       expect(find.text('Core Privacy Controls'), findsOneWidget);
       expect(find.byType(PrivacySettingsPage), findsOneWidget);

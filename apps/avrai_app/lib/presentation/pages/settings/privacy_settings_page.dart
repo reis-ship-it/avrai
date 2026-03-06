@@ -6,14 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/privacy_settings_page_schema.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
 import 'package:avrai_runtime_os/controllers/sync_controller.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
 
 class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});
@@ -23,7 +22,6 @@ class PrivacySettingsPage extends StatefulWidget {
 }
 
 class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
-  // Privacy preferences - would normally be stored in user preferences
   bool _shareLocation = true;
   bool _ai2aiLearning = true;
   bool _userRuntimeLearning = true;
@@ -33,11 +31,9 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   bool _analyticsOptIn = false;
   bool _personalizedAds = false;
   bool _cloudSyncEnabled = false;
-  // Removed unused _dataExportEnabled field
 
   late PersonalitySyncService _syncService;
   late SyncController _syncController;
-  // Use StorageService (get_storage-backed) for lightweight local settings.
   final _storageService = di.sl<StorageService>();
   String? _currentUserId;
   bool _isSyncing = false;
@@ -51,14 +47,14 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     'Precise',
     'Approximate',
     'City Only',
-    'Disabled'
+    'Disabled',
   ];
   final List<String> _retentionOptions = [
     '3 Months',
     '6 Months',
     '1 Year',
     '2 Years',
-    'Forever'
+    'Forever',
   ];
 
   @override
@@ -159,16 +155,12 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     }
 
     if (value) {
-      // Show confirmation dialog when enabling
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Enable Cloud Sync'),
           content: const Text(
-            'This will encrypt and sync your AI personality profile to the cloud, '
-            'allowing you to access it on any device. Your data is encrypted with your password '
-            'and only you can decrypt it.\n\n'
-            'Do you want to enable cloud sync?',
+            'This will encrypt and sync your profile to the cloud so it is available on your signed-in devices. Only you can decrypt the synced data.\n\nDo you want to enable cloud sync?',
           ),
           actions: [
             TextButton(
@@ -184,7 +176,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       );
 
       if (confirmed != true) {
-        return; // User cancelled
+        return;
       }
     }
 
@@ -198,7 +190,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           SnackBar(
             content: Text(
               value
-                  ? 'Cloud sync enabled. Your AI agent will sync across devices.'
+                  ? 'Cloud sync enabled. Your profile will stay in sync across devices.'
                   : 'Cloud sync disabled.',
             ),
             backgroundColor: value ? AppTheme.successColor : AppColors.grey600,
@@ -228,7 +220,6 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       return;
     }
 
-    // Try to get password from secure storage (stored during login)
     String? password;
     try {
       const secureStorage = FlutterSecureStorage();
@@ -236,7 +227,6 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         key: 'user_password_session_$_currentUserId',
       );
     } catch (e) {
-      // Password not available in secure storage
       developer.log(
         'Password not available in secure storage',
         name: 'PrivacySettingsPage',
@@ -244,11 +234,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       );
     }
 
-    // If password is not available, prompt user
     if (password == null || password.isEmpty) {
       password = await _promptForPassword();
       if (password == null || password.isEmpty) {
-        return; // User cancelled
+        return;
       }
     }
 
@@ -336,356 +325,58 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Privacy Settings',
-      scrollable: true,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppSurface(
-              color: AppColors.grey100,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.verified_user, color: AppTheme.successColor),
-                      SizedBox(width: 8),
-                      Text(
-                        'Privacy commitment',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.successColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'You own your data, you control your experience, and you decide what AVRAI can share or retain.',
-                    style: TextStyle(color: AppTheme.successColor),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            AppSurface(
-              color: AppColors.grey100,
-              child: Semantics(
-                label: 'Privacy data sharing summary',
-                child: Text(
-                  'What AVRAI shares: AI2AI learning exchanges only anonymized signals, not your raw chat content.',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Core Privacy Controls
-            const AppPageHeader(
-              title: 'Core Privacy Controls',
-              subtitle:
-                  'Choose how your profile, location, and learning data are shared or retained.',
-              leadingIcon: Icons.privacy_tip_outlined,
-            ),
-            const SizedBox(height: 16),
-
-            _buildDropdownTile(
-              'Profile Visibility',
-              'Who can see your profile and activity',
-              _profileVisibility,
-              _profileOptions,
-              (value) => setState(() => _profileVisibility = value!),
-              Icons.person,
-            ),
-
-            _buildDropdownTile(
-              'Location Sharing',
-              'How precise location data is shared',
-              _locationSharing,
-              _locationOptions,
-              (value) => setState(() => _locationSharing = value!),
-              Icons.location_on,
-            ),
-
-            _buildSwitchTile(
-              'Share Location Data',
-              'Allow location-based recommendations',
-              _shareLocation,
-              (value) => setState(() => _shareLocation = value),
-              Icons.share_location,
-            ),
-
-            const SizedBox(height: 24),
-
-            // AI & Learning Controls
-            Text(
-              'AI & Learning Controls',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Control how AI learns from your behavior and preferences',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-            const SizedBox(height: 16),
-
-            _buildSwitchTile(
-              'AI2AI Learning',
-              'Enable anonymous personality learning between devices',
-              _ai2aiLearning,
-              _handleAi2AiLearningToggle,
-              Icons.psychology,
-            ),
-
-            _buildSwitchTile(
-              'User Runtime Learning',
-              'Allow on-device user behavior to train your reality model runtime',
-              _userRuntimeLearning,
-              _handleUserRuntimeLearningToggle,
-              Icons.memory,
-            ),
-
-            _buildSwitchTile(
-              'Community Recommendations',
-              'Use community data for personalized recommendations',
-              _communityRecommendations,
-              (value) => setState(() => _communityRecommendations = value),
-              Icons.group,
-            ),
-
-            _buildSwitchTile(
-              'Sync AI Agent Across Devices',
-              'Encrypt and sync your AI personality profile to access it on any device. Your data is encrypted with your password.',
-              _cloudSyncEnabled,
-              _handleCloudSyncToggle,
-              Icons.cloud_sync,
-            ),
-
-            // Sync Now button (only show if sync is enabled)
-            if (_cloudSyncEnabled)
-              AppSurface(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: EdgeInsets.zero,
-                child: ListTile(
-                  leading: const Icon(Icons.sync, color: AppTheme.primaryColor),
-                  title: const Text('Sync Now'),
-                  subtitle: _isSyncing
-                      ? const Text('Syncing...')
-                      : const Text(
-                          'Manually sync your AI personality profile to the cloud'),
-                  trailing: _isSyncing
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.arrow_forward_ios),
-                  onTap: _isSyncing ? null : _handleSyncNow,
-                ),
-              ),
-
-            const SizedBox(height: 24),
-
-            // Public Sharing
-            Text(
-              'Public Sharing',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
-
-            _buildSwitchTile(
-              'Public Profile',
-              'Make your profile visible to everyone',
-              _publicProfile,
-              (value) => setState(() => _publicProfile = value),
-              Icons.public,
-            ),
-
-            _buildSwitchTile(
-              'Default Public Lists',
-              'Make new lists public by default',
-              _publicLists,
-              (value) => setState(() => _publicLists = value),
-              Icons.list,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Data & Analytics
-            Text(
-              'Data & Analytics',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
-
-            _buildDropdownTile(
-              'Data Retention',
-              'How long to keep your activity data',
-              _dataRetention,
-              _retentionOptions,
-              (value) => setState(() => _dataRetention = value!),
-              Icons.schedule,
-            ),
-
-            _buildSwitchTile(
-              'Usage Analytics',
-              'Help improve avrai with anonymous usage data',
-              _analyticsOptIn,
-              (value) => setState(() => _analyticsOptIn = value),
-              Icons.analytics,
-            ),
-
-            _buildSwitchTile(
-              'Personalized Ads',
-              'Show ads based on your interests (off by default)',
-              _personalizedAds,
-              (value) => setState(() => _personalizedAds = value),
-              Icons.ad_units,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Data Rights
-            Text(
-              'Your Data Rights',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
-
-            AppSurface(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.download,
-                        color: AppTheme.primaryColor),
-                    title: const Text('Export My Data'),
-                    subtitle: const Text('Download all your avrai data'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: _exportData,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.delete_forever,
-                        color: AppTheme.errorColor),
-                    title: const Text('Delete My Account'),
-                    subtitle:
-                        const Text('Permanently delete your account and data'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: _showDeleteAccountDialog,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading:
-                        const Icon(Icons.policy, color: AppTheme.primaryColor),
-                    title: const Text('Privacy Policy'),
-                    subtitle: const Text('Read our full privacy policy'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: _openPrivacyPolicy,
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Reset Settings
-            AppSurface(
-              color: AppColors.grey100,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.restore, color: AppTheme.warningColor),
-                      SizedBox(width: 8),
-                      Text(
-                        'Reset Privacy Settings',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.warningColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Reset all privacy settings to their default values',
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _resetPrivacySettings,
-                    // Use global ElevatedButtonTheme
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(48, 48),
-                    ),
-                    child: const Text('Reset to Defaults'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwitchTile(
-    String title,
-    String subtitle,
-    bool value,
-    ValueChanged<bool> onChanged,
-    IconData icon,
-  ) {
-    return AppSurface(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: SwitchListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: value,
-        onChanged: onChanged,
-        secondary: Icon(icon, color: AppTheme.primaryColor),
-      ),
-    );
-  }
-
-  Widget _buildDropdownTile(
-    String title,
-    String subtitle,
-    String value,
-    List<String> options,
-    ValueChanged<String?> onChanged,
-    IconData icon,
-  ) {
-    return AppSurface(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Icon(icon, color: AppTheme.primaryColor),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: DropdownButton<String>(
-          value: value,
-          onChanged: onChanged,
-          items: options.map((option) {
-            return DropdownMenuItem(
-              value: option,
-              child: Text(option),
-            );
-          }).toList(),
-        ),
+    return AppSchemaPage(
+      schema: buildPrivacySettingsPageSchema(
+        shareLocation: _shareLocation,
+        ai2aiLearning: _ai2aiLearning,
+        userRuntimeLearning: _userRuntimeLearning,
+        communityRecommendations: _communityRecommendations,
+        publicProfile: _publicProfile,
+        publicLists: _publicLists,
+        analyticsOptIn: _analyticsOptIn,
+        personalizedAds: _personalizedAds,
+        cloudSyncEnabled: _cloudSyncEnabled,
+        isSyncing: _isSyncing,
+        profileVisibility: _profileVisibility,
+        locationSharing: _locationSharing,
+        dataRetention: _dataRetention,
+        profileOptions: _profileOptions,
+        locationOptions: _locationOptions,
+        retentionOptions: _retentionOptions,
+        onProfileVisibilityChanged: (value) {
+          if (value != null) {
+            setState(() => _profileVisibility = value);
+          }
+        },
+        onLocationSharingChanged: (value) {
+          if (value != null) {
+            setState(() => _locationSharing = value);
+          }
+        },
+        onDataRetentionChanged: (value) {
+          if (value != null) {
+            setState(() => _dataRetention = value);
+          }
+        },
+        onShareLocationChanged: (value) =>
+            setState(() => _shareLocation = value),
+        onAi2AiLearningChanged: _handleAi2AiLearningToggle,
+        onUserRuntimeLearningChanged: _handleUserRuntimeLearningToggle,
+        onCommunityRecommendationsChanged: (value) =>
+            setState(() => _communityRecommendations = value),
+        onCloudSyncChanged: _handleCloudSyncToggle,
+        onPublicProfileChanged: (value) =>
+            setState(() => _publicProfile = value),
+        onPublicListsChanged: (value) => setState(() => _publicLists = value),
+        onAnalyticsOptInChanged: (value) =>
+            setState(() => _analyticsOptIn = value),
+        onPersonalizedAdsChanged: (value) =>
+            setState(() => _personalizedAds = value),
+        onSyncNow: _handleSyncNow,
+        onExportData: _exportData,
+        onDeleteAccount: _showDeleteAccountDialog,
+        onOpenPrivacyPolicy: _openPrivacyPolicy,
+        onResetPrivacySettings: _resetPrivacySettings,
       ),
     );
   }
@@ -694,7 +385,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-            'Data export initiated. You will receive an email with download instructions.'),
+          'Data export initiated. You will receive an email with download instructions.',
+        ),
         backgroundColor: AppTheme.successColor,
       ),
     );
@@ -719,7 +411,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
-                      'Account deletion requires additional verification. Check your email.'),
+                    'Account deletion requires additional verification. Check your email.',
+                  ),
                   backgroundColor: AppTheme.errorColor,
                 ),
               );
@@ -746,7 +439,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       builder: (context) => AlertDialog(
         title: const Text('Reset Privacy Settings'),
         content: const Text(
-            'This will reset all privacy settings to their default values. Continue?'),
+          'This will reset all privacy settings to their default values. Continue?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -772,7 +466,9 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 try {
                   await _storageService.setBool('ai2ai_learning_enabled', true);
                   await _storageService.setBool(
-                      'user_runtime_learning_enabled', true);
+                    'user_runtime_learning_enabled',
+                    true,
+                  );
                 } catch (e, st) {
                   developer.log(
                     'Failed to persist reset privacy defaults',

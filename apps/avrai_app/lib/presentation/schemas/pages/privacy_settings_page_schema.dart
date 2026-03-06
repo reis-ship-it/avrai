@@ -136,7 +136,8 @@ PageSchema buildPrivacySettingsPageSchema({
       ),
       SettingsGroupSectionSchema(
         title: 'Learning Controls',
-        subtitle: 'Control how AVRAI learns from your behavior and preferences.',
+        subtitle:
+            'Control how AVRAI learns from your behavior and preferences.',
         items: learningItems,
       ),
       SettingsGroupSectionSchema(

@@ -87,8 +87,7 @@ PageSchema buildDiscoverySettingsPageSchema({
         items: [
           ToggleSettingItemSchema(
             title: 'Share Personality Data',
-            subtitle:
-                'Share anonymized preference signals during discovery.',
+            subtitle: 'Share anonymized preference signals during discovery.',
             icon: Icons.psychology_outlined,
             value: sharePersonalityData,
             onChanged: onSharePersonalityDataChanged,

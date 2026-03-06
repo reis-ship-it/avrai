@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/event_waiver_page_schema.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_runtime_os/legal/event_waiver.dart';
 import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
-import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 
-/// Event Waiver Page
-///
-/// Agent 2: Phase 5, Week 18-19 - Legal Document UI
-///
-/// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-///
-/// Features:
-/// - Event-specific waiver
-/// - Acknowledgment checkboxes
-/// - Accept button
 class EventWaiverPage extends StatefulWidget {
   final ExpertiseEvent event;
   final bool requireAcceptance;
@@ -67,9 +57,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
           }
         });
       }
-    } catch (e) {
-      // Ignore errors, assume not accepted
-    }
+    } catch (_) {}
   }
 
   Future<void> _acceptWaiver() async {
@@ -97,8 +85,8 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
       await _legalService.acceptEventWaiver(
         userId: authState.user.id,
         eventId: widget.event.id,
-        ipAddress: null, // In production, get from request
-        userAgent: null, // In production, get from request
+        ipAddress: null,
+        userAgent: null,
       );
 
       setState(() {
@@ -108,10 +96,7 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Event waiver accepted'),
-            backgroundColor: AppColors.electricGreen,
-          ),
+          const SnackBar(content: Text('Event waiver accepted')),
         );
         if (widget.requireAcceptance) {
           Navigator.pop(context, true);
@@ -132,213 +117,27 @@ class _EventWaiverPageState extends State<EventWaiverPage> {
         ? EventWaiver.generateWaiver(widget.event)
         : EventWaiver.generateSimplifiedWaiver(widget.event);
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Event Waiver',
-      backgroundColor: AppColors.background,
-      constrainBody: false,
-      body: Column(
-        children: [
-          // Event Info Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            color: AppColors.surface,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.warning, color: AppTheme.warningColor),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.event.title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? 'Location TBD'}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_hasAccepted)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.electricGreen.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check_circle,
-                                size: 16, color: AppColors.electricGreen),
-                            SizedBox(width: 4),
-                            Text(
-                              'Accepted',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.electricGreen,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Waiver Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    waiverText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Acknowledgment Checkboxes
-                  if (requiresFull && !_hasAccepted) ...[
-                    const Divider(color: AppColors.grey300),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Acknowledgment',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    CheckboxListTile(
-                      title: const Text(
-                        'I understand and acknowledge the risks of participation',
-                        style: TextStyle(color: AppColors.textPrimary),
-                      ),
-                      value: _acknowledgeRisks,
-                      onChanged: (value) {
-                        setState(() {
-                          _acknowledgeRisks = value ?? false;
-                        });
-                      },
-                      activeColor: AppTheme.primaryColor,
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
-                    CheckboxListTile(
-                      title: const Text(
-                        'I release avrai and all parties from liability',
-                        style: TextStyle(color: AppColors.textPrimary),
-                      ),
-                      value: _acknowledgeRelease,
-                      onChanged: (value) {
-                        setState(() {
-                          _acknowledgeRelease = value ?? false;
-                        });
-                      },
-                      activeColor: AppTheme.primaryColor,
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
-                    CheckboxListTile(
-                      title: const Text(
-                        'I am of legal age to enter into this agreement (or have guardian consent)',
-                        style: TextStyle(color: AppColors.textPrimary),
-                      ),
-                      value: _acknowledgeAge,
-                      onChanged: (value) {
-                        setState(() {
-                          _acknowledgeAge = value ?? false;
-                        });
-                      },
-                      activeColor: AppTheme.primaryColor,
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-
-          // Accept Button
-          if (widget.requireAcceptance && !_hasAccepted) ...[
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.grey300)),
-              ),
-              child: Column(
-                children: [
-                  if (_error != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.error_outline,
-                              color: AppColors.error, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _error!,
-                              style: const TextStyle(
-                                  color: AppColors.error, fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  ElevatedButton(
-                    onPressed: _isSubmitting ? null : _acceptWaiver,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: AppColors.white,
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.white),
-                            ),
-                          )
-                        : const Text('I Agree'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+    return AppSchemaPage(
+      schema: buildEventWaiverPageSchema(
+        eventTitle: widget.event.title,
+        eventDetails:
+            '${_formatDateTime(widget.event.startTime)} • ${widget.event.location ?? "Location TBD"}',
+        paragraphs: splitWaiverContent(waiverText),
+        requiresFull: requiresFull,
+        acknowledgeRisks: _acknowledgeRisks,
+        acknowledgeRelease: _acknowledgeRelease,
+        acknowledgeAge: _acknowledgeAge,
+        hasAccepted: _hasAccepted,
+        requireAcceptance: widget.requireAcceptance,
+        isSubmitting: _isSubmitting,
+        error: _error,
+        onAcknowledgeRisksChanged: (value) =>
+            setState(() => _acknowledgeRisks = value),
+        onAcknowledgeReleaseChanged: (value) =>
+            setState(() => _acknowledgeRelease = value),
+        onAcknowledgeAgeChanged: (value) =>
+            setState(() => _acknowledgeAge = value),
+        onAccept: _acceptWaiver,
       ),
     );
   }
