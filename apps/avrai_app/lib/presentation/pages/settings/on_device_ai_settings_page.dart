@@ -212,7 +212,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                     icon: Icons.error_outline,
                     iconColor: AppColors.error,
                   ),
-                AppSection(title: 'Model Health', child: _buildHappinessCard()),
+                AppSection(title: 'Agent Health', child: _buildHappinessCard()),
                 const SizedBox(height: 12),
                 AppSection(
                   title: 'Device Capability',
@@ -241,9 +241,9 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
             : AppColors.error;
 
     return _buildInfoCard(
-      title: 'Model health',
+      title: 'Agent happiness',
       body: '$percent/100 (n=${h.count}, p50=${h.p50}, p95=${h.p95}).\n\n'
-          'This score helps schedule training safely and avoid changes that lower local model quality.',
+          'This score helps schedule training safely (and blocks “from above” changes that make your agent worse).',
       icon: Icons.favorite_outline,
       iconColor: color,
     );
@@ -380,9 +380,10 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                 .take(3)
                 .map((p) => Chip(
                       label: Text(p.title),
-                      backgroundColor: AppColors.surfaceMuted,
+                      backgroundColor:
+                          AppColors.success.withValues(alpha: 0.12),
                       side: BorderSide(
-                        color: AppColors.borderSubtle,
+                        color: AppColors.success.withValues(alpha: 0.35),
                       ),
                     ))
                 .toList(),
@@ -857,7 +858,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       'Calling score model: $currentCalling',
       'Outcome model: $currentOutcome',
       '',
-      'Auto-rollback is enabled using local quality signals.',
+      'Auto-rollback is enabled using agent happiness signals.',
     ];
     if (last != null) {
       lines.add('');
@@ -878,13 +879,13 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
   Widget _buildNotesCard() {
     return _buildInfoCard(
-      title: 'Why these controls exist',
-      body: 'These controls keep local AI predictable and easier to manage:\n'
-          '- They limit what leaves your device.\n'
-          '- They validate updates before they are used locally.\n'
-          '- They schedule training when it will not hurt battery or heat.\n'
+      title: 'Why this exists (protection from above)',
+      body: 'Off-device governance is a protective firewall:\n'
+          '- It limits what leaves your device.\n'
+          '- It validates what comes back (signed, versioned, safe).\n'
+          '- It schedules training when it won’t hurt battery/heat.\n'
           '\n'
-          'Your personalization stays tied to the device and settings you control.',
+          'Your local agent stays in control of your personalization.',
       icon: Icons.lock_outline,
       iconColor: AppColors.textSecondary,
     );

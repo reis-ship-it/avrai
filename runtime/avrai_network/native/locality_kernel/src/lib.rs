@@ -451,9 +451,9 @@ fn evaluate_zero_locality(payload: &Map<String, Value>) -> Value {
         .unwrap_or(12)
         .max(1) as f64;
 
-    let scenario_count = 5.0;
-    let cold_start = (0.72 + (scenario_count * 0.015)).clamp(0.0, 0.92);
-    let confidence = (0.74 + (locality_count / 400.0)).clamp(0.0, 0.9);
+    let scenario_count: f64 = 5.0;
+    let cold_start = (0.72_f64 + (scenario_count * 0.015_f64)).clamp(0.0_f64, 0.92_f64);
+    let confidence = (0.74_f64 + (locality_count / 400.0_f64)).clamp(0.0_f64, 0.9_f64);
 
     json!({
         "evaluationId": format!("locality-{model_family}-{city_profile}:native-bootstrap"),

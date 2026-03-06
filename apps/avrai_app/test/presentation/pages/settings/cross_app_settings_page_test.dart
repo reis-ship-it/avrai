@@ -82,15 +82,15 @@ void main() {
         await tester.pumpAndSettle();
 
         await tester.scrollUntilVisible(
-          find.text('Local processing'),
-          300,
+          find.text('Your Privacy Matters'),
+          400,
           scrollable: find.byType(Scrollable).first,
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Local processing'), findsOneWidget);
+        expect(find.text('Your Privacy Matters'), findsOneWidget);
         expect(
-          find.textContaining('Connected app signals stay on this device'),
+          find.textContaining('All data is processed locally on your device'),
           findsOneWidget,
         );
       });
