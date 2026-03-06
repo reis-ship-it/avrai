@@ -3,11 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_runtime_os/services/analytics/public_profile_analysis_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
+import 'package:avrai/presentation/widgets/common/app_form_field.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Public Handles Page
@@ -232,25 +237,20 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
   Widget _getPlatformIcon(String platform) {
     IconData icon;
-    Color color;
     switch (platform.toLowerCase()) {
       case 'instagram':
         icon = Icons.camera_alt;
-        color = Colors.purple;
         break;
       case 'tiktok':
         icon = Icons.music_note;
-        color = Colors.black;
         break;
       case 'twitter':
         icon = Icons.chat_bubble_outline;
-        color = Colors.lightBlue;
         break;
       default:
         icon = Icons.link;
-        color = AppTheme.primaryColor;
     }
-    return Icon(icon, color: color);
+    return Icon(icon, color: AppColors.textSecondary);
   }
 
   @override
@@ -265,20 +265,29 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
       title: 'Public Profile Analysis',
       constrainBody: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            const AppPageHeader(
-              title: 'Public Profile Analysis',
-              subtitle:
-                  'Optionally provide your public social media handles to enhance your AI personality. We analyze only public posts and interests, and only with your explicit consent.',
-              leadingIcon: Icons.manage_accounts_outlined,
+            const AppSurface(
+              child: AppPageHeader(
+                title: 'Public Profile Analysis',
+                subtitle:
+                    'Optionally provide public handles so AVRAI can analyze public profile signals with your explicit consent.',
+                leadingIcon: Icons.manage_accounts_outlined,
+                showDivider: false,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            const AppInfoBanner(
+              title: 'Consent required',
+              body:
+                  'Public profile analysis is optional. AVRAI only analyzes public posts, bios, and interests after you opt in.',
+              icon: Icons.privacy_tip_outlined,
             ),
             const SizedBox(height: 24),
 
-            // Consent Section
             AppSurface(
               color: _consentGiven
                   ? AppColors.success.withValues(alpha: 0.1)
@@ -332,113 +341,34 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
             ),
             const SizedBox(height: 24),
 
-            // Handles Input Section
-            Text(
-              'Social Media Handles',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Enter your public handles (without @ symbol)',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.grey600,
-                  ),
-            ),
-            const SizedBox(height: 16),
-
-            // Instagram Handle
-            AppSurface(
+            AppSection(
+              title: 'Social Media Handles',
+              subtitle: 'Enter your public handles without the @ symbol.',
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      _getPlatformIcon('instagram'),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _controllers['instagram'],
-                          decoration: const InputDecoration(
-                            labelText: 'Instagram Username',
-                            hintText: 'username',
-                            border: OutlineInputBorder(),
-                          ),
-                          enabled: _consentGiven,
-                        ),
-                      ),
-                    ],
+                  _buildHandleField(
+                    platform: 'instagram',
+                    label: 'Instagram Username',
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // TikTok Handle
-            AppSurface(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      _getPlatformIcon('tiktok'),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _controllers['tiktok'],
-                          decoration: const InputDecoration(
-                            labelText: 'TikTok Username',
-                            hintText: 'username',
-                            border: OutlineInputBorder(),
-                          ),
-                          enabled: _consentGiven,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 12),
+                  _buildHandleField(
+                    platform: 'tiktok',
+                    label: 'TikTok Username',
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Twitter Handle
-            AppSurface(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      _getPlatformIcon('twitter'),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _controllers['twitter'],
-                          decoration: const InputDecoration(
-                            labelText: 'Twitter/X Username',
-                            hintText: 'username',
-                            border: OutlineInputBorder(),
-                          ),
-                          enabled: _consentGiven,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 12),
+                  _buildHandleField(
+                    platform: 'twitter',
+                    label: 'Twitter/X Username',
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // Save Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: AppButtonPrimary(
                 onPressed: _isLoading || !_consentGiven ? null : _saveHandles,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
                 child: _isLoading
                     ? const SizedBox(
                         width: 20,
@@ -454,12 +384,8 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton(
+                child: AppButtonSecondary(
                   onPressed: _revokeConsent,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.errorColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
                   child: const Text('Revoke Consent & Delete Handles'),
                 ),
               ),
@@ -467,47 +393,36 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
             const SizedBox(height: 24),
 
-            // Privacy Info
-            AppSurface(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderColor: AppColors.primary,
-              radius: 8,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Privacy & Analysis',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '• We only analyze public content (posts, bio, interests)\n'
-                    '• Analysis results are stored locally on your device\n'
-                    '• You can revoke consent and delete data anytime\n'
-                    '• We never share your handles or analysis with third parties\n'
-                    '• Analysis enhances your AI personality insights',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
+            const AppInfoBanner(
+              title: 'Privacy & Analysis',
+              body:
+                  'AVRAI only analyzes public content, stores the results locally on your device, and lets you revoke consent at any time.',
+              icon: Icons.info_outline,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHandleField({
+    required String platform,
+    required String label,
+  }) {
+    return AppSurface(
+      child: Row(
+        children: [
+          _getPlatformIcon(platform),
+          const SizedBox(width: 12),
+          Expanded(
+            child: AppFormField(
+              controller: _controllers[platform],
+              labelText: label,
+              hintText: 'username',
+              enabled: _consentGiven,
+            ),
+          ),
+        ],
       ),
     );
   }

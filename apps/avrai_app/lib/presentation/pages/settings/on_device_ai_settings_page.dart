@@ -29,6 +29,10 @@ import 'package:avrai_runtime_os/ml/model_version_registry.dart';
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -180,10 +184,27 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       title: 'On-Device AI',
       constrainBody: false,
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(label: 'Loading on-device AI settings')
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                const AppSurface(
+                  child: AppPageHeader(
+                    title: 'On-Device AI',
+                    subtitle:
+                        'Review device eligibility, local model installation, and offline AI controls in one place.',
+                    leadingIcon: Icons.memory_outlined,
+                    showDivider: false,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const AppInfoBanner(
+                  title: 'Local-first controls',
+                  body:
+                      'These settings control offline models, local training, and safety checks without relying on a branded visual system.',
+                  icon: Icons.shield_outlined,
+                ),
+                const SizedBox(height: 12),
                 if (_error != null)
                   _buildInfoCard(
                     title: 'Error',
@@ -191,15 +212,19 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                     icon: Icons.error_outline,
                     iconColor: AppColors.error,
                   ),
-                _buildHappinessCard(),
+                AppSection(title: 'Agent Health', child: _buildHappinessCard()),
                 const SizedBox(height: 12),
-                _buildCapabilityCard(),
+                AppSection(
+                  title: 'Device Capability',
+                  child: _buildCapabilityCard(),
+                ),
                 const SizedBox(height: 12),
-                _buildModelSafetyCard(),
+                AppSection(
+                    title: 'Model Safety', child: _buildModelSafetyCard()),
                 const SizedBox(height: 12),
-                _buildTogglesCard(),
+                AppSection(title: 'Offline Mode', child: _buildTogglesCard()),
                 const SizedBox(height: 12),
-                _buildNotesCard(),
+                AppSection(title: 'Notes', child: _buildNotesCard()),
               ],
             ),
     );
@@ -262,7 +287,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         ...gate.reasons.map((r) => '- $r'),
       ].join('\n'),
       icon: Icons.shield_outlined,
-      iconColor: gate.eligible ? AppColors.electricGreen : AppColors.grey600,
+      iconColor: gate.eligible ? AppColors.success : AppColors.grey600,
     );
   }
 
@@ -356,9 +381,9 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                 .map((p) => Chip(
                       label: Text(p.title),
                       backgroundColor:
-                          AppColors.electricGreen.withValues(alpha: 0.12),
+                          AppColors.success.withValues(alpha: 0.12),
                       side: BorderSide(
-                        color: AppColors.electricGreen.withValues(alpha: 0.35),
+                        color: AppColors.success.withValues(alpha: 0.35),
                       ),
                     ))
                 .toList(),
@@ -848,7 +873,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       title: 'Model safety',
       body: lines.join('\n'),
       icon: Icons.health_and_safety_outlined,
-      iconColor: AppColors.electricGreen,
+      iconColor: AppColors.success,
     );
   }
 

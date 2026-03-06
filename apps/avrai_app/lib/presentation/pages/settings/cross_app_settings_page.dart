@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/widgets/settings/cross_app_learning_insights_widget.dart';
 import 'package:avrai_core/models/misc/cross_app_learning_insight.dart';
@@ -67,61 +70,60 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AdaptivePlatformPageScaffold(
       title: 'AI Learning Sources',
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          ? const AppLoadingState(label: 'Loading cross-app settings')
+          : ListView(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header explanation
-                  _buildHeader(isDark),
-                  const SizedBox(height: 24),
-
-                  // Data source toggles
-                  _buildDataSourceSection(isDark),
-                  const SizedBox(height: 24),
-
-                  // Learning insights display
-                  const CrossAppLearningInsightsWidget(),
-                  const SizedBox(height: 24),
-
-                  // Privacy note
-                  _buildPrivacyNote(isDark),
-                  const SizedBox(height: 24),
-
-                  // Quick actions
-                  _buildQuickActions(isDark),
-                  const SizedBox(height: 24),
-
-                  // Data management
-                  _buildDataManagementSection(isDark),
-                ],
-              ),
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 16),
+                const AppInfoBanner(
+                  title: 'Control learning sources',
+                  body:
+                      'Choose which cross-app signals AVRAI can use for local learning and when that learning should pause.',
+                  icon: Icons.psychology_outlined,
+                ),
+                const SizedBox(height: 24),
+                AppSection(
+                  title: 'Data Sources',
+                  child: _buildDataSourceSection(),
+                ),
+                const SizedBox(height: 24),
+                const AppSection(
+                  title: 'Learning Insights',
+                  subtitle:
+                      'Review recent insights learned from connected sources.',
+                  child: CrossAppLearningInsightsWidget(),
+                ),
+                const SizedBox(height: 24),
+                AppSection(
+                  title: 'Privacy Note',
+                  child: _buildPrivacyNote(
+                      Theme.of(context).brightness == Brightness.dark),
+                ),
+                const SizedBox(height: 24),
+                AppSection(
+                  title: 'Quick Actions',
+                  child: _buildQuickActions(
+                      Theme.of(context).brightness == Brightness.dark),
+                ),
+                const SizedBox(height: 24),
+                AppSection(
+                  title: 'Data Management',
+                  child: _buildDataManagementSection(),
+                ),
+              ],
             ),
     );
   }
 
-  Widget _buildDataManagementSection(bool isDark) {
+  Widget _buildDataManagementSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Data Management',
-          style: textTheme.titleMedium?.copyWith(
-            color: isDark ? AppColors.white : AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Pause/Resume Learning Toggle
         AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
@@ -186,8 +188,6 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             ),
           ),
         ),
-
-        // Clear Learning Data Button
         AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
@@ -231,8 +231,6 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
             onTap: () => _showClearDataDialog(isDark),
           ),
         ),
-
-        // Clear Before Date Button
         AppSurface(
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.zero,
@@ -550,7 +548,8 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppSurface(
       padding: const EdgeInsets.all(16),
       radius: 12,
@@ -561,29 +560,19 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
           ? AppColors.white.withValues(alpha: 0.12)
           : AppColors.black.withValues(alpha: 0.08),
       child: const AppPageHeader(
-        title: 'Help Your AI Learn',
+        title: 'Cross-App Learning',
         subtitle:
-            'Your AI can learn from your daily activities to give you better spot suggestions. All data is processed locally on your device.',
+            'Your AI can learn from selected activity signals to improve suggestions while keeping processing local.',
         leadingIcon: Icons.psychology_outlined,
         showDivider: false,
       ),
     );
   }
 
-  Widget _buildDataSourceSection(bool isDark) {
-    final textTheme = Theme.of(context).textTheme;
-
+  Widget _buildDataSourceSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Data Sources',
-          style: textTheme.titleMedium?.copyWith(
-            color: isDark ? AppColors.white : AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
         ...CrossAppDataSource.values.map((source) {
           // Skip app usage on iOS
           if (source == CrossAppDataSource.appUsage && !Platform.isAndroid) {

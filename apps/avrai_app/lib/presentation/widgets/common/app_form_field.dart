@@ -6,6 +6,7 @@ class AppFormField extends StatelessWidget {
   final String? hintText;
   final bool obscureText;
   final ValueChanged<String>? onChanged;
+  final bool enabled;
 
   const AppFormField({
     super.key,
@@ -14,6 +15,7 @@ class AppFormField extends StatelessWidget {
     this.hintText,
     this.obscureText = false,
     this.onChanged,
+    this.enabled = true,
   });
 
   @override
@@ -22,6 +24,7 @@ class AppFormField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       onChanged: onChanged,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
