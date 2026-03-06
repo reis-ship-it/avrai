@@ -5,7 +5,6 @@ use std::ffi::{CStr, CString};
 use std::sync::{Mutex, OnceLock};
 
 static SNAPSHOT_REGISTRY: OnceLock<Mutex<std::collections::HashMap<String, Value>>> = OnceLock::new();
-static MESH_REGISTRY: OnceLock<Mutex<std::collections::HashMap<String, Value>>> = OnceLock::new();
 
 #[derive(Debug, Deserialize)]
 struct NativeRequest {
@@ -87,12 +86,6 @@ fn handle_request(request: NativeRequest) -> Result<NativeResponse, String> {
             payload: observe_locality(&request.payload),
             error: None,
         }),
-        "observe_visit" => Ok(NativeResponse {
-            ok: true,
-            handled: true,
-            payload: observe_visit(&request.payload),
-            error: None,
-        }),
         "project_locality" => Ok(NativeResponse {
             ok: true,
             handled: true,
@@ -115,12 +108,6 @@ fn handle_request(request: NativeRequest) -> Result<NativeResponse, String> {
             ok: true,
             handled: true,
             payload: recover_locality(&request.payload),
-            error: None,
-        }),
-        "observe_mesh_locality" => Ok(NativeResponse {
-            ok: true,
-            handled: true,
-            payload: observe_mesh_locality(&request.payload),
             error: None,
         }),
         _ => Ok(NativeResponse {
@@ -369,57 +356,6 @@ fn observe_locality(payload: &Map<String, Value>) -> Value {
     })
 }
 
-fn observe_visit(payload: &Map<String, Value>) -> Value {
-    let user_id = payload
-        .get("userId")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
-    let visit = payload
-        .get("visit")
-        .and_then(Value::as_object)
-        .cloned()
-        .unwrap_or_default();
-
-    let lat = visit
-        .get("metadata")
-        .and_then(Value::as_object)
-        .and_then(|metadata| metadata.get("latitude"))
-        .and_then(Value::as_f64);
-    let lon = visit
-        .get("metadata")
-        .and_then(Value::as_object)
-        .and_then(|metadata| metadata.get("longitude"))
-        .and_then(Value::as_f64);
-
-    if lat.is_none() || lon.is_none() {
-        return json!({});
-    }
-
-    let occurred_at = visit
-        .get("checkOutTime")
-        .and_then(Value::as_str)
-        .or_else(|| visit.get("checkInTime").and_then(Value::as_str))
-        .unwrap_or("2026-03-06T00:00:00Z");
-    let locality = classify_locality(lat.unwrap_or(33.5186), lon.unwrap_or(-86.8104));
-    let state = build_state(
-        &locality,
-        occurred_at,
-        Some(locality.display_name.clone()),
-        "established",
-    );
-
-    let agent_id = format!("native-agent:{user_id}");
-    save_snapshot(&agent_id, &state, occurred_at);
-
-    json!({
-        "receipt": {
-            "state": state,
-            "cloudUpdated": true,
-            "meshForwarded": true
-        }
-    })
-}
-
 fn project_locality(payload: &Map<String, Value>) -> Value {
     let state = payload
         .get("state")
@@ -515,9 +451,9 @@ fn evaluate_zero_locality(payload: &Map<String, Value>) -> Value {
         .unwrap_or(12)
         .max(1) as f64;
 
-    let scenario_count: f64 = 5.0;
-    let cold_start = (0.72_f64 + (scenario_count * 0.015_f64)).clamp(0.0_f64, 0.92_f64);
-    let confidence = (0.74_f64 + (locality_count / 400.0_f64)).clamp(0.0_f64, 0.9_f64);
+    let scenario_count = 5.0;
+    let cold_start = (0.72 + (scenario_count * 0.015)).clamp(0.0, 0.92);
+    let confidence = (0.74 + (locality_count / 400.0)).clamp(0.0, 0.9);
 
     json!({
         "evaluationId": format!("locality-{model_family}-{city_profile}:native-bootstrap"),
@@ -601,53 +537,8 @@ fn recover_locality(payload: &Map<String, Value>) -> Value {
     })
 }
 
-fn observe_mesh_locality(payload: &Map<String, Value>) -> Value {
-    let key = payload
-        .get("key")
-        .and_then(Value::as_object)
-        .cloned()
-        .unwrap_or_default();
-    let geohash = key
-        .get("geohashPrefix")
-        .and_then(Value::as_str)
-        .unwrap_or("unresolved");
-    let delta12 = payload
-        .get("delta12")
-        .and_then(Value::as_array)
-        .cloned()
-        .unwrap_or_default();
-    let ttl_ms = payload
-        .get("ttlMs")
-        .and_then(Value::as_i64)
-        .unwrap_or(0);
-    let hop = payload
-        .get("hop")
-        .and_then(Value::as_i64)
-        .unwrap_or(0);
-
-    let registry = mesh_registry();
-    let mut guard = registry.lock().expect("mesh registry mutex poisoned");
-    guard.insert(
-        geohash.to_string(),
-        json!({
-            "key": Value::Object(key),
-            "delta12": delta12,
-            "ttlMs": ttl_ms,
-            "hop": hop
-        }),
-    );
-
-    json!({
-        "observed": true
-    })
-}
-
 fn snapshot_registry() -> &'static Mutex<std::collections::HashMap<String, Value>> {
     SNAPSHOT_REGISTRY.get_or_init(|| Mutex::new(std::collections::HashMap::new()))
-}
-
-fn mesh_registry() -> &'static Mutex<std::collections::HashMap<String, Value>> {
-    MESH_REGISTRY.get_or_init(|| Mutex::new(std::collections::HashMap::new()))
 }
 
 fn save_snapshot(agent_id: &str, state: &Value, saved_at: &str) {

@@ -99,22 +99,11 @@ class LocalityNativeBridgeBindings implements LocalityNativeInvocationBridge {
         throw StateError('Locality native bridge returned a non-map response.');
       }
 
-      final ok = decoded['ok'];
-      if (ok == false) {
+      if (decoded['ok'] == false) {
         throw StateError(
             (decoded['error'] as String?) ?? 'Unknown native error');
       }
-
-      final responsePayload = decoded['payload'];
-      if (responsePayload is Map<String, dynamic>) {
-        return responsePayload;
-      }
-      if (decoded['payload'] == null) {
-        return decoded;
-      }
-      throw StateError(
-        'Locality native bridge returned a malformed payload for $syscall.',
-      );
+      return decoded;
     } finally {
       malloc.free(requestPtr);
       if (responsePtr != null &&

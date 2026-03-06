@@ -141,10 +141,16 @@ class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
   }) async {
     nativeBridge.initialize();
     if (nativeBridge.isAvailable) {
-      return nativeBridge.invoke(
+      final response = nativeBridge.invoke(
         syscall: syscall,
         payload: payload,
       );
+      if (response['handled'] == true) {
+        final nativePayload = response['payload'];
+        if (nativePayload is Map<String, dynamic>) {
+          return nativePayload;
+        }
+      }
     }
     return fallbackTransport.invokeAsync(
       syscall: syscall,
@@ -159,10 +165,16 @@ class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
   }) {
     nativeBridge.initialize();
     if (nativeBridge.isAvailable) {
-      return nativeBridge.invoke(
+      final response = nativeBridge.invoke(
         syscall: syscall,
         payload: payload,
       );
+      if (response['handled'] == true) {
+        final nativePayload = response['payload'];
+        if (nativePayload is Map<String, dynamic>) {
+          return nativePayload;
+        }
+      }
     }
     return fallbackTransport.invokeSync(
       syscall: syscall,

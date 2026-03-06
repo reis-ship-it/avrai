@@ -41,11 +41,17 @@ class LocalityLibraryManager {
           _kernelLib = DynamicLibrary.process();
         } else {
           final currentDir = Directory.current.path;
-          final localPath =
-              '$currentDir/runtime/avrai_network/native/locality_kernel/macos/libavrai_locality_kernel.dylib';
-          final localFile = File(localPath);
-          if (localFile.existsSync()) {
-            _kernelLib = DynamicLibrary.open(localPath);
+          final candidatePaths = <String>[
+            '$currentDir/runtime/avrai_network/native/locality_kernel/macos/libavrai_locality_kernel.dylib',
+            '$currentDir/runtime/avrai_network/native/locality_kernel/target/debug/libavrai_locality_kernel.dylib',
+            '$currentDir/runtime/avrai_network/native/locality_kernel/target/release/libavrai_locality_kernel.dylib',
+          ];
+          final existingPath = candidatePaths.cast<String?>().firstWhere(
+                (path) => path != null && File(path).existsSync(),
+                orElse: () => null,
+              );
+          if (existingPath != null) {
+            _kernelLib = DynamicLibrary.open(existingPath);
           } else {
             try {
               _kernelLib =
