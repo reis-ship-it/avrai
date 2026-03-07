@@ -214,6 +214,8 @@ import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart
 import 'package:avrai_runtime_os/services/intake/universal_intake_repository.dart';
 import 'package:avrai_runtime_os/services/admin/remote_source_health_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/services/lists/list_analytics_service.dart';
+import 'package:avrai_runtime_os/services/lists/list_sync_service.dart';
 
 // Admin Services (God-Mode Admin System)
 import 'package:avrai_runtime_os/services/business/business_account_service.dart';

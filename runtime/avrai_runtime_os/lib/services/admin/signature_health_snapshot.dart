@@ -14,6 +14,7 @@ class SignatureHealthRecord {
   final bool reviewNeeded;
   final DateTime? lastSyncAt;
   final DateTime? lastSignatureRebuildAt;
+  final DateTime? updatedAt;
   final String syncState;
   final SignatureHealthCategory healthCategory;
   final String summary;
@@ -32,6 +33,7 @@ class SignatureHealthRecord {
     required this.reviewNeeded,
     this.lastSyncAt,
     this.lastSignatureRebuildAt,
+    this.updatedAt,
     required this.syncState,
     required this.healthCategory,
     required this.summary,
@@ -48,6 +50,38 @@ class SignatureHealthRecord {
     }
     return 'unknown';
   }
+}
+
+class FeedbackTrendWindow {
+  final String label;
+  final Duration duration;
+
+  const FeedbackTrendWindow({required this.label, required this.duration});
+}
+
+class FeedbackTrendCount {
+  final int softIgnoreCount;
+  final int hardNotInterestedCount;
+
+  const FeedbackTrendCount({
+    required this.softIgnoreCount,
+    required this.hardNotInterestedCount,
+  });
+
+  int get totalCount => softIgnoreCount + hardNotInterestedCount;
+}
+
+class FeedbackTrendRow {
+  final String entityType;
+  final Map<String, FeedbackTrendCount> countsByWindow;
+
+  const FeedbackTrendRow({
+    required this.entityType,
+    required this.countsByWindow,
+  });
+
+  int get totalCount =>
+      countsByWindow.values.fold(0, (sum, count) => sum + count.totalCount);
 }
 
 class SignatureHealthOverview {
@@ -95,7 +129,9 @@ class SignatureHealthSnapshot {
     final grouped = <SignatureHealthCategory, List<SignatureHealthRecord>>{};
     for (final record in sourceRecords) {
       grouped.putIfAbsent(
-          record.healthCategory, () => <SignatureHealthRecord>[]);
+        record.healthCategory,
+        () => <SignatureHealthRecord>[],
+      );
       grouped[record.healthCategory]!.add(record);
     }
     return grouped;
@@ -132,9 +168,65 @@ class SignatureHealthSnapshot {
     final grouped = <String, List<SignatureHealthRecord>>{};
     for (final record in feedbackRecords) {
       grouped.putIfAbsent(
-          record.categoryLabel, () => <SignatureHealthRecord>[]);
+        record.categoryLabel,
+        () => <SignatureHealthRecord>[],
+      );
       grouped[record.categoryLabel]!.add(record);
     }
     return grouped;
+  }
+
+  static const List<FeedbackTrendWindow> feedbackTrendWindows =
+      <FeedbackTrendWindow>[
+    FeedbackTrendWindow(label: '24h', duration: Duration(hours: 24)),
+    FeedbackTrendWindow(label: '7d', duration: Duration(days: 7)),
+    FeedbackTrendWindow(label: '30d', duration: Duration(days: 30)),
+  ];
+
+  List<FeedbackTrendRow> buildFeedbackTrendRows({DateTime? now}) {
+    final effectiveNow = now ?? generatedAt;
+    final grouped = <String, Map<String, FeedbackTrendCount>>{};
+    for (final record in feedbackRecords) {
+      final recordedAt = record.updatedAt ??
+          record.lastSignatureRebuildAt ??
+          record.lastSyncAt;
+      if (recordedAt == null) {
+        continue;
+      }
+      final entityCounts = grouped.putIfAbsent(
+        record.entityType,
+        () => <String, FeedbackTrendCount>{
+          for (final window in feedbackTrendWindows)
+            window.label: const FeedbackTrendCount(
+              softIgnoreCount: 0,
+              hardNotInterestedCount: 0,
+            ),
+        },
+      );
+      for (final window in feedbackTrendWindows) {
+        if (effectiveNow.difference(recordedAt) > window.duration) {
+          continue;
+        }
+        final current = entityCounts[window.label]!;
+        entityCounts[window.label] = FeedbackTrendCount(
+          softIgnoreCount: current.softIgnoreCount +
+              (record.categoryLabel == 'soft_ignore' ? 1 : 0),
+          hardNotInterestedCount: current.hardNotInterestedCount +
+              (record.categoryLabel == 'hard_not_interested' ? 1 : 0),
+        );
+      }
+    }
+
+    final rows = grouped.entries
+        .map(
+          (entry) => FeedbackTrendRow(
+            entityType: entry.key,
+            countsByWindow: entry.value,
+          ),
+        )
+        .where((row) => row.totalCount > 0)
+        .toList()
+      ..sort((a, b) => b.totalCount.compareTo(a.totalCount));
+    return rows;
   }
 }

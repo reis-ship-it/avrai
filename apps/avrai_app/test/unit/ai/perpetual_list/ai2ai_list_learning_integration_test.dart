@@ -64,15 +64,16 @@ void main() {
             type: type,
             timestamp: DateTime.now(),
           );
-          expect(interaction.isPositive, isTrue,
-              reason: '${type.name} should be positive');
+          expect(
+            interaction.isPositive,
+            isTrue,
+            reason: '${type.name} should be positive',
+          );
         }
       });
 
       test('should handle negative interactions', () {
-        final negativeTypes = [
-          ListInteractionType.dismissed,
-        ];
+        final negativeTypes = [ListInteractionType.dismissed];
 
         for (final type in negativeTypes) {
           final interaction = ListInteraction(
@@ -80,15 +81,16 @@ void main() {
             type: type,
             timestamp: DateTime.now(),
           );
-          expect(interaction.isNegative, isTrue,
-              reason: '${type.name} should be negative');
+          expect(
+            interaction.isNegative,
+            isTrue,
+            reason: '${type.name} should be negative',
+          );
         }
       });
 
       test('should handle neutral interactions', () {
-        final neutralTypes = [
-          ListInteractionType.viewed,
-        ];
+        final neutralTypes = [ListInteractionType.viewed];
 
         for (final type in neutralTypes) {
           final interaction = ListInteraction(
@@ -96,8 +98,11 @@ void main() {
             type: type,
             timestamp: DateTime.now(),
           );
-          expect(interaction.isNeutral, isTrue,
-              reason: '${type.name} should be neutral');
+          expect(
+            interaction.isNeutral,
+            isTrue,
+            reason: '${type.name} should be neutral',
+          );
         }
       });
     });
@@ -135,8 +140,9 @@ void main() {
       test('should filter 18+ insights for users under 18', () {
         final filter = AgeAwareListFilter();
 
-        final candidateWithAdult =
-            _createScoredCandidate(category: 'tattoo_parlor');
+        final candidateWithAdult = _createScoredCandidate(
+          category: 'tattoo_parlor',
+        );
 
         final filtered = filter.filterByAge(
           candidates: [candidateWithAdult],
@@ -152,8 +158,9 @@ void main() {
       test('should require opt-in for sensitive categories', () {
         final filter = AgeAwareListFilter();
 
-        final sensitiveCandidate =
-            _createScoredCandidate(category: 'adult_entertainment');
+        final sensitiveCandidate = _createScoredCandidate(
+          category: 'adult_entertainment',
+        );
 
         // Without opt-in
         final filteredWithoutOptIn = filter.filterByAge(
@@ -183,37 +190,38 @@ void main() {
 
     group('possibility collapse', () {
       test(
-          'should collapse to best matching possibility on positive interaction',
-          () {
-        final possibilities = [
-          _createPossibilityState(id: 'stable', probability: 0.5),
-          _createPossibilityState(id: 'growth', probability: 0.3),
-          _createPossibilityState(id: 'decline', probability: 0.2),
-        ];
+        'should collapse to best matching possibility on positive interaction',
+        () {
+          final possibilities = [
+            _createPossibilityState(id: 'stable', probability: 0.5),
+            _createPossibilityState(id: 'growth', probability: 0.3),
+            _createPossibilityState(id: 'decline', probability: 0.2),
+          ];
 
-        // On positive interaction, collapse toward the state that predicted it
-        final observedDimensions = {'novelty_seeking': 0.8};
+          // On positive interaction, collapse toward the state that predicted it
+          final observedDimensions = {'novelty_seeking': 0.8};
 
-        // Find best matching possibility
-        PossibilityState? bestMatch;
-        double bestScore = 0.0;
+          // Find best matching possibility
+          PossibilityState? bestMatch;
+          double bestScore = 0.0;
 
-        for (final possibility in possibilities) {
-          double score = 0.0;
-          for (final dim in observedDimensions.entries) {
-            final possibilityValue = possibility.dimensions[dim.key] ?? 0.5;
-            score += 1.0 - (dim.value - possibilityValue).abs();
+          for (final possibility in possibilities) {
+            double score = 0.0;
+            for (final dim in observedDimensions.entries) {
+              final possibilityValue = possibility.dimensions[dim.key] ?? 0.5;
+              score += 1.0 - (dim.value - possibilityValue).abs();
+            }
+            score *= possibility.probability;
+
+            if (score > bestScore) {
+              bestScore = score;
+              bestMatch = possibility;
+            }
           }
-          score *= possibility.probability;
 
-          if (score > bestScore) {
-            bestScore = score;
-            bestMatch = possibility;
-          }
-        }
-
-        expect(bestMatch, isNotNull);
-      });
+          expect(bestMatch, isNotNull);
+        },
+      );
 
       test('should mark surprising outcomes when expectation violated', () {
         const expectedProbability = 0.8;
@@ -237,7 +245,9 @@ void main() {
 
         expect(collapseResult.dimensionUpdates, isNotEmpty);
         expect(
-            collapseResult.dimensionUpdates['novelty_seeking'], equals(0.02));
+          collapseResult.dimensionUpdates['novelty_seeking'],
+          equals(0.02),
+        );
       });
     });
 
@@ -309,17 +319,19 @@ void main() {
     });
 
     group('ListInteraction model', () {
-      test('should store place ID in metadata for place-specific interactions',
-          () {
-        final interaction = ListInteraction(
-          listId: 'test-list',
-          type: ListInteractionType.placeVisited,
-          timestamp: DateTime.now(),
-          metadata: {'placeId': 'visited-place-123'},
-        );
+      test(
+        'should store place ID in metadata for place-specific interactions',
+        () {
+          final interaction = ListInteraction(
+            listId: 'test-list',
+            type: ListInteractionType.placeVisited,
+            timestamp: DateTime.now(),
+            metadata: {'placeId': 'visited-place-123'},
+          );
 
-        expect(interaction.metadata['placeId'], equals('visited-place-123'));
-      });
+          expect(interaction.metadata['placeId'], equals('visited-place-123'));
+        },
+      );
 
       test('should store category in metadata for category-level learning', () {
         final interaction = ListInteraction(
@@ -343,14 +355,47 @@ void main() {
 
         expect(age.inHours, greaterThanOrEqualTo(4));
       });
+
+      test('should expose soft ignore metadata and lower learning weight', () {
+        final interaction = ListInteraction(
+          listId: 'test-list',
+          type: ListInteractionType.dismissed,
+          timestamp: DateTime.now(),
+          metadata: const <String, dynamic>{
+            ListInteraction.negativePreferenceIntentMetadataKey:
+                ListInteraction.softIgnoreIntentValue,
+          },
+        );
+
+        expect(interaction.isSoftIgnore, isTrue);
+        expect(interaction.isHardNotInterested, isFalse);
+        expect(interaction.learningWeight, 0.5);
+      });
+
+      test(
+        'should expose hard not interested metadata and stronger learning weight',
+        () {
+          final interaction = ListInteraction(
+            listId: 'test-list',
+            type: ListInteractionType.dismissed,
+            timestamp: DateTime.now(),
+            metadata: const <String, dynamic>{
+              ListInteraction.negativePreferenceIntentMetadataKey:
+                  ListInteraction.hardNotInterestedIntentValue,
+            },
+          );
+
+          expect(interaction.isSoftIgnore, isFalse);
+          expect(interaction.isHardNotInterested, isTrue);
+          expect(interaction.learningWeight, 1.2);
+        },
+      );
     });
   });
 }
 
 /// Helper to create a scored candidate for testing
-ScoredCandidate _createScoredCandidate({
-  String category = 'cafe',
-}) {
+ScoredCandidate _createScoredCandidate({String category = 'cafe'}) {
   return ScoredCandidate(
     candidate: ListCandidate(
       place: _createTestSpot(category: category),

@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
+import 'package:avrai/presentation/services/suggested_list_feedback_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
@@ -23,10 +22,7 @@ import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dar
 class SuggestedListDetailsPage extends StatelessWidget {
   final SuggestedList suggestedList;
 
-  const SuggestedListDetailsPage({
-    super.key,
-    required this.suggestedList,
-  });
+  const SuggestedListDetailsPage({super.key, required this.suggestedList});
 
   @override
   Widget build(BuildContext context) {
@@ -204,11 +200,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.info_outline,
-                size: 20,
-                color: colorScheme.primary,
-              ),
+              Icon(Icons.info_outline, size: 20, color: colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Why this list?',
@@ -236,10 +228,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      explanation,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                    child: Text(explanation, style: theme.textTheme.bodyMedium),
                   ),
                 ],
               ),
@@ -287,8 +276,9 @@ class SuggestedListDetailsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color:
-                    colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
@@ -421,24 +411,9 @@ class SuggestedListDetailsPage extends StatelessWidget {
   }
 
   Future<void> _recordNegativePreference() async {
-    if (!di.sl.isRegistered<EntitySignatureService>()) {
-      return;
-    }
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null || userId.isEmpty) {
-      return;
-    }
-    await di.sl<EntitySignatureService>().recordNegativePreferenceSignal(
-          userId: userId,
-          title: suggestedList.title,
-          subtitle: suggestedList.description,
-          category: suggestedList.theme,
-          tags: <String>[
-            suggestedList.theme,
-            ...suggestedList.triggerReasons,
-          ],
-          intent: NegativePreferenceIntent.hardNotInterested,
-          entityType: 'suggested_list',
-        );
+    await commitSuggestedListNegativeFeedback(
+      suggestedList: suggestedList,
+      intent: NegativePreferenceIntent.hardNotInterested,
+    );
   }
 }
