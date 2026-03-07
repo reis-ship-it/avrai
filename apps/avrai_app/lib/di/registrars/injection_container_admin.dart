@@ -4,6 +4,8 @@ import 'package:avrai_runtime_os/services/admin/admin_auth_service.dart';
 import 'package:avrai_runtime_os/services/business/business_auth_service.dart';
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
 import 'package:avrai_runtime_os/services/admin/admin_communication_service.dart';
+import 'package:avrai_runtime_os/services/admin/remote_source_health_service.dart';
+import 'package:avrai_runtime_os/services/admin/signature_health_admin_service.dart';
 import 'package:avrai_runtime_os/kernel/service_contracts/urk_kernel_control_plane_service.dart';
 import 'package:avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 import 'package:avrai_runtime_os/services/business/business_account_service.dart';
@@ -76,6 +78,21 @@ Future<void> registerAdminServices(GetIt sl) async {
   // ignore: deprecated_member_use_from_same_package
   sl.registerLazySingleton<AdminGodModeService>(
       () => sl<AdminRuntimeGovernanceService>() as AdminGodModeService);
+
+  sl.registerLazySingleton<SignatureHealthAdminService>(
+    () => SignatureHealthAdminService(
+      intakeRepository: sl(),
+      remoteSourceHealthService: sl.isRegistered<RemoteSourceHealthService>()
+          ? sl<RemoteSourceHealthService>()
+          : null,
+    ),
+  );
+
+  sl.registerLazySingleton<RemoteSourceHealthService>(
+    () => RemoteSourceHealthService(
+      supabaseService: sl<SupabaseService>(),
+    ),
+  );
 
   // URK kernel control-plane service (admin runtime operations).
   sl.registerLazySingleton(

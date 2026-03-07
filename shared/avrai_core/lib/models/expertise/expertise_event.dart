@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 
@@ -37,6 +38,7 @@ class ExpertiseEvent extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
   final EventStatus status;
+  final ExternalSyncMetadata? externalSyncMetadata;
 
   const ExpertiseEvent({
     required this.id,
@@ -62,6 +64,7 @@ class ExpertiseEvent extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.status = EventStatus.upcoming,
+    this.externalSyncMetadata,
   });
 
   /// Check if event is full
@@ -143,6 +146,7 @@ class ExpertiseEvent extends Equatable {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'status': status.name,
+      'externalSyncMetadata': externalSyncMetadata?.toJson(),
     };
   }
 
@@ -178,6 +182,11 @@ class ExpertiseEvent extends Equatable {
         (e) => e.name == json['status'],
         orElse: () => EventStatus.upcoming,
       ),
+      externalSyncMetadata: json['externalSyncMetadata'] is Map<String, dynamic>
+          ? ExternalSyncMetadata.fromJson(
+              json['externalSyncMetadata'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
@@ -206,6 +215,7 @@ class ExpertiseEvent extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     EventStatus? status,
+    Object? externalSyncMetadata = _eventSentinel,
   }) {
     return ExpertiseEvent(
       id: id ?? this.id,
@@ -231,6 +241,9 @@ class ExpertiseEvent extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
+      externalSyncMetadata: externalSyncMetadata == _eventSentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
     );
   }
 
@@ -259,8 +272,11 @@ class ExpertiseEvent extends Equatable {
         createdAt,
         updatedAt,
         status,
+        externalSyncMetadata,
       ];
 }
+
+const Object _eventSentinel = Object();
 
 /// Expertise Event Type
 enum ExpertiseEventType {
