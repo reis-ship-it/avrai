@@ -9,11 +9,14 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
 
   // Data Sources - Remote (Optional, for online features)
   sl.registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl());
+    () => AuthRemoteDataSourceImpl(),
+  );
   sl.registerLazySingleton<SpotsRemoteDataSource>(
-      () => SpotsRemoteDataSourceImpl());
+    () => SpotsRemoteDataSourceImpl(),
+  );
   sl.registerLazySingleton<ListsRemoteDataSource>(
-      () => ListsRemoteDataSourceImpl());
+    () => ListsRemoteDataSourceImpl(),
+  );
 
   // Tax document storage (middle-ground):
   // - Prefer Supabase Storage (private, per-user bucket) for new uploads.
@@ -47,15 +50,14 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
   // can read the same dispute state in this temporary implementation.
   if (!sl.isRegistered<DisputeResolutionService>()) {
     sl.registerLazySingleton<DisputeResolutionService>(
-      () => DisputeResolutionService(
-        eventService: sl<ExpertiseEventService>(),
-      ),
+      () => DisputeResolutionService(eventService: sl<ExpertiseEventService>()),
     );
   }
 
   // Google Places Cache Service (for offline caching)
   sl.registerLazySingleton<GooglePlacesCacheService>(
-      () => GooglePlacesCacheService());
+    () => GooglePlacesCacheService(),
+  );
 
   // Get Google Places API key from config
   final googlePlacesApiKey = GooglePlacesConfig.getApiKey();
@@ -67,44 +69,45 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
 
   // Google Place ID Finder Service (New API)
   sl.registerLazySingleton<GooglePlaceIdFinderServiceNew>(
-      () => GooglePlaceIdFinderServiceNew(
-            apiKey: googlePlacesApiKey.isNotEmpty
-                ? googlePlacesApiKey
-                : 'demo_key', // Fallback for development
-          ));
+    () => GooglePlaceIdFinderServiceNew(
+      apiKey: googlePlacesApiKey.isNotEmpty
+          ? googlePlacesApiKey
+          : 'demo_key', // Fallback for development
+    ),
+  );
 
   // External Data Sources - Using New Places API (New)
   sl.registerLazySingleton<GooglePlacesDataSource>(
-      () => GooglePlacesDataSourceNewImpl(
-            apiKey: googlePlacesApiKey.isNotEmpty
-                ? googlePlacesApiKey
-                : 'demo_key', // Fallback for development
-            httpClient: sl<http.Client>(),
-            cacheService: sl<GooglePlacesCacheService>(),
-          ));
+    () => GooglePlacesDataSourceNewImpl(
+      apiKey: googlePlacesApiKey.isNotEmpty
+          ? googlePlacesApiKey
+          : 'demo_key', // Fallback for development
+      httpClient: sl<http.Client>(),
+      cacheService: sl<GooglePlacesCacheService>(),
+    ),
+  );
   sl.registerLazySingleton<OpenStreetMapDataSource>(
-      () => OpenStreetMapDataSourceImpl(
-            httpClient: sl<http.Client>(),
-          ));
+    () => OpenStreetMapDataSourceImpl(httpClient: sl<http.Client>()),
+  );
 
   // Google Places Sync Service (using New API)
   sl.registerLazySingleton<GooglePlacesSyncService>(
-      () => GooglePlacesSyncService(
-            placeIdFinderNew: sl<GooglePlaceIdFinderServiceNew>(),
-            cacheService: sl<GooglePlacesCacheService>(),
-            googlePlacesDataSource: sl<GooglePlacesDataSource>(),
-            spotsLocalDataSource: sl<SpotsLocalDataSource>(),
-            connectivity: sl<Connectivity>(),
-          ));
+    () => GooglePlacesSyncService(
+      placeIdFinderNew: sl<GooglePlaceIdFinderServiceNew>(),
+      cacheService: sl<GooglePlacesCacheService>(),
+      googlePlacesDataSource: sl<GooglePlacesDataSource>(),
+      spotsLocalDataSource: sl<SpotsLocalDataSource>(),
+      connectivity: sl<Connectivity>(),
+    ),
+  );
 
   // Organic Spot Discovery Service (learns hidden locations from behavior)
   // Detects patterns in unmatched visits (parks, garages, hidden gems)
   // and clusters them into discovery candidates. Integrates with mesh for
   // community validation and with the learning pipeline for personality evolution.
   sl.registerLazySingleton<OrganicSpotDiscoveryService>(
-      () => OrganicSpotDiscoveryService(
-            atomicClock: sl<AtomicClockService>(),
-          ));
+    () => OrganicSpotDiscoveryService(atomicClock: sl<AtomicClockService>()),
+  );
 
   // Repositories (Register first)
   sl.registerLazySingleton<AuthRepository>(
@@ -131,24 +134,38 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
     ),
   );
 
-  if (!sl.isRegistered<UniversalIntakeRepository>()) {
-    sl.registerLazySingleton<UniversalIntakeRepository>(
-      () => UniversalIntakeRepository(
+  if (!sl.isRegistered<ListAnalyticsService>()) {
+    sl.registerLazySingleton<ListAnalyticsService>(
+      () => ListAnalyticsService(),
+    );
+  }
+  if (!sl.isRegistered<ListSyncService>()) {
+    sl.registerLazySingleton<ListSyncService>(
+      () => ListSyncService(
+        supabaseService: sl<SupabaseService>(),
         storageService: sl<StorageService>(),
       ),
     );
   }
 
+  if (!sl.isRegistered<UniversalIntakeRepository>()) {
+    sl.registerLazySingleton<UniversalIntakeRepository>(
+      () => UniversalIntakeRepository(storageService: sl<StorageService>()),
+    );
+  }
+
   // Hybrid Search Repository (Phase 2) - Always available for offline search
-  sl.registerLazySingleton(() => HybridSearchRepository(
-        localDataSource: sl<SpotsLocalDataSource>(),
-        remoteDataSource: sl<SpotsRemoteDataSource>(),
-        googlePlacesDataSource: sl<GooglePlacesDataSource>(),
-        osmDataSource: sl<OpenStreetMapDataSource>(),
-        googlePlacesCache: sl<GooglePlacesCacheService>(),
-        connectivity: sl<Connectivity>(),
-        intakeRepository: sl<UniversalIntakeRepository>(),
-      ));
+  sl.registerLazySingleton(
+    () => HybridSearchRepository(
+      localDataSource: sl<SpotsLocalDataSource>(),
+      remoteDataSource: sl<SpotsRemoteDataSource>(),
+      googlePlacesDataSource: sl<GooglePlacesDataSource>(),
+      osmDataSource: sl<OpenStreetMapDataSource>(),
+      googlePlacesCache: sl<GooglePlacesCacheService>(),
+      connectivity: sl<Connectivity>(),
+      intakeRepository: sl<UniversalIntakeRepository>(),
+    ),
+  );
 
   // Auth Use cases (Register after repositories)
   sl.registerLazySingleton(() => SignInUseCase(sl()));
@@ -183,10 +200,11 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
   // Register Phase 2 services (dependencies first)
   // Note: CommunityValidationService is registered in registerCoreServices()
   sl.registerLazySingleton<RoleManagementService>(
-      () => RoleManagementServiceImpl(
-            storageService: sl<StorageService>(),
-            prefs: sl<SharedPreferencesCompat>(),
-          ));
+    () => RoleManagementServiceImpl(
+      storageService: sl<StorageService>(),
+      prefs: sl<SharedPreferencesCompat>(),
+    ),
+  );
 
   // ============================================================================
   // SHARED FOUNDATIONAL SERVICES
@@ -223,10 +241,12 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
     );
   }
   if (!sl.isRegistered<AgentIdService>()) {
-    sl.registerLazySingleton(() => AgentIdService(
-          encryptionService: sl<SecureMappingEncryptionService>(),
-          businessService: sl<BusinessAccountService>(),
-        ));
+    sl.registerLazySingleton(
+      () => AgentIdService(
+        encryptionService: sl<SecureMappingEncryptionService>(),
+        businessService: sl<BusinessAccountService>(),
+      ),
+    );
   }
   if (!sl.isRegistered<LedgerRecorderServiceV0>()) {
     sl.registerLazySingleton<LedgerRecorderServiceV0>(
@@ -239,9 +259,7 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
   }
   if (!sl.isRegistered<LedgerReceiptsServiceV0>()) {
     sl.registerLazySingleton<LedgerReceiptsServiceV0>(
-      () => LedgerReceiptsServiceV0(
-        supabaseService: sl<SupabaseService>(),
-      ),
+      () => LedgerReceiptsServiceV0(supabaseService: sl<SupabaseService>()),
     );
   }
   if (!sl.isRegistered<ProofRunServiceV0>()) {
@@ -256,18 +274,21 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
   }
 
   // 2. BusinessService (depends on BusinessAccountService)
-  sl.registerLazySingleton<BusinessService>(() => BusinessService(
-        accountService: sl<BusinessAccountService>(),
-      ));
+  sl.registerLazySingleton<BusinessService>(
+    () => BusinessService(accountService: sl<BusinessAccountService>()),
+  );
   logger.debug('✅ [DI] BusinessService registered (shared)');
 
   // 3. ExpertiseEventService (foundational event service - used by Payment, AI)
-  sl.registerLazySingleton<ExpertiseEventService>(() => ExpertiseEventService(
-        storageService: sl<StorageService>(),
-        ledgerRecorder: sl<LedgerRecorderServiceV0>(),
-      ));
+  sl.registerLazySingleton<ExpertiseEventService>(
+    () => ExpertiseEventService(
+      storageService: sl<StorageService>(),
+      ledgerRecorder: sl<LedgerRecorderServiceV0>(),
+    ),
+  );
   logger.debug('✅ [DI] ExpertiseEventService registered (shared)');
 
   logger.debug(
-      '✅ [DI] Shared foundational services registered (BusinessAccountService, BusinessService, ExpertiseEventService)');
+    '✅ [DI] Shared foundational services registered (BusinessAccountService, BusinessService, ExpertiseEventService)',
+  );
 }

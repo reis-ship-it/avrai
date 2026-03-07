@@ -9,9 +9,8 @@ class RemoteSourceHealthService {
 
   final SupabaseService _supabaseService;
 
-  RemoteSourceHealthService({
-    required SupabaseService supabaseService,
-  }) : _supabaseService = supabaseService;
+  RemoteSourceHealthService({required SupabaseService supabaseService})
+      : _supabaseService = supabaseService;
 
   bool get isAvailable => _supabaseService.isAvailable;
 
@@ -113,6 +112,7 @@ class RemoteSourceHealthService {
       reviewNeeded: row['review_needed'] as bool? ?? false,
       lastSyncAt: _asDateTime(row['last_sync_at']),
       lastSignatureRebuildAt: _asDateTime(row['last_signature_rebuild_at']),
+      updatedAt: _asDateTime(row['updated_at']),
       syncState: row['sync_state']?.toString() ?? 'pending',
       healthCategory: category,
       summary: row['summary']?.toString() ?? '',

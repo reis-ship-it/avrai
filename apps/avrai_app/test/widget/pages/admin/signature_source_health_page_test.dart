@@ -27,12 +27,12 @@ void main() {
         fallbackCount: 1,
         reviewNeededCount: 0,
         bundleCount: 0,
-        softIgnoreCount: 0,
+        softIgnoreCount: 1,
         hardNotInterestedCount: 0,
       ),
       reviewQueueCount: 2,
-      records: const <SignatureHealthRecord>[
-        SignatureHealthRecord(
+      records: <SignatureHealthRecord>[
+        const SignatureHealthRecord(
           sourceId: 'source-1',
           provider: 'eventbrite',
           entityType: 'event',
@@ -46,7 +46,7 @@ void main() {
           healthCategory: SignatureHealthCategory.strong,
           summary: 'Strong source summary.',
         ),
-        SignatureHealthRecord(
+        const SignatureHealthRecord(
           sourceId: 'source-2',
           provider: 'manual',
           entityType: 'spot',
@@ -59,6 +59,21 @@ void main() {
           syncState: 'active',
           healthCategory: SignatureHealthCategory.fallback,
           summary: 'Fallback source summary.',
+        ),
+        SignatureHealthRecord(
+          sourceId: 'feedback-1',
+          provider: 'user_feedback',
+          entityType: 'suggested_list',
+          categoryLabel: 'soft_ignore',
+          sourceLabel: 'Suggested list feedback',
+          confidence: 0.68,
+          freshness: 0.92,
+          fallbackRate: 0.0,
+          reviewNeeded: false,
+          updatedAt: DateTime(2026, 3, 6),
+          syncState: 'active',
+          healthCategory: SignatureHealthCategory.strong,
+          summary: 'Soft ignore captured.',
         ),
       ],
     );
@@ -86,9 +101,7 @@ void main() {
 
     testWidgets('renders live signature health sections', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SignatureSourceHealthPage(),
-        ),
+        const MaterialApp(home: SignatureSourceHealthPage()),
       );
 
       controller.add(snapshot);
@@ -97,7 +110,16 @@ void main() {
       expect(find.text('Signature + Source Health'), findsOneWidget);
       expect(find.text('Live signature + intake health'), findsOneWidget);
       expect(find.textContaining('Strong: 1'), findsOneWidget);
-      expect(find.textContaining('Soft ignore: 0'), findsWidgets);
+      expect(find.textContaining('Soft ignore: 1'), findsWidgets);
+      await tester.scrollUntilVisible(
+        find.text('Feedback trend by entity type'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Feedback trend by entity type'), findsOneWidget);
+      expect(find.text('suggested_list'), findsOneWidget);
     });
   });
 }

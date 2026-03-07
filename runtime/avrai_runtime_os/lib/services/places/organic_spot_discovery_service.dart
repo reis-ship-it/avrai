@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
+import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -8,6 +9,7 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_core/models/geographic/discovered_spot_candidate.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/models/visit_pattern.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 
 /// Organic Spot Discovery Service
 ///
@@ -77,9 +79,8 @@ class OrganicSpotDiscoveryService {
     await GetStorage.init(_boxName);
   }
 
-  OrganicSpotDiscoveryService({
-    required AtomicClockService atomicClock,
-  }) : _atomicClock = atomicClock;
+  OrganicSpotDiscoveryService({required AtomicClockService atomicClock})
+      : _atomicClock = atomicClock;
 
   // ─── Core Discovery Logic ────────────────────────────────────────────
 
@@ -173,9 +174,7 @@ class OrganicSpotDiscoveryService {
     // Check if candidate has reached threshold
     if (_hasReachedThreshold(candidate) &&
         candidate.status == DiscoveredSpotStatus.detecting) {
-      candidate = candidate.copyWith(
-        status: DiscoveredSpotStatus.ready,
-      );
+      candidate = candidate.copyWith(status: DiscoveredSpotStatus.ready);
       developer.log(
         'Candidate ${candidate.id} reached discovery threshold! '
         '${candidate.visitCount} visits, '
@@ -229,9 +228,7 @@ class OrganicSpotDiscoveryService {
       // Check if mesh signal pushed us over the threshold
       if (_hasReachedThreshold(candidate) &&
           candidate.status == DiscoveredSpotStatus.detecting) {
-        candidate = candidate.copyWith(
-          status: DiscoveredSpotStatus.ready,
-        );
+        candidate = candidate.copyWith(status: DiscoveredSpotStatus.ready);
         developer.log(
           'Mesh signal pushed candidate ${candidate.id} to ready! '
           '$newUniqueCount unique users',
@@ -291,9 +288,11 @@ class OrganicSpotDiscoveryService {
   ) async {
     final candidates = await _loadAllCandidates(userId);
     return candidates
-        .where((c) =>
-            c.status == DiscoveredSpotStatus.detecting ||
-            c.status == DiscoveredSpotStatus.ready)
+        .where(
+          (c) =>
+              c.status == DiscoveredSpotStatus.detecting ||
+              c.status == DiscoveredSpotStatus.ready,
+        )
         .toList()
       ..sort((a, b) => b.confidence.compareTo(a.confidence));
   }
@@ -319,14 +318,11 @@ class OrganicSpotDiscoveryService {
     final candidate = await _findCandidateById(userId, candidateId);
     if (candidate == null) return;
 
-    await _saveCandidate(candidate.copyWith(
-      status: DiscoveredSpotStatus.prompted,
-    ));
-
-    developer.log(
-      'Candidate $candidateId marked as prompted',
-      name: _logName,
+    await _saveCandidate(
+      candidate.copyWith(status: DiscoveredSpotStatus.prompted),
     );
+
+    developer.log('Candidate $candidateId marked as prompted', name: _logName);
   }
 
   /// Mark a candidate as created (user created a full Spot from it).
@@ -343,10 +339,12 @@ class OrganicSpotDiscoveryService {
     final candidate = await _findCandidateById(userId, candidateId);
     if (candidate == null) return;
 
-    await _saveCandidate(candidate.copyWith(
-      status: DiscoveredSpotStatus.created,
-      createdSpotId: createdSpotId,
-    ));
+    await _saveCandidate(
+      candidate.copyWith(
+        status: DiscoveredSpotStatus.created,
+        createdSpotId: createdSpotId,
+      ),
+    );
 
     developer.log(
       'Candidate $candidateId converted to spot $createdSpotId',
@@ -359,18 +357,38 @@ class OrganicSpotDiscoveryService {
   /// The candidate won't be surfaced again. We still learn from this --
   /// it tells us what kinds of unmatched locations the user does NOT
   /// consider meaningful.
-  Future<void> dismissCandidate(String userId, String candidateId) async {
+  Future<void> dismissCandidate(
+    String userId,
+    String candidateId, {
+    NegativePreferenceIntent intent =
+        NegativePreferenceIntent.hardNotInterested,
+  }) async {
     final candidate = await _findCandidateById(userId, candidateId);
     if (candidate == null) return;
 
-    await _saveCandidate(candidate.copyWith(
-      status: DiscoveredSpotStatus.dismissed,
-    ));
-
-    developer.log(
-      'Candidate $candidateId dismissed by user',
-      name: _logName,
+    await _saveCandidate(
+      candidate.copyWith(status: DiscoveredSpotStatus.dismissed),
     );
+
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<EntitySignatureService>()) {
+      await getIt<EntitySignatureService>().recordNegativePreferenceSignal(
+        userId: userId,
+        title: 'Unmatched location candidate',
+        subtitle:
+            'Candidate ${candidate.inferredCategory.name} at ${candidate.geohash}',
+        category: candidate.inferredCategory.name,
+        tags: <String>[
+          candidate.geohash,
+          candidate.inferredCategory.name,
+          'organic_spot_candidate',
+        ],
+        intent: intent,
+        entityType: 'organic_spot_candidate',
+      );
+    }
+
+    developer.log('Candidate $candidateId dismissed by user', name: _logName);
   }
 
   // ─── Mesh Signal Generation ──────────────────────────────────────────
@@ -383,9 +401,7 @@ class OrganicSpotDiscoveryService {
   /// identity, or visit timing.
   ///
   /// Returns null if the candidate is not yet worth sharing.
-  Map<String, dynamic>? generateMeshSignal(
-    DiscoveredSpotCandidate candidate,
-  ) {
+  Map<String, dynamic>? generateMeshSignal(DiscoveredSpotCandidate candidate) {
     // Only share candidates with at least 2 visits (not noise)
     if (candidate.visitCount < 2) return null;
 
@@ -512,10 +528,7 @@ class OrganicSpotDiscoveryService {
     confidence += math.min(visitCount * _confidencePerVisit, 0.5);
 
     // Mesh user contribution (strong signal)
-    confidence += math.min(
-      (uniqueUserCount - 1) * _confidencePerMeshUser,
-      0.4,
-    );
+    confidence += math.min((uniqueUserCount - 1) * _confidencePerMeshUser, 0.4);
 
     // Group visit bonus
     if (hasGroupVisits) confidence += _confidenceGroupBoost;
@@ -635,10 +648,7 @@ class OrganicSpotDiscoveryService {
           .map((json) => DiscoveredSpotCandidate.fromJson(json))
           .toList();
     } catch (e) {
-      developer.log(
-        'Error loading discovery candidates: $e',
-        name: _logName,
-      );
+      developer.log('Error loading discovery candidates: $e', name: _logName);
       return [];
     }
   }
@@ -661,15 +671,9 @@ class OrganicSpotDiscoveryService {
         _pruneOldCandidates(candidates);
       }
 
-      await _box.write(
-        key,
-        candidates.map((c) => c.toJson()).toList(),
-      );
+      await _box.write(key, candidates.map((c) => c.toJson()).toList());
     } catch (e) {
-      developer.log(
-        'Error saving discovery candidate: $e',
-        name: _logName,
-      );
+      developer.log('Error saving discovery candidate: $e', name: _logName);
     }
   }
 

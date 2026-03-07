@@ -131,10 +131,7 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
               const SizedBox(height: 12),
               Text(_error!, textAlign: TextAlign.center),
               const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: _refresh,
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: _refresh, child: const Text('Retry')),
             ],
           ),
         ),
@@ -178,7 +175,9 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
                       _kpiChip('Bundle', snapshot.overview.bundleCount),
                       _kpiChip('Review queue', snapshot.reviewQueueCount),
                       _kpiChip(
-                          'Soft ignore', snapshot.overview.softIgnoreCount),
+                        'Soft ignore',
+                        snapshot.overview.softIgnoreCount,
+                      ),
                       _kpiChip(
                         'Hard reject',
                         snapshot.overview.hardNotInterestedCount,
@@ -192,6 +191,8 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
           const SizedBox(height: 12),
           _buildFeedbackIntentSection(context, snapshot),
           const SizedBox(height: 12),
+          _buildFeedbackTrendSection(context, snapshot),
+          const SizedBox(height: 12),
           _buildRouteCard(
             context,
             title: 'Back to Command Center',
@@ -200,7 +201,8 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
           ),
           const SizedBox(height: 12),
           ...SignatureHealthCategory.values.map(
-              (category) => _buildCategorySection(context, snapshot, category)),
+            (category) => _buildCategorySection(context, snapshot, category),
+          ),
           const SizedBox(height: 12),
           _buildGroupedSection(
             context,
@@ -248,10 +250,9 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
               records.isEmpty
                   ? 'No sources currently grouped here.'
                   : '${records.length} sources currently grouped here.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.textSecondary),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
             ...records.take(6).map(
@@ -284,17 +285,17 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: entries
-                  .map((entry) =>
-                      Chip(label: Text('${entry.key}: ${entry.value.length}')))
+                  .map(
+                    (entry) => Chip(
+                      label: Text('${entry.key}: ${entry.value.length}'),
+                    ),
+                  )
                   .toList(),
             ),
           ],
@@ -355,6 +356,64 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
     );
   }
 
+  Widget _buildFeedbackTrendSection(
+    BuildContext context,
+    SignatureHealthSnapshot snapshot,
+  ) {
+    final trendRows = snapshot.buildFeedbackTrendRows();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Feedback trend by entity type',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Shows where soft passes or hard rejections are clustering across the last 24 hours, 7 days, and 30 days.',
+            ),
+            if (trendRows.isEmpty) ...[
+              const SizedBox(height: 12),
+              const Text('No feedback trend data available yet.'),
+            ] else ...[
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Entity type')),
+                    DataColumn(label: Text('24h')),
+                    DataColumn(label: Text('7d')),
+                    DataColumn(label: Text('30d')),
+                  ],
+                  rows: trendRows.take(8).map((row) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(row.entityType)),
+                        for (final window
+                            in SignatureHealthSnapshot.feedbackTrendWindows)
+                          DataCell(
+                            _trendCell(row.countsByWindow[window.label]!),
+                          ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _trendCell(FeedbackTrendCount count) {
+    return Text('${count.softIgnoreCount}/${count.hardNotInterestedCount}');
+  }
+
   Widget _buildRecordsTable(List<SignatureHealthRecord> records) {
     return Card(
       child: Padding(
@@ -390,9 +449,11 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
                           DataCell(Text(record.provider)),
                           DataCell(Text(record.metroLabel)),
                           DataCell(
-                              Text('${(record.confidence * 100).round()}%')),
+                            Text('${(record.confidence * 100).round()}%'),
+                          ),
                           DataCell(
-                              Text('${(record.freshness * 100).round()}%')),
+                            Text('${(record.freshness * 100).round()}%'),
+                          ),
                         ],
                       ),
                     )

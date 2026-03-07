@@ -35,9 +35,9 @@ class SignatureHealthAdminService {
     };
     final records = mergedBySourceId.values.toList()
       ..sort((a, b) {
-        final categoryCompare = _categoryPriority(a.healthCategory).compareTo(
-          _categoryPriority(b.healthCategory),
-        );
+        final categoryCompare = _categoryPriority(
+          a.healthCategory,
+        ).compareTo(_categoryPriority(b.healthCategory));
         if (categoryCompare != 0) {
           return categoryCompare;
         }
@@ -52,28 +52,40 @@ class SignatureHealthAdminService {
       generatedAt: DateTime.now(),
       overview: SignatureHealthOverview(
         strongCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.strong)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.strong,
+            )
             .length,
         weakDataCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.weakData)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.weakData,
+            )
             .length,
         staleCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.stale)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.stale,
+            )
             .length,
         fallbackCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.fallback)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.fallback,
+            )
             .length,
         reviewNeededCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.reviewNeeded)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.reviewNeeded,
+            )
             .length,
         bundleCount: sourceRecords
-            .where((record) =>
-                record.healthCategory == SignatureHealthCategory.bundle)
+            .where(
+              (record) =>
+                  record.healthCategory == SignatureHealthCategory.bundle,
+            )
             .length,
         softIgnoreCount: feedbackRecords
             .where((record) => record.categoryLabel == 'soft_ignore')
@@ -145,7 +157,8 @@ class SignatureHealthAdminService {
         metadata['signatureCategory']?.toString() ??
         entityType;
     final lastSignatureRebuildAt = _asDateTime(
-        metadata['signatureUpdatedAt'] ?? metadata['lastSignatureRebuildAt']);
+      metadata['signatureUpdatedAt'] ?? metadata['lastSignatureRebuildAt'],
+    );
     final fallbackState = metadata['signatureMode'] == 'fallback' ||
         metadata['usedSignaturePrimary'] == false ||
         fallbackRate > 0.0;
@@ -174,6 +187,7 @@ class SignatureHealthAdminService {
       reviewNeeded: reviewNeeded,
       lastSyncAt: source.lastSyncedAt,
       lastSignatureRebuildAt: lastSignatureRebuildAt,
+      updatedAt: source.updatedAt,
       syncState: source.syncState.name,
       healthCategory: healthCategory,
       summary: _buildSummary(
