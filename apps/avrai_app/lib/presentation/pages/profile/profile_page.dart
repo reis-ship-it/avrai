@@ -33,7 +33,7 @@ import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_runtime_os/services/device/wearable_data_service.dart';
 import 'package:avrai/presentation/widgets/knot/dynamic_knot_widget.dart';
 import 'package:avrai/presentation/pages/knot/knot_meditation_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -172,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final spacing = context.spacing;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Profile',
       scrollable: true,
       body: BlocBuilder<AuthBloc, AuthState>(

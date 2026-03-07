@@ -6,7 +6,7 @@ import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class CreateListPage extends StatefulWidget {
@@ -154,7 +154,7 @@ class _CreateListPageState extends State<CreateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create List',
       actions: [
         if (_isCreating)

@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
+import 'package:avrai/apps/admin_app/ui/widgets/governance_audit_feed_card.dart';
+import 'package:avrai_core/models/misc/break_glass_governance_directive.dart';
+import 'package:avrai_core/models/misc/governance_inspection.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart';
 import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +30,10 @@ class _AdminCommandCenterPageState extends State<AdminCommandCenterPage> {
   GodModeDashboardData? _dashboardData;
   CommunicationsSnapshot? _communicationsSnapshot;
   List<ActiveAIAgentData> _activeAgents = <ActiveAIAgentData>[];
+  List<GovernanceInspectionResponse> _recentInspections =
+      <GovernanceInspectionResponse>[];
+  List<BreakGlassGovernanceReceipt> _recentBreakGlassReceipts =
+      <BreakGlassGovernanceReceipt>[];
 
   @override
   void initState() {
@@ -66,11 +73,16 @@ class _AdminCommandCenterPageState extends State<AdminCommandCenterPage> {
       final results = await Future.wait<dynamic>([
         service.getDashboardData(),
         service.getAllActiveAIAgents(),
+        service.listRecentGovernanceInspections(limit: 4),
+        service.listRecentBreakGlassReceipts(limit: 4),
       ]);
       if (!mounted) return;
       setState(() {
         _dashboardData = results[0] as GodModeDashboardData;
         _activeAgents = results[1] as List<ActiveAIAgentData>;
+        _recentInspections = results[2] as List<GovernanceInspectionResponse>;
+        _recentBreakGlassReceipts =
+            results[3] as List<BreakGlassGovernanceReceipt>;
         _lastRefreshAt = DateTime.now();
         _error = null;
         _isLoading = false;
@@ -93,7 +105,7 @@ class _AdminCommandCenterPageState extends State<AdminCommandCenterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Admin Command Center',
       actions: [
         IconButton(
@@ -201,11 +213,42 @@ class _AdminCommandCenterPageState extends State<AdminCommandCenterPage> {
             ],
           ),
           const SizedBox(height: 12),
+          GovernanceAuditFeedCard(
+            inspections: _recentInspections,
+            receipts: _recentBreakGlassReceipts,
+            title: 'Governance Audit Snapshot',
+            subtitle:
+                'Recent human-visible inspection and break-glass events across governed agent layers.',
+            onOpenPressed: () => context.go(AdminRoutePaths.governanceAudit),
+            onInspectionTap: (item) => context.go(
+              AdminRoutePaths.governanceAuditRuntimeLink(
+                runtimeId: item.request.targetRuntimeId,
+                stratum: item.request.targetStratum.name,
+                artifactType: 'inspection',
+              ),
+            ),
+            onBreakGlassTap: (item) => context.go(
+              AdminRoutePaths.governanceAuditRuntimeLink(
+                runtimeId: item.directive.targetRuntimeId,
+                stratum: item.directive.targetStratum.name,
+                artifactType: 'breakGlass',
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           RealtimeAgentGlobeWidget(
             agents: _activeAgents,
             title: 'Admin Agent Globe (Live)',
           ),
           const SizedBox(height: 12),
+          _buildNavCard(
+            context,
+            icon: Icons.visibility_outlined,
+            title: 'Governance Audit',
+            subtitle:
+                'Recent inspections, break-glass receipts, and human oversight history',
+            route: AdminRoutePaths.governanceAudit,
+          ),
           _buildNavCard(
             context,
             icon: Icons.psychology_alt,

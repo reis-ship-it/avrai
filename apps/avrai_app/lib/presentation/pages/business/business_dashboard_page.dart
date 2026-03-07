@@ -12,7 +12,7 @@ import 'package:avrai/presentation/pages/business/reservations/reservation_dashb
 import 'package:avrai/presentation/pages/business/reservations/reservation_settings_page.dart';
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Business Dashboard Page
 /// Main dashboard for business accounts after login
@@ -114,7 +114,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: '',
         showNavigationBar: false,
         backgroundColor: AppColors.grey50,
@@ -123,7 +123,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
     }
 
     if (_errorMessage != null) {
-      return AdaptivePlatformPageScaffold(
+      return AppFlowScaffold(
         title: 'Business Dashboard',
         backgroundColor: AppColors.grey50,
         appBarBackgroundColor: Colors.transparent,
@@ -153,7 +153,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Business Dashboard',
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,

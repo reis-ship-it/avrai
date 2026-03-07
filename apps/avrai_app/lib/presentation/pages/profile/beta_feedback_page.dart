@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:developer' as developer;
@@ -89,7 +89,7 @@ class _BetaFeedbackPageState extends State<BetaFeedbackPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Beta Feedback',
       scrollable: true,
       body: Padding(

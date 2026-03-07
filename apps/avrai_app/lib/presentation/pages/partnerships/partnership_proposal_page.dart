@@ -13,7 +13,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Proposal Page
@@ -157,7 +157,7 @@ class _PartnershipProposalPageState extends State<PartnershipProposalPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Partnership Proposal',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,
@@ -568,7 +568,7 @@ class _PartnershipProposalFormPageState
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Partnership Proposal',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

@@ -10,7 +10,7 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Admin page showing detailed communication log between two AIs
 class ConnectionCommunicationDetailPage extends StatefulWidget {
@@ -94,7 +94,7 @@ class _ConnectionCommunicationDetailPageState
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title:
           'Connection: ${widget.connectionId.length > 12 ? widget.connectionId.substring(0, 12) : widget.connectionId}',
       appBarBackgroundColor: AppTheme.primaryColor,

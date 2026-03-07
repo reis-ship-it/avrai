@@ -22,7 +22,7 @@ import 'package:avrai_network/network/device_discovery.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Page displaying device discovery status and discovered devices
@@ -108,7 +108,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Device Discovery',
         constrainBody: false,
         body: Center(
@@ -117,7 +117,7 @@ class _DeviceDiscoveryPageState extends State<DeviceDiscoveryPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Device Discovery',
       appBarBackgroundColor: AppColors.primary,
       appBarForegroundColor: AppColors.white,

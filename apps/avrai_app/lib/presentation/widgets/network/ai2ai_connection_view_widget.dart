@@ -1,20 +1,7 @@
 /// AI2AI Connection View Widget
 ///
-/// Part of Feature Matrix Phase 1: Critical UI/UX
-/// Section 1.2: Device Discovery UI
-///
 /// Displays active AI-to-AI connections with compatibility scores and explanations.
-/// Per OUR_GUTS.md: "All device interactions must go through Personality AI Layer"
-///
-/// Features:
-/// - View active AI2AI connections (read-only)
-/// - Compatibility scores (0-100%)
-/// - Compatibility explanation (why AIs think they're compatible)
-/// - Enable human-to-human conversation at 100% compatibility
-/// - Note: AIs disconnect automatically (fleeting connections)
-/// - No manual disconnect - connections are AI-managed
-///
-/// Uses AppColors and AppTheme for consistent styling per design token requirements.
+/// Shows live connection status, compatibility signals, and optional handoff actions.
 library;
 
 import 'dart:async';

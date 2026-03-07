@@ -75,7 +75,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
               children: [
                 const Icon(
                   Icons.verified_user,
-                  color: AppColors.electricGreen,
+                  color: AppColors.textSecondary,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -106,7 +106,6 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
 
             const SizedBox(height: 16),
 
-            // OUR_GUTS.md Message
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -120,7 +119,7 @@ class _CommunityValidationWidgetState extends State<CommunityValidationWidget> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Per OUR_GUTS.md: Your community validation helps maintain authentic, trustworthy place data.',
+                      'Community validation helps people keep shared place data accurate and useful.',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,

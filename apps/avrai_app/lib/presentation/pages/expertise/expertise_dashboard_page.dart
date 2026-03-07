@@ -14,13 +14,11 @@ import 'package:avrai/presentation/widgets/expertise/partnership_expertise_boost
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Expertise Dashboard Page
 /// Shows user's complete expertise profile with all categories and progress
-/// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
-///
 /// **Usage Example:**
 /// ```dart
 /// Navigator.push(
@@ -299,7 +297,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Expertise Dashboard',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

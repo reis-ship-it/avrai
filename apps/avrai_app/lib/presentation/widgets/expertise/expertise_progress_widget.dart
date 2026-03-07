@@ -4,7 +4,6 @@ import 'package:avrai/theme/colors.dart';
 
 /// Expertise Progress Widget
 /// Shows progress toward next expertise level
-/// OUR_GUTS.md: Progress visibility without gamification
 class ExpertiseProgressWidget extends StatelessWidget {
   final ExpertiseProgress progress;
   final bool showDetails;

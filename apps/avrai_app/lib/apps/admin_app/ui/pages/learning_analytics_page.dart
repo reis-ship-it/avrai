@@ -7,7 +7,7 @@ import 'dart:developer' as developer;
 import 'package:avrai_runtime_os/ai/continuous_learning_system.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Learning Analytics Page
 ///
@@ -81,7 +81,7 @@ class _LearningAnalyticsPageState extends State<LearningAnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Learning Analytics',
       actions: [
         IconButton(

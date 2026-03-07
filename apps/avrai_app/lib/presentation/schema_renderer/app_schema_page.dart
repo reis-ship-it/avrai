@@ -16,10 +16,18 @@ import 'package:avrai/theme/colors.dart';
 
 class AppSchemaPage extends StatelessWidget {
   final PageSchema schema;
+  final List<Widget>? actions;
+  final bool scrollable;
+  final EdgeInsetsGeometry padding;
+  final bool? showNavigationBar;
 
   const AppSchemaPage({
     super.key,
     required this.schema,
+    this.actions,
+    this.scrollable = true,
+    this.padding = const EdgeInsets.all(16),
+    this.showNavigationBar,
   });
 
   @override
@@ -28,8 +36,10 @@ class AppSchemaPage extends StatelessWidget {
       title: schema.header.title,
       subtitle: schema.header.subtitle,
       leadingIcon: schema.header.leadingIcon,
-      showNavigationBar: schema.showNavigationBar,
-      padding: const EdgeInsets.all(16),
+      actions: actions,
+      showNavigationBar: showNavigationBar ?? schema.showNavigationBar,
+      scrollable: scrollable,
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _buildSections(context),
@@ -109,6 +119,16 @@ class AppSchemaPage extends StatelessWidget {
               ],
             ],
           ),
+        ),
+      );
+    }
+
+    if (section is CustomSectionSchema) {
+      return AppSection(
+        title: section.title!,
+        subtitle: section.subtitle,
+        child: AppSurface(
+          child: section.child,
         ),
       );
     }

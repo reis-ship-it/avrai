@@ -11,7 +11,7 @@ import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
 import 'package:avrai/presentation/pages/payment/payment_failure_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Partnership Checkout Page
 ///
@@ -83,7 +83,7 @@ class _PartnershipCheckoutPageState extends State<PartnershipCheckoutPage> {
         widget.event.maxAttendees - widget.event.attendeeCount;
     final isPartnershipEvent = widget.partnership != null;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Checkout',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

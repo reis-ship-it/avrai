@@ -25,6 +25,7 @@ import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai_runtime_os/config/design_feature_flags.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/pages/feed/daily_serendipity_drop_feed.dart';
 import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
@@ -175,7 +176,7 @@ class _HomePageState extends State<HomePage> {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthLoading) {
-            return const AdaptivePlatformPageScaffold(
+            return const AppFlowScaffold(
               title: 'avrai',
               showNavigationBar: false,
               constrainBody: false,
@@ -194,7 +195,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildAuthenticatedContent(BuildContext context, Authenticated state) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'avrai',
       showNavigationBar: false,
       constrainBody: false,
@@ -293,7 +294,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildUnauthenticatedContent(BuildContext context) {
     final spacing = context.spacing;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'avrai',
       automaticallyImplyLeading: false,
       body: Center(
@@ -367,7 +368,7 @@ class _SpotsTabState extends State<SpotsTab> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Spots',
       constrainBody: false,
       leading: BlocBuilder<AuthBloc, AuthState>(

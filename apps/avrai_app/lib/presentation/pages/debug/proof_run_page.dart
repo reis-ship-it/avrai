@@ -16,7 +16,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_network/network/device_discovery.dart'
     show DiscoveredDevice, DeviceType;
@@ -342,7 +342,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
   @override
   Widget build(BuildContext context) {
     if (!kDebugMode) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Proof Run (debug)',
         showNavigationBar: false,
         constrainBody: false,
@@ -356,7 +356,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
         : null;
     final prov = _provState;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Proof Run (debug)',
       appBarBackgroundColor: AppColors.surface,
       constrainBody: false,

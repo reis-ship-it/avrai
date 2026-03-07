@@ -5,7 +5,7 @@ import 'package:avrai_runtime_os/services/telemetry/design_journey_telemetry.dar
 import 'package:avrai_runtime_os/services/visualization/world_plane_orchestration_adapter.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/knot/worldsheet_4d_widget.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +75,7 @@ class _WorldPlanesPageState extends State<WorldPlanesPage> {
     final spacing = context.spacing;
     final textTheme = Theme.of(context).textTheme;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'World Planes',
       scrollable: true,
       actions: [

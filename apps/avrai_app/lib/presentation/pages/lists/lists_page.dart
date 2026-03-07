@@ -6,14 +6,14 @@ import 'package:avrai/presentation/pages/lists/create_list_page.dart';
 import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/common/offline_indicator.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class ListsPage extends StatelessWidget {
   const ListsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'My Lists',
       actions: const [
         OfflineIndicator(),

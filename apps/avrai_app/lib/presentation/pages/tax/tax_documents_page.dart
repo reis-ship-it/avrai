@@ -10,7 +10,7 @@ import 'package:avrai_runtime_os/services/payment/payment_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Tax Documents Page
 ///
@@ -125,7 +125,7 @@ class _TaxDocumentsPageState extends State<TaxDocumentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Tax Documents',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

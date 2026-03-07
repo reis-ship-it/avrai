@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/continuous_learning_page_schema.dart';
 import 'package:avrai/presentation/widgets/common/app_error_state.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_controls_widget.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_data_widget.dart';
 import 'package:avrai/presentation/widgets/settings/continuous_learning_progress_widget.dart';
@@ -76,92 +75,111 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Continuous Learning',
-      constrainBody: false,
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, authState) {
-          if (authState is! Authenticated) {
-            return const AppLoadingState(label: 'Loading continuous learning');
-          }
-
-          final userId = authState.user.id;
-
-          if (_isInitializing) {
-            return const AppLoadingState(label: 'Loading continuous learning');
-          }
-
-          if (_errorMessage != null) {
-            return AppErrorState(
-              title: 'Unable to load continuous learning',
-              body: _errorMessage!,
-              onRetry: _initializeService,
-            );
-          }
-
-          if (_learningSystem == null) {
-            return const AppLoadingState(label: 'Loading continuous learning');
-          }
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              AppSurface(
-                child: const AppPageHeader(
-                  title: 'Continuous Learning',
-                  subtitle:
-                      'Monitor how your AI learns across status, progress, data collection, and controls.',
-                  leadingIcon: Icons.auto_awesome_outlined,
-                  showDivider: false,
-                ),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        if (authState is! Authenticated) {
+          return AppSchemaPage(
+            schema: buildContinuousLearningPageSchema(
+              content: const AppLoadingState(
+                label: 'Loading continuous learning',
               ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Status Overview',
-                subtitle: 'Current learning status and system metrics.',
-                child: ContinuousLearningStatusWidget(
-                  userId: userId,
-                  learningSystem: _learningSystem!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Progress by Dimension',
-                subtitle: 'Track progress across all learning dimensions.',
-                child: ContinuousLearningProgressWidget(
-                  userId: userId,
-                  learningSystem: _learningSystem!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Data Collection Status',
-                subtitle: 'Monitor collection from each enabled source.',
-                child: ContinuousLearningDataWidget(
-                  userId: userId,
-                  learningSystem: _learningSystem!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Controls',
-                subtitle: 'Start, stop, and configure continuous learning.',
-                child: ContinuousLearningControlsWidget(
-                  userId: userId,
-                  learningSystem: _learningSystem!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const AppInfoBanner(
-                title: 'Learn more',
-                body:
-                    'Continuous learning uses local activity and configured signals to improve recommendations while preserving user control.',
-                icon: Icons.info_outline,
-              ),
-            ],
+            ),
           );
-        },
-      ),
+        }
+
+        if (_isInitializing) {
+          return AppSchemaPage(
+            schema: buildContinuousLearningPageSchema(
+              content: const AppLoadingState(
+                label: 'Loading continuous learning',
+              ),
+            ),
+          );
+        }
+
+        if (_errorMessage != null) {
+          return AppSchemaPage(
+            schema: buildContinuousLearningPageSchema(
+              content: AppErrorState(
+                title: 'Unable to load continuous learning',
+                body: _errorMessage!,
+                onRetry: _initializeService,
+              ),
+            ),
+          );
+        }
+
+        if (_learningSystem == null) {
+          return AppSchemaPage(
+            schema: buildContinuousLearningPageSchema(
+              content: const AppLoadingState(
+                label: 'Loading continuous learning',
+              ),
+            ),
+          );
+        }
+
+        return AppSchemaPage(
+          schema: buildContinuousLearningPageSchema(
+            content: _buildContent(authState.user.id),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(String userId) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Monitor how your AI learns across status, progress, data collection, and controls.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Status Overview',
+          subtitle: 'Current learning status and system metrics.',
+          child: ContinuousLearningStatusWidget(
+            userId: userId,
+            learningSystem: _learningSystem!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Progress by Dimension',
+          subtitle: 'Track progress across all learning dimensions.',
+          child: ContinuousLearningProgressWidget(
+            userId: userId,
+            learningSystem: _learningSystem!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Data Collection Status',
+          subtitle: 'Monitor collection from each enabled source.',
+          child: ContinuousLearningDataWidget(
+            userId: userId,
+            learningSystem: _learningSystem!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Controls',
+          subtitle: 'Start, stop, and configure continuous learning.',
+          child: ContinuousLearningControlsWidget(
+            userId: userId,
+            learningSystem: _learningSystem!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        const AppInfoBanner(
+          title: 'Learn more',
+          body:
+              'Continuous learning uses local activity and configured signals to improve recommendations while preserving user control.',
+          icon: Icons.info_outline,
+        ),
+      ],
     );
   }
 }

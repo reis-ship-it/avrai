@@ -22,7 +22,7 @@ import 'package:avrai/presentation/widgets/chat/typing_indicator.dart';
 import 'package:avrai/presentation/widgets/chat/message_search_bar.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class FriendChatView extends StatefulWidget {
   final String friendId;
@@ -289,7 +289,7 @@ class _FriendChatViewState extends State<FriendChatView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Chat',
         showNavigationBar: false,
         constrainBody: false,
@@ -299,7 +299,7 @@ class _FriendChatViewState extends State<FriendChatView> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: _friendDisplayName ?? widget.friendName ?? widget.friendId,
       constrainBody: false,
       titleWidget: Row(

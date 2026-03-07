@@ -4,7 +4,6 @@ import 'package:avrai_core/models/business/brand_account.dart';
 import 'package:avrai_core/models/sponsorship/sponsorship.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/brand/brand_stats_card.dart';
 import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
@@ -12,7 +11,7 @@ import 'package:avrai/presentation/pages/brand/brand_analytics_page.dart';
 import 'package:avrai/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:avrai/presentation/pages/brand/sponsorship_management_page.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
@@ -20,8 +19,6 @@ import 'package:avrai/presentation/widgets/common/app_surface.dart';
 ///
 /// Overview dashboard for brand accounts.
 /// Shows brand info, active sponsorships, and analytics summary.
-///
-/// **CRITICAL:** Uses AppColors/AppTheme (100% adherence required)
 class BrandDashboardPage extends StatefulWidget {
   const BrandDashboardPage({super.key});
 
@@ -128,11 +125,11 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Brand Dashboard',
         backgroundColor: AppColors.background,
-        appBarBackgroundColor: AppTheme.primaryColor,
-        appBarForegroundColor: AppColors.white,
+        appBarBackgroundColor: AppColors.surface,
+        appBarForegroundColor: AppColors.textPrimary,
         appBarElevation: 0,
         constrainBody: false,
         body: Center(child: CircularProgressIndicator()),
@@ -143,11 +140,11 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
       return _buildNoBrandAccountState();
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Brand Dashboard',
       backgroundColor: AppColors.background,
-      appBarBackgroundColor: AppTheme.primaryColor,
-      appBarForegroundColor: AppColors.white,
+      appBarBackgroundColor: AppColors.surface,
+      appBarForegroundColor: AppColors.textPrimary,
       appBarElevation: 0,
       constrainBody: false,
       body: SingleChildScrollView(
@@ -194,11 +191,11 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
             else
               CircleAvatar(
                 radius: 32,
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                backgroundColor: AppColors.surfaceMuted,
                 child: const Icon(
                   Icons.business,
                   size: 32,
-                  color: AppTheme.primaryColor,
+                  color: AppColors.textSecondary,
                 ),
               ),
             const SizedBox(width: 16),
@@ -231,14 +228,14 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                         const Icon(
                           Icons.verified,
                           size: 16,
-                          color: AppTheme.primaryColor,
+                          color: AppColors.success,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Verified Brand',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: AppTheme.primaryColor,
+                            color: AppColors.success,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -291,7 +288,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               label: 'Total Returns',
               value: '\$${_totalReturns.toStringAsFixed(0)}',
               icon: Icons.trending_up,
-              color: AppTheme.primaryColor,
+              color: AppColors.success,
             ),
           ),
         ],
@@ -372,8 +369,8 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: AppColors.surfaceMuted,
+                      foregroundColor: AppColors.textPrimary,
                     ),
                     child: const Text('Discover Events'),
                   ),
@@ -456,8 +453,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               'ROI',
               '${roiPercentage.toStringAsFixed(0)}%',
               isTotal: true,
-              color:
-                  roiPercentage > 0 ? AppTheme.primaryColor : AppColors.error,
+              color: roiPercentage > 0 ? AppColors.success : AppColors.error,
             ),
 
             const SizedBox(height: 16),
@@ -506,7 +502,7 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
               fontSize: isTotal ? 20 : 16,
               fontWeight: FontWeight.bold,
               color: color ??
-                  (isTotal ? AppTheme.primaryColor : AppColors.textPrimary),
+                  (isTotal ? AppColors.textPrimary : AppColors.textPrimary),
             ),
           ),
         ],
@@ -515,11 +511,11 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
   }
 
   Widget _buildNoBrandAccountState() {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Brand Dashboard',
       backgroundColor: AppColors.background,
-      appBarBackgroundColor: AppTheme.primaryColor,
-      appBarForegroundColor: AppColors.white,
+      appBarBackgroundColor: AppColors.surface,
+      appBarForegroundColor: AppColors.textPrimary,
       appBarElevation: 0,
       constrainBody: false,
       body: Center(
@@ -555,8 +551,8 @@ class _BrandDashboardPageState extends State<BrandDashboardPage> {
                 // Navigate to create brand account page
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                foregroundColor: AppColors.white,
+                backgroundColor: AppColors.surfaceMuted,
+                foregroundColor: AppColors.textPrimary,
               ),
               child: const Text('Create Brand Account'),
             ),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/discovery_style_page_schema.dart';
 
 import 'package:avrai_core/models/user/dimension_question.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_question_bank.dart';
@@ -113,116 +117,103 @@ class _DiscoveryStylePageState extends State<DiscoveryStylePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    return AppSchemaPage(
+      schema: buildDiscoveryStylePageSchema(
+        progressSection: _buildProgressSection(context),
+        questionSection: _buildQuestionSection(),
+        navigationSection: _buildNavigationSection(),
+      ),
+    );
+  }
 
+  Widget _buildProgressSection(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'How Do You Discover?',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+        Row(
+          children: [
+            Text(
+              'Question ${_currentQuestionIndex + 1} of ${_questions.length}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            const Spacer(),
+            Text(
+              '${_answers.length}/${_questions.length}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: List.generate(_questions.length, (index) {
+            final isCompleted = _answers.containsKey(_questions[index].id);
+            final isCurrent = index == _currentQuestionIndex;
+            return Expanded(
+              child: Container(
+                height: 4,
+                margin: EdgeInsets.only(
+                    right: index < _questions.length - 1 ? 8 : 0),
+                decoration: BoxDecoration(
+                  color: isCompleted || isCurrent
+                      ? AppColors.textPrimary
+                      : AppColors.borderSubtle,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                "Tell us about your discovery style. There's no right or wrong answer!",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
+            );
+          }),
         ),
-        const SizedBox(height: 16),
+      ],
+    );
+  }
 
-        // Progress indicator
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Row(
-            children: List.generate(_questions.length, (index) {
-              final isCompleted = _answers.containsKey(_questions[index].id);
-              final isCurrent = index == _currentQuestionIndex;
+  Widget _buildQuestionSection() {
+    return SizedBox(
+      height: 420,
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentQuestionIndex = index;
+          });
+        },
+        itemCount: _questions.length,
+        itemBuilder: (context, index) {
+          final question = _questions[index];
+          return SingleChildScrollView(
+            child: DimensionQuestionWidget(
+              question: question,
+              currentValue: _answers[question.id],
+              onAnswerChanged: (value) => _onAnswerChanged(question, value),
+              questionNumber: index + 1,
+              totalQuestions: _questions.length,
+            ),
+          );
+        },
+      ),
+    );
+  }
 
-              return Expanded(
-                child: Container(
-                  height: 4,
-                  margin: EdgeInsets.only(
-                      right: index < _questions.length - 1 ? 8 : 0),
-                  decoration: BoxDecoration(
-                    color: isCompleted || isCurrent
-                        ? AppColors.primary
-                        : AppColors.grey300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              );
-            }),
+  Widget _buildNavigationSection() {
+    return Row(
+      children: [
+        if (_currentQuestionIndex > 0)
+          AppButtonSecondary(
+            onPressed: _goToPreviousQuestion,
+            child: const Text('Back'),
+          )
+        else
+          const SizedBox(width: 80),
+        const Spacer(),
+        if (_currentQuestionIndex < _questions.length - 1)
+          AppButtonPrimary(
+            onPressed: _isCurrentQuestionAnswered() ? _goToNextQuestion : null,
+            child: const Text('Next'),
           ),
-        ),
-        const SizedBox(height: 24),
-
-        // Questions PageView
-        Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentQuestionIndex = index;
-              });
-            },
-            itemCount: _questions.length,
-            itemBuilder: (context, index) {
-              final question = _questions[index];
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: DimensionQuestionWidget(
-                  question: question,
-                  currentValue: _answers[question.id],
-                  onAnswerChanged: (value) => _onAnswerChanged(question, value),
-                  questionNumber: index + 1,
-                  totalQuestions: _questions.length,
-                ),
-              );
-            },
-          ),
-        ),
-
-        // Navigation
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: Row(
-            children: [
-              if (_currentQuestionIndex > 0)
-                TextButton.icon(
-                  onPressed: _goToPreviousQuestion,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Back'),
-                )
-              else
-                const SizedBox(width: 100),
-              const Spacer(),
-              if (_currentQuestionIndex < _questions.length - 1)
-                ElevatedButton(
-                  onPressed:
-                      _isCurrentQuestionAnswered() ? _goToNextQuestion : null,
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Next'),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, size: 18),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }

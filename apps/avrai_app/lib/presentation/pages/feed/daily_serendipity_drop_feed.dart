@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
 import 'package:avrai/theme/colors.dart';
 
 /// The core feed UI for the nightly serendipity drop.
@@ -17,7 +18,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.black,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -31,26 +32,26 @@ class DailySerendipityDropFeed extends StatelessWidget {
                     const AppPageHeader(
                       title: 'Your Daily Drop',
                       subtitle:
-                          'A calm summary of what feels most worth your attention today.',
+                          'A calm summary of what deserves your attention today.',
                       leadingIcon: Icons.auto_awesome_outlined,
                       showDivider: false,
                     ),
                     const SizedBox(height: 16),
                     AppSurface(
-                      color: AppColors.white.withValues(alpha: 0.04),
-                      borderColor: AppColors.white.withValues(alpha: 0.08),
+                      color: AppColors.surfaceMuted,
+                      borderColor: AppColors.borderSubtle,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.12),
+                              color: AppColors.surface,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
                               Icons.auto_awesome_outlined,
-                              color: AppColors.primary,
+                              color: AppColors.textPrimary,
                               size: 20,
                             ),
                           ),
@@ -59,7 +60,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
                             child: Text(
                               drop.llmContextualInsight,
                               style: const TextStyle(
-                                color: AppColors.white,
+                                color: AppColors.textPrimary,
                                 fontSize: 15,
                                 height: 1.5,
                               ),
@@ -112,7 +113,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(
-          color: AppColors.white,
+          color: AppColors.textPrimary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
         ),
@@ -122,8 +123,8 @@ class DailySerendipityDropFeed extends StatelessWidget {
 
   Widget _buildItemCard(DropItem item, IconData icon) {
     return AppSurface(
-      color: AppColors.white.withValues(alpha: 0.03),
-      borderColor: AppColors.white.withValues(alpha: 0.08),
+      color: AppColors.surface,
+      borderColor: AppColors.borderSubtle,
       radius: 20,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -135,10 +136,10 @@ class DailySerendipityDropFeed extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: AppColors.primary, size: 22),
+                child: Icon(icon, color: AppColors.textPrimary, size: 22),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -148,7 +149,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
                     Text(
                       item.title,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -194,13 +195,14 @@ class DailySerendipityDropFeed extends StatelessWidget {
           const SizedBox(height: 16),
           AppSurface(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            color: AppColors.primary.withValues(alpha: 0.06),
-            borderColor: AppColors.primary.withValues(alpha: 0.14),
+            color: AppColors.surfaceMuted,
+            borderColor: AppColors.borderSubtle,
             radius: 12,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.timeline, color: AppColors.primary, size: 16),
+                const Icon(Icons.timeline,
+                    color: AppColors.textSecondary, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -224,8 +226,8 @@ class DailySerendipityDropFeed extends StatelessWidget {
 
   Widget _buildWildcardCard(DropWildcard item) {
     return AppSurface(
-      color: AppColors.white.withValues(alpha: 0.03),
-      borderColor: AppColors.error.withValues(alpha: 0.22),
+      color: AppColors.surface,
+      borderColor: AppColors.borderSubtle,
       radius: 20,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -237,7 +239,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.flash_on, color: AppColors.error),
@@ -250,7 +252,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
                     Text(
                       item.title,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -272,14 +274,14 @@ class DailySerendipityDropFeed extends StatelessWidget {
           _buildCallout(
             icon: Icons.psychology_alt_outlined,
             title: 'Worth a second look',
-            titleColor: AppColors.error,
+            titleColor: AppColors.textSecondary,
             body: item.doubtReasoning,
           ),
           const SizedBox(height: 12),
           _buildCallout(
             icon: Icons.hub_outlined,
             title: 'Why it still fits',
-            titleColor: AppColors.primary,
+            titleColor: AppColors.textSecondary,
             body: item.latentVibeMatch,
           ),
         ],
@@ -289,8 +291,8 @@ class DailySerendipityDropFeed extends StatelessWidget {
 
   Widget _buildLatentCommunityCard(DropLatentCommunity item) {
     return AppSurface(
-      color: AppColors.white.withValues(alpha: 0.03),
-      borderColor: AppColors.primaryLight.withValues(alpha: 0.2),
+      color: AppColors.surface,
+      borderColor: AppColors.borderSubtle,
       radius: 20,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -302,12 +304,12 @@ class DailySerendipityDropFeed extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight.withValues(alpha: 0.1),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.blur_on_outlined,
-                  color: AppColors.primaryLight,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(width: 16),
@@ -318,7 +320,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
                     Text(
                       item.title,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -345,7 +347,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
           _buildCallout(
             icon: Icons.key_outlined,
             title: 'How to start it',
-            titleColor: AppColors.primaryLight,
+            titleColor: AppColors.textSecondary,
             body: item.founderPrompt,
           ),
           const SizedBox(height: 16),
@@ -354,7 +356,7 @@ class DailySerendipityDropFeed extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.selection,
                 foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
@@ -374,8 +376,8 @@ class DailySerendipityDropFeed extends StatelessWidget {
   }) {
     return AppSurface(
       padding: const EdgeInsets.all(12),
-      color: titleColor.withValues(alpha: 0.06),
-      borderColor: titleColor.withValues(alpha: 0.16),
+      color: AppColors.surfaceMuted,
+      borderColor: AppColors.borderSubtle,
       radius: 12,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,19 +411,9 @@ class DailySerendipityDropFeed extends StatelessWidget {
   }
 
   Widget _buildAffinityChip(double affinity) {
-    return AppSurface(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      color: AppColors.primary.withValues(alpha: 0.08),
-      borderColor: AppColors.primary.withValues(alpha: 0.14),
-      radius: 999,
-      child: Text(
-        '${(affinity * 100).toInt()}%',
-        style: const TextStyle(
-          color: AppColors.primary,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
+    return AppStatusPill(
+      color: AppColors.textSecondary,
+      label: '${(affinity * 100).toInt()}%',
     );
   }
 

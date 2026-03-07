@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -20,8 +19,10 @@ import 'package:avrai_runtime_os/controllers/agent_initialization_controller.dar
 import 'package:avrai/presentation/widgets/knot/knot_audio_loading_widget.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_runtime_os/domain/usecases/spots/create_spot_usecase.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/ai_loading_page_schema.dart';
 import 'dart:async';
 
 class _PendingDelay {
@@ -464,224 +465,183 @@ class _AILoadingPageState extends State<AILoadingPage>
       // User ID not available, audio will be skipped
     }
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Preparing Your Experience',
-      automaticallyImplyLeading: false,
-      backgroundColor: AppColors.white,
-      body: Stack(
+    final page = AppSchemaPage(
+      schema: buildAILoadingPageSchema(
+        setupSection: _buildSetupSection(context),
+        infoSection: _buildInfoSection(context),
+        continueSection: _buildContinueSection(context),
+      ),
+      padding: EdgeInsets.all(spacing.lg),
+    );
+
+    if (userId == null) {
+      return page;
+    }
+
+    return Stack(
+      children: [
+        page,
+        KnotAudioLoadingWidget(
+          userId: userId,
+          enabled: false,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSetupSection(BuildContext context) {
+    final spacing = context.spacing;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnimatedBuilder(
+          animation: _loadingAnimation,
+          builder: (context, child) {
+            return Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.textPrimary,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: const Icon(
+                Icons.psychology,
+                color: AppColors.white,
+                size: 40,
+              ),
+            );
+          },
+        ),
+        SizedBox(height: spacing.xl),
+        Text(
+          _isLoading
+              ? 'AI is creating your personalized lists...'
+              : 'Finishing up...',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: spacing.md),
+        Text(
+          'Analyzing your preferences and favorite places to curate the perfect spots just for you.',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: spacing.lg),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(3, (index) {
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: spacing.xxs),
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: AppColors.textPrimary,
+                shape: BoxShape.circle,
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoSection(BuildContext context) {
+    final spacing = context.spacing;
+
+    return AppSurface(
+      padding: EdgeInsets.all(spacing.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.all(spacing.lg),
+          const Icon(
+            Icons.lightbulb_outline,
+            color: AppColors.textPrimary,
+            size: 24,
+          ),
+          SizedBox(width: spacing.sm),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Text(
-                  'Welcome to avrai!',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                ),
-                SizedBox(height: spacing.xs),
-                Text(
-                  'We\'re setting up your personalized experience',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.grey600,
-                      ),
-                ),
-                SizedBox(height: spacing.xxl),
-
-                // Loading content
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Avoid RenderFlex overflow in small viewports (including widget tests).
-                      // This stays centered when there's space, and scrolls when there isn't.
-                      return SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(vertical: spacing.lg),
-                        child: ConstrainedBox(
-                          constraints:
-                              BoxConstraints(minHeight: constraints.maxHeight),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // AI Processing Animation
-                                AnimatedBuilder(
-                                  animation: _loadingAnimation,
-                                  builder: (context, child) {
-                                    return Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primaryColor,
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                      child: const Icon(
-                                        Icons.psychology,
-                                        color: AppColors.white,
-                                        size: 40,
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: spacing.xl),
-                                Text(
-                                  _isLoading
-                                      ? 'AI is creating your personalized lists...'
-                                      : 'Finishing up...',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: spacing.md),
-                                Text(
-                                  'Analyzing your preferences and favorite places to curate the perfect spots just for you.',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        color: AppColors.grey600,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: spacing.lg),
-                                // Progress dots
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(3, (index) {
-                                    return Container(
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: spacing.xxs),
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        color: AppTheme.primaryColor,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // Info section
-                AppSurface(
-                  padding: EdgeInsets.all(spacing.md),
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                  borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.lightbulb_outline,
-                        color: AppTheme.primaryColor,
-                        size: 24,
-                      ),
-                      SizedBox(width: spacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Personalized Lists',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                            ),
-                            SizedBox(height: spacing.xxs),
-                            Text(
-                              'Based on your homebase, favorite places, and preferences, we\'ll create lists tailored just for you.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.grey700,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Continue button - allow users to proceed immediately
-                Padding(
-                  padding: EdgeInsets.only(bottom: spacing.lg),
-                  child: ElevatedButton(
-                    onPressed: _canContinue
-                        ? () async {
-                            _logger.info('User chose to continue immediately',
-                                tag: 'AILoadingPage');
-                            _logger.info(
-                                '🔄 [AI_LOADING_BUTTON] User clicked Continue, marking onboarding complete...',
-                                tag: 'AILoadingPage');
-                            try {
-                              await _markOnboardingCompleted();
-                              _logger.info(
-                                  '✅ [AI_LOADING_BUTTON] Onboarding marked complete, calling onLoadingComplete...',
-                                  tag: 'AILoadingPage');
-                            } catch (e, st) {
-                              _logger.error(
-                                '❌ [AI_LOADING_BUTTON] Error marking onboarding complete',
-                                error: e,
-                                stackTrace: st,
-                                tag: 'AILoadingPage',
-                              );
-                            }
-
-                            if (mounted) {
-                              widget.onLoadingComplete();
-                            }
-                          }
-                        : null, // Disable until ready
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: AppColors.white,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: spacing.xl, vertical: spacing.md),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.radius.md),
-                      ),
-                    ),
-                    child: Text(
-                      _canContinue ? 'Continue' : 'Setting up...',
-                      style: const TextStyle(
-                        fontSize: 16,
+                  'Personalized Lists',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
                       ),
-                    ),
-                  ),
+                ),
+                SizedBox(height: spacing.xxs),
+                Text(
+                  'Based on your homebase, favorite places, and preferences, we\'ll create lists tailored just for you.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                 ),
               ],
             ),
           ),
-          // Knot audio (optional, plays in background)
-          if (userId != null)
-            KnotAudioLoadingWidget(
-              userId: userId,
-              enabled: false, // Set to true when audio synthesis is complete
-            ),
         ],
       ),
     );
+  }
+
+  Widget _buildContinueSection(BuildContext context) {
+    final spacing = context.spacing;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppButtonPrimary(
+          onPressed: _canContinue ? _onContinuePressed : null,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.xl,
+              vertical: spacing.md,
+            ),
+            child: Text(
+              _canContinue ? 'Continue' : 'Setting up...',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onContinuePressed() async {
+    _logger.info('User chose to continue immediately', tag: 'AILoadingPage');
+    _logger.info(
+      '🔄 [AI_LOADING_BUTTON] User clicked Continue, marking onboarding complete...',
+      tag: 'AILoadingPage',
+    );
+
+    try {
+      await _markOnboardingCompleted();
+      _logger.info(
+        '✅ [AI_LOADING_BUTTON] Onboarding marked complete, calling onLoadingComplete...',
+        tag: 'AILoadingPage',
+      );
+    } catch (e, st) {
+      _logger.error(
+        '❌ [AI_LOADING_BUTTON] Error marking onboarding complete',
+        error: e,
+        stackTrace: st,
+        tag: 'AILoadingPage',
+      );
+    }
+
+    if (mounted) {
+      widget.onLoadingComplete();
+    }
   }
 
   Future<void> _markOnboardingCompleted() async {

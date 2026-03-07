@@ -12,7 +12,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/events/event_published_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Event Review Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.11)
@@ -279,6 +279,10 @@ class _EventReviewPageState extends State<EventReviewPage> {
           }
         }
 
+        if (!mounted) {
+          return;
+        }
+
         // Navigate to success page
         Navigator.pushReplacement(
           context,
@@ -349,7 +353,7 @@ class _EventReviewPageState extends State<EventReviewPage> {
   Widget build(BuildContext context) {
     final expertiseLevel = _currentUser?.getExpertiseLevel(widget.category);
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Review Event',
       constrainBody: false,
       backgroundColor: AppColors.background,

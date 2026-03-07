@@ -6,7 +6,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/pages/business/business_expert_chat_page.dart';
 import 'package:intl/intl.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Business Conversations List Page
 ///
@@ -102,7 +102,7 @@ class _BusinessConversationsListPageState
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Conversations',
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,

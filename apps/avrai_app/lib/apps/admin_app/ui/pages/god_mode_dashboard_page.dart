@@ -16,7 +16,7 @@ import 'package:avrai/apps/admin_app/ui/pages/ai_live_map_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer_page.dart';
 import 'package:avrai/apps/admin_app/ui/pages/beta_feedback_viewer_page.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/admin_federated_rounds_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// God-Mode Admin Dashboard
 /// Comprehensive real-time monitoring and data access
@@ -141,7 +141,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
   @override
   Widget build(BuildContext context) {
     if (_isLoading && _dashboardData == null) {
-      return AdaptivePlatformPageScaffold(
+      return AppFlowScaffold(
         title: '',
         showNavigationBar: false,
         body: Center(
@@ -162,7 +162,7 @@ class _GodModeDashboardPageState extends State<GodModeDashboardPage>
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'God-Mode Admin',
       titleWidget: Row(
         children: [

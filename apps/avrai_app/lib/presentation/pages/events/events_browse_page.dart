@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai/presentation/widgets/common/app_filter_chip.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/expertise/expertise_event_widget.dart';
 import 'package:avrai/presentation/widgets/events/community_event_widget.dart';
@@ -19,34 +19,11 @@ import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_core/models/user/user.dart' as user_model;
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/events_browse_page_schema.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:go_router/go_router.dart';
 
-/// Event Discovery UI - Browse/Search Page
-/// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
-/// Phase 6, Week 26-27: Events Page Organization & User Preference Learning
-///
-/// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-///
-/// Features:
-/// - Tab-based event organization by geographic scope (Community, Locality, City, State, Nation, Globe, Universe, Clubs/Communities)
-/// - List view of events
-/// - Search by title, category, location
-/// - Filters: category, location, date, price
-/// - Scope-based filtering (geographic scope from tabs)
-/// - Event sorting by matching score (EventMatchingService)
-/// - Cross-locality event discovery (CrossLocalityConnectionService)
-/// - Pull-to-refresh
-/// - Integration with ExpertiseEventService, EventMatchingService, CrossLocalityConnectionService
-///
-/// **Week 26-27 Updates:**
-/// - Added EventScopeTabWidget for geographic scope filtering
-/// - Integrated EventMatchingService for event sorting
-/// - Integrated CrossLocalityConnectionService for connected locality events
-/// - Added cross-locality event indicators
-/// - Prepared integration points for EventRecommendationService (when available)
 class EventsBrowsePage extends StatefulWidget {
   const EventsBrowsePage({super.key});
 
@@ -599,56 +576,35 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Events',
-      constrainBody: false,
-      backgroundColor: AppColors.background,
-      body: RefreshIndicator(
-        onRefresh: _loadEvents,
-        color: AppColors.primary,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: AppSurface(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppPageHeader(
-                      title: 'Browse Events',
-                      subtitle:
-                          'Find nearby events, community gatherings, and timely plans without the prototype-era noise.',
-                      leadingIcon: Icons.event_outlined,
-                      showDivider: false,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSearchBar(),
-                  ],
+    return AppSchemaPage(
+      schema: buildEventsBrowsePageSchema(
+        content: RefreshIndicator(
+          onRefresh: _loadEvents,
+          color: AppColors.textPrimary,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: AppSurface(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildSearchBar(),
                 ),
               ),
-            ),
-
-            // Scope Tabs
-            EventScopeTabWidget(
-              initialScope: _selectedScope,
-              onTabChanged: _onScopeChanged,
-            ),
-
-            // Filters
-            _buildFilters(),
-
-            // Clubs/Communities scope: add a door to community discovery
-            if (_selectedScope == EventScope.clubsCommunities)
-              _buildCommunityDiscoveryCta(),
-
-            // Event List
-            Expanded(
-              child: _buildEventList(),
-            ),
-          ],
+              EventScopeTabWidget(
+                initialScope: _selectedScope,
+                onTabChanged: _onScopeChanged,
+              ),
+              _buildFilters(),
+              if (_selectedScope == EventScope.clubsCommunities)
+                _buildCommunityDiscoveryCta(),
+              Expanded(
+                child: _buildEventList(),
+              ),
+            ],
+          ),
         ),
       ),
+      scrollable: false,
     );
   }
 
@@ -660,7 +616,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         hintStyle: const TextStyle(color: AppColors.textHint),
         prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
         filled: true,
-        fillColor: AppColors.grey100,
+        fillColor: AppColors.surfaceMuted,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.grey300),
@@ -671,7 +627,8 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+          borderSide:
+              const BorderSide(color: AppColors.textSecondary, width: 2),
         ),
       ),
       style: const TextStyle(color: AppColors.textPrimary),
@@ -688,22 +645,26 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
           child: Row(
             children: [
               _buildFilterChip(
+                isSelected: _selectedCategory != null,
                 label: _selectedCategory ?? 'All Categories',
                 onTap: () => _showCategoryFilter(),
               ),
               const SizedBox(width: 8),
               _buildFilterChip(
+                isSelected: _selectedLocation != null,
                 label: _selectedLocation ?? 'All Locations',
                 onTap: () => _showLocationFilter(),
               ),
               const SizedBox(width: 8),
               _buildFilterChip(
+                isSelected: _selectedDateFilter != null,
                 label:
                     _dateFilters[_selectedDateFilter] ?? _dateFilters['all']!,
                 onTap: () => _showDateFilter(),
               ),
               const SizedBox(width: 8),
               _buildFilterChip(
+                isSelected: _selectedPriceFilter != null,
                 label: _priceFilters[_selectedPriceFilter] ??
                     _priceFilters['all']!,
                 onTap: () => _showPriceFilter(),
@@ -711,6 +672,7 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
               const SizedBox(width: 8),
               if (_hasActiveFilters())
                 _buildFilterChip(
+                  isSelected: false,
                   label: 'Clear',
                   onTap: () => _clearFilters(),
                   isClear: true,
@@ -753,30 +715,13 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
   Widget _buildFilterChip({
     required String label,
     required VoidCallback onTap,
+    bool isSelected = false,
     bool isClear = false,
   }) {
-    return InkWell(
+    return AppFilterChip(
+      label: label,
+      selected: isSelected,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isClear
-              ? AppColors.error.withValues(alpha: 0.1)
-              : AppColors.grey100,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isClear ? AppColors.error : AppColors.grey300,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isClear ? AppColors.error : AppColors.textPrimary,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
     );
   }
 
@@ -820,11 +765,9 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                     _loadEvents();
                     Navigator.pop(context);
                   },
-                  selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  labelStyle: TextStyle(
-                    color: _selectedCategory == null
-                        ? AppTheme.primaryColor
-                        : AppColors.textPrimary,
+                  selectedColor: AppColors.surfaceMuted,
+                  labelStyle: const TextStyle(
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 ..._categories.map((category) {
@@ -838,11 +781,9 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                       _loadEvents();
                       Navigator.pop(context);
                     },
-                    selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                    labelStyle: TextStyle(
-                      color: _selectedCategory == category
-                          ? AppTheme.primaryColor
-                          : AppColors.textPrimary,
+                    selectedColor: AppColors.surfaceMuted,
+                    labelStyle: const TextStyle(
+                      color: AppColors.textPrimary,
                     ),
                   );
                 }),
@@ -1093,25 +1034,24 @@ class _EventsBrowsePageState extends State<EventsBrowsePage> {
                 margin: const EdgeInsets.only(bottom: 4),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+                  border: Border.all(color: AppColors.borderSubtle),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.location_on,
                       size: 12,
-                      color: AppTheme.primaryColor,
+                      color: AppColors.textSecondary,
                     ),
                     SizedBox(width: 4),
                     Text(
                       'Nearby locality',
                       style: TextStyle(
                         fontSize: 10,
-                        color: AppTheme.primaryColor,
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

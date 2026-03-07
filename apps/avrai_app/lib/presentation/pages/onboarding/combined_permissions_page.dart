@@ -2,16 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:avrai/theme/colors.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
 import 'package:avrai_core/models/misc/cross_app_learning_insight.dart'
     hide PermissionStatus;
 import 'package:avrai_runtime_os/services/cross_app/cross_app_consent_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/combined_permissions_page_schema.dart';
+import 'package:avrai/theme/colors.dart';
 
 /// Step 3: Combined Permissions page.
 ///
@@ -343,297 +346,202 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    return AppSchemaPage(
+      schema: buildCombinedPermissionsPageSchema(
+        corePermissionsSection: _buildCorePermissionsSection(),
+        consentSection: _buildCrossAppConsentSection(context),
+        statusActionsSection: _buildStatusActionsSection(),
+      ),
+      padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildCorePermissionsSection() {
+    return Column(
+      children: [
+        _buildPermissionGroup(
+          icon: Icons.location_on,
+          title: 'Location Access',
+          subtitle: 'Show nearby spots and set your homebase',
+          status: _getPermissionGroupStatus([Permission.locationWhenInUse]),
+          isRequired: true,
+          permissions: [Permission.locationWhenInUse],
+        ),
+        const SizedBox(height: 16),
+        _buildPermissionGroup(
+          icon: Icons.bluetooth,
+          title: 'AI Network (Bluetooth)',
+          subtitle: 'Enable your AI to learn from nearby AIs',
+          status: _getPermissionGroupStatus([
+            Permission.bluetooth,
+            Permission.bluetoothScan,
+            Permission.bluetoothConnect,
+            Permission.bluetoothAdvertise,
+          ]),
+          isMandatory: true,
+          permissions: [
+            Permission.bluetooth,
+            Permission.bluetoothScan,
+            Permission.bluetoothConnect,
+            Permission.bluetoothAdvertise,
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildPermissionGroup(
+          icon: Icons.wifi,
+          title: 'Enhanced Discovery (WiFi)',
+          subtitle: 'Improve AI network connectivity',
+          status: _getPermissionGroupStatus([Permission.nearbyWifiDevices]),
+          isMandatory: true,
+          permissions: [Permission.nearbyWifiDevices],
+        ),
+        const SizedBox(height: 16),
+        _buildPermissionGroup(
+          icon: Icons.my_location,
+          title: 'Background Location',
+          subtitle: 'Get proactive recommendations even when app is closed',
+          status: _getPermissionGroupStatus([Permission.locationAlways]),
+          isRecommended: true,
+          permissions: [Permission.locationAlways],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusActionsSection() {
     final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'Enable Your AI',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'avrai needs a few permissions to personalize your experience and connect you with the AI network.',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Privacy Card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primaryLight.withValues(alpha: 0.3),
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_hasCheckedPermissions)
+          AppSurface(
+            borderColor:
+                _isLocationGranted ? AppColors.success : AppColors.warning,
             child: Row(
               children: [
-                Icon(Icons.shield, color: AppColors.primary),
+                Icon(
+                  _isLocationGranted ? Icons.check_circle : Icons.info_outline,
+                  color: _isLocationGranted
+                      ? AppColors.success
+                      : AppColors.warning,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Your Privacy is Protected',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'All AI learning happens on-device. Your personal data is never shared.',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    _isLocationGranted
+                        ? (_isAI2AIFullyGranted
+                            ? 'All permissions granted. Your AI is ready!'
+                            : 'Location granted. AI network may have limited connectivity.')
+                        : 'Location access is required to continue.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _isLocationGranted
+                          ? AppColors.success
+                          : AppColors.warning,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 32),
-
-          // Permission Groups
-          _buildPermissionGroup(
-            context: context,
-            icon: Icons.location_on,
-            title: 'Location Access',
-            subtitle: 'Show nearby spots and set your homebase',
-            status: _getPermissionGroupStatus([Permission.locationWhenInUse]),
-            isRequired: true,
-            permissions: [Permission.locationWhenInUse],
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildPermissionGroup(
-            context: context,
-            icon: Icons.bluetooth,
-            title: 'AI Network (Bluetooth)',
-            subtitle: 'Enable your AI to learn from nearby AIs',
-            status: _getPermissionGroupStatus([
-              Permission.bluetooth,
-              Permission.bluetoothScan,
-              Permission.bluetoothConnect,
-              Permission.bluetoothAdvertise,
-            ]),
-            isRequired: false,
-            isMandatory: true,
-            permissions: [
-              Permission.bluetooth,
-              Permission.bluetoothScan,
-              Permission.bluetoothConnect,
-              Permission.bluetoothAdvertise,
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildPermissionGroup(
-            context: context,
-            icon: Icons.wifi,
-            title: 'Enhanced Discovery (WiFi)',
-            subtitle: 'Improve AI network connectivity',
-            status: _getPermissionGroupStatus([Permission.nearbyWifiDevices]),
-            isRequired: false,
-            isMandatory: true,
-            permissions: [Permission.nearbyWifiDevices],
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildPermissionGroup(
-            context: context,
-            icon: Icons.my_location,
-            title: 'Background Location',
-            subtitle: 'Get proactive recommendations even when app is closed',
-            status: _getPermissionGroupStatus([Permission.locationAlways]),
-            isRequired: false,
-            isRecommended: true,
-            permissions: [Permission.locationAlways],
-          ),
-
-          const SizedBox(height: 32),
-
-          // Cross-App AI Learning Sources Section
-          _buildCrossAppConsentSection(context),
-
-          const SizedBox(height: 32),
-
-          // Status Summary
-          if (_hasCheckedPermissions)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _isLocationGranted
-                    ? AppColors.success.withValues(alpha: 0.1)
-                    : AppColors.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _isLocationGranted
-                      ? AppColors.success
-                      : AppColors.warning,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _isLocationGranted
-                        ? Icons.check_circle
-                        : Icons.info_outline,
-                    color: _isLocationGranted
-                        ? AppColors.success
-                        : AppColors.warning,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _isLocationGranted
-                          ? (_isAI2AIFullyGranted
-                              ? 'All permissions granted. Your AI is ready!'
-                              : 'Location granted. AI network may have limited connectivity.')
-                          : 'Location access is required to continue.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: _isLocationGranted
-                            ? AppColors.success
-                            : AppColors.warning,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
+        if (_hasCheckedPermissions &&
+            _isLocationGranted &&
+            !_isAI2AIFullyGranted)
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceMuted,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.warning.withValues(alpha: 0.35),
               ),
             ),
-
-          if (_hasCheckedPermissions &&
-              _isLocationGranted &&
-              !_isAI2AIFullyGranted)
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: AppColors.warning.withValues(alpha: 0.35)),
-              ),
-              child: Semantics(
-                label: 'AI2AI permissions guidance',
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.info_outline, color: AppColors.warning),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'You can continue with location access, but AI2AI discovery may be limited until Bluetooth and WiFi permissions are granted.',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          height: 1.35,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          const SizedBox(height: 24),
-
-          // Action Buttons
-          if (!_isLocationGranted || !_isAI2AIFullyGranted)
-            Semantics(
-              button: true,
-              label: 'Enable all required permissions',
-              hint:
-                  'Requests location, Bluetooth, and WiFi permissions for AI2AI functionality.',
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _requestAllPermissions,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.security),
-                  label: Text(
-                      _isLoading ? 'Requesting...' : 'Enable All Permissions'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    minimumSize: const Size(48, 48),
-                  ),
-                ),
-              ),
-            ),
-
-          const SizedBox(height: 12),
-
-          Semantics(
-            button: true,
-            label: 'Open system settings for permissions',
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: _openSettings,
-                icon: const Icon(Icons.settings),
-                label: const Text('Open System Settings'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  minimumSize: const Size(48, 48),
-                ),
-              ),
-            ),
-          ),
-
-          // Platform-specific note
-          if (Platform.isMacOS || Platform.isIOS)
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
+            child: Semantics(
+              label: 'AI2AI permissions guidance',
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline, color: AppColors.warning),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      Platform.isMacOS
-                          ? 'On macOS, Bluetooth and WiFi permissions may require configuration in System Settings > Privacy & Security.'
-                          : 'Some permissions may require configuration in Settings > Privacy.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontStyle: FontStyle.italic,
+                      'You can continue with location access, but AI2AI discovery may be limited until Bluetooth and WiFi permissions are granted.',
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        height: 1.35,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-        ],
-      ),
+          ),
+        const SizedBox(height: 24),
+        if (!_isLocationGranted || !_isAI2AIFullyGranted)
+          Semantics(
+            button: true,
+            label: 'Enable all required permissions',
+            hint:
+                'Requests location, Bluetooth, and WiFi permissions for AI2AI functionality.',
+            child: SizedBox(
+              width: double.infinity,
+              child: AppButtonPrimary(
+                onPressed: _isLoading ? null : _requestAllPermissions,
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Enable All Permissions'),
+              ),
+            ),
+          ),
+        const SizedBox(height: 12),
+        Semantics(
+          button: true,
+          label: 'Open system settings for permissions',
+          child: SizedBox(
+            width: double.infinity,
+            child: AppButtonSecondary(
+              onPressed: _openSettings,
+              child: const Text('Open System Settings'),
+            ),
+          ),
+        ),
+        if (Platform.isMacOS || Platform.isIOS)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    Platform.isMacOS
+                        ? 'On macOS, Bluetooth and WiFi permissions may require configuration in System Settings > Privacy & Security.'
+                        : 'Some permissions may require configuration in Settings > Privacy.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
   Widget _buildPermissionGroup({
-    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -668,16 +576,16 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
       padding: EdgeInsets.zero,
       borderColor: status == _PermissionGroupStatus.granted
           ? AppColors.success.withValues(alpha: 0.5)
-          : AppColors.grey300,
+          : AppColors.borderSubtle,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primaryLight.withValues(alpha: 0.2),
+            color: AppColors.surfaceMuted,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: AppColors.primary),
+          child: Icon(icon, color: AppColors.textSecondary),
         ),
         title: Row(
           children: [
@@ -771,90 +679,45 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
   }
 
   Widget _buildCrossAppConsentSection(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section Header
-        Row(
-          children: [
-            Icon(Icons.apps, color: AppColors.primary, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              'AI Learning Sources',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                'Optional',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.grey600,
-                ),
-              ),
+    return AppSurface(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _buildConsentToggle(
+            context: context,
+            source: CrossAppDataSource.calendar,
+            icon: Icons.calendar_today,
+            title: 'Calendar',
+            subtitle: 'Learn from your schedule and event types',
+          ),
+          const Divider(height: 1),
+          _buildConsentToggle(
+            context: context,
+            source: CrossAppDataSource.health,
+            icon: Icons.favorite,
+            title: 'Health & Fitness',
+            subtitle: 'Understand your activity and energy levels',
+          ),
+          const Divider(height: 1),
+          _buildConsentToggle(
+            context: context,
+            source: CrossAppDataSource.media,
+            icon: Icons.music_note,
+            title: 'Music & Media',
+            subtitle: 'Detect your mood from what you listen to',
+          ),
+          if (Platform.isAndroid) ...[
+            const Divider(height: 1),
+            _buildConsentToggle(
+              context: context,
+              source: CrossAppDataSource.appUsage,
+              icon: Icons.phone_android,
+              title: 'App Usage',
+              subtitle: 'Learn from your app usage patterns',
             ),
           ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Your AI can learn from these sources to better understand your preferences. All processing happens on-device.',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Cross-App Consent Toggles
-        AppSurface(
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              _buildConsentToggle(
-                context: context,
-                source: CrossAppDataSource.calendar,
-                icon: Icons.calendar_today,
-                title: 'Calendar',
-                subtitle: 'Learn from your schedule and event types',
-              ),
-              const Divider(height: 1),
-              _buildConsentToggle(
-                context: context,
-                source: CrossAppDataSource.health,
-                icon: Icons.favorite,
-                title: 'Health & Fitness',
-                subtitle: 'Understand your activity and energy levels',
-              ),
-              const Divider(height: 1),
-              _buildConsentToggle(
-                context: context,
-                source: CrossAppDataSource.media,
-                icon: Icons.music_note,
-                title: 'Music & Media',
-                subtitle: 'Detect your mood from what you listen to',
-              ),
-              // App Usage - Android only
-              if (Platform.isAndroid) ...[
-                const Divider(height: 1),
-                _buildConsentToggle(
-                  context: context,
-                  source: CrossAppDataSource.appUsage,
-                  icon: Icons.phone_android,
-                  title: 'App Usage',
-                  subtitle: 'Learn from your app usage patterns',
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -873,14 +736,12 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isEnabled
-              ? AppColors.primaryLight.withValues(alpha: 0.2)
-              : AppColors.grey200,
+          color: isEnabled ? AppColors.surfaceMuted : AppColors.grey200,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           icon,
-          color: isEnabled ? AppColors.primary : AppColors.grey500,
+          color: isEnabled ? AppColors.textPrimary : AppColors.grey500,
           size: 20,
         ),
       ),
@@ -900,7 +761,7 @@ class _CombinedPermissionsPageState extends State<CombinedPermissionsPage> {
       trailing: Switch.adaptive(
         value: isEnabled,
         onChanged: (value) => _handleCrossAppConsentChange(source, value),
-        activeTrackColor: AppColors.primary,
+        activeTrackColor: AppColors.textPrimary,
       ),
     );
   }

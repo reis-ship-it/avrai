@@ -4,7 +4,7 @@ import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/spots/spots_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class EditSpotPage extends StatefulWidget {
@@ -230,7 +230,7 @@ class _EditSpotPageState extends State<EditSpotPage> {
           }
         }
       },
-      child: AdaptivePlatformPageScaffold(
+      child: AppFlowScaffold(
         title: 'Edit Spot',
         actions: [
           PopupMenuButton<String>(

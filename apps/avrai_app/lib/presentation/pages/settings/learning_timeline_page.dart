@@ -5,8 +5,10 @@ import 'package:avrai_core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
 import 'package:avrai_runtime_os/services/cross_app/cross_app_learning_insight_service.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/learning_timeline_page_schema.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
 
 /// Page displaying the timeline of cross-app learning events
 ///
@@ -57,25 +59,26 @@ class _LearningTimelinePageState extends State<LearningTimelinePage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Learning Timeline',
-      constrainBody: false,
-      body: Column(
-        children: [
-          // Filter chips
-          _buildFilterChips(isDark, textTheme),
-          const Divider(height: 1),
+    final content = _isLoading
+        ? const AppLoadingState(label: 'Loading learning timeline')
+        : Column(
+            children: [
+              // Filter chips
+              _buildFilterChips(isDark, textTheme),
+              const Divider(height: 1),
 
-          // Timeline
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _insights.isEmpty
+              // Timeline
+              Expanded(
+                child: _insights.isEmpty
                     ? _buildEmptyState(isDark, textTheme)
                     : _buildTimeline(isDark, textTheme),
-          ),
-        ],
-      ),
+              ),
+            ],
+          );
+
+    return AppSchemaPage(
+      schema: buildLearningTimelinePageSchema(content: content),
+      scrollable: false,
     );
   }
 

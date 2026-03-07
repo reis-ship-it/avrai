@@ -15,7 +15,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/pages/chat/agent_chat_view.dart';
 import 'package:avrai/presentation/pages/chat/friends_chat_list_view.dart';
 import 'package:avrai/presentation/pages/chat/communities_chat_list_view.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class UnifiedChatPage extends StatefulWidget {
   final int initialTabIndex;
@@ -53,7 +53,7 @@ class _UnifiedChatPageState extends State<UnifiedChatPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Chat',
       constrainBody: false,
       appBarBackgroundColor: AppTheme.primaryColor,

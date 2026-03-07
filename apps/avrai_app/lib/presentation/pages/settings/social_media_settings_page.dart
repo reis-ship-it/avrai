@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/social_media_settings_page_schema.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 
@@ -47,63 +47,53 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Social Media Connections',
-      constrainBody: false,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AppSurface(
-              child: AppPageHeader(
-                title: 'Social Media Connections',
-                subtitle:
-                    'Connect or disconnect public accounts used for profile enrichment and friend discovery.',
-                leadingIcon: Icons.hub_outlined,
-                showDivider: false,
-              ),
-            ),
-            const SizedBox(height: 16),
-            AppSurface(
-              padding: EdgeInsets.zero,
-              child: InkWell(
-                onTap: () => context.go('/friends/discover'),
-                child: const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Icon(Icons.people_outline),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Find Friends on AVRAI',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Discover people you already know through connected public accounts.',
-                            ),
-                          ],
+    return AppSchemaPage(
+      schema: buildSocialMediaSettingsPageSchema(
+        content: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSurface(
+                padding: EdgeInsets.zero,
+                child: InkWell(
+                  onTap: () => context.go('/friends/discover'),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.people_outline),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Find Friends on AVRAI',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Discover people you already know through connected public accounts.',
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(Icons.chevron_right),
-                    ],
+                        Icon(Icons.chevron_right),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const AppSection(
-              title: 'Connected Platforms',
-              subtitle: 'Manage which services AVRAI can reference.',
-              child: SizedBox.shrink(),
-            ),
-            Expanded(
-              child: ListView(
+              const SizedBox(height: 24),
+              const AppSection(
+                title: 'Connected Platforms',
+                subtitle: 'Manage which services AVRAI can reference.',
+                child: SizedBox.shrink(),
+              ),
+              ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 children: _connectedPlatforms.entries.map((entry) {
                   final platform = entry.key;
                   final isConnected = entry.value;
@@ -152,17 +142,18 @@ class _SocialMediaSettingsPageState extends State<SocialMediaSettingsPage> {
                   );
                 }).toList(),
               ),
-            ),
-            const SizedBox(height: 16),
-            const AppInfoBanner(
-              title: 'Privacy & Data Usage',
-              body:
-                  'Connected account data is used only for profile enrichment and friend discovery. You can disconnect at any time.',
-              icon: Icons.privacy_tip_outlined,
-            ),
-          ],
+              const SizedBox(height: 16),
+              const AppInfoBanner(
+                title: 'Privacy & Data Usage',
+                body:
+                    'Connected account data is used only for profile enrichment and friend discovery. You can disconnect at any time.',
+                icon: Icons.privacy_tip_outlined,
+              ),
+            ],
+          ),
         ),
       ),
+      scrollable: false,
     );
   }
 

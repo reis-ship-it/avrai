@@ -6,7 +6,7 @@ import 'package:avrai_runtime_os/controllers/event_creation_controller.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:get_it/get_it.dart';
 
 /// Community Event Creation Form Page
@@ -363,7 +363,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
   @override
   Widget build(BuildContext context) {
     if (_currentUser == null && _error == null) {
-      return AdaptivePlatformPageScaffold(
+      return AppFlowScaffold(
         title: 'Create Community Event',
         constrainBody: false,
         backgroundColor: AppColors.background,
@@ -373,7 +373,7 @@ class _CreateCommunityEventPageState extends State<CreateCommunityEventPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create Community Event',
       constrainBody: false,
       backgroundColor: AppColors.background,

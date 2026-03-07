@@ -4,7 +4,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/payment/checkout_page.dart';
 import 'package:avrai/presentation/pages/events/event_details_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Payment Failure Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -78,7 +78,7 @@ class PaymentFailurePage extends StatelessWidget {
     final userFriendlyMessage = _getUserFriendlyMessage();
     final supportMessage = _getSupportMessage();
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Payment Failed',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppColors.error,

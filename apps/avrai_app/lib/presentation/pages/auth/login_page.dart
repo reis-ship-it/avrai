@@ -8,7 +8,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/pages/auth/forgot_password_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Sign In',
       showNavigationBar: false,
       constrainBody: false,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class AppPageScaffold extends StatelessWidget {
   final String title;
@@ -29,9 +29,10 @@ class AppPageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: title,
       actions: actions,
+      scrollable: false,
       constrainBody: constrainBody,
       showNavigationBar: showNavigationBar,
       body: scrollable
@@ -59,7 +60,7 @@ class AppPageScaffold extends StatelessWidget {
                     subtitle: subtitle,
                     leadingIcon: leadingIcon,
                   ),
-                  child,
+                  Expanded(child: child),
                 ],
               ),
             ),

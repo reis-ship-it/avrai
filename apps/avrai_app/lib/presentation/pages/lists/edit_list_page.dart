@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai_core/models/misc/list.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class EditListPage extends StatefulWidget {
@@ -162,7 +162,7 @@ class _EditListPageState extends State<EditListPage> {
           }
         }
       },
-      child: AdaptivePlatformPageScaffold(
+      child: AppFlowScaffold(
         title: 'Edit List',
         actions: [
           PopupMenuButton<String>(
@@ -284,7 +284,7 @@ class _EditListPageState extends State<EditListPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Control who can see your list. Per OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"',
+                        'Control who can see your list. Your visibility choice is always up to you.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppTheme.offlineColor,
                             ),

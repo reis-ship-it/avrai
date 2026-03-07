@@ -15,6 +15,7 @@ import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state
 import 'package:avrai_runtime_os/services/ai_infrastructure/on_device_ai_capability_gate.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
 import 'package:avrai/presentation/pages/onboarding/open_intake_page.dart';
 import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
 import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
@@ -31,7 +32,7 @@ import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_connection_service.dart';
 import 'package:avrai_runtime_os/controllers/onboarding_flow_controller.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 enum OnboardingStepType {
@@ -173,7 +174,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           _goBack();
         }
       },
-      child: AdaptivePlatformPageScaffold(
+      child: AppFlowScaffold(
         title: '',
         automaticallyImplyLeading: true,
         constrainBody: false,
@@ -329,7 +330,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       child: Row(
         children: [
           Expanded(
-            child: ElevatedButton(
+            child: AppButtonPrimary(
               key: const Key('onboarding_primary_cta'),
               onPressed: _isCompleting
                   ? null

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/widgets/common/app_filter_chip.dart';
+import 'package:avrai/presentation/schemas/pages/preference_survey_page_schema.dart';
 
 class PreferenceSurveyPage extends StatefulWidget {
   final Map<String, List<String>> preferences;
@@ -172,129 +174,110 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'What do you love?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Select your preferences to help us find the perfect spots for you.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
-          ),
-          const SizedBox(height: 24),
-
-          // Progress indicator with 15 goal
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Select 15 preferences (recommended)',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  Text(
-                    '${_getSelectedCount()}/15',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: _getSelectedCount() / 15.0,
-                backgroundColor: AppColors.grey300,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${_getSelectedCount()} preferences selected',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.grey600,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Search field
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search preferences...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchQuery = '';
-                        });
-                      },
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.grey300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppTheme.primaryColor, width: 2),
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
-            },
-          ),
-          const SizedBox(height: 24),
-
-          // Categories
-          Expanded(
-            child: ListView.builder(
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories.keys.elementAt(index);
-                final options = _categories[category]!;
-
-                // Filter options based on search
-                final filteredOptions = _searchQuery.isEmpty
-                    ? options
-                    : options
-                        .where((option) =>
-                            option.toLowerCase().contains(_searchQuery))
-                        .toList();
-
-                if (_searchQuery.isNotEmpty && filteredOptions.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-
-                return _buildCategorySection(category, filteredOptions);
-              },
-            ),
-          ),
-        ],
+    return AppSchemaPage(
+      schema: buildPreferenceSurveyPageSchema(
+        summarySection: _buildSummarySection(context),
+        searchSection: _buildSearchSection(),
+        categoriesSection: _buildCategoriesSection(),
       ),
+      padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildSummarySection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${_getSelectedCount()} of 15 selected',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            Text(
+              '${_getSelectedCount()}/15',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: _getSelectedCount() / 15.0,
+          backgroundColor: AppColors.borderSubtle,
+          valueColor:
+              const AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${_getSelectedCount()} preferences selected',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchSection() {
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Search preferences...',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _searchQuery = '';
+                  });
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.textPrimary, width: 2),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value.toLowerCase();
+        });
+      },
+    );
+  }
+
+  Widget _buildCategoriesSection() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _categories.length,
+      itemBuilder: (context, index) {
+        final category = _categories.keys.elementAt(index);
+        final options = _categories[category]!;
+        final filteredOptions = _searchQuery.isEmpty
+            ? options
+            : options
+                .where((option) => option.toLowerCase().contains(_searchQuery))
+                .toList();
+
+        if (_searchQuery.isNotEmpty && filteredOptions.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return _buildCategorySection(category, filteredOptions);
+      },
     );
   }
 
@@ -320,29 +303,25 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
           children: [
             Icon(
               _getCategoryIcon(category),
-              color: AppTheme.primaryColor,
+              color: AppColors.textSecondary,
               size: 20,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 category,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             if (selectedOptions.isNotEmpty)
-              Container(
+              AppSurface(
+                radius: 12,
+                color: AppColors.surfaceMuted,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: Text(
                   '${selectedOptions.length}',
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -358,12 +337,12 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
               runSpacing: 8,
               children: options.map((option) {
                 final isSelected = selectedOptions.contains(option);
-                return FilterChip(
-                  label: Text(option),
+                return AppFilterChip(
+                  label: option,
                   selected: isSelected,
-                  onSelected: (selected) {
+                  onTap: () {
                     setState(() {
-                      if (selected) {
+                      if (!isSelected) {
                         if (!selectedOptions.contains(option)) {
                           selectedOptions.add(option);
                         }
@@ -374,13 +353,6 @@ class _PreferenceSurveyPageState extends State<PreferenceSurveyPage> {
                       widget.onPreferencesChanged(_preferences);
                     });
                   },
-                  selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  checkmarkColor: AppTheme.primaryColor,
-                  labelStyle: TextStyle(
-                    color: isSelected ? AppTheme.primaryColor : null,
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.normal,
-                  ),
                 );
               }).toList(),
             ),

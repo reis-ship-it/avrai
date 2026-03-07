@@ -8,11 +8,9 @@ import 'package:avrai_runtime_os/controllers/event_creation_controller.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/events/event_published_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:get_it/get_it.dart';
 
-/// OUR_GUTS.md: "The key opens doors to events"
-/// Easy Event Hosting - Phase 2: Quick Event Builder
 /// Philosophy: 5-7 minutes → 30 seconds (Instagram Stories-like creation)
 class QuickEventBuilderPage extends StatefulWidget {
   final UnifiedUser currentUser;
@@ -96,7 +94,7 @@ class _QuickEventBuilderPageState extends State<QuickEventBuilderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create Event',
       constrainBody: false,
       backgroundColor: AppColors.background,

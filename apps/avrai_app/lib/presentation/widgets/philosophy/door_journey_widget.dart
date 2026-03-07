@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_core/models/user/usage_pattern.dart';
 
-/// OUR_GUTS.md: "See your door journey"
 /// Shows which doors user has opened (spots → communities → events)
 class DoorJourneyWidget extends StatelessWidget {
   final UsagePattern usagePattern;

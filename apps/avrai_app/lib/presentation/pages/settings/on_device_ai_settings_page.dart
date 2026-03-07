@@ -28,12 +28,11 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
 import 'package:avrai_runtime_os/ml/model_version_registry.dart';
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/on_device_ai_settings_page_schema.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OnDeviceAiSettingsPage extends StatefulWidget {
@@ -180,53 +179,36 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'On-Device AI',
-      constrainBody: false,
-      body: _loading
-          ? const AppLoadingState(label: 'Loading on-device AI settings')
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                const AppSurface(
-                  child: AppPageHeader(
-                    title: 'On-Device AI',
-                    subtitle:
-                        'Review device eligibility, local model installation, and offline AI controls in one place.',
-                    leadingIcon: Icons.memory_outlined,
-                    showDivider: false,
-                  ),
+    final content = _loading
+        ? const AppLoadingState(label: 'Loading on-device AI settings')
+        : ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (_error != null)
+                _buildInfoCard(
+                  title: 'Error',
+                  body: _error!,
+                  icon: Icons.error_outline,
+                  iconColor: AppColors.error,
                 ),
-                const SizedBox(height: 16),
-                const AppInfoBanner(
-                  title: 'Local-first controls',
-                  body:
-                      'These settings control offline models, local training, and safety checks without relying on a branded visual system.',
-                  icon: Icons.shield_outlined,
-                ),
-                const SizedBox(height: 12),
-                if (_error != null)
-                  _buildInfoCard(
-                    title: 'Error',
-                    body: _error!,
-                    icon: Icons.error_outline,
-                    iconColor: AppColors.error,
-                  ),
-                AppSection(title: 'Model Health', child: _buildHappinessCard()),
-                const SizedBox(height: 12),
-                AppSection(
-                  title: 'Device Capability',
-                  child: _buildCapabilityCard(),
-                ),
-                const SizedBox(height: 12),
-                AppSection(
-                    title: 'Model Safety', child: _buildModelSafetyCard()),
-                const SizedBox(height: 12),
-                AppSection(title: 'Offline Mode', child: _buildTogglesCard()),
-                const SizedBox(height: 12),
-                AppSection(title: 'Notes', child: _buildNotesCard()),
-              ],
-            ),
+              AppSection(title: 'Model Health', child: _buildHappinessCard()),
+              const SizedBox(height: 12),
+              AppSection(
+                  title: 'Device Capability', child: _buildCapabilityCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Model Safety', child: _buildModelSafetyCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Offline Mode', child: _buildTogglesCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Notes', child: _buildNotesCard()),
+            ],
+          );
+
+    return AppSchemaPage(
+      schema: buildOnDeviceAISettingsPageSchema(
+        content: content,
+      ),
+      scrollable: false,
     );
   }
 

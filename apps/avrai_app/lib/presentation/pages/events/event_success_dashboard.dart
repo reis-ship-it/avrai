@@ -9,7 +9,7 @@ import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dar
 import 'package:avrai_runtime_os/services/payment/payment_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Event Success Dashboard
 ///
@@ -85,7 +85,7 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Event Success Dashboard',
       constrainBody: false,
       backgroundColor: AppColors.background,

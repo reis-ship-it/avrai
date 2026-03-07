@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_empty_state.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/linked_devices_page_schema.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/crypto/signal/device_registration_service.dart';
 
@@ -50,22 +52,19 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Linked Devices',
+    return AppSchemaPage(
+      schema: buildLinkedDevicesPageSchema(
+        content: _isLoading
+            ? const AppLoadingState(label: 'Loading linked devices')
+            : _buildBody(),
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadDevices,
         ),
       ],
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _buildBody(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showLinkDeviceOptions(context),
-        icon: const Icon(Icons.add_link),
-        label: const Text('Link Device'),
-      ),
+      scrollable: false,
     );
   }
 
@@ -75,16 +74,6 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const AppSurface(
-              child: AppPageHeader(
-                title: 'Linked Devices',
-                subtitle:
-                    'Review the devices connected to your account and add new ones when needed.',
-                leadingIcon: Icons.devices_outlined,
-                showDivider: false,
-              ),
-            ),
-            const SizedBox(height: 16),
             const AppInfoBanner(
               title: 'Device sync',
               body:
@@ -92,11 +81,17 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
               icon: Icons.sync_outlined,
             ),
             const SizedBox(height: 24),
-            const Expanded(
-              child: AppEmptyState(
-                title: 'No devices linked',
-                body: 'Link a device to sync your data across platforms.',
-                icon: Icons.devices_outlined,
+            const AppEmptyState(
+              title: 'No devices linked',
+              body: 'Link a device to sync your data across platforms.',
+              icon: Icons.devices_outlined,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: AppButtonPrimary(
+                onPressed: () => _showLinkDeviceOptions(context),
+                child: const Text('Link Device'),
               ),
             ),
           ],
@@ -109,16 +104,6 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const AppSurface(
-          child: AppPageHeader(
-            title: 'Linked Devices',
-            subtitle:
-                'Review the devices connected to your account and remove old access when needed.',
-            leadingIcon: Icons.devices_outlined,
-            showDivider: false,
-          ),
-        ),
-        const SizedBox(height: 16),
         const AppInfoBanner(
           title: 'Device access',
           body:
@@ -135,6 +120,14 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
           ),
           const SizedBox(height: 12),
         ],
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: AppButtonPrimary(
+            onPressed: () => _showLinkDeviceOptions(context),
+            child: const Text('Link Device'),
+          ),
+        ),
       ],
     );
   }

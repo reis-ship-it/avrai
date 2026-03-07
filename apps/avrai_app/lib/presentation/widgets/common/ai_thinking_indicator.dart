@@ -1,15 +1,6 @@
 /// AI Thinking Indicator Widget
 ///
-/// Part of Feature Matrix Phase 1.3: LLM Full Integration
-/// Provides visual feedback while LLM is processing requests.
-///
-/// Features:
-/// - Animated thinking indicator
-/// - Context loading states (personality, vibe, AI2AI insights)
-/// - Optional "what AI is considering" visibility
-/// - Timeout handling with helpful messages
-///
-/// Uses AppColors and AppTheme for consistent styling per design token requirements.
+/// Provides visual feedback while AI processing is in progress.
 library;
 
 import 'package:flutter/material.dart';
@@ -111,10 +102,10 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
+        color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          color: AppColors.borderSubtle,
           width: 1,
         ),
       ),
@@ -165,10 +156,10 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          color: AppColors.borderSubtle,
         ),
       ),
       child: Row(
@@ -181,7 +172,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.primary,
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -198,16 +189,16 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
           child: Container(
             padding: EdgeInsets.all(size * 0.25),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.16),
+              color: AppColors.surfaceMuted,
               border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.24),
+                color: AppColors.borderSubtle,
               ),
               shape: BoxShape.circle,
             ),
             child: Icon(
               _getStageIcon(),
               size: size,
-              color: AppColors.primary,
+              color: AppColors.textSecondary,
             ),
           ),
         );
@@ -226,7 +217,8 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
             value: progress,
             minHeight: 6,
             backgroundColor: AppColors.grey200,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+            valueColor:
+                const AlwaysStoppedAnimation<Color>(AppColors.textSecondary),
           ),
         ),
         const SizedBox(height: 8),
@@ -245,7 +237,7 @@ class _AIThinkingIndicatorState extends State<AIThinkingIndicator>
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.textPrimary,
               ),
             ),
           ],
@@ -385,7 +377,7 @@ class AIThinkingDots extends StatefulWidget {
 
   const AIThinkingDots({
     super.key,
-    this.color = AppColors.primary,
+    this.color = AppColors.textSecondary,
     this.size = 8.0,
   });
 
