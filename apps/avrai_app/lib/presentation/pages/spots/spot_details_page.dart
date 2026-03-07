@@ -25,7 +25,7 @@ import 'package:avrai_runtime_os/services/reservation/reservation_service.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_availability_service.dart';
 import 'package:avrai/presentation/pages/reservations/create_reservation_page.dart';
 import 'package:avrai/presentation/widgets/reservations/spot_reservation_badge_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class SpotDetailsPage extends StatefulWidget {
@@ -206,7 +206,7 @@ class _SpotDetailsPageState extends State<SpotDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: widget.spot.name,
       actions: [
         IconButton(

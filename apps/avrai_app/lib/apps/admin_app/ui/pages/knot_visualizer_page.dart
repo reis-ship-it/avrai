@@ -13,7 +13,7 @@ import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_pattern_analy
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_matching_tab.dart';
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_evolution_tab.dart';
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer/knot_debug_tab.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Admin Knot Visualizer Page
 ///
@@ -71,14 +71,14 @@ class _KnotVisualizerPageState extends State<KnotVisualizerPage>
   @override
   Widget build(BuildContext context) {
     if (!_isAuthorized) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: '',
         showNavigationBar: false,
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Knot Visualizer',
       materialBottom: TabBar(
         controller: _tabController,

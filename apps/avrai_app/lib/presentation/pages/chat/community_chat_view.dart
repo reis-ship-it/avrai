@@ -23,7 +23,7 @@ import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
 import 'package:avrai/presentation/widgets/chat/message_search_bar.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class CommunityChatView extends StatefulWidget {
   final String communityId;
@@ -344,7 +344,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Community Chat',
         showNavigationBar: false,
         constrainBody: false,
@@ -356,7 +356,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
 
     final communityName = _community?.name ?? widget.communityId;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: communityName,
       constrainBody: false,
       titleWidget: Row(

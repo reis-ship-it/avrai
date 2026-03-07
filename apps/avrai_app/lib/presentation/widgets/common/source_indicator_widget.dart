@@ -14,7 +14,6 @@ IconData _resolveSourceIcon(int codePoint) {
 }
 
 /// Widget to display source indicator badge for data transparency
-/// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Users must know data sources
 class SourceIndicatorWidget extends StatelessWidget {
   final SourceIndicator indicator;
   final bool showWarning;

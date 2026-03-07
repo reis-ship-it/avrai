@@ -10,7 +10,7 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/apps/admin_app/ui/pages/knot_visualizer_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/realtime_agent_globe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -268,7 +268,7 @@ class _RealitySystemOversightPageState
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: '${_layerLabel(widget.layer)} Oversight',
       actions: [
         IconButton(

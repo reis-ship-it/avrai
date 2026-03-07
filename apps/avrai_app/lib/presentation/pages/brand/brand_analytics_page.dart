@@ -7,7 +7,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/brand/roi_chart_widget.dart';
 import 'package:avrai/presentation/widgets/brand/performance_metrics_widget.dart';
 import 'package:avrai/presentation/widgets/brand/brand_exposure_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Brand Analytics Page
@@ -121,7 +121,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Brand Analytics',
         backgroundColor: AppColors.background,
         appBarBackgroundColor: AppTheme.primaryColor,
@@ -133,7 +133,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
     }
 
     if (_analytics == null) {
-      return AdaptivePlatformPageScaffold(
+      return AppFlowScaffold(
         title: 'Brand Analytics',
         backgroundColor: AppColors.background,
         appBarBackgroundColor: AppTheme.primaryColor,
@@ -172,7 +172,7 @@ class _BrandAnalyticsPageState extends State<BrandAnalyticsPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Brand Analytics',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

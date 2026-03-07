@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/pages/chat/agent_chat_view.dart';
 import 'package:avrai/presentation/services/metro_experience_service.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
@@ -54,7 +54,7 @@ class _WorldModelAiPageState extends State<WorldModelAiPage> {
           'Remember this about me',
         ];
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'AI',
       constrainBody: false,
       body: Column(

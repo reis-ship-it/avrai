@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:avrai/apps/admin_app/navigation/admin_route_paths.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/admin/signature_health_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/signature_health_category.dart';
@@ -103,7 +103,7 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Signature + Source Health',
       actions: [
         IconButton(
@@ -191,6 +191,8 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
           ),
           const SizedBox(height: 12),
           _buildFeedbackIntentSection(context, snapshot),
+          const SizedBox(height: 12),
+          _buildFeedbackTrendSection(context, snapshot),
           const SizedBox(height: 12),
           _buildRouteCard(
             context,
@@ -353,6 +355,64 @@ class _SignatureSourceHealthPageState extends State<SignatureSourceHealthPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildFeedbackTrendSection(
+    BuildContext context,
+    SignatureHealthSnapshot snapshot,
+  ) {
+    final trendRows = snapshot.buildFeedbackTrendRows();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Feedback trend by entity type',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Shows where soft passes or hard rejections are clustering across the last 24 hours, 7 days, and 30 days.',
+            ),
+            if (trendRows.isEmpty) ...[
+              const SizedBox(height: 12),
+              const Text('No feedback trend data available yet.'),
+            ] else ...[
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Entity type')),
+                    DataColumn(label: Text('24h')),
+                    DataColumn(label: Text('7d')),
+                    DataColumn(label: Text('30d')),
+                  ],
+                  rows: trendRows.take(8).map((row) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(row.entityType)),
+                        for (final window
+                            in SignatureHealthSnapshot.feedbackTrendWindows)
+                          DataCell(
+                            _trendCell(row.countsByWindow[window.label]!),
+                          ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _trendCell(FeedbackTrendCount count) {
+    return Text('${count.softIgnoreCount}/${count.hardNotInterestedCount}');
   }
 
   Widget _buildRecordsTable(List<SignatureHealthRecord> records) {

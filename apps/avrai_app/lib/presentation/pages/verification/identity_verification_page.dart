@@ -9,7 +9,7 @@ import 'package:avrai_runtime_os/services/payment/payment_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Identity Verification Page
 ///
@@ -163,7 +163,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Identity Verification',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

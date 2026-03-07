@@ -7,7 +7,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_visibility_toggle.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnerships Detail Page
@@ -99,7 +99,7 @@ class _PartnershipsPageState extends State<PartnershipsPage> {
   Widget build(BuildContext context) {
     final spacing = context.spacing;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Partnerships',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

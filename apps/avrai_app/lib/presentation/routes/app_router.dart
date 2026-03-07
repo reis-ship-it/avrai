@@ -97,7 +97,7 @@ import 'package:avrai/presentation/pages/reservations/user_reservation_analytics
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
 import 'package:avrai_runtime_os/config/design_feature_flags.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class AppRouter {
   // Route path helpers for legacy Navigator.pushNamed usages
@@ -231,7 +231,7 @@ class AppRouter {
                   future: _loadListById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -240,7 +240,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return ListDetailsPage(list: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'List Not Found',
                       body: Center(
                         child: Text('The requested list could not be found.'),
@@ -258,7 +258,7 @@ class AppRouter {
                   future: _loadSpotById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -267,7 +267,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return SpotDetailsPage(spot: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'Spot Not Found',
                       body: Center(
                         child: Text('The requested spot could not be found.'),
@@ -289,7 +289,7 @@ class AppRouter {
                   future: _loadSpotById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -298,7 +298,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return EditSpotPage(spot: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'Spot Not Found',
                       body: Center(
                         child: Text('The requested spot could not be found.'),
@@ -320,7 +320,7 @@ class AppRouter {
                   future: _loadListById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -329,7 +329,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return EditListPage(list: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'List Not Found',
                       body: Center(
                         child: Text('The requested list could not be found.'),
@@ -746,9 +746,10 @@ class AppRouter {
                   birthday: birthday,
                   age: age,
                   homebase: extra?['homebase'] as String?,
-                  openResponses: (extra?['openResponses'] as Map<String, dynamic>?)
-                          ?.map((k, v) => MapEntry(k, v.toString())) ??
-                      const {},
+                  openResponses:
+                      (extra?['openResponses'] as Map<String, dynamic>?)
+                              ?.map((k, v) => MapEntry(k, v.toString())) ??
+                          const {},
                   // Note: respectedFriends and socialMediaConnected are passed via extras
                   // but AILoadingPage loads data from OnboardingDataService, so these are
                   // primarily for fallback/verification. The page will use saved onboarding data.
@@ -782,7 +783,7 @@ class AppRouter {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     c.go('/knot-discovery', extra: {'userId': userId});
                   });
-                  return const AdaptivePlatformPageScaffold(
+                  return const AppFlowScaffold(
                     title: '',
                     showNavigationBar: false,
                     body: Center(child: CircularProgressIndicator()),
@@ -818,7 +819,7 @@ class AppRouter {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     c.go('/home');
                   });
-                  return const AdaptivePlatformPageScaffold(
+                  return const AppFlowScaffold(
                     title: '',
                     showNavigationBar: false,
                     body: Center(child: CircularProgressIndicator()),

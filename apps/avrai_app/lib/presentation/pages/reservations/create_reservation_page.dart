@@ -25,7 +25,7 @@ import 'package:avrai/presentation/widgets/reservations/waitlist_join_widget.dar
 import 'package:avrai/presentation/widgets/reservations/special_requests_widget.dart';
 import 'package:avrai/presentation/widgets/reservations/reservation_suggestions_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Reservation Creation Page
 /// Phase 15: Reservation System Implementation
@@ -517,7 +517,7 @@ class _CreateReservationPageState extends State<CreateReservationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create Reservation',
       appBarBackgroundColor: AppTheme.primaryColor,
       appBarForegroundColor: AppColors.white,

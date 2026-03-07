@@ -20,7 +20,7 @@ import 'package:avrai/apps/admin_app/ui/widgets/network_3d_visualization_widget.
 import 'package:avrai/apps/admin_app/ui/widgets/network_health_gauge.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/performance_issues_list.dart';
 import 'package:avrai/apps/admin_app/ui/widgets/privacy_compliance_card.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:flutter/material.dart';
@@ -314,7 +314,7 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'AI2AI Network Dashboard',
       appBarBackgroundColor: AppTheme.primaryColor,
       appBarForegroundColor: AppColors.white,

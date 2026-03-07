@@ -32,7 +32,7 @@ import 'package:avrai_runtime_os/services/places/geohash_service.dart';
 import 'package:avrai/presentation/widgets/map/spot_reservation_marker.dart';
 import 'package:avrai/presentation/widgets/map/map_boundary.dart';
 import 'package:avrai/presentation/widgets/map/map_boundary_converter.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'dart:developer' as developer;
 
 class MapView extends StatefulWidget {
@@ -415,11 +415,11 @@ class _MapViewState extends State<MapView> {
 
     try {
       final sl = GetIt.instance;
-      final localityKernel = sl.isRegistered<LocalityKernelContract>()
-          ? sl<LocalityKernelContract>()
+      final whereKernel = sl.isRegistered<WhereKernelContract>()
+          ? sl<WhereKernelContract>()
           : null;
-      if (localityKernel != null) {
-        final resolution = await localityKernel.resolvePoint(
+      if (whereKernel != null) {
+        final resolution = await whereKernel.resolvePoint(
           LocalityPointQuery(
             latitude: lat,
             longitude: lon,
@@ -766,7 +766,7 @@ class _MapViewState extends State<MapView> {
           ]
         : null;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: widget.appBarTitle ?? 'Map',
       showNavigationBar: widget.showAppBar,
       leading: appBarLeading,

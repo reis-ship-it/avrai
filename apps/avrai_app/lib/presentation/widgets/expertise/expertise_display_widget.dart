@@ -11,8 +11,6 @@ import 'package:go_router/go_router.dart';
 
 /// Expertise Display Widget
 /// Displays user's expertise levels and category expertise
-/// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
-///
 /// **Usage Example:**
 /// ```dart
 /// ExpertiseDisplayWidget(

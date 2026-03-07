@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:intl/intl.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Club/Community Detail Page
 /// View detailed information about a club/community and its members with AI agents
@@ -67,7 +67,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: _data?.name ?? 'Club/Community Details',
       actions: [
         IconButton(

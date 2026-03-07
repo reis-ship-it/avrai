@@ -8,7 +8,6 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
 import 'package:avrai/presentation/schemas/pages/privacy_settings_page_schema.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/controllers/sync_controller.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -148,7 +147,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please sign in to enable cloud sync'),
-          backgroundColor: AppTheme.errorColor,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -193,7 +192,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   ? 'Cloud sync enabled. Your profile will stay in sync across devices.'
                   : 'Cloud sync disabled.',
             ),
-            backgroundColor: value ? AppTheme.successColor : AppColors.grey600,
+            backgroundColor: value ? AppColors.success : AppColors.grey600,
           ),
         );
       }
@@ -202,7 +201,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error updating cloud sync: $e'),
-            backgroundColor: AppTheme.errorColor,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -214,7 +213,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please sign in to sync your data'),
-          backgroundColor: AppTheme.errorColor,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -261,14 +260,14 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Sync completed successfully'),
-              backgroundColor: AppTheme.successColor,
+              backgroundColor: AppColors.success,
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Sync failed: ${result.error ?? "Unknown error"}'),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -281,7 +280,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error syncing: $e'),
-            backgroundColor: AppTheme.errorColor,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -387,7 +386,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         content: Text(
           'Data export initiated. You will receive an email with download instructions.',
         ),
-        backgroundColor: AppTheme.successColor,
+        backgroundColor: AppColors.success,
       ),
     );
   }
@@ -413,11 +412,11 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                   content: Text(
                     'Account deletion requires additional verification. Check your email.',
                   ),
-                  backgroundColor: AppTheme.errorColor,
+                  backgroundColor: AppColors.error,
                 ),
               );
             },
-            style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Delete Account'),
           ),
         ],
@@ -481,7 +480,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Privacy settings reset to defaults'),
-                  backgroundColor: AppTheme.successColor,
+                  backgroundColor: AppColors.success,
                 ),
               );
             },

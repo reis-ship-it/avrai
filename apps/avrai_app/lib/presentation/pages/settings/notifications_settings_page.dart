@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
 import 'package:avrai/presentation/schemas/pages/notifications_settings_page_schema.dart';
-import 'package:avrai/theme/app_theme.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({super.key});
@@ -82,7 +82,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Test notification sent. Check your notification panel.'),
-        backgroundColor: AppTheme.successColor,
+        backgroundColor: AppColors.success,
       ),
     );
   }

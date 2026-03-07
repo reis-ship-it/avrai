@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/services/suggested_list_feedback_service.dart';
 import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
@@ -352,24 +350,9 @@ class SuggestedListCard extends StatelessWidget {
   }
 
   Future<void> _recordNegativePreference() async {
-    if (!di.sl.isRegistered<EntitySignatureService>()) {
-      return;
-    }
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null || userId.isEmpty) {
-      return;
-    }
-    await di.sl<EntitySignatureService>().recordNegativePreferenceSignal(
-          userId: userId,
-          title: suggestedList.title,
-          subtitle: suggestedList.description,
-          category: suggestedList.theme,
-          tags: <String>[
-            suggestedList.theme,
-            ...suggestedList.triggerReasons,
-          ],
-          intent: NegativePreferenceIntent.softIgnore,
-          entityType: 'suggested_list',
-        );
+    await commitSuggestedListNegativeFeedback(
+      suggestedList: suggestedList,
+      intent: NegativePreferenceIntent.softIgnore,
+    );
   }
 }

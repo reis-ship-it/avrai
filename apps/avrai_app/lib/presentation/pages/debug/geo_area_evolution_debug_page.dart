@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Debug-only page to inspect `stable_key -> area_id` mapping and dual-city fields.
 class GeoAreaEvolutionDebugPage extends StatefulWidget {
@@ -116,7 +116,7 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
   @override
   Widget build(BuildContext context) {
     if (!kDebugMode) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Geo Area Evolution Debug',
         showNavigationBar: false,
         constrainBody: false,
@@ -126,7 +126,7 @@ class _GeoAreaEvolutionDebugPageState extends State<GeoAreaEvolutionDebugPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Geo Area Evolution Debug',
       appBarBackgroundColor: AppColors.background,
       backgroundColor: AppColors.background,

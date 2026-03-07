@@ -7,7 +7,7 @@ import 'package:avrai/apps/admin_app/ui/pages/god_mode_dashboard_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai_core/models/user/user.dart' show UserRole;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// God-Mode Admin Login Page
 /// Secure login for admin access with god-mode privileges
@@ -159,7 +159,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
         // If user is authenticated but not an admin, show access denied
         if (authState is Authenticated &&
             authState.user.role != UserRole.admin) {
-          return AdaptivePlatformPageScaffold(
+          return AppFlowScaffold(
             title: '',
             backgroundColor: AppColors.grey50,
             appBarBackgroundColor: Colors.transparent,
@@ -217,7 +217,7 @@ class _GodModeLoginPageState extends State<GodModeLoginPage> {
         }
 
         // Show login form (user can be unauthenticated or authenticated admin)
-        return AdaptivePlatformPageScaffold(
+        return AppFlowScaffold(
           title: '',
           backgroundColor: AppColors.grey50,
           appBarBackgroundColor: Colors.transparent,

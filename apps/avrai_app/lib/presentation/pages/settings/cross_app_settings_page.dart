@@ -3,15 +3,15 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/utils/cross_app_ui_extensions.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
 import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/widgets/settings/cross_app_learning_insights_widget.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/cross_app_settings_page_schema.dart';
 import 'package:avrai_core/models/misc/cross_app_learning_insight.dart';
 import 'package:avrai/theme/colors.dart';
 
@@ -72,56 +72,58 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'AI Learning Sources',
-      body: _isLoading
-          ? const AppLoadingState(label: 'Loading cross-app settings')
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 16),
-                const AppInfoBanner(
-                  title: 'Control learning sources',
-                  body:
-                      'Choose which cross-app signals AVRAI can use for local learning and when that learning should pause.',
-                  icon: Icons.psychology_outlined,
-                ),
-                const SizedBox(height: 24),
-                AppSection(
-                  title: 'Data Sources',
-                  child: _buildDataSourceSection(),
-                ),
-                const SizedBox(height: 24),
-                const AppSection(
-                  title: 'Learning Insights',
-                  subtitle:
-                      'Review recent insights learned from connected sources.',
-                  child: CrossAppLearningInsightsWidget(),
-                ),
-                const SizedBox(height: 24),
-                const AppInfoBanner(
-                  title: 'Local processing',
-                  body:
-                      'Connected app signals stay on this device. Use these controls to decide which sources can contribute to local learning.',
-                  icon: Icons.shield_outlined,
-                ),
-                const SizedBox(height: 24),
-                AppSection(
-                  title: 'Quick Actions',
-                  subtitle:
-                      'Enable or disable all supported sources in one step.',
-                  child: _buildQuickActions(),
-                ),
-                const SizedBox(height: 24),
-                AppSection(
-                  title: 'Data Management',
-                  subtitle:
-                      'Pause learning temporarily or clear stored insights.',
-                  child: _buildDataManagementSection(),
-                ),
-              ],
-            ),
+    final content = _isLoading
+        ? const AppLoadingState(label: 'Loading cross-app settings')
+        : ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const AppInfoBanner(
+                title: 'Control learning sources',
+                body:
+                    'Choose which cross-app signals AVRAI can use for local learning and when that learning should pause.',
+                icon: Icons.psychology_outlined,
+              ),
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Data Sources',
+                child: _buildDataSourceSection(),
+              ),
+              const SizedBox(height: 24),
+              const AppSection(
+                title: 'Learning Insights',
+                subtitle:
+                    'Review recent insights learned from connected sources.',
+                child: CrossAppLearningInsightsWidget(),
+              ),
+              const SizedBox(height: 24),
+              const AppInfoBanner(
+                title: 'Local processing',
+                body:
+                    'Connected app signals stay on this device. Use these controls to decide which sources can contribute to local learning.',
+                icon: Icons.shield_outlined,
+              ),
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Quick Actions',
+                subtitle:
+                    'Enable or disable all supported sources in one step.',
+                child: _buildQuickActions(),
+              ),
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Data Management',
+                subtitle:
+                    'Pause learning temporarily or clear stored insights.',
+                child: _buildDataManagementSection(),
+              ),
+            ],
+          );
+
+    return AppSchemaPage(
+      schema: buildCrossAppSettingsPageSchema(
+        content: content,
+      ),
+      scrollable: false,
     );
   }
 
@@ -552,27 +554,6 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
       'Dec'
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-
-  Widget _buildHeader() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return AppSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 12,
-      color: isDark
-          ? AppColors.white.withValues(alpha: 0.08)
-          : AppColors.black.withValues(alpha: 0.04),
-      borderColor: isDark
-          ? AppColors.white.withValues(alpha: 0.12)
-          : AppColors.black.withValues(alpha: 0.08),
-      child: const AppPageHeader(
-        title: 'Cross-App Learning',
-        subtitle:
-            'Your AI can learn from selected activity signals to improve suggestions while keeping processing local.',
-        leadingIcon: Icons.psychology_outlined,
-        showDivider: false,
-      ),
-    );
   }
 
   Widget _buildDataSourceSection() {

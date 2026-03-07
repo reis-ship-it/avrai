@@ -6,7 +6,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -41,7 +41,7 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Sign Up',
       constrainBody: false,
       body: BlocListener<AuthBloc, AuthState>(

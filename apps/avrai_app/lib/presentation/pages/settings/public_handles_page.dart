@@ -6,14 +6,14 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
 import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
 import 'package:avrai/presentation/widgets/common/app_form_field.dart';
-import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/public_handles_page_schema.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 
 /// Public Handles Page
 ///
@@ -261,144 +261,136 @@ class _PublicHandlesPageState extends State<PublicHandlesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Public Profile Analysis',
-      constrainBody: false,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AppSurface(
-              child: AppPageHeader(
-                title: 'Public Profile Analysis',
-                subtitle:
-                    'Optionally provide public handles so AVRAI can analyze public profile signals with your explicit consent.',
-                leadingIcon: Icons.manage_accounts_outlined,
-                showDivider: false,
+    return AppSchemaPage(
+      schema: buildPublicHandlesPageSchema(
+        content: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppInfoBanner(
+                title: 'Consent required',
+                body:
+                    'Public profile analysis is optional. AVRAI only analyzes public posts, bios, and interests after you opt in.',
+                icon: Icons.privacy_tip_outlined,
               ),
-            ),
-            const SizedBox(height: 16),
-            const AppInfoBanner(
-              title: 'Consent required',
-              body:
-                  'Public profile analysis is optional. AVRAI only analyzes public posts, bios, and interests after you opt in.',
-              icon: Icons.privacy_tip_outlined,
-            ),
-            const SizedBox(height: 24),
-            AppSection(
-              title: 'Consent',
-              subtitle:
-                  'Confirm that AVRAI can analyze public profile signals you choose to share.',
-              child: AppSurface(
-                color: AppColors.surfaceMuted,
-                borderColor: _consentGiven
-                    ? AppColors.borderStrong
-                    : AppColors.borderSubtle,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Checkbox(
-                      value: _consentGiven,
-                      onChanged: (value) {
-                        setState(() {
-                          _consentGiven = value ?? false;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'I consent to public profile analysis',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'AVRAI may analyze the public posts, bios, and interests tied to the handles below. You can revoke consent and remove this data at any time.',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: AppColors.textSecondary),
-                          ),
-                        ],
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Consent',
+                subtitle:
+                    'Confirm that AVRAI can analyze public profile signals you choose to share.',
+                child: AppSurface(
+                  color: AppColors.surfaceMuted,
+                  borderColor: _consentGiven
+                      ? AppColors.borderStrong
+                      : AppColors.borderSubtle,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _consentGiven,
+                        onChanged: (value) {
+                          setState(() {
+                            _consentGiven = value ?? false;
+                          });
+                        },
                       ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'I consent to public profile analysis',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'AVRAI may analyze the public posts, bios, and interests tied to the handles below. You can revoke consent and remove this data at any time.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Public Handles',
+                subtitle:
+                    'Enter public usernames without the @ symbol. Leave any field blank if you do not want to use it.',
+                child: Column(
+                  children: [
+                    _buildHandleField(
+                      platform: 'instagram',
+                      label: 'Instagram Username',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildHandleField(
+                      platform: 'tiktok',
+                      label: 'TikTok Username',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildHandleField(
+                      platform: 'twitter',
+                      label: 'Twitter/X Username',
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            AppSection(
-              title: 'Public Handles',
-              subtitle:
-                  'Enter public usernames without the @ symbol. Leave any field blank if you do not want to use it.',
-              child: Column(
-                children: [
-                  _buildHandleField(
-                    platform: 'instagram',
-                    label: 'Instagram Username',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildHandleField(
-                    platform: 'tiktok',
-                    label: 'TikTok Username',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildHandleField(
-                    platform: 'twitter',
-                    label: 'Twitter/X Username',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            AppSection(
-              title: 'Actions',
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: AppButtonPrimary(
-                      onPressed:
-                          _isLoading || !_consentGiven ? null : _saveHandles,
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Save Handles'),
-                    ),
-                  ),
-                  if (_hasStoredHandles) ...[
-                    const SizedBox(height: 12),
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Actions',
+                child: Column(
+                  children: [
                     SizedBox(
                       width: double.infinity,
-                      child: AppButtonSecondary(
-                        onPressed: _revokeConsent,
-                        child: const Text('Revoke Consent and Delete Data'),
+                      child: AppButtonPrimary(
+                        onPressed:
+                            _isLoading || !_consentGiven ? null : _saveHandles,
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text('Save Handles'),
                       ),
                     ),
+                    if (_hasStoredHandles) ...[
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: AppButtonSecondary(
+                          onPressed: _revokeConsent,
+                          child: const Text('Revoke Consent and Delete Data'),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const AppInfoBanner(
-              title: 'Privacy & Analysis',
-              body:
-                  'AVRAI only analyzes public content you choose to share. You stay in control of consent, and you can remove the saved handles whenever you want.',
-              icon: Icons.info_outline,
-            ),
-          ],
+              const SizedBox(height: 24),
+              const AppInfoBanner(
+                title: 'Privacy & Analysis',
+                body:
+                    'AVRAI only analyzes public content you choose to share. You stay in control of consent, and you can remove the saved handles whenever you want.',
+                icon: Icons.info_outline,
+              ),
+            ],
+          ),
         ),
       ),
+      scrollable: false,
     );
   }
 

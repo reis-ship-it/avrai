@@ -16,7 +16,7 @@ import 'package:avrai/presentation/widgets/brand/sponsorship_revenue_split_displ
 import 'package:avrai/presentation/pages/payment/payment_success_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Brand Sponsorship Checkout Page
@@ -118,7 +118,7 @@ class _SponsorshipCheckoutPageState extends State<SponsorshipCheckoutPage> {
   Widget build(BuildContext context) {
     final totalContribution = (_cashAmount ?? 0.0) + (_productValue ?? 0.0);
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: widget.sponsorship != null ? 'Edit Sponsorship' : 'Sponsor Event',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

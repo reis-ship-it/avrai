@@ -16,8 +16,8 @@ import 'package:avrai/presentation/models/explore_item.dart';
 import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
 import 'package:avrai/presentation/services/metro_experience_service.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
@@ -1062,7 +1062,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Explore',
       constrainBody: false,
       actions: [

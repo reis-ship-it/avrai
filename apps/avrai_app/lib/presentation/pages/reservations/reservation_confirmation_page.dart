@@ -10,7 +10,7 @@ import 'package:avrai_core/models/misc/reservation.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Reservation Confirmation Page
 ///
@@ -38,7 +38,7 @@ class ReservationConfirmationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Reservation Confirmed',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

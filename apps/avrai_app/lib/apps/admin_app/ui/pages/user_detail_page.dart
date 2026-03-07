@@ -4,7 +4,7 @@ import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:intl/intl.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// User Detail Page
 /// Comprehensive view of a single user's data, progress, and predictions
@@ -89,7 +89,7 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'User Detail',
       titleWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

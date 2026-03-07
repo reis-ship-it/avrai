@@ -8,7 +8,7 @@ import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dar
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Review Fraud Review Page (Admin)
 ///
@@ -128,7 +128,7 @@ class _ReviewFraudReviewPageState extends State<ReviewFraudReviewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Review Fraud Review',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

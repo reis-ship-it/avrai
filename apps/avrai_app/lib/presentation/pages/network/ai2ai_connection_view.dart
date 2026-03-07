@@ -9,7 +9,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/theme/colors.dart';
@@ -147,7 +147,7 @@ class _AI2AIConnectionViewState extends State<AI2AIConnectionView> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'AI2AI Connections',
       appBarBackgroundColor: AppColors.black,
       appBarForegroundColor: AppColors.white,

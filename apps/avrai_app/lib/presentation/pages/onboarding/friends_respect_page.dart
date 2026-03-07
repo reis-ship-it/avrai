@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/friends_respect_page_schema.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/locality_agents/onboarding_locality_lists.dart';
 
 class FriendsRespectPage extends StatefulWidget {
@@ -32,7 +33,6 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   static const String _logName = 'FriendsRespectPage';
 
   List<String> _selectedLists = [];
-  final Map<String, int> _respectCounts = {};
   late final OnboardingSuggestionEventStore _eventStore;
   late final List<Map<String, dynamic>> _localPublicLists;
 
@@ -51,10 +51,6 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
     _eventStore = GetIt.instance.isRegistered<OnboardingSuggestionEventStore>()
         ? GetIt.instance<OnboardingSuggestionEventStore>()
         : OnboardingSuggestionEventStore();
-
-    for (var list in _localPublicLists) {
-      _respectCounts[list['name'] as String] = list['respects'] as int;
-    }
 
     // Best-effort: log the suggestions shown on this onboarding surface.
     unawaited(_logSuggestionsShown());
@@ -137,208 +133,179 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'Connect & Discover',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
+    return AppSchemaPage(
+      schema: buildFriendsRespectPageSchema(
+        listSection: _buildListSection(),
+      ),
+    );
+  }
+
+  Widget _buildListSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.location_on,
+              color: AppColors.textSecondary,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Local Public Lists',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            if (_selectedLists.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedLists.clear();
+                  });
+                  widget.onRespectedListsChanged(_selectedLists);
+                  unawaited(
+                    _logSuggestionAction(
+                      type: OnboardingSuggestionActionType.deselect,
+                      promptCategory: 'friends_respect_clear_all',
+                    ),
+                  );
+                },
+                child: const Text('Clear All'),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Curated by avrai for your area',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.grey500,
+              ),
+        ),
+        const SizedBox(height: 16),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _localPublicLists.length,
+          itemBuilder: (context, index) {
+            final list = _localPublicLists[index];
+            final listName = list['name'] as String;
+            final isSelected = _selectedLists.contains(listName);
+
+            return _buildListTile(listName, isSelected, list);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildListTile(
+      String listName, bool isSelected, Map<String, dynamic> list) {
+    return AppSurface(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
+      child: ListTile(
+        onTap: () => _showListDetails(list),
+        leading: CircleAvatar(
+          backgroundColor: AppColors.surfaceMuted,
+          child: Icon(
+            _getCategoryIcon(list['category'] as String),
+            color: AppColors.textSecondary,
+            size: 20,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Curated lists for your area. Add any that interest you and they\'ll appear in your spots page.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        ),
+        title: Text(
+          listName,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            // User profile info
+            _buildUserProfileInfo(list),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  size: 12,
                   color: AppColors.grey500,
                 ),
-          ),
-          const SizedBox(height: 24),
-
-          // Local lists section
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: AppTheme.primaryColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Local Public Lists',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const Spacer(),
-                    if (_selectedLists.isNotEmpty)
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedLists.clear();
-                          });
-                          widget.onRespectedListsChanged(_selectedLists);
-                          unawaited(_logSuggestionAction(
-                            type: OnboardingSuggestionActionType.deselect,
-                            promptCategory: 'friends_respect_clear_all',
-                          ));
-                        },
-                        child: const Text('Clear All'),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Curated by avrai for your area',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.grey500,
-                      ),
-                ),
-                const SizedBox(height: 16),
-
-                // Lists
+                const SizedBox(width: 2),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: _localPublicLists.length,
-                    itemBuilder: (context, index) {
-                      final list = _localPublicLists[index];
-                      final listName = list['name'] as String;
-                      final isSelected = _selectedLists.contains(listName);
-
-                      return AppSurface(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                          children: [
-                            // Main list tile - for viewing details
-                            ListTile(
-                              onTap: () => _showListDetails(list),
-                              leading: CircleAvatar(
-                                backgroundColor: AppTheme.primaryColor
-                                    .withValues(alpha: 0.1),
-                                child: Icon(
-                                  _getCategoryIcon(list['category'] as String),
-                                  color: AppTheme.primaryColor,
-                                  size: 20,
-                                ),
-                              ),
-                              title: Text(
-                                listName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  // User profile info
-                                  _buildUserProfileInfo(list),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        size: 12,
-                                        color: AppColors.grey500,
-                                      ),
-                                      const SizedBox(width: 2),
-                                      Expanded(
-                                        child: Text(
-                                          list['location'] as String,
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: AppColors.grey500,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${list['spots']} spots',
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          color: AppColors.grey500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Respect button
-                                  GestureDetector(
-                                    onTap: () {
-                                      final selecting = !isSelected;
-                                      setState(() {
-                                        if (isSelected) {
-                                          _selectedLists.remove(listName);
-                                        } else {
-                                          _selectedLists.add(listName);
-                                        }
-                                      });
-                                      widget.onRespectedListsChanged(
-                                          _selectedLists);
-                                      unawaited(_logSuggestionAction(
-                                        type: selecting
-                                            ? OnboardingSuggestionActionType
-                                                .select
-                                            : OnboardingSuggestionActionType
-                                                .deselect,
-                                        promptCategory:
-                                            'friends_respect_local_public_lists',
-                                        itemLabel: listName,
-                                      ));
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? AppTheme.primaryColor
-                                            : AppColors.grey200,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Icon(
-                                        isSelected ? Icons.check : Icons.add,
-                                        size: 14,
-                                        color: isSelected
-                                            ? AppColors.white
-                                            : AppColors.grey700,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // View details arrow
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 12,
-                                    color: AppColors.grey400,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                  child: Text(
+                    list['location'] as String,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.grey500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  '${list['spots']} spots',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.grey500,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                final selecting = !isSelected;
+                setState(() {
+                  if (isSelected) {
+                    _selectedLists.remove(listName);
+                  } else {
+                    _selectedLists.add(listName);
+                  }
+                });
+                widget.onRespectedListsChanged(_selectedLists);
+                unawaited(
+                  _logSuggestionAction(
+                    type: selecting
+                        ? OnboardingSuggestionActionType.select
+                        : OnboardingSuggestionActionType.deselect,
+                    promptCategory: 'friends_respect_local_public_lists',
+                    itemLabel: listName,
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.textPrimary : AppColors.grey200,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  isSelected ? Icons.check : Icons.add,
+                  size: 14,
+                  color: isSelected ? AppColors.white : AppColors.grey700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 12,
+              color: AppColors.grey400,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -382,7 +349,7 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
   }
 
   void _showListDetails(Map<String, dynamic> list) {
-    List<Map<String, dynamic>> spots = _getSpotsForList(list);
+    final spots = _getSpotsForList(list);
 
     showModalBottomSheet(
       context: context,
@@ -399,7 +366,6 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
         ),
         child: Column(
           children: [
-            // Handle bar
             Container(
               margin: const EdgeInsets.only(top: 8),
               width: 40,
@@ -409,17 +375,15 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            // Header
             Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor:
-                        AppTheme.primaryColor.withValues(alpha: 0.1),
+                    backgroundColor: AppColors.surfaceMuted,
                     child: Icon(
                       _getCategoryIcon(list['category'] as String),
-                      color: AppTheme.primaryColor,
+                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                   ),
@@ -448,7 +412,6 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                 ],
               ),
             ),
-            // Spots list
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -460,11 +423,10 @@ class _FriendsRespectPageState extends State<FriendsRespectPage> {
                     padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor:
-                            AppTheme.primaryColor.withValues(alpha: 0.1),
+                        backgroundColor: AppColors.surfaceMuted,
                         child: Icon(
                           _getSpotIcon(spot['category'] as String),
-                          color: AppTheme.primaryColor,
+                          color: AppColors.textSecondary,
                           size: 16,
                         ),
                       ),

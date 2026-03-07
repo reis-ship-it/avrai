@@ -2,11 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_admin_diagnostics_bridge.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:intl/intl.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:get_it/get_it.dart';
 
 /// AI Live Map Page
@@ -31,14 +32,19 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
   gmap.GoogleMapController? _mapController;
   ActiveAIAgentData? _selectedAgent;
   Timer? _refreshTimer;
-  late final LocalityKernelContract? _localityKernel;
+  late final WhereKernelContract? _whereKernel;
+  late final LocalityNativeAdminDiagnosticsBridge? _localityDiagnostics;
 
   @override
   void initState() {
     super.initState();
-    _localityKernel = GetIt.instance.isRegistered<LocalityKernelContract>()
-        ? GetIt.instance<LocalityKernelContract>()
+    _whereKernel = GetIt.instance.isRegistered<WhereKernelContract>()
+        ? GetIt.instance<WhereKernelContract>()
         : null;
+    _localityDiagnostics =
+        GetIt.instance.isRegistered<LocalityNativeAdminDiagnosticsBridge>()
+            ? GetIt.instance<LocalityNativeAdminDiagnosticsBridge>()
+            : null;
     _loadActiveAgents();
     // Auto-refresh every 30 seconds
     _refreshTimer =
@@ -90,8 +96,42 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
   Future<Map<String, LocalityPointResolution>> _resolveLocalityResolutions(
     List<ActiveAIAgentData> agents,
   ) async {
-    final kernel = _localityKernel;
-    if (kernel == null || agents.isEmpty) {
+    if (agents.isEmpty) {
+      return <String, LocalityPointResolution>{};
+    }
+
+    final diagnostics = _localityDiagnostics;
+    if (diagnostics != null) {
+      try {
+        final occurredAtUtc = DateTime.now().toUtc();
+        final report = await diagnostics.diagnose(
+          probes: agents
+              .map(
+                (agent) => LocalityAdminDiagnosticsProbe(
+                  latitude: agent.latitude,
+                  longitude: agent.longitude,
+                  occurredAtUtc: occurredAtUtc,
+                ),
+              )
+              .toList(),
+          cityProfile: null,
+        );
+        if (report.resolutions.isNotEmpty) {
+          final entries = <String, LocalityPointResolution>{};
+          for (var i = 0;
+              i < agents.length && i < report.resolutions.length;
+              i += 1) {
+            entries[agents[i].userId] = report.resolutions[i];
+          }
+          return entries;
+        }
+      } catch (_) {
+        // Fall through to kernel point resolution path.
+      }
+    }
+
+    final kernel = _whereKernel;
+    if (kernel == null) {
       return <String, LocalityPointResolution>{};
     }
 
@@ -198,7 +238,9 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
       }).length;
 
   int get _changingCount => _localityResolutions.values.where((resolution) {
-        return resolution.projection.metadata['predictiveTrend'] == 'changing';
+        final predictiveTrend =
+            resolution.projection.metadata['predictiveTrend'] as String?;
+        return predictiveTrend != null && predictiveTrend != 'stable';
       }).length;
 
   Color _colorForResolution(LocalityPointResolution resolution) {
@@ -209,7 +251,8 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
     if (advisoryStatus == 'active') {
       return AppColors.error;
     }
-    if (resolution.projection.nearBoundary || predictiveTrend == 'changing') {
+    if (resolution.projection.nearBoundary ||
+        (predictiveTrend != null && predictiveTrend != 'stable')) {
       return AppColors.warning;
     }
     if (resolution.projection.confidenceBucket == 'high') {
@@ -229,7 +272,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: '',
       showNavigationBar: false,
       body: Stack(

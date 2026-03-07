@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 
-/// OUR_GUTS.md: "The key works offline"
 /// Shows when AI2AI connections happen offline
 class OfflineConnectionBadge extends StatelessWidget {
   final bool isOffline;

@@ -4,8 +4,6 @@ import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/contextual_personality.dart';
 import 'package:avrai_core/constants/vibe_constants.dart';
 
-/// OUR_GUTS.md: "Your doors stay yours"
-/// Phase 3: Admin UI for Contextual Personality Visualization
 /// ADMIN ONLY - Shows personality evolution timeline and context layers
 class PersonalityEvolutionWidget extends StatelessWidget {
   final PersonalityProfile profile;
