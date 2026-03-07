@@ -1,50 +1,56 @@
 import 'package:flutter/material.dart';
 
-/// Centralized minimalist palette: black/grey/white with a single electric green accent.
-/// Keep names stable to reduce churn elsewhere in the codebase.
+/// Neutral, platform-portable palette.
+///
+/// The baseline contract is monochrome. Semantic colors exist only for states
+/// that need user feedback clarity.
 class AppColors {
-  // Accent (singular brand color)
-  static const Color electricGreen = Color(0xFF00FF66); // primary brand accent
-  static const Color electricBlue = Color(0xFF00D4FF); // secondary brand accent
   static const Color transparent = Colors.transparent;
 
-  // Core neutrals
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
 
-  // Greyscale ramp (approx. 50-900)
-  static const Color grey50 = Color(0xFFFAFAFA);
-  static const Color grey100 = Color(0xFFF5F5F5);
-  static const Color grey200 = Color(0xFFE5E5E5);
-  static const Color grey300 = Color(0xFFCCCCCC);
-  static const Color grey400 = Color(0xFFB3B3B3);
-  static const Color grey500 = Color(0xFF8A8A8A);
-  static const Color grey600 = Color(0xFF6E6E6E);
-  static const Color grey700 = Color(0xFF4D4D4D);
-  static const Color grey800 = Color(0xFF1F1F1F);
-  static const Color grey900 = Color(0xFF0B0B0B);
+  static const Color grey50 = Color(0xFFF8F8F8);
+  static const Color grey100 = Color(0xFFF2F2F2);
+  static const Color grey200 = Color(0xFFE6E6E6);
+  static const Color grey300 = Color(0xFFD0D0D0);
+  static const Color grey400 = Color(0xFFB2B2B2);
+  static const Color grey500 = Color(0xFF8C8C8C);
+  static const Color grey600 = Color(0xFF666666);
+  static const Color grey700 = Color(0xFF474747);
+  static const Color grey800 = Color(0xFF242424);
+  static const Color grey900 = Color(0xFF111111);
 
-  // Semantic (kept for clarity; use sparingly)
-  static const Color error = Color(0xFFFF4D4D);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color success = electricGreen; // align success with brand accent
+  static const Color textPrimary = grey900;
+  static const Color textSecondary = grey600;
+  static const Color textHint = grey500;
+  static const Color textInverse = white;
 
-  // Backwards-compat names used across the app (map to new palette)
-  static const Color primary = electricGreen;
-  static const Color primaryLight = Color(0xFF66FF99);
-  static const Color primaryDark = Color(0xFF00CC52);
-  static const Color secondary = grey600; // subdued secondary
-  static const Color accent = electricGreen;
-
-  // Surfaces and text
   static const Color background = white;
   static const Color surface = white;
-  static const Color textPrimary = Color(0xFF121212);
-  static const Color textSecondary = grey600;
-  static const Color textHint = grey400;
+  static const Color surfaceMuted = grey50;
+  static const Color surfaceElevated = white;
+  static const Color borderSubtle = grey200;
+  static const Color borderStrong = grey300;
 
-  // Map styling neutrals (prefer greys; overlays/paths may tint with primary)
-  static const Color mapPrimary = electricGreen;
+  static const Color success = Color(0xFF2E7D32);
+  static const Color warning = Color(0xFFB7791F);
+  static const Color error = Color(0xFFB42318);
+  static const Color focus = grey900;
+  static const Color selection = grey700;
+
+  static const Color primary = focus;
+  static const Color primaryLight = grey600;
+  static const Color primaryDark = black;
+  static const Color secondary = grey700;
+  static const Color accent = selection;
+
+  static const Color mapPrimary = grey800;
   static const Color mapSecondary = grey600;
   static const Color mapAccent = grey400;
+
+  // Legacy aliases kept temporarily while the repo migrates.
+  static const Color electricGreen = success;
+  static const Color electricBlue = selection;
+  static const Color slateBlue = selection;
 }
