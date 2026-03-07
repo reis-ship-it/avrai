@@ -58,8 +58,12 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Header should explain the purpose
-        expect(find.textContaining('Help Your AI Learn'), findsOneWidget);
+        expect(find.text('Cross-App Learning'), findsOneWidget);
+        expect(
+          find.textContaining(
+              'improve suggestions while keeping processing local'),
+          findsOneWidget,
+        );
       });
 
       testWidgets('should display all data source toggles', (tester) async {
@@ -77,8 +81,18 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Should display privacy reassurance section
-        expect(find.text('Your Privacy Matters'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Local processing'),
+          300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Local processing'), findsOneWidget);
+        expect(
+          find.textContaining('Connected app signals stay on this device'),
+          findsOneWidget,
+        );
       });
 
       testWidgets('should show loading indicator initially', (tester) async {
@@ -126,7 +140,13 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Look for Enable All button
+        await tester.scrollUntilVisible(
+          find.text('Enable All'),
+          400,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
         expect(find.text('Enable All'), findsOneWidget);
       });
 
@@ -134,7 +154,13 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Look for Disable All button
+        await tester.scrollUntilVisible(
+          find.text('Disable All'),
+          400,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+
         expect(find.text('Disable All'), findsOneWidget);
       });
 
@@ -210,21 +236,18 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Music description includes 'vibe' or 'mood'
-        expect(find.textContaining('vibe'), findsOneWidget);
+        expect(find.textContaining('mood'), findsOneWidget);
       });
     });
 
-    group('Emoji Icons', () {
-      testWidgets('should display appropriate emoji icons for each source',
+    group('Icons', () {
+      testWidgets('should display switch controls for each visible source',
           (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Icons are emoji text, not Flutter Icons
-        expect(find.text('📅'), findsOneWidget);
-        expect(find.text('❤️'), findsOneWidget);
-        expect(find.text('🎵'), findsOneWidget);
+        expect(find.byType(Switch), findsWidgets);
+        expect(find.byIcon(Icons.psychology_outlined), findsWidgets);
       });
     });
   });

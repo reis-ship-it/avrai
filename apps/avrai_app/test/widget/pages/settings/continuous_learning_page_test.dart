@@ -68,8 +68,8 @@ void main() {
         // Assert
         expect(
             find.widgetWithText(AppBar, 'Continuous Learning'), findsOneWidget);
-        expect(find.textContaining('See how your AI continuously learns'),
-            findsOneWidget);
+        expect(
+            find.textContaining('Monitor how your AI learns'), findsOneWidget);
       });
 
       testWidgets('displays all section headers', (WidgetTester tester) async {
@@ -280,7 +280,7 @@ void main() {
 
         // Scroll to footer
         final list = find.byType(ListView);
-        final target = find.text('Learn More');
+        final target = find.text('Learn more');
         for (var i = 0; i < 20 && target.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));
           await WidgetTestHelpers.safePumpAndSettle(tester);
@@ -288,7 +288,7 @@ void main() {
 
         // Assert
         expect(find.byType(ContinuousLearningPage), findsOneWidget);
-        expect(find.text('Learn More'), findsOneWidget);
+        expect(find.text('Learn more'), findsOneWidget);
       });
     });
 

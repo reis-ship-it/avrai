@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:get_it/get_it.dart';
 
 /// AI Live Map Page
 /// Shows all active AI agents on a live map with their location, data, and predictions
@@ -22,14 +25,20 @@ class AILiveMapPage extends StatefulWidget {
 
 class _AILiveMapPageState extends State<AILiveMapPage> {
   List<ActiveAIAgentData> _activeAgents = [];
+  Map<String, LocalityPointResolution> _localityResolutions =
+      <String, LocalityPointResolution>{};
   bool _isLoading = true;
   gmap.GoogleMapController? _mapController;
   ActiveAIAgentData? _selectedAgent;
   Timer? _refreshTimer;
+  late final LocalityKernelContract? _localityKernel;
 
   @override
   void initState() {
     super.initState();
+    _localityKernel = GetIt.instance.isRegistered<LocalityKernelContract>()
+        ? GetIt.instance<LocalityKernelContract>()
+        : null;
     _loadActiveAgents();
     // Auto-refresh every 30 seconds
     _refreshTimer =
@@ -57,8 +66,10 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
 
     try {
       final agents = await widget.godModeService!.getAllActiveAIAgents();
+      final localityResolutions = await _resolveLocalityResolutions(agents);
       setState(() {
         _activeAgents = agents;
+        _localityResolutions = localityResolutions;
         _isLoading = false;
       });
     } catch (e) {
@@ -76,8 +87,45 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
     }
   }
 
+  Future<Map<String, LocalityPointResolution>> _resolveLocalityResolutions(
+    List<ActiveAIAgentData> agents,
+  ) async {
+    final kernel = _localityKernel;
+    if (kernel == null || agents.isEmpty) {
+      return <String, LocalityPointResolution>{};
+    }
+
+    final entries = await Future.wait(
+      agents.map((agent) async {
+        try {
+          final resolution = await kernel.resolvePoint(
+            LocalityPointQuery(
+              latitude: agent.latitude,
+              longitude: agent.longitude,
+              occurredAtUtc: DateTime.now().toUtc(),
+              audience: LocalityProjectionAudience.admin,
+              includeGeometry: true,
+              includeAttribution: true,
+              includePrediction: true,
+            ),
+          );
+          return MapEntry(agent.userId, resolution);
+        } catch (_) {
+          return null;
+        }
+      }),
+    );
+
+    return <String, LocalityPointResolution>{
+      for (final entry
+          in entries.whereType<MapEntry<String, LocalityPointResolution>>())
+        entry.key: entry.value,
+    };
+  }
+
   Set<gmap.Marker> _buildMarkers() {
     return _activeAgents.map((agent) {
+      final locality = _localityResolutions[agent.userId];
       return gmap.Marker(
         markerId: gmap.MarkerId(agent.userId),
         position: gmap.LatLng(agent.latitude, agent.longitude),
@@ -89,7 +137,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         infoWindow: gmap.InfoWindow(
           title: 'AI Agent: ${agent.aiSignature.substring(0, 12)}...',
           snippet:
-              'Status: ${agent.aiStatus} • Connections: ${agent.aiConnections}',
+              'Status: ${agent.aiStatus} • ${locality?.projection.primaryLabel ?? 'locality resolving'} • Connections: ${agent.aiConnections}',
         ),
         onTap: () {
           setState(() {
@@ -98,6 +146,28 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
         },
       );
     }).toSet();
+  }
+
+  Set<gmap.Circle> _buildLocalityCircles() {
+    final circles = <gmap.Circle>{};
+    for (final agent in _activeAgents) {
+      final resolution = _localityResolutions[agent.userId];
+      if (resolution == null) {
+        continue;
+      }
+      final color = _colorForResolution(resolution);
+      circles.add(
+        gmap.Circle(
+          circleId: gmap.CircleId('locality-${agent.userId}'),
+          center: gmap.LatLng(agent.latitude, agent.longitude),
+          radius: _radiusForResolution(resolution),
+          fillColor: color.withValues(alpha: 0.18),
+          strokeColor: color.withValues(alpha: 0.9),
+          strokeWidth: 2,
+        ),
+      );
+    }
+    return circles;
   }
 
   gmap.LatLng _getMapCenter() {
@@ -119,6 +189,44 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
     );
   }
 
+  int get _nearBoundaryCount => _localityResolutions.values
+      .where((resolution) => resolution.projection.nearBoundary)
+      .length;
+
+  int get _advisoryCount => _localityResolutions.values.where((resolution) {
+        return resolution.projection.metadata['advisoryStatus'] == 'active';
+      }).length;
+
+  int get _changingCount => _localityResolutions.values.where((resolution) {
+        return resolution.projection.metadata['predictiveTrend'] == 'changing';
+      }).length;
+
+  Color _colorForResolution(LocalityPointResolution resolution) {
+    final metadata = resolution.projection.metadata;
+    final advisoryStatus = metadata['advisoryStatus'] as String?;
+    final predictiveTrend = metadata['predictiveTrend'] as String?;
+
+    if (advisoryStatus == 'active') {
+      return AppColors.error;
+    }
+    if (resolution.projection.nearBoundary || predictiveTrend == 'changing') {
+      return AppColors.warning;
+    }
+    if (resolution.projection.confidenceBucket == 'high') {
+      return AppColors.success;
+    }
+    return AppColors.grey500;
+  }
+
+  double _radiusForResolution(LocalityPointResolution resolution) {
+    final baseRadius = switch (resolution.projection.confidenceBucket) {
+      'high' => 120.0,
+      'medium' => 180.0,
+      _ => 240.0,
+    };
+    return resolution.projection.nearBoundary ? baseRadius + 90.0 : baseRadius;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdaptivePlatformPageScaffold(
@@ -135,6 +243,7 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                     zoom: 10,
                   ),
                   markers: _buildMarkers(),
+                  circles: _buildLocalityCircles(),
                   onMapCreated: (controller) {
                     _mapController = controller;
                   },
@@ -178,6 +287,29 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
                               .textTheme
                               .bodySmall
                               ?.copyWith(color: AppColors.grey500),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _buildMetricChip(
+                              label: 'Localities',
+                              value: '${_localityResolutions.length}',
+                            ),
+                            _buildMetricChip(
+                              label: 'Boundary',
+                              value: '$_nearBoundaryCount',
+                            ),
+                            _buildMetricChip(
+                              label: 'Advisory',
+                              value: '$_advisoryCount',
+                            ),
+                            _buildMetricChip(
+                              label: 'Changing',
+                              value: '$_changingCount',
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -253,6 +385,23 @@ class _AILiveMapPageState extends State<AILiveMapPage> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMetricChip({
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.black.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$label: $value',
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

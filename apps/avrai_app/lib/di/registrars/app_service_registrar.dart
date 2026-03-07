@@ -136,13 +136,33 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
   }
   if (!sl.isRegistered<LocalityKernelContract>()) {
     sl.registerLazySingleton<LocalityKernelContract>(
-      () => sl<LocalityKernel>(),
+      () => sl<LocalityNativeKernelStub>(),
+    );
+  }
+  if (!sl.isRegistered<LocalityLibraryManager>()) {
+    sl.registerLazySingleton<LocalityLibraryManager>(
+      () => LocalityLibraryManager(),
+    );
+  }
+  if (!sl.isRegistered<LocalityNativeInvocationBridge>()) {
+    sl.registerLazySingleton<LocalityNativeInvocationBridge>(
+      () => LocalityNativeBridgeBindings(
+        libraryManager: sl<LocalityLibraryManager>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<InProcessLocalitySyscallTransport>()) {
+    sl.registerLazySingleton<InProcessLocalitySyscallTransport>(
+      () => InProcessLocalitySyscallTransport(
+        delegate: sl<LocalityKernel>(),
+      ),
     );
   }
   if (!sl.isRegistered<LocalitySyscallTransport>()) {
     sl.registerLazySingleton<LocalitySyscallTransport>(
-      () => InProcessLocalitySyscallTransport(
-        delegate: sl<LocalityKernelContract>(),
+      () => FfiPreferredLocalitySyscallTransport(
+        nativeBridge: sl<LocalityNativeInvocationBridge>(),
+        fallbackTransport: sl<InProcessLocalitySyscallTransport>(),
       ),
     );
   }

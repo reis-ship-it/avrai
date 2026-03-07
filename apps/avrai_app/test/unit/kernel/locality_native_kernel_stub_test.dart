@@ -64,10 +64,14 @@ void main() {
       final visit = Visit(
         id: 'visit-1',
         userId: 'user-1',
-        spotId: 'spot-1',
+        locationId: 'spot-1',
         checkInTime: DateTime.utc(2026, 3, 6, 18),
-        latitude: 33.5186,
-        longitude: -86.8104,
+        createdAt: DateTime.utc(2026, 3, 6, 18),
+        updatedAt: DateTime.utc(2026, 3, 6, 19),
+        metadata: const <String, dynamic>{
+          'latitude': 33.5186,
+          'longitude': -86.8104,
+        },
       );
 
       final receipt = await stub.observeVisit(

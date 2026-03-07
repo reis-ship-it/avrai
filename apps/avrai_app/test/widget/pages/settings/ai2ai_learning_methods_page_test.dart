@@ -106,8 +106,9 @@ void main() {
 
         // Assert
         expect(find.text('AI2AI Learning Methods'), findsWidgets);
-        expect(find.textContaining('See how your AI learns'), findsWidgets);
-        expect(find.byIcon(Icons.psychology), findsWidgets);
+        expect(
+            find.textContaining('Review how your AI learns'), findsOneWidget);
+        expect(find.byIcon(Icons.psychology_outlined), findsWidgets);
       });
 
       testWidgets('displays all section headers', (WidgetTester tester) async {
@@ -158,17 +159,16 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
-        final learnMore = find.text('Learn More');
+        final learnMore = find.text('Learn more');
         for (var i = 0; i < 30 && learnMore.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -500));
           await WidgetTestHelpers.safePumpAndSettle(tester);
         }
 
         // Assert
-        expect(find.text('Learn More'), findsOneWidget);
-        expect(find.textContaining('AI2AI learning enables'), findsOneWidget);
-        expect(find.textContaining('Your data stays on your device'),
-            findsOneWidget);
+        expect(find.text('Learn more'), findsOneWidget);
+        expect(
+            find.textContaining('AI2AI learning uses secure'), findsOneWidget);
       });
     });
 
@@ -407,7 +407,7 @@ void main() {
         }
 
         // Assert
-        expect(find.text('Learn More'), findsOneWidget);
+        expect(find.text('Learn more'), findsOneWidget);
       });
     });
 
@@ -426,7 +426,8 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert
-        expect(find.textContaining('See how your AI learns'), findsWidgets);
+        expect(
+            find.textContaining('Review how your AI learns'), findsOneWidget);
         expect(find.textContaining('Track how effectively'), findsOneWidget);
 
         final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
@@ -437,14 +438,12 @@ void main() {
         }
         expect(find.textContaining('Recent insights'), findsOneWidget);
 
-        final optimalPartners =
-            find.textContaining('Optimal learning partners');
+        final optimalPartners = find.textContaining('Suggested partners');
         for (var i = 0; i < 40 && optimalPartners.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));
           await WidgetTestHelpers.safePumpAndSettle(tester);
         }
-        expect(
-            find.textContaining('Optimal learning partners'), findsOneWidget);
+        expect(find.textContaining('Suggested partners'), findsOneWidget);
       });
     });
   });

@@ -23,9 +23,8 @@ void main() {
       expect(find.byType(AppBar), findsOneWidget);
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect((appBar.title as Text).data, equals('Federated Learning'));
-      expect(find.text('Privacy-Preserving AI Training'), findsOneWidget);
-      expect(find.text('Help improve AI without sharing your data'),
-          findsOneWidget);
+      expect(find.text('Federated Learning'), findsWidgets);
+      expect(find.textContaining('Help improve shared models'), findsOneWidget);
       expect(find.text('Settings & Participation'), findsOneWidget);
       expect(find.byType(FederatedLearningSettingsSection), findsOneWidget);
       expect(find.byType(ListView), findsOneWidget);
@@ -66,13 +65,14 @@ void main() {
         await tester.pump();
       }
       expect(historyWidget, findsOneWidget);
-      final learnMoreFinder = find.text('Learn More');
+      final learnMoreFinder = find.text('Learn more');
       for (var i = 0; i < 15 && learnMoreFinder.evaluate().isEmpty; i++) {
         await tester.drag(listView, const Offset(0, -200));
         await tester.pump();
       }
       expect(learnMoreFinder, findsOneWidget);
-      expect(find.text('Your data never leaves your device'), findsOneWidget);
+      expect(find.textContaining('Raw personal data stays on-device'),
+          findsOneWidget);
     });
   });
 }

@@ -17,6 +17,8 @@ import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart'
 import 'package:avrai_runtime_os/kernel/locality/locality_inference_head.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_bridge_bindings.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_native_kernel_stub.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_projection_service.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
@@ -264,11 +266,8 @@ import 'package:avrai_runtime_os/services/security/signal_protocol_encryption_se
 import 'package:avrai_runtime_os/services/security/secure_mapping_encryption_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_migration_service.dart';
 import 'package:avrai_runtime_os/services/security/mapping_key_rotation_service.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_engine.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_global_repository.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_ingestion_service_v1.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_local_store.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_mesh_cache.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_update_emitter_v1.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_geofence_planner.dart';
 import 'package:avrai_runtime_os/services/locality_agents/os_geofence_registrar.dart';

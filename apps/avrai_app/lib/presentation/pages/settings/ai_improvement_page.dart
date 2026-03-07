@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_error_state.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
-import 'package:avrai/presentation/widgets/settings/ai_improvement_section.dart';
-import 'package:avrai/presentation/widgets/settings/ai_improvement_progress_widget.dart';
-import 'package:avrai/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai_improvement_impact_widget.dart';
-import 'package:avrai/theme/colors.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_progress_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_section.dart';
+import 'package:avrai/presentation/widgets/settings/ai_improvement_timeline_widget.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai_improvement_tracking_service.dart';
-import 'package:get_it/get_it.dart';
 
-/// AI Improvement Page
-///
-/// Phase 7, Week 37: AI Self-Improvement Visibility - Integration & Polish
-///
-/// Combines all 4 AI improvement widgets into a single comprehensive page:
-/// 1. AIImprovementSection (main metrics)
-/// 2. AIImprovementProgressWidget (progress charts)
-/// 3. AIImprovementTimelineWidget (history timeline)
-/// 4. AIImprovementImpactWidget (impact explanation)
 class AIImprovementPage extends StatefulWidget {
   const AIImprovementPage({super.key});
 
@@ -46,7 +40,6 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
         _errorMessage = null;
       });
 
-      // Use dependency injection instead of direct instantiation
       final service = GetIt.instance<AIImprovementTrackingService>();
       await service.initialize();
 
@@ -79,232 +72,108 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           if (authState is! Authenticated) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const AppLoadingState(label: 'Loading AI improvement');
           }
 
           final userId = authState.user.id;
 
           if (_isInitializing) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const AppLoadingState(label: 'Loading AI improvement');
           }
 
           if (_errorMessage != null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Error',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _initializeService,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
+            return AppErrorState(
+              title: 'Unable to load AI improvement',
+              body: _errorMessage!,
+              onRetry: _initializeService,
             );
           }
 
           if (_trackingService == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const AppLoadingState(label: 'Loading AI improvement');
           }
 
           return ListView(
             key: const Key('ai_improvement_page_list'),
             padding: const EdgeInsets.all(16),
             children: [
-              // Header
-              _buildHeader(context),
-              const SizedBox(height: 24),
-
-              // Section 1: Main Metrics
-              _buildSectionHeader(context, 'AI Improvement Metrics'),
-              const SizedBox(height: 8),
-              const Text(
-                'See how your AI is improving over time',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+              AppSurface(
+                child: const AppPageHeader(
+                  title: 'AI Improvement',
+                  subtitle:
+                      'Review how your AI improves over time across quality, progress, and impact.',
+                  leadingIcon: Icons.trending_up,
+                  showDivider: false,
                 ),
-              ),
-              const SizedBox(height: 12),
-              AIImprovementSection(
-                userId: userId,
-                trackingService: _trackingService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 2: Progress Charts
-              _buildSectionHeader(context, 'Improvement Progress'),
-              const SizedBox(height: 8),
-              const Text(
-                'Track improvement trends over time',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AIImprovementProgressWidget(
-                userId: userId,
-                trackingService: _trackingService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 3: Timeline
-              _buildSectionHeader(context, 'Improvement History'),
-              const SizedBox(height: 8),
-              const Text(
-                'Timeline of AI improvements and milestones',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AIImprovementTimelineWidget(
-                userId: userId,
-                trackingService: _trackingService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 4: Impact
-              _buildSectionHeader(context, 'Impact & Benefits'),
-              const SizedBox(height: 8),
-              const Text(
-                'How AI improvements benefit your experience',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AIImprovementImpactWidget(
-                userId: userId,
-                trackingService: _trackingService!,
               ),
               const SizedBox(height: 24),
-
-              // Footer
-              _buildFooter(context),
+              _DashboardSection(
+                title: 'AI Improvement Metrics',
+                subtitle: 'See how your AI is improving over time.',
+                child: AIImprovementSection(
+                  userId: userId,
+                  trackingService: _trackingService!,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _DashboardSection(
+                title: 'Improvement Progress',
+                subtitle: 'Track improvement trends over time.',
+                child: AIImprovementProgressWidget(
+                  userId: userId,
+                  trackingService: _trackingService!,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _DashboardSection(
+                title: 'Improvement History',
+                subtitle: 'Timeline of AI improvements and milestones.',
+                child: AIImprovementTimelineWidget(
+                  userId: userId,
+                  trackingService: _trackingService!,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _DashboardSection(
+                title: 'Impact & Benefits',
+                subtitle: 'How ongoing improvements affect your experience.',
+                child: AIImprovementImpactWidget(
+                  userId: userId,
+                  trackingService: _trackingService!,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const AppInfoBanner(
+                title: 'Learn more',
+                body:
+                    'Improvements focus on recommendation quality, preference understanding, and adaptation while keeping learning local whenever possible.',
+                icon: Icons.info_outline,
+              ),
             ],
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context) {
-    return AppSurface(
-      color: AppColors.primary.withValues(alpha: 0.1),
-      borderColor: AppColors.primary.withValues(alpha: 0.24),
-      child: const AppPageHeader(
-        title: 'AI Self-Improvement',
-        subtitle: 'Watch your AI learn and improve over time',
-        leadingIcon: Icons.trending_up,
-        showDivider: false,
-      ),
-    );
-  }
+class _DashboardSection extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget child;
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
+  const _DashboardSection({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
 
-  Widget _buildFooter(BuildContext context) {
-    return const AppSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: AppColors.primary,
-                size: 20,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Learn More',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Text(
-            'Your AI continuously learns and improves from your interactions. '
-            'This page shows you how your AI is evolving, including improvements '
-            'in recommendation accuracy, understanding your preferences, and '
-            'adapting to your unique style. All learning happens on your device '
-            'to protect your privacy.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.shield,
-                color: AppColors.success,
-                size: 16,
-              ),
-              SizedBox(width: 4),
-              Text(
-                'Your data stays on your device',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return AppSection(
+      title: title,
+      subtitle: subtitle,
+      child: child,
     );
   }
 }
