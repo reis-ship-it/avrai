@@ -1,3 +1,6 @@
+// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
+// ignore_for_file: deprecated_member_use
+
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/learning_insight_peer_send_lane.dart';

@@ -3,7 +3,8 @@ import 'package:avrai_runtime_os/services/transport/mesh/adaptive_mesh_hop_polic
     as mesh_policy;
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_mesh_cache.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
 import 'package:get_it/get_it.dart';
 
@@ -64,12 +65,30 @@ class IncomingLocalityAgentUpdateProcessor {
     );
 
     final sl = GetIt.instance;
-    if (sl.isRegistered<LocalityAgentMeshCache>()) {
+    var stored = false;
+    if (sl.isRegistered<LocalityKernelContract>()) {
       try {
-        final meshCache = sl<LocalityAgentMeshCache>();
         final ttlMs =
             (payload['ttl_ms'] as num?)?.toInt() ?? (6 * 60 * 60 * 1000);
-        await meshCache.storeMeshUpdate(
+        stored = await sl<LocalityKernelContract>().observeMeshUpdate(
+          key: key,
+          delta12: delta12,
+          ttlMs: ttlMs,
+          hop: hop,
+        );
+      } catch (e) {
+        logger.debug(
+          'Failed to import mesh update through LocalityKernel: $e',
+          tag: logName,
+        );
+      }
+    }
+
+    if (!stored && sl.isRegistered<LocalityMemory>()) {
+      try {
+        final ttlMs =
+            (payload['ttl_ms'] as num?)?.toInt() ?? (6 * 60 * 60 * 1000);
+        await sl<LocalityMemory>().saveMeshUpdate(
           key: key,
           delta12: delta12,
           receivedAt: DateTime.now(),
@@ -81,7 +100,7 @@ class IncomingLocalityAgentUpdateProcessor {
         );
       } catch (e) {
         logger.debug(
-          'Failed to store mesh update in cache: $e',
+          'Failed to store mesh update in locality memory: $e',
           tag: logName,
         );
       }

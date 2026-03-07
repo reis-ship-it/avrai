@@ -61,6 +61,9 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
         aiLearningService: sl.isRegistered<QuantumMatchingAILearningService>()
             ? sl<QuantumMatchingAILearningService>()
             : null,
+        entitySignatureService: sl.isRegistered<EntitySignatureService>()
+            ? sl<EntitySignatureService>()
+            : null,
       ));
 
   // ============================================================================
@@ -70,25 +73,6 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
     sl.registerLazySingleton<LocalityAgentGlobalRepositoryV1>(
       () => LocalityAgentGlobalRepositoryV1(
         supabaseService: sl<SupabaseService>(),
-        storage: sl<StorageService>(),
-      ),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentLocalStoreV1>()) {
-    sl.registerLazySingleton<LocalityAgentLocalStoreV1>(
-      () => LocalityAgentLocalStoreV1(storage: sl<StorageService>()),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentMeshCache>()) {
-    sl.registerLazySingleton<LocalityAgentMeshCache>(
-      () => LocalityAgentMeshCache(storage: sl<StorageService>()),
-    );
-  }
-  if (!sl.isRegistered<LocalityAgentEngineV1>()) {
-    sl.registerLazySingleton<LocalityAgentEngineV1>(
-      () => LocalityAgentEngineV1(
-        globalRepo: sl<LocalityAgentGlobalRepositoryV1>(),
-        localStore: sl<LocalityAgentLocalStoreV1>(),
       ),
     );
   }
@@ -99,17 +83,74 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       ),
     );
   }
-  if (!sl.isRegistered<LocalityAgentIngestionServiceV1>()) {
-    sl.registerLazySingleton<LocalityAgentIngestionServiceV1>(
-      () => LocalityAgentIngestionServiceV1(
+  if (!sl.isRegistered<LocalityMemory>()) {
+    sl.registerLazySingleton<LocalityMemory>(
+      () => LocalityMemory(storage: sl<StorageService>()),
+    );
+  }
+  if (!sl.isRegistered<LocalityInferenceHead>()) {
+    sl.registerLazySingleton<LocalityInferenceHead>(
+      () => LocalityInferenceHead(
+        memory: sl<LocalityMemory>(),
+        syncCoordinator: sl<LocalitySyncCoordinator>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalitySyncCoordinator>()) {
+    sl.registerLazySingleton<LocalitySyncCoordinator>(
+      () => LocalitySyncCoordinator(
+        emitter: sl<LocalityAgentUpdateEmitterV1>(),
+        globalRepository: sl<LocalityAgentGlobalRepositoryV1>(),
+        memory: sl<LocalityMemory>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityProjectionService>()) {
+    sl.registerLazySingleton<LocalityProjectionService>(
+      () => LocalityProjectionService(),
+    );
+  }
+  if (!sl.isRegistered<LocalityKernelRuntimeContext>()) {
+    sl.registerLazySingleton<LocalityKernelRuntimeContext>(
+      () => LocalityKernelRuntimeContext(
         agentIdService: sl<AgentIdService>(),
         geoHierarchyService: sl<GeoHierarchyService>(),
         prefs: sl.isRegistered<SharedPreferencesCompat>()
             ? sl<SharedPreferencesCompat>()
             : null,
         spotsLocalDataSource: sl<SpotsLocalDataSource>(),
-        engine: sl<LocalityAgentEngineV1>(),
-        emitter: sl<LocalityAgentUpdateEmitterV1>(),
+        memory: sl<LocalityMemory>(),
+        inferenceHead: sl<LocalityInferenceHead>(),
+        syncCoordinator: sl<LocalitySyncCoordinator>(),
+        projectionService: sl<LocalityProjectionService>(),
+        trainingContract: sl<LocalityTrainingContract>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityKernel>()) {
+    sl.registerLazySingleton<LocalityKernel>(
+      () => LocalityKernel.fromRuntimeContext(
+        sl<LocalityKernelRuntimeContext>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<LocalityKernelContract>()) {
+    sl.registerLazySingleton<LocalityKernelContract>(
+      () => sl<LocalityKernel>(),
+    );
+  }
+  if (!sl.isRegistered<LocalityTrainingContract>()) {
+    sl.registerLazySingleton<LocalityTrainingContract>(
+      () => const SyntheticLocalityTrainingService(),
+    );
+  }
+  // ignore: deprecated_member_use
+  if (!sl.isRegistered<LocalityAgentIngestionServiceV1>()) {
+    // ignore: deprecated_member_use
+    sl.registerLazySingleton<LocalityAgentIngestionServiceV1>(
+      // ignore: deprecated_member_use
+      () => LocalityAgentIngestionServiceV1(
+        kernel: sl<LocalityKernelContract>(),
       ),
     );
   }
@@ -206,6 +247,9 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
         eventRecommendationService:
             sl<event_rec_service.EventRecommendationService>(),
         agentIdService: sl<AgentIdService>(),
+        localityKernel: sl.isRegistered<LocalityKernelContract>()
+            ? sl<LocalityKernelContract>()
+            : null,
       ));
 
   sl.registerLazySingleton(() => BusinessOnboardingController(
@@ -449,6 +493,8 @@ void _registerAppPresentationLayer() {
   // Blocs (Register last, after all dependencies)
   sl.registerFactory(() => AuthBloc(
         signInUseCase: sl(),
+        signInWithGoogleUseCase: sl(),
+        signInWithAppleUseCase: sl(),
         signUpUseCase: sl(),
         signOutUseCase: sl(),
         getCurrentUserUseCase: sl(),
