@@ -19,6 +19,7 @@ class SuggestedListsSection extends StatelessWidget {
   final bool horizontalMode;
   final void Function(SuggestedList)? onListTap;
   final void Function(SuggestedList)? onListDismiss;
+  final void Function(SuggestedList)? onListUndoDismiss;
   final void Function(SuggestedList)? onListSave;
   final void Function(SuggestedList)? onWhyThisList;
   final VoidCallback? onSeeAll;
@@ -31,6 +32,7 @@ class SuggestedListsSection extends StatelessWidget {
     this.horizontalMode = true,
     this.onListTap,
     this.onListDismiss,
+    this.onListUndoDismiss,
     this.onListSave,
     this.onWhyThisList,
     this.onSeeAll,
@@ -172,6 +174,7 @@ class SuggestedListsSection extends StatelessWidget {
                 suggestedList: list,
                 onTap: () => onListTap?.call(list),
                 onDismiss: () => onListDismiss?.call(list),
+                onUndoDismiss: () => onListUndoDismiss?.call(list),
                 onSave: () => onListSave?.call(list),
                 onWhyThisList: () => onWhyThisList?.call(list),
               ),
@@ -191,6 +194,7 @@ class SuggestedListsSection extends StatelessWidget {
             suggestedList: list,
             onTap: () => onListTap?.call(list),
             onDismiss: () => onListDismiss?.call(list),
+            onUndoDismiss: () => onListUndoDismiss?.call(list),
             onSave: () => onListSave?.call(list),
             onWhyThisList: () => onWhyThisList?.call(list),
           );

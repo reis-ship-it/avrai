@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 
 /// Community Model
 ///
@@ -59,6 +60,9 @@ class Community extends Equatable {
   final int vibeCentroidContributors;
 
   final DateTime updatedAt;
+  final String? cityCode;
+  final String? localityCode;
+  final ExternalSyncMetadata? externalSyncMetadata;
 
   const Community({
     required this.id,
@@ -84,6 +88,9 @@ class Community extends Equatable {
     this.vibeCentroidDimensions,
     this.vibeCentroidContributors = 0,
     required this.updatedAt,
+    this.cityCode,
+    this.localityCode,
+    this.externalSyncMetadata,
   });
 
   bool isMember(String userId) => memberIds.contains(userId);
@@ -130,6 +137,9 @@ class Community extends Equatable {
       'vibeCentroidDimensions': vibeCentroidDimensions,
       'vibeCentroidContributors': vibeCentroidContributors,
       'updatedAt': updatedAt.toIso8601String(),
+      'cityCode': cityCode,
+      'localityCode': localityCode,
+      'externalSyncMetadata': externalSyncMetadata?.toJson(),
     };
   }
 
@@ -180,6 +190,13 @@ class Community extends Equatable {
       vibeCentroidDimensions: parseDoubleMap(json['vibeCentroidDimensions']),
       vibeCentroidContributors: json['vibeCentroidContributors'] as int? ?? 0,
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      cityCode: json['cityCode'] as String?,
+      localityCode: json['localityCode'] as String?,
+      externalSyncMetadata: json['externalSyncMetadata'] is Map<String, dynamic>
+          ? ExternalSyncMetadata.fromJson(
+              json['externalSyncMetadata'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
@@ -208,6 +225,9 @@ class Community extends Equatable {
     bool clearVibeCentroidDimensions = false,
     int? vibeCentroidContributors,
     DateTime? updatedAt,
+    Object? cityCode = _communitySentinel,
+    Object? localityCode = _communitySentinel,
+    Object? externalSyncMetadata = _communitySentinel,
   }) {
     return Community(
       id: id ?? this.id,
@@ -236,6 +256,14 @@ class Community extends Equatable {
       vibeCentroidContributors:
           vibeCentroidContributors ?? this.vibeCentroidContributors,
       updatedAt: updatedAt ?? this.updatedAt,
+      cityCode:
+          cityCode == _communitySentinel ? this.cityCode : cityCode as String?,
+      localityCode: localityCode == _communitySentinel
+          ? this.localityCode
+          : localityCode as String?,
+      externalSyncMetadata: externalSyncMetadata == _communitySentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
     );
   }
 
@@ -264,5 +292,10 @@ class Community extends Equatable {
         vibeCentroidDimensions,
         vibeCentroidContributors,
         updatedAt,
+        cityCode,
+        localityCode,
+        externalSyncMetadata,
       ];
 }
+
+const Object _communitySentinel = Object();

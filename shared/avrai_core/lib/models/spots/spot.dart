@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:avrai_core/models/spots/source_indicator.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 
 class _Sentinel {
   const _Sentinel();
@@ -27,6 +28,9 @@ class Spot {
   // Google Places integration
   final String? googlePlaceId; // Google Place ID for syncing with Google Maps
   final DateTime? googlePlaceIdSyncedAt; // When Google Place ID was last synced
+  final String? cityCode;
+  final String? localityCode;
+  final ExternalSyncMetadata? externalSyncMetadata;
 
   const Spot({
     required this.id,
@@ -47,6 +51,9 @@ class Spot {
     this.metadata = const {},
     this.googlePlaceId,
     this.googlePlaceIdSyncedAt,
+    this.cityCode,
+    this.localityCode,
+    this.externalSyncMetadata,
   });
 
   Spot copyWith({
@@ -68,6 +75,9 @@ class Spot {
     Map<String, dynamic>? metadata,
     Object? googlePlaceId = const _Sentinel(),
     Object? googlePlaceIdSyncedAt = const _Sentinel(),
+    Object? cityCode = const _Sentinel(),
+    Object? localityCode = const _Sentinel(),
+    Object? externalSyncMetadata = const _Sentinel(),
   }) {
     return Spot(
       id: id ?? this.id,
@@ -93,6 +103,13 @@ class Spot {
       googlePlaceIdSyncedAt: googlePlaceIdSyncedAt is _Sentinel
           ? this.googlePlaceIdSyncedAt
           : googlePlaceIdSyncedAt as DateTime?,
+      cityCode: cityCode is _Sentinel ? this.cityCode : cityCode as String?,
+      localityCode: localityCode is _Sentinel
+          ? this.localityCode
+          : localityCode as String?,
+      externalSyncMetadata: externalSyncMetadata is _Sentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
     );
   }
 
@@ -127,6 +144,9 @@ class Spot {
       'metadata': metadata,
       'googlePlaceId': googlePlaceId,
       'googlePlaceIdSyncedAt': googlePlaceIdSyncedAt?.toIso8601String(),
+      'cityCode': cityCode,
+      'localityCode': localityCode,
+      'externalSyncMetadata': externalSyncMetadata?.toJson(),
     };
   }
 
@@ -182,6 +202,13 @@ class Spot {
       googlePlaceId: json['googlePlaceId'],
       googlePlaceIdSyncedAt: json['googlePlaceIdSyncedAt'] != null
           ? DateTime.parse(json['googlePlaceIdSyncedAt'])
+          : null,
+      cityCode: json['cityCode'] as String?,
+      localityCode: json['localityCode'] as String?,
+      externalSyncMetadata: json['externalSyncMetadata'] is Map<String, dynamic>
+          ? ExternalSyncMetadata.fromJson(
+              json['externalSyncMetadata'] as Map<String, dynamic>,
+            )
           : null,
     );
   }

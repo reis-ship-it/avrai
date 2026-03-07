@@ -1,6 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:avrai/theme/colors.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
 
 /// SuggestedListCard - Card displaying an AI-suggested list
@@ -26,6 +32,7 @@ class SuggestedListCard extends StatelessWidget {
   final VoidCallback? onSave;
   final VoidCallback? onWhyThisList;
   final VoidCallback? onPin;
+  final VoidCallback? onUndoDismiss;
 
   /// Whether to show confirmation dialog before dismissing
   final bool confirmDismiss;
@@ -38,6 +45,7 @@ class SuggestedListCard extends StatelessWidget {
     this.onSave,
     this.onWhyThisList,
     this.onPin,
+    this.onUndoDismiss,
     this.confirmDismiss = true,
   });
 
@@ -58,7 +66,15 @@ class SuggestedListCard extends StatelessWidget {
       },
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
-          onDismiss?.call();
+          unawaited(
+            showUndoableNegativeFeedback(
+              context: context,
+              message: '${suggestedList.title} hidden for now.',
+              onOptimisticUpdate: onDismiss,
+              onUndo: onUndoDismiss,
+              onCommit: _recordNegativePreference,
+            ),
+          );
         } else {
           onSave?.call();
         }
@@ -333,5 +349,27 @@ class SuggestedListCard extends StatelessWidget {
       color: color.withValues(alpha: 0.1),
       child: Icon(icon, color: color),
     );
+  }
+
+  Future<void> _recordNegativePreference() async {
+    if (!di.sl.isRegistered<EntitySignatureService>()) {
+      return;
+    }
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+    await di.sl<EntitySignatureService>().recordNegativePreferenceSignal(
+          userId: userId,
+          title: suggestedList.title,
+          subtitle: suggestedList.description,
+          category: suggestedList.theme,
+          tags: <String>[
+            suggestedList.theme,
+            ...suggestedList.triggerReasons,
+          ],
+          intent: NegativePreferenceIntent.softIgnore,
+          entityType: 'suggested_list',
+        );
   }
 }
