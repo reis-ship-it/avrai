@@ -57,6 +57,10 @@ class LocalityAgentGlobalStateV1 extends Equatable {
   /// Optional per-dimension confidence (0..1).
   final List<double>? confidence12;
 
+  final double aggregateHappiness;
+  final int happinessSampleCount;
+  final double happinessTrendSlope;
+
   final DateTime updatedAtUtc;
 
   const LocalityAgentGlobalStateV1({
@@ -65,6 +69,9 @@ class LocalityAgentGlobalStateV1 extends Equatable {
     required this.sampleCount,
     required this.updatedAtUtc,
     this.confidence12,
+    this.aggregateHappiness = 0.5,
+    this.happinessSampleCount = 0,
+    this.happinessTrendSlope = 0.0,
   }) : assert(vector12.length == 12);
 
   static LocalityAgentGlobalStateV1 empty(LocalityAgentKeyV1 key) =>
@@ -73,6 +80,9 @@ class LocalityAgentGlobalStateV1 extends Equatable {
         vector12: List<double>.filled(12, 0.5),
         sampleCount: 0,
         confidence12: List<double>.filled(12, 0.0),
+        aggregateHappiness: 0.5,
+        happinessSampleCount: 0,
+        happinessTrendSlope: 0.0,
         updatedAtUtc: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       );
 
@@ -81,6 +91,9 @@ class LocalityAgentGlobalStateV1 extends Equatable {
         'vector12': vector12,
         'sampleCount': sampleCount,
         'confidence12': confidence12,
+        'aggregateHappiness': aggregateHappiness,
+        'happinessSampleCount': happinessSampleCount,
+        'happinessTrendSlope': happinessTrendSlope,
         'updatedAtUtc': updatedAtUtc.toIso8601String(),
       };
 
@@ -99,6 +112,12 @@ class LocalityAgentGlobalStateV1 extends Equatable {
       vector12: vec.length == 12 ? vec : List<double>.filled(12, 0.5),
       sampleCount: (json['sampleCount'] as num?)?.toInt() ?? 0,
       confidence12: conf?.length == 12 ? conf : null,
+      aggregateHappiness:
+          (json['aggregateHappiness'] as num?)?.toDouble() ?? 0.5,
+      happinessSampleCount:
+          (json['happinessSampleCount'] as num?)?.toInt() ?? 0,
+      happinessTrendSlope:
+          (json['happinessTrendSlope'] as num?)?.toDouble() ?? 0.0,
       updatedAtUtc:
           DateTime.tryParse((json['updatedAtUtc'] ?? '').toString()) ??
               DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
@@ -106,8 +125,16 @@ class LocalityAgentGlobalStateV1 extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [key, vector12, sampleCount, confidence12, updatedAtUtc];
+  List<Object?> get props => [
+        key,
+        vector12,
+        sampleCount,
+        confidence12,
+        aggregateHappiness,
+        happinessSampleCount,
+        happinessTrendSlope,
+        updatedAtUtc,
+      ];
 }
 
 /// Per-user private delta applied on top of global priors (v1).

@@ -14,6 +14,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_inference_head.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_projection_service.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/synthetic_locality_training_service.dart';
 
 // Database
 // Note: AppDatabase (Drift) is initialized in registerDeviceSyncServices() (injection_container_device_sync.dart)
@@ -26,6 +35,8 @@ import 'package:avrai_runtime_os/data/datasources/local/auth_drift_datasource.da
 import 'package:avrai_runtime_os/data/repositories/auth_repository_impl.dart';
 import 'package:avrai_runtime_os/domain/repositories/auth_repository.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_apple_usecase.dart';
+import 'package:avrai_runtime_os/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_up_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/auth/get_current_user_usecase.dart';
@@ -193,6 +204,13 @@ import 'package:avrai_runtime_os/services/places/google_place_id_finder_service_
 import 'package:avrai_runtime_os/services/places/google_places_sync_service.dart';
 import 'package:avrai_runtime_os/data/datasources/remote/google_places_datasource_new_impl.dart';
 import 'package:avrai_runtime_os/config/google_places_config.dart';
+import 'package:avrai_runtime_os/services/intake/air_gap_normalizer.dart';
+import 'package:avrai_runtime_os/services/intake/entity_fit_router.dart';
+import 'package:avrai_runtime_os/services/intake/organizer_sync_connection_advisor.dart';
+import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart';
+import 'package:avrai_runtime_os/services/intake/universal_intake_repository.dart';
+import 'package:avrai_runtime_os/services/admin/remote_source_health_service.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 
 // Admin Services (God-Mode Admin System)
 import 'package:avrai_runtime_os/services/business/business_account_service.dart';
