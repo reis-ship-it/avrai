@@ -1,0 +1,123 @@
+{
+  "packId": "bham-neighborhood-association-calendars-2023",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-12T13:39:52.914682Z",
+  "datasets": [
+    {
+      "sourceName": "Neighborhood Association Calendars",
+      "records": [
+        {
+          "record_id": "nhcal-east-avondale-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "community:east_avondale_neighborhood_association",
+          "title": "East Avondale Neighborhood Association",
+          "name": "East Avondale Neighborhood Association",
+          "community_name": "East Avondale Neighborhood Association",
+          "locality": "bham_east_avondale",
+          "meeting_dates": "Second Tuesday at 7:00 PM at New Bethel Baptist Church",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:30:00Z",
+          "category": "neighborhood_association",
+          "historical_admissibility": "retrospective_archive_calendar_reconstruction",
+          "historical_capture_method": "archival_reconstruction_from_bhamwiki",
+          "historical_validation_note": "Calendar lane reconstructed from archived neighborhood evidence documenting an active 2023 association meeting cadence.",
+          "retrospective_evidence": true,
+          "source_host": "bhamwiki.com",
+          "source_page_title": "East Avondale",
+          "historical_source_url": "https://www.bhamwiki.com/",
+          "source_excerpt": "Neighborhood association meets on the second Tuesday at New Bethel Baptist Church.",
+          "neighborhood_links": [
+            "East Avondale",
+            "New Bethel Baptist Church"
+          ],
+          "confidence": 0.79,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "nhcal-glen-iris-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "community:glen_iris_neighborhood_association",
+          "title": "Glen Iris Neighborhood Association",
+          "name": "Glen Iris Neighborhood Association",
+          "community_name": "Glen Iris Neighborhood Association",
+          "locality": "bham_glen_iris",
+          "meeting_dates": "First Monday at 6:30 PM at St. Elias Maronite Catholic Church",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:30:00Z",
+          "category": "neighborhood_association",
+          "historical_admissibility": "retrospective_archive_calendar_reconstruction",
+          "historical_capture_method": "archival_reconstruction_from_bhamwiki",
+          "historical_validation_note": "Calendar lane reconstructed from archived neighborhood evidence documenting an active 2023 association meeting cadence and leadership continuity.",
+          "retrospective_evidence": true,
+          "source_host": "bhamwiki.com",
+          "source_page_title": "Glen Iris",
+          "historical_source_url": "https://www.bhamwiki.com/",
+          "source_excerpt": "Neighborhood association meets on the first Monday at 6:30 PM at St. Elias; Rob Burton listed as president in the 2023-present period.",
+          "neighborhood_links": [
+            "Glen Iris",
+            "St. Elias Maronite Catholic Church"
+          ],
+          "confidence": 0.82,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "nhcal-wylam-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "community:wylam_neighborhood_association",
+          "title": "Wylam Neighborhood Association",
+          "name": "Wylam Neighborhood Association",
+          "community_name": "Wylam Neighborhood Association",
+          "locality": "bham_wylam",
+          "meeting_dates": "First Tuesday at 6:00 PM at Wylam Public Library",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:30:00Z",
+          "category": "neighborhood_association",
+          "historical_admissibility": "retrospective_archive_calendar_reconstruction",
+          "historical_capture_method": "archival_reconstruction_from_bhamwiki",
+          "historical_validation_note": "Calendar lane reconstructed from archived neighborhood evidence documenting an active 2023 association meeting cadence.",
+          "retrospective_evidence": true,
+          "source_host": "bhamwiki.com",
+          "source_page_title": "Wylam",
+          "historical_source_url": "https://www.bhamwiki.com/",
+          "source_excerpt": "Neighborhood association meets on the first Tuesday at 6:00 PM at Wylam Public Library.",
+          "neighborhood_links": [
+            "Wylam",
+            "Wylam Public Library"
+          ],
+          "confidence": 0.8,
+          "uncertainty_minutes": 10080
+        }
+      ],
+      "metadata": {
+        "status": "historicalized_partial",
+        "historicalPromotionPolicy": "archival_reconstruction",
+        "normalizationTargets": [
+          "events",
+          "communities",
+          "clubs",
+          "neighborhoods",
+          "localities"
+        ],
+        "sourceBasis": [
+          "Bhamwiki archive reconstruction"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "This pack makes the Neighborhood Association Calendars lane operational through governed archival reconstruction.",
+    "Rows are community cadence truth, not exact dated 2023 event-instance truth."
+  ],
+  "metadata": {
+    "reconstructionBasis": "Bhamwiki archived neighborhood association evidence"
+  }
+}

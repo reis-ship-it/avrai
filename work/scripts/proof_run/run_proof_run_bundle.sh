@@ -6,7 +6,11 @@ set -euo pipefail
 # Captures:
 # - iOS simulator screen recording (mp4)
 # - iOS simulator log stream (txt)
-# - proof-run ledger export files pulled from app container (csv/jsonl)
+# - proof-run export files pulled from app container
+#   - ledger rows (csv/jsonl)
+#   - background wake run records (json)
+#   - field validation proofs (json)
+#   - ambient-social diagnostics (json)
 # - flutter analyze output
 # - focused BLE/Signal suite output
 #
@@ -48,7 +52,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "== SPOTS proof run bundle =="
+echo "== AVRAI proof run bundle =="
 echo "timestamp: ${TS}"
 echo "bundle_id: ${APP_BUNDLE_ID}"
 echo
@@ -73,7 +77,7 @@ cat >"$MANIFEST_FILE" <<EOF
   "timestamp": "${TS}",
   "bundle_id": "${APP_BUNDLE_ID}",
   "git_sha": "${GIT_SHA}",
-  "notes": "iOS simulator proof run bundle. AI2AI encounter is simulated (no BLE transport)."
+  "notes": "iOS simulator proof run bundle. Encounter and wake coverage are simulated; no physical BLE transport claim is made."
 }
 EOF
 
@@ -161,18 +165,18 @@ cat >"$FINAL_DIR/manifest.json" <<EOF
     "flutter_analyze": "tests/flutter_analyze.txt",
     "ble_signal_suite": "tests/ble_signal_suite.txt"
   },
-  "notes": "iOS simulator proof run bundle. AI2AI encounter is simulated (no BLE transport)."
+  "notes": "iOS simulator proof run bundle. Encounter and wake coverage are simulated; no physical BLE transport claim is made."
 }
 EOF
 
 cat >"$FINAL_DIR/README.md" <<EOF
-## SPOTS proof run bundle
+## AVRAI proof run bundle
 
 This bundle is designed to be **handed to a skeptic**. It contains:
 
 - **Video**: \`video/\`
 - **Logs**: \`logs/ios_simulator_log_stream.txt\`
-- **Ledger receipts**: \`ledger/\` (CSV + JSONL)
+- **Proof export**: \`ledger/\` (ledger rows + background wake runs + field proofs + ambient-social diagnostics)
 - **Focused tests**: \`tests/\` (\`flutter analyze\` + BLE/Signal fast loop)
 
 ### Run identifiers
@@ -184,9 +188,9 @@ This bundle is designed to be **handed to a skeptic**. It contains:
 
 ### Truth note
 
-iOS simulator cannot do real BLE discovery. The AI2AI encounter in this bundle is a
-**simulation of the orchestrator hot-path** and is labeled as simulated in the
-ledger receipt payload and in \`manifest.json\`.
+iOS simulator cannot do real BLE discovery. The encounter and background wake
+coverage in this bundle are **simulated orchestrator/headless-path proofs** and
+are labeled as simulated in \`manifest.json\`.
 
 EOF
 
@@ -211,4 +215,3 @@ echo
 echo "DONE."
 echo "Folder: $FINAL_DIR"
 echo "Zip:    $ZIP_FILE"
-

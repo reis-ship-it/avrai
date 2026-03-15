@@ -10,6 +10,11 @@ This document is not a claim that all listed capabilities are complete today. It
 - what must be aligned to the launch pack
 - what must be added, tightened, or rewritten before wave 1 is truly launch-ready
 
+This checklist should be read alongside the newer explicit beta contract documents:
+
+- `10_REALITY_MODEL_BUILD_CONTRACT.md`
+- `11_PRIVATE_AGENT_INFRASTRUCTURE_AND_CERTAINTY_PLAN.md`
+
 ## Status Legend
 
 - `Anchor exists`: a relevant implementation surface already exists
@@ -188,6 +193,12 @@ This document is not a claim that all listed capabilities are complete today. It
 - `Add` Explicit isolated-single-device mode behavior in runtime contracts and user-facing status
 - `Adapt` Separate governance truth and behavior truth in runtime decisioning
 - `Add` Downward conviction flow as learned lens without automatic user-facing behavior override unless governance requires it
+- `Add` Explicit runtime-OS operational learning lane:
+  - recovery outcomes
+  - failure signatures
+  - resource-budget adaptation
+  - transport reliability learning
+  - bounded rollback/promotion feedback into core OS
 
 ## 6. Runtime OS: AI2AI, Mesh, Relay, And Locality
 
@@ -219,6 +230,31 @@ This document is not a claim that all listed capabilities are complete today. It
 - `Adapt` Locality propagation rules so conflicts rise upward and convictions can flow back downward
 - `Add` AI2AI success-time metric aligned with the launch gate definition
 
+## 6A. Admin: OS Operations Chat
+
+### Anchor Files
+
+- `apps/admin_app/`
+- `runtime/avrai_runtime_os/lib/kernel/os/*`
+- `runtime/avrai_runtime_os/lib/services/security/*`
+- `runtime/avrai_runtime_os/lib/services/transport/*`
+
+### Checklist
+
+- `Add` Direct admin-to-OS operational chat surface separate from end-user chat
+- `Add` OS chat topics:
+  - security
+  - health
+  - operational value
+  - recovery
+  - drift
+  - reliability
+  - kernel status
+  - transport quality
+  - rollback / rollout behavior
+- `Add` Full audit trail for admin-to-OS chat interactions
+- `Add` Governance bounds so OS chat cannot bypass human admin authority
+
 ## 7. Runtime OS: Local Models, Recommendations, And Outcome Learning
 
 ### Anchor Files
@@ -246,6 +282,10 @@ This document is not a claim that all listed capabilities are complete today. It
 
 ### Anchor Files
 
+- `runtime/avrai_runtime_os/lib/simulation/*`
+- `runtime/avrai_runtime_os/lib/simulation/engine/*`
+- `runtime/avrai_runtime_os/lib/simulation/models/*`
+- `runtime/avrai_runtime_os/lib/services/prediction/swarm_prior_loader.dart`
 - `runtime/avrai_runtime_os/lib/services/places/*`
 - `runtime/avrai_runtime_os/lib/services/community/*`
 - `runtime/avrai_runtime_os/lib/services/events/*`
@@ -254,6 +294,7 @@ This document is not a claim that all listed capabilities are complete today. It
 
 ### Checklist
 
+- `Add` Birmingham-specific simulation baseline and prior artifact export for wave-1 seed quality
 - `Adapt` Place graph preload + simulation + live user update path for Birmingham
 - `Add` Settled-DNA rule:
   - 2 weeks of consistent real-world behavior, or

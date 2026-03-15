@@ -1,0 +1,128 @@
+{
+  "artifactId": "bham-provided-source-inputs-2023-2026-03-11",
+  "loggedAtUtc": "2026-03-11T20:15:00Z",
+  "notes": [
+    "Explicit record of user-provided BHAM source inputs, files, links, and access grants for Wave 8 replay intake.",
+    "Sensitive credentials are intentionally omitted from this artifact."
+  ],
+  "accessProvisioned": [
+    {
+      "sourceName": "BEA / U.S. Census Bureau Economic Series",
+      "state": "provisioned_locally",
+      "credentialStoredInRepo": false,
+      "validated": true,
+      "validatedNotes": [
+        "Jefferson County 01073 CAINC1 line 3 year 2023 query succeeded on 2026-03-11."
+      ],
+      "refs": [
+        "https://apps.bea.gov/api/_pdf/bea_web_service_api_user_guide.pdf",
+        "https://apps.bea.gov/API/_pdf/bea_api_tos.pdf",
+        "https://apps.bea.gov/developers/r-index.htm",
+        "https://github.com/us-bea/",
+        "https://github.com/us-bea/bea_geo_aggregator"
+      ]
+    }
+  ],
+  "sourceGroups": [
+    {
+      "groupName": "UAB",
+      "state": "provided",
+      "refs": [
+        "https://calendar.uab.edu/calendar/day/2023/1/1?card_size=small&order=date&days=366&experience=",
+        "https://www.uab.edu/students/academics/academic-calendar/2022-2023",
+        "https://www.uab.edu/students/academics/academic-calendar/2023-2024"
+      ],
+      "notes": [
+        "Academic term windows are directly available.",
+        "Event-level normalization is still pending.",
+        "Clinical-schedule extraction is still pending."
+      ]
+    },
+    {
+      "groupName": "City of Birmingham OpenGov",
+      "state": "provided",
+      "refs": [
+        "https://data.birminghamal.gov/dataset/",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/e8caddb7-6cdc-42a5-8927-8e7d7e9eed3e/acfr-print-file-01222024.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/9113d270-945f-4d8b-bf9a-1fc116445763/fy23-official-operating-budget-final.pdf",
+        "https://data.birminghamal.gov/dataset/birmingham-planning-commission-archive-2023-2019",
+        "https://data.birminghamal.gov/dataset/magic-city-classic-contract-2023-2026/resource/0383f73c-486d-45a8-a593-9ecf184a1602",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/83954d55-51a3-4a57-8181-bcd00d961ead/open-data-east-dec-2023.csv",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/21397b4a-e99a-42f5-993f-713c87742653/open-data-north-dec-2023.csv",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/fb772dd6-8b92-4735-978c-790bd4c21e10/open-data-south-dec-2023.csv",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/4b3640fe-ccea-4135-acce-dd5ee1b28c16/open-data-west-dec-2023.csv"
+      ],
+      "notes": [
+        "Planning commission archive is useful later for locality/zoning/permitting context.",
+        "Crime CSVs are partial public safety inputs, not a full court/dispatch replacement."
+      ]
+    },
+    {
+      "groupName": "Municipal finance",
+      "state": "partially_provided",
+      "refs": [
+        "/Users/reisgordon/Downloads/2023.2.3.open-data.finance.advertising-invoice-and-payment-reports.bhamtimes.pdf",
+        "/Users/reisgordon/Downloads/budget-by-revenue-type-january-2023.pdf",
+        "/Users/reisgordon/Downloads/budget-by-revenue-type-february-2023.pdf",
+        "/Users/reisgordon/Downloads/budget-by-revenue-type-march-2023.pdf",
+        "/Users/reisgordon/Downloads/budget-by-revenue-type-april-2023.pdf",
+        "/Users/reisgordon/Downloads/budget-by-revenue-type-may-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/5fc81463-230b-403c-a889-784c7a26a1e3/budget-by-revenue-type-july-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/65462364-d758-4d08-91b2-231426d7ba87/budget-by-revenue-type-august-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/684bc3f1-2510-49e6-a77a-638a880f701c/budget-by-revenue-type-september-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/6ba74459-dd9f-4dc2-94ff-4a4b5e91f841/budget-by-revenue-type-october-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/9afa850e-1062-4bff-95d6-8f7582cee4dc/budget-by-revenue-type-november-2023.pdf",
+        "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/8be4284c-24af-49f1-b49a-92da05fc8587/budget-by-revenue-type-december-2023.pdf"
+      ],
+      "notes": [
+        "January-May were inspected locally.",
+        "June 2023 revenue is still missing."
+      ]
+    },
+    {
+      "groupName": "Housing",
+      "state": "provided",
+      "refs": [
+        "/Users/reisgordon/Downloads/Redfin Monthly Housing Market Data-2.pdf"
+      ],
+      "notes": [
+        "Public Redfin monthly housing data is sufficient for a first-pass housing signal lane."
+      ]
+    },
+    {
+      "groupName": "Culture and events",
+      "state": "provided_but_not_registry_elevated",
+      "refs": [
+        "https://birmingham365.org",
+        "https://www.birminghamal.gov/play/city-birmingham-festivals",
+        "https://www.birminghamal.gov/play/arts-museums"
+      ],
+      "notes": [
+        "These are useful for later event/culture enrichment.",
+        "Historical 2023 extraction and normalization are still pending."
+      ]
+    }
+  ],
+  "deferredOrUnavailable": [
+    {
+      "sourceName": "Data Axle / InfoGroup Business Listings",
+      "state": "deferred",
+      "reason": "Paid access not desired right now."
+    },
+    {
+      "sourceName": "Resy / OpenTable / Venue Reservation Exports",
+      "state": "unavailable",
+      "reason": "Restaurant-partner access required."
+    },
+    {
+      "sourceName": "DoorDash / Uber Eats merchant analytics",
+      "state": "unavailable",
+      "reason": "Merchant/customer export access required."
+    },
+    {
+      "sourceName": "Municipal court / records",
+      "state": "unavailable",
+      "reason": "Records were not obtained."
+    }
+  ]
+}

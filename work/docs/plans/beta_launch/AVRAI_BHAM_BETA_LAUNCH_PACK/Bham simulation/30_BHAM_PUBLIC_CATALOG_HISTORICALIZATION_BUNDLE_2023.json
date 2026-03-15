@@ -1,0 +1,188 @@
+{
+  "bundleId": "bham-public-catalog-historicalization-2023",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-12T06:42:54.557941Z",
+  "entries": [
+    {
+      "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+      "sourceUri": "https://www.rpcgb.org/data-and-maps-downloads",
+      "coverageStatus": "current_spatial_catalog",
+      "recordCount": 29,
+      "requiredHistoricalFields": [
+        "historical_source_url",
+        "historical_capture_method",
+        "record_id",
+        "entity_id",
+        "entity_type",
+        "name",
+        "observed_at",
+        "published_at",
+        "valid_from",
+        "valid_to",
+        "historical_validation_note"
+      ],
+      "sourceSpecificActions": [
+        "Replace current catalog rows with year-valid 2023 geometry, parcel, building, or zoning exports.",
+        "Prefer official 2023 downloads, snapshots, or archived RPCGB/ArcGIS items over current landing-page links.",
+        "Convert structural catalog items into locality, parcel, building, housing, or economic replay rows only when year validity is explicit."
+      ],
+      "samples": [
+        {
+          "name": "Regional Transportation Plan",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region",
+          "recordId": "rpcgb-1"
+        },
+        {
+          "name": "Building Communities Program",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region",
+          "recordId": "rpcgb-2"
+        },
+        {
+          "name": "Employment",
+          "entityType": "economic_signal",
+          "locality": "greater_birmingham_region",
+          "recordId": "rpcgb-4"
+        },
+        {
+          "name": "RPCGB Open Data Portal",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region",
+          "recordId": "rpcgb-5"
+        },
+        {
+          "name": "Regional Trends, 2023 (2025)",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region",
+          "recordId": "rpcgb-6"
+        }
+      ],
+      "notes": [
+        "Current lane is operational, but still structural spatial catalog truth rather than governed 2023 parcel/building truth."
+      ]
+    },
+    {
+      "sourceName": "Eventbrite / Meetup",
+      "sourceUri": "https://www.eventbrite.com/d/al--birmingham/events/",
+      "coverageStatus": "current_community_event_catalog",
+      "recordCount": 89,
+      "requiredHistoricalFields": [
+        "historical_source_url",
+        "historical_capture_method",
+        "record_id",
+        "entity_id",
+        "entity_type",
+        "name",
+        "observed_at",
+        "published_at",
+        "valid_from",
+        "valid_to",
+        "historical_validation_note"
+      ],
+      "sourceSpecificActions": [
+        "Replace current discovery pages with archived or year-valid 2023 event/group rows.",
+        "Dedupe against official venue calendars and city event truth before promotion.",
+        "Keep only event, community, or club rows with explicit Birmingham locality and date validity."
+      ],
+      "samples": [
+        {
+          "name": "Find Events",
+          "entityType": "event",
+          "locality": "bham_metro_regional",
+          "recordId": "evt-1"
+        },
+        {
+          "name": "Get Started",
+          "entityType": "event",
+          "locality": "bham_metro_regional",
+          "recordId": "evt-2"
+        },
+        {
+          "name": "Birmingham Speed Dating for Singles Age 23-39 ♥ Alabama at Denim On 7th",
+          "entityType": "event",
+          "locality": "bham_metro_regional",
+          "recordId": "evt-3"
+        },
+        {
+          "name": "Stand on Business Steppas Ball",
+          "entityType": "event",
+          "locality": "bham_metro_regional",
+          "recordId": "evt-4"
+        },
+        {
+          "name": "R&B & SOUTHERN SOUL MONTHLY PARTY SERIES: MIKE CLARK JR. PERFORMING LIVE!!",
+          "entityType": "event",
+          "locality": "bham_metro_regional",
+          "recordId": "evt-5"
+        }
+      ],
+      "notes": [
+        "Current lane is operational, but still public community-event catalog truth rather than governed 2023 historical event truth."
+      ]
+    },
+    {
+      "sourceName": "IN Birmingham (CVB Calendar)",
+      "sourceUri": "https://inbirmingham.com/festivals-and-events/",
+      "coverageStatus": "current_tourism_catalog",
+      "recordCount": 28,
+      "requiredHistoricalFields": [
+        "historical_source_url",
+        "historical_capture_method",
+        "record_id",
+        "entity_id",
+        "entity_type",
+        "name",
+        "observed_at",
+        "published_at",
+        "valid_from",
+        "valid_to",
+        "historical_validation_note"
+      ],
+      "sourceSpecificActions": [
+        "Replace current guides and tourism landing pages with archived 2023 event or neighborhood/community rows.",
+        "Prefer official 2023 CVB event pages or archived captures with explicit date validity.",
+        "Dedupe venue and event truth against official city pages, BJCC, and major venue calendars before promotion."
+      ],
+      "samples": [
+        {
+          "name": "Birmingham Guides",
+          "entityType": "locality",
+          "locality": "bham_metro_regional",
+          "recordId": "inbham-1"
+        },
+        {
+          "name": "Avondale / Crestwood Visit Avondale / Crestwood",
+          "entityType": "community",
+          "locality": "bham_avondale",
+          "recordId": "inbham-2"
+        },
+        {
+          "name": "Bessemer Visit Bessemer",
+          "entityType": "community",
+          "locality": "bham_metro_regional",
+          "recordId": "inbham-3"
+        },
+        {
+          "name": "Downtown Visit Downtown",
+          "entityType": "community",
+          "locality": "bham_downtown",
+          "recordId": "inbham-4"
+        },
+        {
+          "name": "Fultondale Visit Fultondale",
+          "entityType": "community",
+          "locality": "bham_metro_regional",
+          "recordId": "inbham-5"
+        }
+      ],
+      "notes": [
+        "Current lane is operational, but still tourism/community catalog truth rather than governed 2023 historical event truth."
+      ]
+    }
+  ],
+  "notes": [
+    "Operational public catalogs should not be promoted to replay truth until replaced by governed year-valid 2023 historical rows.",
+    "This bundle is the handoff from public-catalog seeding to archival or year-valid historicalization."
+  ]
+}

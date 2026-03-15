@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AVRAI Consumer Beta Portal Reference Board</title>
+    <script
+      src="https://mcp.figma.com/mcp/html-to-design/capture.js"
+      async
+    ></script>
+    <style>
+      :root {
+        --ink: #e7edf7;
+        --muted: #91a1ba;
+        --deep-night: #0a1a2f;
+        --sky-day: #3380e6;
+        --sky-night: #0d0d26;
+        --grass-day: #1a991a;
+        --water-night: #0e1626;
+        --electric-green: #00ff66;
+        --platinum: #e0e0e0;
+        --mid-grey: #b0b0b0;
+        --gunmetal-light: #707070;
+        --charcoal: #404040;
+        --graphite: #303030;
+        --card-stroke: rgba(255, 255, 255, 0.12);
+        --glass-fill: rgba(18, 29, 44, 0.34);
+        --shadow: 0 36px 90px rgba(0, 0, 0, 0.42);
+        --hero-shadow: 0 60px 120px rgba(0, 0, 0, 0.48);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 0%, rgba(51, 128, 230, 0.32), transparent 30%),
+          radial-gradient(circle at 86% 14%, rgba(0, 255, 102, 0.16), transparent 22%),
+          linear-gradient(180deg, #081221 0%, #09192a 38%, #081019 100%);
+      }
+
+      .board {
+        width: 1720px;
+        margin: 0 auto;
+        padding: 52px 40px 120px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 460px;
+        padding: 34px 36px 40px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 38px;
+        background:
+          radial-gradient(circle at 30% 15%, rgba(255, 255, 255, 0.16), transparent 18%),
+          linear-gradient(180deg, rgba(20, 36, 58, 0.72) 0%, rgba(10, 16, 28, 0.76) 100%);
+        box-shadow: var(--hero-shadow);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 24% 14%, rgba(244, 249, 255, 0.18), transparent 16%),
+          radial-gradient(circle at 76% 12%, rgba(0, 255, 102, 0.12), transparent 14%),
+          linear-gradient(180deg, rgba(51, 128, 230, 0.45) 0%, rgba(8, 24, 47, 0) 38%);
+        pointer-events: none;
+      }
+
+      .hills {
+        position: absolute;
+        inset: auto 0 0;
+        height: 220px;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .hill {
+        position: absolute;
+        bottom: -24px;
+        border-radius: 50%;
+        filter: blur(1px);
+      }
+
+      .hill.one {
+        left: -6%;
+        width: 44%;
+        height: 160px;
+        background: linear-gradient(180deg, rgba(44, 167, 78, 0.92), rgba(9, 44, 19, 0.98));
+      }
+
+      .hill.two {
+        left: 26%;
+        width: 36%;
+        height: 180px;
+        background: linear-gradient(180deg, rgba(38, 141, 67, 0.94), rgba(7, 34, 15, 1));
+      }
+
+      .hill.three {
+        right: -4%;
+        width: 42%;
+        height: 170px;
+        background: linear-gradient(180deg, rgba(25, 119, 53, 0.9), rgba(6, 27, 14, 1));
+      }
+
+      .hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1.02fr 0.98fr;
+        gap: 26px;
+        align-items: start;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: rgba(8, 12, 24, 0.28);
+        color: rgba(231, 237, 247, 0.88);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--electric-green);
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.66);
+      }
+
+      h1,
+      h2,
+      h3,
+      .metal {
+        margin: 0;
+        letter-spacing: -0.03em;
+        color: transparent;
+        background:
+          linear-gradient(
+            135deg,
+            var(--platinum) 0%,
+            #f5f5f5 18%,
+            var(--mid-grey) 34%,
+            var(--platinum) 58%,
+            var(--gunmetal-light) 80%,
+            var(--graphite) 100%
+          );
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+      }
+
+      h1 {
+        margin-top: 18px;
+        font-size: 54px;
+        line-height: 0.96;
+      }
+
+      .lede {
+        max-width: 660px;
+        margin: 18px 0 0;
+        color: rgba(231, 237, 247, 0.84);
+        font-size: 19px;
+        line-height: 1.55;
+      }
+
+      .hero-notes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 26px;
+      }
+
+      .glass-card,
+      .section,
+      .mini-card,
+      .comparison-card,
+      .lane-card {
+        border: 1px solid var(--card-stroke);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.02) 100%),
+          var(--glass-fill);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(28px);
+      }
+
+      .mini-card {
+        padding: 16px 18px 18px;
+        border-radius: 22px;
+      }
+
+      .mini-card strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--ink);
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .mini-card p,
+      .section p,
+      .comparison-card p,
+      .lane-card p,
+      .body-copy {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .portal-mock {
+        position: relative;
+        min-height: 360px;
+        padding: 28px;
+        border-radius: 32px;
+      }
+
+      .portal-mock .slate {
+        position: relative;
+        width: 100%;
+        min-height: 300px;
+        padding: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 34px;
+        background:
+          linear-gradient(180deg, rgba(24, 36, 54, 0.54), rgba(11, 18, 29, 0.48)),
+          rgba(19, 28, 42, 0.28);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.18),
+          inset 0 -24px 80px rgba(0, 0, 0, 0.2),
+          0 32px 70px rgba(0, 0, 0, 0.44);
+        backdrop-filter: blur(34px);
+      }
+
+      .portal-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .portal-brand {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+      }
+
+      .chrome {
+        display: flex;
+        gap: 10px;
+      }
+
+      .chrome span,
+      .ghost-chip {
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        display: inline-flex;
+        align-items: center;
+        color: rgba(231, 237, 247, 0.92);
+        font-size: 12px;
+      }
+
+      .portal-shell {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .map-well {
+        position: relative;
+        min-height: 190px;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+          radial-gradient(circle at 70% 24%, rgba(51, 128, 230, 0.28), transparent 18%),
+          linear-gradient(180deg, rgba(7, 13, 23, 0.92), rgba(13, 20, 31, 0.96));
+        box-shadow:
+          inset 0 18px 40px rgba(0, 0, 0, 0.34),
+          inset 0 -16px 28px rgba(255, 255, 255, 0.04),
+          0 16px 32px rgba(0, 0, 0, 0.26);
+        overflow: hidden;
+      }
+
+      .map-well::before,
+      .map-well::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+
+      .map-well::before {
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 100%),
+          linear-gradient(rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 100%);
+        background-size: 52px 52px;
+        opacity: 0.34;
+      }
+
+      .map-well::after {
+        background: radial-gradient(circle at center, transparent 0 34%, rgba(0, 0, 0, 0.42) 100%);
+      }
+
+      .pin {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--electric-green);
+        box-shadow: 0 0 22px rgba(0, 255, 102, 0.86);
+      }
+
+      .pin.one {
+        top: 32%;
+        left: 24%;
+      }
+
+      .pin.two {
+        top: 54%;
+        left: 58%;
+      }
+
+      .pin.three {
+        top: 22%;
+        left: 70%;
+      }
+
+      .side-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .info-card,
+      .action-card {
+        padding: 16px 18px;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .action-card {
+        background:
+          linear-gradient(135deg, rgba(0, 255, 102, 0.18), rgba(0, 255, 102, 0.04)),
+          rgba(255, 255, 255, 0.06);
+      }
+
+      .info-card strong,
+      .action-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        margin-top: 28px;
+      }
+
+      .section {
+        padding: 26px;
+        border-radius: 30px;
+      }
+
+      .section h2 {
+        font-size: 32px;
+        margin-bottom: 14px;
+      }
+
+      .principles {
+        display: grid;
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .principle {
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .principle .tag {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(231, 237, 247, 0.86);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .principle strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--ink);
+        font-size: 18px;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .swatch {
+        overflow: hidden;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .swatch-tone {
+        height: 106px;
+      }
+
+      .swatch-copy {
+        padding: 14px 16px 18px;
+      }
+
+      .swatch-copy strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .swatch-copy code {
+        color: rgba(231, 237, 247, 0.74);
+        font-size: 13px;
+      }
+
+      .comparison {
+        margin-top: 28px;
+      }
+
+      .comparison h2 {
+        margin-bottom: 14px;
+        font-size: 34px;
+      }
+
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .comparison-card {
+        padding: 20px;
+        border-radius: 26px;
+      }
+
+      .comparison-card strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ink);
+        font-size: 16px;
+      }
+
+      .comparison-card .current,
+      .comparison-card .target {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .comparison-card .current::before,
+      .comparison-card .target::before {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .comparison-card .current::before {
+        content: "Current Atlas";
+        color: rgba(231, 237, 247, 0.62);
+      }
+
+      .comparison-card .target::before {
+        content: "Portal Pass";
+        color: var(--electric-green);
+      }
+
+      .lane-section {
+        margin-top: 28px;
+      }
+
+      .lane-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .lane-card {
+        padding: 20px;
+        border-radius: 26px;
+      }
+
+      .lane-card .lane-kicker {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(231, 237, 247, 0.84);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .lane-card strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ink);
+        font-size: 17px;
+      }
+
+      .footer-note {
+        margin-top: 24px;
+        padding: 18px 20px;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 255, 102, 0.18);
+        background:
+          linear-gradient(135deg, rgba(0, 255, 102, 0.08), rgba(0, 255, 102, 0.02)),
+          rgba(255, 255, 255, 0.04);
+        color: rgba(231, 237, 247, 0.9);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="board">
+      <section class="hero">
+        <div class="hills">
+          <div class="hill one"></div>
+          <div class="hill two"></div>
+          <div class="hill three"></div>
+        </div>
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Portal Design Reference For Beta Page Review</div>
+            <h1>Consumer beta pages, re-read through the portal lens.</h1>
+            <p class="lede">
+              This board condenses the portal design system into a Figma-friendly reference page so the
+              neutral consumer beta atlas can be reviewed in the same file against the intended world,
+              slate, chrome, and motion language.
+            </p>
+            <div class="hero-notes">
+              <article class="mini-card">
+                <strong>Portal World</strong>
+                <p>Procedural sky, horizon, grass, night depth, and visible negative border around the UI.</p>
+              </article>
+              <article class="mini-card">
+                <strong>Glass Slate</strong>
+                <p>High-blur translucent container with metallic edge treatment instead of white cards on flat grey.</p>
+              </article>
+              <article class="mini-card">
+                <strong>Metallic Type</strong>
+                <p>Primary headings and the avrai wordmark use Satin Titanium treatment with light-driven contrast.</p>
+              </article>
+              <article class="mini-card">
+                <strong>Action Green</strong>
+                <p>Electric Green marks the key moments: motion, active state, map pins, and emphasis.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="glass-card portal-mock">
+            <div class="slate">
+              <div class="portal-topbar">
+                <div class="portal-brand metal">avrai</div>
+                <div class="chrome">
+                  <span>north locked</span>
+                  <span>beta portal</span>
+                </div>
+              </div>
+              <div class="portal-shell">
+                <div class="map-well">
+                  <span class="pin one"></span>
+                  <span class="pin two"></span>
+                  <span class="pin three"></span>
+                </div>
+                <div class="side-stack">
+                  <div class="info-card">
+                    <strong>Glass Slate</strong>
+                    <p>Primary canvas floats over the world and keeps the horizon visible around the edges.</p>
+                  </div>
+                  <div class="info-card">
+                    <strong>Recessed Instrument</strong>
+                    <p>Maps and data wells sit inside the slate rather than on top of it.</p>
+                  </div>
+                  <div class="action-card">
+                    <strong>Electric Green</strong>
+                    <p>Use for motion cues, active CTAs, status signals, and meaningful pins only.</p>
+                  </div>
+                  <div class="ghost-chip">know you belong.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="section">
+          <h2>Portal Principles</h2>
+          <p class="body-copy">
+            The beta atlas currently documents neutral white mobile frames. This review page isolates the
+            visual moves that should be present once those same flows inherit the full portal system.
+          </p>
+          <div class="principles">
+            <div class="principle">
+              <span class="tag">World</span>
+              <strong>Every screen sits over a living environment.</strong>
+              <p>Sky, cloud, grass, and night states are not decorative wallpaper. They set depth and orientation.</p>
+            </div>
+            <div class="principle">
+              <span class="tag">Container</span>
+              <strong>The slate is the product surface.</strong>
+              <p>Blurred glass, metallic border, soft interior shadow, and negative border around the device frame.</p>
+            </div>
+            <div class="principle">
+              <span class="tag">Typography</span>
+              <strong>Headlines feel machined, not flat.</strong>
+              <p>Satin Titanium heading treatment carries the sense of craft and precision across hero moments.</p>
+            </div>
+            <div class="principle">
+              <span class="tag">Maps</span>
+              <strong>Maps become recessed instruments.</strong>
+              <p>Deep wells, vignettes, crosshair logic, and glowing pins replace light neutral cards with embedded maps.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="section">
+          <h2>Portal Palette</h2>
+          <p class="body-copy">
+            Colors pulled from the portal report and brand-book copy. Use these as the comparison anchor
+            when judging whether beta screens still read as neutral prototype or actual portal product.
+          </p>
+          <div class="swatches">
+            <article class="swatch">
+              <div class="swatch-tone" style="background:#0a1a2f"></div>
+              <div class="swatch-copy">
+                <strong>Deep Night</strong>
+                <code>#0A1A2F</code>
+              </div>
+            </article>
+            <article class="swatch">
+              <div class="swatch-tone" style="background:#3380e6"></div>
+              <div class="swatch-copy">
+                <strong>Sky Day</strong>
+                <code>#3380E6</code>
+              </div>
+            </article>
+            <article class="swatch">
+              <div class="swatch-tone" style="background:#1a991a"></div>
+              <div class="swatch-copy">
+                <strong>Grass Day</strong>
+                <code>#1A991A</code>
+              </div>
+            </article>
+            <article class="swatch">
+              <div class="swatch-tone" style="background:#00ff66"></div>
+              <div class="swatch-copy">
+                <strong>Electric Green</strong>
+                <code>#00FF66</code>
+              </div>
+            </article>
+            <article class="swatch">
+              <div
+                class="swatch-tone"
+                style="background:linear-gradient(135deg,#e0e0e0 0%,#b0b0b0 34%,#e0e0e0 58%,#909090 100%)"
+              ></div>
+              <div class="swatch-copy">
+                <strong>Satin Titanium</strong>
+                <code>#E0E0E0 · #B0B0B0 · #909090</code>
+              </div>
+            </article>
+            <article class="swatch">
+              <div class="swatch-tone" style="background:#303030"></div>
+              <div class="swatch-copy">
+                <strong>Deep Graphite</strong>
+                <code>#303030</code>
+              </div>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <section class="comparison">
+        <h2>Beta Atlas To Portal Pass</h2>
+        <div class="comparison-grid">
+          <article class="comparison-card">
+            <strong>Background And Depth</strong>
+            <p>Move from flat light grey phone canvases to a world-backed composition with visible breathing room.</p>
+            <p class="current">Neutral white screens on soft grey surface with no atmospheric depth.</p>
+            <p class="target">World visible around the slate, day or night sky mood, and depth established before content.</p>
+          </article>
+          <article class="comparison-card">
+            <strong>Surfaces And Borders</strong>
+            <p>Replace ordinary cards with translucent glass containers and stronger edge logic.</p>
+            <p class="current">Rounded white cards with low-contrast borders and flat hierarchy.</p>
+            <p class="target">Blurred glass, interior shading, metallic border cues, and fewer but more intentional layers.</p>
+          </article>
+          <article class="comparison-card">
+            <strong>Typography And Brand Moments</strong>
+            <p>Promote the branded surface language in entry points and key destinations.</p>
+            <p class="current">Standard dark text with limited distinction between product chrome and body copy.</p>
+            <p class="target">Metallic avrai headings, sharper title hierarchy, and calmer low-contrast secondary copy.</p>
+          </article>
+          <article class="comparison-card">
+            <strong>Maps And Data Wells</strong>
+            <p>High-value spatial modules should feel embedded and instrument-like.</p>
+            <p class="current">Maps behave like a normal card or placeholder block within the flow.</p>
+            <p class="target">Recessed map well, vignettes, crosshair logic, and green pins against dark terrain styling.</p>
+          </article>
+          <article class="comparison-card">
+            <strong>Navigation Chrome</strong>
+            <p>Chrome should feel engineered, not generic mobile scaffolding.</p>
+            <p class="current">Conventional nav bars, pills, and utility icons on light backgrounds.</p>
+            <p class="target">Lightweight metallic or translucent chrome floating above the slate with deliberate accent use.</p>
+          </article>
+          <article class="comparison-card">
+            <strong>Motion And State</strong>
+            <p>Portal screens gain their feel from world motion, shimmer, and focus behavior.</p>
+            <p class="current">Static white mock frames imply little about animation or environmental response.</p>
+            <p class="target">Subtle world movement, shimmer in metallic type, turbine loading, and deeper focus mode states.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lane-section">
+        <h2 class="metal">Review Prompts By Lane</h2>
+        <div class="lane-grid">
+          <article class="lane-card">
+            <div class="lane-kicker">Auth</div>
+            <strong>Make entry feel like opening the world.</strong>
+            <p>Login and signup should shift from plain form stacks toward a slate-on-world composition with branded chrome.</p>
+          </article>
+          <article class="lane-card">
+            <div class="lane-kicker">Onboarding</div>
+            <strong>Keep the funnel calm, but atmospheric.</strong>
+            <p>Questionnaire and consent can stay structured while inheriting portal depth, metallic headers, and stronger progress affordances.</p>
+          </article>
+          <article class="lane-card">
+            <div class="lane-kicker">Discovery</div>
+            <strong>The home shell should justify the portal system.</strong>
+            <p>Home, explore, map, and AI surfaces need the full recessed-map and floating-slate treatment more than any other lane.</p>
+          </article>
+          <article class="lane-card">
+            <div class="lane-kicker">Objects</div>
+            <strong>Detail pages should feel instrumented.</strong>
+            <p>Spot, list, event, and reservation flows should read as machined modules with embedded media and stronger chrome hierarchy.</p>
+          </article>
+        </div>
+        <div class="footer-note">
+          The consumer beta atlas remains the route inventory. This page is the portal comparison layer to sit beside it in the same Figma file for rapid visual switching.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

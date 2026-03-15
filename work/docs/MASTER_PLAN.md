@@ -12,6 +12,7 @@
 **Admin command-center ideal architecture alignment audit:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`  
 **Admin private-server security implementation checklist:** `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`  
 **Admin command-center future references registry:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`  
+**Autonomous security immune system doctrine:** `docs/plans/architecture/AUTONOMOUS_SECURITY_IMMUNE_SYSTEM_2026-03-13.md`  
 **Canonical experiment/training script registry:** `docs/EXPERIMENT_REGISTRY.md` (generated from `configs/experiments/EXPERIMENT_REGISTRY.csv`)  
 **Canonical AVRAI-native training data contracts:** `configs/ml/feature_label_contracts.json` + `configs/ml/avrai_native_type_contracts.json`  
 **Canonical build-doc wiring index:** `docs/plans/methodology/BUILD_DOCS_WIRING_INDEX.md`  
@@ -183,6 +184,7 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 - `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`
 - `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`
 - `docs/plans/architecture/ADMIN_COMMAND_CENTER_FUTURE_REFERENCES_2026-02-28.md`
+- `docs/plans/architecture/AUTONOMOUS_SECURITY_IMMUNE_SYSTEM_2026-03-13.md`
 - `docs/security/RED_TEAM_TEST_MATRIX.md`
 - `docs/EXPERIMENT_REGISTRY.md`
 - `docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`
@@ -1160,13 +1162,39 @@ Uses the transition predictor to simulate action sequences and pick the best one
 | 6.1.13 | **Community creator intelligence.** The MPC planner must support community host/admin actions: `(plan_community_event, set_event_parameters, invite_target_members, select_venue, schedule_event)`. Uses the community's fabric invariants (Phase 3.4.4) and member satisfaction history to predict which event types will engage current members. The planner helps creators answer: "What should our community do next?" by simulating event outcomes for different event types/venues/times. Wire into community admin tools as "Suggested Next Event" with explanation |
 | 6.1.14 | **Event creator optimization.** For event hosts (community or individual), the MPC planner optimizes event parameters BEFORE the event is created: (a) Predict optimal time slot by simulating attendance for different time options, (b) Predict optimal venue by matching event vibe with candidate venue vibes, (c) Predict optimal capacity by simulating attendee mix quality at different sizes (small intimate vs. large diverse), (d) Predict pricing sweet spot by simulating attendance drop-off at different price points. Present as suggestions during event creation: "Based on your community, Saturday 7pm at [venue] for ~25 people would work best." Uses bidirectional energy (Phase 4.4.2) to ensure both host and attendee perspectives are considered |
 | 6.1.15 | **Creator feedback loop.** After a creator-hosted event completes, run a post-hoc analysis comparing predictions vs. actuals: predicted attendance vs. actual, predicted vibe vs. post-event feedback, predicted duration vs. actual. Store as creator-specific episodic tuples: `(creator_state, event_params, predicted_outcomes, actual_outcomes)`. This trains the MPC planner to make better creator-side predictions over time. Show creators a "How your event went" summary with insights: "Your event attracted more arts enthusiasts than expected -- consider more arts-focused events" |
+
+#### Event-OS Roadmap After Beta
+
+Birmingham beta keeps the current precursor slice in-app only: `Beta Event Truth + Air-Gapped Agent Learning + Creator Debrief`. It is the beta event build slice, not a separate future organizer platform requirement.
+
+**Phase 2: Post-Beta Event Ops Expansion + Human-Governed Outreach**
+- Organizer/event-ops workspace inside AVRAI for planning, staffing, and reviewed execution queues.
+- Human-reviewed candidate queues for volunteers, vendors, bands, sponsors, workers, and security.
+- Human-approved outreach drafts and follow-up flows; no autonomous binding or high-impact autonomous send.
+- Richer timing/budget planning for lead times, staffing fill windows, deposits, fallback windows, and budget pressure.
+- Organizer-entered planning, outreach, and staffing information must still cross the event-planning air gap before persistence, learning, or upward sharing.
+- Non-goals: autonomous contracting, city-grade safety automation, and state/regional rollout.
+
+**Phase 3: Public Launch Event Ops + Partnerships + Civic Coordination**
+- Full organizer/event-ops plus business/partnership surfaces.
+- Contracts, deposits, payouts, reporting, live run-of-show, incident workflows, and city-coordination surfaces.
+- Locality/city/business/event agents learn from realized operations, not only creation intent.
+- Police, fire, EMS, and other public-safety actions remain human-in-the-loop.
+- Planner, partner, and operator inputs remain air-gap-governed with no privileged organizer bypass.
+- Non-goal: full autonomous civic authority or Phase 12 AVRAI OS behavior.
+
+**Non-negotiable air-gap rule**
+- All event-planning inputs from humans, personal agents, and later organizer/operator surfaces must cross the event-planning air gap before they can influence learning, persistence, or higher-agent summaries.
+- Raw event-planning text is transient only.
+- Only air-gap-produced abstractions may survive persistence or upward sharing.
+
 | 6.1.16 | **Evidence-backed action priors.** Add planner priors derived from validated research (`EvidenceBundle` + `ConvictionLedger`) but require local simulation win before action selection. Research can bias search order, never bypass energy/transition checks |
 | 6.1.17 | **Internal vs external data route selection.** For each planning decision, choose `internal_only`, `blended`, or `external_suppressed` route based on consent scope, DP class, drift risk, and source reliability. Route choice is logged for audit and post-hoc learning |
 | 6.1.18 | **Conviction-aware horizon control.** Increase planning horizon only when conviction is supported by delayed validation and cross-source agreement; when contradiction rises, shorten horizon and shift to information-gathering actions |
 | 6.1.19 | **Volunteer pathway planning.** Include volunteer actions in MPC candidate space for community/event/business lanes and optimize for sustained positive community impact, not only short-term engagement |
 | 6.1.20 | **Nearby invite/install planner action.** Add planner action family for compliant nearby growth routes (`show_invite_qr`, `share_install_link`, `mesh_invite_ping`) with platform/legal constraints and consent checks |
 | 6.1.21 | **Unrestricted discovery action lane.** Add planner option `show_unfiltered_results` so users can access full discoverability views by explicit intent; personalization ranks but does not gate non-restricted entities |
-| 6.1.22 | **Direct Serendipity Integration (Deprecate Trojan Horse UX).** Wire the Daily Serendipity Drop (`NightlyDigestionJob`) directly to the MPC Planner's multi-step trajectory output. Replace the direct LLM prompt generation with a pipeline where the MPC Planner simulates 24 hours forward to find the lowest-energy action sequence, and the LLM merely translates the mathematical trajectory into the human-readable Serendipity Drop UI | Replaces LLM-only drop |
+| 6.1.22 | **Direct Serendipity Integration (Deprecate Trojan Horse UX).** Wire the Daily Serendipity Drop (`AdaptiveDigestionJob`) directly to the MPC Planner's multi-step trajectory output. Replace the direct LLM prompt generation with a pipeline where the MPC Planner simulates 24 hours forward to find the lowest-energy action sequence, and the LLM merely translates the mathematical trajectory into the human-readable Serendipity Drop UI | Replaces LLM-only drop |
 | 6.1.23 | **Active "Second Chance" Triggers (Delta-Driven Re-evaluation).** Track core `PersonalityKnot` string evolution over time. When a user's knot complexity/volume grows by a configured threshold (e.g., +40% since last interaction), actively pull historical "Hard No" or "Failed" matching entities (spots, users, events) and force a re-evaluation through the MPC Planner. Rather than waiting for passive quantum decoherence (time decay), this uses quantified personal growth to actively ignite serendipitous second chances | New |
 | 6.1.24 | **Pheromone-Catalyzed Overrides (Context Beating Core).** Allow temporary Knowledge Vectors (`Pheromones`) shared via the BLE mesh to act as heavy multipliers in the MPC planner. If a historical DNA (core personality) mismatch exists, but current temporary pheromone overlap spikes (e.g., both users exhibiting high "social fatigue" and "rainy day coffee seeking"), the planner explicitly overrides the DNA mismatch to recommend the serendipitous connection for that specific temporal window | New |
 
@@ -2131,6 +2159,8 @@ These reorganization tasks depend on active intelligence work settling first. Do
 
 These tasks convert the self-learning/self-healing architecture from "planned behavior" into enforceable reliability guarantees. This section is a release gate for autonomous adaptation features.
 
+> **Companion doctrine:** `docs/plans/architecture/AUTONOMOUS_SECURITY_IMMUNE_SYSTEM_2026-03-13.md` defines the long-horizon security-kernel model for this section: autonomous sandbox red-teaming, immune memory, admin HiTL promotion gates, and signed mesh/hierarchy propagation of validated countermeasures.
+
 | Task | Description | Extends |
 |------|-------------|---------|
 | 10.9.1 | **Production readiness gate for adaptive paths.** Add `ProductionReadinessGate` checks that block enabling autonomous learning/healing when critical code paths contain TODO/log-only placeholders. Required checks: (a) persistence implemented for orchestration/learning state, (b) fail-closed behavior on persistence failure, (c) no placeholder methods in recommendation/training/rollback critical paths | Phases 7.1, 10.2.12, 10.2.13 |
@@ -2162,6 +2192,11 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.27 | **Engine-layer security boundaries.** Add security infrastructure to engine packages (`avrai_ai`, `avrai_knot`, `avrai_quantum`, `reality_engine`): operation audit logging (what decisions were made, on what inputs, logged to `AuditLogService`), computation budgets (max iterations, max memory, timeout enforcement per operation), and input validation beyond clamping (reject malformed data with structured errors). The engine must not trust the runtime implicitly — defense in depth applies at every layer | 3.10.5, 5.2.25 |
 | 10.9.28 | **BLE anti-spoofing hardening.** Device discovery currently uses replay hash deduplication and Signal identity binding but lacks challenge-response authentication. Implement: challenge-response during BLE discovery handshake (before any data exchange), rotating BLE advertisement identifiers (prevent device tracking across sessions), and binding BLE discovery identity to Signal Protocol identity key (a BLE device must prove it controls the claimed identity key before session establishment) | 2.5.4, 8.2 |
 | 10.9.29 | **Zero trust compliance dashboard.** Admin-facing dashboard showing real-time zero trust posture: credential rotation status (which credentials are overdue), certificate pin validation results, continuous verification health, action gateway statistics (allow/deny/escalate rates), audit log integrity verification results, and red-team lane status. Connects to 10.9.22 admin command center | 10.9.22, 2.7.1, 2.8.1, 6.10.1 |
+| 10.9.30 | **Autonomous sandbox red-team control plane.** Build a governed sandbox fleet, attack-scenario registry, replay harness, and campaign scheduler that continuously attacks AVRAI's auth, mesh, AI2AI, conversation, memory, update, and admin surfaces in isolated environments. Every major code/model/policy change must trigger the relevant offensive scenarios automatically before promotion | 7.9.31, 10.9.20, 10.9.22, 10.9.25 |
+| 10.9.31 | **Security immune memory + countermeasure bundle contract.** Persist redacted threat signatures, exploit preconditions, successful containment patterns, false-positive lessons, and signed preventative/interventional countermeasure bundles with scope, expiry, rollback TTL, and evidence refs. This is the platform's "antibody library" and promotion substrate for future hardening | 1.1E.8, 1.1E.14, 10.9.12, 10.9.13 |
+| 10.9.32 | **Admin security immune-system cockpit.** Extend the admin command center with live red-team campaign status, sandbox fleet health, attack-graph inspection, immune-memory ledger, containment queue, vaccination rollout status, false-positive review lane, and HiTL promotion controls for production countermeasure activation | 10.9.22, 10.9.23, 10.9.24, 10.9.25 |
+| 10.9.33 | **Mesh + hierarchy countermeasure propagation.** Implement signed distribution of validated preventative/interventional countermeasure bundles across personal, locality, world, and universal strata with bounded fan-out, acknowledgement receipts, drift detection, staged activation, and rollback path. Protections should propagate like immunization, not uncontrolled broadcast | 8.1.10, 8.1.11, 8.1.14, 10.9.16, 10.9.31 |
+| 10.9.34 | **Bounded security-AI + edge scout governance.** Add an AVRAI Security AI orchestrator plus low-trust Pi/edge attacker scouts for continuous red-teaming, but require authority tokens, compute budgets, false-positive budgets, and HiTL-only production policy promotion. Edge workers may probe and simulate; they may not become security sovereigns | 7.9.26, 10.9.18, 10.9.30, 10.9.31 |
 
 > **Release policy:** No autonomous adaptation feature (including 7.7, 7.7A, 8.1, 8.9 promotion paths) may be marked production-ready until 10.9.1-10.9.4 are complete and validated in CI.
 
@@ -2194,8 +2229,13 @@ These tasks convert the self-learning/self-healing architecture from "planned be
 | 10.9.23 | Observability + Applied ML + Business Platform | 7.3.4, 8.8, 9.2.6, 10.9.3 | 1 week | Correlation panel ties outcome shifts to model/runtime changes with statistical confidence; SLO burn-rate widgets and breach forecasts active for user/business/runtime/reality lanes |
 | 10.9.24 | Security Engineering + Governance + Observability | 2.1, 2.5, 7.7, 10.9.10, 10.9.20 | 1-2 weeks | Policy-decision traces (`allow/deny/defer`) are queryable; provenance chain present for all high-impact decisions; SOC alerts include leak/anomaly class, confidence, and runbook pointer |
 | 10.9.25 | Admin Platform + Runtime Control Plane + Model Ops | 6.1, 7.7, 7.9, 10.9.11, 10.9.18 | 1-2 weeks | Entity digital twins expose current/expected state + risk score; intervention console enforces backend-only execution and records immutable control-action audit entries |
+| 10.9.30 | Security Engineering + Runtime Control Plane + QA Automation | 7.9.31, 10.9.20, 10.9.22, 10.9.25 | 1-2 weeks | Governed sandbox fleet exists with deterministic templates, replay imports, auto-scheduled campaigns, attack budgets, and evidence capture; relevant offensive suites run automatically on critical code/model/policy changes before promotion |
+| 10.9.31 | AI Platform + Security Engineering + Governance | 1.1E.8, 1.1E.14, 10.9.12, 10.9.13 | 1 week | Immune-memory store persists threat signatures, containment lessons, and false-positive tags; signed countermeasure bundle schema includes scope, approvals, expiry, and rollback TTL; read/write paths are audited and privacy-redacted |
+| 10.9.32 | Admin Platform + Governance + Observability | 10.9.22, 10.9.23, 10.9.24, 10.9.25 | 1-2 weeks | Admin app exposes live campaigns, sandbox fleet, immune-memory ledger, containment queue, rollout/vaccination status, and HiTL promotion controls; high-impact actions require explicit approval and immutable audit receipts |
+| 10.9.33 | Federated Learning + Security Engineering + Runtime Engineering | 8.1.10, 8.1.11, 8.1.14, 10.9.16, 10.9.31 | 1-2 weeks | Countermeasure bundles propagate with signed receipts, bounded fan-out, staged activation, drift alerts, and rollback controls; divergent or stale nodes are quarantined or downgraded before they can widen blast radius |
+| 10.9.34 | Security Engineering + Applied ML + Governance | 7.9.26, 10.9.18, 10.9.30, 10.9.31 | 1-2 weeks | AVRAI Security AI is bounded by authority tokens, compute quotas, and false-positive budgets; Pi/edge scout workers can execute low-trust adversarial probes; no automated production policy promotion path exists without HiTL evidence review |
 
-> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.20 in parallel where dependencies allow.
+> **Sequencing rule:** Execute 10.9.1-10.9.4 first (hard gate), then 10.9.5-10.9.34 in parallel where dependencies allow. `10.9.30-10.9.34` start only after `10.9.20` and the admin command-center baseline (`10.9.22-10.9.25`) are in place.
 
 #### 10.9B Milestone Rollout Plan (Expanded Across Existing Phases)
 
@@ -2210,6 +2250,8 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | M5: Governance Lock-In | Make robustness requirements durable and non-optional | 10.9.11, 10.9.13, Hardcoded Invariants section, 7.7A | Week 7-8 | Autonomous change-control policy ratified; kernel integrity enforcement active; staged rollout lifecycle tooling-enforced; all self-updating components declare policy space + rollback + human override |
 | M6: Meta-Learning Integrity + Response SLA | Enforce recursive anti-drift controls, dream-conviction hierarchy safety, and universal first-occurrence/dwell-time response guarantees | 10.9.14, 10.9.15, 10.9.17, 10.9.19, 10.9.21, 5.2.17, 6.2.17, 6.2.18, 8.1.9 | Week 8-10 | Promotion requires macro/micro alignment pass; dream-tier precedence checks remain green; first-occurrence triage SLA meets target; dwell-budget escalations auto-route; recurrence trend decreases across cohorts, alert storm SLO remains green, and scaling reliability gates pass |
 | M7: Oversight + Kernel Lifecycle Closure | Make kernel lifecycle and high-impact autonomy oversight operational and auditable | 10.9.16, 10.9.18, 1.1E.17, 1.1E.18, 7.9.39 | Week 10-11 | Kernel upgrade/downgrade/freeze drills pass; rollback TTL enforced; high-impact autonomous loop caps and mandatory human review SLA validated |
+| M8: Autonomous Security Immune-System Foundation | Stand up the continuous sandbox red-team, immune-memory substrate, and admin HiTL cockpit | 10.9.30, 10.9.31, 10.9.32, 10.9.20, 10.9.22-10.9.25 | Week 11-13 | Governed sandbox fleet is operational; immune-memory ledger stores signed bundle candidates and false-positive lessons; admin security cockpit is live; failed offensive lanes open deterministic remediation work and block risky promotions |
+| M9: Countermeasure Immunization + Edge Scout Closure | Propagate validated protections across the hierarchy and bound the security-AI / Pi scout fleet | 10.9.33, 10.9.34, 8.1.10, 8.1.11, 10.9.16, 10.9.18 | Week 13-15 | Signed countermeasure bundles propagate with acknowledgements and drift alerts; Pi/headless scout nodes execute bounded adversarial campaigns; false-positive budgets remain green; HiTL gate proves no production security-law promotion can bypass human approval |
 
 #### 10.9C Cross-Phase Expansion Map (What to Update in Each Existing Phase)
 
@@ -2245,6 +2287,13 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | 7.9 Autonomous Research Lane | Add dream falsification contracts, negative-dream archive governance, and divergence monitoring | 10.9.21 |
 | 8.1 Federated World Model Learning | Add federated dream-policy quarantine and cross-family belief-tier consistency checks | 10.9.21 |
 | 10.2 Stub/TODO Cleanup | Enforce adaptive critical-path placeholder elimination as release blocker | 10.9.1 |
+| 1.1E Lightweight Deterministic Memory Core | Add immune-memory ledger, signed countermeasure bundle registry, false-positive archive, and rollout/rollback TTL evidence retention | 10.9.31, 10.9.33 |
+| 7.9 Autonomous Research Lane | Add autonomous sandbox red-team campaigns, attacker-role taxonomy, and bounded security-AI authority tokens for offensive simulation | 10.9.30, 10.9.34 |
+| 8.1 Federated World Model Learning | Add signed preventative/interventional countermeasure propagation, receipt acknowledgements, and stale/divergent node drift alarms | 10.9.33 |
+| 10.9.22-10.9.25 Admin Command Center | Add live red-team campaigns, immune-memory ledger, containment queue, vaccination rollout view, and false-positive review lane | 10.9.32 |
+| 12.1 Cognitive Kernel Extraction | Add constitutional security-kernel boundary and dedicated sandbox execution lane inside the headless runtime | 10.9.30, 10.9.31 |
+| 12.3 Cognitive Syscall API & Permission Model | Add dedicated governance endpoints, evidence envelopes, and countermeasure permission ladders separate from ordinary external caller paths | 10.9.32, 10.9.33 |
+| 12.6 Multi-Device / Headless Runtime | Add sandbox worker mode, Pi scout deployments, and signed countermeasure receipt verification for headless fleets | 10.9.33, 10.9.34 |
 
 #### 10.9D Program-Level Checkpoints (Portfolio View)
 
@@ -2254,6 +2303,7 @@ This milestone plan expands robustness hardening into the already-defined phase 
 | C2: Federated Promotion | Before promoting any global federated update outside canary | M2 + M3 complete; cohort no-regression pass | Promote to staged rollout |
 | C3: Broad Rollout | Before full-population adaptive rollout | M4 complete + adversarial controls active + compatibility matrix pass | Full rollout allowed |
 | C4: Continuous Operation | Quarterly | M5 policy audit + M6 meta-learning integrity review + M7 oversight/lifecycle audit + rollback drill + incident postmortem review | Continue / tighten policy |
+| C5: Autonomous Security Expansion | Before widening automatic containment or mesh-wide countermeasure propagation | M8 + M9 complete; false-positive budget green; HiTL promotion drill pass; signed bundle drift monitor green | Allow bounded security-autonomy expansion only |
 
 #### 10.9E Governance RACI + Risk Scoring
 
@@ -2620,6 +2670,8 @@ These legacy phases are explicitly not carried forward:
 **Why this phase:** Beta proves users want the product. Phase 12 makes AVRAI infrastructure that other software depends on — the mandatory mediation layer for AI cognition on any device. This is the transition from "a sophisticated Flutter app" to "a cognitive OS that AI companies integrate with."  
 **North Star:** AVRAI's Cognitive Kernel runs headless on any device (phone, home server, Raspberry Pi, cloud container). Every AI company and third-party developer that wants longitudinal behavioral context, local ground truth, or real-world action grounding calls AVRAI's stable cognitive syscall API. The Flutter app is one shell among many. The OS is the product.  
 **Rationale doc:** `docs/plans/rationale/PHASE_12_OS_RATIONALE.md`
+**Doctrine + spec:** `docs/plans/architecture/AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`, `docs/plans/architecture/AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`
+**Security immune-system companion:** `docs/plans/architecture/AUTONOMOUS_SECURITY_IMMUNE_SYSTEM_2026-03-13.md`
 
 ---
 
@@ -2639,8 +2691,16 @@ These legacy phases are explicitly not carried forward:
 | 12.1.6 | Kernel integration test: kernel starts, accepts connections, runs inference, processes AI2AI messages — without Flutter process running |
 | 12.1.7 | Flutter app refactored to call kernel API via method channel / FFI — not import runtime packages directly |
 | 12.1.8 | Kernel self-healing: kernel restart must not lose agent state (durable state checkpoint before any restart) |
+| 12.1.9 | Self-bootstrapping node contract: a fresh node must boot from signed software + shipped priors/model packs, begin useful local cognition immediately, and remain minimally useful without AVRAI-operated services |
+| 12.1.10 | Recursive governance kernel boundary: define personal, locality, world/city, and universal/reality governance strata as explicit kernel-owned agent classes with separate cognition, governance, emergency-control, and audit channels |
+| 12.1.11 | Quantum atomic time substrate: promote quantum/atomic time to required kernel dependency for event ordering, causality, replay, conflict resolution, escalation timing, and reality-state coherence |
+| 12.1.12 | Six-kernel governance boundary: implement governance-native kernel surfaces for `who`, `what`, `when`, `where`, `why`, and `how`, and require every governed stratum to expose observation/intervention through those surfaces rather than ad hoc admin access paths |
+| 12.1.13 | Constitutional security-kernel extraction: move capability checks, attestation validation, quarantine/rollback execution, break-glass enforcement, and signed countermeasure-bundle ingestion into a kernel-owned mandatory boundary rather than shell-level services |
+| 12.1.14 | Dedicated sandbox/replay execution lane: the headless kernel must host a strictly isolated lane for red-team simulations, incident replay, and digital-twin attack environments with deterministic evidence capture and hard resource budgets |
+| 12.1.15 | Kernel immune-memory registry: persist threat signatures, signed countermeasure bundles, false-positive history, and rollback TTL metadata as kernel-owned security memory separate from ordinary user cognition memory |
+| 12.1.16 | Security-law precedence contract: countermeasure bundles may tighten behavior only inside immutable kernel law; they may not widen surveillance scope, bypass the Air Gap, or self-authorize policy-space changes |
 
-**Gate to 12.2:** Headless integration test passes. Flutter app operates correctly as kernel client.
+**Gate to 12.2:** Headless integration test passes. Flutter app operates correctly as kernel client. Sandbox lane isolation and security-kernel precedence tests pass.
 
 ---
 
@@ -2706,8 +2766,15 @@ recover(incident: RecoveryRequest) → HealingState
 | 12.3.5 | External caller authentication: API key + device attestation for production; sandbox mode for development |
 | 12.3.6 | Rate limiting and abuse prevention per external caller (per-minute, per-day caps, circuit breaker) |
 | 12.3.7 | API versioning contract: v1 API must not break without a v2 migration path and deprecation period |
+| 12.3.8 | Human governance observability API: authorized humans can inspect each individual personal, locality, world, and universal agent through explicit, audited governance endpoints without relying on hidden backdoors |
+| 12.3.9 | Governance-path separation contract: updates, quarantine, rollback, and break-glass intervention must use a dedicated signed governance channel and may not piggyback on ordinary learning or reality-model inference paths |
+| 12.3.10 | Agent-inspection policy ladder: define which reasoning traces, convictions, anomalies, provenance bundles, and raw detail are visible by default, by anomaly trigger, and by break-glass authorization |
+| 12.3.11 | Internal governance endpoint set: add dedicated authenticated endpoints for `inspect`, `sandbox_run`, `quarantine`, `countermeasure_status`, and `promotion_review` that are inaccessible to ordinary external API callers |
+| 12.3.12 | Dual-channel auth model: separate ordinary caller authentication from governance/control-plane authentication; break-glass and production countermeasure promotion require stronger attestation and dual-approval-capable identity paths |
+| 12.3.13 | Security evidence envelope: every sandbox run, containment action, and countermeasure promotion emits a signed evidence bundle with trace IDs, privacy-ladder tags, runtime scope, approvals, and rollback refs |
+| 12.3.14 | Countermeasure permission ladder: define what protections can auto-apply locally, what requires locality/world review, and what requires universal HiTL before activation or mesh propagation |
 
-**Gate to 12.4:** Syscall API passes contract tests. Permission model enforced. At least one external test caller successfully authenticated and rate-limited.
+**Gate to 12.4:** Syscall API passes contract tests. Permission model enforced. Governance-channel auth, evidence envelopes, and permission ladders pass dedicated security tests. At least one external test caller successfully authenticated and rate-limited.
 
 ---
 
@@ -2725,6 +2792,8 @@ recover(incident: RecoveryRequest) → HealingState
 | 12.4.4 | Package baseline model weights (energy function + transition predictor) for distribution with OS |
 | 12.4.5 | Cold-start API test: brand-new installation with zero real user data returns plausible (not garbage) outputs from reality model API |
 | 12.4.6 | Baseline quality gate: API responses for sampled queries must score above minimum plausibility threshold before 12.5 opens |
+| 12.4.7 | Reality governor abstraction contract: the top reality-model agent must reason primarily over abstract truthful convictions, system coherence signals, and anomaly structures; raw personal detail escalates upward only on policy/incident triggers |
+| 12.4.8 | Recursive-governance compression test: validate that personal→locality→world→universal summarization preserves safety-critical truth while reducing routine raw-detail exposure |
 
 **Gate to 12.5:** Cold-start API test passes. Baseline quality gate passes.
 
@@ -2801,8 +2870,15 @@ recover(incident: RecoveryRequest) → HealingState
 | 12.6.5 | CLI toolset: `avrai status`, `avrai logs`, `avrai test-connection`, `avrai reset` — for developers and server operators |
 | 12.6.6 | Multi-device personality sync (extends Phase 7.8 for OS-level sync): when same user has kernel running on phone + home server, personality state is reconciled via encrypted sync |
 | 12.6.7 | Headless regression test suite: all kernel API tests run headless without Flutter |
+| 12.6.8 | User-owned node authority path: desktop/home-server nodes must be able to act as continuity anchors without becoming canonical cloud replacements; user-owned nodes extend the user's kernel authority rather than replacing it |
+| 12.6.9 | Early-launch human-observable mode: beta/first-launch builds support broader explicit human visibility across all governance layers to establish safety patterns, validate anomaly thresholds, and calibrate self-governance compression |
+| 12.6.10 | Quantum-time multi-node reconciliation: multi-device sync, replay, and cross-node truth resolution must fail closed when atomic-time uncertainty exceeds policy thresholds |
+| 12.6.11 | Headless sandbox worker mode: `avrai_runtime --sandbox-worker` starts an isolated replay/red-team worker with synthetic identities, scenario import, constrained network/tool permissions, and automatic cleanup after each campaign |
+| 12.6.12 | Raspberry Pi 4 security scout profile: publish a low-trust deployment target for Pi/home-lab nodes that can run fuzzing, canary, and adversarial swarm tasks continuously without ever becoming policy authority or canonical truth source |
+| 12.6.13 | Mesh immunization receipt service: headless nodes must verify, stage, acknowledge, audit, and, if needed, roll back signed countermeasure bundles; stale or divergent receipt state triggers drift alerts and quarantine |
+| 12.6.14 | Fleet security drill scheduler: home-server, Pi, Docker, and cloud nodes must support periodic autonomous red-team cadence, budget caps, and evidence upload for command-center review |
 
-**Gate to 12.7:** Headless test suite passes on Linux x86, Raspberry Pi, and Docker. Web shell connects to WASM kernel successfully.
+**Gate to 12.7:** Headless test suite passes on Linux x86, Raspberry Pi, and Docker. Sandbox-worker mode, immunization receipt verification, and Pi scout profile pass contract tests. Web shell connects to WASM kernel successfully.
 
 ---
 
@@ -3067,5 +3143,5 @@ These systems are NOT replaced. They provide the rich feature substrate that mak
 
 ---
 
-**Last Updated:** March 3, 2026 (v19 -- AVRAI OS Phase 12 added. Added Phase 12 (AVRAI OS — Cognitive Kernel, Platform Adapters & External API) with 7 sections (12.1-12.7), 5 prerequisite gates, complete packaging/distribution format matrix, external API surface spec (Context Enrichment, Reality Model, Action Grounding, Inference Routing), and north star OS vision. Updated Execution Index and Appendix A mapping. Previous: v18 3-Prong Concurrent Plan Separation Update)  
+**Last Updated:** March 13, 2026 (v21 -- autonomous security immune system milestones added. Added explicit `10.9.30-10.9.34` future milestones for sandbox red-teaming, immune memory, admin HiTL cockpit, mesh immunization, and bounded security-AI governance, plus Phase 12 implementation tasks (`12.1.13-12.1.16`, `12.3.11-12.3.14`, `12.6.11-12.6.14`) for kernel enforcement, governance endpoints, and headless Pi/sandbox worker deployment. Previous: v20 autonomous security immune system doctrine added)  
 **Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`

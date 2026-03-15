@@ -1,0 +1,82 @@
+{
+  "captured_at_utc": "2023-12-31T23:59:59.000Z",
+  "route_destination_count": 4,
+  "route_entry_count": 7,
+  "pending_custody_count": 2,
+  "due_custody_count": 1,
+  "encrypted_at_rest": true,
+  "queued_payload_kind_counts": {
+    "organic_spot_discovery": 1,
+    "prekey_bundle": 1
+  },
+  "destinations": [
+    {
+      "destination_id": "community:downtown",
+      "known_route_count": 2,
+      "pending_custody_count": 1,
+      "best_success_rate": 0.86,
+      "total_success_count": 6,
+      "total_failure_count": 1,
+      "payload_kinds": [
+        "organic_spot_discovery",
+        "prekey_bundle"
+      ],
+      "peer_ids": [
+        "peer:five-points",
+        "peer:railroad-park"
+      ],
+      "last_route_update_at_utc": "2023-12-31T23:40:00.000Z",
+      "last_queued_at_utc": "2023-12-31T23:47:00.000Z"
+    },
+    {
+      "destination_id": "community:southside",
+      "known_route_count": 2,
+      "pending_custody_count": 0,
+      "best_success_rate": 0.74,
+      "total_success_count": 5,
+      "total_failure_count": 2,
+      "payload_kinds": [
+        "gossip_learning"
+      ],
+      "peer_ids": [
+        "peer:avondale",
+        "peer:lakeview"
+      ],
+      "last_route_update_at_utc": "2023-12-31T23:37:00.000Z",
+      "last_queued_at_utc": null
+    },
+    {
+      "destination_id": "agent:citywide-reality",
+      "known_route_count": 2,
+      "pending_custody_count": 1,
+      "best_success_rate": 0.67,
+      "total_success_count": 4,
+      "total_failure_count": 2,
+      "payload_kinds": [
+        "gossip_learning"
+      ],
+      "peer_ids": [
+        "peer:downtown-hub",
+        "peer:northside-hub"
+      ],
+      "last_route_update_at_utc": "2023-12-31T23:31:00.000Z",
+      "last_queued_at_utc": "2023-12-31T23:52:00.000Z"
+    },
+    {
+      "destination_id": "peer:woodlawn",
+      "known_route_count": 1,
+      "pending_custody_count": 0,
+      "best_success_rate": 1.0,
+      "total_success_count": 2,
+      "total_failure_count": 0,
+      "payload_kinds": [
+        "locality_agent_update"
+      ],
+      "peer_ids": [
+        "peer:eastlake"
+      ],
+      "last_route_update_at_utc": "2023-12-31T23:25:00.000Z",
+      "last_queued_at_utc": null
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # AVRAI Philosophy and Architecture
 
-**Last Updated:** February 23, 2026  
+**Last Updated:** March 14, 2026  
 **Status:** ACTIVE - Master Philosophy Document
 
 ## 1. Core Philosophy: Doors
@@ -109,6 +109,31 @@ If users choose to opt into physical-to-digital identity matching (Phase 12.8), 
 - Bias and fairness evaluation before release.
 - Uncertainty and calibration checks across cohorts.
 - Staged rollout and rollback readiness.
+
+### 6.4 Truth Surfaces and Scope Ontology
+
+AVRAI must treat every adaptive subsystem as a governed truth surface.
+
+A **truth surface** is the bounded layer where claims can be validated, falsified, or throttled by resolved outcomes, signed evidence, contradiction records, or explicit governance review. A subsystem may reason creatively inside its scope, but it may not claim authority outside the truth surface that can actually prove it right or wrong.
+
+AVRAI therefore requires an explicit scope ontology for any forecasting, security, planning, or API-facing intelligence surface:
+- **Governance stratum:** personal, locality, world, universal.
+- **Operational sphere:** the domain or namespace being reasoned over, such as journey, venue demand, community evolution, mesh health, or security posture.
+- **Family:** the specific learning or forecast lane within that sphere.
+- **Agent class:** the kind of agent or actor the truth applies to, such as consumer, business, organizer, locality, planner, or security agent.
+- **Tenant scope:** AVRAI-native, trusted partner-private, or outside-buyer aggregate.
+
+This ontology exists to prevent false authority and scope leakage.
+
+Rules:
+- A **sphere** is an operational domain, not a physics claim. It does not mean a literal geometric sphere or a worldsheet/quantum object unless the architecture explicitly maps it that way.
+- Quantum, knot, string, worldsheet, and other advanced mathematical representations are **candidate lenses on reality**, not automatic authority. They may improve predictors, but they do not define confidence on their own.
+- Forecast trust must be earned from realized outcomes, calibration, contradiction handling, and drift checks. Elegant representation is not evidence.
+- Security authority must be earned from signed evidence, bounded containment policy, and human-governed promotion. Observation does not imply intervention rights.
+- External API callers may query only the truth surfaces their capability class allows. Outside buyers receive aggregate, delayed, privacy-bounded insight surfaces only. They do not receive raw mesh, per-agent, or internal governance truth.
+- Higher governance strata should receive compressed truth by default, not routine raw detail. AVRAI must avoid centralizing all truth into a single watcher or control plane.
+
+This is how AVRAI stays coherent as it adds forecast kernels, autonomous security, recursive governance, and external APIs: every subsystem must declare what kind of truth it is allowed to learn from, what scope that truth belongs to, and what decisions that truth is actually allowed to govern.
 
 ## 7. Collective Reality Stewardship
 

@@ -5,6 +5,7 @@
 **Purpose:** Decision-complete interface and governance contract for all URK runtime types and future kernel types.
 
 **Companion Blueprint:** `docs/plans/architecture/UNIFIED_RUNTIME_KERNEL_BLUEPRINT_2026-02-27.md`
+**Companion doctrine/spec:** `docs/plans/architecture/AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`, `docs/plans/architecture/AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`
 
 ---
 
@@ -41,6 +42,11 @@ Every runtime instance must declare:
    - `model_core`
    - `runtime_core`
    - `governance_core`
+5. `governance_stratum`:
+   - `personal`
+   - `locality`
+   - `world`
+   - `universal`
 
 ---
 
@@ -208,6 +214,22 @@ Must include:
 4. expiry,
 5. follow-up review requirements.
 
+## 4.8 `GET /runtime/{runtime_id}/governance-inspect`
+
+Purpose:
+
+1. Explicit human and authorized higher-stratum inspection of an individual agent/runtime,
+2. return convictions, anomaly summaries, provenance references, policy state, and optionally deeper traces under break-glass rules,
+3. maintain auditable observation of personal, locality, world, and universal strata without hidden backdoors.
+
+Must include:
+
+1. inspection actor,
+2. inspection scope,
+3. visibility tier (`summary|triggered_detail|break_glass_detail`),
+4. justification,
+5. immutable audit reference.
+
 ---
 
 ## 5. Trigger Contract
@@ -226,6 +248,13 @@ Each trigger must declare:
 2. `allowed_privacy_modes`,
 3. `max_action_impact_tier`,
 4. `cooldown_policy`.
+
+`governance_event` triggers must additionally declare:
+
+1. whether they are normal governance or break-glass,
+2. affected governance strata,
+3. rollback path,
+4. quantum-time validity window.
 
 ---
 
@@ -257,6 +286,76 @@ Hard requirements:
 2. policy + compliance checks pass,
 3. lineage and audit persisted for cloud-path actions,
 4. rollout guardrails (canary/rollback) enforced.
+
+---
+
+## 7. Governance Observation Contract
+
+Governance observation is defined across six kernel surfaces:
+
+1. `who`
+2. `what`
+3. `when`
+4. `where`
+5. `why`
+6. `how`
+
+### 7.1 Normal observation
+
+Normal observation may return:
+
+1. conviction summaries,
+2. anomaly scores,
+3. provenance references,
+4. policy state,
+5. quantum-time-ordered event summaries,
+6. compressed `who/what/when/where/why/how` kernel views.
+
+### 7.2 Triggered detail
+
+Triggered detail may return additional reasoning traces and state detail only when:
+
+1. anomaly thresholds are breached,
+2. attack or disruption conditions are detected,
+3. a higher governance stratum requests review under policy,
+4. an authorized human initiates an audited investigation.
+
+Triggered detail should still preserve the six-kernel shape rather than collapsing into unstructured dumps.
+
+### 7.3 Break-glass detail
+
+Break-glass detail requires:
+
+1. explicit authorization,
+2. reason code,
+3. expiry,
+4. immutable audit record,
+5. follow-up review.
+
+Break-glass detail must declare which kernel surfaces are being expanded and why.
+
+### 7.4 Forbidden implementation style
+
+The following are contract violations:
+
+1. hidden unrestricted live-inspection paths,
+2. unaudited research access,
+3. governance control tunneled through ordinary learning or inference channels.
+
+---
+
+## 8. Quantum Atomic Time Contract
+
+All request, decision, observe, recover, override, and governance-inspect flows must carry authoritative temporal metadata sufficient for:
+
+1. event ordering,
+2. replay,
+3. causality validation,
+4. cross-node conflict resolution,
+5. escalation timing,
+6. coherence enforcement across governance strata.
+
+If the uncertainty window violates policy for the requested action, the runtime must fail closed or downgrade to a lower-impact path.
 
 ---
 

@@ -1,0 +1,1259 @@
+# BHAM Replay Normalized Observations
+
+- Pack: `bham-automated-replay-pack-2023-historicalized`
+- Replay year: `2023`
+- Datasets: `4`
+- Ingested sources: `4`
+- Skipped sources: `33`
+
+## Ingested Sources
+
+- `BEA / U.S. Census Bureau Economic Series` [`aggregate_metric_replay_source_adapter`] records `1` observations `1`
+- `U.S. Census ACS` [`aggregate_metric_replay_source_adapter`] records `378` observations `378`
+- `OpenStreetMap POI Data` [`spatial_feature_replay_source_adapter`] records `789` observations `789`
+- `Birmingham Public Library Archives` [`historical_entity_replay_source_adapter`] records `38` observations `38`
+
+## Skipped Sources
+
+- `ALDOT Long-Term Construction Projects`
+- `ALDOT Traffic Data`
+- `BHM Airport / TSA Throughput`
+- `Bureau of Labor Statistics / State DOL`
+- `City of Birmingham OpenGov`
+- `Jefferson / Shelby / Regional GIS and Assessors`
+- `LEHD / OnTheMap`
+- `MAX Transit GTFS`
+- `Municipal Budgets and Revenue Reports`
+- `NWS / NOAA Weather API`
+- `BJCC / Legacy Arena / Protective Stadium Calendars`
+- `SEC / College Football Broadcast Schedules`
+- `Samford University Calendars and Campus Map`
+- `UAB / Samford Enrollment Origin Reports`
+- `UAB Academic, Clinical, and Event Calendars`
+- `Data Axle / InfoGroup Business Listings`
+- `Delivery / Ordering Platform Aggregates`
+- `Google Places / Yelp`
+- `Real Estate and Rent Index`
+- `Resy / OpenTable / Venue Reservation Exports`
+- `Birmingham Public Library Network`
+- `Birmingham365.org`
+- `City of Birmingham Play Pages`
+- `County / Municipal Courts and Police Dispatch`
+- `Eventbrite / Meetup`
+- `IN Birmingham (CVB Calendar)`
+- `Major Venue Calendars and Historical Venue Calendars`
+- `Neighborhood Association Calendars`
+- `Bham Now / AL.com / Birmingham Business Journal`
+- `Bhamwiki`
+- `James Beard / Garden & Gun / Michelin`
+- `REV Birmingham Updates`
+- `WBHM 90.3 Public Radio`
+
+## Observation Summary
+
+- `obs:bea-2023-01073-CAINC1-line-3` -> `economic_signal` `Birmingham Metro`
+- `obs:acs-2023-000100-population` -> `population_cohort` `Census Tract 1; Jefferson County; Alabama`
+- `obs:acs-2023-000100-housing` -> `housing_signal` `Census Tract 1; Jefferson County; Alabama`
+- `obs:acs-2023-000300-population` -> `population_cohort` `Census Tract 3; Jefferson County; Alabama`
+- `obs:acs-2023-000300-housing` -> `housing_signal` `Census Tract 3; Jefferson County; Alabama`
+- `obs:acs-2023-000400-population` -> `population_cohort` `Census Tract 4; Jefferson County; Alabama`
+- `obs:acs-2023-000400-housing` -> `housing_signal` `Census Tract 4; Jefferson County; Alabama`
+- `obs:acs-2023-000500-population` -> `population_cohort` `Census Tract 5; Jefferson County; Alabama`
+- `obs:acs-2023-000500-housing` -> `housing_signal` `Census Tract 5; Jefferson County; Alabama`
+- `obs:acs-2023-000700-population` -> `population_cohort` `Census Tract 7; Jefferson County; Alabama`
+- `obs:acs-2023-000700-housing` -> `housing_signal` `Census Tract 7; Jefferson County; Alabama`
+- `obs:acs-2023-000800-population` -> `population_cohort` `Census Tract 8; Jefferson County; Alabama`
+- `obs:acs-2023-000800-housing` -> `housing_signal` `Census Tract 8; Jefferson County; Alabama`
+- `obs:acs-2023-001100-population` -> `population_cohort` `Census Tract 11; Jefferson County; Alabama`
+- `obs:acs-2023-001100-housing` -> `housing_signal` `Census Tract 11; Jefferson County; Alabama`
+- `obs:acs-2023-001200-population` -> `population_cohort` `Census Tract 12; Jefferson County; Alabama`
+- `obs:acs-2023-001200-housing` -> `housing_signal` `Census Tract 12; Jefferson County; Alabama`
+- `obs:acs-2023-001400-population` -> `population_cohort` `Census Tract 14; Jefferson County; Alabama`
+- `obs:acs-2023-001400-housing` -> `housing_signal` `Census Tract 14; Jefferson County; Alabama`
+- `obs:acs-2023-001500-population` -> `population_cohort` `Census Tract 15; Jefferson County; Alabama`
+- `obs:acs-2023-001500-housing` -> `housing_signal` `Census Tract 15; Jefferson County; Alabama`
+- `obs:acs-2023-001600-population` -> `population_cohort` `Census Tract 16; Jefferson County; Alabama`
+- `obs:acs-2023-001600-housing` -> `housing_signal` `Census Tract 16; Jefferson County; Alabama`
+- `obs:acs-2023-001902-population` -> `population_cohort` `Census Tract 19.02; Jefferson County; Alabama`
+- `obs:acs-2023-001902-housing` -> `housing_signal` `Census Tract 19.02; Jefferson County; Alabama`
+- `obs:acs-2023-002000-population` -> `population_cohort` `Census Tract 20; Jefferson County; Alabama`
+- `obs:acs-2023-002000-housing` -> `housing_signal` `Census Tract 20; Jefferson County; Alabama`
+- `obs:acs-2023-002100-population` -> `population_cohort` `Census Tract 21; Jefferson County; Alabama`
+- `obs:acs-2023-002100-housing` -> `housing_signal` `Census Tract 21; Jefferson County; Alabama`
+- `obs:acs-2023-002200-population` -> `population_cohort` `Census Tract 22; Jefferson County; Alabama`
+- `obs:acs-2023-002200-housing` -> `housing_signal` `Census Tract 22; Jefferson County; Alabama`
+- `obs:acs-2023-002303-population` -> `population_cohort` `Census Tract 23.03; Jefferson County; Alabama`
+- `obs:acs-2023-002303-housing` -> `housing_signal` `Census Tract 23.03; Jefferson County; Alabama`
+- `obs:acs-2023-002305-population` -> `population_cohort` `Census Tract 23.05; Jefferson County; Alabama`
+- `obs:acs-2023-002305-housing` -> `housing_signal` `Census Tract 23.05; Jefferson County; Alabama`
+- `obs:acs-2023-002306-population` -> `population_cohort` `Census Tract 23.06; Jefferson County; Alabama`
+- `obs:acs-2023-002306-housing` -> `housing_signal` `Census Tract 23.06; Jefferson County; Alabama`
+- `obs:acs-2023-002401-population` -> `population_cohort` `Census Tract 24.01; Jefferson County; Alabama`
+- `obs:acs-2023-002401-housing` -> `housing_signal` `Census Tract 24.01; Jefferson County; Alabama`
+- `obs:acs-2023-002402-population` -> `population_cohort` `Census Tract 24.02; Jefferson County; Alabama`
+- `obs:acs-2023-002402-housing` -> `housing_signal` `Census Tract 24.02; Jefferson County; Alabama`
+- `obs:acs-2023-002701-population` -> `population_cohort` `Census Tract 27.01; Jefferson County; Alabama`
+- `obs:acs-2023-002701-housing` -> `housing_signal` `Census Tract 27.01; Jefferson County; Alabama`
+- `obs:acs-2023-002702-population` -> `population_cohort` `Census Tract 27.02; Jefferson County; Alabama`
+- `obs:acs-2023-002702-housing` -> `housing_signal` `Census Tract 27.02; Jefferson County; Alabama`
+- `obs:acs-2023-002900-population` -> `population_cohort` `Census Tract 29; Jefferson County; Alabama`
+- `obs:acs-2023-002900-housing` -> `housing_signal` `Census Tract 29; Jefferson County; Alabama`
+- `obs:acs-2023-003001-population` -> `population_cohort` `Census Tract 30.01; Jefferson County; Alabama`
+- `obs:acs-2023-003001-housing` -> `housing_signal` `Census Tract 30.01; Jefferson County; Alabama`
+- `obs:acs-2023-003002-population` -> `population_cohort` `Census Tract 30.02; Jefferson County; Alabama`
+- `obs:acs-2023-003002-housing` -> `housing_signal` `Census Tract 30.02; Jefferson County; Alabama`
+- `obs:acs-2023-003100-population` -> `population_cohort` `Census Tract 31; Jefferson County; Alabama`
+- `obs:acs-2023-003100-housing` -> `housing_signal` `Census Tract 31; Jefferson County; Alabama`
+- `obs:acs-2023-003200-population` -> `population_cohort` `Census Tract 32; Jefferson County; Alabama`
+- `obs:acs-2023-003200-housing` -> `housing_signal` `Census Tract 32; Jefferson County; Alabama`
+- `obs:acs-2023-003300-population` -> `population_cohort` `Census Tract 33; Jefferson County; Alabama`
+- `obs:acs-2023-003300-housing` -> `housing_signal` `Census Tract 33; Jefferson County; Alabama`
+- `obs:acs-2023-003400-population` -> `population_cohort` `Census Tract 34; Jefferson County; Alabama`
+- `obs:acs-2023-003400-housing` -> `housing_signal` `Census Tract 34; Jefferson County; Alabama`
+- `obs:acs-2023-003500-population` -> `population_cohort` `Census Tract 35; Jefferson County; Alabama`
+- `obs:acs-2023-003500-housing` -> `housing_signal` `Census Tract 35; Jefferson County; Alabama`
+- `obs:acs-2023-003600-population` -> `population_cohort` `Census Tract 36; Jefferson County; Alabama`
+- `obs:acs-2023-003600-housing` -> `housing_signal` `Census Tract 36; Jefferson County; Alabama`
+- `obs:acs-2023-003700-population` -> `population_cohort` `Census Tract 37; Jefferson County; Alabama`
+- `obs:acs-2023-003700-housing` -> `housing_signal` `Census Tract 37; Jefferson County; Alabama`
+- `obs:acs-2023-003802-population` -> `population_cohort` `Census Tract 38.02; Jefferson County; Alabama`
+- `obs:acs-2023-003802-housing` -> `housing_signal` `Census Tract 38.02; Jefferson County; Alabama`
+- `obs:acs-2023-003803-population` -> `population_cohort` `Census Tract 38.03; Jefferson County; Alabama`
+- `obs:acs-2023-003803-housing` -> `housing_signal` `Census Tract 38.03; Jefferson County; Alabama`
+- `obs:acs-2023-003900-population` -> `population_cohort` `Census Tract 39; Jefferson County; Alabama`
+- `obs:acs-2023-003900-housing` -> `housing_signal` `Census Tract 39; Jefferson County; Alabama`
+- `obs:acs-2023-004000-population` -> `population_cohort` `Census Tract 40; Jefferson County; Alabama`
+- `obs:acs-2023-004000-housing` -> `housing_signal` `Census Tract 40; Jefferson County; Alabama`
+- `obs:acs-2023-004200-population` -> `population_cohort` `Census Tract 42; Jefferson County; Alabama`
+- `obs:acs-2023-004200-housing` -> `housing_signal` `Census Tract 42; Jefferson County; Alabama`
+- `obs:acs-2023-004501-population` -> `population_cohort` `Census Tract 45.01; Jefferson County; Alabama`
+- `obs:acs-2023-004501-housing` -> `housing_signal` `Census Tract 45.01; Jefferson County; Alabama`
+- `obs:acs-2023-004502-population` -> `population_cohort` `Census Tract 45.02; Jefferson County; Alabama`
+- `obs:acs-2023-004502-housing` -> `housing_signal` `Census Tract 45.02; Jefferson County; Alabama`
+- `obs:acs-2023-004701-population` -> `population_cohort` `Census Tract 47.01; Jefferson County; Alabama`
+- `obs:acs-2023-004701-housing` -> `housing_signal` `Census Tract 47.01; Jefferson County; Alabama`
+- `obs:acs-2023-004702-population` -> `population_cohort` `Census Tract 47.02; Jefferson County; Alabama`
+- `obs:acs-2023-004702-housing` -> `housing_signal` `Census Tract 47.02; Jefferson County; Alabama`
+- `obs:acs-2023-004800-population` -> `population_cohort` `Census Tract 48; Jefferson County; Alabama`
+- `obs:acs-2023-004800-housing` -> `housing_signal` `Census Tract 48; Jefferson County; Alabama`
+- `obs:acs-2023-004901-population` -> `population_cohort` `Census Tract 49.01; Jefferson County; Alabama`
+- `obs:acs-2023-004901-housing` -> `housing_signal` `Census Tract 49.01; Jefferson County; Alabama`
+- `obs:acs-2023-004902-population` -> `population_cohort` `Census Tract 49.02; Jefferson County; Alabama`
+- `obs:acs-2023-004902-housing` -> `housing_signal` `Census Tract 49.02; Jefferson County; Alabama`
+- `obs:acs-2023-005000-population` -> `population_cohort` `Census Tract 50; Jefferson County; Alabama`
+- `obs:acs-2023-005000-housing` -> `housing_signal` `Census Tract 50; Jefferson County; Alabama`
+- `obs:acs-2023-005101-population` -> `population_cohort` `Census Tract 51.01; Jefferson County; Alabama`
+- `obs:acs-2023-005101-housing` -> `housing_signal` `Census Tract 51.01; Jefferson County; Alabama`
+- `obs:acs-2023-005103-population` -> `population_cohort` `Census Tract 51.03; Jefferson County; Alabama`
+- `obs:acs-2023-005103-housing` -> `housing_signal` `Census Tract 51.03; Jefferson County; Alabama`
+- `obs:acs-2023-005104-population` -> `population_cohort` `Census Tract 51.04; Jefferson County; Alabama`
+- `obs:acs-2023-005104-housing` -> `housing_signal` `Census Tract 51.04; Jefferson County; Alabama`
+- `obs:acs-2023-005200-population` -> `population_cohort` `Census Tract 52; Jefferson County; Alabama`
+- `obs:acs-2023-005200-housing` -> `housing_signal` `Census Tract 52; Jefferson County; Alabama`
+- `obs:acs-2023-005302-population` -> `population_cohort` `Census Tract 53.02; Jefferson County; Alabama`
+- `obs:acs-2023-005302-housing` -> `housing_signal` `Census Tract 53.02; Jefferson County; Alabama`
+- `obs:acs-2023-005500-population` -> `population_cohort` `Census Tract 55; Jefferson County; Alabama`
+- `obs:acs-2023-005500-housing` -> `housing_signal` `Census Tract 55; Jefferson County; Alabama`
+- `obs:acs-2023-005600-population` -> `population_cohort` `Census Tract 56; Jefferson County; Alabama`
+- `obs:acs-2023-005600-housing` -> `housing_signal` `Census Tract 56; Jefferson County; Alabama`
+- `obs:acs-2023-005701-population` -> `population_cohort` `Census Tract 57.01; Jefferson County; Alabama`
+- `obs:acs-2023-005701-housing` -> `housing_signal` `Census Tract 57.01; Jefferson County; Alabama`
+- `obs:acs-2023-005702-population` -> `population_cohort` `Census Tract 57.02; Jefferson County; Alabama`
+- `obs:acs-2023-005702-housing` -> `housing_signal` `Census Tract 57.02; Jefferson County; Alabama`
+- `obs:acs-2023-005800-population` -> `population_cohort` `Census Tract 58; Jefferson County; Alabama`
+- `obs:acs-2023-005800-housing` -> `housing_signal` `Census Tract 58; Jefferson County; Alabama`
+- `obs:acs-2023-005903-population` -> `population_cohort` `Census Tract 59.03; Jefferson County; Alabama`
+- `obs:acs-2023-005903-housing` -> `housing_signal` `Census Tract 59.03; Jefferson County; Alabama`
+- `obs:acs-2023-005905-population` -> `population_cohort` `Census Tract 59.05; Jefferson County; Alabama`
+- `obs:acs-2023-005905-housing` -> `housing_signal` `Census Tract 59.05; Jefferson County; Alabama`
+- `obs:acs-2023-005907-population` -> `population_cohort` `Census Tract 59.07; Jefferson County; Alabama`
+- `obs:acs-2023-005907-housing` -> `housing_signal` `Census Tract 59.07; Jefferson County; Alabama`
+- `obs:acs-2023-005908-population` -> `population_cohort` `Census Tract 59.08; Jefferson County; Alabama`
+- `obs:acs-2023-005908-housing` -> `housing_signal` `Census Tract 59.08; Jefferson County; Alabama`
+- `obs:acs-2023-005909-population` -> `population_cohort` `Census Tract 59.09; Jefferson County; Alabama`
+- `obs:acs-2023-005909-housing` -> `housing_signal` `Census Tract 59.09; Jefferson County; Alabama`
+- `obs:acs-2023-005910-population` -> `population_cohort` `Census Tract 59.10; Jefferson County; Alabama`
+- `obs:acs-2023-005910-housing` -> `housing_signal` `Census Tract 59.10; Jefferson County; Alabama`
+- `obs:acs-2023-010001-population` -> `population_cohort` `Census Tract 100.01; Jefferson County; Alabama`
+- `obs:acs-2023-010001-housing` -> `housing_signal` `Census Tract 100.01; Jefferson County; Alabama`
+- `obs:acs-2023-010002-population` -> `population_cohort` `Census Tract 100.02; Jefferson County; Alabama`
+- `obs:acs-2023-010002-housing` -> `housing_signal` `Census Tract 100.02; Jefferson County; Alabama`
+- `obs:acs-2023-010100-population` -> `population_cohort` `Census Tract 101; Jefferson County; Alabama`
+- `obs:acs-2023-010100-housing` -> `housing_signal` `Census Tract 101; Jefferson County; Alabama`
+- `obs:acs-2023-010200-population` -> `population_cohort` `Census Tract 102; Jefferson County; Alabama`
+- `obs:acs-2023-010200-housing` -> `housing_signal` `Census Tract 102; Jefferson County; Alabama`
+- `obs:acs-2023-010301-population` -> `population_cohort` `Census Tract 103.01; Jefferson County; Alabama`
+- `obs:acs-2023-010301-housing` -> `housing_signal` `Census Tract 103.01; Jefferson County; Alabama`
+- `obs:acs-2023-010302-population` -> `population_cohort` `Census Tract 103.02; Jefferson County; Alabama`
+- `obs:acs-2023-010302-housing` -> `housing_signal` `Census Tract 103.02; Jefferson County; Alabama`
+- `obs:acs-2023-010401-population` -> `population_cohort` `Census Tract 104.01; Jefferson County; Alabama`
+- `obs:acs-2023-010401-housing` -> `housing_signal` `Census Tract 104.01; Jefferson County; Alabama`
+- `obs:acs-2023-010402-population` -> `population_cohort` `Census Tract 104.02; Jefferson County; Alabama`
+- `obs:acs-2023-010402-housing` -> `housing_signal` `Census Tract 104.02; Jefferson County; Alabama`
+- `obs:acs-2023-010500-population` -> `population_cohort` `Census Tract 105; Jefferson County; Alabama`
+- `obs:acs-2023-010500-housing` -> `housing_signal` `Census Tract 105; Jefferson County; Alabama`
+- `obs:acs-2023-010603-population` -> `population_cohort` `Census Tract 106.03; Jefferson County; Alabama`
+- `obs:acs-2023-010603-housing` -> `housing_signal` `Census Tract 106.03; Jefferson County; Alabama`
+- `obs:acs-2023-010604-population` -> `population_cohort` `Census Tract 106.04; Jefferson County; Alabama`
+- `obs:acs-2023-010604-housing` -> `housing_signal` `Census Tract 106.04; Jefferson County; Alabama`
+- `obs:acs-2023-010605-population` -> `population_cohort` `Census Tract 106.05; Jefferson County; Alabama`
+- `obs:acs-2023-010605-housing` -> `housing_signal` `Census Tract 106.05; Jefferson County; Alabama`
+- `obs:acs-2023-010701-population` -> `population_cohort` `Census Tract 107.01; Jefferson County; Alabama`
+- `obs:acs-2023-010701-housing` -> `housing_signal` `Census Tract 107.01; Jefferson County; Alabama`
+- `obs:acs-2023-010702-population` -> `population_cohort` `Census Tract 107.02; Jefferson County; Alabama`
+- `obs:acs-2023-010702-housing` -> `housing_signal` `Census Tract 107.02; Jefferson County; Alabama`
+- `obs:acs-2023-010703-population` -> `population_cohort` `Census Tract 107.03; Jefferson County; Alabama`
+- `obs:acs-2023-010703-housing` -> `housing_signal` `Census Tract 107.03; Jefferson County; Alabama`
+- `obs:acs-2023-010704-population` -> `population_cohort` `Census Tract 107.04; Jefferson County; Alabama`
+- `obs:acs-2023-010704-housing` -> `housing_signal` `Census Tract 107.04; Jefferson County; Alabama`
+- `obs:acs-2023-010705-population` -> `population_cohort` `Census Tract 107.05; Jefferson County; Alabama`
+- `obs:acs-2023-010705-housing` -> `housing_signal` `Census Tract 107.05; Jefferson County; Alabama`
+- `obs:acs-2023-010706-population` -> `population_cohort` `Census Tract 107.06; Jefferson County; Alabama`
+- `obs:acs-2023-010706-housing` -> `housing_signal` `Census Tract 107.06; Jefferson County; Alabama`
+- `obs:acs-2023-010801-population` -> `population_cohort` `Census Tract 108.01; Jefferson County; Alabama`
+- `obs:acs-2023-010801-housing` -> `housing_signal` `Census Tract 108.01; Jefferson County; Alabama`
+- `obs:acs-2023-010802-population` -> `population_cohort` `Census Tract 108.02; Jefferson County; Alabama`
+- `obs:acs-2023-010802-housing` -> `housing_signal` `Census Tract 108.02; Jefferson County; Alabama`
+- `obs:acs-2023-010803-population` -> `population_cohort` `Census Tract 108.03; Jefferson County; Alabama`
+- `obs:acs-2023-010803-housing` -> `housing_signal` `Census Tract 108.03; Jefferson County; Alabama`
+- `obs:acs-2023-010804-population` -> `population_cohort` `Census Tract 108.04; Jefferson County; Alabama`
+- `obs:acs-2023-010804-housing` -> `housing_signal` `Census Tract 108.04; Jefferson County; Alabama`
+- `obs:acs-2023-010806-population` -> `population_cohort` `Census Tract 108.06; Jefferson County; Alabama`
+- `obs:acs-2023-010806-housing` -> `housing_signal` `Census Tract 108.06; Jefferson County; Alabama`
+- `obs:acs-2023-010807-population` -> `population_cohort` `Census Tract 108.07; Jefferson County; Alabama`
+- `obs:acs-2023-010807-housing` -> `housing_signal` `Census Tract 108.07; Jefferson County; Alabama`
+- `obs:acs-2023-010900-population` -> `population_cohort` `Census Tract 109; Jefferson County; Alabama`
+- `obs:acs-2023-010900-housing` -> `housing_signal` `Census Tract 109; Jefferson County; Alabama`
+- `obs:acs-2023-011002-population` -> `population_cohort` `Census Tract 110.02; Jefferson County; Alabama`
+- `obs:acs-2023-011002-housing` -> `housing_signal` `Census Tract 110.02; Jefferson County; Alabama`
+- `obs:acs-2023-011003-population` -> `population_cohort` `Census Tract 110.03; Jefferson County; Alabama`
+- `obs:acs-2023-011003-housing` -> `housing_signal` `Census Tract 110.03; Jefferson County; Alabama`
+- `obs:acs-2023-011004-population` -> `population_cohort` `Census Tract 110.04; Jefferson County; Alabama`
+- `obs:acs-2023-011004-housing` -> `housing_signal` `Census Tract 110.04; Jefferson County; Alabama`
+- `obs:acs-2023-011108-population` -> `population_cohort` `Census Tract 111.08; Jefferson County; Alabama`
+- `obs:acs-2023-011108-housing` -> `housing_signal` `Census Tract 111.08; Jefferson County; Alabama`
+- `obs:acs-2023-011109-population` -> `population_cohort` `Census Tract 111.09; Jefferson County; Alabama`
+- `obs:acs-2023-011109-housing` -> `housing_signal` `Census Tract 111.09; Jefferson County; Alabama`
+- `obs:acs-2023-011110-population` -> `population_cohort` `Census Tract 111.10; Jefferson County; Alabama`
+- `obs:acs-2023-011110-housing` -> `housing_signal` `Census Tract 111.10; Jefferson County; Alabama`
+- `obs:acs-2023-011112-population` -> `population_cohort` `Census Tract 111.12; Jefferson County; Alabama`
+- `obs:acs-2023-011112-housing` -> `housing_signal` `Census Tract 111.12; Jefferson County; Alabama`
+- `obs:acs-2023-011113-population` -> `population_cohort` `Census Tract 111.13; Jefferson County; Alabama`
+- `obs:acs-2023-011113-housing` -> `housing_signal` `Census Tract 111.13; Jefferson County; Alabama`
+- `obs:acs-2023-011114-population` -> `population_cohort` `Census Tract 111.14; Jefferson County; Alabama`
+- `obs:acs-2023-011114-housing` -> `housing_signal` `Census Tract 111.14; Jefferson County; Alabama`
+- `obs:acs-2023-011115-population` -> `population_cohort` `Census Tract 111.15; Jefferson County; Alabama`
+- `obs:acs-2023-011115-housing` -> `housing_signal` `Census Tract 111.15; Jefferson County; Alabama`
+- `obs:acs-2023-011116-population` -> `population_cohort` `Census Tract 111.16; Jefferson County; Alabama`
+- `obs:acs-2023-011116-housing` -> `housing_signal` `Census Tract 111.16; Jefferson County; Alabama`
+- `obs:acs-2023-011117-population` -> `population_cohort` `Census Tract 111.17; Jefferson County; Alabama`
+- `obs:acs-2023-011117-housing` -> `housing_signal` `Census Tract 111.17; Jefferson County; Alabama`
+- `obs:acs-2023-011205-population` -> `population_cohort` `Census Tract 112.05; Jefferson County; Alabama`
+- `obs:acs-2023-011205-housing` -> `housing_signal` `Census Tract 112.05; Jefferson County; Alabama`
+- `obs:acs-2023-011206-population` -> `population_cohort` `Census Tract 112.06; Jefferson County; Alabama`
+- `obs:acs-2023-011206-housing` -> `housing_signal` `Census Tract 112.06; Jefferson County; Alabama`
+- `obs:acs-2023-011207-population` -> `population_cohort` `Census Tract 112.07; Jefferson County; Alabama`
+- `obs:acs-2023-011207-housing` -> `housing_signal` `Census Tract 112.07; Jefferson County; Alabama`
+- `obs:acs-2023-011208-population` -> `population_cohort` `Census Tract 112.08; Jefferson County; Alabama`
+- `obs:acs-2023-011208-housing` -> `housing_signal` `Census Tract 112.08; Jefferson County; Alabama`
+- `obs:acs-2023-011209-population` -> `population_cohort` `Census Tract 112.09; Jefferson County; Alabama`
+- `obs:acs-2023-011209-housing` -> `housing_signal` `Census Tract 112.09; Jefferson County; Alabama`
+- `obs:acs-2023-011210-population` -> `population_cohort` `Census Tract 112.10; Jefferson County; Alabama`
+- `obs:acs-2023-011210-housing` -> `housing_signal` `Census Tract 112.10; Jefferson County; Alabama`
+- `obs:acs-2023-011301-population` -> `population_cohort` `Census Tract 113.01; Jefferson County; Alabama`
+- `obs:acs-2023-011301-housing` -> `housing_signal` `Census Tract 113.01; Jefferson County; Alabama`
+- `obs:acs-2023-011303-population` -> `population_cohort` `Census Tract 113.03; Jefferson County; Alabama`
+- `obs:acs-2023-011303-housing` -> `housing_signal` `Census Tract 113.03; Jefferson County; Alabama`
+- `obs:acs-2023-011304-population` -> `population_cohort` `Census Tract 113.04; Jefferson County; Alabama`
+- `obs:acs-2023-011304-housing` -> `housing_signal` `Census Tract 113.04; Jefferson County; Alabama`
+- `obs:acs-2023-011401-population` -> `population_cohort` `Census Tract 114.01; Jefferson County; Alabama`
+- `obs:acs-2023-011401-housing` -> `housing_signal` `Census Tract 114.01; Jefferson County; Alabama`
+- `obs:acs-2023-011402-population` -> `population_cohort` `Census Tract 114.02; Jefferson County; Alabama`
+- `obs:acs-2023-011402-housing` -> `housing_signal` `Census Tract 114.02; Jefferson County; Alabama`
+- `obs:acs-2023-011500-population` -> `population_cohort` `Census Tract 115; Jefferson County; Alabama`
+- `obs:acs-2023-011500-housing` -> `housing_signal` `Census Tract 115; Jefferson County; Alabama`
+- `obs:acs-2023-011600-population` -> `population_cohort` `Census Tract 116; Jefferson County; Alabama`
+- `obs:acs-2023-011600-housing` -> `housing_signal` `Census Tract 116; Jefferson County; Alabama`
+- `obs:acs-2023-011704-population` -> `population_cohort` `Census Tract 117.04; Jefferson County; Alabama`
+- `obs:acs-2023-011704-housing` -> `housing_signal` `Census Tract 117.04; Jefferson County; Alabama`
+- `obs:acs-2023-011706-population` -> `population_cohort` `Census Tract 117.06; Jefferson County; Alabama`
+- `obs:acs-2023-011706-housing` -> `housing_signal` `Census Tract 117.06; Jefferson County; Alabama`
+- `obs:acs-2023-011707-population` -> `population_cohort` `Census Tract 117.07; Jefferson County; Alabama`
+- `obs:acs-2023-011707-housing` -> `housing_signal` `Census Tract 117.07; Jefferson County; Alabama`
+- `obs:acs-2023-011708-population` -> `population_cohort` `Census Tract 117.08; Jefferson County; Alabama`
+- `obs:acs-2023-011708-housing` -> `housing_signal` `Census Tract 117.08; Jefferson County; Alabama`
+- `obs:acs-2023-011709-population` -> `population_cohort` `Census Tract 117.09; Jefferson County; Alabama`
+- `obs:acs-2023-011709-housing` -> `housing_signal` `Census Tract 117.09; Jefferson County; Alabama`
+- `obs:acs-2023-011710-population` -> `population_cohort` `Census Tract 117.10; Jefferson County; Alabama`
+- `obs:acs-2023-011710-housing` -> `housing_signal` `Census Tract 117.10; Jefferson County; Alabama`
+- `obs:acs-2023-011803-population` -> `population_cohort` `Census Tract 118.03; Jefferson County; Alabama`
+- `obs:acs-2023-011803-housing` -> `housing_signal` `Census Tract 118.03; Jefferson County; Alabama`
+- `obs:acs-2023-011804-population` -> `population_cohort` `Census Tract 118.04; Jefferson County; Alabama`
+- `obs:acs-2023-011804-housing` -> `housing_signal` `Census Tract 118.04; Jefferson County; Alabama`
+- `obs:acs-2023-011805-population` -> `population_cohort` `Census Tract 118.05; Jefferson County; Alabama`
+- `obs:acs-2023-011805-housing` -> `housing_signal` `Census Tract 118.05; Jefferson County; Alabama`
+- `obs:acs-2023-011806-population` -> `population_cohort` `Census Tract 118.06; Jefferson County; Alabama`
+- `obs:acs-2023-011806-housing` -> `housing_signal` `Census Tract 118.06; Jefferson County; Alabama`
+- `obs:acs-2023-011901-population` -> `population_cohort` `Census Tract 119.01; Jefferson County; Alabama`
+- `obs:acs-2023-011901-housing` -> `housing_signal` `Census Tract 119.01; Jefferson County; Alabama`
+- `obs:acs-2023-011904-population` -> `population_cohort` `Census Tract 119.04; Jefferson County; Alabama`
+- `obs:acs-2023-011904-housing` -> `housing_signal` `Census Tract 119.04; Jefferson County; Alabama`
+- `obs:acs-2023-012001-population` -> `population_cohort` `Census Tract 120.01; Jefferson County; Alabama`
+- `obs:acs-2023-012001-housing` -> `housing_signal` `Census Tract 120.01; Jefferson County; Alabama`
+- `obs:acs-2023-012003-population` -> `population_cohort` `Census Tract 120.03; Jefferson County; Alabama`
+- `obs:acs-2023-012003-housing` -> `housing_signal` `Census Tract 120.03; Jefferson County; Alabama`
+- `obs:acs-2023-012004-population` -> `population_cohort` `Census Tract 120.04; Jefferson County; Alabama`
+- `obs:acs-2023-012004-housing` -> `housing_signal` `Census Tract 120.04; Jefferson County; Alabama`
+- `obs:acs-2023-012103-population` -> `population_cohort` `Census Tract 121.03; Jefferson County; Alabama`
+- `obs:acs-2023-012103-housing` -> `housing_signal` `Census Tract 121.03; Jefferson County; Alabama`
+- `obs:acs-2023-012104-population` -> `population_cohort` `Census Tract 121.04; Jefferson County; Alabama`
+- `obs:acs-2023-012104-housing` -> `housing_signal` `Census Tract 121.04; Jefferson County; Alabama`
+- `obs:acs-2023-012200-population` -> `population_cohort` `Census Tract 122; Jefferson County; Alabama`
+- `obs:acs-2023-012200-housing` -> `housing_signal` `Census Tract 122; Jefferson County; Alabama`
+- `obs:acs-2023-012302-population` -> `population_cohort` `Census Tract 123.02; Jefferson County; Alabama`
+- `obs:acs-2023-012302-housing` -> `housing_signal` `Census Tract 123.02; Jefferson County; Alabama`
+- `obs:acs-2023-012304-population` -> `population_cohort` `Census Tract 123.04; Jefferson County; Alabama`
+- `obs:acs-2023-012304-housing` -> `housing_signal` `Census Tract 123.04; Jefferson County; Alabama`
+- `obs:acs-2023-012306-population` -> `population_cohort` `Census Tract 123.06; Jefferson County; Alabama`
+- `obs:acs-2023-012306-housing` -> `housing_signal` `Census Tract 123.06; Jefferson County; Alabama`
+- `obs:acs-2023-012307-population` -> `population_cohort` `Census Tract 123.07; Jefferson County; Alabama`
+- `obs:acs-2023-012307-housing` -> `housing_signal` `Census Tract 123.07; Jefferson County; Alabama`
+- `obs:acs-2023-012401-population` -> `population_cohort` `Census Tract 124.01; Jefferson County; Alabama`
+- `obs:acs-2023-012401-housing` -> `housing_signal` `Census Tract 124.01; Jefferson County; Alabama`
+- `obs:acs-2023-012402-population` -> `population_cohort` `Census Tract 124.02; Jefferson County; Alabama`
+- `obs:acs-2023-012402-housing` -> `housing_signal` `Census Tract 124.02; Jefferson County; Alabama`
+- `obs:acs-2023-012403-population` -> `population_cohort` `Census Tract 124.03; Jefferson County; Alabama`
+- `obs:acs-2023-012403-housing` -> `housing_signal` `Census Tract 124.03; Jefferson County; Alabama`
+- `obs:acs-2023-012500-population` -> `population_cohort` `Census Tract 125; Jefferson County; Alabama`
+- `obs:acs-2023-012500-housing` -> `housing_signal` `Census Tract 125; Jefferson County; Alabama`
+- `obs:acs-2023-012602-population` -> `population_cohort` `Census Tract 126.02; Jefferson County; Alabama`
+- `obs:acs-2023-012602-housing` -> `housing_signal` `Census Tract 126.02; Jefferson County; Alabama`
+- `obs:acs-2023-012701-population` -> `population_cohort` `Census Tract 127.01; Jefferson County; Alabama`
+- `obs:acs-2023-012701-housing` -> `housing_signal` `Census Tract 127.01; Jefferson County; Alabama`
+- `obs:acs-2023-012703-population` -> `population_cohort` `Census Tract 127.03; Jefferson County; Alabama`
+- `obs:acs-2023-012703-housing` -> `housing_signal` `Census Tract 127.03; Jefferson County; Alabama`
+- `obs:acs-2023-012704-population` -> `population_cohort` `Census Tract 127.04; Jefferson County; Alabama`
+- `obs:acs-2023-012704-housing` -> `housing_signal` `Census Tract 127.04; Jefferson County; Alabama`
+- `obs:acs-2023-012802-population` -> `population_cohort` `Census Tract 128.02; Jefferson County; Alabama`
+- `obs:acs-2023-012802-housing` -> `housing_signal` `Census Tract 128.02; Jefferson County; Alabama`
+- `obs:acs-2023-012804-population` -> `population_cohort` `Census Tract 128.04; Jefferson County; Alabama`
+- `obs:acs-2023-012804-housing` -> `housing_signal` `Census Tract 128.04; Jefferson County; Alabama`
+- `obs:acs-2023-012805-population` -> `population_cohort` `Census Tract 128.05; Jefferson County; Alabama`
+- `obs:acs-2023-012805-housing` -> `housing_signal` `Census Tract 128.05; Jefferson County; Alabama`
+- `obs:acs-2023-012905-population` -> `population_cohort` `Census Tract 129.05; Jefferson County; Alabama`
+- `obs:acs-2023-012905-housing` -> `housing_signal` `Census Tract 129.05; Jefferson County; Alabama`
+- `obs:acs-2023-012907-population` -> `population_cohort` `Census Tract 129.07; Jefferson County; Alabama`
+- `obs:acs-2023-012907-housing` -> `housing_signal` `Census Tract 129.07; Jefferson County; Alabama`
+- `obs:acs-2023-012908-population` -> `population_cohort` `Census Tract 129.08; Jefferson County; Alabama`
+- `obs:acs-2023-012908-housing` -> `housing_signal` `Census Tract 129.08; Jefferson County; Alabama`
+- `obs:acs-2023-012910-population` -> `population_cohort` `Census Tract 129.10; Jefferson County; Alabama`
+- `obs:acs-2023-012910-housing` -> `housing_signal` `Census Tract 129.10; Jefferson County; Alabama`
+- `obs:acs-2023-012911-population` -> `population_cohort` `Census Tract 129.11; Jefferson County; Alabama`
+- `obs:acs-2023-012911-housing` -> `housing_signal` `Census Tract 129.11; Jefferson County; Alabama`
+- `obs:acs-2023-012913-population` -> `population_cohort` `Census Tract 129.13; Jefferson County; Alabama`
+- `obs:acs-2023-012913-housing` -> `housing_signal` `Census Tract 129.13; Jefferson County; Alabama`
+- `obs:acs-2023-012914-population` -> `population_cohort` `Census Tract 129.14; Jefferson County; Alabama`
+- `obs:acs-2023-012914-housing` -> `housing_signal` `Census Tract 129.14; Jefferson County; Alabama`
+- `obs:acs-2023-012916-population` -> `population_cohort` `Census Tract 129.16; Jefferson County; Alabama`
+- `obs:acs-2023-012916-housing` -> `housing_signal` `Census Tract 129.16; Jefferson County; Alabama`
+- `obs:acs-2023-012917-population` -> `population_cohort` `Census Tract 129.17; Jefferson County; Alabama`
+- `obs:acs-2023-012917-housing` -> `housing_signal` `Census Tract 129.17; Jefferson County; Alabama`
+- `obs:acs-2023-012918-population` -> `population_cohort` `Census Tract 129.18; Jefferson County; Alabama`
+- `obs:acs-2023-012918-housing` -> `housing_signal` `Census Tract 129.18; Jefferson County; Alabama`
+- `obs:acs-2023-012919-population` -> `population_cohort` `Census Tract 129.19; Jefferson County; Alabama`
+- `obs:acs-2023-012919-housing` -> `housing_signal` `Census Tract 129.19; Jefferson County; Alabama`
+- `obs:acs-2023-012920-population` -> `population_cohort` `Census Tract 129.20; Jefferson County; Alabama`
+- `obs:acs-2023-012920-housing` -> `housing_signal` `Census Tract 129.20; Jefferson County; Alabama`
+- `obs:acs-2023-012921-population` -> `population_cohort` `Census Tract 129.21; Jefferson County; Alabama`
+- `obs:acs-2023-012921-housing` -> `housing_signal` `Census Tract 129.21; Jefferson County; Alabama`
+- `obs:acs-2023-013002-population` -> `population_cohort` `Census Tract 130.02; Jefferson County; Alabama`
+- `obs:acs-2023-013002-housing` -> `housing_signal` `Census Tract 130.02; Jefferson County; Alabama`
+- `obs:acs-2023-013100-population` -> `population_cohort` `Census Tract 131; Jefferson County; Alabama`
+- `obs:acs-2023-013100-housing` -> `housing_signal` `Census Tract 131; Jefferson County; Alabama`
+- `obs:acs-2023-013200-population` -> `population_cohort` `Census Tract 132; Jefferson County; Alabama`
+- `obs:acs-2023-013200-housing` -> `housing_signal` `Census Tract 132; Jefferson County; Alabama`
+- `obs:acs-2023-013300-population` -> `population_cohort` `Census Tract 133; Jefferson County; Alabama`
+- `obs:acs-2023-013300-housing` -> `housing_signal` `Census Tract 133; Jefferson County; Alabama`
+- `obs:acs-2023-013400-population` -> `population_cohort` `Census Tract 134; Jefferson County; Alabama`
+- `obs:acs-2023-013400-housing` -> `housing_signal` `Census Tract 134; Jefferson County; Alabama`
+- `obs:acs-2023-013601-population` -> `population_cohort` `Census Tract 136.01; Jefferson County; Alabama`
+- `obs:acs-2023-013601-housing` -> `housing_signal` `Census Tract 136.01; Jefferson County; Alabama`
+- `obs:acs-2023-013801-population` -> `population_cohort` `Census Tract 138.01; Jefferson County; Alabama`
+- `obs:acs-2023-013801-housing` -> `housing_signal` `Census Tract 138.01; Jefferson County; Alabama`
+- `obs:acs-2023-013901-population` -> `population_cohort` `Census Tract 139.01; Jefferson County; Alabama`
+- `obs:acs-2023-013901-housing` -> `housing_signal` `Census Tract 139.01; Jefferson County; Alabama`
+- `obs:acs-2023-013902-population` -> `population_cohort` `Census Tract 139.02; Jefferson County; Alabama`
+- `obs:acs-2023-013902-housing` -> `housing_signal` `Census Tract 139.02; Jefferson County; Alabama`
+- `obs:acs-2023-014001-population` -> `population_cohort` `Census Tract 140.01; Jefferson County; Alabama`
+- `obs:acs-2023-014001-housing` -> `housing_signal` `Census Tract 140.01; Jefferson County; Alabama`
+- `obs:acs-2023-014002-population` -> `population_cohort` `Census Tract 140.02; Jefferson County; Alabama`
+- `obs:acs-2023-014002-housing` -> `housing_signal` `Census Tract 140.02; Jefferson County; Alabama`
+- `obs:acs-2023-014104-population` -> `population_cohort` `Census Tract 141.04; Jefferson County; Alabama`
+- `obs:acs-2023-014104-housing` -> `housing_signal` `Census Tract 141.04; Jefferson County; Alabama`
+- `obs:acs-2023-014105-population` -> `population_cohort` `Census Tract 141.05; Jefferson County; Alabama`
+- `obs:acs-2023-014105-housing` -> `housing_signal` `Census Tract 141.05; Jefferson County; Alabama`
+- `obs:acs-2023-014106-population` -> `population_cohort` `Census Tract 141.06; Jefferson County; Alabama`
+- `obs:acs-2023-014106-housing` -> `housing_signal` `Census Tract 141.06; Jefferson County; Alabama`
+- `obs:acs-2023-014107-population` -> `population_cohort` `Census Tract 141.07; Jefferson County; Alabama`
+- `obs:acs-2023-014107-housing` -> `housing_signal` `Census Tract 141.07; Jefferson County; Alabama`
+- `obs:acs-2023-014205-population` -> `population_cohort` `Census Tract 142.05; Jefferson County; Alabama`
+- `obs:acs-2023-014205-housing` -> `housing_signal` `Census Tract 142.05; Jefferson County; Alabama`
+- `obs:acs-2023-014206-population` -> `population_cohort` `Census Tract 142.06; Jefferson County; Alabama`
+- `obs:acs-2023-014206-housing` -> `housing_signal` `Census Tract 142.06; Jefferson County; Alabama`
+- `obs:acs-2023-014207-population` -> `population_cohort` `Census Tract 142.07; Jefferson County; Alabama`
+- `obs:acs-2023-014207-housing` -> `housing_signal` `Census Tract 142.07; Jefferson County; Alabama`
+- `obs:acs-2023-014208-population` -> `population_cohort` `Census Tract 142.08; Jefferson County; Alabama`
+- `obs:acs-2023-014208-housing` -> `housing_signal` `Census Tract 142.08; Jefferson County; Alabama`
+- `obs:acs-2023-014209-population` -> `population_cohort` `Census Tract 142.09; Jefferson County; Alabama`
+- `obs:acs-2023-014209-housing` -> `housing_signal` `Census Tract 142.09; Jefferson County; Alabama`
+- `obs:acs-2023-014301-population` -> `population_cohort` `Census Tract 143.01; Jefferson County; Alabama`
+- `obs:acs-2023-014301-housing` -> `housing_signal` `Census Tract 143.01; Jefferson County; Alabama`
+- `obs:acs-2023-014303-population` -> `population_cohort` `Census Tract 143.03; Jefferson County; Alabama`
+- `obs:acs-2023-014303-housing` -> `housing_signal` `Census Tract 143.03; Jefferson County; Alabama`
+- `obs:acs-2023-014304-population` -> `population_cohort` `Census Tract 143.04; Jefferson County; Alabama`
+- `obs:acs-2023-014304-housing` -> `housing_signal` `Census Tract 143.04; Jefferson County; Alabama`
+- `obs:acs-2023-014404-population` -> `population_cohort` `Census Tract 144.04; Jefferson County; Alabama`
+- `obs:acs-2023-014404-housing` -> `housing_signal` `Census Tract 144.04; Jefferson County; Alabama`
+- `obs:acs-2023-014405-population` -> `population_cohort` `Census Tract 144.05; Jefferson County; Alabama`
+- `obs:acs-2023-014405-housing` -> `housing_signal` `Census Tract 144.05; Jefferson County; Alabama`
+- `obs:acs-2023-014406-population` -> `population_cohort` `Census Tract 144.06; Jefferson County; Alabama`
+- `obs:acs-2023-014406-housing` -> `housing_signal` `Census Tract 144.06; Jefferson County; Alabama`
+- `obs:acs-2023-014408-population` -> `population_cohort` `Census Tract 144.08; Jefferson County; Alabama`
+- `obs:acs-2023-014408-housing` -> `housing_signal` `Census Tract 144.08; Jefferson County; Alabama`
+- `obs:acs-2023-014409-population` -> `population_cohort` `Census Tract 144.09; Jefferson County; Alabama`
+- `obs:acs-2023-014409-housing` -> `housing_signal` `Census Tract 144.09; Jefferson County; Alabama`
+- `obs:acs-2023-014410-population` -> `population_cohort` `Census Tract 144.10; Jefferson County; Alabama`
+- `obs:acs-2023-014410-housing` -> `housing_signal` `Census Tract 144.10; Jefferson County; Alabama`
+- `obs:acs-2023-014412-population` -> `population_cohort` `Census Tract 144.12; Jefferson County; Alabama`
+- `obs:acs-2023-014412-housing` -> `housing_signal` `Census Tract 144.12; Jefferson County; Alabama`
+- `obs:acs-2023-014414-population` -> `population_cohort` `Census Tract 144.14; Jefferson County; Alabama`
+- `obs:acs-2023-014414-housing` -> `housing_signal` `Census Tract 144.14; Jefferson County; Alabama`
+- `obs:acs-2023-014415-population` -> `population_cohort` `Census Tract 144.15; Jefferson County; Alabama`
+- `obs:acs-2023-014415-housing` -> `housing_signal` `Census Tract 144.15; Jefferson County; Alabama`
+- `obs:osm-node-56756628` -> `venue` `bham_metro_regional`
+- `obs:osm-node-56774521` -> `venue` `bham_metro_regional`
+- `obs:osm-node-56826189` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358905602` -> `venue` `bham_avondale`
+- `obs:osm-node-358905945` -> `community` `bham_metro_regional`
+- `obs:osm-node-358908236` -> `community` `bham_metro_regional`
+- `obs:osm-node-358908313` -> `community` `bham_metro_regional`
+- `obs:osm-node-358908752` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358908835` -> `community` `bham_metro_regional`
+- `obs:osm-node-358910567` -> `community` `bham_metro_regional`
+- `obs:osm-node-358910583` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358911080` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358911414` -> `community` `bham_metro_regional`
+- `obs:osm-node-358911703` -> `venue` `bham_downtown`
+- `obs:osm-node-358913546` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358913583` -> `community` `bham_metro_regional`
+- `obs:osm-node-358914644` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358916118` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358916477` -> `community` `bham_metro_regional`
+- `obs:osm-node-358916712` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358917896` -> `community` `bham_metro_regional`
+- `obs:osm-node-358917999` -> `venue` `bham_lakeview`
+- `obs:osm-node-358918216` -> `community` `bham_metro_regional`
+- `obs:osm-node-358918397` -> `community` `bham_metro_regional`
+- `obs:osm-node-358918787` -> `community` `bham_metro_regional`
+- `obs:osm-node-358919112` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358919128` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358919232` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358921067` -> `community` `bham_metro_regional`
+- `obs:osm-node-358922429` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358922535` -> `community` `bham_metro_regional`
+- `obs:osm-node-358922625` -> `community` `bham_metro_regional`
+- `obs:osm-node-358922966` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358924058` -> `community` `bham_metro_regional`
+- `obs:osm-node-358924273` -> `community` `bham_metro_regional`
+- `obs:osm-node-358924640` -> `community` `bham_metro_regional`
+- `obs:osm-node-358924810` -> `community` `bham_metro_regional`
+- `obs:osm-node-358926691` -> `community` `bham_metro_regional`
+- `obs:osm-node-358927171` -> `community` `bham_metro_regional`
+- `obs:osm-node-358927783` -> `community` `bham_metro_regional`
+- `obs:osm-node-358927902` -> `community` `bham_metro_regional`
+- `obs:osm-node-358928566` -> `community` `bham_metro_regional`
+- `obs:osm-node-358929465` -> `community` `bham_metro_regional`
+- `obs:osm-node-358929575` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358930577` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358931014` -> `venue` `bham_southside`
+- `obs:osm-node-358931034` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358931762` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358931969` -> `community` `bham_metro_regional`
+- `obs:osm-node-358931990` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358955645` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955650` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955658` -> `community` `bham_downtown`
+- `obs:osm-node-358955664` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955670` -> `community` `bham_downtown`
+- `obs:osm-node-358955675` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955692` -> `community` `bham_southside`
+- `obs:osm-node-358955696` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955699` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955752` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955760` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955764` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955769` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955789` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955803` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955844` -> `community` `bham_southside`
+- `obs:osm-node-358955861` -> `community` `bham_southside`
+- `obs:osm-node-358955865` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955877` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955883` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955888` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955908` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955914` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955918` -> `community` `bham_southside`
+- `obs:osm-node-358955926` -> `community` `bham_southside`
+- `obs:osm-node-358955937` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955954` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955963` -> `community` `bham_metro_regional`
+- `obs:osm-node-358955974` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956015` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956033` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956055` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956111` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956114` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956136` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956153` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956164` -> `community` `bham_metro_regional`
+- `obs:osm-node-358956173` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962377` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962383` -> `community` `bham_avondale`
+- `obs:osm-node-358962416` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962419` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962434` -> `community` `bham_avondale`
+- `obs:osm-node-358962450` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962453` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962457` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962459` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962479` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962490` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962494` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962511` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962551` -> `community` `bham_downtown`
+- `obs:osm-node-358962614` -> `community` `bham_lakeview`
+- `obs:osm-node-358962632` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962635` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358962640` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962643` -> `community` `bham_downtown`
+- `obs:osm-node-358962647` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962650` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962667` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962670` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962679` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962681` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962684` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962689` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962691` -> `community` `bham_downtown`
+- `obs:osm-node-358962694` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962698` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962721` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962765` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962805` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962814` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962826` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962846` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962849` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962851` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962855` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962861` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962880` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962887` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962890` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358962896` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962905` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962914` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962917` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962920` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962923` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962927` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962934` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962939` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962944` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962955` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962958` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962961` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962964` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962978` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962981` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962984` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962988` -> `community` `bham_metro_regional`
+- `obs:osm-node-358962997` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963006` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963010` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963028` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963033` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963039` -> `community` `bham_downtown`
+- `obs:osm-node-358963065` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963068` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963081` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963136` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963181` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963183` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963235` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963245` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963251` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963254` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358963285` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963304` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963323` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963333` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963352` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963368` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963375` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963399` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963404` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963407` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963412` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963415` -> `community` `bham_lakeview`
+- `obs:osm-node-358963430` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963435` -> `community` `bham_avondale`
+- `obs:osm-node-358963438` -> `community` `bham_downtown`
+- `obs:osm-node-358963442` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963447` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963454` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963470` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963480` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963502` -> `community` `bham_southside`
+- `obs:osm-node-358963505` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963508` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963548` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963584` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963599` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963626` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963630` -> `community` `bham_metro_regional`
+- `obs:osm-node-358963641` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358972226` -> `community` `bham_metro_regional`
+- `obs:osm-node-358972327` -> `community` `bham_metro_regional`
+- `obs:osm-node-358972334` -> `community` `bham_avondale`
+- `obs:osm-node-358972341` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973035` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358973115` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973131` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973136` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973194` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973208` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973212` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973221` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973230` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973234` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973238` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973247` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973251` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973256` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973260` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973265` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973270` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973283` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973287` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973292` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973301` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973306` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973311` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973320` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973334` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973338` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973343` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973347` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973356` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973377` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973381` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973385` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973390` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973394` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973400` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973413` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973430` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973434` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973440` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973444` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973448` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973454` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973461` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973470` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973474` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973479` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973483` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973488` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973493` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973523` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973890` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973895` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973897` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973900` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973902` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973906` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973909` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973911` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973914` -> `community` `bham_metro_regional`
+- `obs:osm-node-358973916` -> `community` `bham_metro_regional`
+- `obs:osm-node-358974201` -> `community` `bham_metro_regional`
+- `obs:osm-node-358975321` -> `community` `bham_metro_regional`
+- `obs:osm-node-358976477` -> `community` `bham_metro_regional`
+- `obs:osm-node-358977668` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979155` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979161` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979201` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979225` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979228` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979232` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979238` -> `community` `bham_metro_regional`
+- `obs:osm-node-358979241` -> `community` `bham_metro_regional`
+- `obs:osm-node-358981798` -> `community` `bham_metro_regional`
+- `obs:osm-node-358982825` -> `community` `bham_metro_regional`
+- `obs:osm-node-358982831` -> `community` `bham_metro_regional`
+- `obs:osm-node-358988086` -> `community` `bham_metro_regional`
+- `obs:osm-node-358988138` -> `community` `bham_metro_regional`
+- `obs:osm-node-358988148` -> `community` `bham_metro_regional`
+- `obs:osm-node-358994887` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358994896` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358994922` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358994925` -> `venue` `bham_metro_regional`
+- `obs:osm-node-358996260` -> `community` `bham_metro_regional`
+- `obs:osm-node-358996835` -> `community` `bham_metro_regional`
+- `obs:osm-node-358996838` -> `community` `bham_metro_regional`
+- `obs:osm-node-359002486` -> `venue` `bham_metro_regional`
+- `obs:osm-node-359002490` -> `venue` `bham_metro_regional`
+- `obs:osm-node-359002498` -> `venue` `bham_metro_regional`
+- `obs:osm-node-359002542` -> `community` `bham_metro_regional`
+- `obs:osm-node-359002553` -> `community` `bham_downtown`
+- `obs:osm-node-359002559` -> `community` `bham_metro_regional`
+- `obs:osm-node-359002925` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003372` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003375` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003378` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003663` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003666` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003671` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003675` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003677` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003679` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003683` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003685` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003689` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003695` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003699` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003729` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003858` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003908` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003911` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003915` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003917` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003920` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003922` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003926` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003931` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003937` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003939` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003942` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003945` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003947` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003950` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003952` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003955` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003964` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003966` -> `community` `bham_metro_regional`
+- `obs:osm-node-359003968` -> `community` `bham_metro_regional`
+- `obs:osm-node-359004000` -> `community` `bham_southside`
+- `obs:osm-node-359004006` -> `community` `bham_metro_regional`
+- `obs:osm-node-359004023` -> `community` `bham_southside`
+- `obs:osm-node-359004032` -> `community` `bham_metro_regional`
+- `obs:osm-node-359004035` -> `community` `bham_metro_regional`
+- `obs:osm-node-359004048` -> `community` `bham_avondale`
+- `obs:osm-node-359004067` -> `community` `bham_metro_regional`
+- `obs:osm-node-359004077` -> `community` `bham_downtown`
+- `obs:osm-node-359007199` -> `venue` `bham_metro_regional`
+- `obs:osm-node-367930848` -> `community` `bham_metro_regional`
+- `obs:osm-node-367931368` -> `community` `bham_metro_regional`
+- `obs:osm-node-367931515` -> `community` `bham_metro_regional`
+- `obs:osm-node-367931580` -> `community` `bham_metro_regional`
+- `obs:osm-node-367931595` -> `community` `bham_metro_regional`
+- `obs:osm-node-367932101` -> `venue` `bham_downtown`
+- `obs:osm-node-367932302` -> `venue` `bham_metro_regional`
+- `obs:osm-node-367932313` -> `venue` `bham_metro_regional`
+- `obs:osm-node-367932314` -> `venue` `bham_metro_regional`
+- `obs:osm-node-610491693` -> `community` `bham_metro_regional`
+- `obs:osm-node-610491698` -> `community` `bham_metro_regional`
+- `obs:osm-node-966025383` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1192048267` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1382007082` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1382007427` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1384963341` -> `venue` `bham_downtown`
+- `obs:osm-node-1399429850` -> `community` `bham_metro_regional`
+- `obs:osm-node-1399431680` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399431683` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399431684` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399432515` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399432755` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399432756` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1399432757` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1428434405` -> `venue` `bham_downtown`
+- `obs:osm-node-1428434839` -> `venue` `bham_downtown`
+- `obs:osm-node-1653905896` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1653907043` -> `venue` `bham_metro_regional`
+- `obs:osm-node-1864619823` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2159986616` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2222493595` -> `community` `bham_metro_regional`
+- `obs:osm-node-2311636078` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2311646551` -> `venue` `bham_lakeview`
+- `obs:osm-node-2363118852` -> `venue` `bham_downtown`
+- `obs:osm-node-2395129622` -> `venue` `bham_lakeview`
+- `obs:osm-node-2397519600` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450022452` -> `community` `bham_metro_regional`
+- `obs:osm-node-2450040252` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450040290` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054163` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054164` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054180` -> `community` `bham_metro_regional`
+- `obs:osm-node-2450054181` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054186` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054189` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2450054190` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2573534269` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2611365200` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2699255554` -> `venue` `bham_lakeview`
+- `obs:osm-node-2699257717` -> `venue` `bham_lakeview`
+- `obs:osm-node-2699257720` -> `venue` `bham_lakeview`
+- `obs:osm-node-2699257722` -> `venue` `bham_lakeview`
+- `obs:osm-node-2718288565` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2771627089` -> `venue` `bham_lakeview`
+- `obs:osm-node-2980034580` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034585` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034588` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034589` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034591` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034592` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034594` -> `venue` `bham_metro_regional`
+- `obs:osm-node-2980034596` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3084651118` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3136021093` -> `venue` `bham_downtown`
+- `obs:osm-node-3143052683` -> `community` `bham_avondale`
+- `obs:osm-node-3156627152` -> `venue` `bham_southside`
+- `obs:osm-node-3156924295` -> `venue` `bham_southside`
+- `obs:osm-node-3156924296` -> `venue` `bham_southside`
+- `obs:osm-node-3261766101` -> `community` `bham_metro_regional`
+- `obs:osm-node-3264284063` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264287061` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264295762` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264307063` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264318361` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264332384` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264382061` -> `community` `bham_metro_regional`
+- `obs:osm-node-3264392362` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3264406661` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3358376748` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3358376749` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3358376752` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3358376755` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3358376757` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374885993` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374893693` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374900893` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374903393` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374938193` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374941394` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3374941395` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3375687993` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3375796293` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3376464194` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3376842796` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3376854998` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3376856993` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3376920693` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3415798482` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3442815991` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3442829110` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3446674475` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3447822716` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3450883492` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3450933685` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3450994132` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3450994133` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3451010452` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3451010454` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3451045716` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3451045717` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3570296993` -> `venue` `bham_lakeview`
+- `obs:osm-node-3601418689` -> `community` `bham_metro_regional`
+- `obs:osm-node-3754980330` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3759178870` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3763255564` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3763255565` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3818024068` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3818024084` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3818024089` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3818024090` -> `venue` `bham_metro_regional`
+- `obs:osm-node-3818024091` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071201322` -> `venue` `bham_southside`
+- `obs:osm-node-4071220720` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071236115` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071236116` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071307107` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071310629` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071321811` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071365489` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071365490` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071461436` -> `venue` `bham_downtown`
+- `obs:osm-node-4071477429` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071495520` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071495521` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4071505601` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4485971664` -> `venue` `bham_downtown`
+- `obs:osm-node-4486012922` -> `community` `bham_downtown`
+- `obs:osm-node-4486012923` -> `community` `bham_downtown`
+- `obs:osm-node-4551747871` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4610568621` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4741572125` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4742353441` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4742354308` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4742358670` -> `venue` `bham_southside`
+- `obs:osm-node-4742498957` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4747791817` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4833587745` -> `community` `bham_metro_regional`
+- `obs:osm-node-4839277824` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324586` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324587` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324592` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324593` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324594` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324595` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324596` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324598` -> `club` `bham_metro_regional`
+- `obs:osm-node-4839324601` -> `community` `bham_metro_regional`
+- `obs:osm-node-4839324604` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324605` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839324608` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4839898107` -> `community` `bham_metro_regional`
+- `obs:osm-node-4848847625` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4849800020` -> `community` `bham_metro_regional`
+- `obs:osm-node-4849800521` -> `community` `bham_metro_regional`
+- `obs:osm-node-4849807536` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4849815777` -> `community` `bham_metro_regional`
+- `obs:osm-node-4884446710` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4884527478` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4884597687` -> `venue` `bham_metro_regional`
+- `obs:osm-node-4884625086` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5256878805` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5333262785` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5469686957` -> `community` `bham_metro_regional`
+- `obs:osm-node-5473300705` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5553315033` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5553315035` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5553315036` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5553315037` -> `community` `bham_metro_regional`
+- `obs:osm-node-5553315038` -> `community` `bham_metro_regional`
+- `obs:osm-node-5554643563` -> `community` `bham_metro_regional`
+- `obs:osm-node-5554667967` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5554667971` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5585357395` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5600120022` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5613514695` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5615114290` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5627820452` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5636200812` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5641018499` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5650280841` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5655103958` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5655187789` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5663453941` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5703240077` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5703240079` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5703240080` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5703240082` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5703240083` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5711037851` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5711037857` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5729188269` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5739814038` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5782477661` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5785156773` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5785156775` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5793231484` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5799944749` -> `venue` `bham_southside`
+- `obs:osm-node-5799944750` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5833577617` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5837202922` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5840213933` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5840213934` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5840213935` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5857345548` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5857352669` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5857352670` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5857352671` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5864635502` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5864649586` -> `venue` `bham_lakeview`
+- `obs:osm-node-5864649587` -> `venue` `bham_lakeview`
+- `obs:osm-node-5866962725` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5872592869` -> `venue` `bham_southside`
+- `obs:osm-node-5872592870` -> `venue` `bham_downtown`
+- `obs:osm-node-5876776347` -> `venue` `bham_avondale`
+- `obs:osm-node-5877090640` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5877090643` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5889497208` -> `venue` `bham_downtown`
+- `obs:osm-node-5889497209` -> `venue` `bham_downtown`
+- `obs:osm-node-5889497210` -> `venue` `bham_downtown`
+- `obs:osm-node-5889497211` -> `venue` `bham_downtown`
+- `obs:osm-node-5891905003` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5907346899` -> `venue` `bham_avondale`
+- `obs:osm-node-5908524456` -> `venue` `bham_southside`
+- `obs:osm-node-5912804585` -> `community` `bham_downtown`
+- `obs:osm-node-5912804685` -> `community` `bham_downtown`
+- `obs:osm-node-5912804885` -> `community` `bham_downtown`
+- `obs:osm-node-5912859186` -> `community` `bham_downtown`
+- `obs:osm-node-5912859187` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5913559385` -> `community` `bham_metro_regional`
+- `obs:osm-node-5913559485` -> `community` `bham_metro_regional`
+- `obs:osm-node-5913559585` -> `community` `bham_metro_regional`
+- `obs:osm-node-5914999882` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5914999883` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5915002412` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5915052227` -> `community` `bham_metro_regional`
+- `obs:osm-node-5917236192` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5925078514` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5932947936` -> `venue` `bham_lakeview`
+- `obs:osm-node-5936013202` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5936036799` -> `community` `bham_metro_regional`
+- `obs:osm-node-5939709835` -> `venue` `bham_downtown`
+- `obs:osm-node-5939911102` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5939913097` -> `venue` `bham_southside`
+- `obs:osm-node-5962333206` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5962333207` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5962333208` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5962333209` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5965272157` -> `community` `bham_metro_regional`
+- `obs:osm-node-5991923146` -> `venue` `bham_metro_regional`
+- `obs:osm-node-5991923147` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6006268335` -> `venue` `bham_southside`
+- `obs:osm-node-6141493837` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6151657752` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6152832462` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6160602224` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6160606499` -> `venue` `bham_southside`
+- `obs:osm-node-6172300256` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6184063654` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6184063656` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6184063657` -> `club` `bham_metro_regional`
+- `obs:osm-node-6185182220` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182223` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182224` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182225` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182227` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182228` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182230` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182231` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182232` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182233` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182234` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182239` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182241` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182242` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182244` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182247` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182248` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6185182251` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6188791404` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6188791409` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6188791411` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6188816186` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6211997990` -> `venue` `bham_downtown`
+- `obs:osm-node-6214910536` -> `venue` `bham_southside`
+- `obs:osm-node-6219878025` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6228590439` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6228590440` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6255247426` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6287582937` -> `community` `bham_metro_regional`
+- `obs:osm-node-6332131699` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6361203291` -> `venue` `bham_downtown`
+- `obs:osm-node-6361203297` -> `venue` `bham_downtown`
+- `obs:osm-node-6405178441` -> `community` `bham_metro_regional`
+- `obs:osm-node-6407991764` -> `venue` `bham_avondale`
+- `obs:osm-node-6432124826` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6432124827` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6489661225` -> `venue` `bham_southside`
+- `obs:osm-node-6573254337` -> `community` `bham_metro_regional`
+- `obs:osm-node-6724741685` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6775970888` -> `venue` `bham_southside`
+- `obs:osm-node-6781959424` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6788382977` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6855319249` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6866807576` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6866807577` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6956689007` -> `venue` `bham_metro_regional`
+- `obs:osm-node-6967654318` -> `venue` `bham_southside`
+- `obs:osm-node-6988716727` -> `community` `bham_metro_regional`
+- `obs:osm-node-6997517360` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7036911399` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7055660143` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7068007818` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7070237634` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7070584608` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7070584609` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7070584625` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7074138746` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7076123572` -> `venue` `bham_southside`
+- `obs:osm-node-7076123573` -> `venue` `bham_southside`
+- `obs:osm-node-7078502742` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7082561183` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7092230782` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7092350090` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7095056514` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7096572035` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7104576523` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7106416132` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7110519040` -> `venue` `bham_downtown`
+- `obs:osm-node-7128546526` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7128546528` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7128546529` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7141587406` -> `community` `bham_metro_regional`
+- `obs:osm-node-7142093775` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7147202632` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7150170165` -> `venue` `bham_downtown`
+- `obs:osm-node-7152874997` -> `community` `bham_metro_regional`
+- `obs:osm-node-7161445221` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7168337041` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7193378201` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7203608985` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7204755924` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7207028885` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7229271318` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7235441624` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7236068355` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7237589380` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7239491917` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7239743517` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7246278346` -> `venue` `bham_southside`
+- `obs:osm-node-7270686280` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7286971701` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7289770640` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7313018755` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7340809080` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7341716686` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7360518775` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7369343407` -> `venue` `bham_southside`
+- `obs:osm-node-7402536413` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7442098309` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7512761282` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7546697148` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7579027410` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7594409507` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7695947955` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7700298748` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7708948186` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7755583104` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7775898725` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7781735949` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7787832019` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7792119993` -> `venue` `bham_southside`
+- `obs:osm-node-7792769429` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7795552378` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7813407915` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7837479758` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7872262983` -> `community` `bham_metro_regional`
+- `obs:osm-node-7877148073` -> `venue` `bham_metro_regional`
+- `obs:osm-node-7993535276` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8035147093` -> `venue` `bham_avondale`
+- `obs:osm-node-8035147094` -> `community` `bham_avondale`
+- `obs:osm-node-8235594966` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8235594989` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8265099482` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8265422215` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8265422216` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8268622903` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8299988507` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8313030371` -> `community` `bham_southside`
+- `obs:osm-node-8313519023` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8427040226` -> `venue` `bham_southside`
+- `obs:osm-node-8427060092` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8481252768` -> `venue` `bham_southside`
+- `obs:osm-node-8590165130` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8611618138` -> `community` `bham_metro_regional`
+- `obs:osm-node-8726739535` -> `community` `bham_metro_regional`
+- `obs:osm-node-8747925280` -> `community` `bham_metro_regional`
+- `obs:osm-node-8849629455` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8849629456` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8855176545` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8895483123` -> `community` `bham_metro_regional`
+- `obs:osm-node-8895483124` -> `community` `bham_metro_regional`
+- `obs:osm-node-8916825975` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8916825976` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8937258637` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8937258638` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8937584420` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8990649945` -> `venue` `bham_metro_regional`
+- `obs:osm-node-8990649961` -> `club` `bham_metro_regional`
+- `obs:osm-node-9008748527` -> `venue` `bham_southside`
+- `obs:osm-node-9386352391` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9498406335` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9510423829` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9610853952` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9680970003` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9717699063` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9828712634` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9837608588` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9848131384` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9910142066` -> `venue` `bham_metro_regional`
+- `obs:osm-node-9975001289` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10098078409` -> `community` `bham_metro_regional`
+- `obs:osm-node-10239078415` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10268961991` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10659638744` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10674986373` -> `community` `bham_metro_regional`
+- `obs:osm-node-10681915644` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10681915645` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10684972985` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10689525569` -> `venue` `bham_downtown`
+- `obs:osm-node-10739044405` -> `community` `bham_downtown`
+- `obs:osm-node-10749306900` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10751583048` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10751583080` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10751583081` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10751583084` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10751583085` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10759218274` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10763191695` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10763191702` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10763191703` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10763191704` -> `venue` `bham_metro_regional`
+- `obs:osm-node-10860576832` -> `venue` `bham_downtown`
+- `obs:osm-node-10961748261` -> `venue` `bham_metro_regional`
+- `obs:osm-node-11152860269` -> `venue` `bham_avondale`
+- `obs:osm-node-11423739548` -> `venue` `bham_downtown`
+- `obs:bpl-archive-0` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-1` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-2` -> `locality` `bham_metro_regional`
+- `obs:bpl-archive-3` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-4` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-5` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-6` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-7` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-8` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-9` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-10` -> `locality` `bham_metro_regional`
+- `obs:bpl-archive-11` -> `locality` `bham_metro_regional`
+- `obs:bpl-archive-12` -> `locality` `bham_metro_regional`
+- `obs:bpl-archive-13` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-14` -> `locality` `bham_metro_regional`
+- `obs:bpl-archive-15` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-16` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-17` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-18` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-19` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-20` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-21` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-22` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-23` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-24` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-25` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-26` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-27` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-28` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-29` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-30` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-31` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-32` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-33` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-34` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-35` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-36` -> `venue` `bham_metro_regional`
+- `obs:bpl-archive-37` -> `venue` `bham_metro_regional`

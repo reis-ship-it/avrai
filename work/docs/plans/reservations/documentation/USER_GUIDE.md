@@ -811,8 +811,7 @@ Sync happens **automatically** when you're online. You can also:
 #### How do I contact support?
 
 - **In-app**: Settings → Support → Contact Us
-- **Email**: support@avrai.app
-- **Help Center**: help.avrai.app
+- **Support**: https://avrai.org/support
 
 #### What information should I include when contacting support?
 

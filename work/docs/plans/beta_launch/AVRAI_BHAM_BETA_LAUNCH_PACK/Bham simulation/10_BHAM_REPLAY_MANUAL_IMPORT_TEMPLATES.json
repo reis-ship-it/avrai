@@ -1,0 +1,1265 @@
+{
+  "replayYear": 2023,
+  "templates": [
+    {
+      "sourceName": "ALDOT Long-Term Construction Projects",
+      "rawOutputKey": "aldot_long_term_construction_projects",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "project_timeline",
+        "closures",
+        "detours",
+        "affected_segments"
+      ],
+      "dedupeKeys": [
+        "project_id",
+        "segment_id"
+      ],
+      "normalizationTargets": [
+        "event",
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "event",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "project_timeline": "<required>",
+        "closures": "<required>",
+        "detours": "<required>",
+        "affected_segments": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "ALDOT Traffic Data",
+      "rawOutputKey": "aldot_traffic_data",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "counts",
+        "travel_speed",
+        "artery_load"
+      ],
+      "dedupeKeys": [
+        "segment_id",
+        "date"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "counts": "<required>",
+        "travel_speed": "<required>",
+        "artery_load": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "BHM Airport / TSA Throughput",
+      "rawOutputKey": "bhm_airport_tsa_throughput",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "departures",
+        "arrivals",
+        "holiday_throughput"
+      ],
+      "dedupeKeys": [
+        "airport_code",
+        "date"
+      ],
+      "normalizationTargets": [
+        "event",
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "event",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "departures": "<required>",
+        "arrivals": "<required>",
+        "holiday_throughput": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Bureau of Labor Statistics / State DOL",
+      "rawOutputKey": "bureau_of_labor_statistics_state_dol",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "occupation_mix",
+        "industry_sectors",
+        "shift_hours"
+      ],
+      "dedupeKeys": [
+        "metro_code",
+        "occupation_code",
+        "year_month"
+      ],
+      "normalizationTargets": [
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "venue",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "occupation_mix": "<required>",
+        "industry_sectors": "<required>",
+        "shift_hours": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Public labor data; use as aggregate role prior.",
+        "Adult labor patterns only; do not create under-13 personal agents.",
+        "Eligible to seed governed replay/entity priors.",
+        "Adult labor patterns only; do not create under-13 personal agents."
+      ]
+    },
+    {
+      "sourceName": "City of Birmingham OpenGov",
+      "rawOutputKey": "city_of_birmingham_opengov",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "neighborhood_polygons",
+        "districts",
+        "civic_datasets",
+        "budget_reports",
+        "crime_precinct_exports",
+        "planning_archives",
+        "civic_contracts"
+      ],
+      "dedupeKeys": [
+        "dataset_id",
+        "neighborhood_name",
+        "revision_date"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "neighborhood_polygons": "<required>",
+        "districts": "<required>",
+        "civic_datasets": "<required>",
+        "budget_reports": "<required>",
+        "crime_precinct_exports": "<required>",
+        "planning_archives": "<required>",
+        "civic_contracts": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+      "rawOutputKey": "jefferson_shelby_regional_gis_and_assessors",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "parcel_geometry",
+        "building_footprints",
+        "zoning",
+        "addresses"
+      ],
+      "dedupeKeys": [
+        "parcel_id",
+        "address",
+        "county"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "parcel_geometry": "<required>",
+        "building_footprints": "<required>",
+        "zoning": "<required>",
+        "addresses": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "LEHD / OnTheMap",
+      "rawOutputKey": "lehd_onthemap",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "origin_destination_flow",
+        "daytime_population",
+        "worker_concentration"
+      ],
+      "dedupeKeys": [
+        "origin_geoid",
+        "destination_geoid",
+        "year"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "origin_destination_flow": "<required>",
+        "daytime_population": "<required>",
+        "worker_concentration": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Aggregate mobility only.",
+        "Eligible to seed governed replay/entity priors.",
+        "Aggregate mobility only."
+      ]
+    },
+    {
+      "sourceName": "MAX Transit GTFS",
+      "rawOutputKey": "max_transit_gtfs",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "routes",
+        "stops",
+        "trips",
+        "service_calendar"
+      ],
+      "dedupeKeys": [
+        "route_id",
+        "trip_id",
+        "service_id"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "routes": "<required>",
+        "stops": "<required>",
+        "trips": "<required>",
+        "service_calendar": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "rawOutputKey": "bjcc_legacy_arena_protective_stadium_calendars",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "event_calendar",
+        "capacity",
+        "doors_open",
+        "venue_status"
+      ],
+      "dedupeKeys": [
+        "venue",
+        "event_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "movement_flow",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "event_calendar": "<required>",
+        "capacity": "<required>",
+        "doors_open": "<required>",
+        "venue_status": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "SEC / College Football Broadcast Schedules",
+      "rawOutputKey": "sec_college_football_broadcast_schedules",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "game_time",
+        "broadcast_window",
+        "team_affinity_pressure"
+      ],
+      "dedupeKeys": [
+        "sport",
+        "game_id",
+        "broadcast_date"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "game_time": "<required>",
+        "broadcast_window": "<required>",
+        "team_affinity_pressure": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Samford University Calendars and Campus Map",
+      "rawOutputKey": "samford_university_calendars_and_campus_map",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "event_calendar",
+        "campus_map",
+        "term_schedule"
+      ],
+      "dedupeKeys": [
+        "calendar_uid",
+        "building_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "movement_flow",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "event_calendar": "<required>",
+        "campus_map": "<required>",
+        "term_schedule": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "UAB / Samford Enrollment Origin Reports",
+      "rawOutputKey": "uab_samford_enrollment_origin_reports",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "origin_states",
+        "international_mix",
+        "term_count"
+      ],
+      "dedupeKeys": [
+        "institution",
+        "term",
+        "report_year"
+      ],
+      "normalizationTargets": [
+        "community",
+        "movement_flow",
+        "population_cohort"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "origin_states": "<required>",
+        "international_mix": "<required>",
+        "term_count": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "UAB Academic, Clinical, and Event Calendars",
+      "rawOutputKey": "uab_academic_clinical_and_event_calendars",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "academic_calendar",
+        "event_calendar",
+        "clinical_schedule"
+      ],
+      "dedupeKeys": [
+        "calendar_uid",
+        "event_start",
+        "campus_location"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "movement_flow",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "academic_calendar": "<required>",
+        "event_calendar": "<required>",
+        "clinical_schedule": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Data Axle / InfoGroup Business Listings",
+      "rawOutputKey": "data_axle_infogroup_business_listings",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "naics",
+        "entity_status",
+        "business_name",
+        "address"
+      ],
+      "dedupeKeys": [
+        "business_id",
+        "normalized_name",
+        "address"
+      ],
+      "normalizationTargets": [
+        "club",
+        "venue"
+      ],
+      "requiresReview": true,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "naics": "<required>",
+        "entity_status": "<required>",
+        "business_name": "<required>",
+        "address": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Requires review or final approval before authoritative replay ingest.",
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "Delivery / Ordering Platform Aggregates",
+      "rawOutputKey": "delivery_ordering_platform_aggregates",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "demand_density",
+        "cuisine_timing",
+        "delivery_heat"
+      ],
+      "dedupeKeys": [
+        "provider",
+        "delivery_zone",
+        "service_date",
+        "meal_period"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "venue"
+      ],
+      "requiresReview": true,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "demand_density": "<required>",
+        "cuisine_timing": "<required>",
+        "delivery_heat": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Aggregate-only patterns; never retain raw personal order history.",
+        "Requires review or final approval before authoritative replay ingest.",
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "Google Places / Yelp",
+      "rawOutputKey": "google_places_yelp",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "operating_hours",
+        "category",
+        "rating_count"
+      ],
+      "dedupeKeys": [
+        "provider_place_id",
+        "normalized_name",
+        "address"
+      ],
+      "normalizationTargets": [
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "venue",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "operating_hours": "<required>",
+        "category": "<required>",
+        "rating_count": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Respect provider terms; use as enrichment after identity normalization.",
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "OpenStreetMap POI Data",
+      "rawOutputKey": "openstreetmap_poi_data",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "poi_type",
+        "name",
+        "address",
+        "hours",
+        "geometry"
+      ],
+      "dedupeKeys": [
+        "osm_id",
+        "address",
+        "lat_lng"
+      ],
+      "normalizationTargets": [
+        "club",
+        "community",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "poi_type": "<required>",
+        "name": "<required>",
+        "address": "<required>",
+        "hours": "<required>",
+        "geometry": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Real Estate and Rent Index",
+      "rawOutputKey": "real_estate_and_rent_index",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "rent_index",
+        "home_price_index",
+        "inventory"
+      ],
+      "dedupeKeys": [
+        "zip",
+        "month",
+        "provider"
+      ],
+      "normalizationTargets": [
+        "housing_signal",
+        "locality",
+        "movement_flow",
+        "population_cohort"
+      ],
+      "requiresReview": true,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "housing_signal",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "rent_index": "<required>",
+        "home_price_index": "<required>",
+        "inventory": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Resy / OpenTable / Venue Reservation Exports",
+      "rawOutputKey": "resy_opentable_venue_reservation_exports",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "reservation_windows",
+        "seat_pressure",
+        "table_scarcity"
+      ],
+      "dedupeKeys": [
+        "venue_name",
+        "service_date",
+        "service_period"
+      ],
+      "normalizationTargets": [
+        "event",
+        "venue"
+      ],
+      "requiresReview": true,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "event",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "reservation_windows": "<required>",
+        "seat_pressure": "<required>",
+        "table_scarcity": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Use only after legal and partner access review. Never sole venue truth.",
+        "Requires review or final approval before authoritative replay ingest.",
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "Birmingham Public Library Network",
+      "rawOutputKey": "birmingham_public_library_network",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "classes",
+        "events",
+        "branch_locations"
+      ],
+      "dedupeKeys": [
+        "branch",
+        "event_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "classes": "<required>",
+        "events": "<required>",
+        "branch_locations": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "County / Municipal Courts and Police Dispatch",
+      "rawOutputKey": "county_municipal_courts_and_police_dispatch",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "incident_type",
+        "time",
+        "location",
+        "disposition"
+      ],
+      "dedupeKeys": [
+        "incident_id",
+        "timestamp",
+        "location"
+      ],
+      "normalizationTargets": [
+        "event",
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": true,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "event",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "incident_type": "<required>",
+        "time": "<required>",
+        "location": "<required>",
+        "disposition": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Requires review or final approval before authoritative replay ingest.",
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Eventbrite / Meetup",
+      "rawOutputKey": "eventbrite_meetup",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "event_name",
+        "organizer",
+        "venue",
+        "recurrence"
+      ],
+      "dedupeKeys": [
+        "platform_event_id",
+        "event_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "club",
+        "community",
+        "event",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "event_name": "<required>",
+        "organizer": "<required>",
+        "venue": "<required>",
+        "recurrence": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Must be deduplicated against official venue truth before promotion.",
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "IN Birmingham (CVB Calendar)",
+      "rawOutputKey": "in_birmingham_cvb_calendar",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "event_name",
+        "venue_name",
+        "event_dates",
+        "category"
+      ],
+      "dedupeKeys": [
+        "event_name",
+        "venue_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "event_name": "<required>",
+        "venue_name": "<required>",
+        "event_dates": "<required>",
+        "category": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Major Venue Calendars (Saturn / Iron City / The Nick)",
+      "rawOutputKey": "major_venue_calendars_saturn_iron_city_the_nick",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "event_calendar",
+        "venue_status",
+        "ticketed_events"
+      ],
+      "dedupeKeys": [
+        "venue",
+        "event_name",
+        "event_start"
+      ],
+      "normalizationTargets": [
+        "club",
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "event_calendar": "<required>",
+        "venue_status": "<required>",
+        "ticketed_events": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Neighborhood Association Calendars",
+      "rawOutputKey": "neighborhood_association_calendars",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "meeting_dates",
+        "community_topics",
+        "association_identity"
+      ],
+      "dedupeKeys": [
+        "association_name",
+        "meeting_date",
+        "neighborhood"
+      ],
+      "normalizationTargets": [
+        "club",
+        "community",
+        "event",
+        "locality"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "meeting_dates": "<required>",
+        "community_topics": "<required>",
+        "association_identity": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Bham Now / AL.com / Birmingham Business Journal",
+      "rawOutputKey": "bham_now_al_com_birmingham_business_journal",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "article_date",
+        "venue_name",
+        "event_mentions",
+        "closure_signal"
+      ],
+      "dedupeKeys": [
+        "headline",
+        "published_at",
+        "normalized_entity"
+      ],
+      "normalizationTargets": [
+        "club",
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "club",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "article_date": "<required>",
+        "venue_name": "<required>",
+        "event_mentions": "<required>",
+        "closure_signal": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "Bhamwiki",
+      "rawOutputKey": "bhamwiki",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "entity_history",
+        "opening_closure_history",
+        "neighborhood_links"
+      ],
+      "dedupeKeys": [
+        "page_title",
+        "normalized_entity",
+        "last_revision"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "entity_history": "<required>",
+        "opening_closure_history": "<required>",
+        "neighborhood_links": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "Birmingham Public Library Archives",
+      "rawOutputKey": "birmingham_public_library_archives",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "archival_reference",
+        "event_dates",
+        "location_history"
+      ],
+      "dedupeKeys": [
+        "archive_id",
+        "collection_name",
+        "date"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "archival_reference": "<required>",
+        "event_dates": "<required>",
+        "location_history": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Eligible to seed governed replay/entity priors."
+      ]
+    },
+    {
+      "sourceName": "James Beard / Garden & Gun / Michelin",
+      "rawOutputKey": "james_beard_garden_and_gun_michelin",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "award_date",
+        "venue_name",
+        "recognition_type"
+      ],
+      "dedupeKeys": [
+        "venue_name",
+        "award_name",
+        "award_year"
+      ],
+      "normalizationTargets": [
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "venue",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "award_date": "<required>",
+        "venue_name": "<required>",
+        "recognition_type": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "REV Birmingham Updates",
+      "rawOutputKey": "rev_birmingham_updates",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "district_news",
+        "opening_signal",
+        "closure_signal"
+      ],
+      "dedupeKeys": [
+        "headline",
+        "published_at",
+        "district"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "district_news": "<required>",
+        "opening_signal": "<required>",
+        "closure_signal": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    },
+    {
+      "sourceName": "WBHM 90.3 Public Radio",
+      "rawOutputKey": "wbhm_90_3_public_radio",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "story_date",
+        "entity_mentions",
+        "civic_signal"
+      ],
+      "dedupeKeys": [
+        "headline",
+        "published_at"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality"
+      ],
+      "requiresReview": false,
+      "exampleRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "story_date": "<required>",
+        "entity_mentions": "<required>",
+        "civic_signal": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "notes": [
+        "Use as enrichment or verification layer after base entity normalization."
+      ]
+    }
+  ]
+}

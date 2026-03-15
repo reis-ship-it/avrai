@@ -22,6 +22,35 @@
 - learning/recommendation audit trail
 - event/list/community/club explorer
 - notifications / incidents center
+- direct OS operations chat
+
+## Direct Admin To OS Chat
+
+Admin should have a direct chat service with the runtime OS.
+
+This chat exists so admin can discuss and inspect:
+
+- security
+- health
+- operational value
+- drift
+- recovery
+- reliability
+- kernel status
+- transport quality
+- rollback and rollout behavior
+
+This is not a social chat surface.
+It is an operational control and inspection surface.
+
+### Rules
+
+- the chat is separate from end-user chat
+- the chat must be auditable
+- the chat must be governance-bounded
+- the OS may explain what it believes is happening operationally
+- the OS may explain why it took a recovery or fallback action
+- the OS may not bypass human admin authority
 
 ## Admin Visibility Rule
 
@@ -70,7 +99,54 @@ Highest authority for learning what the human actually likes or does:
 4. locality priors
 5. preload/simulation priors
 
+Simulation and preload are priors, not reality claims.
+
+If fresh live evidence conflicts with historical replay or preload:
+
+1. the live evidence should take precedence
+2. the older prior should be downgraded or replaced
+3. admin should be able to inspect that override path
+
 Strong reality-model convictions may flow downward as learned lenses or constraints. They do not automatically force a user-facing behavior change unless safety or governance requires it.
+
+## Runtime OS Learning Rule
+
+The runtime OS should be allowed to self-heal, self-learn, and self-improve operationally within explicit boundaries.
+
+The OS may learn from:
+
+- recovery outcomes
+- failure signatures
+- transport reliability
+- resource pressure
+- drift and health signals
+- queue and retry behavior
+- rollout and rollback outcomes
+
+The OS may not autonomously redefine:
+
+- safety policy
+- legal policy
+- permission boundaries
+- governance hierarchy
+
+The intended split is:
+
+- reality model learns human reality
+- runtime OS learns execution reality
+- governance decides when live truth overrides stale priors
+
+## Geography Seeding Rule
+
+At launch there is one master human admin app.
+
+If AVRAI boots in a geography without seeded locality agents:
+
+1. the reality model should escalate upward
+2. the runtime OS should request permission to attach fresh locality intake sources
+3. the human admin must approve the seeding
+4. the raw intake should be used to seed locality agents, not to create a permanent unconstrained world database
+5. the seeding request, authorization, source provenance, and resulting locality-agent bootstrap state must remain auditable
 
 ## Public Creation And Moderation
 

@@ -99,6 +99,10 @@ Once your account is activated:
 4. **App icon:** Upload app icon (512x512 PNG, no transparency)
 5. **Feature graphic:** Upload feature graphic (1024x500 PNG/JPG)
 6. **Screenshots:** Upload screenshots (at least 2, max 8)
+7. **Canonical public URLs:**
+   - Website / support: `https://avrai.org/support`
+   - Privacy policy: `https://avrai.org/privacy`
+   - Terms: `https://avrai.org/terms`
 
 ### Technical Setup:
 
@@ -127,7 +131,7 @@ Before you can publish, complete:
    - Submit for rating
 
 2. **Privacy policy:**
-   - Required URL for privacy policy
+   - Required URL for privacy policy: `https://avrai.org/privacy`
    - Must cover data collection, usage, sharing
 
 3. **Target audience and content:**
@@ -179,7 +183,8 @@ Before submitting for review, verify:
 - [ ] At least 2 screenshots uploaded
 - [ ] Short description (≤80 chars)
 - [ ] Full description (≤4000 chars)
-- [ ] Privacy policy URL provided
+- [ ] Privacy policy URL provided (`https://avrai.org/privacy`)
+- [ ] Support URL prepared (`https://avrai.org/support`)
 - [ ] Content rating completed
 - [ ] Data safety form completed
 - [ ] App signing configured

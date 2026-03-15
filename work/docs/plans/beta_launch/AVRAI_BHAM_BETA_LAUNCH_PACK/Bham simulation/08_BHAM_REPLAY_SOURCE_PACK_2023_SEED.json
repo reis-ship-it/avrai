@@ -1,0 +1,196 @@
+{
+  "packId": "bham-2023-seed-pack-v1",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-10T18:00:00Z",
+  "notes": [
+    "Seed pack for first governed 2023 BHAM replay ingestion slice.",
+    "This is local seed data, not final authoritative historical ingest."
+  ],
+  "metadata": {
+    "sourceCount": 7,
+    "status": "seed"
+  },
+  "datasets": [
+    {
+      "sourceName": "BEA / U.S. Census Bureau Economic Series",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "economic_priors"
+      },
+      "records": [
+        {
+          "record_id": "bea-2023-jefferson-income",
+          "series_key": "personal_income_per_capita",
+          "name": "Jefferson County Personal Income Per Capita",
+          "entity_id": "county:073",
+          "entity_type": "economic_signal",
+          "locality": "Birmingham Metro",
+          "metric_value": 60210,
+          "unit": "usd_per_person",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2024-03-28T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "ALDOT Traffic Data",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "movement_flow_truth"
+      },
+      "records": [
+        {
+          "record_id": "aldot-2023-280-pm-peak",
+          "series_key": "us280_pm_peak",
+          "name": "US-280 PM Peak Travel Speed",
+          "entity_id": "segment:us280_pm_peak",
+          "entity_type": "movement_flow",
+          "locality": "US-280 Corridor",
+          "metric_value": 17.8,
+          "unit": "mph",
+          "observed_at": "2023-10-12T17:30:00Z",
+          "published_at": "2023-10-12T18:00:00Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "ALDOT Long-Term Construction Projects",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "route_friction_truth"
+      },
+      "records": [
+        {
+          "record_id": "aldot-construction-2023-redmountain",
+          "series_key": "red_mountain_lane_closure",
+          "name": "Red Mountain Expressway Lane Closure",
+          "entity_id": "project:red_mountain_lane_closure",
+          "entity_type": "movement_flow",
+          "locality": "Red Mountain Corridor",
+          "metric_value": 1,
+          "unit": "active_closure",
+          "observed_at": "2023-06-05T00:00:00Z",
+          "published_at": "2023-05-28T00:00:00Z",
+          "valid_from": "2023-06-05T00:00:00Z",
+          "valid_to": "2023-06-30T23:59:59Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "U.S. Census ACS",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "population_and_housing_baseline"
+      },
+      "records": [
+        {
+          "record_id": "acs-2023-southside-population",
+          "series_key": "population_total",
+          "name": "Southside Population",
+          "entity_id": "tract:110100",
+          "entity_type": "population_cohort",
+          "locality": "Southside",
+          "metric_value": 12000,
+          "unit": "people",
+          "observed_at": "2023-07-01T00:00:00Z",
+          "published_at": "2023-12-15T00:00:00Z"
+        },
+        {
+          "record_id": "acs-2023-avondale-housing",
+          "series_key": "housing_units",
+          "name": "Avondale Housing Units",
+          "entity_id": "tract:110200",
+          "entity_type": "housing_signal",
+          "locality": "Avondale",
+          "metric_value": 4210,
+          "unit": "units",
+          "observed_at": "2023-07-01T00:00:00Z",
+          "published_at": "2023-12-15T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "NWS / NOAA Weather API",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "environmental_signal_truth"
+      },
+      "records": [
+        {
+          "record_id": "noaa-2023-heat-advisory",
+          "series_key": "heat_index_advisory",
+          "name": "Birmingham Heat Advisory",
+          "entity_id": "weather-zone:jefferson",
+          "entity_type": "environmental_signal",
+          "locality": "Birmingham Metro",
+          "metric_value": 104,
+          "unit": "heat_index_f",
+          "observed_at": "2023-08-17T15:00:00Z",
+          "published_at": "2023-08-17T13:00:00Z",
+          "valid_from": "2023-08-17T13:00:00Z",
+          "valid_to": "2023-08-17T21:00:00Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "City of Birmingham OpenGov",
+      "metadata": {
+        "ingestPriority": 1,
+        "seedRole": "locality_truth"
+      },
+      "records": [
+        {
+          "record_id": "opengov-avondale-locality",
+          "feature_id": "neighborhood-avondale",
+          "name": "Avondale",
+          "entity_type": "locality",
+          "locality": "Avondale",
+          "lat": 33.5245,
+          "lng": -86.7743,
+          "published_at": "2023-02-01T00:00:00Z"
+        },
+        {
+          "record_id": "opengov-southside-community",
+          "feature_id": "community-southside",
+          "name": "Southside",
+          "entity_type": "community",
+          "locality": "Southside",
+          "lat": 33.4999,
+          "lng": -86.7975,
+          "published_at": "2023-02-01T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "sourceName": "UAB Academic, Clinical, and Event Calendars",
+      "metadata": {
+        "ingestPriority": 2,
+        "seedRole": "institutional_event_gravity"
+      },
+      "records": [
+        {
+          "record_id": "uab-2023-spring-concert",
+          "event_id": "event-uab-spring-concert",
+          "title": "UAB Spring Concert",
+          "venue_name": "UAB Green",
+          "community_name": "UAB Students",
+          "locality": "Southside",
+          "published_at": "2023-03-01T10:00:00Z",
+          "starts_at": "2023-04-10T18:00:00Z",
+          "ends_at": "2023-04-10T20:00:00Z"
+        },
+        {
+          "record_id": "uab-2023-medical-lecture",
+          "event_id": "event-uab-medical-lecture",
+          "title": "UAB Medical Lecture",
+          "venue_name": "West Pavilion",
+          "community_name": "Medical District",
+          "locality": "Southside",
+          "published_at": "2023-09-03T14:00:00Z",
+          "starts_at": "2023-09-15T17:30:00Z",
+          "ends_at": "2023-09-15T19:00:00Z"
+        }
+      ]
+    }
+  ]
+}
