@@ -4,11 +4,12 @@
 **Workflow path:** `.github/workflows/execution-board-guard.yml`  
 **Generated at:** 2026-02-27T21:45:00Z  
 **Required commands checked:** 12  
-**Verdict:** PASS
+**Verdict:** FAIL
 
 ## Missing Commands
 
-- None
+- dart run tool/update_execution_board.dart --check
+- dart run tool/update_three_prong_reviews.dart --check
 
 ## Duplicated Commands
 
