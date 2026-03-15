@@ -17,6 +17,14 @@ if [[ "${AVRAI_SKIP_APP_TESTS:-0}" != "1" ]]; then
   )
 fi
 
+if [[ "${AVRAI_SKIP_SECURITY_KERNEL_ACTIVATION:-0}" != "1" ]]; then
+  run_step "Running security kernel activation suite"
+  (
+    cd "$ROOT_DIR"
+    bash work/scripts/run_security_kernel_activation_suite.sh
+  )
+fi
+
 if [[ "${AVRAI_SKIP_IOS_BUILD:-0}" != "1" ]]; then
   if [[ "$(uname -s)" == "Darwin" ]]; then
     run_step "Building iOS simulator app"
