@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 
 REQUIRED_FILES = [
     ROOT / "docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md",
@@ -68,7 +68,7 @@ def _check_forbidden_platform_dirs() -> list[str]:
 
 def _check_bootstrap_desktop_guard() -> list[str]:
     issues: list[str] = []
-    bootstrap = ROOT / "lib/apps/admin_app/bootstrap/admin_bootstrap.dart"
+    bootstrap = ROOT / "apps/admin_app/lib/bootstrap/admin_bootstrap.dart"
     if not bootstrap.exists():
         return [str(bootstrap.relative_to(ROOT)) + " missing"]
     text = bootstrap.read_text(encoding="utf-8")

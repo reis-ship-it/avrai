@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 513
+**Total mapped files:** 531
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,15 +10,15 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_review | 368 |
-| keep_update | 145 |
+| keep_review | 378 |
+| keep_update | 153 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| tooling-ops | 368 |
-| supabase-infra | 139 |
+| tooling-ops | 378 |
+| supabase-infra | 147 |
 | data-platform-sql | 6 |
 
 ## Highest-Volume Buckets (Top 40)
