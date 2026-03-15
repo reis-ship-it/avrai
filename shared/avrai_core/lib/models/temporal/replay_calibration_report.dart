@@ -32,9 +32,9 @@ class ReplayCalibrationRecord {
   factory ReplayCalibrationRecord.fromJson(Map<String, dynamic> json) {
     return ReplayCalibrationRecord(
       metricId: json['metricId'] as String? ?? '',
-      targetValue: (json['targetValue'] as num?)?.toDouble() ?? 0,
-      actualValue: (json['actualValue'] as num?)?.toDouble() ?? 0,
-      allowedVariancePct: (json['allowedVariancePct'] as num?)?.toDouble() ?? 0,
+      targetValue: (json['targetValue'] as num?)?.toDouble() ?? 0.0,
+      actualValue: (json['actualValue'] as num?)?.toDouble() ?? 0.0,
+      allowedVariancePct: (json['allowedVariancePct'] as num?)?.toDouble() ?? 0.0,
       passed: json['passed'] as bool? ?? false,
       rationale: json['rationale'] as String? ?? '',
       metadata: Map<String, dynamic>.from(
@@ -46,7 +46,7 @@ class ReplayCalibrationRecord {
 
 class ReplayCalibrationReport {
   const ReplayCalibrationReport({
-    required this.environmentId,
+    required this.reportId,
     required this.replayYear,
     required this.passed,
     required this.records,
@@ -54,7 +54,7 @@ class ReplayCalibrationReport {
     this.metadata = const <String, dynamic>{},
   });
 
-  final String environmentId;
+  final String reportId;
   final int replayYear;
   final bool passed;
   final List<ReplayCalibrationRecord> records;
@@ -63,7 +63,7 @@ class ReplayCalibrationReport {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'environmentId': environmentId,
+      'reportId': reportId,
       'replayYear': replayYear,
       'passed': passed,
       'records': records.map((entry) => entry.toJson()).toList(),
@@ -74,19 +74,21 @@ class ReplayCalibrationReport {
 
   factory ReplayCalibrationReport.fromJson(Map<String, dynamic> json) {
     return ReplayCalibrationReport(
-      environmentId: json['environmentId'] as String? ?? '',
+      reportId: json['reportId'] as String? ?? '',
       replayYear: (json['replayYear'] as num?)?.toInt() ?? 0,
       passed: json['passed'] as bool? ?? false,
       records: (json['records'] as List?)
               ?.whereType<Map>()
-              .map((entry) => ReplayCalibrationRecord.fromJson(
-                    Map<String, dynamic>.from(entry),
-                  ))
-              .toList() ??
+              .map(
+                (entry) => ReplayCalibrationRecord.fromJson(
+                  Map<String, dynamic>.from(entry),
+                ),
+              )
+              .toList(growable: false) ??
           const <ReplayCalibrationRecord>[],
       unresolvedMetrics: (json['unresolvedMetrics'] as List?)
               ?.map((entry) => entry.toString())
-              .toList() ??
+              .toList(growable: false) ??
           const <String>[],
       metadata: Map<String, dynamic>.from(
         json['metadata'] as Map? ?? const <String, dynamic>{},

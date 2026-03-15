@@ -1,140 +1,101 @@
-import 'package:avrai_core/avra_core.dart';
+import 'package:avrai_core/models/temporal/replay_calibration_report.dart';
+import 'package:avrai_core/models/temporal/replay_simulation_artifacts.dart';
+import 'package:avrai_runtime_os/simulation/models/simulated_human.dart';
+
+import 'package:avrai_runtime_os/services/prediction/bham_replay_constants.dart';
 
 class BhamReplayCalibrationService {
   const BhamReplayCalibrationService();
 
   ReplayCalibrationReport buildReport({
-    required ReplayVirtualWorldEnvironment environment,
-    required ReplayPopulationProfile populationProfile,
-    required ReplayPlaceGraph placeGraph,
-    required ReplayDailyBehaviorBatch dailyBehaviorBatch,
-    required ReplayKernelParticipationReport kernelParticipationReport,
+    required List<ReplayScenarioPacket> scenarios,
+    required List<SimulatedHuman> sampledPopulation,
+    required List<ReplayScenarioComparison> comparisons,
   }) {
-    final localityCoveragePct =
-        ((populationProfile.metadata['localityCoveragePct'] as num?) ?? 0).toDouble();
-    final actorCountTarget = 25000.0;
-    final activeKernelTarget = kernelParticipationReport.requiredKernelCount.toDouble();
-    final actorBearingLocalities = populationProfile.localityPopulationCounts.keys.toSet();
-    final coveredActorBearingLocalities = dailyBehaviorBatch.actionCountsByLocality.keys
-        .where(actorBearingLocalities.contains)
-        .length;
+    final socialFollowThroughAvg = _average(
+      sampledPopulation.map((entry) => entry.socialFollowThrough),
+    );
+    final weatherSensitivityAvg = _average(
+      sampledPopulation.map((entry) => entry.weatherSensitivity),
+    );
+    final nightlifeAffinityAvg = _average(
+      sampledPopulation.map((entry) => entry.nightlifeAffinity),
+    );
+    final branchSensitivityAvg = _average(
+      comparisons.expand((comparison) => comparison.branchDiffs).map(
+            (diff) => diff.localityPressureDeltas.values.fold<double>(
+              0.0,
+              (sum, value) => sum + value.abs(),
+            ),
+          ),
+    );
+
     final records = <ReplayCalibrationRecord>[
-      _exactRecord(
-        metricId: 'city_population_total',
-        targetValue: populationProfile.totalPopulation.toDouble(),
-        actualValue: populationProfile.totalPopulation.toDouble(),
-        allowedVariancePct: 1.0,
-        rationale: 'Population total should exactly reflect ACS/BEA truth-year intake.',
+      _minimumRecord(
+        metricId: 'scenario_pack_coverage',
+        targetValue: 6,
+        actualValue: scenarios.length.toDouble(),
+        rationale:
+            'Phase 1 should cover the six Birmingham scenario families in the event scenario pack.',
       ),
-      _exactRecord(
-        metricId: 'city_housing_total',
-        targetValue: populationProfile.totalHousingUnits.toDouble(),
-        actualValue: populationProfile.totalHousingUnits.toDouble(),
-        allowedVariancePct: 1.0,
-        rationale: 'Housing total should remain aligned with replay truth-year inputs.',
+      _rangeRecord(
+        metricId: 'social_follow_through_avg',
+        targetValue: 0.55,
+        actualValue: socialFollowThroughAvg,
+        allowedVariancePct: 30,
+        rationale:
+            'Actor realism needs moderate social follow-through instead of purely routine-driven acceptance.',
+      ),
+      _rangeRecord(
+        metricId: 'weather_sensitivity_avg',
+        targetValue: 0.50,
+        actualValue: weatherSensitivityAvg,
+        allowedVariancePct: 35,
+        rationale:
+            'Weather sensitivity should be materially present for outdoor Birmingham planning.',
+      ),
+      _rangeRecord(
+        metricId: 'nightlife_affinity_avg',
+        targetValue: 0.40,
+        actualValue: nightlifeAffinityAvg,
+        allowedVariancePct: 45,
+        rationale:
+            'Nightlife affinity should exist but not dominate the synthetic population.',
       ),
       _minimumRecord(
-        metricId: 'metro_core_locality_coverage_pct',
-        targetValue: 100.0,
-        actualValue: localityCoveragePct * 100.0,
-        rationale: 'Every in-scope metro-core locality must be represented.',
+        metricId: 'branch_sensitivity_signal',
+        targetValue: 0.60,
+        actualValue: branchSensitivityAvg,
+        rationale:
+            'Scenario branches should generate measurable locality pressure deltas.',
       ),
       _minimumRecord(
-        metricId: 'weighted_actor_count',
-        targetValue: actorCountTarget,
-        actualValue: populationProfile.modeledActorCount.toDouble(),
-        rationale: 'Dense city-faithful replay requires at least 25k weighted actors.',
-      ),
-      _minimumRecord(
-        metricId: 'venue_profile_count',
-        targetValue: 700.0,
-        actualValue: placeGraph.venueProfiles.length.toDouble(),
-        rationale: 'Venue graph should be dense enough for metro-core destination choice.',
-      ),
-      _minimumRecord(
-        metricId: 'club_profile_count',
-        targetValue: 120.0,
-        actualValue: placeGraph.clubProfiles.length.toDouble(),
-        rationale: 'Club structure must be materially present in the truth-year graph.',
-      ),
-      _minimumRecord(
-        metricId: 'community_profile_count',
-        targetValue: 500.0,
-        actualValue: placeGraph.communityProfiles.length.toDouble(),
-        rationale: 'Community density should be citywide, not just structural anchors.',
-      ),
-      _minimumRecord(
-        metricId: 'organization_profile_count',
-        targetValue: 300.0,
-        actualValue: placeGraph.organizationProfiles.length.toDouble(),
-        rationale: 'Organizations should be explicit enough to host city life.',
-      ),
-      _minimumRecord(
-        metricId: 'event_profile_count',
-        targetValue: 1000.0,
-        actualValue: placeGraph.eventProfiles.length.toDouble(),
-        rationale: 'A 2023 city-faithful year needs a materially dense event corpus.',
-      ),
-      _minimumRecord(
-        metricId: 'active_kernel_count',
-        targetValue: activeKernelTarget,
-        actualValue: kernelParticipationReport.activeKernelCount.toDouble(),
-        rationale: 'All replay-participating kernels must remain active.',
-      ),
-      _minimumRecord(
-        metricId: 'daily_behavior_locality_coverage_pct',
-        targetValue: 100.0,
-        actualValue: actorBearingLocalities.isEmpty
-            ? 0.0
-            : (coveredActorBearingLocalities / actorBearingLocalities.length) *
-                100.0,
-        rationale: 'Daily behavior should cover nearly all replay localities.',
-      ),
-      _minimumRecord(
-        metricId: 'daily_behavior_action_density',
-        targetValue: populationProfile.modeledActorCount.toDouble(),
-        actualValue: dailyBehaviorBatch.actions.length.toDouble(),
-        rationale: 'At least one explicit replay action per weighted actor is expected.',
+        metricId: 'bham_locality_overlay_count',
+        targetValue: 4,
+        actualValue: scenarios
+            .expand((scenario) => scenario.seedLocalityCodes)
+            .toSet()
+            .length
+            .toDouble(),
+        rationale:
+            'Neighborhood-readable Birmingham overlays should exist for multiple localities.',
       ),
     ];
 
-    final passed = records.every((record) => record.passed);
+    final unresolved = records
+        .where((record) => !record.passed)
+        .map((record) => record.metricId)
+        .toList(growable: false);
     return ReplayCalibrationReport(
-      environmentId: environment.environmentId,
-      replayYear: environment.replayYear,
-      passed: passed,
+      reportId: 'bham_phase1_calibration_${DateTime.now().toUtc().millisecondsSinceEpoch}',
+      replayYear: bhamReplayBaseYear,
+      passed: unresolved.isEmpty,
       records: records,
-      unresolvedMetrics: records
-          .where((record) => !record.passed)
-          .map((record) => record.metricId)
-          .toList(growable: false),
+      unresolvedMetrics: unresolved,
       metadata: <String, dynamic>{
-        'nodeCount': environment.nodeCount,
-        'localityCount': placeGraph.localityCounts.length,
-      },
-    );
-  }
-
-  ReplayCalibrationRecord _exactRecord({
-    required String metricId,
-    required double targetValue,
-    required double actualValue,
-    required double allowedVariancePct,
-    required String rationale,
-  }) {
-    final delta = (actualValue - targetValue).abs();
-    final pct = targetValue == 0 ? (actualValue == 0 ? 0.0 : 100.0) : (delta / targetValue) * 100.0;
-    return ReplayCalibrationRecord(
-      metricId: metricId,
-      targetValue: targetValue,
-      actualValue: actualValue,
-      allowedVariancePct: allowedVariancePct,
-      passed: pct <= allowedVariancePct,
-      rationale: rationale,
-      metadata: <String, dynamic>{
-        'delta': delta,
-        'variancePct': pct.isFinite ? pct : double.nan,
-        'comparison': 'exact',
+        'cityCode': bhamReplayCityCode,
+        'sampledPopulationCount': sampledPopulation.length,
+        'comparisonCount': comparisons.length,
       },
     );
   }
@@ -145,11 +106,6 @@ class BhamReplayCalibrationService {
     required double actualValue,
     required String rationale,
   }) {
-    final delta = actualValue - targetValue;
-    final pctBelow = targetValue == 0
-        ? 0.0
-        : ((targetValue - actualValue).clamp(0, double.infinity) / targetValue) *
-            100.0;
     return ReplayCalibrationRecord(
       metricId: metricId,
       targetValue: targetValue,
@@ -158,10 +114,45 @@ class BhamReplayCalibrationService {
       passed: actualValue >= targetValue,
       rationale: rationale,
       metadata: <String, dynamic>{
-        'delta': delta,
-        'variancePct': pctBelow.isFinite ? pctBelow : double.nan,
         'comparison': 'minimum',
+        'variancePct': targetValue == 0
+            ? 0.0
+            : ((targetValue - actualValue).clamp(0.0, double.infinity) /
+                    targetValue) *
+                100.0,
       },
     );
+  }
+
+  ReplayCalibrationRecord _rangeRecord({
+    required String metricId,
+    required double targetValue,
+    required double actualValue,
+    required double allowedVariancePct,
+    required String rationale,
+  }) {
+    final deltaPct = targetValue == 0
+        ? 0.0
+        : ((actualValue - targetValue).abs() / targetValue) * 100.0;
+    return ReplayCalibrationRecord(
+      metricId: metricId,
+      targetValue: targetValue,
+      actualValue: actualValue,
+      allowedVariancePct: allowedVariancePct,
+      passed: deltaPct <= allowedVariancePct,
+      rationale: rationale,
+      metadata: <String, dynamic>{
+        'comparison': 'range',
+        'variancePct': deltaPct,
+      },
+    );
+  }
+
+  double _average(Iterable<double> values) {
+    final list = values.toList(growable: false);
+    if (list.isEmpty) {
+      return 0.0;
+    }
+    return list.reduce((left, right) => left + right) / list.length;
   }
 }

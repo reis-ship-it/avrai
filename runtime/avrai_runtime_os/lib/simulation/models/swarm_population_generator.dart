@@ -91,10 +91,28 @@ class SwarmPopulationGenerator {
       city: city,
       routine: routine,
       finances: finances,
+      transportDependence: _transportDependenceFor(city),
+      weatherSensitivity: _normalDistribution(0.52, 0.18).clamp(0.1, 1.0),
+      accessibilitySensitivity:
+          _normalDistribution(0.25, 0.16).clamp(0.0, 1.0),
+      socialFollowThrough: _normalDistribution(0.58, 0.18).clamp(0.1, 1.0),
+      nightlifeAffinity: _normalDistribution(0.42, 0.24).clamp(0.0, 1.0),
+      childcareFriction: _normalDistribution(0.20, 0.18).clamp(0.0, 1.0),
       homeLocation: homeLocation,
       workLocation: workLocation,
       baseInertia: friction,
     );
+  }
+
+  double _transportDependenceFor(CityProfile city) {
+    switch (city.transportType) {
+      case TransportationDominance.walkable:
+        return _normalDistribution(0.25, 0.12).clamp(0.0, 1.0);
+      case TransportationDominance.subway:
+        return _normalDistribution(0.48, 0.14).clamp(0.0, 1.0);
+      case TransportationDominance.carCentric:
+        return _normalDistribution(0.72, 0.14).clamp(0.0, 1.0);
+    }
   }
 
   SpatialHeatmap _getHeatmapForCity(String name) {
