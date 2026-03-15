@@ -9,6 +9,7 @@ import 'package:avrai/di/registrars/injection_container_admin.dart';
 import 'package:avrai/di/registrars/injection_container_knot.dart';
 import 'package:avrai/di/registrars/injection_container_quantum.dart';
 import 'package:avrai/di/registrars/injection_container_ai.dart';
+import 'package:avrai/di/registrars/injection_container_device_sync.dart';
 import 'package:avrai/di/registrars/injection_container_predictive_outreach.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
@@ -380,6 +381,9 @@ Future<void> init() async {
     registerRuntimeServices: () => registerCoreServices(sl),
   );
   logger.debug('✅ [DI] Core services registered');
+
+  await registerDeviceSyncServices(sl);
+  logger.debug('✅ [DI] Device sync services registered');
 
   await _registerRuntimeServiceLayer(logger);
 

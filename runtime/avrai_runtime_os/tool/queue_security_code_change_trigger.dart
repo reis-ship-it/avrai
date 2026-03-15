@@ -14,16 +14,12 @@ Future<void> main(List<String> args) async {
   }
 
   final prefs = await SharedPreferencesCompat.getInstance();
-  final ingress = SecurityTriggerIngressService(
-    campaignRegistry: const SecurityCampaignRegistry(),
-    prefs: prefs,
-  );
-  await ingress.notifyCodeChange(
+  final pending = await queueSecurityCodeChangeTriggers(
     changedPaths: parser.changedPaths,
     commitRef: parser.commitRef,
     actorAlias: parser.actorAlias,
+    prefs: prefs,
   );
-  final pending = ingress.pendingTriggers(limit: 128);
   stdout.writeln(
     'Queued ${pending.length} security trigger(s) for commit ${parser.commitRef}.',
   );
@@ -32,6 +28,25 @@ Future<void> main(List<String> args) async {
       '- ${trigger.campaignId} (${trigger.trigger.name}) by ${trigger.actorAlias}',
     );
   }
+}
+
+Future<List<SecurityQueuedCampaignTrigger>> queueSecurityCodeChangeTriggers({
+  required List<String> changedPaths,
+  required String commitRef,
+  String actorAlias = 'ci_release',
+  SharedPreferencesCompat? prefs,
+  SecurityCampaignRegistry campaignRegistry = const SecurityCampaignRegistry(),
+}) async {
+  final ingress = SecurityTriggerIngressService(
+    campaignRegistry: campaignRegistry,
+    prefs: prefs,
+  );
+  await ingress.notifyCodeChange(
+    changedPaths: changedPaths,
+    commitRef: commitRef,
+    actorAlias: actorAlias,
+  );
+  return ingress.pendingTriggers(limit: 128);
 }
 
 class _CodeChangeTriggerArgs {
@@ -49,16 +64,12 @@ class _CodeChangeTriggerArgs {
 
   String get usage => '''
 Usage:
-  flutter pub run tool/queue_security_code_change_trigger.dart \\
-    --commit-ref <sha-or-label> \\
-    [--actor <alias>] \\
-    --changed-path <path> [--changed-path <path> ...]
+  bash work/scripts/ci/queue_security_code_change_from_git.sh [<git-diff-range>]
 
 Example:
-  flutter pub run tool/queue_security_code_change_trigger.dart \\
-    --commit-ref abc123 \\
-    --actor ci_release \\
-    --changed-path runtime/avrai_runtime_os/services/security/security_trigger_ingress_service.dart
+  SECURITY_TRIGGER_COMMIT_REF=abc123 \\
+  SECURITY_TRIGGER_ACTOR_ALIAS=ci_release \\
+  bash work/scripts/ci/queue_security_code_change_from_git.sh
 ''';
 
   static _CodeChangeTriggerArgs parse(List<String> args) {

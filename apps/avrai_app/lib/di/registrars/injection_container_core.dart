@@ -27,6 +27,7 @@ import 'package:avrai_runtime_os/services/infrastructure/deployment_validator.da
 import 'package:avrai_runtime_os/services/infrastructure/search_cache_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai_search_suggestions_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
 import 'package:avrai_runtime_os/services/user/permissions_persistence_service.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 
@@ -49,6 +50,7 @@ Future<void> registerCoreServices(GetIt sl) async {
   // External dependencies
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => PermissionsPersistenceService());
+  sl.registerLazySingleton<DeviceMotionService>(() => DeviceMotionService());
 
   // Note: AppDatabase (Drift) is registered in injection_container_device_sync.dart
   // Sembast was fully removed in Phase 26 migration.

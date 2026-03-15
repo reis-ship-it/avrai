@@ -35,14 +35,19 @@ main() {
 
   echo "Queueing security code-change triggers for ${#changed_paths[@]} changed path(s) at ${COMMIT_REF}."
 
+  local changed_paths_file
+  changed_paths_file="$(mktemp)"
+  trap 'rm -f "$changed_paths_file"' EXIT
+  printf '%s\n' "${changed_paths[@]}" > "$changed_paths_file"
+
   local -a cmd=(
-    flutter pub run avrai_runtime_os:tool/queue_security_code_change_trigger.dart
-    --commit-ref "$COMMIT_REF"
-    --actor "$ACTOR_ALIAS"
+    flutter test
+    test/tools/security_code_change_trigger_ci_driver_test.dart
+    --reporter compact
+    --dart-define="SECURITY_TRIGGER_COMMIT_REF=$COMMIT_REF"
+    --dart-define="SECURITY_TRIGGER_ACTOR_ALIAS=$ACTOR_ALIAS"
+    --dart-define="SECURITY_TRIGGER_CHANGED_PATHS_FILE=$changed_paths_file"
   )
-  for path in "${changed_paths[@]}"; do
-    cmd+=(--changed-path "$path")
-  done
 
   (
     cd "$RUNTIME_DIR"

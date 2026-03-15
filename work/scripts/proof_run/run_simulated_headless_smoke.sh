@@ -174,6 +174,7 @@ run_flutter_drive() {
     flutter drive \
       --driver=test/integration_test_driver/simulated_headless_smoke_driver.dart \
       --target=integration_test/simulated_headless_smoke_test.dart \
+      --dart-define=AVRAI_ENABLE_DART_WHAT_FALLBACK=true \
       --dart-define="SIMULATED_SMOKE_PLATFORM=$PLATFORM" \
       -d "$device_id" \
       >"$DRIVE_LOG" 2>&1
