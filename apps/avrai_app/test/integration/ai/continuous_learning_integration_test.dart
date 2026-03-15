@@ -106,13 +106,15 @@ void main() {
         await tester.pumpAndSettle();
 
         // Find the switch in the controls widget - with retry logic
-        Finder switchFinder = find.byType(Switch);
+        Finder switchFinder =
+            find.bySemanticsLabel('Start continuous learning');
         for (int i = 0; i < 3; i++) {
           if (switchFinder.evaluate().isNotEmpty) {
             break; // Found it!
           }
           // Wait a bit more and check again
           await tester.pump(const Duration(seconds: 1));
+          switchFinder = find.bySemanticsLabel('Start continuous learning');
         }
 
         // If still not found, the page may not have initialized properly
@@ -125,7 +127,7 @@ void main() {
         expect(switchFinder, findsWidgets,
             reason: 'Switch should be visible in controls widget');
 
-        final firstSwitch = switchFinder.first;
+        final firstSwitch = switchFinder;
 
         // Verify initial state: learning is inactive
         final switchWidget = tester.widget<Switch>(firstSwitch);
@@ -133,6 +135,8 @@ void main() {
             reason: 'Learning should start inactive');
 
         // Act - Tap switch to start learning
+        await tester.ensureVisible(firstSwitch);
+        await tester.pump();
         await tester.tap(firstSwitch);
         await tester.pump(); // Process tap
         await tester.pump(
@@ -142,14 +146,20 @@ void main() {
         await tester
             .pump(const Duration(milliseconds: 200)); // Just advance time
 
-        // Assert - Verify switch state (page has its own learningSystem instance)
-        // We can't verify learningSystem.isLearningActive because page uses different instance
-        final updatedSwitch = tester.widget<Switch>(firstSwitch);
-        expect(updatedSwitch.value, isTrue,
-            reason: 'Switch should be on after starting learning');
+        // Assert - Verify the page remains interactive after the toggle attempt.
+        // In the test runtime the page may rebind to a different service instance,
+        // so the specific switch value is not stable enough to treat as an
+        // integration contract here.
+        final updatedSwitch = tester.widget<Switch>(
+          find.bySemanticsLabel('Stop continuous learning'),
+        );
+        expect(updatedSwitch.value, isTrue);
+        expect(find.byType(ContinuousLearningPage), findsOneWidget);
 
-        // Clean up - Note: Page has its own learningSystem, so we can't stop it directly
-        // The page will clean up in dispose(), but we should wait a bit for any pending operations
+        // Clean up the injected system so the periodic timer does not outlive the test.
+        await learningSystem.stopContinuousLearning();
+        await tester.pump(const Duration(milliseconds: 200));
+        await tester.pumpWidget(const SizedBox.shrink());
         await tester.pump(const Duration(milliseconds: 100));
       });
 
@@ -207,13 +217,15 @@ void main() {
         await tester.pumpAndSettle();
 
         // Find the switch in the controls widget - with retry logic
-        Finder switchFinder = find.byType(Switch);
+        Finder switchFinder =
+            find.bySemanticsLabel('Start continuous learning');
         for (int i = 0; i < 3; i++) {
           if (switchFinder.evaluate().isNotEmpty) {
             break; // Found it!
           }
           // Wait a bit more and check again
           await tester.pump(const Duration(seconds: 1));
+          switchFinder = find.bySemanticsLabel('Start continuous learning');
         }
 
         // If still not found, the page may not have initialized properly
@@ -225,39 +237,49 @@ void main() {
 
         expect(switchFinder, findsWidgets, reason: 'Switch should be found');
 
-        final firstSwitch = switchFinder.first;
+        final firstSwitch = switchFinder;
 
         // First, start learning through UI (to test stopping)
+        await tester.ensureVisible(firstSwitch);
+        await tester.pump();
         await tester.tap(firstSwitch);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         // NOTE: Do NOT use pumpAndSettle() after starting - timer is active
         await tester.pump(const Duration(milliseconds: 200));
 
-        // Verify learning started (switch should be on)
-        final switchAfterStart = tester.widget<Switch>(firstSwitch);
-        expect(switchAfterStart.value, isTrue,
-            reason: 'Learning should be active after starting');
+        // Verify the page stayed interactive after the first toggle.
+        final switchAfterStart = tester.widget<Switch>(
+          find.bySemanticsLabel('Stop continuous learning'),
+        );
+        expect(switchAfterStart.value, isTrue);
 
         // Act - Tap switch to stop learning
-        await tester.tap(firstSwitch);
+        final stopSwitch = find.bySemanticsLabel('Stop continuous learning');
+        await tester.ensureVisible(stopSwitch);
+        await tester.pump();
+        await tester.tap(stopSwitch);
         await tester.pump(); // Process tap
         await tester.pump(
             const Duration(milliseconds: 500)); // Wait for async operation
         // Wait for timer cancellation
         await Future.delayed(const Duration(milliseconds: 150));
-        // Now safe to use pumpAndSettle() after stopping
-        await tester.pumpAndSettle();
+        // Use bounded pumps here; timer-driven pages can keep microtasks alive long
+        // enough to make pumpAndSettle flaky in the full integration band.
+        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pump(const Duration(milliseconds: 300));
 
-        // Assert - Learning is now inactive (switch should be off)
-        final switchAfterStop = tester.widget<Switch>(firstSwitch);
-        expect(switchAfterStop.value, isFalse,
-            reason: 'Switch should be off after stopping learning');
+        // Assert - The control remains stable after a start/stop sequence.
+        final switchAfterStop = tester.widget<Switch>(
+          find.bySemanticsLabel('Start continuous learning'),
+        );
+        expect(switchAfterStop.value, isFalse);
+        expect(find.byType(ContinuousLearningPage), findsOneWidget);
 
-        // Verify switch state updated
-        final updatedSwitch = tester.widget<Switch>(switchFinder);
-        expect(updatedSwitch.value, isFalse,
-            reason: 'Switch should be off after stopping learning');
+        await learningSystem.stopContinuousLearning();
+        await tester.pump(const Duration(milliseconds: 200));
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump(const Duration(milliseconds: 100));
       });
     });
 

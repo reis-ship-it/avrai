@@ -1,0 +1,58 @@
+name: Repo Green Gate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 11 * * *'
+
+jobs:
+  app-package-and-workspace:
+    name: App Package And Workspace Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+          cache: true
+
+      - name: Bootstrap app CI environment
+        run: bash scripts/ci/bootstrap_avrai_app_ci_env.sh
+
+      - name: Run validated repo green gate without iOS build
+        env:
+          AVRAI_SKIP_IOS_BUILD: '1'
+        run: melos run gate:repo_green
+
+  ios-simulator-build:
+    name: iOS Simulator Build Gate
+    runs-on: macos-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+          cache: true
+
+      - name: Bootstrap app CI environment
+        run: bash scripts/ci/bootstrap_avrai_app_ci_env.sh
+
+      - name: Run validated repo green gate iOS build slice
+        env:
+          AVRAI_SKIP_APP_TESTS: '1'
+          AVRAI_SKIP_ANALYZE: '1'
+          AVRAI_SKIP_ARCHITECTURE: '1'
+          AVRAI_SKIP_REPO_HYGIENE: '1'
+        run: melos run gate:repo_green

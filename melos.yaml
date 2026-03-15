@@ -35,37 +35,39 @@ scripts:
   
   # Testing
   test:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test all packages
     exec:
       concurrency: 4
+    packageFilters:
+      dirExists: test
   
   test:network:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test network module only
     packageFilters:
       scope: "avrai_network"
   
   test:core:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test core module only
     packageFilters:
       scope: "avrai_core"
   
   test:data:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test data module only
     packageFilters:
       scope: "avrai_data"
   
   test:ai:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test AI module only
     packageFilters:
       scope: "avrai_ai"
   
   test:ml:
-    run: flutter test
+    run: flutter test --concurrency=1
     description: Test ML module only
     packageFilters:
       scope: "avrai_ml"

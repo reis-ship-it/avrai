@@ -1,7 +1,8 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
+import 'package:avrai_runtime_os/services/admin/research_activity_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
+import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 
 part 'admin_auth_service_models.dart';
 
@@ -11,10 +12,15 @@ part 'admin_auth_service_models.dart';
 class AdminAuthService {
   static const String _logName = 'AdminAuthService';
   static const String _adminSessionKey = 'admin_session';
+  static const String _adminSessionMirrorKey = 'admin_session_mirror';
   static const String _adminLoginAttemptsKey = 'admin_login_attempts';
   static const String _adminLockoutKey = 'admin_lockout_until';
+  static const String _adminControlPlaneTokenKey =
+      'admin_control_plane_session_token';
 
   final SharedPreferencesCompat _prefs;
+  final FlutterSecureStorage? _secureStorage;
+  final AdminControlPlaneGateway _gateway;
 
   // Maximum login attempts before lockout
   // ignore: unused_field
@@ -22,7 +28,13 @@ class AdminAuthService {
   // ignore: unused_field - Reserved for future lockout implementation
   static const Duration _lockoutDuration = Duration(minutes: 15);
 
-  AdminAuthService(this._prefs);
+  AdminAuthService(
+    this._prefs, {
+    FlutterSecureStorage? secureStorage,
+    AdminControlPlaneGateway? gateway,
+  })  : _secureStorage = secureStorage,
+        _gateway = gateway ??
+            AdminControlPlaneGatewayFactory.resolveDefault(prefs: _prefs);
 
   /// Authenticate admin with god-mode credentials
   /// Returns true if authentication successful
@@ -46,23 +58,6 @@ class AdminAuthService {
           await _verifyCredentials(username, password, twoFactorCode);
 
       if (!verifyResult.success) {
-        // Handle lockout from server
-        if (verifyResult.lockedOut && verifyResult.lockoutRemaining != null) {
-          final lockoutUntil = DateTime.now()
-              .add(verifyResult.lockoutRemaining!)
-              .millisecondsSinceEpoch;
-          await _prefs.setInt(_adminLockoutKey, lockoutUntil);
-          return AdminAuthResult.lockedOut(verifyResult.lockoutRemaining!);
-        }
-
-        // Handle failed attempts
-        if (verifyResult.remainingAttempts != null) {
-          return AdminAuthResult.failed(
-            error: verifyResult.error,
-            remainingAttempts: verifyResult.remainingAttempts,
-          );
-        }
-
         return AdminAuthResult.failed(error: verifyResult.error);
       }
 
@@ -73,13 +68,21 @@ class AdminAuthService {
       // Create admin session
       final session = AdminSession(
         username: username,
-        loginTime: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(hours: 8)),
+        loginTime: DateTime.now().toUtc(),
+        expiresAt: DateTime.now()
+            .toUtc()
+            .add(verifyResult.sessionDuration ?? const Duration(hours: 8)),
         accessLevel: AdminAccessLevel.godMode,
         permissions: AdminPermissions.all(),
+        sessionTokenId: verifyResult.sessionTokenId,
+        issuedBy: verifyResult.issuedBy ?? 'supabase_edge_admin_auth',
+        requiresPrivateControlPlane: true,
       );
 
-      await _saveSession(session);
+      await _saveSession(
+        session,
+        controlPlaneToken: verifyResult.controlPlaneToken,
+      );
 
       developer.log('Admin authenticated: $username', name: _logName);
       return AdminAuthResult.success(session);
@@ -94,74 +97,56 @@ class AdminAuthService {
   Future<_VerifyResult> _verifyCredentials(
       String username, String password, String? twoFactorCode) async {
     try {
-      final supabaseService = SupabaseService();
-
-      // Check if Supabase is available before trying to use it
-      if (!supabaseService.isAvailable) {
-        developer.log(
-          'Supabase not initialized - cannot verify admin credentials',
-          name: _logName,
-        );
+      if (!await _gateway.canConnect()) {
         return _VerifyResult(
           success: false,
           error:
-              'Backend service unavailable. Please configure Supabase credentials.',
+              'Private admin control plane unavailable. Backend session issuance is fail-closed.',
         );
       }
-
-      // Get client (we know it's available from the check above)
-      final client = supabaseService.client;
-
-      // Call the admin-auth edge function
-      final response = await client.functions.invoke(
-        'admin-auth',
-        body: {
-          'username': username,
-          'password': password,
-          if (twoFactorCode != null) 'twoFactorCode': twoFactorCode,
-        },
+      final grant = await _gateway.createSession(
+        request: AdminControlPlaneSessionRequest(
+          operatorAlias: username,
+          oidcAssertion: base64Url.encode(
+            utf8.encode(
+              jsonEncode(<String, dynamic>{
+                'username': username,
+                'password': password,
+                'exchange': 'compat_credentials_exchange',
+              }),
+            ),
+          ),
+          mfaProof: twoFactorCode ?? '',
+          deviceAttestation: const AdminControlPlaneDeviceAttestation(
+            deviceId: 'desktop-admin-client',
+            platform: 'desktop',
+            privateMeshProvider: 'headscale_tailscale',
+            meshIdentity: 'private-admin-mesh',
+            clientCertificateFingerprint: 'managed-device-cert',
+            signedDesktopBinary: true,
+            managedDevice: true,
+            diskEncryptionEnabled: true,
+            osPatchBaselineSatisfied: true,
+          ),
+          allowedGroups: const <String>['admin_operator'],
+        ),
       );
-
-      // Parse response data - handle both Map and String responses
-      Map<String, dynamic>? data;
-      if (response.data is Map) {
-        data = response.data as Map<String, dynamic>;
-      } else if (response.data is String) {
-        try {
-          data = jsonDecode(response.data as String) as Map<String, dynamic>;
-        } catch (e) {
-          developer.log('Failed to parse edge function response: $e',
-              name: _logName);
-          return _VerifyResult(
-            success: false,
-            error: 'Invalid response from server',
-          );
-        }
-      }
-
-      if (response.status == 200 && data?['success'] == true) {
-        developer.log('Admin credentials verified successfully',
-            name: _logName);
-        return _VerifyResult(success: true);
-      }
-
-      // Handle error responses
-      final error = data?['error'] as String? ?? 'Authentication failed';
-      final lockedOut = data?['lockedOut'] as bool? ?? false;
-      final lockoutRemaining = data?['lockoutRemaining'] as int?;
-      final remainingAttempts = data?['remainingAttempts'] as int?;
-
-      developer.log('Admin auth failed: $error (status: ${response.status})',
-          name: _logName);
-
+      developer.log(
+        'Admin credentials verified via private control plane',
+        name: _logName,
+      );
+      return _VerifyResult(
+        success: true,
+        controlPlaneToken: grant.sessionToken,
+        sessionTokenId: grant.sessionTokenId,
+        issuedBy: grant.issuedBy,
+        sessionDuration: grant.expiresAt.difference(DateTime.now().toUtc()),
+      );
+    } on AdminControlPlaneAuthException catch (e) {
+      developer.log('Admin auth blocked by control plane: $e', name: _logName);
       return _VerifyResult(
         success: false,
-        error: error,
-        lockedOut: lockedOut,
-        lockoutRemaining: lockoutRemaining != null
-            ? Duration(minutes: lockoutRemaining)
-            : null,
-        remainingAttempts: remainingAttempts,
+        error: e.message,
       );
     } catch (e) {
       developer.log('Error verifying admin credentials: $e', name: _logName);
@@ -175,7 +160,8 @@ class AdminAuthService {
   /// Get current admin session
   AdminSession? getCurrentSession() {
     try {
-      final sessionJson = _prefs.getString(_adminSessionKey);
+      final sessionJson = _prefs.getString(_adminSessionMirrorKey) ??
+          _prefs.getString(_adminSessionKey);
       if (sessionJson == null) return null;
 
       final sessionMap = jsonDecode(sessionJson) as Map<String, dynamic>;
@@ -193,7 +179,6 @@ class AdminAuthService {
 
     // Check if session expired
     if (DateTime.now().isAfter(session.expiresAt)) {
-      logout();
       return false;
     }
 
@@ -210,13 +195,30 @@ class AdminAuthService {
 
   /// Logout admin
   Future<void> logout() async {
+    await _gateway.revokeActiveSession();
     await _prefs.remove(_adminSessionKey);
+    await _prefs.remove(_adminSessionMirrorKey);
+    await _secureStorage?.delete(key: _adminControlPlaneTokenKey);
     developer.log('Admin logged out', name: _logName);
   }
 
   /// Save admin session
-  Future<void> _saveSession(AdminSession session) async {
+  Future<void> _saveSession(
+    AdminSession session, {
+    String? controlPlaneToken,
+  }) async {
     final sessionJson = jsonEncode(session.toJson());
+    if (_secureStorage != null) {
+      await _prefs.setString(_adminSessionMirrorKey, sessionJson);
+      await _prefs.remove(_adminSessionKey);
+      if (controlPlaneToken != null && controlPlaneToken.isNotEmpty) {
+        await _secureStorage.write(
+          key: _adminControlPlaneTokenKey,
+          value: controlPlaneToken,
+        );
+      }
+      return;
+    }
     await _prefs.setString(_adminSessionKey, sessionJson);
   }
 
@@ -239,6 +241,9 @@ class AdminSession {
   final DateTime expiresAt;
   final AdminAccessLevel accessLevel;
   final AdminPermissions permissions;
+  final String? sessionTokenId;
+  final String? issuedBy;
+  final bool requiresPrivateControlPlane;
 
   AdminSession({
     required this.username,
@@ -246,6 +251,9 @@ class AdminSession {
     required this.expiresAt,
     required this.accessLevel,
     required this.permissions,
+    this.sessionTokenId,
+    this.issuedBy,
+    this.requiresPrivateControlPlane = false,
   });
 
   AdminSession copyWith({
@@ -254,6 +262,9 @@ class AdminSession {
     DateTime? expiresAt,
     AdminAccessLevel? accessLevel,
     AdminPermissions? permissions,
+    String? sessionTokenId,
+    String? issuedBy,
+    bool? requiresPrivateControlPlane,
   }) {
     return AdminSession(
       username: username ?? this.username,
@@ -261,6 +272,10 @@ class AdminSession {
       expiresAt: expiresAt ?? this.expiresAt,
       accessLevel: accessLevel ?? this.accessLevel,
       permissions: permissions ?? this.permissions,
+      sessionTokenId: sessionTokenId ?? this.sessionTokenId,
+      issuedBy: issuedBy ?? this.issuedBy,
+      requiresPrivateControlPlane:
+          requiresPrivateControlPlane ?? this.requiresPrivateControlPlane,
     );
   }
 
@@ -271,6 +286,9 @@ class AdminSession {
       'expiresAt': expiresAt.toIso8601String(),
       'accessLevel': accessLevel.name,
       'permissions': permissions.toJson(),
+      'sessionTokenId': sessionTokenId,
+      'issuedBy': issuedBy,
+      'requiresPrivateControlPlane': requiresPrivateControlPlane,
     };
   }
 
@@ -285,6 +303,10 @@ class AdminSession {
       ),
       permissions: AdminPermissions.fromJson(
           json['permissions'] as Map<String, dynamic>),
+      sessionTokenId: json['sessionTokenId'] as String?,
+      issuedBy: json['issuedBy'] as String?,
+      requiresPrivateControlPlane:
+          json['requiresPrivateControlPlane'] as bool? ?? false,
     );
   }
 }

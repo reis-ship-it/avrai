@@ -21,11 +21,15 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('What matches your vibe?'), findsOneWidget);
+      expect(find.text('Favorite Places'), findsWidgets);
       expect(
-        find.textContaining('Select places that match your aesthetic'),
+        find.text(
+          'Choose neighborhoods and cities to improve local discovery from the start.',
+        ),
         findsOneWidget,
       );
+      expect(find.text('Starting point only'), findsOneWidget);
+      expect(find.text('Why local context matters'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('New York Area'), findsOneWidget);
       expect(find.text('Los Angeles Area'), findsOneWidget);
@@ -48,7 +52,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget3);
-      expect(find.text('What matches your vibe?'), findsOneWidget);
+      expect(find.text('Favorite Places'), findsWidgets);
     });
   });
 }

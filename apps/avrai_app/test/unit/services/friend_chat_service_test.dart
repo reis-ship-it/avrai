@@ -13,6 +13,13 @@
 /// - Error Handling: Invalid inputs, encryption errors
 library;
 
+import 'dart:io';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_core/models/interpretation/interpretation_models.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
@@ -27,7 +34,79 @@ import '../../helpers/test_helpers.dart';
 class MockMessageEncryptionService extends Mock
     implements MessageEncryptionService {}
 
+class _FixedHumanLanguageBoundaryReviewLane
+    extends HumanLanguageBoundaryReviewLane {
+  _FixedHumanLanguageBoundaryReviewLane(this._review);
+
+  final HumanLanguageBoundaryReview _review;
+
+  @override
+  Future<HumanLanguageBoundaryReview> reviewOutboundText({
+    required String actorAgentId,
+    required String rawText,
+    required BoundaryEgressPurpose egressPurpose,
+    required bool egressRequested,
+    String? userId,
+    String chatType = 'agent',
+    String surface = 'chat',
+    String channel = 'in_app',
+    BoundaryPrivacyMode privacyMode = BoundaryPrivacyMode.localSovereign,
+    Set<String>? consentScopes,
+  }) async {
+    return _review;
+  }
+}
+
+HumanLanguageBoundaryReview _buildBoundaryReview({
+  required BoundaryDecision decision,
+  bool egressRequested = false,
+  BoundaryEgressPurpose egressPurpose = BoundaryEgressPurpose.directMessage,
+}) {
+  return HumanLanguageBoundaryReview(
+    rawText: 'boundary-reviewed text',
+    turn: HumanLanguageKernelTurn(
+      interpretation: InterpretationResult(
+        intent: InterpretationIntent.share,
+        normalizedText: 'boundary-reviewed text',
+        requestArtifact: const InterpretationRequestArtifact(
+          summary: 'boundary-reviewed text',
+          asksForResponse: false,
+          asksForRecommendation: false,
+          asksForAction: false,
+          asksForExplanation: false,
+          referencedEntities: <String>[],
+          questions: <String>[],
+          preferenceSignals: <InterpretationPreferenceSignal>[],
+          shareIntent: true,
+        ),
+        learningArtifact: const InterpretationLearningArtifact(
+          vocabulary: <String>[],
+          phrases: <String>[],
+          toneMetrics: <String, double>{},
+          directnessPreference: 0.5,
+          brevityPreference: 0.5,
+        ),
+        privacySensitivity: InterpretationPrivacySensitivity.low,
+        confidence: 0.9,
+        ambiguityFlags: <String>[],
+        needsClarification: false,
+        safeForLearning: false,
+      ),
+      boundary: decision,
+    ),
+    egressRequested: egressRequested,
+    egressPurpose: egressPurpose,
+    chatType: 'friend',
+    surface: 'chat',
+    channel: 'friend_chat',
+  );
+}
+
 void main() {
+  late Directory storageRoot;
+  late GetStorage friendChatMessagesStorage;
+  late GetStorage friendChatOutboxStorage;
+
   // Register fallback values for mocktail
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +130,20 @@ void main() {
     );
   });
 
+  setUpAll(() async {
+    storageRoot = await Directory.systemTemp.createTemp('friend_chat_test_');
+    friendChatMessagesStorage = GetStorage(
+      'friend_chat_messages',
+      storageRoot.path,
+    );
+    friendChatOutboxStorage = GetStorage(
+      'friend_chat_outbox',
+      storageRoot.path,
+    );
+    await friendChatMessagesStorage.initStorage;
+    await friendChatOutboxStorage.initStorage;
+  });
+
   group('FriendChatService Tests', () {
     late FriendChatService service;
     late MockMessageEncryptionService mockEncryptionService;
@@ -62,10 +155,9 @@ void main() {
 
     setUp(() async {
       TestHelpers.setupTestEnvironment();
-      await GetStorage.init('friend_chat_messages');
-      await GetStorage.init('friend_chat_outbox');
-      await GetStorage('friend_chat_messages').erase();
-      await GetStorage('friend_chat_outbox').erase();
+      await friendChatMessagesStorage.erase();
+      await friendChatOutboxStorage.erase();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Initialize mocks
       mockEncryptionService = MockMessageEncryptionService();
@@ -95,10 +187,27 @@ void main() {
       );
     });
 
+    tearDownAll(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      if (storageRoot.existsSync()) {
+        for (var attempt = 0; attempt < 5; attempt++) {
+          try {
+            await storageRoot.delete(recursive: true);
+            break;
+          } on FileSystemException {
+            if (attempt == 4) rethrow;
+            await Future<void>.delayed(
+              Duration(milliseconds: 100 * (attempt + 1)),
+            );
+          }
+        }
+      }
+    });
+
     tearDown(() async {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      await GetStorage('friend_chat_messages').erase();
-      await GetStorage('friend_chat_outbox').erase();
+      await friendChatMessagesStorage.erase();
+      await friendChatOutboxStorage.erase();
+      await Future<void>.delayed(const Duration(milliseconds: 150));
       TestHelpers.teardownTestEnvironment();
     });
 
@@ -122,10 +231,63 @@ void main() {
         expect(chatMessage.senderId, equals(testUserId));
         expect(chatMessage.recipientId, equals(testFriendId));
         expect(chatMessage.isRead, isFalse);
+        expect(chatMessage.metadata, isNotNull);
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey],
+          isA<Map<String, dynamic>>(),
+        );
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey]
+              ['egress_purpose'],
+          BoundaryEgressPurpose.directMessage.toWireValue(),
+        );
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey]
+              ['egress_requested'],
+          isFalse,
+        );
 
         // Verify encryption was called
         verify(() => mockEncryptionService.encrypt(message, testChatId))
             .called(1);
+      });
+
+      test('should fail closed when transcript storage is denied', () async {
+        service = FriendChatService(
+          encryptionService: mockEncryptionService,
+          humanLanguageBoundaryReviewLane:
+              _FixedHumanLanguageBoundaryReviewLane(
+            _buildBoundaryReview(
+              decision: BoundaryDecision(
+                accepted: false,
+                disposition: BoundaryDisposition.block,
+                transcriptStorageAllowed: false,
+                storageAllowed: false,
+                learningAllowed: false,
+                egressAllowed: false,
+                airGapRequired: false,
+                reasonCodes: const <String>['policy_blocked'],
+                sanitizedArtifact: const BoundarySanitizedArtifact(
+                  pseudonymousActorRef: 'anon_test',
+                  summary: 'blocked',
+                  safeClaims: <String>[],
+                  safeQuestions: <String>[],
+                  safePreferenceSignals: <InterpretationPreferenceSignal>[],
+                  learningVocabulary: <String>[],
+                  learningPhrases: <String>[],
+                  redactedText: 'blocked',
+                ),
+                egressPurpose: BoundaryEgressPurpose.directMessage,
+              ),
+            ),
+          ),
+        );
+
+        await expectLater(
+          () => service.sendMessage(testUserId, testFriendId, 'Blocked'),
+          throwsA(isA<HumanLanguageBoundaryViolationException>()),
+        );
+        verifyNever(() => mockEncryptionService.encrypt(any(), any()));
       });
 
       test('should generate consistent chat ID regardless of user order',
@@ -157,6 +319,27 @@ void main() {
 
         // Assert
         expect(message1.messageId, isNot(equals(message2.messageId)));
+      });
+
+      test('should return kernel context when direct message uses OS host',
+          () async {
+        const message = 'OS-backed DM';
+        service = FriendChatService(
+          encryptionService: mockEncryptionService,
+          headlessOsHost: _FakeFriendChatHeadlessHost(),
+        );
+
+        final result = await service.sendMessageOverNetworkWithKernelContext(
+          testUserId,
+          testFriendId,
+          message,
+        );
+
+        expect(result.message.senderId, testUserId);
+        expect(result.modelTruthReady, isTrue);
+        expect(result.localityContainedInWhere, isTrue);
+        expect(result.kernelEventId, contains('friend_chat:'));
+        expect(result.governanceSummary, isNotNull);
       });
     });
 
@@ -417,4 +600,87 @@ void main() {
       });
     });
   });
+}
+
+class _FakeFriendChatHeadlessHost implements HeadlessAvraiOsHost {
+  @override
+  Future<HeadlessAvraiOsHostState> start() async {
+    return HeadlessAvraiOsHostState(
+      started: true,
+      startedAtUtc: DateTime.utc(2026, 3, 7),
+      localityContainedInWhere: true,
+      summary: 'friend chat host ready',
+    );
+  }
+
+  @override
+  Future<RealityKernelFusionInput> buildModelTruth({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    return RealityKernelFusionInput(
+      envelope: envelope,
+      bundle: const KernelContextBundle(
+        who: null,
+        what: null,
+        when: null,
+        where: null,
+        how: null,
+        why: null,
+      ),
+      who: const WhoRealityProjection(summary: 'who', confidence: 0.8),
+      what: const WhatRealityProjection(summary: 'what', confidence: 0.8),
+      when: const WhenRealityProjection(summary: 'when', confidence: 0.9),
+      where: const WhereRealityProjection(summary: 'where', confidence: 0.9),
+      why: const WhyRealityProjection(summary: 'why', confidence: 0.8),
+      how: const HowRealityProjection(summary: 'how', confidence: 0.8),
+      generatedAtUtc: DateTime.utc(2026, 3, 7),
+      localityContainedInWhere: true,
+    );
+  }
+
+  @override
+  Future<List<KernelHealthReport>> healthCheck() async {
+    return const <KernelHealthReport>[];
+  }
+
+  @override
+  Future<KernelGovernanceReport> inspectGovernance({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    return KernelGovernanceReport(
+      envelope: envelope,
+      bundle: const KernelContextBundle(
+        who: null,
+        what: null,
+        when: null,
+        where: null,
+        how: null,
+        why: null,
+      ),
+      projections: const <KernelGovernanceProjection>[
+        KernelGovernanceProjection(
+          domain: KernelDomain.why,
+          summary: 'direct message remained governed',
+          confidence: 0.8,
+        ),
+      ],
+      generatedAtUtc: DateTime.utc(2026, 3, 7),
+    );
+  }
+
+  @override
+  Future<KernelContextBundle> resolveRuntimeExecution({
+    required KernelEventEnvelope envelope,
+  }) async {
+    return const KernelContextBundle(
+      who: null,
+      what: null,
+      when: null,
+      where: null,
+      how: null,
+      why: null,
+    );
+  }
 }

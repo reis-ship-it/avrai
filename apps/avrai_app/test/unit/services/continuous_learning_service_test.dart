@@ -20,6 +20,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:avrai_runtime_os/ai/continuous_learning/policy/learning_dimension_policy.dart';
 import 'package:avrai_runtime_os/ai/continuous_learning_system.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 
@@ -293,17 +294,16 @@ void main() {
         expect(status.activeSourcesCount, isA<int>());
       });
 
-      test('returns status with all 10 data sources', () async {
+      test('returns status entries for all configured data sources', () async {
         await service.initialize();
-        await service.startContinuousLearning();
-
-        // Wait for data collection
-        await Future.delayed(const Duration(seconds: 2));
 
         final status = await service.getDataCollectionStatus();
 
         expect(status.sourceStatuses, isA<Map<String, DataSourceStatus>>());
-        // Should have entries for all 10 data sources
+        expect(
+          status.sourceStatuses.keys.toSet(),
+          equals(LearningDimensionPolicy.dataSources.toSet()),
+        );
       });
 
       test('returns status with correct data source status structure',
