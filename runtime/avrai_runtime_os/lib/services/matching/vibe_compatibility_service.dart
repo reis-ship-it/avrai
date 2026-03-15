@@ -11,6 +11,7 @@ import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai/quantum/multi_scale_quantum_state_service.dart';
 import 'package:avrai_runtime_os/services/matching/attraction_12d_resolver.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_knot/models/entity_knot.dart';
 import 'package:avrai_knot/services/knot/entity_knot_service.dart';
@@ -97,6 +98,7 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
   );
 
   final PersonalityLearning _personalityLearning;
+  final CanonicalVibeProjectionService _canonicalVibeProjectionService;
   final PersonalityKnotService _personalityKnotService;
   final EntityKnotService _entityKnotService;
 
@@ -112,9 +114,12 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     required PersonalityLearning personalityLearning,
     required PersonalityKnotService personalityKnotService,
     required EntityKnotService entityKnotService,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
     this.attractionResolver,
     this.multiScaleService,
   })  : _personalityLearning = personalityLearning,
+        _canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService(),
         _personalityKnotService = personalityKnotService,
         _entityKnotService = entityKnotService;
 
@@ -124,11 +129,13 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     required BusinessAccount business,
   }) async {
     final userProfile = await _getOrCreateUserProfile(userId);
-    
+
     if (userProfile.isAccelerated) {
-      _logger.debug('User $userId has an Accelerated Profile. Bypassing 14-day training wheels.', tag: _logName);
+      _logger.debug(
+          'User $userId has an Accelerated Profile. Bypassing 14-day training wheels.',
+          tag: _logName);
     }
-    
+
     // SPIKE 1: Future State Interpolation
     Map<String, double> targetDims;
     try {
@@ -140,18 +147,19 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
         decoded.forEach((key, value) {
           dnaShifts[key] = (value as num).toDouble();
         });
-        
-        final futureProfile = userProfile.evolve(newDimensions: userProfile.dimensions.map((key, val) {
-           final shift = dnaShifts[key] ?? 0.0;
-           return MapEntry(key, (val + shift).clamp(0.0, 1.0));
+
+        final futureProfile = userProfile.evolve(
+            newDimensions: userProfile.dimensions.map((key, val) {
+          final shift = dnaShifts[key] ?? 0.0;
+          return MapEntry(key, (val + shift).clamp(0.0, 1.0));
         }));
-        
+
         targetDims = _ensureAllDimensions(futureProfile.dimensions);
       } else {
         targetDims = _ensureAllDimensions(userProfile.dimensions);
       }
     } catch (e) {
-       targetDims = _ensureAllDimensions(userProfile.dimensions);
+      targetDims = _ensureAllDimensions(userProfile.dimensions);
     }
 
     final businessDims = _inferBusinessVibeDimensions(business);
@@ -210,11 +218,13 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
     required ExpertiseEvent event,
   }) async {
     final userProfile = await _getOrCreateUserProfile(userId);
-    
+
     if (userProfile.isAccelerated) {
-      _logger.debug('User $userId has an Accelerated Profile. Bypassing 14-day training wheels.', tag: _logName);
+      _logger.debug(
+          'User $userId has an Accelerated Profile. Bypassing 14-day training wheels.',
+          tag: _logName);
     }
-    
+
     // SPIKE 1: Future State Interpolation
     // If the user has an aspirational future state stored, we calculate a vector
     // that pulls them towards it, rather than just matching their present state.
@@ -229,21 +239,23 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
         decoded.forEach((key, value) {
           dnaShifts[key] = (value as num).toDouble();
         });
-        
+
         // Temporarily apply shifts to create the future state vector
         // Using a 50% pull towards the future state for matching
-        final futureProfile = userProfile.evolve(newDimensions: userProfile.dimensions.map((key, val) {
-           final shift = dnaShifts[key] ?? 0.0;
-           return MapEntry(key, (val + shift).clamp(0.0, 1.0));
+        final futureProfile = userProfile.evolve(
+            newDimensions: userProfile.dimensions.map((key, val) {
+          final shift = dnaShifts[key] ?? 0.0;
+          return MapEntry(key, (val + shift).clamp(0.0, 1.0));
         }));
-        
+
         targetDims = _ensureAllDimensions(futureProfile.dimensions);
-        _logger.debug('Using Future State Interpolation for user $userId', tag: _logName);
+        _logger.debug('Using Future State Interpolation for user $userId',
+            tag: _logName);
       } else {
         targetDims = _ensureAllDimensions(userProfile.dimensions);
       }
     } catch (e) {
-       targetDims = _ensureAllDimensions(userProfile.dimensions);
+      targetDims = _ensureAllDimensions(userProfile.dimensions);
     }
 
     // Best-available event "vibe" proxy: host personality vector.
@@ -255,7 +267,8 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
 
     // User knot ↔ event knot (entity knot) yields topological + weave components when available.
     final knotScores = await _tryKnotScores(
-      entityA: await _tryEntityKnotForPerson(userProfile), // Note: We still use the *real* knot for topology
+      entityA: await _tryEntityKnotForPerson(
+          userProfile), // Note: We still use the *real* knot for topology
       entityB: await _tryEntityKnotForEvent(event),
     );
 
@@ -272,9 +285,11 @@ class QuantumKnotVibeCompatibilityService implements VibeCompatibilityService {
   }
 
   Future<PersonalityProfile> _getOrCreateUserProfile(String userId) async {
-    final existing = await _personalityLearning.getCurrentPersonality(userId);
-    if (existing != null) return existing;
-    return _personalityLearning.initializePersonality(userId);
+    return _canonicalVibeProjectionService.getOrCreateProjectedProfile(
+      userId: userId,
+      loadFallback: _personalityLearning.getCurrentPersonality,
+      createFallback: _personalityLearning.initializePersonality,
+    );
   }
 
   Map<String, double> _ensureAllDimensions(Map<String, double> input) {

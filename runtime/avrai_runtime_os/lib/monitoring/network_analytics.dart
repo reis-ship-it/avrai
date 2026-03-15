@@ -27,6 +27,8 @@ class NetworkAnalytics {
   final SharedPreferencesCompat
       _prefs; // Reserved for future persistent storage integration
   final ConnectionMonitor? _connectionMonitor;
+  final Duration _networkHealthUpdateInterval;
+  final Duration _realTimeMetricsUpdateInterval;
 
   // Stream controllers + timers for periodic updates (admin dashboard).
   StreamController<NetworkHealthReport>? _networkHealthStreamController;
@@ -46,8 +48,12 @@ class NetworkAnalytics {
   NetworkAnalytics({
     required SharedPreferencesCompat prefs,
     ConnectionMonitor? connectionMonitor,
+    Duration networkHealthUpdateInterval = const Duration(seconds: 8),
+    Duration realTimeMetricsUpdateInterval = const Duration(seconds: 7),
   })  : _prefs = prefs,
-        _connectionMonitor = connectionMonitor;
+        _connectionMonitor = connectionMonitor,
+        _networkHealthUpdateInterval = networkHealthUpdateInterval,
+        _realTimeMetricsUpdateInterval = realTimeMetricsUpdateInterval;
 
   /// Cancel all periodic update timers and close stream controllers.
   ///
@@ -854,7 +860,7 @@ class NetworkAnalytics {
 
     // Start periodic updates (single timer; cancelled on disposeStreams()).
     _networkHealthTimer ??= Timer.periodic(
-      const Duration(seconds: 8),
+      _networkHealthUpdateInterval,
       (_) => unawaited(emitOnce()),
     );
 
@@ -887,7 +893,7 @@ class NetworkAnalytics {
 
     // Start periodic updates (single timer; cancelled on disposeStreams()).
     _realTimeMetricsTimer ??= Timer.periodic(
-      const Duration(seconds: 7),
+      _realTimeMetricsUpdateInterval,
       (_) => unawaited(emitOnce()),
     );
 

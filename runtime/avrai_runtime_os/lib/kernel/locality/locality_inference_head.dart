@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:avrai_core/constants/vibe_constants.dart';
 import 'package:avrai_core/models/spots/visit.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_infrastructure_bridge.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_token.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
 
@@ -23,13 +23,13 @@ class LocalityInferenceHead {
   static const List<String> dimensions = VibeConstants.coreDimensions;
 
   final LocalityMemory _memory;
-  final LocalitySyncCoordinator _syncCoordinator;
+  final LocalityInfrastructureBridge _infrastructureBridge;
 
   LocalityInferenceHead({
     required LocalityMemory memory,
-    required LocalitySyncCoordinator syncCoordinator,
+    required LocalityInfrastructureBridge infrastructureBridge,
   })  : _memory = memory,
-        _syncCoordinator = syncCoordinator;
+        _infrastructureBridge = infrastructureBridge;
 
   Future<LocalityState> resolve(LocalityPerceptionInput input) async {
     final key = input.localityKeyHint ??
@@ -60,7 +60,7 @@ class LocalityInferenceHead {
     LocalityReliabilityTier? forcedTier,
     LocalitySourceMix? sourceMix,
   }) async {
-    final self = await _syncCoordinator.getGlobalState(key);
+    final self = await _infrastructureBridge.fetchGlobalState(key);
     final neighborKeys = GeohashService.neighbors(geohash: key.geohashPrefix)
         .map((gh) => LocalityAgentKeyV1(
               geohashPrefix: gh,
@@ -81,15 +81,18 @@ class LocalityInferenceHead {
 
     final neighborStates = <LocalityAgentGlobalStateV1>[];
     for (final nk in neighborKeys) {
-      neighborStates.add(await _syncCoordinator.getGlobalState(nk));
+      neighborStates.add(await _infrastructureBridge.fetchGlobalState(nk));
     }
-    final parentState =
-        parentKey != null ? await _syncCoordinator.getGlobalState(parentKey) : null;
+    final parentState = parentKey != null
+        ? await _infrastructureBridge.fetchGlobalState(parentKey)
+        : null;
 
-    final meshNeighborDeltas = _syncCoordinator.getNeighborMeshUpdates(key);
+    final meshNeighborDeltas =
+        _infrastructureBridge.readNeighborMeshUpdates(key);
     final combinedGlobal = _blendGlobal(
       self: self.vector12,
-      neighbors: neighborStates.map((state) => state.vector12).toList(growable: false),
+      neighbors:
+          neighborStates.map((state) => state.vector12).toList(growable: false),
       parent: parentState?.vector12,
       meshNeighbors: meshNeighborDeltas,
     );

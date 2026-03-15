@@ -3,7 +3,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai/presentation/widgets/portal/glass_slate.dart';
 import 'package:avrai/presentation/widgets/portal/portal_shader_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// The root layout for the Portal Design System.
 ///
@@ -24,7 +24,7 @@ class AvraiPortalLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final immersive = context.immersive;
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: '',
       showNavigationBar: false,
       constrainBody: false,

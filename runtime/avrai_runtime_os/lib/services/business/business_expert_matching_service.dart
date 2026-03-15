@@ -6,8 +6,8 @@ import 'package:avrai_core/models/expertise/expertise_community.dart';
 import 'package:avrai_core/models/quantum/matching_result.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_matching_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_community_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/services/partnerships/partnership_service.dart';
 import 'package:avrai_runtime_os/services/matching/vibe_compatibility_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_integration_service.dart';
@@ -41,7 +41,7 @@ class BusinessExpertMatchingService {
 
   final ExpertiseMatchingService _expertiseMatchingService;
   final ExpertiseCommunityService _communityService;
-  final LLMService? _llmService;
+  final LanguageRuntimeService? _languageRuntimeService;
   final PartnershipService? _partnershipService;
   final VibeCompatibilityService? _vibeCompatibilityService;
   final QuantumMatchingIntegrationService? _quantumIntegrationService;
@@ -54,7 +54,7 @@ class BusinessExpertMatchingService {
   BusinessExpertMatchingService({
     ExpertiseMatchingService? expertiseMatchingService,
     ExpertiseCommunityService? communityService,
-    LLMService? llmService,
+    LanguageRuntimeService? languageRuntimeService,
     PartnershipService? partnershipService,
     VibeCompatibilityService? vibeCompatibilityService,
     QuantumMatchingIntegrationService? quantumIntegrationService,
@@ -62,7 +62,7 @@ class BusinessExpertMatchingService {
   })  : _expertiseMatchingService =
             expertiseMatchingService ?? ExpertiseMatchingService(),
         _communityService = communityService ?? ExpertiseCommunityService(),
-        _llmService = llmService,
+        _languageRuntimeService = languageRuntimeService,
         _partnershipService = partnershipService,
         _vibeCompatibilityService = vibeCompatibilityService,
         _quantumIntegrationService = quantumIntegrationService,
@@ -110,11 +110,14 @@ class BusinessExpertMatchingService {
         matches.addAll(communityMatches);
       }
 
-      // STEP 3: Use AI to suggest additional experts (with preferences)
-      if (_llmService != null) {
-        final aiMatches =
-            await _findExpertsWithAI(business, preferences, maxResults: 10);
-        matches.addAll(aiMatches);
+      // STEP 3: Use the language runtime to suggest additional experts.
+      if (_languageRuntimeService != null) {
+        final runtimeMatches = await _findExpertsWithLanguageRuntime(
+          business,
+          preferences,
+          maxResults: 10,
+        );
+        matches.addAll(runtimeMatches);
       }
 
       // STEP 4: Apply preference filters
@@ -279,20 +282,20 @@ class BusinessExpertMatchingService {
     }
   }
 
-  /// Use AI to suggest experts (with preferences)
-  Future<List<BusinessExpertMatch>> _findExpertsWithAI(
+  /// Use the language runtime to suggest experts (with preferences).
+  Future<List<BusinessExpertMatch>> _findExpertsWithLanguageRuntime(
     BusinessAccount business,
     BusinessExpertPreferences? preferences, {
     int maxResults = 10,
   }) async {
     try {
-      if (_llmService == null) return [];
+      if (_languageRuntimeService == null) return [];
 
-      // Build AI prompt with preferences
+      // Build prompt with preferences for the language runtime.
       final prompt = _buildAIMatchingPrompt(business, preferences);
 
-      // Get AI suggestions
-      final aiResponse = await _llmService.generateRecommendation(
+      // Get suggestions from the low-level language runtime.
+      final aiResponse = await _languageRuntimeService.generateRecommendation(
         userQuery: prompt,
       );
 
@@ -314,7 +317,11 @@ class BusinessExpertMatchingService {
       matches.sort((a, b) => b.matchScore.compareTo(a.matchScore));
       return matches.take(maxResults).toList();
     } catch (e) {
-      _logger.error('Error finding experts with AI', error: e, tag: _logName);
+      _logger.error(
+        'Error finding experts with language runtime',
+        error: e,
+        tag: _logName,
+      );
       return [];
     }
   }

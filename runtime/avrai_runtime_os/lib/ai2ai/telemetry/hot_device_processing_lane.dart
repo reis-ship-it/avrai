@@ -4,10 +4,12 @@ import 'dart:typed_data';
 
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_runtime_os/ai2ai/canonical_peer_resolution_service.dart';
 import 'package:avrai_runtime_os/ai2ai/discovery/anonymized_vibe_mapper.dart';
 import 'package:avrai_runtime_os/ai2ai/trust/trusted_node_factory.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_network/avra_network.dart';
@@ -30,6 +32,11 @@ class HotDeviceProcessingLane {
       required DiscoveredDevice device,
       required BleGattSession session,
     }) primeOfflineSignalPreKeyBundleInSession,
+    Future<ResolvedPeerVibeContext?> Function({
+      required String localUserId,
+      required PersonalityProfile localPersonality,
+      required String remoteDeviceId,
+    })? resolveRemotePeerContext,
     required bool Function(VibeCompatibilityResult compatibility)
         isConnectionWorthy,
     required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
@@ -79,7 +86,7 @@ class HotDeviceProcessingLane {
               await session.readStreamPayload(streamId: 0);
           vibeReadSw.stop();
           onVibeReadMs(vibeReadSw.elapsedMilliseconds);
-          
+
           if (vibeBytes != null && vibeBytes.isNotEmpty) {
             dnaPayload = Uint8List.fromList(vibeBytes);
           }
@@ -104,8 +111,19 @@ class HotDeviceProcessingLane {
 
       personalityData ??= await deviceDiscovery?.extractPersonalityData(device);
       dnaPayload ??= await deviceDiscovery?.extractDnaPayload(device);
+      final resolvedPeerContext = resolveRemotePeerContext == null
+          ? null
+          : await resolveRemotePeerContext(
+              localUserId: userId,
+              localPersonality: personality,
+              remoteDeviceId: device.deviceId,
+            );
 
-      if (personalityData == null && dnaPayload == null) return;
+      if (personalityData == null &&
+          dnaPayload == null &&
+          resolvedPeerContext == null) {
+        return;
+      }
 
       PersonalityKnot? decodedKnot;
       if (dnaPayload != null) {
@@ -117,7 +135,7 @@ class HotDeviceProcessingLane {
         }
       }
 
-      final UserVibe vibe = personalityData != null 
+      final UserVibe vibe = personalityData != null
           ? AnonymizedVibeMapper.toUserVibe(personalityData)
           : UserVibe(
               hashedSignature: device.deviceId,
@@ -145,24 +163,42 @@ class HotDeviceProcessingLane {
         nodeId: node.nodeId,
         vibe: node.vibe,
         knot: decodedKnot,
+        resolvedPeerContext: resolvedPeerContext,
         lastSeen: node.lastSeen,
         trustScore: node.trustScore,
         learningHistory: node.learningHistory,
       );
 
       final Stopwatch compatSw = Stopwatch()..start();
-      
+
       // Phase 0.1 Pivot: If we have a knot, use DeterministicMatcherService
       VibeCompatibilityResult compatibility;
-      if (decodedKnot != null) {
-        final knotService = GetIt.instance.isRegistered<PersonalityKnotService>()
-            ? GetIt.instance<PersonalityKnotService>()
-            : PersonalityKnotService();
+      if (resolvedPeerContext != null) {
+        final canonicalPeerResolutionService = CanonicalPeerResolutionService();
+        final localPayload = canonicalPeerResolutionService.buildLocalPayload(
+          localPersonality: personality,
+        );
+        final canonicalCompatibility =
+            canonicalPeerResolutionService.computeCompatibility(
+          localPayload: localPayload,
+          remoteContext: resolvedPeerContext,
+        );
+        compatibility =
+            canonicalPeerResolutionService.toLegacyCompatibilityResult(
+          canonicalCompatibility,
+          localPayload: localPayload,
+          remoteContext: resolvedPeerContext,
+        );
+      } else if (decodedKnot != null) {
+        final knotService =
+            GetIt.instance.isRegistered<PersonalityKnotService>()
+                ? GetIt.instance<PersonalityKnotService>()
+                : PersonalityKnotService();
         final localKnot = await knotService.generateKnot(personality);
-        
+
         final matcher = DeterministicMatcherService();
         final matchScore = matcher.calculateVibeMatch(localKnot, decodedKnot);
-        
+
         // Wrap the raw score in a VibeCompatibilityResult
         compatibility = VibeCompatibilityResult(
           basicCompatibility: matchScore,
@@ -172,14 +208,18 @@ class HotDeviceProcessingLane {
           interactionStyle: AI2AIInteractionStyle.focusedExchange,
           trustBuildingPotential: matchScore,
           recommendedConnectionDuration: const Duration(seconds: 300),
-          connectionPriority: matchScore > 0.7 ? ConnectionPriority.high : ConnectionPriority.low,
+          connectionPriority: matchScore > 0.7
+              ? ConnectionPriority.high
+              : ConnectionPriority.low,
         );
-        
-        logger.debug('Vibe compatibility via DeterministicMatcher: $matchScore', tag: logName);
+
+        logger.debug('Vibe compatibility via DeterministicMatcher: $matchScore',
+            tag: logName);
       } else {
-        compatibility = await vibeAnalyzer.analyzeVibeCompatibility(localVibe, nodeWithKnot.vibe);
+        compatibility = await vibeAnalyzer.analyzeVibeCompatibility(
+            localVibe, nodeWithKnot.vibe);
       }
-      
+
       compatSw.stop();
       onCompatMs(compatSw.elapsedMilliseconds);
       if (!isConnectionWorthy(compatibility)) return;

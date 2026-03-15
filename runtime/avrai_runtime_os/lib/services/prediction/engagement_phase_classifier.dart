@@ -28,7 +28,6 @@ class EngagementPhaseClassifier {
   // reveal whether they need adjustment.
   static const int _onboardingInteractionThreshold = 5;
   static const int _exploringCommunityThreshold = 2;
-  static const int _embeddingReturnVisitThreshold = 3;
   static const double _quietPeriodEngagementDrop = 0.3;
   static const int _churningInactiveDays = 7;
 

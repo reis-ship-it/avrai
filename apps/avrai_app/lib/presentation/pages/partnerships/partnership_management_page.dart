@@ -11,7 +11,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/partnership_card.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Management Page
@@ -217,7 +217,7 @@ class _PartnershipManagementPageState extends State<PartnershipManagementPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'My Partnerships',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,
@@ -325,7 +325,7 @@ class PartnershipDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Partnership Details',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

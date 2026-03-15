@@ -216,10 +216,7 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
   /// Unregister a peer from signaling server for WebRTC/WebSocket transport.
   Future<bool> unregisterAdvertisingPeer(String peerId) async {
     final unregistered = await _postAdvertisingSignalEvent(
-      message: <String, dynamic>{
-        'type': 'unregister',
-        'peer_id': peerId,
-      },
+      message: <String, dynamic>{'type': 'unregister', 'peer_id': peerId},
     );
     if (unregistered) {
       _activeAdvertisingPeerIds.remove(peerId);
@@ -233,7 +230,10 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
   }) async {
     final signalingUrl = _signalingConfig.getSignalingServerUrl();
     if (signalingUrl.isEmpty) {
-      developer.log('No signaling URL configured for advertising registration', name: _logName);
+      developer.log(
+        'No signaling URL configured for advertising registration',
+        name: _logName,
+      );
       return false;
     }
 
@@ -261,9 +261,7 @@ class WebDeviceDiscovery extends DeviceDiscoveryPlatform {
       );
 
       await openCompleter.future.timeout(postTimeout);
-      final encodedMessage = base64Encode(
-        utf8.encode(jsonEncode(message)),
-      );
+      final encodedMessage = base64Encode(utf8.encode(jsonEncode(message)));
       ws.send(encodedMessage.toJS);
       await Future<void>.delayed(postTimeout);
       ws.close();

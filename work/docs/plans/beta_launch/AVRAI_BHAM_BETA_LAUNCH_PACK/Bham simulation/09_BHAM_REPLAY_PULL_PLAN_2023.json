@@ -1,0 +1,788 @@
+{
+  "replayYear": 2023,
+  "plans": [
+    {
+      "sourceName": "ALDOT Long-Term Construction Projects",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "aldot_long_term_construction_projects",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "infrastructure_friction",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "event",
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "ALDOT Traffic Data",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "aldot_traffic_data",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "traffic_flow",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "BEA / U.S. Census Bureau Economic Series",
+      "replayYear": 2023,
+      "acquisitionMode": "apiKeyRequired",
+      "rawOutputKey": "bea_u_s_census_bureau_economic_series",
+      "sourceUrl": "https://apps.bea.gov/api/data",
+      "endpointRef": "https://apps.bea.gov/api/data",
+      "requiresReview": false,
+      "notes": [
+        "Public economic series; safe for aggregate seeding.",
+        "Aggregate-only source; never instantiate under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "economic_reality",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "economic_signal",
+          "population_cohort"
+        ]
+      }
+    },
+    {
+      "sourceName": "BHM Airport / TSA Throughput",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "bhm_airport_tsa_throughput",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "travel_flow",
+        "accessMethod": "scrape",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "event",
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "Bureau of Labor Statistics / State DOL",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "bureau_of_labor_statistics_state_dol",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [
+        "Public labor data; use as aggregate role prior.",
+        "Adult labor patterns only; do not create under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "employment_distribution",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "City of Birmingham OpenGov",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "city_of_birmingham_opengov",
+      "sourceUrl": "https://data.birminghamal.gov/dataset/",
+      "endpointRef": "https://data.birminghamal.gov/dataset/",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "civic_spatial_truth",
+        "accessMethod": "openData",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality"
+        ]
+      }
+    },
+    {
+      "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "jefferson_shelby_regional_gis_and_assessors",
+      "sourceUrl": "https://www.rpcgb.org/data-and-maps-downloads",
+      "endpointRef": "https://www.rpcgb.org/data-and-maps-downloads",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "spatial_grounding",
+        "accessMethod": "openData",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "LEHD / OnTheMap",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "lehd_onthemap",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [
+        "Aggregate mobility only."
+      ],
+      "metadata": {
+        "sourceType": "movement_reality",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "MAX Transit GTFS",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "max_transit_gtfs",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "transit_schedule",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "Municipal Budgets and Revenue Reports",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "municipal_budgets_and_revenue_reports",
+      "sourceUrl": "https://data.birminghamal.gov/dataset/comprehensive-annual-financial-reports",
+      "endpointRef": "https://data.birminghamal.gov/dataset/comprehensive-annual-financial-reports",
+      "requiresReview": false,
+      "notes": [
+        "Aggregate municipal source; never instantiate under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "municipal_finance",
+        "accessMethod": "openData",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "economic_signal",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "NWS / NOAA Weather API",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "nws_noaa_weather_api",
+      "sourceUrl": "https://api.weather.gov",
+      "endpointRef": "https://api.weather.gov",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "environmental_truth",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "environmental_signal",
+          "event",
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "U.S. Census ACS",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "u_s_census_acs",
+      "sourceUrl": "https://api.census.gov/data/2023/acs/acs5",
+      "endpointRef": "https://api.census.gov/data/2023/acs/acs5",
+      "requiresReview": false,
+      "notes": [
+        "Use for aggregate dependent mobility only; never instantiate under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "demographic_reality",
+        "accessMethod": "api",
+        "ingestPriority": 1,
+        "normalizationTargetTypes": [
+          "housing_signal",
+          "population_cohort"
+        ]
+      }
+    },
+    {
+      "sourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "bjcc_legacy_arena_protective_stadium_calendars",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "major_venue_calendar",
+        "accessMethod": "ics",
+        "ingestPriority": 2,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "movement_flow",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "SEC / College Football Broadcast Schedules",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "sec_college_football_broadcast_schedules",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "macro_event_schedule",
+        "accessMethod": "api",
+        "ingestPriority": 2,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "Samford University Calendars and Campus Map",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "samford_university_calendars_and_campus_map",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "institutional_calendar",
+        "accessMethod": "ics",
+        "ingestPriority": 2,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "movement_flow",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "UAB / Samford Enrollment Origin Reports",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "uab_samford_enrollment_origin_reports",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "enrollment_origin",
+        "accessMethod": "manual",
+        "ingestPriority": 2,
+        "normalizationTargetTypes": [
+          "community",
+          "movement_flow",
+          "population_cohort"
+        ]
+      }
+    },
+    {
+      "sourceName": "UAB Academic, Clinical, and Event Calendars",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "uab_academic_clinical_and_event_calendars",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "institutional_calendar",
+        "accessMethod": "ics",
+        "ingestPriority": 2,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "movement_flow",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Data Axle / InfoGroup Business Listings",
+      "replayYear": 2023,
+      "acquisitionMode": "partnerReview",
+      "rawOutputKey": "data_axle_infogroup_business_listings",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": true,
+      "notes": [
+        "Source remains pending review before authoritative ingestion."
+      ],
+      "metadata": {
+        "sourceType": "business_listing",
+        "accessMethod": "partnerExport",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "club",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Delivery / Ordering Platform Aggregates",
+      "replayYear": 2023,
+      "acquisitionMode": "partnerReview",
+      "rawOutputKey": "delivery_ordering_platform_aggregates",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": true,
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Aggregate-only patterns; never retain raw personal order history."
+      ],
+      "metadata": {
+        "sourceType": "delivery_demand",
+        "accessMethod": "partnerExport",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Google Places / Yelp",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "google_places_yelp",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [
+        "Respect provider terms; use as enrichment after identity normalization."
+      ],
+      "metadata": {
+        "sourceType": "commercial_poi_enrichment",
+        "accessMethod": "api",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "OpenStreetMap POI Data",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "openstreetmap_poi_data",
+      "sourceUrl": "https://download.geofabrik.de/north-america/us/alabama.html",
+      "endpointRef": "https://overpass-api.de/api/interpreter",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "poi_baseline",
+        "accessMethod": "api",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Real Estate and Rent Index",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "real_estate_and_rent_index",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "housing_market",
+        "accessMethod": "manual",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "housing_signal",
+          "locality",
+          "movement_flow",
+          "population_cohort"
+        ]
+      }
+    },
+    {
+      "sourceName": "Resy / OpenTable / Venue Reservation Exports",
+      "replayYear": 2023,
+      "acquisitionMode": "partnerReview",
+      "rawOutputKey": "resy_opentable_venue_reservation_exports",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": true,
+      "notes": [
+        "Source remains pending review before authoritative ingestion.",
+        "Use only after legal and partner access review. Never sole venue truth."
+      ],
+      "metadata": {
+        "sourceType": "reservation_demand",
+        "accessMethod": "partnerExport",
+        "ingestPriority": 3,
+        "normalizationTargetTypes": [
+          "event",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Birmingham Public Library Network",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "birmingham_public_library_network",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "civic_community_calendar",
+        "accessMethod": "scrape",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Birmingham365.org",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "birmingham365_org",
+      "sourceUrl": "https://www.birmingham365.org/",
+      "endpointRef": "https://www.birmingham365.org/",
+      "requiresReview": false,
+      "notes": [
+        "Use for cultural discovery and structural seeding. Deduplicate against venue truth before promotion.",
+        "Directory/discovery source only; never instantiate under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "community_spatial_directory",
+        "accessMethod": "scrape",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "City of Birmingham Play Pages",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "city_of_birmingham_play_pages",
+      "sourceUrl": "https://www.birminghamal.gov/play/arts-museums",
+      "endpointRef": "https://www.birminghamal.gov/play/arts-museums",
+      "requiresReview": false,
+      "notes": [
+        "Use for structural BHAM cultural seed rows and official city event-page history when a dated 2023 page is directly available.",
+        "Civic directory source only; never instantiate under-13 personal agents."
+      ],
+      "metadata": {
+        "sourceType": "civic_cultural_spatial_directory",
+        "accessMethod": "scrape",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "County / Municipal Courts and Police Dispatch",
+      "replayYear": 2023,
+      "acquisitionMode": "partnerReview",
+      "rawOutputKey": "county_municipal_courts_and_police_dispatch",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": true,
+      "notes": [
+        "Source remains pending review before authoritative ingestion."
+      ],
+      "metadata": {
+        "sourceType": "civic_friction",
+        "accessMethod": "openData",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "event",
+          "locality",
+          "movement_flow"
+        ]
+      }
+    },
+    {
+      "sourceName": "Eventbrite / Meetup",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "eventbrite_meetup",
+      "sourceUrl": "https://www.eventbrite.com/d/al--birmingham/events/",
+      "endpointRef": "https://www.eventbrite.com/d/al--birmingham/events/",
+      "requiresReview": false,
+      "notes": [
+        "Must be deduplicated against official venue truth before promotion."
+      ],
+      "metadata": {
+        "sourceType": "community_event_platform",
+        "accessMethod": "api",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "event",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "IN Birmingham (CVB Calendar)",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "in_birmingham_cvb_calendar",
+      "sourceUrl": "https://inbirmingham.com/festivals-and-events/",
+      "endpointRef": "https://inbirmingham.com/festivals-and-events/",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "tourism_calendar",
+        "accessMethod": "scrape",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Major Venue Calendars and Historical Venue Calendars",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "major_venue_calendars_and_historical_venue_calendars",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "venue_spatial_calendar",
+        "accessMethod": "ics",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Neighborhood Association Calendars",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "neighborhood_association_calendars",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "hyper_local_calendar",
+        "accessMethod": "scrape",
+        "ingestPriority": 4,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "event",
+          "locality"
+        ]
+      }
+    },
+    {
+      "sourceName": "Bham Now / AL.com / Birmingham Business Journal",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "bham_now_al_com_birmingham_business_journal",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "local_news_verification",
+        "accessMethod": "rss",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "club",
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Bhamwiki",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "bhamwiki",
+      "sourceUrl": "https://www.bhamwiki.com/",
+      "endpointRef": "https://www.bhamwiki.com/",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "historical_entity_archive",
+        "accessMethod": "archive",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "Birmingham Public Library Archives",
+      "replayYear": 2023,
+      "acquisitionMode": "automated",
+      "rawOutputKey": "birmingham_public_library_archives",
+      "sourceUrl": "https://www.cobpl.org/resources/archives/collections.aspx",
+      "endpointRef": "https://www.cobpl.org/resources/archives/collections.aspx",
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "historical_archive",
+        "accessMethod": "archive",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "James Beard / Garden & Gun / Michelin",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "james_beard_garden_and_gun_michelin",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "prestige_signal",
+        "accessMethod": "manual",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "REV Birmingham Updates",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "rev_birmingham_updates",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "district_turnover_signal",
+        "accessMethod": "rss",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ]
+      }
+    },
+    {
+      "sourceName": "WBHM 90.3 Public Radio",
+      "replayYear": 2023,
+      "acquisitionMode": "manualImport",
+      "rawOutputKey": "wbhm_90_3_public_radio",
+      "sourceUrl": null,
+      "endpointRef": null,
+      "requiresReview": false,
+      "notes": [],
+      "metadata": {
+        "sourceType": "civic_news_verification",
+        "accessMethod": "rss",
+        "ingestPriority": 5,
+        "normalizationTargetTypes": [
+          "community",
+          "event",
+          "locality"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Pull plan is governed from the replay ingestion manifest.",
+    "Automated does not mean executed yet; it only means the source has enough metadata for scripted pull attempts."
+  ]
+}

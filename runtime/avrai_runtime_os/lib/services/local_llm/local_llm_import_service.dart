@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/model_safety_supervisor.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
 
 /// Dev/helper flow: import a local GGUF file into the model-pack directory and
 /// activate it (no hosting, no manifest URL).
@@ -23,9 +24,16 @@ class LocalLlmImportService {
   static const String prefsKeyLastGoodModelId =
       'local_llm_last_good_model_id_v1';
 
+  LocalLlmImportService({
+    SecurityKernelReleaseGateService? securityReleaseGateService,
+  }) : _securityReleaseGateService = securityReleaseGateService;
+
+  final SecurityKernelReleaseGateService? _securityReleaseGateService;
+
   Future<void> importAndActivateAndroidGguf({
     required File ggufFile,
     String? modelId,
+    bool operatorApproved = false,
   }) async {
     if (kIsWeb) throw UnsupportedError('Local import is not supported on web.');
     if (!await ggufFile.exists()) {
@@ -60,13 +68,35 @@ class LocalLlmImportService {
     }
 
     final packId = '$id@$version';
+    final securityGateService = _securityReleaseGateService;
+    if (securityGateService != null) {
+      final gateDecision = await securityGateService.evaluateModelPromotion(
+        surfaceId: 'chat_local_llm',
+        version: packId,
+        actorAlias: 'local_llm_import',
+        operatorApproved: operatorApproved,
+        metadata: <String, dynamic>{
+          'model_id': id,
+          'activation_source': 'local_llm_import',
+        },
+      );
+      if (!gateDecision.servingAllowed) {
+        throw Exception(
+          'Security release gate blocked local model import: '
+          '${gateDecision.reasonCodes.join(", ")}',
+        );
+      }
+    }
     await prefs.setString(prefsKeyActiveModelDir, targetDir.path);
     await prefs.setString(prefsKeyActiveModelId, packId);
 
     // Start happiness-gated rollout for the local chat model.
     try {
       if (previousActiveId != null && previousActiveId.isNotEmpty) {
-        await ModelSafetySupervisor(prefs: prefs).startRolloutCandidate(
+        await ModelSafetySupervisor(
+          prefs: prefs,
+          securityReleaseGateService: _securityReleaseGateService,
+        ).startRolloutCandidate(
           modelType: 'chat_local_llm',
           fromVersion: previousActiveId,
           toVersion: packId,

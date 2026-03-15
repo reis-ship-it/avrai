@@ -13,7 +13,6 @@ import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_knot/services/knot/knot_orchestrator_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
@@ -307,8 +306,6 @@ class ReservationRecurrenceService {
   // Signal Protocol (Phase 10.3: Privacy-preserving recurring data)
   // ignore: unused_field - Reserved for Phase 10.3: Signal Protocol encryption integration
   final HybridEncryptionService? _encryptionService;
-  // ignore: unused_field - Reserved for Phase 10.3: Anonymous communication protocol integration
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   // Analytics (Phase 10.3: Pattern detection integration)
   // ignore: unused_field - Reserved for Phase 10.3: Pattern detection integration
@@ -337,7 +334,6 @@ class ReservationRecurrenceService {
     // Optional AI2AI services
     QuantumMatchingAILearningService? aiLearningService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
     // Optional analytics
     ReservationAnalyticsService? analyticsService,
   })  : _reservationService = reservationService,
@@ -352,7 +348,6 @@ class ReservationRecurrenceService {
         _worldsheetService = worldsheetService,
         _aiLearningService = aiLearningService,
         _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol,
         _analyticsService = analyticsService;
 
   /// Create recurring reservation series

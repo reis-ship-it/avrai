@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/presentation/pages/auth/login_page.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -16,14 +17,43 @@ import 'package:avrai_runtime_os/domain/usecases/auth/update_password_usecase.da
 import 'package:avrai_runtime_os/domain/repositories/auth_repository.dart';
 
 void main() {
+  const deviceCapabilitiesChannel = MethodChannel('avra/device_capabilities');
+
+  setUpAll(() async {
+    await WidgetTestHelpers.setupWidgetTestEnvironment();
+  });
+
+  tearDownAll(() async {
+    await WidgetTestHelpers.cleanupWidgetTestEnvironment();
+  });
+
   group('LoginPage Widget Tests', () {
     late _FakeAuthBloc fakeAuthBloc;
 
     setUp(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(deviceCapabilitiesChannel,
+              (MethodCall methodCall) async {
+        if (methodCall.method != 'getCapabilities') {
+          return null;
+        }
+        return <String, Object?>{
+          'platform': 'ios',
+          'deviceModel': 'iPhone 15',
+          'osVersion': '18.0',
+          'totalRamMb': 8192,
+          'freeDiskMb': 32768,
+          'totalDiskMb': 131072,
+          'cpuCores': 6,
+          'isLowPowerMode': false,
+        };
+      });
       fakeAuthBloc = _FakeAuthBloc();
     });
 
     tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(deviceCapabilitiesChannel, null);
       fakeAuthBloc.close();
     });
 
@@ -39,7 +69,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       expect(find.byIcon(Icons.location_on), findsOneWidget);
       expect(find.text('avrai'), findsOneWidget);
       expect(find.text('Discover meaningful places'), findsOneWidget);
@@ -64,7 +94,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       await tester.enterText(find.byKey(const Key('email_field')), '');
       await tester.enterText(
           find.byKey(const Key('password_field')), 'password123');
@@ -96,7 +126,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
+      await _pumpLoginPage(tester, widget1);
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
       await tester.enterText(
@@ -122,7 +152,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       await tester.tap(find.byKey(const Key('google_sign_in_button')));
       await tester.pump();
       expect(
@@ -140,7 +170,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       // SnackBar is shown via BlocListener on state changes, not initial state.
       fakeAuthBloc.setState(AuthError(errorMessage));
       await tester.pump();
@@ -159,7 +189,7 @@ void main() {
         authBloc: fakeAuthBloc,
         navigatorObserver: navigatorObserver,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       expect(find.byType(LoginPage), findsOneWidget);
     });
 
@@ -171,7 +201,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       await tester.tap(find.text('Forgot password?'));
       await tester.pump();
       expect(find.text('Forgot password?'), findsOneWidget);
@@ -185,7 +215,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
       await tester.enterText(
@@ -205,7 +235,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       expect(find.text('Email'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
       expect(find.text('Sign In'), findsOneWidget);
@@ -225,7 +255,7 @@ void main() {
         child: const LoginPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpLoginPage(tester, widget);
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
       await tester.enterText(
@@ -434,4 +464,10 @@ Widget _createTestableWidgetWithRealBloc({
       navigatorObservers: navigatorObserver != null ? [navigatorObserver] : [],
     ),
   );
+}
+
+Future<void> _pumpLoginPage(WidgetTester tester, Widget widget) async {
+  await WidgetTestHelpers.pumpAndSettle(tester, widget);
+  await tester.pump(const Duration(milliseconds: 300));
+  await WidgetTestHelpers.safePumpAndSettle(tester);
 }

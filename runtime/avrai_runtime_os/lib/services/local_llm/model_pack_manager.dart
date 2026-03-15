@@ -15,6 +15,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai_runtime_os/services/ai_infrastructure/model_safety_supervisor.dart';
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
 
 import 'model_pack_manifest.dart';
 import 'signed_manifest.dart';
@@ -52,14 +53,17 @@ class LocalLlmModelPackManager {
   final http.Client _client;
   final SharedPreferencesCompat? _prefsOverride;
   final Directory? _rootDirOverride;
+  final SecurityKernelReleaseGateService? _securityReleaseGateService;
 
   LocalLlmModelPackManager({
     http.Client? client,
     SharedPreferencesCompat? prefs,
     Directory? rootDir,
+    SecurityKernelReleaseGateService? securityReleaseGateService,
   })  : _client = client ?? http.Client(),
         _prefsOverride = prefs,
-        _rootDirOverride = rootDir;
+        _rootDirOverride = rootDir,
+        _securityReleaseGateService = securityReleaseGateService;
 
   Future<SharedPreferencesCompat> _prefs() async {
     if (_prefsOverride != null) return _prefsOverride;
@@ -126,6 +130,8 @@ class LocalLlmModelPackManager {
   /// This avoids user-provided manifest URLs in release builds.
   Future<void> downloadAndActivateTrusted({
     String tier = 'llama8b',
+    bool operatorApproved = false,
+    String actorAlias = 'local_llm_manager',
     void Function(int receivedBytes, int totalBytes)? onProgress,
   }) async {
     if (kIsWeb) {
@@ -141,12 +147,16 @@ class LocalLlmModelPackManager {
 
     await _downloadAndActivateManifest(
       manifest: manifest,
+      operatorApproved: operatorApproved,
+      actorAlias: actorAlias,
       onProgress: onProgress,
     );
   }
 
   Future<void> downloadAndActivate({
     required Uri manifestUrl,
+    bool operatorApproved = false,
+    String actorAlias = 'local_llm_manager',
     void Function(int receivedBytes, int totalBytes)? onProgress,
   }) async {
     if (kIsWeb) {
@@ -156,12 +166,16 @@ class LocalLlmModelPackManager {
     final manifest = await fetchManifest(manifestUrl);
     await _downloadAndActivateManifest(
       manifest: manifest,
+      operatorApproved: operatorApproved,
+      actorAlias: actorAlias,
       onProgress: onProgress,
     );
   }
 
   Future<void> _downloadAndActivateManifest({
     required LocalLlmModelPackManifest manifest,
+    required bool operatorApproved,
+    required String actorAlias,
     void Function(int receivedBytes, int totalBytes)? onProgress,
   }) async {
     final prefs = await _prefs();
@@ -244,6 +258,26 @@ class LocalLlmModelPackManager {
         await prefs.setString(prefsKeyLastGoodModelId, previousActiveId);
       }
 
+      final securityGateService = _securityReleaseGateService;
+      if (securityGateService != null) {
+        final gateDecision = await securityGateService.evaluateModelPromotion(
+          surfaceId: 'chat_local_llm',
+          version: manifest.packId,
+          actorAlias: actorAlias,
+          operatorApproved: operatorApproved,
+          metadata: <String, dynamic>{
+            'model_id': manifest.modelId,
+            'activation_source': 'local_llm_pack_manager',
+          },
+        );
+        if (!gateDecision.servingAllowed) {
+          throw Exception(
+            'Security release gate blocked local model activation: '
+            '${gateDecision.reasonCodes.join(", ")}',
+          );
+        }
+      }
+
       await prefs.setString(prefsKeyActiveModelDir, targetDir.path);
       await prefs.setString(prefsKeyActiveModelId, manifest.packId);
       await prefs.setString(
@@ -252,7 +286,10 @@ class LocalLlmModelPackManager {
       // Start happiness-gated rollout for local chat model pack.
       try {
         if (previousActiveId != null && previousActiveId.isNotEmpty) {
-          await ModelSafetySupervisor(prefs: prefs).startRolloutCandidate(
+          await ModelSafetySupervisor(
+            prefs: prefs,
+            securityReleaseGateService: _securityReleaseGateService,
+          ).startRolloutCandidate(
             modelType: 'chat_local_llm',
             fromVersion: previousActiveId,
             toVersion: manifest.packId,

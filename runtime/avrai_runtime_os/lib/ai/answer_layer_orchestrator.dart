@@ -8,9 +8,10 @@ import 'package:avrai_runtime_os/ai/rag_feedback_signals.dart';
 import 'package:avrai_runtime_os/ai/rag_formatter.dart';
 import 'package:avrai_runtime_os/ai/retrieval_service.dart';
 import 'package:avrai_runtime_os/ai/scope_classifier.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_learning_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart'
-    as llm;
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
+import 'package:avrai_core/models/expression/expression_models.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 
@@ -24,7 +25,7 @@ class AnswerLayerOrchestrator {
     RetrievalService? retrievalService,
     RAGFormatter? formatter,
     RAGContextBuilder? contextBuilder,
-    llm.LLMService? llmService,
+    LanguageKernelOrchestratorService? languageKernelOrchestrator,
     RAGSignalsCollector? signalsCollector,
     ConversationPreferenceStore? conversationPrefsStore,
   })  : _scopeClassifier = scopeClassifier ?? ScopeClassifier(),
@@ -32,7 +33,9 @@ class AnswerLayerOrchestrator {
         _retrievalService = retrievalService ?? _get<RetrievalService>(),
         _formatter = formatter ?? _get<RAGFormatter>(),
         _contextBuilder = contextBuilder ?? _get<RAGContextBuilder>(),
-        _llmService = llmService ?? _get<llm.LLMService>(),
+        _languageKernelOrchestrator = languageKernelOrchestrator ??
+            _get<LanguageKernelOrchestratorService>() ??
+            LanguageKernelOrchestratorService(),
         _signalsCollector = _get<RAGSignalsCollector>(),
         _conversationPrefsStore =
             conversationPrefsStore ?? _get<ConversationPreferenceStore>(),
@@ -45,7 +48,7 @@ class AnswerLayerOrchestrator {
   final RetrievalService? _retrievalService;
   final RAGFormatter? _formatter;
   final RAGContextBuilder? _contextBuilder;
-  final llm.LLMService? _llmService;
+  final LanguageKernelOrchestratorService _languageKernelOrchestrator;
   final RAGSignalsCollector? _signalsCollector;
   final ConversationPreferenceStore? _conversationPrefsStore;
   final LanguagePatternLearningService? _languageLearning;
@@ -60,7 +63,7 @@ class AnswerLayerOrchestrator {
   Future<String> respond({
     required String userId,
     required String message,
-    required List<llm.ChatMessage> history,
+    required List<LanguageTurnMessage> history,
     Position? location,
     bool searchUsed = false,
     String? agentId,
@@ -70,7 +73,7 @@ class AnswerLayerOrchestrator {
     }
 
     final lastAssistant =
-        history.isNotEmpty && history.last.role == llm.ChatRole.assistant
+        history.isNotEmpty && history.last.role == LanguageTurnRole.assistant
             ? history.last.content
             : null;
     if (_bypassDetector.bypassRequested(message,
@@ -95,11 +98,11 @@ class AnswerLayerOrchestrator {
     required String userId,
     String? agentId,
     required String message,
-    required List<llm.ChatMessage> history,
+    required List<LanguageTurnMessage> history,
     Position? location,
     required bool searchUsed,
   }) async {
-    if (_contextBuilder == null || _llmService == null) {
+    if (_contextBuilder == null) {
       return "I can’t elaborate right now. Try again later.";
     }
     try {
@@ -108,13 +111,23 @@ class AnswerLayerOrchestrator {
         query: message,
         location: location,
       );
-      final messages = List<llm.ChatMessage>.from(history)
-        ..add(llm.ChatMessage(role: llm.ChatRole.user, content: message));
-      final response = await _llmService.chat(
-        messages: messages,
-        context: context,
-        temperature: 0.7,
-        maxTokens: 500,
+      final response = _languageKernelOrchestrator.renderGroundedOutput(
+        speechAct: ExpressionSpeechAct.clarify,
+        audience: ExpressionAudience.userSafe,
+        surfaceShape: ExpressionSurfaceShape.chatTurn,
+        subjectLabel: message,
+        allowedClaims: _claimsFromContext(context),
+        evidenceRefs: _evidenceRefsFromContext(context),
+        confidenceBand: _confidenceBandFromContext(context),
+        toneProfile: context.languageStyle != null &&
+                context.languageStyle!.trim().isNotEmpty
+            ? 'adapted_to_user_style'
+            : 'clear_calm',
+        uncertaintyNotice:
+            'This follow-up stays inside what AVRAI has already grounded.',
+        cta:
+            'Ask about a specific preference, place, or connection for a tighter answer.',
+        adaptationProfileRef: 'answer_layer_bypass:$userId',
       );
       async.unawaited(_recordFeedback(
           userId: userId,
@@ -122,7 +135,7 @@ class AnswerLayerOrchestrator {
           usedBypass: true,
           searchUsed: searchUsed,
           retrievedFactGroups: []));
-      return response;
+      return response.text;
     } catch (e, st) {
       developer.log('Bypass path failed: $e',
           name: _logName, error: e, stackTrace: st);
@@ -202,5 +215,111 @@ class AnswerLayerOrchestrator {
     } catch (e) {
       developer.log('RAG feedback record failed: $e', name: _logName);
     }
+  }
+
+  List<String> _claimsFromContext(LanguageRuntimeContext context) {
+    final claims = <String>[];
+    final preferences = context.preferences;
+    if (preferences != null) {
+      final traits = preferences['traits'];
+      if (traits is List && traits.isNotEmpty) {
+        claims.add('traits: ${traits.take(5).join(', ')}');
+      }
+      final places = preferences['places'];
+      if (places is List && places.isNotEmpty) {
+        claims.add('places: ${places.take(5).join(', ')}');
+      }
+      final socialGraph = preferences['social_graph'];
+      if (socialGraph is List && socialGraph.isNotEmpty) {
+        claims.add('social graph signals: ${socialGraph.take(3).join(', ')}');
+      }
+      final networkCues = preferences['network_cues'];
+      if (networkCues is List && networkCues.isNotEmpty) {
+        claims.add('network cues: ${networkCues.take(3).join('; ')}');
+      }
+      final dimensionScores = preferences['dimension_scores'];
+      if (dimensionScores is Map && dimensionScores.isNotEmpty) {
+        claims.add(
+          'dimension scores are available for grounded follow-up guidance.',
+        );
+      }
+    }
+    final personality = context.personality;
+    if (personality != null) {
+      claims.add('personality archetype: ${personality.archetype}');
+      final dominantTraits = personality.getDominantTraits().take(4).toList();
+      if (dominantTraits.isNotEmpty) {
+        claims.add('dominant personality traits: ${dominantTraits.join(', ')}');
+      }
+    }
+    final vibe = context.vibe;
+    if (vibe != null) {
+      claims.add('vibe archetype: ${vibe.getVibeArchetype()}');
+    }
+    final insights = context.ai2aiInsights;
+    if (insights != null && insights.isNotEmpty) {
+      claims.add(
+        'ai2ai learning insights are available from AVRAI’s prior grounded learning.',
+      );
+    }
+    final connectionMetrics = context.connectionMetrics;
+    if (connectionMetrics != null) {
+      claims.add(
+        'current compatibility score: ${connectionMetrics.currentCompatibility.toStringAsFixed(2)}',
+      );
+    }
+    final conversationPreferences = context.conversationPreferences;
+    if (conversationPreferences != null && conversationPreferences.isNotEmpty) {
+      claims.add('conversation preferences are available for phrasing.');
+    }
+    return claims.isEmpty
+        ? <String>[
+            'AVRAI only has a limited grounded context for this follow-up right now.'
+          ]
+        : claims;
+  }
+
+  List<String> _evidenceRefsFromContext(LanguageRuntimeContext context) {
+    final refs = <String>[];
+    if (context.preferences != null && context.preferences!.isNotEmpty) {
+      refs.add('preferences');
+    }
+    if (context.personality != null) {
+      refs.add('personality');
+    }
+    if (context.vibe != null) {
+      refs.add('vibe');
+    }
+    if (context.ai2aiInsights != null && context.ai2aiInsights!.isNotEmpty) {
+      refs.add('ai2ai_insights');
+    }
+    if (context.connectionMetrics != null) {
+      refs.add('connection_metrics');
+    }
+    if (context.conversationPreferences != null &&
+        context.conversationPreferences!.isNotEmpty) {
+      refs.add('conversation_preferences');
+    }
+    return refs;
+  }
+
+  String _confidenceBandFromContext(LanguageRuntimeContext context) {
+    var evidenceCount = 0;
+    if (context.preferences != null && context.preferences!.isNotEmpty) {
+      evidenceCount++;
+    }
+    if (context.personality != null) {
+      evidenceCount++;
+    }
+    if (context.vibe != null) {
+      evidenceCount++;
+    }
+    if (context.ai2aiInsights != null && context.ai2aiInsights!.isNotEmpty) {
+      evidenceCount++;
+    }
+    if (context.connectionMetrics != null) {
+      evidenceCount++;
+    }
+    return evidenceCount >= 3 ? 'medium' : 'low';
   }
 }

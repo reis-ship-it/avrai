@@ -9,17 +9,19 @@ import 'package:avrai_runtime_os/services/onboarding/onboarding_place_list_gener
 import 'package:avrai_runtime_os/services/onboarding/onboarding_geo_context_service.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_recommendation_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/onboarding/initial_dna_synthesis_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/preferences_profile.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
+import 'package:avrai_core/models/why/why_models.dart' as core_why;
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
@@ -27,7 +29,15 @@ import 'package:avrai_core/models/unified_location_data.dart';
 import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
+import 'package:avrai_runtime_os/kernel/service_contracts/urk_governed_runtime_registry_service.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
+import 'package:avrai_runtime_os/services/transport/compatibility/transport_route_receipt_compatibility_translator.dart';
+import 'package:avrai_core/models/atomic_timestamp.dart';
+import 'package:avrai_core/models/misc/governance_inspection.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 
 /// Agent Initialization Controller
 ///
@@ -96,6 +106,7 @@ class AgentInitializationController
   final KnotStorageService? _knotStorageService;
   final GeoHierarchyService _geoHierarchyService;
   final SharedPreferencesCompat? _prefs;
+  final UrkGovernedRuntimeRegistryService? _governedRuntimeRegistryService;
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final AtomicClockService _atomicClock; // Used for 4D quantum state timestamps
@@ -103,6 +114,8 @@ class AgentInitializationController
   final QuantumEntanglementService? _quantumEntanglementService;
   final QuantumMatchingAILearningService? _aiLearningService;
   final EntitySignatureService? _entitySignatureService;
+  final HeadlessAvraiOsHost? _headlessOsHost;
+  final HeadlessAvraiOsBootstrapService? _headlessOsBootstrapService;
 
   AgentInitializationController({
     SocialMediaDataCollectionController? socialMediaDataController,
@@ -119,11 +132,14 @@ class AgentInitializationController
     KnotStorageService? knotStorageService,
     GeoHierarchyService? geoHierarchyService,
     SharedPreferencesCompat? prefs,
+    UrkGovernedRuntimeRegistryService? governedRuntimeRegistryService,
     AtomicClockService? atomicClock,
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
     EntitySignatureService? entitySignatureService,
+    HeadlessAvraiOsHost? headlessOsHost,
+    HeadlessAvraiOsBootstrapService? headlessOsBootstrapService,
   })  : _socialMediaDataController = socialMediaDataController ??
             GetIt.instance<SocialMediaDataCollectionController>(),
         _personalityLearning =
@@ -154,6 +170,10 @@ class AgentInitializationController
             (GetIt.instance.isRegistered<SharedPreferencesCompat>()
                 ? GetIt.instance<SharedPreferencesCompat>()
                 : null),
+        _governedRuntimeRegistryService = governedRuntimeRegistryService ??
+            (GetIt.instance.isRegistered<UrkGovernedRuntimeRegistryService>()
+                ? GetIt.instance<UrkGovernedRuntimeRegistryService>()
+                : null),
         _atomicClock = atomicClock ??
             (GetIt.instance.isRegistered<AtomicClockService>()
                 ? GetIt.instance<AtomicClockService>()
@@ -173,6 +193,14 @@ class AgentInitializationController
         _entitySignatureService = entitySignatureService ??
             (GetIt.instance.isRegistered<EntitySignatureService>()
                 ? GetIt.instance<EntitySignatureService>()
+                : null),
+        _headlessOsHost = headlessOsHost ??
+            (GetIt.instance.isRegistered<HeadlessAvraiOsHost>()
+                ? GetIt.instance<HeadlessAvraiOsHost>()
+                : null),
+        _headlessOsBootstrapService = headlessOsBootstrapService ??
+            (GetIt.instance.isRegistered<HeadlessAvraiOsBootstrapService>()
+                ? GetIt.instance<HeadlessAvraiOsBootstrapService>()
                 : null);
 
   @override
@@ -214,6 +242,10 @@ class AgentInitializationController
         agentId = await _agentIdService.getUserAgentId(userId);
         _logger.debug('✅ Got agentId: ${agentId.substring(0, 10)}...',
             tag: _logName);
+        await _registerGovernedRuntimeBindings(
+          userId: userId,
+          agentId: agentId,
+        );
       } catch (e) {
         _logger.error('❌ Failed to get agentId: $e', error: e, tag: _logName);
         return AgentInitializationResult.failure(
@@ -278,16 +310,21 @@ class AgentInitializationController
       }
 
       // STEP 2.7: Synthesize Initial DNA from Open Responses
-      Map<String, double>? slmDimensions;
+      Map<String, double>? languageDimensions;
+      InitialDnaSeedResult? initialDnaSeedResult;
       if (onboardingData.openResponses.isNotEmpty) {
         try {
           _logger.info(
-              '🧠 Synthesizing initial DNA from open responses via local SLM...',
+              '🧠 Synthesizing initial DNA from open responses via the language kernel...',
               tag: _logName);
-          final llmService = GetIt.instance<LLMService>();
-          final dnaService = InitialDNASynthesisService(llmService: llmService);
-          slmDimensions = await dnaService
-              .synthesizeInitialDNA(onboardingData.openResponses);
+          final dnaService = InitialDNASynthesisService(
+            languageKernelOrchestrator: LanguageKernelOrchestratorService(),
+          );
+          initialDnaSeedResult = await dnaService.synthesizeInitialDNA(
+            onboardingData.openResponses,
+            actorAgentId: agentId,
+          );
+          languageDimensions = initialDnaSeedResult.baselineDimensions;
           _logger.info('✅ Initial DNA synthesized successfully', tag: _logName);
         } catch (e) {
           _logger.warn(
@@ -315,7 +352,7 @@ class AgentInitializationController
           userId,
           onboardingData: onboardingDataMap,
           socialMediaData: socialMediaData,
-          slmDimensions: slmDimensions,
+          slmDimensions: languageDimensions,
         );
 
         _logger.info(
@@ -481,20 +518,27 @@ class AgentInitializationController
                 tag: _logName,
               );
 
-              // Seed locality agent with homebase context (best-effort).
+              // Seed where-kernel homebase context (best-effort).
               try {
                 final sl = GetIt.instance;
-                final localityKernel =
-                    sl.isRegistered<LocalityKernelContract>()
-                        ? sl<LocalityKernelContract>()
-                        : null;
-                if (localityKernel != null) {
-                  await localityKernel.seedHomebase(
+                final whereKernel = sl.isRegistered<WhereKernelContract>()
+                    ? sl<WhereKernelContract>()
+                    : null;
+                if (whereKernel != null) {
+                  final localityState = await whereKernel.seedHomebase(
                     userId: userId,
                     agentId: agentId,
                     latitude: geo.latitude!,
                     longitude: geo.longitude!,
                     cityCode: geo.cityCode,
+                  );
+                  await _registerLocalityRuntimeBindings(
+                    userId: userId,
+                    agentId: agentId,
+                    localityTokenId: localityState.activeToken.id,
+                    cityCode: geo.cityCode,
+                    localityCode: geo.localityCode,
+                    topAlias: localityState.topAlias,
                   );
                 }
               } catch (e) {
@@ -761,6 +805,39 @@ class AgentInitializationController
         );
       }
 
+      final restoredBootstrapSnapshot =
+          _headlessOsBootstrapService?.restoredSnapshot;
+      final kernelArtifact = await _buildKernelArtifact(
+        userId: userId,
+        agentId: agentId,
+        onboardingData: onboardingData,
+        personalityProfile: personalityProfile,
+        preferencesProfile: preferencesProfile,
+        hasSocialMediaConnections: hasSocialMediaConnections,
+        generatedPlaceLists: generatedPlaceLists,
+        recommendations: recommendations,
+        cloudSyncAttempted: cloudSyncAttempted,
+        cloudSyncSucceeded: cloudSyncSucceeded,
+      );
+      final osBackedFlow = kernelArtifact?.buildFlowResult(
+            data: personalityProfile,
+            restoredHeadlessOsBootstrapSnapshot: restoredBootstrapSnapshot,
+            metadata: <String, dynamic>{
+              'workflow': 'agent_initialization',
+              'cloudSyncAttempted': cloudSyncAttempted,
+              'cloudSyncSucceeded': cloudSyncSucceeded,
+            },
+          ) ??
+          OsBackedFlowResult<PersonalityProfile>.success(
+            data: personalityProfile,
+            degraded: true,
+            restoredHeadlessOsBootstrapSnapshot: restoredBootstrapSnapshot,
+            metadata: <String, dynamic>{
+              'workflow': 'agent_initialization',
+              'kernelBackfillDeferred': true,
+            },
+          );
+
       return AgentInitializationResult.success(
         agentId: agentId,
         personalityProfile: personalityProfile,
@@ -770,6 +847,45 @@ class AgentInitializationController
         recommendations: recommendations,
         cloudSyncAttempted: cloudSyncAttempted,
         cloudSyncSucceeded: cloudSyncSucceeded,
+        realityKernelFusionInput: kernelArtifact?.modelTruth,
+        kernelGovernanceReport: kernelArtifact?.governance,
+        restoredHeadlessOsBootstrapSnapshot: restoredBootstrapSnapshot,
+        osBackedFlow: osBackedFlow,
+        initialDnaWhySnapshot: initialDnaSeedResult?.whySnapshot,
+        onboardingMutationReceipts: initialDnaSeedResult?.mutationReceipts ??
+            const <TrajectoryMutationRecord>[],
+        metadata: <String, dynamic>{
+          'timestamp': DateTime.now().toUtc().toIso8601String(),
+          'restoredHeadlessOsBootstrapAvailable':
+              restoredBootstrapSnapshot != null,
+          if (initialDnaSeedResult != null) ...<String, dynamic>{
+            'initialDnaMutationReceiptCount':
+                initialDnaSeedResult.mutationReceipts.length,
+            'initialDnaWhySummary': initialDnaSeedResult.whySnapshot.summary,
+          },
+          if (restoredBootstrapSnapshot != null) ...<String, dynamic>{
+            'restoredHeadlessOsStartedAtUtc': restoredBootstrapSnapshot
+                .startedAtUtc
+                .toUtc()
+                .toIso8601String(),
+            'restoredHeadlessOsKernelCount':
+                restoredBootstrapSnapshot.healthReports.length,
+            'restoredHeadlessOsLocalityContainedInWhere':
+                restoredBootstrapSnapshot.state.localityContainedInWhere,
+          },
+          if (kernelArtifact != null) ...<String, dynamic>{
+            'kernelEventId': kernelArtifact.eventId,
+            'modelTruthReady': true,
+            'localityContainedInWhere':
+                kernelArtifact.modelTruth.localityContainedInWhere,
+            'governanceDomains': kernelArtifact.governance.projections
+                .map((entry) => entry.domain.name)
+                .toList(),
+            if (kernelArtifact.governance.projections.isNotEmpty)
+              'governanceSummary':
+                  kernelArtifact.governance.projections.first.summary,
+          },
+        },
       );
     } catch (e, stackTrace) {
       _logger.error(
@@ -797,6 +913,247 @@ class AgentInitializationController
     // Agent initialization doesn't require rollback - profiles are created atomically
     // If initialization fails, no profiles are created, so nothing to rollback
   }
+
+  Future<_AgentInitializationKernelArtifact?> _buildKernelArtifact({
+    required String userId,
+    required String agentId,
+    required OnboardingData onboardingData,
+    required PersonalityProfile personalityProfile,
+    required PreferencesProfile? preferencesProfile,
+    required bool hasSocialMediaConnections,
+    required List<Map<String, dynamic>>? generatedPlaceLists,
+    required Map<String, List<Map<String, dynamic>>>? recommendations,
+    required bool cloudSyncAttempted,
+    required bool cloudSyncSucceeded,
+  }) async {
+    final host = _headlessOsHost;
+    if (host == null) {
+      return null;
+    }
+
+    try {
+      await host.start();
+      final now = DateTime.now().toUtc();
+      final recommendedListCount = recommendations?['lists']?.length ?? 0;
+      final recommendedAccountCount = recommendations?['accounts']?.length ?? 0;
+      final routeReceipt =
+          TransportRouteReceiptCompatibilityTranslator.buildLocalOnly(
+        receiptId: 'agent_init:$userId:${now.microsecondsSinceEpoch}',
+        channel: 'headless_avrai_os',
+        status: 'resolved',
+        recordedAtUtc: now,
+        metadata: const <String, dynamic>{
+          'beta_program': BhamBetaDefaults.betaProgram,
+          'workflow': 'agent_initialization',
+        },
+      );
+      final envelope = KernelEventEnvelope(
+        eventId: 'agent_initialization:$userId:${now.microsecondsSinceEpoch}',
+        agentId: agentId,
+        userId: userId,
+        occurredAtUtc: now,
+        sourceSystem: 'agent_initialization_controller',
+        eventType: 'agent_initialized',
+        actionType: 'initialize_agent',
+        entityId: agentId,
+        entityType: 'agent',
+        primarySliceId: BhamBetaDefaults.firstSliceId,
+        relatedSliceIds: const <String>[
+          BhamBetaDefaults.betaProgram,
+          'onboarding_runtime',
+        ],
+        routeReceipt: routeReceipt,
+        adminProvenance: <String, dynamic>{
+          'beta_program': BhamBetaDefaults.betaProgram,
+          'questionnaire_version': onboardingData.questionnaireVersion,
+          'beta_consent_version': onboardingData.betaConsentVersion,
+        },
+        context: <String, dynamic>{
+          'homebase': onboardingData.homebase,
+          'favorite_places_count': onboardingData.favoritePlaces.length,
+          'preferences_count': onboardingData.preferences.length,
+          'generated_place_list_count': generatedPlaceLists?.length ?? 0,
+          'recommended_list_count': recommendedListCount,
+          'recommended_account_count': recommendedAccountCount,
+          'social_media_connected': hasSocialMediaConnections,
+          'baseline_lists_count': onboardingData.baselineLists.length,
+        },
+        predictionContext: <String, dynamic>{
+          'personality_dimension_count': personalityProfile.dimensions.length,
+          'preferences_locality_count':
+              preferencesProfile?.localityPreferences.length ?? 0,
+          'preferences_category_count':
+              preferencesProfile?.categoryPreferences.length ?? 0,
+        },
+        runtimeContext: const <String, dynamic>{
+          'workflow_stage': 'onboarding_runtime',
+          'execution_path': 'agent_initialization_controller',
+          'locality_kernel_owner': 'where',
+        },
+      );
+      final runtimeBundle =
+          await host.resolveRuntimeExecution(envelope: envelope);
+      final whyRequest = KernelWhyRequest(
+        bundle: runtimeBundle.withoutWhy(),
+        goal: 'bootstrap_personal_agent',
+        predictedOutcome: 'agent_ready_for_runtime',
+        predictedConfidence: 0.91,
+        actualOutcome: 'initialized',
+        actualOutcomeScore: 1.0,
+        coreSignals: <WhySignal>[
+          WhySignal(
+            label: 'personality_profile_initialized',
+            weight: personalityProfile.dimensions.isEmpty ? 0.2 : 0.95,
+            source: 'personality_learning',
+            durable: true,
+          ),
+          WhySignal(
+            label: 'preferences_profile_initialized',
+            weight: preferencesProfile == null ? 0.35 : 0.82,
+            source: 'preferences_profile_service',
+            durable: true,
+          ),
+          WhySignal(
+            label: 'social_graph_available',
+            weight: hasSocialMediaConnections ? 0.78 : 0.3,
+            source: 'social_media_data_collection',
+            durable: true,
+          ),
+          WhySignal(
+            label: 'homebase_grounded_in_where',
+            weight: (onboardingData.homebase?.trim().isNotEmpty ?? false)
+                ? 0.85
+                : 0.25,
+            source: 'where_kernel',
+            durable: true,
+          ),
+        ],
+        policySignals: <WhySignal>[
+          WhySignal(
+            label: 'cloud_sync_attempted',
+            weight: cloudSyncAttempted ? 0.65 : 0.2,
+            source: 'personality_sync',
+            durable: false,
+          ),
+          WhySignal(
+            label: 'cloud_sync_succeeded',
+            weight: cloudSyncSucceeded ? 0.7 : 0.25,
+            source: 'personality_sync',
+            durable: false,
+          ),
+        ],
+        memoryContext: <String, dynamic>{
+          'personalityArchetype': personalityProfile.archetype,
+          'generatedPlaceListCount': generatedPlaceLists?.length ?? 0,
+          'recommendedListCount': recommendedListCount,
+          'recommendedAccountCount': recommendedAccountCount,
+        },
+        severity: 'normal',
+      );
+      final modelTruth = await host.buildModelTruth(
+        envelope: envelope,
+        whyRequest: whyRequest,
+      );
+      final governance = await host.inspectGovernance(
+        envelope: envelope,
+        whyRequest: whyRequest,
+      );
+      return _AgentInitializationKernelArtifact(
+        eventId: envelope.eventId,
+        envelope: envelope,
+        routeReceipt: routeReceipt,
+        modelTruth: modelTruth,
+        governance: governance,
+      );
+    } catch (e, stackTrace) {
+      _logger.warning(
+        '⚠️ Headless agent initialization kernel attribution failed',
+        error: e,
+        stackTrace: stackTrace,
+        tag: _logName,
+      );
+      return null;
+    }
+  }
+
+  Future<void> _registerGovernedRuntimeBindings({
+    required String userId,
+    required String agentId,
+  }) async {
+    final registry = _governedRuntimeRegistryService;
+    if (registry == null) {
+      return;
+    }
+    final now = DateTime.now().toUtc();
+    final aiSignature =
+        UrkGovernedRuntimeRegistryService.deterministicAISignatureForUser(
+      userId,
+    );
+    final runtimeIds =
+        UrkGovernedRuntimeRegistryService.canonicalPersonalRuntimeIds(
+      userId: userId,
+      agentId: agentId,
+      aiSignature: aiSignature,
+    );
+    for (final runtimeId in runtimeIds) {
+      await registry.upsertBinding(
+        UrkGovernedRuntimeBinding(
+          runtimeId: runtimeId,
+          stratum: GovernanceStratum.personal,
+          userId: userId,
+          aiSignature: aiSignature,
+          agentId: agentId,
+          source: 'agent_initialization_bootstrap',
+          updatedAt: AtomicTimestamp.now(
+            precision: TimePrecision.millisecond,
+            isSynchronized: true,
+            serverTime: now,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _registerLocalityRuntimeBindings({
+    required String userId,
+    required String agentId,
+    required String localityTokenId,
+    String? cityCode,
+    String? localityCode,
+    String? topAlias,
+  }) async {
+    final registry = _governedRuntimeRegistryService;
+    if (registry == null) {
+      return;
+    }
+    final now = DateTime.now().toUtc();
+    final runtimeIds =
+        UrkGovernedRuntimeRegistryService.canonicalLocalityRuntimeIds(
+      userId: userId,
+      agentId: agentId,
+      localityTokenId: localityTokenId,
+      cityCode: cityCode,
+      localityCode: localityCode,
+      topAlias: topAlias,
+    );
+    for (final runtimeId in runtimeIds) {
+      await registry.upsertBinding(
+        UrkGovernedRuntimeBinding(
+          runtimeId: runtimeId,
+          stratum: GovernanceStratum.locality,
+          userId: userId,
+          aiSignature: null,
+          agentId: agentId,
+          source: 'agent_initialization_locality_seed',
+          updatedAt: AtomicTimestamp.now(
+            precision: TimePrecision.millisecond,
+            isSynchronized: true,
+            serverTime: now,
+          ),
+        ),
+      );
+    }
+  }
 }
 
 /// Result of agent initialization workflow
@@ -809,6 +1166,12 @@ class AgentInitializationResult extends ControllerResult {
   final Map<String, List<Map<String, dynamic>>>? recommendations;
   final bool cloudSyncAttempted;
   final bool cloudSyncSucceeded;
+  final RealityKernelFusionInput? realityKernelFusionInput;
+  final KernelGovernanceReport? kernelGovernanceReport;
+  final HeadlessAvraiOsBootstrapSnapshot? restoredHeadlessOsBootstrapSnapshot;
+  final OsBackedFlowResult<PersonalityProfile>? osBackedFlow;
+  final core_why.WhySnapshot? initialDnaWhySnapshot;
+  final List<TrajectoryMutationRecord> onboardingMutationReceipts;
 
   const AgentInitializationResult({
     required super.success,
@@ -823,6 +1186,12 @@ class AgentInitializationResult extends ControllerResult {
     this.recommendations,
     this.cloudSyncAttempted = false,
     this.cloudSyncSucceeded = false,
+    this.realityKernelFusionInput,
+    this.kernelGovernanceReport,
+    this.restoredHeadlessOsBootstrapSnapshot,
+    this.osBackedFlow,
+    this.initialDnaWhySnapshot,
+    this.onboardingMutationReceipts = const <TrajectoryMutationRecord>[],
   });
 
   /// Create a successful result
@@ -835,9 +1204,18 @@ class AgentInitializationResult extends ControllerResult {
     Map<String, List<Map<String, dynamic>>>? recommendations,
     bool cloudSyncAttempted = false,
     bool cloudSyncSucceeded = false,
+    RealityKernelFusionInput? realityKernelFusionInput,
+    KernelGovernanceReport? kernelGovernanceReport,
+    HeadlessAvraiOsBootstrapSnapshot? restoredHeadlessOsBootstrapSnapshot,
+    OsBackedFlowResult<PersonalityProfile>? osBackedFlow,
+    core_why.WhySnapshot? initialDnaWhySnapshot,
+    List<TrajectoryMutationRecord> onboardingMutationReceipts =
+        const <TrajectoryMutationRecord>[],
+    Map<String, dynamic>? metadata,
   }) {
     return AgentInitializationResult(
       success: true,
+      metadata: metadata,
       agentId: agentId,
       personalityProfile: personalityProfile,
       preferencesProfile: preferencesProfile,
@@ -846,6 +1224,12 @@ class AgentInitializationResult extends ControllerResult {
       recommendations: recommendations,
       cloudSyncAttempted: cloudSyncAttempted,
       cloudSyncSucceeded: cloudSyncSucceeded,
+      realityKernelFusionInput: realityKernelFusionInput,
+      kernelGovernanceReport: kernelGovernanceReport,
+      restoredHeadlessOsBootstrapSnapshot: restoredHeadlessOsBootstrapSnapshot,
+      osBackedFlow: osBackedFlow,
+      initialDnaWhySnapshot: initialDnaWhySnapshot,
+      onboardingMutationReceipts: onboardingMutationReceipts,
     );
   }
 
@@ -874,5 +1258,42 @@ class AgentInitializationResult extends ControllerResult {
         recommendations,
         cloudSyncAttempted,
         cloudSyncSucceeded,
+        realityKernelFusionInput,
+        kernelGovernanceReport,
+        restoredHeadlessOsBootstrapSnapshot,
+        osBackedFlow,
+        initialDnaWhySnapshot,
+        onboardingMutationReceipts,
       ];
+}
+
+class _AgentInitializationKernelArtifact {
+  const _AgentInitializationKernelArtifact({
+    required this.eventId,
+    required this.envelope,
+    required this.routeReceipt,
+    required this.modelTruth,
+    required this.governance,
+  });
+
+  final String eventId;
+  final KernelEventEnvelope envelope;
+  final TransportRouteReceipt routeReceipt;
+  final RealityKernelFusionInput modelTruth;
+  final KernelGovernanceReport governance;
+
+  OsBackedFlowResult<PersonalityProfile> buildFlowResult({
+    required PersonalityProfile data,
+    required HeadlessAvraiOsBootstrapSnapshot?
+        restoredHeadlessOsBootstrapSnapshot,
+    required Map<String, dynamic> metadata,
+  }) {
+    return OsBackedFlowResult<PersonalityProfile>.success(
+      data: data,
+      restoredHeadlessOsBootstrapSnapshot: restoredHeadlessOsBootstrapSnapshot,
+      kernelEventEnvelope: envelope,
+      routeReceipt: routeReceipt,
+      metadata: metadata,
+    );
+  }
 }

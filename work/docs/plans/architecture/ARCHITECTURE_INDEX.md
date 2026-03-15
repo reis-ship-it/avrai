@@ -38,6 +38,7 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **Repo hygiene and boundary rules:** [`REPO_HYGIENE_AND_ARCHITECTURE_RULES.md`](./REPO_HYGIENE_AND_ARCHITECTURE_RULES.md)
 - **Universal self-healing contract (all subsystems):** [`docs/MASTER_PLAN.md` section `Universal Self-Healing Contract` + task `10.9.12`](../../MASTER_PLAN.md)
 - **Autonomous research + experimentation governance:** [`AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md`](./AUTONOMOUS_RESEARCH_EXPERIMENTATION_ENGINE.md)
+- **Governed autoresearch kernel + admin HiTL control:** [`GOVERNED_AUTORESEARCH_KERNEL_ARCHITECTURE_2026-03-14.md`](./GOVERNED_AUTORESEARCH_KERNEL_ARCHITECTURE_2026-03-14.md)
 - **Dream training + conviction hierarchy governance:** [`DREAM_TRAINING_CONVICTION_GOVERNANCE.md`](./DREAM_TRAINING_CONVICTION_GOVERNANCE.md)
 - **Canonical experiment registry (build-enforced):** [`docs/EXPERIMENT_REGISTRY.md`](../../EXPERIMENT_REGISTRY.md)
 - **Experiment registry source CSV:** [`configs/experiments/EXPERIMENT_REGISTRY.csv`](../../../configs/experiments/EXPERIMENT_REGISTRY.csv)
@@ -81,6 +82,10 @@ Use these when changing world-model training/planning behavior or model lifecycl
 
 - **Runtime transport migration status checkpoint (current):** [`MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md`](./MIGRATION_STATUS_RUNTIME_TRANSPORT_2026-02-28.md)
 - **3-prong target end-state umbrella authority:** [`MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`](./MASTER_PLAN_3_PRONG_TARGET_END_STATE.md)
+- **AVRAI cognitive OS doctrine (governing principles):** [`AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`](./AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md)
+- **AVRAI recursive governance architecture spec:** [`AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`](./AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md)
+- **AVRAI bidirectional reality/governance flow note (inward + outward flow):** [`AVRAI_BIDIRECTIONAL_REALITY_GOVERNANCE_FLOW_NOTE_2026-03-07.md`](./AVRAI_BIDIRECTIONAL_REALITY_GOVERNANCE_FLOW_NOTE_2026-03-07.md)
+- **AVRAI `when` kernel architecture + migration plan:** [`AVRAI_WHEN_KERNEL_ARCHITECTURE_AND_MIGRATION_PLAN_2026-03-06.md`](./AVRAI_WHEN_KERNEL_ARCHITECTURE_AND_MIGRATION_PLAN_2026-03-06.md)
 - **Apps prong concurrent execution plan:** [`PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
 - **Runtime OS prong concurrent execution plan:** [`PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
 - **Reality Model prong concurrent execution plan:** [`PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)

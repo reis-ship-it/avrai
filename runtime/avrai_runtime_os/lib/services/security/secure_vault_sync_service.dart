@@ -33,7 +33,7 @@ class SecureVaultSyncService {
   /// Backs up the local state to the cloud encrypted with the given passphrase.
   Future<void> backupVault(String passphrase) async {
     developer.log('Starting secure vault backup...', name: _logName);
-    
+
     final currentUser = _supabase.currentUser;
     if (currentUser == null) {
       throw StateError('Cannot backup vault: No authenticated user.');
@@ -42,40 +42,49 @@ class SecureVaultSyncService {
     try {
       // 1. Gather all state from the database
       final dwellEvents = await _db.getAllDwellEvents();
-      final pheromones = await _db.getPheromonesByQueue('inbox'); // Backup only what's needed or both
+      final pheromones = await _db
+          .getPheromonesByQueue('inbox'); // Backup only what's needed or both
       final outboxPheromones = await _db.getPheromonesByQueue('outbox');
       final archetypes = await _db.getAllArchetypes();
       final knot = await _db.getPersonalityKnot(currentUser.id);
 
       // 2. Serialize to JSON
       final stateMap = {
-        'dwells': dwellEvents.map((e) => {
-          'id': e.id,
-          'startTime': e.startTime.toIso8601String(),
-          'endTime': e.endTime.toIso8601String(),
-          'latitude': e.latitude,
-          'longitude': e.longitude,
-          'encounteredAgentIds': e.encounteredAgentIds,
-        }).toList(),
-        'pheromones': [...pheromones, ...outboxPheromones].map((p) => {
-          'id': p.id,
-          'senderAgentId': p.senderAgentId,
-          'insightWeights': p.insightWeights,
-          'contextCategory': p.contextCategory,
-          'timestamp': p.timestamp.toIso8601String(),
-          'queueType': p.queueType,
-        }).toList(),
-        'archetypes': archetypes.map((a) => {
-          'id': a.id,
-          'name': a.name,
-          'stateJson': a.stateJson,
-          'lastUpdatedAt': a.lastUpdatedAt.toIso8601String(),
-        }).toList(),
-        'knot': knot != null ? {
-          'userId': knot.userId,
-          'dnaPayload': base64Encode(knot.dnaPayload),
-          'lastUpdatedAt': knot.lastUpdatedAt.toIso8601String(),
-        } : null,
+        'dwells': dwellEvents
+            .map((e) => {
+                  'id': e.id,
+                  'startTime': e.startTime.toIso8601String(),
+                  'endTime': e.endTime.toIso8601String(),
+                  'latitude': e.latitude,
+                  'longitude': e.longitude,
+                  'encounteredAgentIds': e.encounteredAgentIds,
+                })
+            .toList(),
+        'pheromones': [...pheromones, ...outboxPheromones]
+            .map((p) => {
+                  'id': p.id,
+                  'senderAgentId': p.senderAgentId,
+                  'insightWeights': p.insightWeights,
+                  'contextCategory': p.contextCategory,
+                  'timestamp': p.timestamp.toIso8601String(),
+                  'queueType': p.queueType,
+                })
+            .toList(),
+        'archetypes': archetypes
+            .map((a) => {
+                  'id': a.id,
+                  'name': a.name,
+                  'stateJson': a.stateJson,
+                  'lastUpdatedAt': a.lastUpdatedAt.toIso8601String(),
+                })
+            .toList(),
+        'knot': knot != null
+            ? {
+                'userId': knot.userId,
+                'dnaPayload': base64Encode(knot.dnaPayload),
+                'lastUpdatedAt': knot.lastUpdatedAt.toIso8601String(),
+              }
+            : null,
       };
 
       final plaintext = jsonEncode(stateMap);
@@ -84,7 +93,7 @@ class SecureVaultSyncService {
       final salt = _generateRandomBytes(16);
       final key = _deriveKey(passphrase, salt);
       final encryptedBlob = _encryptAES256GCM(plaintext, key);
-      
+
       final payload = {
         'encrypted_data': encryptedBlob,
         'salt': base64Encode(salt),
@@ -97,9 +106,11 @@ class SecureVaultSyncService {
         'vault_data': payload,
       });
 
-      developer.log('Secure vault backup completed successfully.', name: _logName);
+      developer.log('Secure vault backup completed successfully.',
+          name: _logName);
     } catch (e, st) {
-      developer.log('Failed to backup vault', error: e, stackTrace: st, name: _logName);
+      developer.log('Failed to backup vault',
+          error: e, stackTrace: st, name: _logName);
       rethrow;
     }
   }
@@ -107,7 +118,7 @@ class SecureVaultSyncService {
   /// Restores the local state from the cloud using the given passphrase.
   Future<void> restoreVault(String passphrase) async {
     developer.log('Starting secure vault restore...', name: _logName);
-    
+
     final currentUser = _supabase.currentUser;
     if (currentUser == null) {
       throw StateError('Cannot restore vault: No authenticated user.');
@@ -140,8 +151,9 @@ class SecureVaultSyncService {
       // 4. Insert back into the database
       // Clear old data to prevent duplication conflicts? Or just upsert.
       // Upserting is safer.
-      
-      final dwellsList = (stateMap['dwells'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+
+      final dwellsList =
+          (stateMap['dwells'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       for (final d in dwellsList) {
         await _db.upsertDwellEvent(DwellEventsCompanion.insert(
           id: d['id'],
@@ -153,7 +165,8 @@ class SecureVaultSyncService {
         ));
       }
 
-      final pheromonesList = (stateMap['pheromones'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final pheromonesList =
+          (stateMap['pheromones'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       for (final p in pheromonesList) {
         await _db.upsertPheromone(PheromonesCompanion.insert(
           id: p['id'],
@@ -164,7 +177,8 @@ class SecureVaultSyncService {
         ));
       }
 
-      final archetypesList = (stateMap['archetypes'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final archetypesList =
+          (stateMap['archetypes'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       for (final a in archetypesList) {
         await _db.upsertArchetype(ArchetypesCompanion.insert(
           id: a['id'],
@@ -183,9 +197,11 @@ class SecureVaultSyncService {
         ));
       }
 
-      developer.log('Secure vault restore completed successfully.', name: _logName);
+      developer.log('Secure vault restore completed successfully.',
+          name: _logName);
     } catch (e, st) {
-      developer.log('Failed to restore vault', error: e, stackTrace: st, name: _logName);
+      developer.log('Failed to restore vault',
+          error: e, stackTrace: st, name: _logName);
       rethrow;
     }
   }
@@ -201,13 +217,14 @@ class SecureVaultSyncService {
   /// Derives an AES-256 key from a passphrase using PBKDF2 (HMAC-SHA256)
   Uint8List _deriveKey(String passphrase, Uint8List salt) {
     final pbkdf2 = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
-      ..init(Pbkdf2Parameters(salt, 100000, 32)); // 100k iterations, 32 bytes (256 bits)
+      ..init(Pbkdf2Parameters(
+          salt, 100000, 32)); // 100k iterations, 32 bytes (256 bits)
     return pbkdf2.process(Uint8List.fromList(utf8.encode(passphrase)));
   }
 
   String _encryptAES256GCM(String plaintext, Uint8List key) {
     final iv = _generateRandomBytes(12);
-    
+
     final cipher = GCMBlockCipher(AESEngine())
       ..init(true, AEADParameters(KeyParameter(key), 128, iv, Uint8List(0)));
 
@@ -228,7 +245,7 @@ class SecureVaultSyncService {
 
     final base64Data = encrypted.substring('vault_v1:'.length);
     final bytes = base64Decode(base64Data);
-    
+
     if (bytes.length < 12 + 16) {
       throw Exception('Invalid vault data length');
     }

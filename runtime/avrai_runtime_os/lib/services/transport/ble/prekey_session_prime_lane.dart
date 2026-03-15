@@ -11,6 +11,7 @@ import 'package:avrai_runtime_os/crypto/signal/signal_types.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_audit_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_network/avra_network.dart';
 
 class PrekeySessionPrimeLane {
@@ -19,7 +20,7 @@ class PrekeySessionPrimeLane {
   static Future<void> run({
     required bool allowBleSideEffects,
     required SignalKeyManager? signalKeyManager,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DiscoveredDevice device,
     required BleGattSession session,
     required Map<String, String> peerNodeIdByDeviceId,
@@ -34,7 +35,7 @@ class PrekeySessionPrimeLane {
     required String logName,
   }) async {
     if (!allowBleSideEffects) return;
-    if (signalKeyManager == null || protocol == null) return;
+    if (signalKeyManager == null || packetCodec == null) return;
 
     try {
       final bytes = await session.readStreamPayload(streamId: 1);
@@ -107,8 +108,8 @@ class PrekeySessionPrimeLane {
         ));
       }
 
-      final packetBytes = await protocol.encodePacketBytes(
-        type: MessageType.heartbeat,
+      final packetBytes = await packetCodec.encode(
+        type: MeshPacketType.heartbeat,
         payload: <String, dynamic>{
           't': DateTime.now().toUtc().toIso8601String(),
           'kind': 'silent_signal_bootstrap',
@@ -137,7 +138,7 @@ class PrekeySessionPrimeLane {
             'ok': ok,
             'device_id': device.deviceId,
             'recipient_id': recipientId,
-            'message_type': 'heartbeat',
+            'message_type': MeshPacketType.heartbeat.name,
             'kind': 'silent_signal_bootstrap',
           },
         ));

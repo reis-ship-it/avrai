@@ -42,20 +42,62 @@ class ClubService {
   // ignore: unused_field
   final CommunityService _communityService;
   final LedgerRecorderServiceV0 _ledger;
+  final StorageService? _storageService;
 
   // In-memory storage (in production, use database)
   final Map<String, Club> _clubs = {};
+  static const String _clubsStorageKey = 'clubs:all_v1';
+  bool _storageHydrated = false;
 
   ClubService({
     CommunityService? communityService,
     LedgerRecorderServiceV0? ledgerRecorder,
+    StorageService? storageService,
   })  : _communityService = communityService ?? CommunityService(),
+        _storageService = storageService ?? StorageService.instance,
         _ledger = ledgerRecorder ??
             LedgerRecorderServiceV0(
               supabaseService: SupabaseService(),
               agentIdService: AgentIdService(),
               storage: StorageService.instance,
             );
+
+  Future<Club> createClub({
+    required String founderId,
+    required String name,
+    required String description,
+    required String category,
+    required String originalLocality,
+    String? cityCode,
+    String? localityCode,
+  }) async {
+    final now = DateTime.now();
+    final club = Club(
+      id: 'club_${now.microsecondsSinceEpoch}',
+      name: name,
+      description: description,
+      category: category,
+      originatingEventId: '',
+      originatingEventType: OriginatingEventType.communityEvent,
+      founderId: founderId,
+      memberIds: <String>[founderId],
+      memberCount: 1,
+      createdAt: now,
+      updatedAt: now,
+      originalLocality: originalLocality,
+      currentLocalities: originalLocality.isEmpty
+          ? const <String>[]
+          : <String>[originalLocality],
+      cityCode: cityCode,
+      localityCode: localityCode,
+      leaders: <String>[founderId],
+      organizationalMaturity: 0.4,
+      leadershipStability: 0.65,
+      activityLevel: ActivityLevel.growing,
+    );
+    await _saveClub(club);
+    return club;
+  }
 
   Future<void> _tryLedgerAppendForUser({
     required String expectedOwnerUserId,
@@ -489,6 +531,56 @@ class ClubService {
     }
   }
 
+  Future<List<Club>> getAllClubs({int maxResults = 100}) async {
+    final allClubs = await _getAllClubs();
+    allClubs.sort((a, b) => b.memberCount.compareTo(a.memberCount));
+    return allClubs.take(maxResults).toList();
+  }
+
+  Future<List<Club>> searchClubs(
+    String query, {
+    int maxResults = 30,
+  }) async {
+    final normalizedQuery = query.trim().toLowerCase();
+    final allClubs = await _getAllClubs();
+    if (normalizedQuery.isEmpty) {
+      return getAllClubs(maxResults: maxResults);
+    }
+    return allClubs
+        .where((club) {
+          return club.name.toLowerCase().contains(normalizedQuery) ||
+              club.category.toLowerCase().contains(normalizedQuery) ||
+              (club.description ?? '').toLowerCase().contains(normalizedQuery);
+        })
+        .take(maxResults)
+        .toList();
+  }
+
+  Future<void> leaveClub({
+    required String clubId,
+    required String userId,
+  }) async {
+    final club = await getClubById(clubId);
+    if (club == null || !club.memberIds.contains(userId)) {
+      return;
+    }
+    if (club.founderId == userId) {
+      return;
+    }
+
+    final updated = club.copyWith(
+      memberIds:
+          club.memberIds.where((memberId) => memberId != userId).toList(),
+      memberCount: (club.memberCount - 1).clamp(0, 1 << 31),
+      leaders: club.leaders.where((memberId) => memberId != userId).toList(),
+      adminTeam:
+          club.adminTeam.where((memberId) => memberId != userId).toList(),
+      memberRoles: Map<String, ClubRole>.from(club.memberRoles)..remove(userId),
+      updatedAt: DateTime.now(),
+    );
+    await _saveClub(updated);
+  }
+
   /// Update club details
   Future<Club> updateClub({
     required Club club,
@@ -677,12 +769,37 @@ class ClubService {
   // Private helper methods
 
   Future<void> _saveClub(Club club) async {
-    // In production, save to database
+    await _hydrateFromStorageIfNeeded();
     _clubs[club.id] = club;
+    await _persistClubs();
   }
 
   Future<List<Club>> _getAllClubs() async {
-    // In production, query database
+    await _hydrateFromStorageIfNeeded();
     return _clubs.values.toList();
+  }
+
+  Future<void> _hydrateFromStorageIfNeeded() async {
+    if (_storageHydrated) {
+      return;
+    }
+    _storageHydrated = true;
+    final stored = _storageService?.getObject<List<dynamic>>(_clubsStorageKey);
+    if (stored == null) {
+      return;
+    }
+    for (final item in stored) {
+      if (item is Map) {
+        final club = Club.fromJson(Map<String, dynamic>.from(item));
+        _clubs[club.id] = club;
+      }
+    }
+  }
+
+  Future<void> _persistClubs() async {
+    await _storageService?.setObject(
+      _clubsStorageKey,
+      _clubs.values.map((club) => club.toJson()).toList(),
+    );
   }
 }

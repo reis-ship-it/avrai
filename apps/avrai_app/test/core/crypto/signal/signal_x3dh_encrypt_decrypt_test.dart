@@ -307,8 +307,7 @@ void main() {
 
         // Keys should be different
         final alicePubKey = aliceIdentityKey.publicKey;
-        expect(alicePubKey,
-            isNot(equals(bobIdentityKey.publicKey)));
+        expect(alicePubKey, isNot(equals(bobIdentityKey.publicKey)));
       });
 
       test('should perform X3DH key exchange and encrypt/decrypt message',

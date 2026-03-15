@@ -51,7 +51,8 @@ class StringTheoryPossibilityEngine {
 
     // 0. Aspirational trajectory (if the user explicitly set a goal in chat)
     if (aspirationalDimensions != null && aspirationalDimensions.isNotEmpty) {
-      possibilities.add(_createAspirationalState(currentDimensions, aspirationalDimensions));
+      possibilities.add(
+          _createAspirationalState(currentDimensions, aspirationalDimensions));
     }
 
     // 1. Stable trajectory (current state continues)
@@ -206,7 +207,7 @@ class StringTheoryPossibilityEngine {
     Map<String, double> aspirational,
   ) {
     final newDimensions = Map<String, double>.from(current);
-    
+
     // Blend current with aspirational (move strongly toward the goal)
     for (final entry in aspirational.entries) {
       final currentVal = newDimensions[entry.key] ?? 0.5;
@@ -217,7 +218,8 @@ class StringTheoryPossibilityEngine {
     return PossibilityState(
       id: const Uuid().v4(),
       dimensions: newDimensions,
-      probability: 0.30, // High probability because it's explicitly user-requested
+      probability:
+          0.30, // High probability because it's explicitly user-requested
       trajectory: TrajectoryInfo(
         type: TrajectoryType.aspirational,
         direction: TrajectoryDirection.increasing,

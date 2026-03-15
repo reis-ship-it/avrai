@@ -10,6 +10,8 @@ import 'analyzers/location_pattern_analyzer.dart';
 import 'analyzers/string_theory_possibility_engine.dart';
 import 'filters/age_aware_list_filter.dart';
 import 'integration/ai2ai_list_learning_integration.dart';
+import '../../kernel/os/kernel_outcome_attribution_lane.dart';
+import '../../kernel/what/what_runtime_ingestion_service.dart';
 
 /// Perpetual List Orchestrator
 ///
@@ -48,6 +50,8 @@ class PerpetualListOrchestrator {
 
   // Integration
   final AI2AIListLearningIntegration _ai2aiIntegration;
+  final KernelOutcomeAttributionLane? _kernelOutcomeAttributionLane;
+  final WhatRuntimeIngestionService? _whatRuntimeIngestionService;
 
   // State tracking
   final Map<String, List<SuggestedList>> _recentSuggestions = {};
@@ -61,13 +65,17 @@ class PerpetualListOrchestrator {
     required StringTheoryPossibilityEngine possibilityEngine,
     required AgeAwareListFilter ageFilter,
     required AI2AIListLearningIntegration ai2aiIntegration,
+    KernelOutcomeAttributionLane? kernelOutcomeAttributionLane,
+    WhatRuntimeIngestionService? whatRuntimeIngestionService,
   })  : _triggerEngine = triggerEngine,
         _contextEngine = contextEngine,
         _generationEngine = generationEngine,
         _locationAnalyzer = locationAnalyzer,
         _possibilityEngine = possibilityEngine,
         _ageFilter = ageFilter,
-        _ai2aiIntegration = ai2aiIntegration;
+        _ai2aiIntegration = ai2aiIntegration,
+        _kernelOutcomeAttributionLane = kernelOutcomeAttributionLane,
+        _whatRuntimeIngestionService = whatRuntimeIngestionService;
 
   /// Generate lists if appropriate based on current context
   ///
@@ -121,11 +129,14 @@ class PerpetualListOrchestrator {
       final aspirationalJson = prefs.getString('aspirational_state_$userId');
       if (aspirationalJson != null) {
         final Map<String, dynamic> decoded = jsonDecode(aspirationalJson);
-        aspirationalDimensions = decoded.map((k, v) => MapEntry(k, (v as num).toDouble()));
-        developer.log('Loaded aspirational dimensions for user $userId', name: _logName);
+        aspirationalDimensions =
+            decoded.map((k, v) => MapEntry(k, (v as num).toDouble()));
+        developer.log('Loaded aspirational dimensions for user $userId',
+            name: _logName);
       }
     } catch (e) {
-      developer.log('Error loading aspirational dimensions: $e', name: _logName);
+      developer.log('Error loading aspirational dimensions: $e',
+          name: _logName);
     }
 
     // 4. Generate possibility space
@@ -240,12 +251,41 @@ class PerpetualListOrchestrator {
     required String userId,
     required int userAge,
     required ListInteraction interaction,
+    SuggestedList? suggestedList,
   }) async {
     await _ai2aiIntegration.learnFromListInteraction(
       userId: userId,
       userAge: userAge,
       interaction: interaction,
     );
+    if (_kernelOutcomeAttributionLane != null) {
+      await _kernelOutcomeAttributionLane.recordListInteraction(
+        userId: userId,
+        userAge: userAge,
+        interaction: interaction,
+        suggestedList: suggestedList,
+      );
+    }
+    if (_whatRuntimeIngestionService != null) {
+      await _whatRuntimeIngestionService.ingestListInteractionObservation(
+        entityRef: 'list:${interaction.listId}',
+        observedAtUtc: interaction.timestamp,
+        structuredSignals: <String, dynamic>{
+          'interactionType': interaction.type.name,
+          if (suggestedList != null) 'theme': suggestedList.theme,
+          if (suggestedList != null) 'qualityScore': suggestedList.qualityScore,
+        },
+        activityContext:
+            suggestedList?.theme.toLowerCase().replaceAll(' ', '_'),
+        confidence: interaction.isPositive
+            ? 0.68
+            : interaction.isNegative
+                ? 0.55
+                : 0.46,
+        lineageRef:
+            'list_interaction:${interaction.listId}:${interaction.timestamp.microsecondsSinceEpoch}',
+      );
+    }
   }
 
   /// Get recent suggestions for a user

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avrai/presentation/pages/onboarding/welcome_page.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
 
 void main() {
   group('WelcomePage', () {
@@ -19,14 +20,25 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(WelcomePage), findsOneWidget);
-      expect(find.text('Hi, tell me\nabout yourself'), findsOneWidget);
-      expect(find.text('Tap to continue'), findsOneWidget);
+      expect(find.text('Welcome to AVRAI'), findsWidgets);
+      expect(
+        find.text(
+          'Set up a calm baseline so recommendations, planning, and AI guidance feel useful from the start.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('What happens next'), findsOneWidget);
+      expect(find.text('Ready to begin'), findsOneWidget);
+      expect(find.widgetWithText(AppButtonPrimary, 'Continue'), findsOneWidget);
       expect(find.text('Skip'), findsNothing);
-      expect(find.byType(SafeArea), findsOneWidget);
 
-      await tester.tap(find.byType(GestureDetector));
+      await tester.ensureVisible(
+        find.widgetWithText(AppButtonPrimary, 'Continue'),
+      );
+      await tester.tap(find.widgetWithText(AppButtonPrimary, 'Continue'));
       await tester.pump();
 
       expect(continueTapped, isTrue);
@@ -45,8 +57,10 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.widgetWithText(TextButton, 'Skip'), findsOneWidget);
+      expect(find.widgetWithText(AppButtonPrimary, 'Continue'), findsOneWidget);
 
       await tester.tap(find.text('Skip'));
       await tester.pump();

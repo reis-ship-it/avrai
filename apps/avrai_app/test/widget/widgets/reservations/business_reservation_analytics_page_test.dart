@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
-import 'package:avrai_runtime_os/services/business/business_reservation_analytics_models.dart';
 import 'package:avrai_runtime_os/services/business/business_reservation_analytics_service.dart';
 import 'package:avrai_runtime_os/runtime_api.dart' show TrendType;
 import '../../helpers/widget_test_helpers.dart' as helpers;

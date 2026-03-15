@@ -50,4 +50,16 @@ create index if not exists idx_external_source_health_v1_updated
 create index if not exists idx_external_source_health_v1_grouping
   on public.external_source_health_v1 (health_category, entity_type, provider, city_code, locality_code);
 
-alter publication supabase_realtime add table public.external_source_health_v1;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'external_source_health_v1'
+  ) then
+    alter publication supabase_realtime add table public.external_source_health_v1;
+  end if;
+end;
+$$;

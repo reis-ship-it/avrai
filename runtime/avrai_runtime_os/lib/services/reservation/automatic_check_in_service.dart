@@ -1,6 +1,6 @@
 import 'package:avrai_core/models/spots/visit.dart';
 import 'package:avrai_core/models/misc/automatic_check_in.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:get_it/get_it.dart';
@@ -384,17 +384,17 @@ class AutomaticCheckInService {
         // This should never block checkout.
         try {
           final sl = GetIt.instance;
-          final localityKernel = sl.isRegistered<LocalityKernelContract>()
-              ? sl<LocalityKernelContract>()
+          final whereKernel = sl.isRegistered<WhereKernelContract>()
+              ? sl<WhereKernelContract>()
               : null;
-          if (localityKernel != null) {
+          if (whereKernel != null) {
             final source = switch (activeCheckIn.triggerType) {
               CheckInTriggerType.geofence => 'geofence',
               CheckInTriggerType.bluetooth => 'bluetooth',
               CheckInTriggerType.unknown => 'unknown',
             };
             // ignore: unawaited_futures
-            localityKernel.observeVisit(
+            whereKernel.observeVisit(
                 userId: userId, visit: updatedVisit, source: source);
           }
         } catch (e) {

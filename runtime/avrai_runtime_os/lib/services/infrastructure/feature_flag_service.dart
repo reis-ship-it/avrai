@@ -341,4 +341,14 @@ class GovernanceFeatureFlags {
   /// Enables hard enforcement for kernel governance gates.
   /// When false, gates operate in shadow mode.
   static const String kernelGovernanceEnforce = 'kernel_governance_enforce';
+
+  /// Enables the Reticulum-inspired mesh transport control plane.
+  /// Default OFF until telemetry proves parity/safety.
+  static const String reticulumMeshTransportControlPlaneV1 =
+      'reticulum_mesh_transport_control_plane_v1';
+
+  /// Enables authenticated announce enforcement for mesh route admission.
+  /// Only meaningful when the Reticulum-inspired control plane is enabled.
+  static const String trustedMeshAnnounceEnforcementV1 =
+      'trusted_mesh_announce_enforcement_v1';
 }

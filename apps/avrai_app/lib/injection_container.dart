@@ -9,23 +9,92 @@ import 'package:avrai/di/registrars/injection_container_admin.dart';
 import 'package:avrai/di/registrars/injection_container_knot.dart';
 import 'package:avrai/di/registrars/injection_container_quantum.dart';
 import 'package:avrai/di/registrars/injection_container_ai.dart';
+import 'package:avrai/di/registrars/injection_container_device_sync.dart';
 import 'package:avrai/di/registrars/injection_container_predictive_outreach.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/crypto/signal/secure_signal_storage.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
+import 'package:avrai_runtime_os/kernel/locality/legacy/dart_locality_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/locality/legacy/disabled_locality_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/locality/legacy/where_kernel_ingestion_adapter.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_cloud_prior_gateway.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_cloud_update_gateway.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_inference_head.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_kernel.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_infrastructure_bridge.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_memory.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_admin_diagnostics_bridge.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_native_bridge_bindings.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_sync_payload_builder.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_training_bridge.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_projection_service.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_runtime_context.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_sync_coordinator.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_where_kernel_adapter.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_transport_support.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
 import 'package:avrai_runtime_os/kernel/locality/synthetic_locality_training_service.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_orchestrator.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_os.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_prong_ports.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_admin_service.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_conformance_service.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_outcome_attribution_lane.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_bundle_store.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_incident_recorder.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_root_cause_index.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_telemetry_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/headless_avrai_os_availability_service.dart';
+import 'package:avrai_runtime_os/services/background/headless_background_runtime_coordinator.dart';
+import 'package:avrai_runtime_os/services/background/background_wake_execution_run_record_store.dart';
+import 'package:avrai_runtime_os/kernel/who/legacy/dart_who_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/who/legacy/disabled_who_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/who/who_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/who/who_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/who/who_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/who/who_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/who/who_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/who/who_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/what/what_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/what/what_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/what/what_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/what/what_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_recovery_service.dart';
+import 'package:avrai_runtime_os/kernel/when/legacy/dart_when_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/when/legacy/disabled_when_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/when/when_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/when/when_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/when/when_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/when/when_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/when/when_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/when/when_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/how/legacy/dart_how_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/how/legacy/disabled_how_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/how/how_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/how/how_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/how/how_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/how/how_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/how/how_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/how/how_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/why/legacy/dart_why_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/why/legacy/disabled_why_fallback_kernel.dart';
+import 'package:avrai_runtime_os/kernel/why/why_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/why/why_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/why/why_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/why/why_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/why/why_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/why/why_native_startup_gate.dart';
+import 'package:avrai_runtime_os/kernel/what/what_kernel_bootstrap.dart';
+import 'package:avrai_runtime_os/services/passive_collection/passive_dwell_reality_learning_service.dart';
+import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_proof_store.dart';
 
 // Database
 // Note: AppDatabase (Drift) is initialized in registerDeviceSyncServices() (injection_container_device_sync.dart)
@@ -71,6 +140,8 @@ import 'package:avrai_runtime_os/domain/usecases/lists/get_lists_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/lists/create_list_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/lists/update_list_usecase.dart';
 import 'package:avrai_runtime_os/domain/usecases/lists/delete_list_usecase.dart';
+import 'package:avrai_runtime_os/services/lists/list_analytics_service.dart';
+import 'package:avrai_runtime_os/services/lists/list_sync_service.dart';
 import 'package:avrai/presentation/blocs/lists/lists_bloc.dart';
 
 // Hybrid Search (Phase 2: External Data Integration)
@@ -113,6 +184,19 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/network/enhanced_connectivity_service.dart';
+import 'package:avrai_runtime_os/services/security/immune_memory_ledger.dart';
+import 'package:avrai_runtime_os/services/security/sandbox_orchestrator_service.dart';
+import 'package:avrai_runtime_os/services/security/security_autonomy_impact_policy.dart';
+import 'package:avrai_runtime_os/services/security/security_campaign_registry.dart';
+import 'package:avrai_runtime_os/services/security/security_campaign_scheduler.dart';
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
+import 'package:avrai_runtime_os/services/security/security_learning_moment_bridge.dart';
+import 'package:avrai_runtime_os/services/security/security_replay_harness.dart';
+import 'package:avrai_runtime_os/services/security/security_scout_coordinator.dart';
+import 'package:avrai_runtime_os/services/security/security_trigger_ingress_service.dart';
+import 'package:avrai_runtime_os/services/admin/governed_run_kernel_service.dart';
+import 'package:avrai_runtime_os/services/admin/research_activity_service.dart';
+import 'package:avrai_runtime_os/services/admin/self_heal_governance_adapter_service.dart';
 // Note: LargeCityDetectionService, NeighborhoodBoundaryService, and GeographicScopeService
 // are now registered in registerCoreServices() (injection_container_core.dart)
 import 'package:avrai_runtime_os/services/geographic/geographic_scope_service.dart';
@@ -121,6 +205,8 @@ import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_receipts_service_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/proof_run_service_v0.dart';
+import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart';
+import 'package:avrai/services/debug/proof_run_automation_service.dart';
 import 'package:avrai_runtime_os/services/business/business_shared_agent_service.dart';
 import 'package:avrai_runtime_os/kernel/service_contracts/urk_kernel_registry_service.dart';
 // Onboarding & Agent Creation Services (Phase 1: Foundation)
@@ -173,6 +259,7 @@ import 'package:avrai_runtime_os/services/reservation/reservation_notification_s
 import 'package:avrai_runtime_os/services/reservation/reservation_waitlist_service.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_analytics_service.dart';
 import 'package:avrai_runtime_os/services/business/business_reservation_analytics_service.dart';
+import 'package:avrai_runtime_os/services/recommendations/recommendation_telemetry_service.dart';
 // Phase 10.1: Multi-layered Check-In System
 import 'package:avrai_runtime_os/services/reservation/reservation_proximity_service.dart';
 import 'package:avrai_runtime_os/services/device/wifi_fingerprint_service.dart';
@@ -186,8 +273,9 @@ import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_s
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart'
     show VibeConnectionOrchestrator;
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_runtime_os/services/network/rate_limiting_service.dart';
+import 'package:avrai_runtime_os/services/events/event_learning_signal_service.dart';
+import 'package:avrai_runtime_os/services/events/event_planning_telemetry_service.dart';
 import 'package:avrai_runtime_os/services/events/event_success_analysis_service.dart';
 import 'package:avrai_runtime_os/controllers/quantum_matching_controller.dart';
 import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dart';
@@ -201,6 +289,7 @@ import 'package:avrai_runtime_os/config/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:avrai_runtime_os/ml/embedding_cloud_client.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 // Google Places integration
 import 'package:avrai_runtime_os/services/places/google_places_cache_service.dart';
 import 'package:avrai_runtime_os/services/places/google_place_id_finder_service_new.dart';
@@ -249,6 +338,8 @@ import 'package:avrai_runtime_os/services/behavior/behavior_assessment_service.d
 import 'package:avrai_runtime_os/ml/outcome_prediction_model.dart';
 import 'package:avrai_runtime_os/services/recommendations/outcome_prediction_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_gate.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_native_priority.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_telemetry_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/model_version_manager.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/online_learning_service.dart';
@@ -266,9 +357,6 @@ import 'package:avrai_runtime_os/services/security/signal_protocol_encryption_se
 import 'package:avrai_runtime_os/services/security/secure_mapping_encryption_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_migration_service.dart';
 import 'package:avrai_runtime_os/services/security/mapping_key_rotation_service.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_global_repository.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_ingestion_service_v1.dart';
-import 'package:avrai_runtime_os/services/locality_agents/locality_agent_update_emitter_v1.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_geofence_planner.dart';
 import 'package:avrai_runtime_os/services/locality_agents/os_geofence_registrar.dart';
 
@@ -294,6 +382,9 @@ Future<void> init() async {
   );
   logger.debug('✅ [DI] Core services registered');
 
+  await registerDeviceSyncServices(sl);
+  logger.debug('✅ [DI] Device sync services registered');
+
   await _registerRuntimeServiceLayer(logger);
 
   // Note: CommunityService will be registered after Knot module (it has optional Knot dependencies)
@@ -313,6 +404,30 @@ Future<void> init() async {
   // Note: These services are foundational infrastructure and remain in main container
 
   await _registerAppServiceLayer(logger);
+  LocalityNativeStartupGate.ensureReady(
+    nativeBridge: sl<LocalityNativeInvocationBridge>(),
+    policy: sl<LocalityNativeExecutionPolicy>(),
+  );
+  WhatNativeStartupGate.ensureReady(
+    nativeBridge: sl<WhatNativeInvocationBridge>(),
+    policy: sl<WhatNativeExecutionPolicy>(),
+  );
+  WhoNativeStartupGate.ensureReady(
+    nativeBridge: sl<WhoNativeInvocationBridge>(),
+    policy: sl<WhoNativeExecutionPolicy>(),
+  );
+  WhenNativeStartupGate.ensureReady(
+    nativeBridge: sl<WhenNativeInvocationBridge>(),
+    policy: sl<WhenNativeExecutionPolicy>(),
+  );
+  HowNativeStartupGate.ensureReady(
+    nativeBridge: sl<HowNativeInvocationBridge>(),
+    policy: sl<HowNativeExecutionPolicy>(),
+  );
+  WhyNativeStartupGate.ensureReady(
+    nativeBridge: sl<WhyNativeInvocationBridge>(),
+    policy: sl<WhyNativeExecutionPolicy>(),
+  );
 
   // Note: OnboardingRecommendationService, PreferencesProfileService, EventRecommendationService,
   // EventMatchingService, SpotVibeMatchingService, OAuthDeepLinkHandler, SocialMediaConnectionService,
@@ -360,9 +475,9 @@ Future<void> init() async {
     sl.registerLazySingleton<RealtimeBackend>(() => backend.realtime);
     logger.debug('✅ [DI] Backend components registered');
 
-    // Register Supabase Client for LLM service
+    // Register Supabase Client for language runtime services
     try {
-      logger.debug('🤖 [DI] Registering LLM service...');
+      logger.debug('🤖 [DI] Registering language runtime service...');
       // Only register if Supabase is initialized
       try {
         final supabaseClient = Supabase.instance.client;
@@ -427,15 +542,88 @@ Future<void> init() async {
               prefs: sl<SharedPreferencesCompat>(),
             ));
         logger.debug('✅ [DI] KernelGovernanceTelemetryService registered');
+        sl.registerLazySingleton(() => RecommendationTelemetryService(
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] RecommendationTelemetryService registered');
         sl.registerLazySingleton(() => KernelGovernanceGate(
               registryService: sl<UrkKernelRegistryService>(),
               featureFlagService: sl<FeatureFlagService>(),
               telemetryService: sl<KernelGovernanceTelemetryService>(),
               defaultMode: KernelGovernanceMode.enforce,
+              nativeBridge: KernelGovernanceNativeBridgeBindings(),
+              nativePolicy: const KernelGovernanceNativeExecutionPolicy(
+                  requireNative: true),
+              whenKernel: sl<WhenKernelContract>(),
             ));
         logger.debug('✅ [DI] KernelGovernanceGate registered');
+        sl.registerLazySingleton(() => const SecurityCampaignRegistry());
+        logger.debug('✅ [DI] SecurityCampaignRegistry registered');
+        sl.registerLazySingleton(() => GovernedRunKernelService(
+              prefs: sl<SharedPreferencesCompat>(),
+              autoresearchSupervisorResolver: () async {
+                final resolution =
+                    await GovernedAutoresearchSupervisorFactory.createDefault(
+                  prefs: sl<SharedPreferencesCompat>(),
+                );
+                return resolution.service;
+              },
+            ));
+        logger.debug('✅ [DI] GovernedRunKernelService registered');
+        sl.registerLazySingleton(() => const SecurityAutonomyImpactPolicy());
+        logger.debug('✅ [DI] SecurityAutonomyImpactPolicy registered');
+        sl.registerLazySingleton(() => SecurityLearningMomentBridge(
+              prefs: sl<SharedPreferencesCompat>(),
+              impactPolicy: sl<SecurityAutonomyImpactPolicy>(),
+            ));
+        logger.debug('✅ [DI] SecurityLearningMomentBridge registered');
+        sl.registerLazySingleton(() => ImmuneMemoryLedger(
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] ImmuneMemoryLedger registered');
+        sl.registerLazySingleton(() => SandboxOrchestratorService(
+              governedRunKernel: sl<GovernedRunKernelService>(),
+              campaignRegistry: sl<SecurityCampaignRegistry>(),
+              immuneMemoryLedger: sl<ImmuneMemoryLedger>(),
+              replayHarness: const SecurityReplayHarness(),
+              learningMomentBridge: sl<SecurityLearningMomentBridge>(),
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] SandboxOrchestratorService registered');
+        sl.registerLazySingleton(() => SecurityTriggerIngressService(
+              campaignRegistry: sl<SecurityCampaignRegistry>(),
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] SecurityTriggerIngressService registered');
+        sl.registerLazySingleton(() => SecurityCampaignScheduler(
+              campaignRegistry: sl<SecurityCampaignRegistry>(),
+              sandboxOrchestrator: sl<SandboxOrchestratorService>(),
+              triggerIngressService: sl<SecurityTriggerIngressService>(),
+            ));
+        logger.debug('✅ [DI] SecurityCampaignScheduler registered');
+        sl.registerLazySingleton(() => SecurityScoutCoordinator(
+              prefs: sl<SharedPreferencesCompat>(),
+            ));
+        logger.debug('✅ [DI] SecurityScoutCoordinator registered');
+        sl.registerLazySingleton(() => SecurityKernelReleaseGateService(
+              campaignScheduler: sl<SecurityCampaignScheduler>(),
+              campaignRegistry: sl<SecurityCampaignRegistry>(),
+              sandboxOrchestrator: sl<SandboxOrchestratorService>(),
+              immuneMemoryLedger: sl<ImmuneMemoryLedger>(),
+              governedRunKernel: sl<GovernedRunKernelService>(),
+              triggerIngressService: sl<SecurityTriggerIngressService>(),
+            ));
+        logger.debug('✅ [DI] SecurityKernelReleaseGateService registered');
+        sl.registerLazySingleton(() => SelfHealGovernanceAdapterService(
+              governedRunKernel: sl<GovernedRunKernelService>(),
+              impactPolicy: sl<SecurityAutonomyImpactPolicy>(),
+              learningMomentBridge: sl<SecurityLearningMomentBridge>(),
+            ));
+        logger.debug('✅ [DI] SelfHealGovernanceAdapterService registered');
         sl.registerLazySingleton(() => ModelVersionManager(
               kernelGovernanceGate: sl<KernelGovernanceGate>(),
+              securityReleaseGateService:
+                  sl<SecurityKernelReleaseGateService>(),
             ));
         logger.debug('✅ [DI] ModelVersionManager registered');
 
@@ -608,8 +796,8 @@ Future<void> init() async {
               agentIdService: sl.isRegistered<AgentIdService>()
                   ? sl<AgentIdService>()
                   : null,
-              llmService: sl.isRegistered<LLMService>()
-                  ? sl<LLMService>()
+              languageRuntimeService: sl.isRegistered<LanguageRuntimeService>()
+                  ? sl<LanguageRuntimeService>()
                   : null, // Phase 6.2: AI-powered suggestions
               personalityLearning: sl.isRegistered<PersonalityLearning>()
                   ? sl<PersonalityLearning>()
@@ -856,9 +1044,6 @@ Future<void> init() async {
               encryptionService: sl.isRegistered<HybridEncryptionService>()
                   ? sl<HybridEncryptionService>()
                   : null,
-              ai2aiProtocol: sl.isRegistered<AnonymousCommunicationProtocol>()
-                  ? sl<AnonymousCommunicationProtocol>()
-                  : null,
               orchestrator: sl.isRegistered<VibeConnectionOrchestrator>()
                   ? sl<VibeConnectionOrchestrator>()
                   : null,
@@ -901,9 +1086,6 @@ Future<void> init() async {
               encryptionService: sl.isRegistered<HybridEncryptionService>()
                   ? sl<HybridEncryptionService>()
                   : null,
-              ai2aiProtocol: sl.isRegistered<AnonymousCommunicationProtocol>()
-                  ? sl<AnonymousCommunicationProtocol>()
-                  : null,
             ));
         logger.debug(
             '✅ [DI] ReservationCalendarService registered (Phase 10.2: Full AVRAI integration)');
@@ -938,9 +1120,6 @@ Future<void> init() async {
                       : null,
               encryptionService: sl.isRegistered<HybridEncryptionService>()
                   ? sl<HybridEncryptionService>()
-                  : null,
-              ai2aiProtocol: sl.isRegistered<AnonymousCommunicationProtocol>()
-                  ? sl<AnonymousCommunicationProtocol>()
                   : null,
               // Optional analytics
               analyticsService: sl.isRegistered<ReservationAnalyticsService>()
@@ -981,27 +1160,29 @@ Future<void> init() async {
               encryptionService: sl.isRegistered<HybridEncryptionService>()
                   ? sl<HybridEncryptionService>()
                   : null,
-              ai2aiProtocol: sl.isRegistered<AnonymousCommunicationProtocol>()
-                  ? sl<AnonymousCommunicationProtocol>()
-                  : null,
             ));
         logger.debug(
             '✅ [DI] ReservationSharingService registered (Phase 10.4: Full AVRAI integration)');
 
-        // Register LLM Service (Google Gemini) with connectivity check
-        sl.registerLazySingleton<LLMService>(() => LLMService(
-              supabaseClient,
-              connectivity: sl<Connectivity>(),
-            ));
-        logger.debug('✅ [DI] LLM service registered');
+        // Register the legacy language runtime adapter. Kernel consumers should
+        // prefer the language-kernel stack for semantics.
+        sl.registerLazySingleton<LanguageRuntimeService>(
+            () => LanguageRuntimeService(
+                  supabaseClient,
+                  connectivity: sl<Connectivity>(),
+                ));
+        sl.registerLazySingleton<LLMService>(
+            () => sl<LanguageRuntimeService>());
+        logger.debug('✅ [DI] Language runtime service registered');
       } catch (e) {
         logger.warn(
-            '⚠️ [DI] Supabase not initialized, skipping LLM service registration');
+            '⚠️ [DI] Supabase not initialized, skipping language runtime registration');
       }
     } catch (e, stackTrace) {
-      logger.warn('⚠️ [DI] LLM service registration failed (optional): $e');
+      logger
+          .warn('⚠️ [DI] Language runtime registration failed (optional): $e');
       logger.debug('Stack trace: $stackTrace');
-      // LLM service optional - app can work without it
+      // Language runtime optional - app can work without it
     }
   } catch (e, stackTrace) {
     logger.error('❌ [DI] Backend initialization failed', error: e);

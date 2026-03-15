@@ -61,6 +61,16 @@ class TextSectionSchema extends SectionSchema {
   }) : super(title: title);
 }
 
+class CustomSectionSchema extends SectionSchema {
+  final Widget child;
+
+  const CustomSectionSchema({
+    required String title,
+    super.subtitle,
+    required this.child,
+  }) : super(title: title);
+}
+
 class KeyValueItemSchema {
   final String label;
   final String value;

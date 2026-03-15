@@ -1,15 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:avrai_runtime_os/ai/ai2ai_learning.dart';
+import 'package:avrai_runtime_os/ai/personality_learning.dart';
+import 'package:avrai_runtime_os/ai2ai/models/friend_chat_message.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/community/community_chat_service.dart';
 import 'package:avrai_runtime_os/services/chat/friend_chat_service.dart';
 import 'package:avrai_runtime_os/services/chat/dm_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_sender_key_service.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_route_planner.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
 
 import 'package:avrai_core/avra_core.dart';
@@ -157,8 +168,39 @@ class InMemoryRealtimeBackend implements RealtimeBackend {
   Future<void> updateLiveCursor(String documentId, LiveCursor cursor) async {}
 }
 
+class FakeSignalEncryptionService implements MessageEncryptionService {
+  @override
+  EncryptionType get encryptionType => EncryptionType.signalProtocol;
+
+  @override
+  Future<EncryptedMessage> encrypt(String plaintext, String recipientId) async {
+    return EncryptedMessage(
+      encryptedContent: Uint8List.fromList(utf8.encode(plaintext)),
+      encryptionType: EncryptionType.signalProtocol,
+      metadata: <String, dynamic>{
+        'recipient_id': recipientId,
+      },
+    );
+  }
+
+  @override
+  Future<String> decrypt(EncryptedMessage encrypted, String senderId) async {
+    return utf8.decode(encrypted.encryptedContent);
+  }
+}
+
+TransportRouteReceipt? _routeReceiptFromMessage(FriendChatMessage message) {
+  final raw = message.metadata?['transport_route_receipt'];
+  if (raw is! Map) {
+    return null;
+  }
+  return TransportRouteReceipt.fromJson(Map<String, dynamic>.from(raw));
+}
+
 void main() {
-  setUpAll(() {
+  late Directory storageRoot;
+
+  setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -171,6 +213,13 @@ void main() {
         return null;
       },
     );
+    storageRoot =
+        await Directory.systemTemp.createTemp('chat_transport_contract_');
+    await GetStorage('friend_chat_messages', storageRoot.path).initStorage;
+    await GetStorage('friend_chat_outbox', storageRoot.path).initStorage;
+    await GetStorage('community_chat_messages', storageRoot.path).initStorage;
+    await GetStorage('bham_route_learning', storageRoot.path).initStorage;
+    await GetStorage('ai2ai_chat_contract_prefs', storageRoot.path).initStorage;
   });
 
   group('Signal transport contract (DM + community)', () {
@@ -188,6 +237,10 @@ void main() {
       dmStore = InMemoryDmMessageStore();
       senderKeyService = InMemoryCommunitySenderKeyService();
       communityMessageStore = InMemoryCommunityMessageStore();
+      await GetStorage('friend_chat_messages').erase();
+      await GetStorage('friend_chat_outbox').erase();
+      await GetStorage('community_chat_messages').erase();
+      await GetStorage('bham_route_learning').erase();
     });
 
     tearDown(() async {
@@ -213,6 +266,124 @@ void main() {
       final plaintext =
           await service.getDecryptedMessage(history.single, 'userA', 'userB');
       expect(plaintext, equals('hello'));
+    });
+
+    test(
+        'Friend DM: sender route receipt advances from custody to delivered to read',
+        () async {
+      final service = FriendChatService(
+        encryptionService: FakeSignalEncryptionService(),
+        agentIdService: agentIdService,
+        realtimeBackend: realtime,
+        atomicClock: atomicClock,
+        dmStore: dmStore,
+        routePlanner: BhamRoutePlanner(),
+      );
+
+      final result = await service.sendMessageOverNetworkWithKernelContext(
+        'userA',
+        'userB',
+        'hello with receipts',
+      );
+
+      expect(
+        result.routeReceipt?.lifecycleStage,
+        TransportReceiptLifecycleStage.custodyAccepted,
+      );
+
+      var history = await service.getConversationHistory('userA', 'userB');
+      expect(history, hasLength(1));
+      expect(
+        _routeReceiptFromMessage(history.single)?.lifecycleStage,
+        TransportReceiptLifecycleStage.custodyAccepted,
+      );
+
+      await realtime.sendMessage(
+        'dm_receipts:userA',
+        RealtimeMessage(
+          id: result.message.messageId,
+          senderId: 'userB',
+          content: result.message.messageId,
+          type: 'dm_receipt',
+          timestamp: DateTime.now().toUtc(),
+          metadata: <String, dynamic>{
+            'kind': 'dm_delivery_receipt_v1',
+            'message_id': result.message.messageId,
+            'sender_user_id': 'userA',
+            'recipient_user_id': 'userB',
+            'receipt_by_user_id': 'userB',
+          },
+        ),
+      );
+
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      history = await service.getConversationHistory('userA', 'userB');
+      expect(
+        _routeReceiptFromMessage(history.single)?.lifecycleStage,
+        TransportReceiptLifecycleStage.delivered,
+      );
+
+      final marked = await service.markAsRead('userB', 'userA');
+      expect(marked, 1);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      history = await service.getConversationHistory('userA', 'userB');
+      final readReceipt = _routeReceiptFromMessage(history.single);
+      expect(readReceipt?.lifecycleStage, TransportReceiptLifecycleStage.read);
+      expect(readReceipt?.readBy, 'userB');
+      expect(history.single.isRead, isTrue);
+    });
+
+    test(
+        'Friend DM: successful network send stores learnable metadata and feeds analyzer',
+        () async {
+      final prefsStorage = GetStorage('ai2ai_chat_contract_prefs');
+      await prefsStorage.erase();
+      final prefs =
+          await SharedPreferencesCompat.getInstance(storage: prefsStorage);
+      await prefs.setBool('user_runtime_learning_enabled', true);
+      await prefs.setBool('ai2ai_learning_enabled', true);
+      final analyzer = AI2AIChatAnalyzer(
+        prefs: prefs,
+        personalityLearning: PersonalityLearning.withPrefs(prefs),
+      );
+      final intake = Ai2AiChatEventIntakeService(
+        chatAnalyzer: analyzer,
+        humanLanguageBoundaryReviewLane: HumanLanguageBoundaryReviewLane(
+          prefs: prefs,
+        ),
+        agentIdService: agentIdService,
+      );
+      final service = FriendChatService(
+        encryptionService: FakeSignalEncryptionService(),
+        agentIdService: agentIdService,
+        realtimeBackend: realtime,
+        atomicClock: atomicClock,
+        dmStore: dmStore,
+        routePlanner: BhamRoutePlanner(),
+        ai2aiChatEventIntakeService: intake,
+      );
+
+      await service.sendMessageOverNetworkWithKernelContext(
+        'userA',
+        'userB',
+        'I prefer collaborative planning and trying new local spots.',
+      );
+
+      final history = await service.getConversationHistory('userA', 'userB');
+      expect(history, hasLength(1));
+      expect(
+        history
+            .single.metadata?[HumanLanguageBoundaryReview.learningMetadataKey],
+        isA<Map<String, dynamic>>(),
+      );
+
+      final learningHistory = await analyzer.getChatHistoryForAdmin('userA');
+      expect(learningHistory, hasLength(1));
+      expect(
+        learningHistory.single.messages.single.learnableArtifactSource,
+        ChatMessage.humanLanguageLearningMetadataKey,
+      );
     });
 
     test('Friend DM: inbound non-Signal payload is ignored (not stored)',
@@ -366,6 +537,12 @@ void main() {
 
       expect(received, isFalse);
     });
+  });
+
+  tearDownAll(() async {
+    if (storageRoot.existsSync()) {
+      await storageRoot.delete(recursive: true);
+    }
   });
 }
 

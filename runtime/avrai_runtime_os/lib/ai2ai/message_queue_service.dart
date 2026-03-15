@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:avrai_runtime_os/services/messaging/bham_messaging_models.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_transport_policy.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 
@@ -15,18 +17,19 @@ class MessageQueueService {
   static const String _cleanupExpiredRpc = 'cleanup_expired_wormhole_messages';
 
   final SupabaseService _supabaseService;
+  final BhamTransportPolicy _transportPolicy;
   final AppLogger _logger = const AppLogger(
     defaultTag: 'MessageQueue',
     minimumLevel: LogLevel.debug,
   );
 
-  // Queue configuration
-  static const int _maxQueueSize = 1000; // Maximum messages per agent
   static const int _maxDeliveryAttempts = 3;
 
   MessageQueueService({
     required SupabaseService supabaseService,
-  }) : _supabaseService = supabaseService;
+    BhamTransportPolicy? transportPolicy,
+  })  : _supabaseService = supabaseService,
+        _transportPolicy = transportPolicy ?? const BhamTransportPolicy();
 
   /// Store message in queue
   ///
@@ -48,7 +51,7 @@ class MessageQueueService {
 
       // Check queue size for target agent
       final currentQueueSize = await _getQueueSize(targetAgentId);
-      if (currentQueueSize >= _maxQueueSize) {
+      if (currentQueueSize >= _transportPolicy.queueCap) {
         // Remove oldest pending message (FIFO eviction)
         await _evictOldestMessage(targetAgentId);
       }
@@ -120,6 +123,25 @@ class MessageQueueService {
       );
       return [];
     }
+  }
+
+  Future<void> enqueueTransportEnvelope({
+    required String senderAgentId,
+    required String targetAgentId,
+    required String encryptedPayload,
+    required QueuedTransportEnvelope envelope,
+  }) async {
+    await enqueueMessage(
+      messageId: envelope.envelopeId,
+      senderAgentId: senderAgentId,
+      targetAgentId: targetAgentId,
+      encryptedPayload: encryptedPayload,
+      messageType: envelope.payloadType,
+      expiresAt: envelope.expiresAtUtc,
+      routingHops: envelope.routePlan.candidateRoutes
+          .map((route) => route.mode.name)
+          .toList(),
+    );
   }
 
   /// Mark message as delivered

@@ -1,5 +1,4 @@
 import 'dart:developer' as developer;
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 
 /// Error handler for anonymization and privacy-related errors
 ///
@@ -14,16 +13,17 @@ class AnonymizationErrorHandler {
   ///
   /// Maps technical error messages to clear, actionable user messages
   /// that explain privacy protection without exposing technical details.
-  static String getUserFriendlyMessage(AnonymousCommunicationException error) {
-    final message = error.message.toLowerCase();
+  static String getUserFriendlyMessage(Object error) {
+    final rawMessage = _errorMessage(error);
+    final message = rawMessage.toLowerCase();
 
     // Check for specific validation failures
     if (message.contains('forbidden user data')) {
-      return _handleForbiddenDataError(error.message);
+      return _handleForbiddenDataError(rawMessage);
     }
 
     if (message.contains('suspicious patterns')) {
-      return _handleSuspiciousPatternError(error.message);
+      return _handleSuspiciousPatternError(rawMessage);
     }
 
     if (message.contains('target agent id cannot be empty')) {
@@ -123,9 +123,8 @@ class AnonymizationErrorHandler {
   /// Get actionable guidance for the error
   ///
   /// Returns suggestions for how the user can resolve the issue
-  static List<String> getActionableGuidance(
-      AnonymousCommunicationException error) {
-    final message = error.message.toLowerCase();
+  static List<String> getActionableGuidance(Object error) {
+    final message = _errorMessage(error).toLowerCase();
     final guidance = <String>[];
 
     if (message.contains('forbidden') || message.contains('suspicious')) {
@@ -158,10 +157,9 @@ class AnonymizationErrorHandler {
   }
 
   /// Log error with context
-  static void logError(AnonymousCommunicationException error,
-      {String? context}) {
+  static void logError(Object error, {String? context}) {
     developer.log(
-      'Anonymization error: ${error.message}',
+      'Anonymization error: ${_errorMessage(error)}',
       name: _logName,
       error: error,
     );
@@ -172,16 +170,16 @@ class AnonymizationErrorHandler {
   }
 
   /// Check if error is a validation error (user can fix)
-  static bool isValidationError(AnonymousCommunicationException error) {
-    final message = error.message.toLowerCase();
+  static bool isValidationError(Object error) {
+    final message = _errorMessage(error).toLowerCase();
     return message.contains('forbidden') ||
         message.contains('suspicious') ||
         message.contains('cannot be empty');
   }
 
   /// Check if error is a connection error (may be transient)
-  static bool isConnectionError(AnonymousCommunicationException error) {
-    final message = error.message.toLowerCase();
+  static bool isConnectionError(Object error) {
+    final message = _errorMessage(error).toLowerCase();
     return message.contains('failed to send') ||
         message.contains('failed to receive') ||
         message.contains('failed to establish') ||
@@ -189,8 +187,17 @@ class AnonymizationErrorHandler {
   }
 
   /// Check if error is a trust/security error (requires time/action)
-  static bool isTrustError(AnonymousCommunicationException error) {
-    final message = error.message.toLowerCase();
+  static bool isTrustError(Object error) {
+    final message = _errorMessage(error).toLowerCase();
     return message.contains('trust level') || message.contains('insufficient');
+  }
+
+  static String _errorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'AnonymousCommunicationException: ';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length);
+    }
+    return raw;
   }
 }

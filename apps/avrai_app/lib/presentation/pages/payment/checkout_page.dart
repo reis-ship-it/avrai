@@ -12,7 +12,7 @@ import 'package:avrai/presentation/pages/legal/event_waiver_page.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
 import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Checkout Page
 /// Agent 2: Event Discovery & Hosting UI (Section 2, Task 2.2)
@@ -172,7 +172,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final availableTickets =
         widget.event.maxAttendees - widget.event.attendeeCount;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Checkout',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

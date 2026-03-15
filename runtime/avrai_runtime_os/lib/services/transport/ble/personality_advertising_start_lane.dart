@@ -29,11 +29,11 @@ class PersonalityAdvertisingStartLane {
 
     // V0.1 Pivot: Generate DNA math string payload for BLE
     // We try to get the PersonalityKnotService from GetIt, fallback to creating it.
-    final knotService = GetIt.instance.isRegistered<PersonalityKnotService>() 
-        ? GetIt.instance<PersonalityKnotService>() 
+    final knotService = GetIt.instance.isRegistered<PersonalityKnotService>()
+        ? GetIt.instance<PersonalityKnotService>()
         : PersonalityKnotService();
     final dnaEncoder = DnaEncoderService();
-    
+
     final knot = await knotService.generateKnot(personality);
     final dnaPayload = dnaEncoder.encode(knot);
 

@@ -10,7 +10,9 @@ void main() {
       exchangeService = LocalityFederatedExchangeService();
     });
 
-    test('should encode precise latitude/longitude into a low-precision privacy geohash', () async {
+    test(
+        'should encode precise latitude/longitude into a low-precision privacy geohash',
+        () async {
       // Very precise location (like a specific house)
       const double exactLat = 37.7749295;
       const double exactLon = -122.4194155;
@@ -28,7 +30,8 @@ void main() {
 
       // Simulate a successful upload
       final gradients = [
-        AnonymousGradient(category: 'spot_affinity', weightAdjustments: [0.1, 0.2])
+        AnonymousGradient(
+            category: 'spot_affinity', weightAdjustments: [0.1, 0.2])
       ];
 
       // This should not throw
@@ -40,8 +43,9 @@ void main() {
     });
 
     test('should download global model updates for the local region', () async {
-      final updates = await exchangeService.downloadGlobalModelUpdates(37.7749, -122.4194);
-      
+      final updates =
+          await exchangeService.downloadGlobalModelUpdates(37.7749, -122.4194);
+
       expect(updates, isNotEmpty);
       expect(updates.first.category, equals('spot_affinity'));
       expect(updates.first.weightAdjustments, isNotEmpty);

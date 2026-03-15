@@ -67,7 +67,10 @@ class ConversationInsightsExtractor {
   Future<List<SharedInsight>> extractDimensionInsights(
       ChatMessage message) async {
     final insights = <SharedInsight>[];
-    final content = message.content.toLowerCase();
+    final content = message.learnablePatternText.toLowerCase();
+    if (content.trim().isEmpty) {
+      return insights;
+    }
 
     // Map keywords to dimensions
     final dimensionKeywords = {
@@ -153,15 +156,15 @@ class ConversationInsightsExtractor {
       if (matches > 0) {
         // Calculate value based on keyword frequency
         final value = min(1.0, (matches / keywords.length) * 0.8 + 0.2);
-        final reliability =
-            min(1.0, matches / 3.0); // More matches = more reliable
+        final reliability = min(1.0, matches / 3.0);
 
         insights.add(SharedInsight(
           category: 'dimension_evolution',
           dimension: dimension,
           value: value,
           description:
-              'Dimension insight from message: ${message.content.substring(0, min(50, message.content.length))}...',
+              'Dimension insight from ${message.learnableArtifactSource}: '
+              '${_truncateText(message.learnableSummaryText, 50)}...',
           reliability: reliability,
           timestamp: message.timestamp,
         ));
@@ -175,7 +178,10 @@ class ConversationInsightsExtractor {
   Future<List<SharedInsight>> extractPreferenceInsights(
       ChatMessage message) async {
     final insights = <SharedInsight>[];
-    final content = message.content.toLowerCase();
+    final content = message.learnablePatternText.toLowerCase();
+    if (content.trim().isEmpty) {
+      return insights;
+    }
 
     // Look for preference indicators
     final preferencePatterns = {
@@ -221,7 +227,10 @@ class ConversationInsightsExtractor {
   Future<List<SharedInsight>> extractExperienceInsights(
       ChatMessage message) async {
     final insights = <SharedInsight>[];
-    final content = message.content.toLowerCase();
+    final content = message.learnablePatternText.toLowerCase();
+    if (content.trim().isEmpty) {
+      return insights;
+    }
 
     // Look for experience indicators
     final experienceKeywords = [
@@ -266,7 +275,8 @@ class ConversationInsightsExtractor {
         dimension: experienceType,
         value: 0.7,
         description:
-            'Experience shared: ${message.content.substring(0, min(60, message.content.length))}...',
+            'Experience shared from ${message.learnableArtifactSource}: '
+            '${_truncateText(message.learnableSummaryText, 60)}...',
         reliability: 0.7,
         timestamp: message.timestamp,
       ));
@@ -327,15 +337,10 @@ class ConversationInsightsExtractor {
   double _analyzeTopicConsistency(List<AI2AIChatEvent> history) {
     if (history.isEmpty) return 0.5; // Default for no history
 
-    // Extract topics from message content
+    // Extract topics from learnable artifacts, not raw transcripts.
     final allTopics = <String>[];
     for (final event in history) {
       for (final message in event.messages) {
-        // Simple keyword extraction (in production, could use NLP)
-        final content = message.content.toLowerCase();
-        final words = content.split(RegExp(r'\s+'));
-
-        // Extract meaningful words (length > 3, not common stop words)
         final stopWords = {
           'the',
           'and',
@@ -377,10 +382,9 @@ class ConversationInsightsExtractor {
           'too'
         };
 
-        for (final word in words) {
-          final cleaned = word.replaceAll(RegExp(r'[^\w]'), '');
-          if (cleaned.length > 3 && !stopWords.contains(cleaned)) {
-            allTopics.add(cleaned);
+        for (final topic in message.learnableTopicTerms) {
+          if (!stopWords.contains(topic)) {
+            allTopics.add(topic);
           }
         }
       }
@@ -410,5 +414,12 @@ class ConversationInsightsExtractor {
         (repetitionRatio * 0.7 + (1.0 - diversityPenalty) * 0.3)
             .clamp(0.0, 1.0);
     return consistencyScore;
+  }
+
+  String _truncateText(String input, int maxLength) {
+    if (input.length <= maxLength) {
+      return input;
+    }
+    return input.substring(0, maxLength);
   }
 }

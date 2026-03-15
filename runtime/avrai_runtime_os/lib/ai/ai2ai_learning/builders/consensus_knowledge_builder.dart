@@ -16,8 +16,11 @@ class ConsensusKnowledgeBuilder {
     for (final chat in chats) {
       // Extract insights from messages
       for (final message in chat.messages) {
-        // Simple keyword-based insight extraction
-        final content = message.content.toLowerCase();
+        // Simple keyword-based insight extraction over the learnable artifact.
+        final content = message.learnablePatternText.toLowerCase();
+        if (content.trim().isEmpty) {
+          continue;
+        }
 
         // Look for dimension-related keywords
         final dimensionKeywords = {

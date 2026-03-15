@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'expertise_level.dart';
 
@@ -35,23 +32,21 @@ class ExpertisePin extends Equatable {
 
   /// Get pin color based on category
   /// Returns category-specific colors for visual distinction
-  /// CRITICAL: Uses 0xFF000000(100% adherence required)
   int getPinColor() {
-    // Category-specific color mapping using AppColors
     final categoryColors = {
-      'Coffee': 0xFF4D4D4D, // grey700
-      'Restaurants': 0xFFFF4D4D, // error
-      'Bookstores': 0xFF00FF66, // electricGreen
-      'Parks': 0xFF00FF66, // electricGreen
-      'Museums': 0xFF6E6E6E, // grey600
-      'Shopping': 0xFF8A8A8A, // grey500
-      'Bars': 0xFFFFC107, // warning
-      'Hotels': 0xFFB3B3B3, // grey400
-      'Thai Food': 0xFFFFC107, // warning
-      'Vintage': 0xFF6E6E6E, // grey600
+      'Coffee': 0xFF474747, // AppColors.grey700
+      'Restaurants': 0xFFB42318, // AppColors.error
+      'Bookstores': 0xFF2E7D32, // AppColors.success
+      'Parks': 0xFF2E7D32, // AppColors.success
+      'Museums': 0xFF666666, // AppColors.grey600
+      'Shopping': 0xFF8C8C8C, // AppColors.grey500
+      'Bars': 0xFFB7791F, // AppColors.warning
+      'Hotels': 0xFFB2B2B2, // AppColors.grey400
+      'Thai Food': 0xFFB7791F, // AppColors.warning
+      'Vintage': 0xFF666666, // AppColors.grey600
     };
 
-    return categoryColors[category] ?? 0xFF8A8A8A;
+    return categoryColors[category] ?? 0xFF8C8C8C;
   }
 
   /// Get pin icon based on category
@@ -164,29 +159,6 @@ class ExpertisePin extends Equatable {
     double? communityTrustScore,
     List<String>? unlockedFeatures,
   }) {
-    // #region agent log
-    // Debug mode: prove whether location was explicitly cleared vs omitted.
-    try {
-      final payload = <String, dynamic>{
-        'id': 'log_${DateTime.now().millisecondsSinceEpoch}_H6',
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'sessionId': 'debug-session',
-        'runId': 'pre-fix-expertise-pin',
-        'hypothesisId': 'H6',
-        'location':
-            'lib/core/models/expertise/expertise_pin.dart:ExpertisePin.copyWith',
-        'message': 'copyWith location param handling',
-        'data': {
-          'location_param_is_unset': identical(location, _unset),
-          'location_param_is_null': location == null,
-          'previous_location_is_null': this.location == null,
-        },
-      };
-      File('/Users/reisgordon/SPOTS/.cursor/debug.log')
-          .writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
-    } catch (_) {}
-    // #endregion
-
     return ExpertisePin(
       id: id ?? this.id,
       userId: userId ?? this.userId,

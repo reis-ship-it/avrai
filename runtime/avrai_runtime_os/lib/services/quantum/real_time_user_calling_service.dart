@@ -35,7 +35,7 @@ import 'package:avrai_runtime_os/services/quantum/meaningful_experience_calculat
 import 'package:avrai_runtime_os/services/quantum/user_journey_tracking_service.dart';
 import 'package:avrai_core/models/unified_location_data.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
+import 'package:avrai_runtime_os/services/chat/conversation_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
 import 'package:avrai_runtime_os/services/quantum/real_time_user_calling_models.dart';
 import 'dart:math' as math;
@@ -82,7 +82,7 @@ class RealTimeUserCallingService {
   final KnotWorldsheetService _worldsheetService;
   final KnotFabricService _fabricService;
   final KnotStorageService _knotStorage;
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
+  final ConversationOrchestrationLane? _conversationOrchestrationLane;
   final HybridEncryptionService? _encryptionService;
 
   // Performance optimization: Cache for quantum states and compatibility
@@ -120,7 +120,7 @@ class RealTimeUserCallingService {
     required KnotWorldsheetService worldsheetService,
     required KnotFabricService fabricService,
     required KnotStorageService knotStorage,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
+    ConversationOrchestrationLane? conversationOrchestrationLane,
     HybridEncryptionService? encryptionService,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
@@ -138,7 +138,7 @@ class RealTimeUserCallingService {
         _worldsheetService = worldsheetService,
         _fabricService = fabricService,
         _knotStorage = knotStorage,
-        _ai2aiProtocol = ai2aiProtocol,
+        _conversationOrchestrationLane = conversationOrchestrationLane,
         _encryptionService = encryptionService;
 
   /// Call users to event immediately upon event creation
@@ -161,6 +161,14 @@ class RealTimeUserCallingService {
     );
 
     try {
+      if (eventEntities.isEmpty) {
+        developer.log(
+          'Skipping user calling on event creation because no event entities were provided',
+          name: _logName,
+        );
+        return;
+      }
+
       final tAtomic = await _atomicClock.getAtomicTimestamp();
 
       // Create entangled state from event entities
@@ -1438,7 +1446,7 @@ class RealTimeUserCallingService {
   /// **Enhanced with AI2AI Mesh + Signal Protocol:**
   /// 1. Creates anonymous notification payload (privacy-preserving)
   /// 2. Encrypts using Signal Protocol (via HybridEncryptionService)
-  /// 3. Routes through AI2AI mesh (via AnonymousCommunicationProtocol)
+  /// 3. Routes through AI2AI mesh via the governed private delivery adapter
   /// 4. Falls back to database storage if AI2AI services unavailable
   Future<void> _sendEventCallNotification({
     required String userId,
@@ -1453,9 +1461,9 @@ class RealTimeUserCallingService {
       );
 
       // 1. Try AI2AI mesh + Signal Protocol (if available)
-      final ai2aiProtocol = _ai2aiProtocol;
+      final conversationLane = _conversationOrchestrationLane;
       final encryptionService = _encryptionService;
-      if (ai2aiProtocol != null && encryptionService != null) {
+      if (conversationLane != null && encryptionService != null) {
         try {
           // Get agent ID for recipient (user)
           final recipientAgentId = await _agentIdService.getUserAgentId(userId);
@@ -1468,14 +1476,11 @@ class RealTimeUserCallingService {
             'timestamp': DateTime.now().toIso8601String(),
           };
 
-          // Route through AI2AI mesh with Signal Protocol encryption
-          // sendEncryptedMessage handles encryption internally via MessageEncryptionService
-          // Parameters are positional: targetAgentId, messageType, anonymousPayload
-          await ai2aiProtocol.sendEncryptedMessage(
-            recipientAgentId, // targetAgentId (positional)
-            MessageType
-                .recommendationShare, // messageType (positional) - Use recommendationShare for event recommendations
-            notificationPayload, // anonymousPayload (positional)
+          await conversationLane.sendDirectMessagePayload(
+            recipientAgentId: recipientAgentId,
+            payload: notificationPayload,
+            messageCategory:
+                isUpdate ? 'event_call_updated' : 'event_call_notification',
           );
 
           developer.log(

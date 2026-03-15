@@ -1,0 +1,31 @@
+{
+  "control_pack_id": "governance_inspection_controls",
+  "scope": "explicit human and higher-stratum inspection of personal, locality, world, and universal agents",
+  "master_plan_refs": ["12.3.8", "12.3.10", "12.6.9"],
+  "related_milestones": ["M31-P7-2"],
+  "inspection_policy": {
+    "supported_governance_strata": ["personal", "locality", "world", "universal"],
+    "supported_visibility_tiers": ["summary", "triggered_detail", "break_glass_detail"],
+    "human_visibility_required_during_beta_and_first_launches": true,
+    "hidden_backdoor_access_allowed": false
+  },
+  "audit_requirements": {
+    "inspection_actor_required": true,
+    "justification_required": true,
+    "immutable_audit_record_required": true,
+    "follow_up_review_required_for_break_glass": true
+  },
+  "triggered_detail_policy": {
+    "requires_anomaly_threshold_or_authorized_investigation": true,
+    "default_raw_detail_visibility": "denied",
+    "allowed_detail_triggers": [
+      "serious_anomaly",
+      "attack_signature",
+      "coherence_failure",
+      "authorized_human_investigation"
+    ]
+  },
+  "status": "starter",
+  "last_updated": "2026-03-06",
+  "notes": "Starter contract pack for governance-inspect pathway and early-launch human observability."
+}

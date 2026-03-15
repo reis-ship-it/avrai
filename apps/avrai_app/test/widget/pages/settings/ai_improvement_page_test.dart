@@ -207,7 +207,7 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert - All widgets should be in a scrollable list
-        expect(find.byType(ListView), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
         expect(find.byType(AIImprovementSection), findsOneWidget);
         final list = find.byKey(const Key('ai_improvement_page_list'));
         final progressWidget = find.byType(AIImprovementProgressWidget);
@@ -356,7 +356,7 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert
-        expect(find.byType(ListView), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
         expect(find.byType(Scrollable), findsWidgets);
       });
 

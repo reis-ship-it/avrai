@@ -11,5 +11,9 @@ resolution: workspace
 dependencies:
   meta: ^1.10.0
   uuid: ^4.3.3
+  ffi: ^2.1.4
   avrai_core:
     path: ../../shared/avrai_core
+
+dev_dependencies:
+  test: ^1.25.15

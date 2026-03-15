@@ -3,11 +3,21 @@ import 'dart:developer' as developer;
 
 import 'package:avrai_runtime_os/ai2ai/models/community_chat_message.dart';
 import 'package:avrai_core/models/community/community.dart';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:avrai_runtime_os/crypto/aes256gcm_fixed_key_codec.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/chat/dm_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_sender_key_service.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_messaging_models.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_route_learning_service.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_route_planner.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_transport_policy.dart';
+import 'package:avrai_runtime_os/services/transport/compatibility/transport_route_receipt_compatibility_translator.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_network/avra_network.dart';
@@ -39,6 +49,12 @@ class CommunityChatService {
   final DmMessageStore? _dmStore;
   final CommunitySenderKeyService? _senderKeyService;
   final CommunityMessageStore? _communityMessageStore;
+  final HeadlessAvraiOsHost? _headlessOsHost;
+  final BhamRoutePlanner? _routePlanner;
+  final BhamRouteLearningService? _routeLearningService;
+  final BhamTransportPolicy? _transportPolicy;
+  final HumanLanguageBoundaryReviewLane _humanLanguageBoundaryReviewLane;
+  final Ai2AiChatEventIntakeService? _ai2aiChatEventIntakeService;
 
   CommunityChatService({
     MessageEncryptionService? encryptionService,
@@ -48,13 +64,26 @@ class CommunityChatService {
     DmMessageStore? dmStore,
     CommunitySenderKeyService? senderKeyService,
     CommunityMessageStore? communityMessageStore,
+    HeadlessAvraiOsHost? headlessOsHost,
+    BhamRoutePlanner? routePlanner,
+    BhamRouteLearningService? routeLearningService,
+    BhamTransportPolicy? transportPolicy,
+    HumanLanguageBoundaryReviewLane? humanLanguageBoundaryReviewLane,
+    Ai2AiChatEventIntakeService? ai2aiChatEventIntakeService,
   })  : _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _agentIdService = agentIdService,
         _realtimeBackend = realtimeBackend,
         _atomicClock = atomicClock,
         _dmStore = dmStore,
         _senderKeyService = senderKeyService,
-        _communityMessageStore = communityMessageStore;
+        _communityMessageStore = communityMessageStore,
+        _headlessOsHost = headlessOsHost,
+        _routePlanner = routePlanner,
+        _routeLearningService = routeLearningService,
+        _transportPolicy = transportPolicy,
+        _humanLanguageBoundaryReviewLane = humanLanguageBoundaryReviewLane ??
+            HumanLanguageBoundaryReviewLane(),
+        _ai2aiChatEventIntakeService = ai2aiChatEventIntakeService;
 
   /// Send an encrypted group message
   ///
@@ -81,23 +110,25 @@ class CommunityChatService {
           'Sending group message from $userId to community $communityId',
           name: _logName);
 
-      final chatId = _generateChatId(communityId);
-
-      // Encrypt message with group key
-      final encrypted = await _encryptGroupMessage(message, communityId);
-
-      // Create message
-      final chatMessage = CommunityChatMessage(
-        messageId: const Uuid().v4(),
-        chatId: chatId,
+      final review = await _reviewCommunityMessage(
+        userId: userId,
         communityId: communityId,
-        senderId: userId,
-        encryptedContent: encrypted,
-        timestamp: DateTime.now(),
+        message: message,
+        egressRequested: false,
       );
+      if (!review.transcriptStorageAllowed) {
+        throw HumanLanguageBoundaryViolationException(
+          operation: 'community_chat_local_store',
+          decision: review.turn.boundary,
+        );
+      }
 
-      // Store message
-      await _saveMessage(chatMessage);
+      final chatMessage = await _storeOutboundGroupMessage(
+        userId: userId,
+        communityId: communityId,
+        plaintext: review.transcriptText,
+        metadata: review.toMetadata(),
+      );
 
       developer.log('✅ Group message sent and saved: ${chatMessage.messageId}',
           name: _logName);
@@ -125,22 +156,87 @@ class CommunityChatService {
     required String message,
     required Community community,
   }) async {
-    // Store locally first
-    final stored = await sendGroupMessage(
-      userId,
-      communityId,
-      message,
+    final result = await sendGroupMessageOverNetworkWithKernelContext(
+      userId: userId,
+      communityId: communityId,
+      message: message,
       community: community,
     );
+    return result.message;
+  }
+
+  Future<CommunityChatSendResult> sendGroupMessageOverNetworkWithKernelContext({
+    required String userId,
+    required String communityId,
+    required String message,
+    required Community community,
+  }) async {
+    final review = await _reviewCommunityMessage(
+      userId: userId,
+      communityId: communityId,
+      message: message,
+      egressRequested: true,
+    );
+    if (!review.transcriptStorageAllowed || !review.egressAllowed) {
+      throw HumanLanguageBoundaryViolationException(
+        operation: 'community_chat_network_send',
+        decision: review.turn.boundary,
+      );
+    }
+
+    final stored = await _storeOutboundGroupMessage(
+      userId: userId,
+      communityId: communityId,
+      plaintext: review.transcriptText,
+      metadata: await _buildOutboundCommunityMessageMetadata(
+        userId: userId,
+        plaintext: review.transcriptText,
+        review: review,
+      ),
+    );
+    final routeReceipt = await _planGroupRouteReceipt(
+      messageId: stored.messageId,
+      communityId: communityId,
+    );
+    var effectiveRouteReceipt = routeReceipt;
 
     await _broadcastGroupMessageSenderKey(
       senderUserId: userId,
       community: community,
-      plaintext: message,
+      plaintext: review.transportText,
       messageId: stored.messageId,
     );
+    effectiveRouteReceipt = _markCustodyAccepted(routeReceipt);
+    await _recordRouteOutcome(effectiveRouteReceipt, success: true);
+    await _ingestCommunityMessageForLearning(
+      localUserId: userId,
+      senderUserId: userId,
+      communityId: communityId,
+      messageId: stored.messageId,
+      plaintext: review.transportText,
+      occurredAt: stored.timestamp,
+      direction: Ai2AiChatFlowDirection.outbound,
+      metadata: stored.metadata,
+      routeReceipt: effectiveRouteReceipt,
+      memberCount: community.memberCount,
+    );
 
-    return stored;
+    final kernelResult = await _emitHeadlessCommunityChatLifecycle(
+      userId: userId,
+      communityId: communityId,
+      message: review.transportText,
+      community: community,
+      storedMessage: stored,
+      routeReceipt: effectiveRouteReceipt,
+      boundaryReview: review,
+    );
+
+    return CommunityChatSendResult(
+      message: stored,
+      realityKernelFusionInput: kernelResult?.realityKernelFusionInput,
+      governanceReport: kernelResult?.governanceReport,
+      routeReceipt: effectiveRouteReceipt,
+    );
   }
 
   /// Subscribe to incoming community messages for a user (optionally scoped to one community).
@@ -269,8 +365,28 @@ class CommunityChatService {
             senderUserId: blob.senderUserId,
             plaintext: plaintext,
             sentAtIso: blob.sentAt.toIso8601String(),
+            metadata: await _buildAi2AiLearningMetadata(
+              localUserId: userId,
+              sourceUserId: blob.senderUserId,
+              plaintext: plaintext,
+              chatType: 'community',
+              channel: 'community_chat',
+            ),
           );
-          if (stored != null) yield stored;
+          if (stored != null) {
+            await _ingestCommunityMessageForLearning(
+              localUserId: userId,
+              senderUserId: blob.senderUserId,
+              communityId: blob.communityId,
+              messageId: stored.messageId,
+              plaintext: plaintext,
+              occurredAt: stored.timestamp,
+              direction: Ai2AiChatFlowDirection.inbound,
+              metadata: stored.metadata,
+              memberCount: null,
+            );
+            yield stored;
+          }
         } catch (e, st) {
           developer.log(
             'Error processing incoming community message: $e',
@@ -555,6 +671,27 @@ class CommunityChatService {
     }
   }
 
+  Future<CommunityChatMessage> _storeOutboundGroupMessage({
+    required String userId,
+    required String communityId,
+    required String plaintext,
+    required Map<String, dynamic> metadata,
+  }) async {
+    final chatId = _generateChatId(communityId);
+    final encrypted = await _encryptGroupMessage(plaintext, communityId);
+    final chatMessage = CommunityChatMessage(
+      messageId: const Uuid().v4(),
+      chatId: chatId,
+      communityId: communityId,
+      senderId: userId,
+      encryptedContent: encrypted,
+      timestamp: DateTime.now(),
+      metadata: metadata,
+    );
+    await _saveMessage(chatMessage);
+    return chatMessage;
+  }
+
   // Legacy fanout path (Signal-per-recipient) removed in favor of sender keys.
 
   Future<void> _broadcastGroupMessageSenderKey({
@@ -632,6 +769,7 @@ class CommunityChatService {
     required String senderUserId,
     required String plaintext,
     String? sentAtIso,
+    Map<String, dynamic>? metadata,
   }) async {
     try {
       final chatId = _generateChatId(communityId);
@@ -658,6 +796,7 @@ class CommunityChatService {
         senderId: senderUserId,
         encryptedContent: encryptedAtRest,
         timestamp: timestamp,
+        metadata: metadata,
       );
 
       existing.add(chatMessage.toJson());
@@ -673,4 +812,331 @@ class CommunityChatService {
       return null;
     }
   }
+
+  Future<CommunityChatSendResult?> _emitHeadlessCommunityChatLifecycle({
+    required String userId,
+    required String communityId,
+    required String message,
+    required Community community,
+    required CommunityChatMessage storedMessage,
+    required TransportRouteReceipt routeReceipt,
+    required HumanLanguageBoundaryReview boundaryReview,
+  }) async {
+    final host = _headlessOsHost;
+    if (host == null) {
+      return null;
+    }
+
+    try {
+      await host.start();
+      final now = DateTime.now().toUtc();
+      final envelope = KernelEventEnvelope(
+        eventId:
+            'community_chat:$communityId:$userId:${now.microsecondsSinceEpoch}',
+        userId: userId,
+        agentId: await _resolveActorAgentId(userId),
+        occurredAtUtc: now,
+        sourceSystem: 'community_chat_service',
+        eventType: 'community_message_sent',
+        actionType: 'send_group_message',
+        entityId: communityId,
+        entityType: 'community_chat',
+        routeReceipt: routeReceipt,
+        context: <String, dynamic>{
+          'message_id': storedMessage.messageId,
+          'message_length': message.length,
+          'member_count': community.memberCount,
+          'language_intent':
+              boundaryReview.turn.interpretation.intent.toWireValue(),
+          'boundary_disposition':
+              boundaryReview.turn.boundary.disposition.toWireValue(),
+          'boundary_reason_codes': boundaryReview.turn.boundary.reasonCodes,
+          'egress_purpose':
+              boundaryReview.turn.boundary.egressPurpose.toWireValue(),
+        },
+        predictionContext: const <String, dynamic>{
+          'transport': 'signal_protocol_sender_key',
+          'chat_scope': 'community',
+        },
+        runtimeContext: const <String, dynamic>{
+          'execution_path':
+              'community_chat_service.sendGroupMessageOverNetwork',
+          'workflow_stage': 'community_message_send',
+        },
+      );
+      final runtimeBundle = await host.resolveRuntimeExecution(
+        envelope: envelope,
+      );
+      final whyRequest = KernelWhyRequest(
+        bundle: runtimeBundle.withoutWhy(),
+        goal: 'deliver_community_message',
+        predictedOutcome: 'message_visible_to_members',
+        predictedConfidence: 0.79,
+        actualOutcome: 'message_sent',
+        actualOutcomeScore: 1.0,
+        coreSignals: <WhySignal>[
+          WhySignal(
+            label: 'member_count',
+            weight: (community.memberCount / 25.0).clamp(0.0, 1.0),
+            source: 'community',
+            durable: false,
+          ),
+          WhySignal(
+            label: 'message_length',
+            weight: (message.length / 120.0).clamp(0.0, 1.0),
+            source: 'community',
+            durable: false,
+          ),
+        ],
+        policySignals: const <WhySignal>[
+          WhySignal(
+            label: 'locality_in_where',
+            weight: 0.4,
+            source: 'policy',
+            durable: true,
+          ),
+        ],
+      );
+      final modelTruth = await host.buildModelTruth(
+        envelope: envelope,
+        whyRequest: whyRequest,
+      );
+      final governance = await host.inspectGovernance(
+        envelope: envelope,
+        whyRequest: whyRequest,
+      );
+      return CommunityChatSendResult(
+        message: storedMessage,
+        realityKernelFusionInput: modelTruth,
+        governanceReport: governance,
+      );
+    } catch (e, st) {
+      developer.log(
+        'Headless OS community chat lifecycle failed',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<String?> _resolveActorAgentId(String userId) async {
+    final service = _agentIdService;
+    if (service == null) {
+      return null;
+    }
+    try {
+      return await service.getUserAgentId(userId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<TransportRouteReceipt> _planGroupRouteReceipt({
+    required String messageId,
+    required String communityId,
+  }) async {
+    final planner = _routePlanner;
+    if (planner == null) {
+      return TransportRouteReceiptCompatibilityTranslator.buildQueuedFallback(
+        channel: 'community_chat',
+        recordedAtUtc: DateTime.now().toUtc(),
+      );
+    }
+    final ttl = _transportPolicy?.ttlForThreadKind(ChatThreadKind.community) ??
+        const Duration(hours: 24);
+    final expiresAtUtc = DateTime.now().toUtc().add(ttl);
+    final routePlan = await planner.planRoutes(
+      messageId: messageId,
+      threadKind: ChatThreadKind.community,
+      expiresAtUtc: expiresAtUtc,
+      availability: <TransportMode, bool>{
+        TransportMode.ble: true,
+        TransportMode.localWifi: true,
+        TransportMode.nearbyRelay: true,
+        TransportMode.wormhole: true,
+        TransportMode.cloudAssist: _realtimeBackend != null,
+      },
+      locality: communityId,
+      exploratory: true,
+    );
+    return planner.markReleased(
+      receipt: planner.buildQueuedReceipt(
+        routePlan: routePlan,
+        channel: 'community_chat',
+        expiresAtUtc: expiresAtUtc,
+      ),
+      attemptedRoutes: routePlan.candidateRoutes.take(3).toList(),
+    );
+  }
+
+  Future<HumanLanguageBoundaryReview> _reviewCommunityMessage({
+    required String userId,
+    required String communityId,
+    required String message,
+    required bool egressRequested,
+  }) async {
+    final actorAgentId =
+        await _resolveActorAgentId(userId) ?? 'agt_community_chat_$userId';
+    return _humanLanguageBoundaryReviewLane.reviewOutboundText(
+      actorAgentId: actorAgentId,
+      rawText: message,
+      egressPurpose: BoundaryEgressPurpose.communityMessage,
+      egressRequested: egressRequested,
+      userId: userId,
+      chatType: 'community',
+      surface: 'chat',
+      channel: 'community_chat:$communityId',
+      privacyMode: BoundaryPrivacyMode.localSovereign,
+    );
+  }
+
+  Future<Map<String, dynamic>> _buildOutboundCommunityMessageMetadata({
+    required String userId,
+    required String plaintext,
+    required HumanLanguageBoundaryReview review,
+  }) async {
+    return _mergeMetadata(
+      review.toMetadata(),
+      await _buildAi2AiLearningMetadata(
+        localUserId: userId,
+        sourceUserId: userId,
+        plaintext: plaintext,
+        chatType: 'community',
+        channel: 'community_chat',
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> _buildAi2AiLearningMetadata({
+    required String localUserId,
+    required String sourceUserId,
+    required String plaintext,
+    required String chatType,
+    required String channel,
+  }) async {
+    final intake = _ai2aiChatEventIntakeService;
+    if (intake == null) {
+      return const <String, dynamic>{};
+    }
+    return intake.buildLearningMetadata(
+      localUserId: localUserId,
+      sourceUserId: sourceUserId,
+      rawText: plaintext,
+      chatType: chatType,
+      channel: channel,
+    );
+  }
+
+  Future<void> _ingestCommunityMessageForLearning({
+    required String localUserId,
+    required String senderUserId,
+    required String communityId,
+    required String messageId,
+    required String plaintext,
+    required DateTime occurredAt,
+    required Ai2AiChatFlowDirection direction,
+    Map<String, dynamic>? metadata,
+    TransportRouteReceipt? routeReceipt,
+    int? memberCount,
+  }) async {
+    final intake = _ai2aiChatEventIntakeService;
+    if (intake == null) {
+      return;
+    }
+    await intake.ingestCommunityMessage(
+      localUserId: localUserId,
+      senderUserId: senderUserId,
+      communityId: communityId,
+      messageId: messageId,
+      plaintext: plaintext,
+      occurredAt: occurredAt,
+      direction: direction,
+      metadata: metadata,
+      routeReceipt: routeReceipt,
+      memberCount: memberCount,
+    );
+  }
+
+  Map<String, dynamic> _mergeMetadata(
+    Map<String, dynamic>? base,
+    Map<String, dynamic>? additions,
+  ) {
+    final merged = Map<String, dynamic>.from(base ?? const <String, dynamic>{});
+    if (additions != null) {
+      merged.addAll(additions);
+    }
+    return merged;
+  }
+
+  TransportRouteReceipt _markCustodyAccepted(TransportRouteReceipt receipt) {
+    final planner = _routePlanner;
+    if (planner == null) {
+      return receipt;
+    }
+    final winningRoute = receipt.attemptedRoutes.isNotEmpty
+        ? receipt.attemptedRoutes.first
+        : receipt.plannedRoutes.firstOrNull;
+    if (winningRoute == null) {
+      return receipt;
+    }
+    return planner.markCustodyAccepted(
+      receipt: receipt,
+      winningRoute: winningRoute,
+      winningRouteReason: 'group message accepted by transport',
+      custodyAcceptedBy: winningRoute.metadata['peer_id']?.toString() ??
+          winningRoute.mode.name,
+    );
+  }
+
+  Future<void> _recordRouteOutcome(
+    TransportRouteReceipt receipt, {
+    required bool success,
+  }) async {
+    final learning = _routeLearningService;
+    final winningRoute = receipt.winningRoute ??
+        receipt.attemptedRoutes.firstOrNull ??
+        receipt.plannedRoutes.firstOrNull;
+    if (learning == null || winningRoute == null) {
+      return;
+    }
+    await learning.recordSignal(
+      RouteLearningSignal(
+        messageId:
+            receipt.metadata['message_id']?.toString() ?? receipt.receiptId,
+        mode: winningRoute.mode,
+        success: success,
+        observedAtUtc: DateTime.now().toUtc(),
+        latencyMs: winningRoute.estimatedLatencyMs,
+      ),
+    );
+  }
+}
+
+class CommunityChatSendResult {
+  const CommunityChatSendResult({
+    required this.message,
+    this.realityKernelFusionInput,
+    this.governanceReport,
+    this.routeReceipt,
+  });
+
+  final CommunityChatMessage message;
+  final RealityKernelFusionInput? realityKernelFusionInput;
+  final KernelGovernanceReport? governanceReport;
+  final TransportRouteReceipt? routeReceipt;
+
+  String? get kernelEventId =>
+      realityKernelFusionInput?.envelope.eventId ??
+      governanceReport?.envelope.eventId;
+
+  bool get modelTruthReady => realityKernelFusionInput != null;
+
+  bool get localityContainedInWhere =>
+      realityKernelFusionInput?.localityContainedInWhere ?? false;
+
+  String? get governanceSummary => governanceReport?.projections.isEmpty ?? true
+      ? null
+      : governanceReport!.projections.first.summary;
 }

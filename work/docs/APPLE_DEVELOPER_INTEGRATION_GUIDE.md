@@ -258,6 +258,9 @@ The AVRAI app uses these capabilities (already configured in Info.plist):
    - Write description
    - Set pricing
    - Configure App Privacy details
+   - Set **Privacy Policy URL:** `https://avrai.org/privacy`
+   - Set **Support URL:** `https://avrai.org/support`
+   - Keep **Terms of Service URL:** `https://avrai.org/terms` in app-facing references
 
 ### TestFlight Setup
 
@@ -291,6 +294,8 @@ Before building for distribution, verify:
 - [ ] App Store Connect app created (for distribution)
 - [ ] All required capabilities configured
 - [ ] Privacy descriptions added to Info.plist
+- [ ] App Privacy metadata uses `https://avrai.org/privacy`
+- [ ] Support URL uses `https://avrai.org/support`
 
 ---
 

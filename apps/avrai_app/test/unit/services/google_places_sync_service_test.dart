@@ -43,6 +43,8 @@ void main() {
         googlePlacesDataSource: mockGooglePlacesDataSource,
         spotsLocalDataSource: mockSpotsLocalDataSource,
         connectivity: mockConnectivity,
+        perSpotDelay: Duration.zero,
+        betweenBatchDelay: Duration.zero,
       );
 
       spot = ModelFactories.createTestSpot(

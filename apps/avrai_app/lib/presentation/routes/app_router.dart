@@ -16,12 +16,16 @@ import 'package:avrai/presentation/pages/profile/profile_page.dart';
 import 'package:avrai/presentation/pages/profile/beta_feedback_page.dart';
 import 'package:avrai/apps/consumer_app/ui/pages/profile/ai_personality_status_page.dart';
 import 'package:avrai/presentation/pages/chat/unified_chat_page.dart';
+import 'package:avrai/presentation/pages/chat/agent_chat_view.dart';
+import 'package:avrai/presentation/pages/chat/admin_support_chat_view.dart';
+import 'package:avrai/presentation/pages/chat/event_chat_view.dart';
 import 'package:avrai/presentation/pages/chat/friend_chat_view.dart';
 import 'package:avrai/presentation/pages/chat/community_chat_view.dart';
 import 'package:avrai/presentation/pages/expertise/expertise_dashboard_page.dart';
 import 'package:avrai/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:avrai/presentation/pages/onboarding/ai_loading_page.dart';
+import 'package:avrai/presentation/pages/onboarding/bham_walkthrough_page.dart';
 import 'package:avrai/presentation/pages/onboarding/knot_birth_page.dart';
 import 'package:avrai/presentation/pages/onboarding/knot_discovery_page.dart';
 import 'package:avrai/presentation/pages/world_planes/world_planes_page.dart';
@@ -31,11 +35,6 @@ import 'package:avrai/presentation/pages/search/hybrid_search_page.dart';
 import 'package:avrai/presentation/pages/group/group_formation_page.dart';
 import 'package:avrai/presentation/pages/group/group_results_page.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
-import 'package:avrai/apps/admin_app/ui/pages/fraud_review_page.dart';
-import 'package:avrai/apps/admin_app/ui/pages/review_fraud_review_page.dart';
-import 'package:avrai/apps/admin_app/ui/pages/user_detail_page.dart';
-import 'package:avrai/apps/admin_app/ui/pages/connection_communication_detail_page.dart';
-import 'package:avrai/apps/admin_app/ui/pages/club_detail_page.dart';
 import 'package:avrai/presentation/pages/business/business_signup_page.dart';
 import 'package:avrai/presentation/pages/business/business_login_page.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
@@ -70,12 +69,16 @@ import 'package:avrai/presentation/pages/social/add_friend_qr_page.dart';
 import 'package:avrai/presentation/pages/social/scan_friend_qr_page.dart';
 // Phase 10: Social Media Integration - Public Handles
 import 'package:avrai/presentation/pages/settings/public_handles_page.dart';
-import 'package:avrai/apps/admin_app/ui/pages/learning_analytics_page.dart';
+import 'package:avrai/presentation/pages/admin/admin_desktop_handoff_page.dart';
 // Phase 6, Week 29: Communities & Clubs
 import 'package:avrai/presentation/pages/communities/community_page.dart';
+import 'package:avrai/presentation/pages/communities/create_community_page.dart';
 import 'package:avrai/presentation/pages/communities/communities_discover_page.dart';
 import 'package:avrai/presentation/pages/clubs/club_page.dart';
+import 'package:avrai/presentation/pages/clubs/create_club_page.dart';
 // Detail Pages
+import 'package:avrai/presentation/pages/events/create_event_page.dart';
+import 'package:avrai/presentation/pages/events/event_details_page.dart';
 import 'package:avrai/presentation/pages/lists/list_details_page.dart';
 import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
 import 'package:avrai/presentation/pages/spots/create_spot_page.dart';
@@ -87,6 +90,7 @@ import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_runtime_os/domain/repositories/lists_repository.dart';
 import 'package:avrai_runtime_os/domain/repositories/spots_repository.dart';
 import 'package:avrai_runtime_os/data/repositories/spots_repository_impl.dart';
+import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_core/models/user/user.dart';
 // Phase 15: Reservations
@@ -96,8 +100,9 @@ import 'package:avrai/presentation/pages/reservations/reservation_detail_page.da
 import 'package:avrai/presentation/pages/reservations/user_reservation_analytics_page.dart';
 import 'package:avrai/presentation/pages/business/reservations/business_reservation_analytics_page.dart';
 import 'package:avrai_core/models/misc/reservation.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 import 'package:avrai_runtime_os/config/design_feature_flags.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 class AppRouter {
   // Route path helpers for legacy Navigator.pushNamed usages
@@ -231,7 +236,7 @@ class AppRouter {
                   future: _loadListById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -240,7 +245,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return ListDetailsPage(list: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'List Not Found',
                       body: Center(
                         child: Text('The requested list could not be found.'),
@@ -258,7 +263,7 @@ class AppRouter {
                   future: _loadSpotById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -267,7 +272,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return SpotDetailsPage(spot: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'Spot Not Found',
                       body: Center(
                         child: Text('The requested spot could not be found.'),
@@ -289,7 +294,7 @@ class AppRouter {
                   future: _loadSpotById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -298,10 +303,41 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return EditSpotPage(spot: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'Spot Not Found',
                       body: Center(
                         child: Text('The requested spot could not be found.'),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            GoRoute(
+              path: 'event/create',
+              builder: (c, s) => const CreateEventPage(),
+            ),
+            GoRoute(
+              path: 'event/:id',
+              builder: (c, s) {
+                final id = s.pathParameters['id']!;
+                return FutureBuilder(
+                  future: _loadEventById(id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const AppFlowScaffold(
+                        title: '',
+                        showNavigationBar: false,
+                        body: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    if (snapshot.hasData && snapshot.data != null) {
+                      return EventDetailsPage(event: snapshot.data!);
+                    }
+                    return const AppFlowScaffold(
+                      title: 'Event Not Found',
+                      body: Center(
+                        child: Text('The requested event could not be found.'),
                       ),
                     );
                   },
@@ -320,7 +356,7 @@ class AppRouter {
                   future: _loadListById(id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const AdaptivePlatformPageScaffold(
+                      return const AppFlowScaffold(
                         title: '',
                         showNavigationBar: false,
                         body: Center(child: CircularProgressIndicator()),
@@ -329,7 +365,7 @@ class AppRouter {
                     if (snapshot.hasData && snapshot.data != null) {
                       return EditListPage(list: snapshot.data!);
                     }
-                    return const AdaptivePlatformPageScaffold(
+                    return const AppFlowScaffold(
                       title: 'List Not Found',
                       body: Center(
                         child: Text('The requested list could not be found.'),
@@ -427,6 +463,14 @@ class AppRouter {
               builder: (c, s) => const UnifiedChatPage(),
               routes: [
                 GoRoute(
+                  path: 'agent',
+                  builder: (c, s) => const AgentChatView(),
+                ),
+                GoRoute(
+                  path: 'admin',
+                  builder: (c, s) => const AdminSupportChatView(),
+                ),
+                GoRoute(
                   path: 'friend/:friendId',
                   builder: (c, s) {
                     final friendId = s.pathParameters['friendId']!;
@@ -440,6 +484,32 @@ class AppRouter {
                     return CommunityChatView(communityId: communityId);
                   },
                 ),
+                GoRoute(
+                  path: 'event/:eventId',
+                  builder: (c, s) {
+                    final eventId = s.pathParameters['eventId']!;
+                    final title =
+                        s.uri.queryParameters['title'] ?? 'Event Chat';
+                    return EventChatView(
+                      threadId: 'event:$eventId',
+                      title: title,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: 'announcement/:scope/:scopeId',
+                  builder: (c, s) {
+                    final scope = s.pathParameters['scope']!;
+                    final scopeId = s.pathParameters['scopeId']!;
+                    final title =
+                        s.uri.queryParameters['title'] ?? 'Announcements';
+                    return EventChatView(
+                      threadId: 'announcement:$scope:$scopeId',
+                      title: title,
+                      readOnly: true,
+                    );
+                  },
+                ),
               ],
             ),
             GoRoute(
@@ -449,6 +519,12 @@ class AppRouter {
             // Phase 4.5: Partnerships Page
             GoRoute(
               path: 'profile/partnerships',
+              redirect: (context, state) {
+                if (!BhamBetaDefaults.enablePartnershipSurfaces) {
+                  return '/profile';
+                }
+                return null;
+              },
               builder: (c, s) => const PartnershipsPage(),
             ),
             // Phase 10: Social Media Integration - Friend Discovery
@@ -479,6 +555,10 @@ class AppRouter {
               },
             ),
             GoRoute(
+              path: 'community/create',
+              builder: (c, s) => const CreateCommunityPage(),
+            ),
+            GoRoute(
               path: 'communities/discover',
               builder: (c, s) => const CommunitiesDiscoverPage(),
             ),
@@ -488,6 +568,10 @@ class AppRouter {
                 final id = s.pathParameters['id']!;
                 return ClubPage(clubId: id);
               },
+            ),
+            GoRoute(
+              path: 'club/create',
+              builder: (c, s) => const CreateClubPage(),
             ),
             GoRoute(
               path: 'admin/fraud-review/:eventId',
@@ -508,7 +592,10 @@ class AppRouter {
               },
               builder: (c, s) {
                 final eventId = s.pathParameters['eventId']!;
-                return FraudReviewPage(eventId: eventId);
+                return AdminDesktopHandoffPage(
+                  requestedSurfaceTitle: 'Fraud Review',
+                  requestedPath: '/admin/fraud-review/$eventId',
+                );
               },
             ),
             GoRoute(
@@ -530,7 +617,10 @@ class AppRouter {
               },
               builder: (c, s) {
                 final eventId = s.pathParameters['eventId']!;
-                return ReviewFraudReviewPage(eventId: eventId);
+                return AdminDesktopHandoffPage(
+                  requestedSurfaceTitle: 'Fraud Review',
+                  requestedPath: '/admin/fraud-review/$eventId/review',
+                );
               },
             ),
             GoRoute(
@@ -552,7 +642,10 @@ class AppRouter {
               },
               builder: (c, s) {
                 final userId = s.pathParameters['id']!;
-                return UserDetailPage(userId: userId);
+                return AdminDesktopHandoffPage(
+                  requestedSurfaceTitle: 'User Detail',
+                  requestedPath: '/admin/user/$userId',
+                );
               },
             ),
             GoRoute(
@@ -574,8 +667,10 @@ class AppRouter {
               },
               builder: (c, s) {
                 final connectionId = s.pathParameters['id']!;
-                return ConnectionCommunicationDetailPage(
-                    connectionId: connectionId);
+                return AdminDesktopHandoffPage(
+                  requestedSurfaceTitle: 'Communication Detail',
+                  requestedPath: '/admin/communication/$connectionId',
+                );
               },
             ),
             GoRoute(
@@ -597,7 +692,10 @@ class AppRouter {
               },
               builder: (c, s) {
                 final clubId = s.pathParameters['id']!;
-                return ClubDetailPage(clubCommunityId: clubId);
+                return AdminDesktopHandoffPage(
+                  requestedSurfaceTitle: 'Club Detail',
+                  requestedPath: '/admin/club/$clubId',
+                );
               },
             ),
             // Phase 11 Section 8: Learning Quality Monitoring
@@ -618,23 +716,50 @@ class AppRouter {
 
                 return null;
               },
-              builder: (c, s) => const LearningAnalyticsPage(),
+              builder: (c, s) => const AdminDesktopHandoffPage(
+                requestedSurfaceTitle: 'Learning Analytics',
+                requestedPath: '/admin/learning-analytics',
+              ),
             ),
             // Business Routes
             GoRoute(
               path: 'business/signup',
+              redirect: (context, state) {
+                if (!BhamBetaDefaults.enableBusinessAccountSurfaces) {
+                  return '/home';
+                }
+                return null;
+              },
               builder: (c, s) => const BusinessSignupPage(),
             ),
             GoRoute(
               path: 'business/login',
+              redirect: (context, state) {
+                if (!BhamBetaDefaults.enableBusinessAccountSurfaces) {
+                  return '/home';
+                }
+                return null;
+              },
               builder: (c, s) => const BusinessLoginPage(),
             ),
             GoRoute(
               path: 'business/dashboard',
+              redirect: (context, state) {
+                if (!BhamBetaDefaults.enableBusinessAccountSurfaces) {
+                  return '/home';
+                }
+                return null;
+              },
               builder: (c, s) => const BusinessDashboardPage(),
             ),
             GoRoute(
               path: 'business/reservations/analytics',
+              redirect: (context, state) {
+                if (!BhamBetaDefaults.enableBusinessAccountSurfaces) {
+                  return '/home';
+                }
+                return null;
+              },
               builder: (c, s) {
                 final extra = s.extra as Map<String, dynamic>?;
                 return BusinessReservationAnalyticsPage(
@@ -746,30 +871,26 @@ class AppRouter {
                   birthday: birthday,
                   age: age,
                   homebase: extra?['homebase'] as String?,
-                  openResponses: (extra?['openResponses'] as Map<String, dynamic>?)
-                          ?.map((k, v) => MapEntry(k, v.toString())) ??
-                      const {},
+                  openResponses:
+                      (extra?['openResponses'] as Map<String, dynamic>?)
+                              ?.map((k, v) => MapEntry(k, v.toString())) ??
+                          const {},
                   // Note: respectedFriends and socialMediaConnected are passed via extras
                   // but AILoadingPage loads data from OnboardingDataService, so these are
                   // primarily for fallback/verification. The page will use saved onboarding data.
                   onLoadingComplete: () {
-                    // Post-onboarding journey:
-                    // ai-loading -> knot-birth -> knot-discovery -> home (with graceful fallbacks).
                     try {
-                      final authState = c.read<AuthBloc>().state;
-                      if (authState is Authenticated) {
-                        c.go('/knot-birth',
-                            extra: {'userId': authState.user.id});
-                      } else {
-                        c.go('/home');
-                      }
+                      c.go('/onboarding/walkthrough');
                     } catch (e) {
-                      // Fallback to home if knot discovery fails
                       c.go('/home');
                     }
                   },
                 );
               },
+            ),
+            GoRoute(
+              path: 'onboarding/walkthrough',
+              builder: (c, s) => const BhamWalkthroughPage(),
             ),
             // Phase 3: Knot Discovery Page (optional onboarding step)
             GoRoute(
@@ -782,7 +903,7 @@ class AppRouter {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     c.go('/knot-discovery', extra: {'userId': userId});
                   });
-                  return const AdaptivePlatformPageScaffold(
+                  return const AppFlowScaffold(
                     title: '',
                     showNavigationBar: false,
                     body: Center(child: CircularProgressIndicator()),
@@ -818,7 +939,7 @@ class AppRouter {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     c.go('/home');
                   });
-                  return const AdaptivePlatformPageScaffold(
+                  return const AppFlowScaffold(
                     title: '',
                     showNavigationBar: false,
                     body: Center(child: CircularProgressIndicator()),
@@ -897,6 +1018,15 @@ class AppRouter {
       } catch (e) {
         return null;
       }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<dynamic> _loadEventById(String id) async {
+    try {
+      final eventService = di.sl<ExpertiseEventService>();
+      return await eventService.getEventById(id);
     } catch (e) {
       return null;
     }

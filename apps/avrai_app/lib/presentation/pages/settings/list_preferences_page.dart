@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/list_preferences_page_schema.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/filters/age_aware_list_filter.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
 import 'package:avrai_runtime_os/services/lists/list_preference_service.dart';
@@ -43,69 +43,61 @@ class _ListPreferencesPageState extends State<ListPreferencesPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
-        title: 'List Preferences',
-        body: AppLoadingState(label: 'Loading list preferences'),
+      return AppSchemaPage(
+        schema: buildListPreferencesPageSchema(
+          content: const AppLoadingState(label: 'Loading list preferences'),
+        ),
       );
     }
 
-    return AdaptivePlatformPageScaffold(
-      title: 'List Preferences',
-      constrainBody: false,
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const AppSurface(
-            child: AppPageHeader(
-              title: 'List Preferences',
-              subtitle:
-                  'Choose when suggested lists appear and how adventurous those suggestions should feel.',
-              leadingIcon: Icons.tune_outlined,
-              showDivider: false,
+    return AppSchemaPage(
+      schema: buildListPreferencesPageSchema(
+        content: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const AppInfoBanner(
+              title: 'Suggestion controls',
+              body:
+                  'Use these settings to control timing, variety, categories, and list suggestion notifications.',
+              icon: Icons.list_alt_outlined,
             ),
-          ),
-          const SizedBox(height: 16),
-          const AppInfoBanner(
-            title: 'Suggestion controls',
-            body:
-                'Use these settings to control timing, variety, categories, and list suggestion notifications.',
-            icon: Icons.list_alt_outlined,
-          ),
-          const SizedBox(height: 24),
-          AppSection(
-            title: 'When to suggest lists',
-            child: _buildTimeSlotToggles(),
-          ),
-          const SizedBox(height: 24),
-          AppSection(
-            title: 'Frequency',
-            child: _buildFrequencySettings(),
-          ),
-          const SizedBox(height: 24),
-          AppSection(
-            title: 'Exploration vs Familiar',
-            child: _buildExplorationSlider(context),
-          ),
-          const SizedBox(height: 24),
-          AppSection(
-            title: 'Categories',
-            child: _buildCategoryToggles(),
-          ),
-          if ((widget.userAge ?? 18) >= 18) ...[
             const SizedBox(height: 24),
             AppSection(
-              title: 'Sensitive Categories',
-              subtitle: 'These require explicit opt-in and are 18+ only.',
-              child: _buildSensitiveCategoryToggles(context),
+              title: 'When to suggest lists',
+              child: _buildTimeSlotToggles(),
+            ),
+            const SizedBox(height: 24),
+            AppSection(
+              title: 'Frequency',
+              child: _buildFrequencySettings(),
+            ),
+            const SizedBox(height: 24),
+            AppSection(
+              title: 'Exploration vs Familiar',
+              child: _buildExplorationSlider(context),
+            ),
+            const SizedBox(height: 24),
+            AppSection(
+              title: 'Categories',
+              child: _buildCategoryToggles(),
+            ),
+            if ((widget.userAge ?? 18) >= 18) ...[
+              const SizedBox(height: 24),
+              AppSection(
+                title: 'Sensitive Categories',
+                subtitle: 'These require explicit opt-in and are 18+ only.',
+                child: _buildSensitiveCategoryToggles(context),
+              ),
+            ],
+            const SizedBox(height: 24),
+            AppSection(
+              title: 'Notifications',
+              child: _buildNotificationSettings(),
             ),
           ],
-          const SizedBox(height: 24),
-          AppSection(
-            title: 'Notifications',
-            child: _buildNotificationSettings(),
-          ),
-        ],
+        ),
       ),
+      scrollable: false,
     );
   }
 

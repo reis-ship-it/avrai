@@ -9,16 +9,21 @@ import 'package:avrai_runtime_os/ai/knowledge_lifecycle/claim_lifecycle_contract
 import 'package:avrai_runtime_os/controllers/base/workflow_controller.dart';
 import 'package:avrai_runtime_os/controllers/base/controller_result.dart';
 import 'package:avrai_runtime_os/controllers/conviction_shadow_gate.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_os.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/matching/preferences_profile_service.dart';
 import 'package:avrai_runtime_os/services/events/event_recommendation_service.dart'
     as event_rec_service;
+import 'package:avrai_runtime_os/services/recommendations/recommendation_why_explanation_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/preferences_profile.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
@@ -94,7 +99,9 @@ class AIRecommendationController
       _quantumEntanglementService; // Reserved for future quantum compatibility calculations
   final QuantumMatchingAILearningService? _aiLearningService;
   final ConvictionGateEvaluator _convictionGateEvaluator;
-  final LocalityKernelContract? _localityKernel;
+  final WhereKernelContract? _whereKernel;
+  final HeadlessAvraiOsHost? _headlessOsHost;
+  final FunctionalKernelOs? _functionalKernelOs;
 
   AIRecommendationController({
     PersonalityLearning? personalityLearning,
@@ -110,7 +117,9 @@ class AIRecommendationController
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
     ConvictionGateEvaluator? convictionGateEvaluator,
-    LocalityKernelContract? localityKernel,
+    WhereKernelContract? whereKernel,
+    HeadlessAvraiOsHost? headlessOsHost,
+    FunctionalKernelOs? functionalKernelOs,
   })  : _personalityLearning = personalityLearning ??
             (() {
               // Use same pattern as injection_container.dart
@@ -155,9 +164,17 @@ class AIRecommendationController
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
                 : null),
-        _localityKernel = localityKernel ??
-            (GetIt.instance.isRegistered<LocalityKernelContract>()
-                ? GetIt.instance<LocalityKernelContract>()
+        _whereKernel = whereKernel ??
+            (GetIt.instance.isRegistered<WhereKernelContract>()
+                ? GetIt.instance<WhereKernelContract>()
+                : null),
+        _headlessOsHost = headlessOsHost ??
+            (GetIt.instance.isRegistered<HeadlessAvraiOsHost>()
+                ? GetIt.instance<HeadlessAvraiOsHost>()
+                : null),
+        _functionalKernelOs = functionalKernelOs ??
+            (GetIt.instance.isRegistered<FunctionalKernelOs>()
+                ? GetIt.instance<FunctionalKernelOs>()
                 : null),
         _convictionGateEvaluator =
             convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
@@ -220,13 +237,13 @@ class AIRecommendationController
       // Step 2: Get agentId for privacy protection
       final agentId = await _agentIdService.getUserAgentId(userId);
 
-      LocalityState? localityState;
-      LocalityProjection? localityProjection;
-      final localityKernel = _localityKernel;
-      if (localityKernel != null) {
+      WhereState? localityState;
+      WhereProjection? localityProjection;
+      final whereKernel = _whereKernel;
+      if (whereKernel != null) {
         try {
-          localityState = await localityKernel.resolveWhere(
-            LocalityPerceptionInput(
+          localityState = await whereKernel.resolveWhere(
+            WhereKernelInput(
               agentId: agentId,
               occurredAtUtc: DateTime.now().toUtc(),
               latitude: context.latitude,
@@ -234,9 +251,9 @@ class AIRecommendationController
               topAlias: context.location,
             ),
           );
-          localityProjection = localityKernel.project(
-            LocalityProjectionRequest(
-              audience: LocalityProjectionAudience.user,
+          localityProjection = whereKernel.project(
+            WhereProjectionRequest(
+              audience: WhereProjectionAudience.user,
               state: localityState,
             ),
           );
@@ -468,6 +485,113 @@ class AIRecommendationController
         name: _logName,
       );
 
+      KernelContextBundle? kernelContextBundle;
+      RealityKernelFusionInput? realityKernelFusionInput;
+      RecommendationExpressionArtifact? primaryRecommendationExpression;
+      final generatedAt = DateTime.now().toUtc();
+      final primaryRecommendation =
+          filteredEvents.isEmpty ? null : filteredEvents.first;
+      final kernelEnvelope = _buildKernelEnvelope(
+        agentId: agentId,
+        userId: userId,
+        context: context,
+        generatedAt: generatedAt,
+        primaryRecommendation: primaryRecommendation,
+      );
+      final headlessOsHost = _headlessOsHost;
+      if (headlessOsHost != null) {
+        try {
+          await headlessOsHost.start();
+          final runtimeBundle = await headlessOsHost.resolveRuntimeExecution(
+            envelope: kernelEnvelope,
+          );
+          final kernelWhyRequest = _buildKernelWhyRequest(
+            kernelBundle: runtimeBundle.withoutWhy(),
+            context: context,
+            localityState: localityState,
+            primaryRecommendation: primaryRecommendation,
+            preferencesProfile: preferencesProfile,
+          );
+          realityKernelFusionInput = await headlessOsHost.buildModelTruth(
+            envelope: kernelEnvelope,
+            whyRequest: kernelWhyRequest,
+          );
+          final governanceReport = await headlessOsHost.inspectGovernance(
+            envelope: kernelEnvelope,
+            whyRequest: kernelWhyRequest,
+          );
+          kernelContextBundle = governanceReport.bundle;
+          developer.log(
+            '✅ Recommendation attribution routed through headless AVRAI OS host',
+            name: _logName,
+          );
+        } catch (e) {
+          developer.log(
+            '⚠️ Headless AVRAI OS host attribution failed: $e',
+            name: _logName,
+          );
+        }
+      }
+
+      final functionalKernelOs = _functionalKernelOs;
+      if (kernelContextBundle == null && functionalKernelOs != null) {
+        try {
+          final baseBundle =
+              await functionalKernelOs.resolveKernelContext(kernelEnvelope);
+          final why = functionalKernelOs.explainWhy(
+            _buildKernelWhyRequest(
+              kernelBundle: baseBundle.withoutWhy(),
+              context: context,
+              localityState: localityState,
+              primaryRecommendation: primaryRecommendation,
+              preferencesProfile: preferencesProfile,
+            ),
+          );
+          kernelContextBundle = KernelContextBundle(
+            who: baseBundle.who,
+            what: baseBundle.what,
+            when: baseBundle.when,
+            where: baseBundle.where,
+            how: baseBundle.how,
+            vibe: baseBundle.vibe,
+            vibeStack: baseBundle.vibeStack,
+            why: why,
+          );
+          realityKernelFusionInput ??=
+              await functionalKernelOs.buildRealityKernelFusionInput(
+            envelope: kernelEnvelope,
+            whyRequest: _buildKernelWhyRequest(
+              kernelBundle: baseBundle.withoutWhy(),
+              context: context,
+              localityState: localityState,
+              primaryRecommendation: primaryRecommendation,
+              preferencesProfile: preferencesProfile,
+            ),
+          );
+        } catch (e) {
+          developer.log(
+            '⚠️ Functional kernel OS attribution failed: $e',
+            name: _logName,
+          );
+        }
+      }
+
+      if (primaryRecommendation != null) {
+        try {
+          primaryRecommendationExpression = await _eventRecommendationService
+              .expressRecommendationWithKernelContext(
+            user: user,
+            recommendation: primaryRecommendation,
+            perspective: 'user_safe',
+          );
+        } catch (e) {
+          developer.log(
+            '⚠️ Recommendation expression generation failed: $e',
+            name: _logName,
+          );
+        }
+      }
+
       return RecommendationResult.success(
         events: filteredEvents,
         spots: const [], // TODO(Phase 8.11): Implement when SpotRecommendationService is available
@@ -477,6 +601,9 @@ class AIRecommendationController
         convictionGateDecision: convictionGateDecision,
         localityState: localityState,
         localityProjection: localityProjection,
+        kernelContextBundle: kernelContextBundle,
+        realityKernelFusionInput: realityKernelFusionInput,
+        primaryRecommendationExpression: primaryRecommendationExpression,
       );
     } catch (e, stackTrace) {
       developer.log(
@@ -492,6 +619,191 @@ class AIRecommendationController
       );
     }
   }
+
+  KernelEventEnvelope _buildKernelEnvelope({
+    required String agentId,
+    required String userId,
+    required RecommendationContext context,
+    required DateTime generatedAt,
+    required event_rec_service.EventRecommendation? primaryRecommendation,
+  }) {
+    return KernelEventEnvelope(
+      eventId: 'recommendation:$userId:${generatedAt.microsecondsSinceEpoch}',
+      agentId: agentId,
+      userId: userId,
+      sessionId: context.convictionRequestId,
+      occurredAtUtc: generatedAt,
+      sourceSystem: 'ai_recommendation_controller',
+      eventType: 'recommendation_generated',
+      actionType: 'recommend_event',
+      entityId: primaryRecommendation?.event.id,
+      entityType: 'event',
+      context: <String, dynamic>{
+        if (context.latitude != null) 'latitude': context.latitude,
+        if (context.longitude != null) 'longitude': context.longitude,
+        if (context.location != null) 'location_label': context.location,
+        'actual_outcome': 'generated',
+      },
+      predictionContext: <String, dynamic>{
+        'planner_mode': 'recommendation_ranker',
+        'model_family': 'event_recommendation_service',
+        if (primaryRecommendation != null)
+          'predicted_relevance': primaryRecommendation.relevanceScore,
+      },
+      policyContext: <String, dynamic>{
+        'trust_scope': 'private',
+        'policy_checks_passed': context.policyChecksPassed,
+      },
+      runtimeContext: const <String, dynamic>{
+        'execution_path':
+            'ai_recommendation_controller.generateRecommendations',
+        'workflow_stage': 'recommendation_generation',
+        'intervention_chain': <String>['resolve', 'rank', 'filter'],
+      },
+    );
+  }
+
+  KernelWhyRequest _buildKernelWhyRequest({
+    required KernelContextBundleWithoutWhy kernelBundle,
+    required RecommendationContext context,
+    required WhereState? localityState,
+    required event_rec_service.EventRecommendation? primaryRecommendation,
+    required PreferencesProfile? preferencesProfile,
+  }) {
+    return KernelWhyRequest(
+      bundle: kernelBundle,
+      goal: 'recommend_event',
+      predictedOutcome: 'positive_engagement',
+      predictedConfidence:
+          primaryRecommendation?.relevanceScore ?? localityState?.confidence,
+      actualOutcome: 'generated',
+      actualOutcomeScore: 1.0,
+      coreSignals: <WhySignal>[
+        WhySignal(
+          label: 'preference_profile_available',
+          weight: preferencesProfile == null ? -0.2 : 0.55,
+          source: 'core',
+          durable: true,
+        ),
+        ..._canonicalPersonalAndEntityWhySignals(kernelBundle),
+      ],
+      pheromoneSignals: <WhySignal>[
+        if (localityState != null)
+          WhySignal(
+            label: 'boundary_tension',
+            weight: -localityState.boundaryTension,
+            source: 'pheromone',
+            durable: false,
+          ),
+        ..._canonicalGeographicAndScopedWhySignals(kernelBundle),
+      ],
+      policySignals: <WhySignal>[
+        WhySignal(
+          label: 'policy_checks_passed',
+          weight: context.policyChecksPassed ? 0.35 : -0.65,
+          source: 'policy',
+          durable: false,
+        ),
+      ],
+    );
+  }
+
+  List<WhySignal> _canonicalPersonalAndEntityWhySignals(
+    KernelContextBundleWithoutWhy bundle,
+  ) {
+    final signals = <WhySignal>[];
+    final personalSnapshot = bundle.vibe ?? bundle.vibeStack?.primarySnapshot;
+    if (personalSnapshot != null) {
+      signals.add(
+        WhySignal(
+          label: 'personal_vibe_${personalSnapshot.affectiveState.label}',
+          weight: personalSnapshot.confidence.clamp(0.0, 1.0),
+          source: 'personal',
+          durable: true,
+        ),
+      );
+    }
+
+    final entitySnapshots = bundle.vibeStack?.selectedEntitySnapshots;
+    if (entitySnapshots != null && entitySnapshots.isNotEmpty) {
+      final entitySnapshot = entitySnapshots.first;
+      signals.add(
+        WhySignal(
+          label: 'entity_context_${entitySnapshot.entityType}',
+          weight: entitySnapshot.vibe.confidence.clamp(0.0, 1.0),
+          source: 'entity',
+          durable: false,
+        ),
+      );
+    }
+    return signals;
+  }
+
+  List<WhySignal> _canonicalGeographicAndScopedWhySignals(
+    KernelContextBundleWithoutWhy bundle,
+  ) {
+    final signals = <WhySignal>[];
+    final vibeStack = bundle.vibeStack;
+    if (vibeStack == null) {
+      return signals;
+    }
+
+    final localitySnapshot = vibeStack.activeLocalitySnapshot ??
+        (vibeStack.geographicSnapshots.isNotEmpty
+            ? vibeStack.geographicSnapshots.first
+            : null);
+    if (localitySnapshot != null) {
+      signals.add(
+        WhySignal(
+          label:
+              'geographic_${_geographicLabel(localitySnapshot.subjectRef.effectiveGeographicLevel)}',
+          weight: localitySnapshot.confidence.clamp(0.0, 1.0),
+          source: 'geographic',
+          durable: false,
+        ),
+      );
+    }
+
+    if (vibeStack.higherAgentSnapshots.isNotEmpty) {
+      final higherAgentSnapshot = vibeStack.higherAgentSnapshots.last;
+      signals.add(
+        WhySignal(
+          label:
+              'higher_agent_${_geographicLabel(higherAgentSnapshot.subjectRef.effectiveGeographicLevel)}',
+          weight: higherAgentSnapshot.confidence.clamp(0.0, 1.0),
+          source: 'geographic',
+          durable: false,
+        ),
+      );
+    }
+
+    if (vibeStack.scopedContextSnapshots.isNotEmpty) {
+      final scopedSnapshot = vibeStack.scopedContextSnapshots.first;
+      final scopedKind = vibeStack.scopedBindings
+          .firstWhere(
+            (entry) => entry.contextRef.subjectId == scopedSnapshot.subjectId,
+            orElse: () => ScopedVibeBinding(
+              contextRef: scopedSnapshot.subjectRef,
+              scopedKind: ScopedAgentKind.scene,
+            ),
+          )
+          .scopedKind
+          .toWireValue();
+      signals.add(
+        WhySignal(
+          label: 'scoped_context_$scopedKind',
+          weight: scopedSnapshot.confidence.clamp(0.0, 1.0),
+          source: 'scoped',
+          durable: false,
+        ),
+      );
+    }
+
+    return signals;
+  }
+
+  String _geographicLabel(GeographicAgentLevel? level) =>
+      level?.toWireValue() ?? 'locality';
 
   /// Enhance event recommendations with quantum compatibility scores
   ///
@@ -696,8 +1008,11 @@ class RecommendationResult extends ControllerResult {
   final PersonalityProfile? personalityProfile;
   final PreferencesProfile? preferencesProfile;
   final ConvictionGateDecision? convictionGateDecision;
-  final LocalityState? localityState;
-  final LocalityProjection? localityProjection;
+  final WhereState? localityState;
+  final WhereProjection? localityProjection;
+  final KernelContextBundle? kernelContextBundle;
+  final RealityKernelFusionInput? realityKernelFusionInput;
+  final RecommendationExpressionArtifact? primaryRecommendationExpression;
 
   const RecommendationResult({
     required super.success,
@@ -712,6 +1027,9 @@ class RecommendationResult extends ControllerResult {
     this.convictionGateDecision,
     this.localityState,
     this.localityProjection,
+    this.kernelContextBundle,
+    this.realityKernelFusionInput,
+    this.primaryRecommendationExpression,
   });
 
   /// Create successful recommendation result
@@ -722,8 +1040,11 @@ class RecommendationResult extends ControllerResult {
     PersonalityProfile? personalityProfile,
     PreferencesProfile? preferencesProfile,
     ConvictionGateDecision? convictionGateDecision,
-    LocalityState? localityState,
-    LocalityProjection? localityProjection,
+    WhereState? localityState,
+    WhereProjection? localityProjection,
+    KernelContextBundle? kernelContextBundle,
+    RealityKernelFusionInput? realityKernelFusionInput,
+    RecommendationExpressionArtifact? primaryRecommendationExpression,
   }) {
     return RecommendationResult(
       success: true,
@@ -735,6 +1056,9 @@ class RecommendationResult extends ControllerResult {
       convictionGateDecision: convictionGateDecision,
       localityState: localityState,
       localityProjection: localityProjection,
+      kernelContextBundle: kernelContextBundle,
+      realityKernelFusionInput: realityKernelFusionInput,
+      primaryRecommendationExpression: primaryRecommendationExpression,
       metadata: {
         'timestamp': DateTime.now().toIso8601String(),
         'eventCount': events.length,
@@ -744,6 +1068,17 @@ class RecommendationResult extends ControllerResult {
           'localityLabel': localityProjection.primaryLabel,
         if (localityState != null)
           'localityToken': localityState.activeToken.id,
+        if (kernelContextBundle?.why != null)
+          'functionalRootCause':
+              kernelContextBundle!.why!.rootCauseType.toWireValue(),
+        if (realityKernelFusionInput != null)
+          'modelTruthReady': realityKernelFusionInput.localityContainedInWhere,
+        if (primaryRecommendationExpression != null)
+          'primaryRecommendationExpressionValid':
+              primaryRecommendationExpression.validation.valid,
+        if (primaryRecommendationExpression != null)
+          'primaryRecommendationText':
+              primaryRecommendationExpression.rendered.text,
       },
     );
   }

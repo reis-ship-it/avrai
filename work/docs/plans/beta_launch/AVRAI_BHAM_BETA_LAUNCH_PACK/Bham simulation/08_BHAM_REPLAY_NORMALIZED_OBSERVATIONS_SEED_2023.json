@@ -1,0 +1,5463 @@
+{
+  "pack": {
+    "packId": "bham-2023-seed-pack-v1",
+    "replayYear": 2023,
+    "generatedAtUtc": "2026-03-10T18:00:00.000Z",
+    "datasets": [
+      {
+        "sourceName": "BEA / U.S. Census Bureau Economic Series",
+        "records": [
+          {
+            "record_id": "bea-2023-jefferson-income",
+            "series_key": "personal_income_per_capita",
+            "name": "Jefferson County Personal Income Per Capita",
+            "entity_id": "county:073",
+            "entity_type": "economic_signal",
+            "locality": "Birmingham Metro",
+            "metric_value": 60210,
+            "unit": "usd_per_person",
+            "observed_at": "2023-12-31T00:00:00Z",
+            "published_at": "2024-03-28T00:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "economic_priors"
+        }
+      },
+      {
+        "sourceName": "ALDOT Traffic Data",
+        "records": [
+          {
+            "record_id": "aldot-2023-280-pm-peak",
+            "series_key": "us280_pm_peak",
+            "name": "US-280 PM Peak Travel Speed",
+            "entity_id": "segment:us280_pm_peak",
+            "entity_type": "movement_flow",
+            "locality": "US-280 Corridor",
+            "metric_value": 17.8,
+            "unit": "mph",
+            "observed_at": "2023-10-12T17:30:00Z",
+            "published_at": "2023-10-12T18:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "movement_flow_truth"
+        }
+      },
+      {
+        "sourceName": "ALDOT Long-Term Construction Projects",
+        "records": [
+          {
+            "record_id": "aldot-construction-2023-redmountain",
+            "series_key": "red_mountain_lane_closure",
+            "name": "Red Mountain Expressway Lane Closure",
+            "entity_id": "project:red_mountain_lane_closure",
+            "entity_type": "movement_flow",
+            "locality": "Red Mountain Corridor",
+            "metric_value": 1,
+            "unit": "active_closure",
+            "observed_at": "2023-06-05T00:00:00Z",
+            "published_at": "2023-05-28T00:00:00Z",
+            "valid_from": "2023-06-05T00:00:00Z",
+            "valid_to": "2023-06-30T23:59:59Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "route_friction_truth"
+        }
+      },
+      {
+        "sourceName": "U.S. Census ACS",
+        "records": [
+          {
+            "record_id": "acs-2023-southside-population",
+            "series_key": "population_total",
+            "name": "Southside Population",
+            "entity_id": "tract:110100",
+            "entity_type": "population_cohort",
+            "locality": "Southside",
+            "metric_value": 12000,
+            "unit": "people",
+            "observed_at": "2023-07-01T00:00:00Z",
+            "published_at": "2023-12-15T00:00:00Z"
+          },
+          {
+            "record_id": "acs-2023-avondale-housing",
+            "series_key": "housing_units",
+            "name": "Avondale Housing Units",
+            "entity_id": "tract:110200",
+            "entity_type": "housing_signal",
+            "locality": "Avondale",
+            "metric_value": 4210,
+            "unit": "units",
+            "observed_at": "2023-07-01T00:00:00Z",
+            "published_at": "2023-12-15T00:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "population_and_housing_baseline"
+        }
+      },
+      {
+        "sourceName": "NWS / NOAA Weather API",
+        "records": [
+          {
+            "record_id": "noaa-2023-heat-advisory",
+            "series_key": "heat_index_advisory",
+            "name": "Birmingham Heat Advisory",
+            "entity_id": "weather-zone:jefferson",
+            "entity_type": "environmental_signal",
+            "locality": "Birmingham Metro",
+            "metric_value": 104,
+            "unit": "heat_index_f",
+            "observed_at": "2023-08-17T15:00:00Z",
+            "published_at": "2023-08-17T13:00:00Z",
+            "valid_from": "2023-08-17T13:00:00Z",
+            "valid_to": "2023-08-17T21:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "environmental_signal_truth"
+        }
+      },
+      {
+        "sourceName": "City of Birmingham OpenGov",
+        "records": [
+          {
+            "record_id": "opengov-avondale-locality",
+            "feature_id": "neighborhood-avondale",
+            "name": "Avondale",
+            "entity_type": "locality",
+            "locality": "Avondale",
+            "lat": 33.5245,
+            "lng": -86.7743,
+            "published_at": "2023-02-01T00:00:00Z"
+          },
+          {
+            "record_id": "opengov-southside-community",
+            "feature_id": "community-southside",
+            "name": "Southside",
+            "entity_type": "community",
+            "locality": "Southside",
+            "lat": 33.4999,
+            "lng": -86.7975,
+            "published_at": "2023-02-01T00:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 1,
+          "seedRole": "locality_truth"
+        }
+      },
+      {
+        "sourceName": "UAB Academic, Clinical, and Event Calendars",
+        "records": [
+          {
+            "record_id": "uab-2023-spring-concert",
+            "event_id": "event-uab-spring-concert",
+            "title": "UAB Spring Concert",
+            "venue_name": "UAB Green",
+            "community_name": "UAB Students",
+            "locality": "Southside",
+            "published_at": "2023-03-01T10:00:00Z",
+            "starts_at": "2023-04-10T18:00:00Z",
+            "ends_at": "2023-04-10T20:00:00Z"
+          },
+          {
+            "record_id": "uab-2023-medical-lecture",
+            "event_id": "event-uab-medical-lecture",
+            "title": "UAB Medical Lecture",
+            "venue_name": "West Pavilion",
+            "community_name": "Medical District",
+            "locality": "Southside",
+            "published_at": "2023-09-03T14:00:00Z",
+            "starts_at": "2023-09-15T17:30:00Z",
+            "ends_at": "2023-09-15T19:00:00Z"
+          }
+        ],
+        "metadata": {
+          "ingestPriority": 2,
+          "seedRole": "institutional_event_gravity"
+        }
+      }
+    ],
+    "notes": [
+      "Seed pack for first governed 2023 BHAM replay ingestion slice.",
+      "This is local seed data, not final authoritative historical ingest."
+    ],
+    "metadata": {
+      "sourceCount": 7,
+      "status": "seed"
+    }
+  },
+  "ingestion": {
+    "manifest": {
+      "manifestId": "bham-replay-ingestion-2023",
+      "replayYear": 2023,
+      "generatedAtUtc": "2026-03-11T02:40:37.436414Z",
+      "selectedScore": {
+        "year": 2023,
+        "eventCoverage": 0.6725769230769233,
+        "venueCoverage": 0.6555789473684213,
+        "communityCoverage": 0.7140000000000002,
+        "recurrenceFidelity": 0.8147058823529415,
+        "temporalCertainty": 0.8210529411764705,
+        "trustQuality": 0.7030588235294118,
+        "overallScore": 0.7167745946653967,
+        "notes": [
+          "candidate sources still influence score"
+        ],
+        "sourceRefs": [
+          "BEA / U.S. Census Bureau Economic Series",
+          "Bureau of Labor Statistics / State DOL",
+          "U.S. Census ACS",
+          "LEHD / OnTheMap",
+          "Jefferson / Shelby / Regional GIS and Assessors",
+          "City of Birmingham OpenGov",
+          "NWS / NOAA Weather API",
+          "MAX Transit GTFS",
+          "ALDOT Traffic Data",
+          "ALDOT Long-Term Construction Projects",
+          "BHM Airport / TSA Throughput",
+          "UAB Academic, Clinical, and Event Calendars",
+          "Samford University Calendars and Campus Map",
+          "UAB / Samford Enrollment Origin Reports",
+          "BJCC / Legacy Arena / Protective Stadium Calendars",
+          "SEC / College Football Broadcast Schedules",
+          "OpenStreetMap POI Data",
+          "Google Places / Yelp",
+          "Resy / OpenTable / Venue Reservation Exports",
+          "Delivery / Ordering Platform Aggregates",
+          "Data Axle / InfoGroup Business Listings",
+          "Real Estate and Rent Index",
+          "Neighborhood Association Calendars",
+          "Birmingham Public Library Network",
+          "IN Birmingham (CVB Calendar)",
+          "Major Venue Calendars (Saturn / Iron City / The Nick)",
+          "Eventbrite / Meetup",
+          "County / Municipal Courts and Police Dispatch",
+          "Bham Now / AL.com / Birmingham Business Journal",
+          "WBHM 90.3 Public Radio",
+          "James Beard / Garden & Gun / Michelin",
+          "Bhamwiki",
+          "Birmingham Public Library Archives",
+          "REV Birmingham Updates"
+        ]
+      },
+      "sourcePlans": [
+        {
+          "source": {
+            "sourceName": "ALDOT Long-Term Construction Projects",
+            "sourceType": "infrastructure_friction",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "events",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "multi_year_route_friction",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "project_timeline",
+                "closures",
+                "detours",
+                "affected_segments"
+              ],
+              "dedupeKeys": [
+                "project_id",
+                "segment_id"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "project_id",
+            "segment_id"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "project_timeline",
+              "closures",
+              "detours",
+              "affected_segments"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "ALDOT Traffic Data",
+            "sourceType": "traffic_flow",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "traffic",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "arterial_flow_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "counts",
+                "travel_speed",
+                "artery_load"
+              ],
+              "dedupeKeys": [
+                "segment_id",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "segment_id",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "counts",
+              "travel_speed",
+              "artery_load"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BEA / U.S. Census Bureau Economic Series",
+            "sourceType": "economic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "economics",
+              "income",
+              "wallets",
+              "households"
+            ],
+            "temporalStartYear": 1969,
+            "temporalEndYear": 2025,
+            "replayRole": "economic_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "BEA / U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate-only source; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+              "plannedIngestFields": [
+                "personal_income",
+                "consumer_spending",
+                "median_wages"
+              ],
+              "dedupeKeys": [
+                "county_fips",
+                "series_id",
+                "year"
+              ],
+              "currentStatusNotes": "Approved for baseline economic priors."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "economic_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "county_fips",
+            "series_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate-only source; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+            "plannedIngestFields": [
+              "personal_income",
+              "consumer_spending",
+              "median_wages"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BHM Airport / TSA Throughput",
+            "sourceType": "travel_flow",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "events",
+              "travelers",
+              "localities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "travel_influx_egress",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham-Shuttlesworth Airport / TSA",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "departures",
+                "arrivals",
+                "holiday_throughput"
+              ],
+              "dedupeKeys": [
+                "airport_code",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "airport_code",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "departures",
+              "arrivals",
+              "holiday_throughput"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bureau of Labor Statistics / State DOL",
+            "sourceType": "employment_distribution",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "employment",
+              "occupations",
+              "shift_patterns",
+              "workplaces"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "occupation_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "BLS / Alabama Department of Labor",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2021,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Adult labor patterns only; do not create under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "legalUsageNotes": "Public labor data; use as aggregate role prior.",
+              "plannedIngestFields": [
+                "occupation_mix",
+                "industry_sectors",
+                "shift_hours"
+              ],
+              "dedupeKeys": [
+                "metro_code",
+                "occupation_code",
+                "year_month"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "metro_code",
+            "occupation_code",
+            "year_month"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Adult labor patterns only; do not create under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "legalUsageNotes": "Public labor data; use as aggregate role prior.",
+            "plannedIngestFields": [
+              "occupation_mix",
+              "industry_sectors",
+              "shift_hours"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "City of Birmingham OpenGov",
+            "sourceType": "civic_spatial_truth",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "localities",
+              "neighborhoods",
+              "events",
+              "civic_boundaries",
+              "communities"
+            ],
+            "temporalStartYear": 2015,
+            "temporalEndYear": 2026,
+            "replayRole": "locality_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "City of Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "neighborhood_polygons",
+                "districts",
+                "civic_datasets"
+              ],
+              "dedupeKeys": [
+                "dataset_id",
+                "neighborhood_name",
+                "revision_date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "dataset_id",
+            "neighborhood_name",
+            "revision_date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "neighborhood_polygons",
+              "districts",
+              "civic_datasets"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+            "sourceType": "spatial_grounding",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "localities",
+              "parcels",
+              "buildings"
+            ],
+            "temporalStartYear": 1998,
+            "temporalEndYear": 2026,
+            "replayRole": "spatial_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Jefferson County, Shelby County, RPCGB",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "parcel_geometry",
+                "building_footprints",
+                "zoning",
+                "addresses"
+              ],
+              "dedupeKeys": [
+                "parcel_id",
+                "address",
+                "county"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "parcel_id",
+            "address",
+            "county"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "parcel_geometry",
+              "building_footprints",
+              "zoning",
+              "addresses"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "LEHD / OnTheMap",
+            "sourceType": "movement_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "commutes",
+              "day_night_flows",
+              "localities"
+            ],
+            "temporalStartYear": 2002,
+            "temporalEndYear": 2023,
+            "replayRole": "commuter_flow_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate mobility only.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "origin_destination_flow",
+                "daytime_population",
+                "worker_concentration"
+              ],
+              "dedupeKeys": [
+                "origin_geoid",
+                "destination_geoid",
+                "year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "origin_geoid",
+            "destination_geoid",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate mobility only."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "origin_destination_flow",
+              "daytime_population",
+              "worker_concentration"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "MAX Transit GTFS",
+            "sourceType": "transit_schedule",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "stops",
+              "localities"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "public_transit_rhythm",
+            "legalStatus": "allowed",
+            "sourceOwner": "MAX Transit",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "routes",
+                "stops",
+                "trips",
+                "service_calendar"
+              ],
+              "dedupeKeys": [
+                "route_id",
+                "trip_id",
+                "service_id"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "route_id",
+            "trip_id",
+            "service_id"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "routes",
+              "stops",
+              "trips",
+              "service_calendar"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "NWS / NOAA Weather API",
+            "sourceType": "environmental_truth",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "weather",
+              "events",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 1950,
+            "temporalEndYear": 2026,
+            "replayRole": "environmental_overrides",
+            "legalStatus": "allowed",
+            "sourceOwner": "NOAA / NWS",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2011,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "storms",
+                "warnings",
+                "heatwaves",
+                "floods"
+              ],
+              "dedupeKeys": [
+                "event_id",
+                "issued_at",
+                "zone"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "environmental_signal",
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "event_id",
+            "issued_at",
+            "zone"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "storms",
+              "warnings",
+              "heatwaves",
+              "floods"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "U.S. Census ACS",
+            "sourceType": "demographic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "population",
+              "age_distribution",
+              "families",
+              "housing"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2024,
+            "replayRole": "population_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2020,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Use for aggregate dependent mobility only; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "population",
+                "age_bands",
+                "family_size",
+                "housing_tenure"
+              ],
+              "dedupeKeys": [
+                "tract_id",
+                "year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "housing_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "tract_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Use for aggregate dependent mobility only; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "population",
+              "age_bands",
+              "family_size",
+              "housing_tenure"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+            "sourceType": "major_venue_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "movement",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1995,
+            "temporalEndYear": 2026,
+            "replayRole": "major_event_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "BJCC",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2022,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "event_calendar",
+                "capacity",
+                "doors_open",
+                "venue_status"
+              ],
+              "dedupeKeys": [
+                "venue",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "event_calendar",
+              "capacity",
+              "doors_open",
+              "venue_status"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "SEC / College Football Broadcast Schedules",
+            "sourceType": "macro_event_schedule",
+            "accessMethod": "api",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "movement",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "macro_behavior_override",
+            "legalStatus": "allowed",
+            "sourceOwner": "SEC / Broadcast Networks / Universities",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "game_time",
+                "broadcast_window",
+                "team_affinity_pressure"
+              ],
+              "dedupeKeys": [
+                "sport",
+                "game_id",
+                "broadcast_date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "sport",
+            "game_id",
+            "broadcast_date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "game_time",
+              "broadcast_window",
+              "team_affinity_pressure"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Samford University Calendars and Campus Map",
+            "sourceType": "institutional_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "movement"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "institutional_gravity_well",
+            "legalStatus": "allowed",
+            "sourceOwner": "Samford University",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "event_calendar",
+                "campus_map",
+                "term_schedule"
+              ],
+              "dedupeKeys": [
+                "calendar_uid",
+                "building_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "calendar_uid",
+            "building_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "event_calendar",
+              "campus_map",
+              "term_schedule"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "UAB / Samford Enrollment Origin Reports",
+            "sourceType": "enrollment_origin",
+            "accessMethod": "manual",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "population",
+              "movement",
+              "communities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2025,
+            "replayRole": "seasonal_population_influx",
+            "legalStatus": "allowed",
+            "sourceOwner": "UAB / Samford",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "origin_states",
+                "international_mix",
+                "term_count"
+              ],
+              "dedupeKeys": [
+                "institution",
+                "term",
+                "report_year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "movement_flow",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "institution",
+            "term",
+            "report_year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "origin_states",
+              "international_mix",
+              "term_count"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "UAB Academic, Clinical, and Event Calendars",
+            "sourceType": "institutional_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "institutional_gravity_well",
+            "legalStatus": "allowed",
+            "sourceOwner": "University of Alabama at Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "academic_calendar",
+                "event_calendar",
+                "clinical_schedule"
+              ],
+              "dedupeKeys": [
+                "calendar_uid",
+                "event_start",
+                "campus_location"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "calendar_uid",
+            "event_start",
+            "campus_location"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "academic_calendar",
+              "event_calendar",
+              "clinical_schedule"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Data Axle / InfoGroup Business Listings",
+            "sourceType": "business_listing",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "businesses",
+              "clubs"
+            ],
+            "temporalStartYear": 2006,
+            "temporalEndYear": 2026,
+            "replayRole": "business_truth_enrichment",
+            "legalStatus": "review_required",
+            "sourceOwner": "Data Axle / InfoGroup",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "naics",
+                "entity_status",
+                "business_name",
+                "address"
+              ],
+              "dedupeKeys": [
+                "business_id",
+                "normalized_name",
+                "address"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "club",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "business_id",
+            "normalized_name",
+            "address"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "naics",
+              "entity_status",
+              "business_name",
+              "address"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Delivery / Ordering Platform Aggregates",
+            "sourceType": "delivery_demand",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "localities",
+              "demand_windows"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "meal_demand_rhythm",
+            "legalStatus": "review_required",
+            "sourceOwner": "Delivery Partners",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Aggregate-only patterns; never retain raw personal order history.",
+              "plannedIngestFields": [
+                "demand_density",
+                "cuisine_timing",
+                "delivery_heat"
+              ],
+              "dedupeKeys": [
+                "provider",
+                "delivery_zone",
+                "service_date",
+                "meal_period"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "provider",
+            "delivery_zone",
+            "service_date",
+            "meal_period"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Aggregate-only patterns; never retain raw personal order history.",
+            "plannedIngestFields": [
+              "demand_density",
+              "cuisine_timing",
+              "delivery_heat"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Google Places / Yelp",
+            "sourceType": "commercial_poi_enrichment",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "restaurants",
+              "spots"
+            ],
+            "temporalStartYear": 2011,
+            "temporalEndYear": 2026,
+            "replayRole": "hours_and_operating_enrichment",
+            "legalStatus": "allowed_with_terms",
+            "sourceOwner": "Google / Yelp",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Respect provider terms; use as enrichment after identity normalization.",
+              "plannedIngestFields": [
+                "operating_hours",
+                "category",
+                "rating_count"
+              ],
+              "dedupeKeys": [
+                "provider_place_id",
+                "normalized_name",
+                "address"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "provider_place_id",
+            "normalized_name",
+            "address"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Respect provider terms; use as enrichment after identity normalization.",
+            "plannedIngestFields": [
+              "operating_hours",
+              "category",
+              "rating_count"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "OpenStreetMap POI Data",
+            "sourceType": "poi_baseline",
+            "accessMethod": "api",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2008,
+            "temporalEndYear": 2026,
+            "replayRole": "poi_identity_baseline",
+            "legalStatus": "allowed",
+            "sourceOwner": "OpenStreetMap",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "poi_type",
+                "name",
+                "address",
+                "hours",
+                "geometry"
+              ],
+              "dedupeKeys": [
+                "osm_id",
+                "address",
+                "lat_lng"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "osm_id",
+            "address",
+            "lat_lng"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "poi_type",
+              "name",
+              "address",
+              "hours",
+              "geometry"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Real Estate and Rent Index",
+            "sourceType": "housing_market",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "localities",
+              "housing",
+              "population",
+              "movement"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "gentrification_and_displacement",
+            "legalStatus": "review_required",
+            "sourceOwner": "Zillow / MLS / HUD",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2021,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "rent_index",
+                "home_price_index",
+                "inventory"
+              ],
+              "dedupeKeys": [
+                "zip",
+                "month",
+                "provider"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "housing_signal",
+            "locality",
+            "movement_flow",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "zip",
+            "month",
+            "provider"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "rent_index",
+              "home_price_index",
+              "inventory"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Resy / OpenTable / Venue Reservation Exports",
+            "sourceType": "reservation_demand",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "events",
+              "demand_windows"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "occupancy_and_booking_pressure",
+            "legalStatus": "review_required",
+            "sourceOwner": "Resy / OpenTable / Venue Partners",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Use only after legal and partner access review. Never sole venue truth.",
+              "plannedIngestFields": [
+                "reservation_windows",
+                "seat_pressure",
+                "table_scarcity"
+              ],
+              "dedupeKeys": [
+                "venue_name",
+                "service_date",
+                "service_period"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "event",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue_name",
+            "service_date",
+            "service_period"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Use only after legal and partner access review. Never sole venue truth.",
+            "plannedIngestFields": [
+              "reservation_windows",
+              "seat_pressure",
+              "table_scarcity"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Birmingham Public Library Network",
+            "sourceType": "civic_community_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "public_space_community_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham Public Library",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "classes",
+                "events",
+                "branch_locations"
+              ],
+              "dedupeKeys": [
+                "branch",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "branch",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "classes",
+              "events",
+              "branch_locations"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "County / Municipal Courts and Police Dispatch",
+            "sourceType": "civic_friction",
+            "accessMethod": "openData",
+            "trustTier": "tier2",
+            "status": "candidate",
+            "entityCoverage": [
+              "events",
+              "movement",
+              "localities",
+              "safety"
+            ],
+            "temporalStartYear": 2010,
+            "temporalEndYear": 2026,
+            "replayRole": "incident_and_friction_truth",
+            "legalStatus": "review_required",
+            "sourceOwner": "Jefferson County / Municipalities",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "incident_type",
+                "time",
+                "location",
+                "disposition"
+              ],
+              "dedupeKeys": [
+                "incident_id",
+                "timestamp",
+                "location"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "incident_id",
+            "timestamp",
+            "location"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "incident_type",
+              "time",
+              "location",
+              "disposition"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Eventbrite / Meetup",
+            "sourceType": "community_event_platform",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "clubs",
+              "venues"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "community_event_discovery",
+            "legalStatus": "allowed_with_terms",
+            "sourceOwner": "Eventbrite / Meetup",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+              "plannedIngestFields": [
+                "event_name",
+                "organizer",
+                "venue",
+                "recurrence"
+              ],
+              "dedupeKeys": [
+                "platform_event_id",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "platform_event_id",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+            "plannedIngestFields": [
+              "event_name",
+              "organizer",
+              "venue",
+              "recurrence"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "IN Birmingham (CVB Calendar)",
+            "sourceType": "tourism_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "official_tourism_event_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Greater Birmingham Convention & Visitors Bureau",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "event_name",
+                "venue_name",
+                "event_dates",
+                "category"
+              ],
+              "dedupeKeys": [
+                "event_name",
+                "venue_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "event_name",
+            "venue_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "event_name",
+              "venue_name",
+              "event_dates",
+              "category"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Major Venue Calendars (Saturn / Iron City / The Nick)",
+            "sourceType": "venue_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "nightlife_and_culture_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Individual venues",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "event_calendar",
+                "venue_status",
+                "ticketed_events"
+              ],
+              "dedupeKeys": [
+                "venue",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "event_calendar",
+              "venue_status",
+              "ticketed_events"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Neighborhood Association Calendars",
+            "sourceType": "hyper_local_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "clubs",
+              "neighborhoods",
+              "localities"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "hyper_local_community_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Neighborhood Associations",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2019,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "meeting_dates",
+                "community_topics",
+                "association_identity"
+              ],
+              "dedupeKeys": [
+                "association_name",
+                "meeting_date",
+                "neighborhood"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "association_name",
+            "meeting_date",
+            "neighborhood"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "meeting_dates",
+              "community_topics",
+              "association_identity"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bham Now / AL.com / Birmingham Business Journal",
+            "sourceType": "local_news_verification",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2016,
+            "temporalEndYear": 2026,
+            "replayRole": "opening_closure_cross_verification",
+            "legalStatus": "allowed",
+            "sourceOwner": "Local news organizations",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "article_date",
+                "venue_name",
+                "event_mentions",
+                "closure_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at",
+                "normalized_entity"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at",
+            "normalized_entity"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "article_date",
+              "venue_name",
+              "event_mentions",
+              "closure_signal"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bhamwiki",
+            "sourceType": "historical_entity_archive",
+            "accessMethod": "archive",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2006,
+            "temporalEndYear": 2026,
+            "replayRole": "historical_entity_memory",
+            "legalStatus": "allowed",
+            "sourceOwner": "Bhamwiki",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2024,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "entity_history",
+                "opening_closure_history",
+                "neighborhood_links"
+              ],
+              "dedupeKeys": [
+                "page_title",
+                "normalized_entity",
+                "last_revision"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "page_title",
+            "normalized_entity",
+            "last_revision"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "entity_history",
+              "opening_closure_history",
+              "neighborhood_links"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Birmingham Public Library Archives",
+            "sourceType": "historical_archive",
+            "accessMethod": "archive",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "places",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1880,
+            "temporalEndYear": 2026,
+            "replayRole": "deep_historical_context",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham Public Library",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 1963,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "archival_reference",
+                "event_dates",
+                "location_history"
+              ],
+              "dedupeKeys": [
+                "archive_id",
+                "collection_name",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "archive_id",
+            "collection_name",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "archival_reference",
+              "event_dates",
+              "location_history"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "James Beard / Garden & Gun / Michelin",
+            "sourceType": "prestige_signal",
+            "accessMethod": "manual",
+            "trustTier": "tier4",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "prestige"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "prestige_enrichment",
+            "legalStatus": "allowed",
+            "sourceOwner": "Editorial and awards organizations",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2025,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "award_date",
+                "venue_name",
+                "recognition_type"
+              ],
+              "dedupeKeys": [
+                "venue_name",
+                "award_name",
+                "award_year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue_name",
+            "award_name",
+            "award_year"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "award_date",
+              "venue_name",
+              "recognition_type"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "REV Birmingham Updates",
+            "sourceType": "district_turnover_signal",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2013,
+            "temporalEndYear": 2026,
+            "replayRole": "district_opening_closure_signal",
+            "legalStatus": "allowed",
+            "sourceOwner": "REV Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "district_news",
+                "opening_signal",
+                "closure_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at",
+                "district"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at",
+            "district"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "district_news",
+              "opening_signal",
+              "closure_signal"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "WBHM 90.3 Public Radio",
+            "sourceType": "civic_news_verification",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "civic_mood_and_major_event_crosscheck",
+            "legalStatus": "allowed",
+            "sourceOwner": "WBHM",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2020,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "story_date",
+                "entity_mentions",
+                "civic_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "story_date",
+              "entity_mentions",
+              "civic_signal"
+            ]
+          }
+        }
+      ],
+      "canonicalEntityTypes": [
+        "club",
+        "community",
+        "economic_signal",
+        "environmental_signal",
+        "event",
+        "housing_signal",
+        "locality",
+        "movement_flow",
+        "population_cohort",
+        "venue"
+      ],
+      "notes": [
+        "Manifest generated from governed BHAM replay source registry wave8-phase1.",
+        "29 sources are ready for replay-year intake.",
+        "5 sources remain pending review before full replay-year authority.",
+        "Normalization targets are canonical entity types derived from source coverage and replay role."
+      ],
+      "sourceStatusCounts": {
+        "approved": 29,
+        "candidate": 5
+      }
+    },
+    "results": [
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "ALDOT Long-Term Construction Projects",
+            "sourceType": "infrastructure_friction",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "events",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "multi_year_route_friction",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "project_timeline",
+                "closures",
+                "detours",
+                "affected_segments"
+              ],
+              "dedupeKeys": [
+                "project_id",
+                "segment_id"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "project_id",
+            "segment_id"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "project_timeline",
+              "closures",
+              "detours",
+              "affected_segments"
+            ]
+          }
+        },
+        "adapterId": "aggregate_metric_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "aldot-construction-2023-redmountain",
+            "sourceName": "ALDOT Long-Term Construction Projects",
+            "replayYear": 2023,
+            "rawEntityId": "project:red_mountain_lane_closure",
+            "rawEntityType": "movement_flow",
+            "replayEnvelope": {
+              "envelopeId": "env:aldot-construction-2023-redmountain",
+              "subjectId": "project:red_mountain_lane_closure",
+              "observedAt": {
+                "referenceTime": "2023-06-05T00:00:00.000Z",
+                "civilTime": "2023-06-05T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685923200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-05-28T00:00:00.000Z",
+                "civilTime": "2023-05-28T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685232000000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-06-05T00:00:00.000Z",
+                "civilTime": "2023-06-05T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685923200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-06-30T23:59:59.000Z",
+                "civilTime": "2023-06-30T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169599000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "ALDOT Long-Term Construction Projects"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "movement_flow",
+            "localityHint": "Red Mountain Corridor",
+            "payload": {
+              "name": "Red Mountain Expressway Lane Closure",
+              "metric_value": 1,
+              "series_key": "red_mountain_lane_closure",
+              "unit": "active_closure",
+              "record_id": "aldot-construction-2023-redmountain",
+              "entity_id": "project:red_mountain_lane_closure",
+              "entity_type": "movement_flow",
+              "locality": "Red Mountain Corridor",
+              "observed_at": "2023-06-05T00:00:00Z",
+              "published_at": "2023-05-28T00:00:00Z",
+              "valid_from": "2023-06-05T00:00:00Z",
+              "valid_to": "2023-06-30T23:59:59Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "infrastructure_friction"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:aldot-construction-2023-redmountain",
+            "subjectIdentity": {
+              "normalizedEntityId": "movement_flow:red-mountain-expressway-lane-closure",
+              "entityType": "movement_flow",
+              "canonicalName": "Red Mountain Expressway Lane Closure",
+              "sourceAliases": [
+                "project:red_mountain_lane_closure",
+                "Red Mountain Expressway Lane Closure"
+              ],
+              "sourceRefs": [
+                "ALDOT Long-Term Construction Projects"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "project:red_mountain_lane_closure",
+                "locality": "Red Mountain Corridor"
+              },
+              "localityAnchor": "Red Mountain Corridor",
+              "metadata": {
+                "source_type": "infrastructure_friction",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:aldot-construction-2023-redmountain",
+              "subjectId": "project:red_mountain_lane_closure",
+              "observedAt": {
+                "referenceTime": "2023-06-05T00:00:00.000Z",
+                "civilTime": "2023-06-05T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685923200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-05-28T00:00:00.000Z",
+                "civilTime": "2023-05-28T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685232000000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-06-05T00:00:00.000Z",
+                "civilTime": "2023-06-05T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1685923200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-06-30T23:59:59.000Z",
+                "civilTime": "2023-06-30T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Long-Term Construction Projects"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169599000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "ALDOT Long-Term Construction Projects"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "ALDOT Long-Term Construction Projects"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Red Mountain Expressway Lane Closure",
+              "entity_type": "movement_flow",
+              "locality_anchor": "Red Mountain Corridor",
+              "name": "Red Mountain Expressway Lane Closure",
+              "metric_value": 1,
+              "series_key": "red_mountain_lane_closure",
+              "unit": "active_closure",
+              "record_id": "aldot-construction-2023-redmountain",
+              "entity_id": "project:red_mountain_lane_closure",
+              "locality": "Red Mountain Corridor",
+              "observed_at": "2023-06-05T00:00:00Z",
+              "published_at": "2023-05-28T00:00:00Z",
+              "valid_from": "2023-06-05T00:00:00Z",
+              "valid_to": "2023-06-30T23:59:59Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:aldot-construction-2023-redmountain",
+              "subjectId": "movement_flow:red-mountain-expressway-lane-closure",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.602363Z",
+                "civilTime": "2026-03-10T22:16:41.602363",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 19102,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "ALDOT Long-Term Construction Projects"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "aldot-construction-2023-redmountain",
+                "raw_entity_type": "movement_flow"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "aldot-construction-2023-redmountain"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "ALDOT Traffic Data",
+            "sourceType": "traffic_flow",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "traffic",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "arterial_flow_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "counts",
+                "travel_speed",
+                "artery_load"
+              ],
+              "dedupeKeys": [
+                "segment_id",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "segment_id",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "counts",
+              "travel_speed",
+              "artery_load"
+            ]
+          }
+        },
+        "adapterId": "aggregate_metric_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "aldot-2023-280-pm-peak",
+            "sourceName": "ALDOT Traffic Data",
+            "replayYear": 2023,
+            "rawEntityId": "segment:us280_pm_peak",
+            "rawEntityType": "movement_flow",
+            "replayEnvelope": {
+              "envelopeId": "env:aldot-2023-280-pm-peak",
+              "subjectId": "segment:us280_pm_peak",
+              "observedAt": {
+                "referenceTime": "2023-10-12T17:30:00.000Z",
+                "civilTime": "2023-10-12T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Traffic Data"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1697131800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-10-12T18:00:00.000Z",
+                "civilTime": "2023-10-12T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Traffic Data"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1697133600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "ALDOT Traffic Data"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "movement_flow",
+            "localityHint": "US-280 Corridor",
+            "payload": {
+              "name": "US-280 PM Peak Travel Speed",
+              "metric_value": 17.8,
+              "series_key": "us280_pm_peak",
+              "unit": "mph",
+              "record_id": "aldot-2023-280-pm-peak",
+              "entity_id": "segment:us280_pm_peak",
+              "entity_type": "movement_flow",
+              "locality": "US-280 Corridor",
+              "observed_at": "2023-10-12T17:30:00Z",
+              "published_at": "2023-10-12T18:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "traffic_flow"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:aldot-2023-280-pm-peak",
+            "subjectIdentity": {
+              "normalizedEntityId": "movement_flow:us-280-pm-peak-travel-speed",
+              "entityType": "movement_flow",
+              "canonicalName": "US-280 PM Peak Travel Speed",
+              "sourceAliases": [
+                "segment:us280_pm_peak",
+                "US-280 PM Peak Travel Speed"
+              ],
+              "sourceRefs": [
+                "ALDOT Traffic Data"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "segment:us280_pm_peak",
+                "locality": "US-280 Corridor"
+              },
+              "localityAnchor": "US-280 Corridor",
+              "metadata": {
+                "source_type": "traffic_flow",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:aldot-2023-280-pm-peak",
+              "subjectId": "segment:us280_pm_peak",
+              "observedAt": {
+                "referenceTime": "2023-10-12T17:30:00.000Z",
+                "civilTime": "2023-10-12T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Traffic Data"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1697131800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-10-12T18:00:00.000Z",
+                "civilTime": "2023-10-12T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "ALDOT Traffic Data"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1697133600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "ALDOT Traffic Data"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "ALDOT Traffic Data"
+            ],
+            "normalizedFields": {
+              "canonical_name": "US-280 PM Peak Travel Speed",
+              "entity_type": "movement_flow",
+              "locality_anchor": "US-280 Corridor",
+              "name": "US-280 PM Peak Travel Speed",
+              "metric_value": 17.8,
+              "series_key": "us280_pm_peak",
+              "unit": "mph",
+              "record_id": "aldot-2023-280-pm-peak",
+              "entity_id": "segment:us280_pm_peak",
+              "locality": "US-280 Corridor",
+              "observed_at": "2023-10-12T17:30:00Z",
+              "published_at": "2023-10-12T18:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:aldot-2023-280-pm-peak",
+              "subjectId": "movement_flow:us-280-pm-peak-travel-speed",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.617412Z",
+                "civilTime": "2026-03-10T22:16:41.617412",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 34120,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "ALDOT Traffic Data"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "aldot-2023-280-pm-peak",
+                "raw_entity_type": "movement_flow"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "aldot-2023-280-pm-peak"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "BEA / U.S. Census Bureau Economic Series",
+            "sourceType": "economic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "economics",
+              "income",
+              "wallets",
+              "households"
+            ],
+            "temporalStartYear": 1969,
+            "temporalEndYear": 2025,
+            "replayRole": "economic_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "BEA / U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate-only source; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+              "plannedIngestFields": [
+                "personal_income",
+                "consumer_spending",
+                "median_wages"
+              ],
+              "dedupeKeys": [
+                "county_fips",
+                "series_id",
+                "year"
+              ],
+              "currentStatusNotes": "Approved for baseline economic priors."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "economic_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "county_fips",
+            "series_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate-only source; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+            "plannedIngestFields": [
+              "personal_income",
+              "consumer_spending",
+              "median_wages"
+            ]
+          }
+        },
+        "adapterId": "aggregate_metric_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "bea-2023-jefferson-income",
+            "sourceName": "BEA / U.S. Census Bureau Economic Series",
+            "replayYear": 2023,
+            "rawEntityId": "county:073",
+            "rawEntityType": "economic_signal",
+            "replayEnvelope": {
+              "envelopeId": "env:bea-2023-jefferson-income",
+              "subjectId": "county:073",
+              "observedAt": {
+                "referenceTime": "2023-12-31T00:00:00.000Z",
+                "civilTime": "2023-12-31T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "BEA / U.S. Census Bureau Economic Series"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1703980800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2024-03-28T00:00:00.000Z",
+                "civilTime": "2024-03-28T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "BEA / U.S. Census Bureau Economic Series"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1711584000000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "BEA / U.S. Census Bureau Economic Series"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "economic_signal",
+            "localityHint": "Birmingham Metro",
+            "payload": {
+              "name": "Jefferson County Personal Income Per Capita",
+              "metric_value": 60210,
+              "series_key": "personal_income_per_capita",
+              "unit": "usd_per_person",
+              "record_id": "bea-2023-jefferson-income",
+              "entity_id": "county:073",
+              "entity_type": "economic_signal",
+              "locality": "Birmingham Metro",
+              "observed_at": "2023-12-31T00:00:00Z",
+              "published_at": "2024-03-28T00:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "economic_reality"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:bea-2023-jefferson-income",
+            "subjectIdentity": {
+              "normalizedEntityId": "economic_signal:jefferson-county-personal-income-per-capita",
+              "entityType": "economic_signal",
+              "canonicalName": "Jefferson County Personal Income Per Capita",
+              "sourceAliases": [
+                "county:073",
+                "Jefferson County Personal Income Per Capita"
+              ],
+              "sourceRefs": [
+                "BEA / U.S. Census Bureau Economic Series"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "county:073",
+                "locality": "Birmingham Metro"
+              },
+              "localityAnchor": "Birmingham Metro",
+              "metadata": {
+                "source_type": "economic_reality",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:bea-2023-jefferson-income",
+              "subjectId": "county:073",
+              "observedAt": {
+                "referenceTime": "2023-12-31T00:00:00.000Z",
+                "civilTime": "2023-12-31T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "BEA / U.S. Census Bureau Economic Series"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1703980800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2024-03-28T00:00:00.000Z",
+                "civilTime": "2024-03-28T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "BEA / U.S. Census Bureau Economic Series"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1711584000000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "BEA / U.S. Census Bureau Economic Series"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "BEA / U.S. Census Bureau Economic Series"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Jefferson County Personal Income Per Capita",
+              "entity_type": "economic_signal",
+              "locality_anchor": "Birmingham Metro",
+              "name": "Jefferson County Personal Income Per Capita",
+              "metric_value": 60210,
+              "series_key": "personal_income_per_capita",
+              "unit": "usd_per_person",
+              "record_id": "bea-2023-jefferson-income",
+              "entity_id": "county:073",
+              "locality": "Birmingham Metro",
+              "observed_at": "2023-12-31T00:00:00Z",
+              "published_at": "2024-03-28T00:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:bea-2023-jefferson-income",
+              "subjectId": "economic_signal:jefferson-county-personal-income-per-capita",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.618834Z",
+                "civilTime": "2026-03-10T22:16:41.618834",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 35539,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "BEA / U.S. Census Bureau Economic Series"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "bea-2023-jefferson-income",
+                "raw_entity_type": "economic_signal"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "bea-2023-jefferson-income"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "City of Birmingham OpenGov",
+            "sourceType": "civic_spatial_truth",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "localities",
+              "neighborhoods",
+              "events",
+              "civic_boundaries",
+              "communities"
+            ],
+            "temporalStartYear": 2015,
+            "temporalEndYear": 2026,
+            "replayRole": "locality_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "City of Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "neighborhood_polygons",
+                "districts",
+                "civic_datasets"
+              ],
+              "dedupeKeys": [
+                "dataset_id",
+                "neighborhood_name",
+                "revision_date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "dataset_id",
+            "neighborhood_name",
+            "revision_date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "neighborhood_polygons",
+              "districts",
+              "civic_datasets"
+            ]
+          }
+        },
+        "adapterId": "spatial_feature_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "opengov-avondale-locality",
+            "sourceName": "City of Birmingham OpenGov",
+            "replayYear": 2023,
+            "rawEntityId": "neighborhood-avondale",
+            "rawEntityType": "locality",
+            "replayEnvelope": {
+              "envelopeId": "env:opengov-avondale-locality",
+              "subjectId": "neighborhood-avondale",
+              "observedAt": {
+                "referenceTime": "2026-03-11T03:16:41.621223Z",
+                "civilTime": "2026-03-10T22:16:41.621223",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 37931,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-02-01T00:00:00.000Z",
+                "civilTime": "2023-02-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "City of Birmingham OpenGov"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1675209600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "City of Birmingham OpenGov"
+              },
+              "uncertainty": {
+                "windowMicros": 600000000,
+                "confidence": 0.92
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "spatial_feature_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "locality",
+            "localityHint": "Avondale",
+            "payload": {
+              "name": "Avondale",
+              "lat": 33.5245,
+              "lng": -86.7743,
+              "geometry": null,
+              "record_id": "opengov-avondale-locality",
+              "feature_id": "neighborhood-avondale",
+              "entity_type": "locality",
+              "locality": "Avondale",
+              "published_at": "2023-02-01T00:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "spatial_feature_replay_source_adapter",
+              "source_type": "civic_spatial_truth"
+            }
+          },
+          {
+            "recordId": "opengov-southside-community",
+            "sourceName": "City of Birmingham OpenGov",
+            "replayYear": 2023,
+            "rawEntityId": "community-southside",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:opengov-southside-community",
+              "subjectId": "community-southside",
+              "observedAt": {
+                "referenceTime": "2026-03-11T03:16:41.621223Z",
+                "civilTime": "2026-03-10T22:16:41.621223",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 37931,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-02-01T00:00:00.000Z",
+                "civilTime": "2023-02-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "City of Birmingham OpenGov"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1675209600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "City of Birmingham OpenGov"
+              },
+              "uncertainty": {
+                "windowMicros": 600000000,
+                "confidence": 0.92
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "spatial_feature_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "Southside",
+            "payload": {
+              "name": "Southside",
+              "lat": 33.4999,
+              "lng": -86.7975,
+              "geometry": null,
+              "record_id": "opengov-southside-community",
+              "feature_id": "community-southside",
+              "entity_type": "community",
+              "locality": "Southside",
+              "published_at": "2023-02-01T00:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "spatial_feature_replay_source_adapter",
+              "source_type": "civic_spatial_truth"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:opengov-avondale-locality",
+            "subjectIdentity": {
+              "normalizedEntityId": "locality:avondale",
+              "entityType": "locality",
+              "canonicalName": "Avondale",
+              "sourceAliases": [
+                "neighborhood-avondale",
+                "Avondale"
+              ],
+              "sourceRefs": [
+                "City of Birmingham OpenGov"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "neighborhood-avondale",
+                "locality": "Avondale"
+              },
+              "localityAnchor": "Avondale",
+              "metadata": {
+                "source_type": "civic_spatial_truth",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:opengov-avondale-locality",
+              "subjectId": "neighborhood-avondale",
+              "observedAt": {
+                "referenceTime": "2026-03-11T03:16:41.621223Z",
+                "civilTime": "2026-03-10T22:16:41.621223",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 37931,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-02-01T00:00:00.000Z",
+                "civilTime": "2023-02-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "City of Birmingham OpenGov"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1675209600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "City of Birmingham OpenGov"
+              },
+              "uncertainty": {
+                "windowMicros": 600000000,
+                "confidence": 0.92
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "spatial_feature_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "City of Birmingham OpenGov"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Avondale",
+              "entity_type": "locality",
+              "locality_anchor": "Avondale",
+              "name": "Avondale",
+              "lat": 33.5245,
+              "lng": -86.7743,
+              "geometry": null,
+              "record_id": "opengov-avondale-locality",
+              "feature_id": "neighborhood-avondale",
+              "locality": "Avondale",
+              "published_at": "2023-02-01T00:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:opengov-avondale-locality",
+              "subjectId": "locality:avondale",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.626363Z",
+                "civilTime": "2026-03-10T22:16:41.626363",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 43071,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "City of Birmingham OpenGov"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "opengov-avondale-locality",
+                "raw_entity_type": "locality"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "opengov-avondale-locality"
+            }
+          },
+          {
+            "observationId": "obs:opengov-southside-community",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:southside",
+              "entityType": "community",
+              "canonicalName": "Southside",
+              "sourceAliases": [
+                "community-southside",
+                "Southside"
+              ],
+              "sourceRefs": [
+                "City of Birmingham OpenGov"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community-southside",
+                "locality": "Southside"
+              },
+              "localityAnchor": "Southside",
+              "metadata": {
+                "source_type": "civic_spatial_truth",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:opengov-southside-community",
+              "subjectId": "community-southside",
+              "observedAt": {
+                "referenceTime": "2026-03-11T03:16:41.621223Z",
+                "civilTime": "2026-03-10T22:16:41.621223",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 37931,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-02-01T00:00:00.000Z",
+                "civilTime": "2023-02-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "City of Birmingham OpenGov"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1675209600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "City of Birmingham OpenGov"
+              },
+              "uncertainty": {
+                "windowMicros": 600000000,
+                "confidence": 0.92
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "spatial_feature_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "City of Birmingham OpenGov"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Southside",
+              "entity_type": "community",
+              "locality_anchor": "Southside",
+              "name": "Southside",
+              "lat": 33.4999,
+              "lng": -86.7975,
+              "geometry": null,
+              "record_id": "opengov-southside-community",
+              "feature_id": "community-southside",
+              "locality": "Southside",
+              "published_at": "2023-02-01T00:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:opengov-southside-community",
+              "subjectId": "community:southside",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.626954Z",
+                "civilTime": "2026-03-10T22:16:41.626954",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 43662,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "City of Birmingham OpenGov"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "opengov-southside-community",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "opengov-southside-community"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "NWS / NOAA Weather API",
+            "sourceType": "environmental_truth",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "weather",
+              "events",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 1950,
+            "temporalEndYear": 2026,
+            "replayRole": "environmental_overrides",
+            "legalStatus": "allowed",
+            "sourceOwner": "NOAA / NWS",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2011,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "storms",
+                "warnings",
+                "heatwaves",
+                "floods"
+              ],
+              "dedupeKeys": [
+                "event_id",
+                "issued_at",
+                "zone"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "environmental_signal",
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "event_id",
+            "issued_at",
+            "zone"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "storms",
+              "warnings",
+              "heatwaves",
+              "floods"
+            ]
+          }
+        },
+        "adapterId": "aggregate_metric_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "noaa-2023-heat-advisory",
+            "sourceName": "NWS / NOAA Weather API",
+            "replayYear": 2023,
+            "rawEntityId": "weather-zone:jefferson",
+            "rawEntityType": "environmental_signal",
+            "replayEnvelope": {
+              "envelopeId": "env:noaa-2023-heat-advisory",
+              "subjectId": "weather-zone:jefferson",
+              "observedAt": {
+                "referenceTime": "2023-08-17T15:00:00.000Z",
+                "civilTime": "2023-08-17T15:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692284400000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-08-17T13:00:00.000Z",
+                "civilTime": "2023-08-17T13:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692277200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-08-17T13:00:00.000Z",
+                "civilTime": "2023-08-17T13:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692277200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-08-17T21:00:00.000Z",
+                "civilTime": "2023-08-17T21:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692306000000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "NWS / NOAA Weather API"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "environmental_signal",
+            "localityHint": "Birmingham Metro",
+            "payload": {
+              "name": "Birmingham Heat Advisory",
+              "metric_value": 104,
+              "series_key": "heat_index_advisory",
+              "unit": "heat_index_f",
+              "record_id": "noaa-2023-heat-advisory",
+              "entity_id": "weather-zone:jefferson",
+              "entity_type": "environmental_signal",
+              "locality": "Birmingham Metro",
+              "observed_at": "2023-08-17T15:00:00Z",
+              "published_at": "2023-08-17T13:00:00Z",
+              "valid_from": "2023-08-17T13:00:00Z",
+              "valid_to": "2023-08-17T21:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "environmental_truth"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:noaa-2023-heat-advisory",
+            "subjectIdentity": {
+              "normalizedEntityId": "environmental_signal:birmingham-heat-advisory",
+              "entityType": "environmental_signal",
+              "canonicalName": "Birmingham Heat Advisory",
+              "sourceAliases": [
+                "weather-zone:jefferson",
+                "Birmingham Heat Advisory"
+              ],
+              "sourceRefs": [
+                "NWS / NOAA Weather API"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "weather-zone:jefferson",
+                "locality": "Birmingham Metro"
+              },
+              "localityAnchor": "Birmingham Metro",
+              "metadata": {
+                "source_type": "environmental_truth",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:noaa-2023-heat-advisory",
+              "subjectId": "weather-zone:jefferson",
+              "observedAt": {
+                "referenceTime": "2023-08-17T15:00:00.000Z",
+                "civilTime": "2023-08-17T15:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692284400000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-08-17T13:00:00.000Z",
+                "civilTime": "2023-08-17T13:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692277200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-08-17T13:00:00.000Z",
+                "civilTime": "2023-08-17T13:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692277200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-08-17T21:00:00.000Z",
+                "civilTime": "2023-08-17T21:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "NWS / NOAA Weather API"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1692306000000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "NWS / NOAA Weather API"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "NWS / NOAA Weather API"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Birmingham Heat Advisory",
+              "entity_type": "environmental_signal",
+              "locality_anchor": "Birmingham Metro",
+              "name": "Birmingham Heat Advisory",
+              "metric_value": 104,
+              "series_key": "heat_index_advisory",
+              "unit": "heat_index_f",
+              "record_id": "noaa-2023-heat-advisory",
+              "entity_id": "weather-zone:jefferson",
+              "locality": "Birmingham Metro",
+              "observed_at": "2023-08-17T15:00:00Z",
+              "published_at": "2023-08-17T13:00:00Z",
+              "valid_from": "2023-08-17T13:00:00Z",
+              "valid_to": "2023-08-17T21:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:noaa-2023-heat-advisory",
+              "subjectId": "environmental_signal:birmingham-heat-advisory",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.627588Z",
+                "civilTime": "2026-03-10T22:16:41.627588",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 44296,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "NWS / NOAA Weather API"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "noaa-2023-heat-advisory",
+                "raw_entity_type": "environmental_signal"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "noaa-2023-heat-advisory"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "U.S. Census ACS",
+            "sourceType": "demographic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "population",
+              "age_distribution",
+              "families",
+              "housing"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2024,
+            "replayRole": "population_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2020,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Use for aggregate dependent mobility only; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "population",
+                "age_bands",
+                "family_size",
+                "housing_tenure"
+              ],
+              "dedupeKeys": [
+                "tract_id",
+                "year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "housing_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "tract_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Use for aggregate dependent mobility only; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "population",
+              "age_bands",
+              "family_size",
+              "housing_tenure"
+            ]
+          }
+        },
+        "adapterId": "aggregate_metric_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "acs-2023-southside-population",
+            "sourceName": "U.S. Census ACS",
+            "replayYear": 2023,
+            "rawEntityId": "tract:110100",
+            "rawEntityType": "population_cohort",
+            "replayEnvelope": {
+              "envelopeId": "env:acs-2023-southside-population",
+              "subjectId": "tract:110100",
+              "observedAt": {
+                "referenceTime": "2023-07-01T00:00:00.000Z",
+                "civilTime": "2023-07-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-12-15T00:00:00.000Z",
+                "civilTime": "2023-12-15T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1702598400000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "U.S. Census ACS"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "population_cohort",
+            "localityHint": "Southside",
+            "payload": {
+              "name": "Southside Population",
+              "metric_value": 12000,
+              "series_key": "population_total",
+              "unit": "people",
+              "record_id": "acs-2023-southside-population",
+              "entity_id": "tract:110100",
+              "entity_type": "population_cohort",
+              "locality": "Southside",
+              "observed_at": "2023-07-01T00:00:00Z",
+              "published_at": "2023-12-15T00:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "demographic_reality"
+            }
+          },
+          {
+            "recordId": "acs-2023-avondale-housing",
+            "sourceName": "U.S. Census ACS",
+            "replayYear": 2023,
+            "rawEntityId": "tract:110200",
+            "rawEntityType": "housing_signal",
+            "replayEnvelope": {
+              "envelopeId": "env:acs-2023-avondale-housing",
+              "subjectId": "tract:110200",
+              "observedAt": {
+                "referenceTime": "2023-07-01T00:00:00.000Z",
+                "civilTime": "2023-07-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-12-15T00:00:00.000Z",
+                "civilTime": "2023-12-15T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1702598400000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "U.S. Census ACS"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "housing_signal",
+            "localityHint": "Avondale",
+            "payload": {
+              "name": "Avondale Housing Units",
+              "metric_value": 4210,
+              "series_key": "housing_units",
+              "unit": "units",
+              "record_id": "acs-2023-avondale-housing",
+              "entity_id": "tract:110200",
+              "entity_type": "housing_signal",
+              "locality": "Avondale",
+              "observed_at": "2023-07-01T00:00:00Z",
+              "published_at": "2023-12-15T00:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "aggregate_metric_replay_source_adapter",
+              "source_type": "demographic_reality"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:acs-2023-southside-population",
+            "subjectIdentity": {
+              "normalizedEntityId": "population_cohort:southside-population",
+              "entityType": "population_cohort",
+              "canonicalName": "Southside Population",
+              "sourceAliases": [
+                "tract:110100",
+                "Southside Population"
+              ],
+              "sourceRefs": [
+                "U.S. Census ACS"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "tract:110100",
+                "locality": "Southside"
+              },
+              "localityAnchor": "Southside",
+              "metadata": {
+                "source_type": "demographic_reality",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:acs-2023-southside-population",
+              "subjectId": "tract:110100",
+              "observedAt": {
+                "referenceTime": "2023-07-01T00:00:00.000Z",
+                "civilTime": "2023-07-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-12-15T00:00:00.000Z",
+                "civilTime": "2023-12-15T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1702598400000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "U.S. Census ACS"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "U.S. Census ACS"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Southside Population",
+              "entity_type": "population_cohort",
+              "locality_anchor": "Southside",
+              "name": "Southside Population",
+              "metric_value": 12000,
+              "series_key": "population_total",
+              "unit": "people",
+              "record_id": "acs-2023-southside-population",
+              "entity_id": "tract:110100",
+              "locality": "Southside",
+              "observed_at": "2023-07-01T00:00:00Z",
+              "published_at": "2023-12-15T00:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:acs-2023-southside-population",
+              "subjectId": "population_cohort:southside-population",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.628287Z",
+                "civilTime": "2026-03-10T22:16:41.628287",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 44991,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "U.S. Census ACS"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "acs-2023-southside-population",
+                "raw_entity_type": "population_cohort"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "acs-2023-southside-population"
+            }
+          },
+          {
+            "observationId": "obs:acs-2023-avondale-housing",
+            "subjectIdentity": {
+              "normalizedEntityId": "housing_signal:avondale-housing-units",
+              "entityType": "housing_signal",
+              "canonicalName": "Avondale Housing Units",
+              "sourceAliases": [
+                "tract:110200",
+                "Avondale Housing Units"
+              ],
+              "sourceRefs": [
+                "U.S. Census ACS"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "tract:110200",
+                "locality": "Avondale"
+              },
+              "localityAnchor": "Avondale",
+              "metadata": {
+                "source_type": "demographic_reality",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:acs-2023-avondale-housing",
+              "subjectId": "tract:110200",
+              "observedAt": {
+                "referenceTime": "2023-07-01T00:00:00.000Z",
+                "civilTime": "2023-07-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1688169600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-12-15T00:00:00.000Z",
+                "civilTime": "2023-12-15T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "U.S. Census ACS"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1702598400000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": null,
+              "validTo": null,
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "U.S. Census ACS"
+              },
+              "uncertainty": {
+                "windowMicros": 900000000,
+                "confidence": 0.9
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "aggregate_metric_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "U.S. Census ACS"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Avondale Housing Units",
+              "entity_type": "housing_signal",
+              "locality_anchor": "Avondale",
+              "name": "Avondale Housing Units",
+              "metric_value": 4210,
+              "series_key": "housing_units",
+              "unit": "units",
+              "record_id": "acs-2023-avondale-housing",
+              "entity_id": "tract:110200",
+              "locality": "Avondale",
+              "observed_at": "2023-07-01T00:00:00Z",
+              "published_at": "2023-12-15T00:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:acs-2023-avondale-housing",
+              "subjectId": "housing_signal:avondale-housing-units",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.628420Z",
+                "civilTime": "2026-03-10T22:16:41.628420",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 45124,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "U.S. Census ACS"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "acs-2023-avondale-housing",
+                "raw_entity_type": "housing_signal"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "acs-2023-avondale-housing"
+            }
+          }
+        ]
+      },
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "UAB Academic, Clinical, and Event Calendars",
+            "sourceType": "institutional_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "institutional_gravity_well",
+            "legalStatus": "allowed",
+            "sourceOwner": "University of Alabama at Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "academic_calendar",
+                "event_calendar",
+                "clinical_schedule"
+              ],
+              "dedupeKeys": [
+                "calendar_uid",
+                "event_start",
+                "campus_location"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "calendar_uid",
+            "event_start",
+            "campus_location"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "academic_calendar",
+              "event_calendar",
+              "clinical_schedule"
+            ]
+          }
+        },
+        "adapterId": "calendar_event_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "uab-2023-spring-concert",
+            "sourceName": "UAB Academic, Clinical, and Event Calendars",
+            "replayYear": 2023,
+            "rawEntityId": "event-uab-spring-concert",
+            "rawEntityType": "event",
+            "replayEnvelope": {
+              "envelopeId": "env:uab-2023-spring-concert",
+              "subjectId": "event-uab-spring-concert",
+              "observedAt": {
+                "referenceTime": "2023-03-01T10:00:00.000Z",
+                "civilTime": "2023-03-01T10:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1677664800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-03-01T10:00:00.000Z",
+                "civilTime": "2023-03-01T10:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1677664800000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-04-10T18:00:00.000Z",
+                "civilTime": "2023-04-10T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681149600000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-04-10T20:00:00.000Z",
+                "civilTime": "2023-04-10T20:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681156800000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": {
+                "referenceTime": "2023-04-10T18:00:00.000Z",
+                "civilTime": "2023-04-10T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681149600000000,
+                "atomicTimestamp": null
+              },
+              "eventEndAt": {
+                "referenceTime": "2023-04-10T20:00:00.000Z",
+                "civilTime": "2023-04-10T20:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681156800000000,
+                "atomicTimestamp": null
+              },
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "UAB Academic, Clinical, and Event Calendars"
+              },
+              "uncertainty": {
+                "windowMicros": 300000000,
+                "confidence": 0.94
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "event",
+            "localityHint": "Southside",
+            "payload": {
+              "name": "UAB Spring Concert",
+              "venue_name": "UAB Green",
+              "community_name": "UAB Students",
+              "starts_at": "2023-04-10T18:00:00Z",
+              "ends_at": "2023-04-10T20:00:00Z",
+              "record_id": "uab-2023-spring-concert",
+              "event_id": "event-uab-spring-concert",
+              "title": "UAB Spring Concert",
+              "locality": "Southside",
+              "published_at": "2023-03-01T10:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "institutional_calendar"
+            }
+          },
+          {
+            "recordId": "uab-2023-medical-lecture",
+            "sourceName": "UAB Academic, Clinical, and Event Calendars",
+            "replayYear": 2023,
+            "rawEntityId": "event-uab-medical-lecture",
+            "rawEntityType": "event",
+            "replayEnvelope": {
+              "envelopeId": "env:uab-2023-medical-lecture",
+              "subjectId": "event-uab-medical-lecture",
+              "observedAt": {
+                "referenceTime": "2023-09-03T14:00:00.000Z",
+                "civilTime": "2023-09-03T14:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1693749600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-09-03T14:00:00.000Z",
+                "civilTime": "2023-09-03T14:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1693749600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-09-15T17:30:00.000Z",
+                "civilTime": "2023-09-15T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694799000000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-09-15T19:00:00.000Z",
+                "civilTime": "2023-09-15T19:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694804400000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": {
+                "referenceTime": "2023-09-15T17:30:00.000Z",
+                "civilTime": "2023-09-15T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694799000000000,
+                "atomicTimestamp": null
+              },
+              "eventEndAt": {
+                "referenceTime": "2023-09-15T19:00:00.000Z",
+                "civilTime": "2023-09-15T19:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694804400000000,
+                "atomicTimestamp": null
+              },
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "UAB Academic, Clinical, and Event Calendars"
+              },
+              "uncertainty": {
+                "windowMicros": 300000000,
+                "confidence": 0.94
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "event",
+            "localityHint": "Southside",
+            "payload": {
+              "name": "UAB Medical Lecture",
+              "venue_name": "West Pavilion",
+              "community_name": "Medical District",
+              "starts_at": "2023-09-15T17:30:00Z",
+              "ends_at": "2023-09-15T19:00:00Z",
+              "record_id": "uab-2023-medical-lecture",
+              "event_id": "event-uab-medical-lecture",
+              "title": "UAB Medical Lecture",
+              "locality": "Southside",
+              "published_at": "2023-09-03T14:00:00Z"
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "institutional_calendar"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:uab-2023-spring-concert",
+            "subjectIdentity": {
+              "normalizedEntityId": "event:uab-spring-concert",
+              "entityType": "event",
+              "canonicalName": "UAB Spring Concert",
+              "sourceAliases": [
+                "event-uab-spring-concert",
+                "UAB Spring Concert"
+              ],
+              "sourceRefs": [
+                "UAB Academic, Clinical, and Event Calendars"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "event-uab-spring-concert",
+                "locality": "Southside"
+              },
+              "localityAnchor": "Southside",
+              "metadata": {
+                "source_type": "institutional_calendar",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:uab-2023-spring-concert",
+              "subjectId": "event-uab-spring-concert",
+              "observedAt": {
+                "referenceTime": "2023-03-01T10:00:00.000Z",
+                "civilTime": "2023-03-01T10:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1677664800000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-03-01T10:00:00.000Z",
+                "civilTime": "2023-03-01T10:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1677664800000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-04-10T18:00:00.000Z",
+                "civilTime": "2023-04-10T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681149600000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-04-10T20:00:00.000Z",
+                "civilTime": "2023-04-10T20:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681156800000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": {
+                "referenceTime": "2023-04-10T18:00:00.000Z",
+                "civilTime": "2023-04-10T18:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681149600000000,
+                "atomicTimestamp": null
+              },
+              "eventEndAt": {
+                "referenceTime": "2023-04-10T20:00:00.000Z",
+                "civilTime": "2023-04-10T20:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1681156800000000,
+                "atomicTimestamp": null
+              },
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "UAB Academic, Clinical, and Event Calendars"
+              },
+              "uncertainty": {
+                "windowMicros": 300000000,
+                "confidence": 0.94
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "UAB Academic, Clinical, and Event Calendars"
+            ],
+            "normalizedFields": {
+              "canonical_name": "UAB Spring Concert",
+              "entity_type": "event",
+              "locality_anchor": "Southside",
+              "name": "UAB Spring Concert",
+              "venue_name": "UAB Green",
+              "community_name": "UAB Students",
+              "starts_at": "2023-04-10T18:00:00Z",
+              "ends_at": "2023-04-10T20:00:00Z",
+              "record_id": "uab-2023-spring-concert",
+              "event_id": "event-uab-spring-concert",
+              "title": "UAB Spring Concert",
+              "locality": "Southside",
+              "published_at": "2023-03-01T10:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:uab-2023-spring-concert",
+              "subjectId": "event:uab-spring-concert",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.630892Z",
+                "civilTime": "2026-03-10T22:16:41.630892",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 47597,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "UAB Academic, Clinical, and Event Calendars"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "uab-2023-spring-concert",
+                "raw_entity_type": "event"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "uab-2023-spring-concert"
+            }
+          },
+          {
+            "observationId": "obs:uab-2023-medical-lecture",
+            "subjectIdentity": {
+              "normalizedEntityId": "event:uab-medical-lecture",
+              "entityType": "event",
+              "canonicalName": "UAB Medical Lecture",
+              "sourceAliases": [
+                "event-uab-medical-lecture",
+                "UAB Medical Lecture"
+              ],
+              "sourceRefs": [
+                "UAB Academic, Clinical, and Event Calendars"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "event-uab-medical-lecture",
+                "locality": "Southside"
+              },
+              "localityAnchor": "Southside",
+              "metadata": {
+                "source_type": "institutional_calendar",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:uab-2023-medical-lecture",
+              "subjectId": "event-uab-medical-lecture",
+              "observedAt": {
+                "referenceTime": "2023-09-03T14:00:00.000Z",
+                "civilTime": "2023-09-03T14:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1693749600000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-09-03T14:00:00.000Z",
+                "civilTime": "2023-09-03T14:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1693749600000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-09-15T17:30:00.000Z",
+                "civilTime": "2023-09-15T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694799000000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-09-15T19:00:00.000Z",
+                "civilTime": "2023-09-15T19:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694804400000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": {
+                "referenceTime": "2023-09-15T17:30:00.000Z",
+                "civilTime": "2023-09-15T17:30:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694799000000000,
+                "atomicTimestamp": null
+              },
+              "eventEndAt": {
+                "referenceTime": "2023-09-15T19:00:00.000Z",
+                "civilTime": "2023-09-15T19:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "UAB Academic, Clinical, and Event Calendars"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1694804400000000,
+                "atomicTimestamp": null
+              },
+              "lastVerifiedAt": null,
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "UAB Academic, Clinical, and Event Calendars"
+              },
+              "uncertainty": {
+                "windowMicros": 300000000,
+                "confidence": 0.94
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "UAB Academic, Clinical, and Event Calendars"
+            ],
+            "normalizedFields": {
+              "canonical_name": "UAB Medical Lecture",
+              "entity_type": "event",
+              "locality_anchor": "Southside",
+              "name": "UAB Medical Lecture",
+              "venue_name": "West Pavilion",
+              "community_name": "Medical District",
+              "starts_at": "2023-09-15T17:30:00Z",
+              "ends_at": "2023-09-15T19:00:00Z",
+              "record_id": "uab-2023-medical-lecture",
+              "event_id": "event-uab-medical-lecture",
+              "title": "UAB Medical Lecture",
+              "locality": "Southside",
+              "published_at": "2023-09-03T14:00:00Z"
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:uab-2023-medical-lecture",
+              "subjectId": "event:uab-medical-lecture",
+              "outcome": "merged",
+              "confidence": 0.95,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-11T03:16:41.630977Z",
+                "civilTime": "2026-03-10T22:16:41.630977",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 47680,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "UAB Academic, Clinical, and Event Calendars"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "uab-2023-medical-lecture",
+                "raw_entity_type": "event"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "uab-2023-medical-lecture"
+            }
+          }
+        ]
+      }
+    ],
+    "skippedSources": [
+      "BHM Airport / TSA Throughput",
+      "Bureau of Labor Statistics / State DOL",
+      "Jefferson / Shelby / Regional GIS and Assessors",
+      "LEHD / OnTheMap",
+      "MAX Transit GTFS",
+      "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "SEC / College Football Broadcast Schedules",
+      "Samford University Calendars and Campus Map",
+      "UAB / Samford Enrollment Origin Reports",
+      "Data Axle / InfoGroup Business Listings",
+      "Delivery / Ordering Platform Aggregates",
+      "Google Places / Yelp",
+      "OpenStreetMap POI Data",
+      "Real Estate and Rent Index",
+      "Resy / OpenTable / Venue Reservation Exports",
+      "Birmingham Public Library Network",
+      "County / Municipal Courts and Police Dispatch",
+      "Eventbrite / Meetup",
+      "IN Birmingham (CVB Calendar)",
+      "Major Venue Calendars (Saturn / Iron City / The Nick)",
+      "Neighborhood Association Calendars",
+      "Bham Now / AL.com / Birmingham Business Journal",
+      "Bhamwiki",
+      "Birmingham Public Library Archives",
+      "James Beard / Garden & Gun / Michelin",
+      "REV Birmingham Updates",
+      "WBHM 90.3 Public Radio"
+    ]
+  }
+}

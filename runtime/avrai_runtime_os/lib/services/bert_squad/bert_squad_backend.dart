@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/bert_squad/avrai_context_builder.dart';
 import 'package:avrai_runtime_os/services/bert_squad/query_classifier.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 
 /// BERT-SQuAD backend for question answering about AVRAI dataset.
@@ -14,7 +15,7 @@ import 'package:avrai_core/models/spots/spot.dart';
 /// - User profiles (personality dimensions, expertise)
 /// - Lists (spot memberships, curation)
 /// - Community metrics (respect counts, views)
-class BertSquadBackend implements LlmBackend {
+class BertSquadBackend implements LanguageBackend {
   static const String _logName = 'BertSquadBackend';
   static const MethodChannel _channel = MethodChannel('avra/bert_squad');
 
@@ -109,8 +110,8 @@ class BertSquadBackend implements LlmBackend {
   @override
   Future<String> chat({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required Duration timeout,
@@ -123,7 +124,7 @@ class BertSquadBackend implements LlmBackend {
 
     // Get the last user message as the question
     final lastMessage = messages.lastWhere(
-      (m) => m.role == ChatRole.user,
+      (m) => m.role == LanguageTurnRole.user,
       orElse: () => messages.last,
     );
 
@@ -180,8 +181,8 @@ class BertSquadBackend implements LlmBackend {
   @override
   Stream<String> chatStream({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required bool useRealSse,
@@ -202,7 +203,7 @@ class BertSquadBackend implements LlmBackend {
 
   /// Fetch relevant spots based on query.
   Future<List<Spot>> _fetchRelevantSpots(
-      String query, LLMContext? context) async {
+      String query, LanguageRuntimeContext? context) async {
     // Extract spot names from query
     // In production, use proper entity extraction
     final spotNames = _extractSpotNames(query);

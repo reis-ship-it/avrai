@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:avrai_core/avra_core.dart';
 import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 
 /// Delivery acknowledgment service (BitChat-inspired, AI2AI-optimized)
 ///
 /// **BitChat Pattern:** DeliveryAck/ReadReceipt pattern
-/// **AI2AI-Specific:** ONLY for critical messages (personalityExchange, connectionRequest/Response, chat)
+/// **AI2AI-Specific:** ONLY for critical messages (vibeExchange, personalityExchange, connectionRequest/Response, chat)
 /// NO ACKs for learning insights (redundancy handles it)
 ///
 /// **ACK Strategy:**
-/// - Critical messages require delivery ACK (personalityExchange, connectionRequest/Response)
+/// - Critical messages require delivery ACK (vibeExchange, personalityExchange, connectionRequest/Response)
 /// - Learning insights are best-effort (no ACK, redundancy handles delivery)
 /// - Read receipts optional (future enhancement)
 ///
@@ -21,6 +22,7 @@ class DeliveryAckService {
 
   /// ACK timeout (5 seconds)
   static const Duration ackTimeout = Duration(seconds: 5);
+  static const Duration _deadlineCheckFloor = Duration(milliseconds: 50);
 
   /// Pending ACKs (messageId -> Completer)
   final Map<String, Completer<bool>> _pendingAcks = {};
@@ -28,13 +30,26 @@ class DeliveryAckService {
   /// ACK timers (messageId -> Timer)
   final Map<String, Timer> _ackTimers = {};
 
+  final ClockSource _clockSource;
+  final Duration _ackTimeout;
+  final Duration _deadlineCheckFloorOverride;
+
+  DeliveryAckService({
+    ClockSource? clockSource,
+    Duration ackTimeout = DeliveryAckService.ackTimeout,
+    Duration deadlineCheckFloor = _deadlineCheckFloor,
+  }) : _clockSource = clockSource ?? SystemClockSource(),
+       _ackTimeout = ackTimeout,
+       _deadlineCheckFloorOverride = deadlineCheckFloor;
+
   /// Check if message type requires ACK (AI2AI-specific)
   ///
   /// **ACK Strategy:**
-  /// - Critical messages require ACK: personalityExchange, connectionRequest/Response, userChat
+  /// - Critical messages require ACK: vibeExchange, personalityExchange, connectionRequest/Response, userChat
   /// - Best-effort messages: learningInsight, heartbeat, disconnect, learningExchange, fragments
   static bool requiresAck(MessageType messageType) {
     switch (messageType) {
+      case MessageType.vibeExchange:
       case MessageType.personalityExchange:
       case MessageType.connectionRequest:
       case MessageType.connectionResponse:
@@ -63,21 +78,57 @@ class DeliveryAckService {
   Future<bool> waitForAck(String messageId) async {
     final completer = Completer<bool>();
     _pendingAcks[messageId] = completer;
+    final startedAt = await _clockSource.now();
+    final startedTicks = _timeBasisMicros(startedAt);
 
-    // Set timeout
-    final timer = Timer(ackTimeout, () {
-      if (_pendingAcks.containsKey(messageId)) {
-        _pendingAcks.remove(messageId);
-        _ackTimers.remove(messageId);
-        if (!completer.isCompleted) {
-          completer.complete(false); // Timeout
-          developer.log('ACK timeout for message: $messageId', name: _logName);
-        }
-      }
-    });
+    final timer = _scheduleAckDeadlineCheck(
+      messageId: messageId,
+      completer: completer,
+      startedTicks: startedTicks,
+      remaining: _ackTimeout,
+    );
     _ackTimers[messageId] = timer;
 
     return completer.future;
+  }
+
+  Timer _scheduleAckDeadlineCheck({
+    required String messageId,
+    required Completer<bool> completer,
+    required int startedTicks,
+    required Duration remaining,
+  }) {
+    final nextDelay = remaining > _deadlineCheckFloor
+        ? remaining
+        : _deadlineCheckFloorOverride;
+    return Timer(nextDelay, () async {
+      if (!_pendingAcks.containsKey(messageId) || completer.isCompleted) {
+        return;
+      }
+
+      final now = await _clockSource.now();
+      final elapsedMicros = _timeBasisMicros(now) - startedTicks;
+      if (elapsedMicros >= _ackTimeout.inMicroseconds) {
+        _pendingAcks.remove(messageId);
+        _ackTimers.remove(messageId);
+        completer.complete(false);
+        developer.log('ACK timeout for message: $messageId', name: _logName);
+        return;
+      }
+
+      final remainingMicros = _ackTimeout.inMicroseconds - elapsedMicros;
+      _ackTimers[messageId] = _scheduleAckDeadlineCheck(
+        messageId: messageId,
+        completer: completer,
+        startedTicks: startedTicks,
+        remaining: Duration(microseconds: remainingMicros),
+      );
+    });
+  }
+
+  int _timeBasisMicros(TemporalInstant instant) {
+    return instant.monotonicTicks ??
+        instant.referenceTime.microsecondsSinceEpoch;
   }
 
   /// Receive delivery ACK

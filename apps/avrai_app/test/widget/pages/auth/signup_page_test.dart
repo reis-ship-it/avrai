@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai/presentation/pages/auth/signup_page.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
@@ -24,14 +25,43 @@ Future<void> _tapSignUp(WidgetTester tester) async {
 }
 
 void main() {
+  const deviceCapabilitiesChannel = MethodChannel('avra/device_capabilities');
+
+  setUpAll(() async {
+    await WidgetTestHelpers.setupWidgetTestEnvironment();
+  });
+
+  tearDownAll(() async {
+    await WidgetTestHelpers.cleanupWidgetTestEnvironment();
+  });
+
   group('SignupPage Widget Tests', () {
     late _FakeAuthBloc fakeAuthBloc;
 
     setUp(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(deviceCapabilitiesChannel,
+              (MethodCall methodCall) async {
+        if (methodCall.method != 'getCapabilities') {
+          return null;
+        }
+        return <String, Object?>{
+          'platform': 'ios',
+          'deviceModel': 'iPhone 15',
+          'osVersion': '18.0',
+          'totalRamMb': 8192,
+          'freeDiskMb': 32768,
+          'totalDiskMb': 131072,
+          'cpuCores': 6,
+          'isLowPowerMode': false,
+        };
+      });
       fakeAuthBloc = _FakeAuthBloc();
     });
 
     tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(deviceCapabilitiesChannel, null);
       fakeAuthBloc.close();
     });
 
@@ -47,7 +77,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       expect(find.text('Sign Up'), findsNWidgets(2));
       expect(find.byIcon(Icons.location_on), findsOneWidget);
       expect(find.text('Join avrai'), findsOneWidget);
@@ -75,7 +105,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       await tester.enterText(find.byKey(const Key('name_field')), '');
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
@@ -126,7 +156,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget1);
+      await _pumpSignupPage(tester, widget1);
       await tester.enterText(find.byKey(const Key('name_field')), 'Test User');
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
@@ -158,7 +188,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       fakeAuthBloc.setState(AuthError(errorMessage));
       await tester.pump();
       // SnackBar animates in; allow a short frame window.
@@ -175,7 +205,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       fakeAuthBloc.setState(SignupConfirmationRequired(
         email: 'test@example.com',
         message: confirmationMessage,
@@ -194,7 +224,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       expect(find.byType(SignupPage), findsOneWidget);
     });
 
@@ -205,7 +235,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       await tester.tap(find.byKey(const Key('google_sign_in_button')));
       await tester.pump();
       expect(
@@ -222,7 +252,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       await tester.ensureVisible(find.text('Sign In'));
       await tester.tap(find.text('Sign In'));
       await tester.pump();
@@ -238,7 +268,7 @@ void main() {
         child: const SignupPage(),
         authBloc: fakeAuthBloc,
       );
-      await WidgetTestHelpers.pumpAndSettle(tester, widget);
+      await _pumpSignupPage(tester, widget);
       await tester.enterText(find.byKey(const Key('name_field')), 'Test User');
       await tester.enterText(
           find.byKey(const Key('email_field')), 'test@example.com');
@@ -510,4 +540,10 @@ Widget _createTestableWidgetWithRealBloc({
       home: child,
     ),
   );
+}
+
+Future<void> _pumpSignupPage(WidgetTester tester, Widget widget) async {
+  await WidgetTestHelpers.pumpAndSettle(tester, widget);
+  await tester.pump(const Duration(milliseconds: 300));
+  await WidgetTestHelpers.safePumpAndSettle(tester);
 }

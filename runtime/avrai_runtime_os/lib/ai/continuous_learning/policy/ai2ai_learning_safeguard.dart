@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
-import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 import 'package:avrai_network/network/rate_limiter.dart';
 import 'package:get_it/get_it.dart';
 
@@ -52,7 +51,7 @@ class Ai2AiLearningSafeguard {
       final allowed = await rateLimiter.checkRateLimit(
         peerAgentId: peerId,
         limitType: RateLimitType.message,
-        messageType: MessageType.learningInsight,
+        messageClass: RateLimitedMessageClass.learningInsight,
       );
       if (!allowed) {
         developer.log(

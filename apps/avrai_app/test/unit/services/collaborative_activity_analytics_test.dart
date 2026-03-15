@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart';
 import 'package:avrai_runtime_os/services/admin/admin_auth_service.dart';

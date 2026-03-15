@@ -4,33 +4,39 @@ import 'package:avrai_core/models/personality_knot.dart';
 
 /// Service responsible for executing lightning-fast mathematical comparisons
 /// between two [PersonalityKnot] profiles locally on the device.
-/// 
+///
 /// Part of the v0.1 Reality Check pivot. This completely replaces the need
 /// to run expensive local LLM inference during a 5-second BLE passing window.
 /// It operates purely on the topological invariants (the "DNA") of the knot.
 class DeterministicMatcherService {
   /// Calculates a compatibility score [0.0, 1.0] between two knots.
-  /// 
+  ///
   /// 1.0 = mathematically identical topology
   /// 0.0 = completely disjoint topology
-  /// 
+  ///
   /// This operation takes fractions of a millisecond and uses virtually zero battery.
   double calculateVibeMatch(PersonalityKnot a, PersonalityKnot b) {
     final invA = a.invariants;
     final invB = b.invariants;
 
     // Weight allocations for different topological comparisons
-    const double scalarWeight = 0.3;     // Crossing number, writhe, etc.
-    const double jonesWeight = 0.35;     // Jones polynomial similarity
+    const double scalarWeight = 0.3; // Crossing number, writhe, etc.
+    const double jonesWeight = 0.35; // Jones polynomial similarity
     const double alexanderWeight = 0.35; // Alexander polynomial similarity
 
     final scalarSim = _calculateScalarSimilarity(invA, invB);
-    final jonesSim = _calculatePolynomialSimilarity(invA.jonesPolynomial, invB.jonesPolynomial);
-    final alexanderSim = _calculatePolynomialSimilarity(invA.alexanderPolynomial, invB.alexanderPolynomial);
+    final jonesSim = _calculatePolynomialSimilarity(
+      invA.jonesPolynomial,
+      invB.jonesPolynomial,
+    );
+    final alexanderSim = _calculatePolynomialSimilarity(
+      invA.alexanderPolynomial,
+      invB.alexanderPolynomial,
+    );
 
-    return (scalarSim * scalarWeight) + 
-           (jonesSim * jonesWeight) + 
-           (alexanderSim * alexanderWeight);
+    return (scalarSim * scalarWeight) +
+        (jonesSim * jonesWeight) +
+        (alexanderSim * alexanderWeight);
   }
 
   /// Calculates a normalized similarity [0.0, 1.0] between simple scalar invariants.
@@ -48,14 +54,20 @@ class DeterministicMatcherService {
 
     final crossingSim = math.max(0.0, 1.0 - (crossingDist / maxCrossingDist));
     final writheSim = math.max(0.0, 1.0 - (writheDist / maxWritheDist));
-    final signatureSim = math.max(0.0, 1.0 - (signatureDist / maxSignatureDist));
+    final signatureSim = math.max(
+      0.0,
+      1.0 - (signatureDist / maxSignatureDist),
+    );
 
     return (crossingSim * 0.4) + (writheSim * 0.4) + (signatureSim * 0.2);
   }
 
   /// Calculates Cosine Similarity between two polynomial coefficient arrays.
   /// Result is mapped from [-1.0, 1.0] to [0.0, 1.0].
-  double _calculatePolynomialSimilarity(List<double> polyA, List<double> polyB) {
+  double _calculatePolynomialSimilarity(
+    List<double> polyA,
+    List<double> polyB,
+  ) {
     if (polyA.isEmpty && polyB.isEmpty) return 1.0;
     if (polyA.isEmpty || polyB.isEmpty) return 0.0;
 
@@ -84,7 +96,7 @@ class DeterministicMatcherService {
     if (normA == 0 || normB == 0) return 0.0;
 
     final cosineSimilarity = dotProduct / (math.sqrt(normA) * math.sqrt(normB));
-    
+
     // Map cosine similarity from [-1.0, 1.0] to [0.0, 1.0]
     return (cosineSimilarity + 1.0) / 2.0;
   }

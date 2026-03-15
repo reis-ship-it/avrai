@@ -72,14 +72,15 @@ class PhysicalLayerDiscoveryLane {
         try {
           decodedKnot = dnaEncoder.decode(dnaPayload);
         } catch (e) {
-          logger.warn('Failed to decode DNA math string for ${device.deviceId}: $e',
+          logger.warn(
+              'Failed to decode DNA math string for ${device.deviceId}: $e',
               tag: logName);
         }
       }
 
       // Create a dummy/fallback Vibe if missing, since AIPersonalityNode expects one
       // The actual matching will happen using DeterministicMatcherService on the decodedKnot.
-      final vibe = personalityData != null 
+      final vibe = personalityData != null
           ? AnonymizedVibeMapper.toUserVibe(personalityData)
           : UserVibe(
               hashedSignature: device.deviceId,

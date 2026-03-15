@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AVRAI Consumer Beta Portal Atlas</title>
+    <script
+      src="https://mcp.figma.com/mcp/html-to-design/capture.js"
+      async
+    ></script>
+    <style>
+      :root {
+        --black: #000000;
+        --white: #ffffff;
+        --grey-50: #f8f8f8;
+        --grey-100: #f2f2f2;
+        --grey-200: #e6e6e6;
+        --grey-300: #d0d0d0;
+        --grey-500: #8c8c8c;
+        --grey-600: #666666;
+        --grey-700: #474747;
+        --grey-900: #111111;
+        --bg: #efefef;
+        --shadow: 0 18px 42px rgba(0, 0, 0, 0.08);
+        --radius-phone: 34px;
+        --radius-xl: 24px;
+        --radius-lg: 20px;
+        --radius-md: 16px;
+        --radius-sm: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), transparent 26%),
+          linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
+        color: var(--grey-900);
+      }
+
+      .board {
+        width: 1720px;
+        margin: 0 auto;
+        padding: 56px 40px 96px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.35fr 0.95fr;
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+
+      .hero-card {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--grey-200);
+        border-radius: 28px;
+        padding: 28px 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--grey-200);
+        border-radius: 999px;
+        background: var(--grey-50);
+        color: var(--grey-600);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 12px;
+        font-size: 34px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+      }
+
+      .hero p,
+      .meta-card p,
+      .section-note,
+      .phone .copy,
+      .phone .small-copy {
+        color: var(--grey-600);
+      }
+
+      .meta-card {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .meta-item {
+        background: var(--white);
+        border: 1px solid var(--grey-200);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .meta-item strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .lane {
+        margin-top: 40px;
+      }
+
+      .lane-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 18px;
+      }
+
+      .lane h2 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 28px 22px;
+      }
+
+      .phone-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .frame-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .frame-title {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .route-tag {
+        padding: 6px 10px;
+        border: 1px solid var(--grey-200);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        color: var(--grey-600);
+        font-size: 12px;
+      }
+
+      .phone {
+        width: 390px;
+        min-height: 844px;
+        background: var(--white);
+        border: 1.5px solid var(--grey-300);
+        border-radius: var(--radius-phone);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .screen {
+        padding: 18px 18px 26px;
+        min-height: 844px;
+        background:
+          linear-gradient(180deg, rgba(248, 248, 248, 0.6) 0%, rgba(255, 255, 255, 0.96) 14%),
+          var(--white);
+      }
+
+      .statusbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 2px 4px 0;
+        color: var(--grey-900);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .notch {
+        width: 138px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--grey-900);
+        margin: 0 auto 18px;
+      }
+
+      .navless {
+        margin-top: 20px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .nav-title {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .icon-dot,
+      .icon-square {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        color: var(--grey-900);
+      }
+
+      .icon-dot {
+        width: 38px;
+        height: 38px;
+        border-radius: 19px;
+        background: var(--grey-100);
+        border: 1px solid var(--grey-200);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .icon-square {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: var(--grey-100);
+        border: 1px solid var(--grey-200);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .logo-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 40px 0 28px;
+        text-align: center;
+      }
+
+      .brand-mark {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        background: var(--grey-100);
+        border: 1px solid var(--grey-200);
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .display {
+        margin: 16px 0 8px;
+        font-size: 34px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+      }
+
+      .headline {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        font-weight: 700;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .copy {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.45;
+      }
+
+      .small-copy {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .stack-8 > * + * {
+        margin-top: 8px;
+      }
+
+      .stack-12 > * + * {
+        margin-top: 12px;
+      }
+
+      .stack-16 > * + * {
+        margin-top: 16px;
+      }
+
+      .stack-20 > * + * {
+        margin-top: 20px;
+      }
+
+      .stack-24 > * + * {
+        margin-top: 24px;
+      }
+
+      .surface {
+        background: var(--white);
+        border: 1px solid var(--grey-200);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+      }
+
+      .surface.soft {
+        background: var(--grey-50);
+      }
+
+      .surface.compact {
+        padding: 12px 14px;
+        border-radius: 14px;
+      }
+
+      .field {
+        background: var(--grey-50);
+        border: 1px solid var(--grey-200);
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .field-label {
+        display: block;
+        font-size: 13px;
+        color: var(--grey-500);
+        margin-bottom: 6px;
+      }
+
+      .field-value {
+        font-size: 16px;
+        color: var(--grey-900);
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .row.between {
+        justify-content: space-between;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--grey-200);
+        background: var(--grey-50);
+        color: var(--grey-700);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .pill.selected {
+        background: var(--grey-900);
+        color: var(--white);
+        border-color: var(--grey-900);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 12px;
+        border: 1px solid var(--grey-300);
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .button.primary {
+        background: var(--grey-900);
+        color: var(--white);
+        border-color: var(--grey-900);
+      }
+
+      .button.secondary {
+        background: var(--white);
+        color: var(--grey-900);
+      }
+
+      .button.tonal {
+        background: var(--grey-50);
+        color: var(--grey-900);
+        border-color: var(--grey-200);
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .button-row > * {
+        flex: 1 1 0;
+      }
+
+      .divider-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--grey-600);
+        font-size: 13px;
+      }
+
+      .divider-row::before,
+      .divider-row::after {
+        content: "";
+        height: 1px;
+        background: var(--grey-300);
+        flex: 1 1 0;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .list-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid var(--grey-200);
+        background: var(--white);
+      }
+
+      .chevron {
+        margin-left: auto;
+        color: var(--grey-500);
+        font-size: 18px;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta span {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--grey-50);
+        border: 1px solid var(--grey-200);
+        color: var(--grey-600);
+        font-size: 12px;
+      }
+
+      .progress {
+        height: 8px;
+        background: var(--grey-100);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress > span {
+        display: block;
+        height: 100%;
+        width: 62%;
+        background: var(--grey-900);
+      }
+
+      .map-box {
+        height: 300px;
+        border-radius: 22px;
+        border: 1px solid var(--grey-200);
+        background:
+          linear-gradient(0deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.68)),
+          linear-gradient(135deg, #f0f0f0 25%, transparent 25%) -18px 0 / 36px 36px,
+          linear-gradient(225deg, #f0f0f0 25%, transparent 25%) -18px 0 / 36px 36px,
+          linear-gradient(315deg, #f0f0f0 25%, transparent 25%) 0px 0 / 36px 36px,
+          linear-gradient(45deg, #f0f0f0 25%, transparent 25%) 0px 0 / 36px 36px,
+          #fafafa;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .map-pin {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        background: var(--grey-900);
+        border: 2px solid var(--white);
+      }
+
+      .bottom-nav {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 18px;
+        border: 1px solid var(--grey-200);
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 20px;
+        padding: 10px;
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: var(--grey-600);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .tab.active {
+        color: var(--grey-900);
+      }
+
+      .mini-stat {
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid var(--grey-200);
+        background: var(--grey-50);
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .muted-banner {
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--grey-200);
+        background: var(--grey-50);
+      }
+    </style>
+    <style>
+      :root {
+        --portal-ink: #edf3ff;
+        --portal-muted: #9caac1;
+        --portal-dim: #71819c;
+        --portal-night: #0a1a2f;
+        --portal-night-deep: #08111d;
+        --portal-sky: #3380e6;
+        --portal-slate: rgba(14, 24, 39, 0.5);
+        --portal-slate-strong: rgba(12, 20, 32, 0.76);
+        --portal-stroke: rgba(255, 255, 255, 0.12);
+        --portal-stroke-soft: rgba(255, 255, 255, 0.08);
+        --portal-green: #00ff66;
+        --portal-green-soft: rgba(0, 255, 102, 0.18);
+        --portal-metal-a: #f2f4f7;
+        --portal-metal-b: #d2d8df;
+        --portal-metal-c: #9aa4af;
+        --portal-metal-d: #5e6771;
+        --portal-shadow: 0 34px 72px rgba(0, 0, 0, 0.36);
+      }
+
+      body {
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--portal-ink);
+        background:
+          radial-gradient(circle at 10% 0%, rgba(58, 132, 242, 0.26), transparent 24%),
+          radial-gradient(circle at 88% 12%, rgba(0, 255, 102, 0.08), transparent 16%),
+          linear-gradient(180deg, #091321 0%, #08111b 40%, #060c14 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 100%),
+          linear-gradient(rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 100%);
+        background-size: 48px 48px;
+        opacity: 0.34;
+      }
+
+      .hero-card,
+      .meta-item,
+      .surface,
+      .field,
+      .list-item,
+      .bottom-nav,
+      .mini-stat,
+      .muted-banner,
+      .button.secondary,
+      .button.tonal,
+      .icon-dot,
+      .icon-square,
+      .brand-mark,
+      .route-tag,
+      .pill,
+      .meta span {
+        border-color: var(--portal-stroke);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%),
+          var(--portal-slate);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.14),
+          0 24px 48px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(24px);
+      }
+
+      .hero-card {
+        border-radius: 32px;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.16),
+          0 42px 90px rgba(0, 0, 0, 0.34);
+      }
+
+      .eyebrow {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(9, 15, 24, 0.34);
+        color: rgba(237, 243, 255, 0.84);
+        letter-spacing: 0.12em;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--portal-green);
+        box-shadow: 0 0 16px rgba(0, 255, 102, 0.7);
+      }
+
+      h1,
+      h2,
+      .display,
+      .headline,
+      .nav-title,
+      .frame-title,
+      .meta-item strong {
+        color: transparent;
+        background:
+          linear-gradient(
+            135deg,
+            var(--portal-metal-a) 0%,
+            var(--portal-metal-b) 26%,
+            var(--portal-metal-c) 56%,
+            var(--portal-metal-a) 72%,
+            var(--portal-metal-d) 100%
+          );
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .title {
+        color: var(--portal-ink);
+      }
+
+      .hero p,
+      .meta-card p,
+      .section-note,
+      .phone .copy,
+      .phone .small-copy,
+      .field-label,
+      .route-tag,
+      .tab,
+      .statusbar,
+      .pill,
+      .meta span,
+      .divider-row,
+      .chevron {
+        color: var(--portal-muted);
+      }
+
+      .board {
+        position: relative;
+      }
+
+      .lane {
+        position: relative;
+      }
+
+      .lane::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -14px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 102, 0.28), transparent);
+      }
+
+      .route-tag {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+          rgba(8, 14, 24, 0.36);
+      }
+
+      .phone {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.02)),
+          linear-gradient(180deg, #0c1421 0%, #080d15 100%);
+        border-color: rgba(210, 216, 223, 0.22);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.16),
+          0 42px 92px rgba(0, 0, 0, 0.42);
+      }
+
+      .phone::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        pointer-events: none;
+      }
+
+      .screen {
+        position: relative;
+        isolation: isolate;
+        background: transparent;
+      }
+
+      .screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: 26px;
+        background:
+          radial-gradient(circle at 24% 9%, rgba(255, 255, 255, 0.16), transparent 16%),
+          radial-gradient(circle at 86% 12%, rgba(0, 255, 102, 0.09), transparent 18%),
+          linear-gradient(180deg, rgba(61, 132, 236, 0.52) 0%, rgba(31, 53, 88, 0.5) 28%, rgba(8, 14, 25, 0.2) 42%, transparent 43%),
+          radial-gradient(ellipse at 16% 102%, rgba(32, 144, 69, 0.96) 0 40%, transparent 41%),
+          radial-gradient(ellipse at 56% 104%, rgba(21, 104, 46, 0.98) 0 38%, transparent 39%),
+          radial-gradient(ellipse at 96% 102%, rgba(10, 62, 29, 0.96) 0 42%, transparent 43%),
+          linear-gradient(180deg, #0b1830 0%, #091521 60%, #07111a 100%);
+      }
+
+      .screen::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 18%),
+          radial-gradient(circle at center, transparent 34%, rgba(0, 0, 0, 0.16) 100%);
+        pointer-events: none;
+      }
+
+      .screen > :not(.bottom-nav) {
+        position: relative;
+        z-index: 1;
+      }
+
+      .bottom-nav {
+        z-index: 2;
+        left: 18px;
+        right: 18px;
+        bottom: 20px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+          rgba(7, 13, 22, 0.5);
+      }
+
+      .tab.active {
+        color: var(--portal-green);
+      }
+
+      .notch {
+        background: rgba(7, 11, 18, 0.96);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .brand-mark {
+        color: #03110b;
+        border-color: rgba(0, 255, 102, 0.32);
+        background:
+          radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.62), transparent 26%),
+          linear-gradient(180deg, rgba(206, 255, 220, 0.94), rgba(0, 255, 102, 0.78));
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.58),
+          0 16px 30px rgba(0, 255, 102, 0.22);
+      }
+
+      .display {
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+      }
+
+      .surface {
+        border-color: var(--portal-stroke);
+      }
+
+      .surface.soft,
+      .surface.compact,
+      .field,
+      .list-item,
+      .mini-stat,
+      .muted-banner {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+          rgba(9, 16, 28, 0.44);
+      }
+
+      .icon-dot,
+      .icon-square {
+        color: var(--portal-ink);
+      }
+
+      .field-value {
+        color: var(--portal-ink);
+      }
+
+      .pill-row {
+        gap: 10px;
+      }
+
+      .pill.selected,
+      .button.primary {
+        color: #04150c;
+        border-color: rgba(0, 255, 102, 0.24);
+        background:
+          linear-gradient(135deg, rgba(236, 255, 241, 0.98) 0%, rgba(119, 255, 162, 0.98) 34%, rgba(0, 255, 102, 0.96) 100%);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.68),
+          0 18px 34px rgba(0, 255, 102, 0.22);
+      }
+
+      .button.secondary,
+      .button.tonal {
+        color: var(--portal-ink);
+      }
+
+      .divider-row::before,
+      .divider-row::after {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .progress {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .progress > span {
+        background:
+          linear-gradient(90deg, rgba(214, 255, 226, 0.96) 0%, rgba(0, 255, 102, 1) 52%, rgba(234, 255, 240, 0.96) 100%);
+        box-shadow: 0 0 18px rgba(0, 255, 102, 0.32);
+      }
+
+      .list-item {
+        gap: 14px;
+      }
+
+      .map-box {
+        border-color: var(--portal-stroke-soft);
+        background:
+          radial-gradient(circle at 68% 24%, rgba(51, 128, 230, 0.26), transparent 18%),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 100%),
+          linear-gradient(rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 100%),
+          linear-gradient(180deg, rgba(6, 11, 18, 0.94), rgba(11, 18, 29, 0.96));
+        background-size: auto, 46px 46px, 46px 46px, auto;
+        box-shadow:
+          inset 0 22px 40px rgba(0, 0, 0, 0.34),
+          inset 0 -16px 26px rgba(255, 255, 255, 0.03),
+          0 20px 40px rgba(0, 0, 0, 0.22);
+      }
+
+      .map-pin {
+        background: var(--portal-green);
+        border-color: rgba(8, 12, 20, 0.94);
+        box-shadow: 0 0 18px rgba(0, 255, 102, 0.62);
+      }
+
+      .meta span {
+        color: var(--portal-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="board">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="eyebrow">AVRAI Consumer Beta Portal Atlas</div>
+          <h1>Every consumer beta page re-read as a portal screen, not a neutral wire comp</h1>
+          <p class="copy">
+            This board keeps the exact route-by-route beta outline, then translates it into the
+            portal system: living world backdrop, floating glass slate, metallic type, recessed
+            instruments, darker chrome, and Electric Green reserved for active doors.
+          </p>
+        </div>
+        <div class="hero-card meta-card">
+          <div class="meta-item">
+            <strong>Palette</strong>
+            <p class="small-copy">Deep Night, sky blue, grass green, metallic neutrals, and Electric Green for active emphasis.</p>
+          </div>
+          <div class="meta-item">
+            <strong>Layout</strong>
+            <p class="small-copy">The phone frame becomes a visible portal with negative border, atmospheric depth, and a floating slate hierarchy.</p>
+          </div>
+          <div class="meta-item">
+            <strong>Surfaces</strong>
+            <p class="small-copy">Cards become blurred glass modules with metallic edges, darker wells, and stronger separation of primary vs secondary planes.</p>
+          </div>
+          <div class="meta-item">
+            <strong>Navigation</strong>
+            <p class="small-copy">Entry remains calm, but chrome shifts to portal hardware: translucent nav, green active state, and instrument-style map/navigation moments.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane">
+        <div class="lane-header">
+          <div>
+            <h2>Auth</h2>
+            <p class="section-note">Centered entry flows with logo stack, federated options, divider text, and form fields.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Login</div>
+              <div class="route-tag">/login</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>beta</span></div>
+                <div class="notch"></div>
+                <div class="logo-stack">
+                  <div class="brand-mark">A</div>
+                  <div class="display">avrai</div>
+                  <p class="copy">Discover meaningful places</p>
+                </div>
+                <div class="stack-16">
+                  <div class="button secondary">Continue with Google</div>
+                  <div class="button secondary">Continue with Apple</div>
+                  <div class="divider-row">or continue with email</div>
+                  <div class="field">
+                    <span class="field-label">Email</span>
+                    <span class="field-value">name@example.com</span>
+                  </div>
+                  <div class="field">
+                    <span class="field-label">Password</span>
+                    <span class="field-value">••••••••••</span>
+                  </div>
+                  <div class="button primary">Sign In</div>
+                  <div class="surface soft compact">
+                    <p class="small-copy">BHAM beta device gating appears as a bordered notice above the sign-in actions when the device is not approved.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Sign Up</div>
+              <div class="route-tag">/signup</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>beta</span></div>
+                <div class="notch"></div>
+                <div class="logo-stack">
+                  <div class="brand-mark">A</div>
+                  <div class="headline">Join avrai</div>
+                  <p class="copy">Create your account to start discovering</p>
+                </div>
+                <div class="stack-16">
+                  <div class="button secondary">Continue with Google</div>
+                  <div class="button secondary">Continue with Apple</div>
+                  <div class="divider-row">or create an account with email</div>
+                  <div class="field"><span class="field-label">Full Name</span><span class="field-value">Alex Example</span></div>
+                  <div class="field"><span class="field-label">Email</span><span class="field-value">alex@example.com</span></div>
+                  <div class="field"><span class="field-label">Password</span><span class="field-value">Create a password</span></div>
+                  <div class="field"><span class="field-label">Confirm Password</span><span class="field-value">Repeat password</span></div>
+                  <div class="button primary">Create Account</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane">
+        <div class="lane-header">
+          <div>
+            <h2>Onboarding</h2>
+            <p class="section-note">A staged funnel: questionnaire, consent, permissions, optional bridges, AI loading, then walkthrough.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Questionnaire</div>
+              <div class="route-tag">/onboarding</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>step 1</span></div>
+                <div class="notch"></div>
+                <div class="nav navless">
+                  <div class="icon-dot">‹</div>
+                  <div class="title">Birmingham beta setup</div>
+                  <div class="icon-dot">1/4</div>
+                </div>
+                <div class="progress"><span></span></div>
+                <div class="stack-16" style="margin-top: 20px;">
+                  <div class="surface">
+                    <p class="title">What do you want more of right now?</p>
+                    <p class="copy">Examples: better routines, more time outside, more friends, more fun, more creativity.</p>
+                  </div>
+                  <div class="field"><span class="field-label">More of</span><span class="field-value">More real plans, better routines, and stronger local signal.</span></div>
+                  <div class="field"><span class="field-label">Values</span><span class="field-value">Belonging, privacy, calm, curiosity.</span></div>
+                  <div class="field"><span class="field-label">Favorite places</span><span class="field-value">Coffee shops, parks, live music, walkable neighborhoods.</span></div>
+                  <div class="pill-row">
+                    <div class="pill selected">Social energy: Balanced</div>
+                    <div class="pill">Transit: Mixed</div>
+                  </div>
+                  <div class="button primary">Continue</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Consent</div>
+              <div class="route-tag">/onboarding</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>step 2</span></div>
+                <div class="notch"></div>
+                <div class="nav navless">
+                  <div class="icon-dot">‹</div>
+                  <div class="title">Consent</div>
+                  <div class="icon-dot">2/4</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface">
+                    <p class="title">BHAM beta consent</p>
+                    <p class="copy">AVRAI explains privacy, beta operating rules, and the difference between private identity and agent-level learning.</p>
+                  </div>
+                  <div class="surface soft compact">
+                    <div class="row between"><span class="field-value">I accept beta participation</span><span>✓</span></div>
+                  </div>
+                  <div class="surface soft compact">
+                    <div class="row between"><span class="field-value">I accept Terms of Service</span><span>✓</span></div>
+                  </div>
+                  <div class="surface soft compact">
+                    <div class="row between"><span class="field-value">I accept Privacy Policy</span><span>✓</span></div>
+                  </div>
+                  <div class="button primary">Continue</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Permissions</div>
+              <div class="route-tag">/onboarding</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>step 3</span></div>
+                <div class="notch"></div>
+                <div class="nav navless">
+                  <div class="icon-dot">‹</div>
+                  <div class="title">Recommended permissions</div>
+                  <div class="icon-dot">3/4</div>
+                </div>
+                <div class="stack-12">
+                  <div class="list-item"><div class="icon-square">LO</div><div><p class="title">Location</p><p class="small-copy">Required for locality-aware discovery and map relevance.</p></div></div>
+                  <div class="list-item"><div class="icon-square">BG</div><div><p class="title">Background location</p><p class="small-copy">Supports passive locality signal when allowed.</p></div></div>
+                  <div class="list-item"><div class="icon-square">BT</div><div><p class="title">Bluetooth</p><p class="small-copy">Needed for local AI2AI exchange.</p></div></div>
+                  <div class="list-item"><div class="icon-square">NT</div><div><p class="title">Notifications</p><p class="small-copy">Used for delivery and recommendation prompts.</p></div></div>
+                  <div class="button primary">Request recommended permissions</div>
+                  <div class="button secondary">Continue for now</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Bridges</div>
+              <div class="route-tag">/onboarding</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>step 4</span></div>
+                <div class="notch"></div>
+                <div class="nav navless">
+                  <div class="icon-dot">‹</div>
+                  <div class="title">Optional bridges</div>
+                  <div class="icon-dot">4/4</div>
+                </div>
+                <div class="list">
+                  <div class="list-item"><div class="icon-square">SP</div><div><p class="title">Spotify</p><p class="small-copy">Optional signal only</p></div><div class="chevron">○</div></div>
+                  <div class="list-item"><div class="icon-square">IG</div><div><p class="title">Instagram</p><p class="small-copy">Optional signal only</p></div><div class="chevron">○</div></div>
+                  <div class="list-item"><div class="icon-square">FB</div><div><p class="title">Facebook</p><p class="small-copy">Optional signal only</p></div><div class="chevron">○</div></div>
+                  <div class="list-item"><div class="icon-square">GO</div><div><p class="title">Google</p><p class="small-copy">Optional signal only</p></div><div class="chevron">○</div></div>
+                  <div class="list-item"><div class="icon-square">AP</div><div><p class="title">Apple</p><p class="small-copy">Optional signal only</p></div><div class="chevron">○</div></div>
+                  <div class="button primary">Build my agent</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">AI Loading</div>
+              <div class="route-tag">/ai-loading</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>initializing</span></div>
+                <div class="notch"></div>
+                <div style="display:grid;place-items:center;height:720px;text-align:center;">
+                  <div class="stack-20" style="width:100%;">
+                    <div class="brand-mark" style="margin:0 auto;width:84px;height:84px;">AI</div>
+                    <div class="headline">Building your AVRAI</div>
+                    <p class="copy">Generating your agent, knot baseline, onboarding state, and first Birmingham Daily Drop.</p>
+                    <div class="surface soft">
+                      <div class="progress"><span style="width:72%;"></span></div>
+                      <p class="small-copy" style="margin-top:10px;">Locality bootstrap, personality initialization, and BHAM drop generation.</p>
+                    </div>
+                    <div class="button primary">Continue when ready</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Walkthrough</div>
+              <div class="route-tag">/onboarding/walkthrough</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>welcome</span></div>
+                <div class="notch"></div>
+                <div class="stack-16">
+                  <div class="headline">AVRAI works best when you live your life, not when you stay on your phone.</div>
+                  <div class="surface"><p class="title">Daily Drop</p><p class="copy">Each day, AVRAI gives you a small set of strong doors to explore.</p></div>
+                  <div class="surface"><p class="title">Explore</p><p class="copy">Browse Birmingham through spots, lists, events, clubs, and communities.</p></div>
+                  <div class="surface"><p class="title">AI2AI</p><p class="copy">Nearby AVRAI agents can learn from each other without needing the internet.</p></div>
+                  <div class="surface"><p class="title">Privacy</p><p class="copy">Your private identity stays protected by default.</p></div>
+                  <div class="button primary">Open your Birmingham Daily Drop</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane">
+        <div class="lane-header">
+          <div>
+            <h2>Core Discovery</h2>
+            <p class="section-note">Top bar plus bottom navigation. Daily Drop is finite and card-driven; Explore expands into browse and map surfaces.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Home / Daily Drop</div>
+              <div class="route-tag">/home</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>drop</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">PR</div>
+                  <div class="nav-title">Daily Drop</div>
+                  <div class="icon-dot">CH</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <div class="row">
+                      <div class="icon-square">AI</div>
+                      <div>
+                        <p class="title">Your Birmingham Daily Drop</p>
+                        <p class="small-copy">Five explicit recommendation doors for the BHAM beta loop.</p>
+                      </div>
+                    </div>
+                    <div class="meta" style="margin-top:12px;">
+                      <span>Generated 9:12 AM</span>
+                      <span>Expires 11:59 PM</span>
+                      <span>fresh pass</span>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <div class="row between"><p class="title">Spot</p><div class="pill">86% enjoyability</div></div>
+                    <p class="copy">A quieter coffee door near your usual movement pattern.</p>
+                    <div class="meta"><span>0.8 miles away</span><span>Save</span><span>Dismiss</span></div>
+                  </div>
+                  <div class="surface">
+                    <div class="row between"><p class="title">List</p><div class="pill">network wisdom</div></div>
+                    <p class="copy">A locally grounded collection that fits your current values and pace.</p>
+                  </div>
+                  <div class="surface">
+                    <div class="row between"><p class="title">Event</p><div class="pill">tonight</div></div>
+                    <p class="copy">A specific event door with explicit why and confidence metadata.</p>
+                  </div>
+                </div>
+                <div class="bottom-nav">
+                  <div class="tab active"><span>●</span><span>Daily Drop</span></div>
+                  <div class="tab"><span>○</span><span>Explore</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Explore / List</div>
+              <div class="route-tag">Explore tab</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>explore</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">PR</div>
+                  <div class="nav-title">Explore</div>
+                  <div class="icon-dot">CH</div>
+                </div>
+                <div class="stack-16">
+                  <div>
+                    <div class="headline">Explore Birmingham</div>
+                    <p class="copy">One discovery surface for spots, lists, events, clubs, and communities.</p>
+                  </div>
+                  <div class="pill-row">
+                    <div class="pill selected">Spot</div>
+                    <div class="pill">List</div>
+                    <div class="pill">Event</div>
+                    <div class="pill">Club</div>
+                    <div class="pill">Community</div>
+                  </div>
+                  <div class="pill-row">
+                    <div class="pill selected">List</div>
+                    <div class="pill">Map</div>
+                  </div>
+                  <div class="surface">
+                    <div class="row">
+                      <div class="icon-square">SP</div>
+                      <div>
+                        <p class="title">A calm neighborhood coffee spot</p>
+                        <p class="small-copy">Saved items sort above recommendations, then recommendation cards stack below.</p>
+                      </div>
+                    </div>
+                    <div class="meta" style="margin-top:12px;"><span>Open</span><span>Save</span><span>Dismiss</span><span>Meaningful</span></div>
+                  </div>
+                  <div class="surface">
+                    <div class="row">
+                      <div class="icon-square">EV</div>
+                      <div>
+                        <p class="title">Tonight’s local event</p>
+                        <p class="small-copy">Open routes into the entity page, then explicit ask-back feedback follows.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bottom-nav">
+                  <div class="tab"><span>○</span><span>Daily Drop</span></div>
+                  <div class="tab active"><span>●</span><span>Explore</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Explore / Map</div>
+              <div class="route-tag">Explore map mode</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>map</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">PR</div>
+                  <div class="nav-title">Explore</div>
+                  <div class="icon-dot">CH</div>
+                </div>
+                <div class="stack-16">
+                  <div class="pill-row">
+                    <div class="pill selected">Spot</div>
+                    <div class="pill">List</div>
+                    <div class="pill">Event</div>
+                    <div class="pill">Club</div>
+                    <div class="pill">Community</div>
+                  </div>
+                  <div class="pill-row">
+                    <div class="pill">List</div>
+                    <div class="pill selected">Map</div>
+                  </div>
+                  <div class="map-box">
+                    <div class="map-pin" style="left:58px;top:84px;"></div>
+                    <div class="map-pin" style="left:146px;top:146px;"></div>
+                    <div class="map-pin" style="left:264px;top:108px;"></div>
+                    <div class="map-pin" style="left:216px;top:230px;"></div>
+                  </div>
+                  <div class="surface compact">
+                    <p class="title">Map preview</p>
+                    <p class="small-copy">Mappable entities render as pins, then tap-through opens the same entity cards and feedback loop.</p>
+                  </div>
+                </div>
+                <div class="bottom-nav">
+                  <div class="tab"><span>○</span><span>Daily Drop</span></div>
+                  <div class="tab active"><span>●</span><span>Explore</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Chat</div>
+              <div class="route-tag">/chat</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>chat</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Chat</div>
+                  <div class="icon-dot">⋯</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface">
+                    <div class="row"><div class="icon-square">AI</div><div><p class="title">Personal AI chat</p><p class="small-copy">Continue your local and online AI thread.</p></div></div>
+                  </div>
+                  <div class="surface">
+                    <div class="row"><div class="icon-square">AD</div><div><p class="title">Admin support</p><p class="small-copy">Pseudonymous Birmingham beta support.</p></div></div>
+                  </div>
+                  <div class="surface soft">
+                    <p class="title">Pending Matches</p>
+                    <p class="copy">High-confidence match cards sit above the thread list with explicit accept or decline actions.</p>
+                    <div class="button-row" style="margin-top:12px;">
+                      <div class="button secondary">Decline</div>
+                      <div class="button primary">Accept</div>
+                    </div>
+                  </div>
+                  <div class="list">
+                    <div class="list-item"><div class="icon-square">FR</div><div><p class="title">Friend thread</p><p class="small-copy">Latest message preview</p></div><div class="pill">2</div></div>
+                    <div class="list-item"><div class="icon-square">CO</div><div><p class="title">Community thread</p><p class="small-copy">Group context</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">EV</div><div><p class="title">Event thread</p><p class="small-copy">Event coordination</p></div><div class="chevron">›</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane">
+        <div class="lane-header">
+          <div>
+            <h2>Profile, Settings, and Support</h2>
+            <p class="section-note">Profile is the control hub. Settings-derived pages lean on headers, grouped rows, and plain-language info sections.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Profile</div>
+              <div class="route-tag">/profile</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>profile</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Profile</div>
+                  <div class="icon-dot">ED</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface">
+                    <div class="row">
+                      <div class="brand-mark" style="width:56px;height:56px;border-radius:18px;">AE</div>
+                      <div>
+                        <p class="title">Alex Example</p>
+                        <p class="small-copy">BHAM beta user</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="two-col">
+                    <div class="mini-stat"><p class="small-copy">Saved</p><p class="title">12</p></div>
+                    <div class="mini-stat"><p class="small-copy">Positive signals</p><p class="title">29</p></div>
+                    <div class="mini-stat"><p class="small-copy">Negative signals</p><p class="title">7</p></div>
+                    <div class="mini-stat"><p class="small-copy">AI2AI today</p><p class="title">4</p></div>
+                  </div>
+                  <div class="surface soft">
+                    <p class="title">Beta controls</p>
+                    <p class="small-copy">AI2AI participation, BLE discovery, background sensing, direct matching, and privacy posture are exposed as explicit switches.</p>
+                  </div>
+                  <div class="list">
+                    <div class="list-item"><div class="icon-square">ST</div><div><p class="title">Settings</p><p class="small-copy">Notifications, privacy, support, about</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">FB</div><div><p class="title">Beta feedback</p><p class="small-copy">Send direct product input</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">AI</div><div><p class="title">AI personality status</p><p class="small-copy">Inspect agent status and learning</p></div><div class="chevron">›</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Settings Hub</div>
+              <div class="route-tag">settings family</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>settings</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Settings</div>
+                  <div class="icon-dot">⋯</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <div class="row">
+                      <div class="icon-square">⚙</div>
+                      <div>
+                        <p class="title">Control your AVRAI shell</p>
+                        <p class="small-copy">Neutral sectioned lists and schema-driven detail pages.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list">
+                    <div class="list-item"><div class="icon-square">NO</div><div><p class="title">Notifications</p><p class="small-copy">Preference groups and toggles</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">PR</div><div><p class="title">Privacy settings</p><p class="small-copy">Privacy groups, policy links, reset action</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">SM</div><div><p class="title">Social media settings</p><p class="small-copy">Bridge visibility and control</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">HS</div><div><p class="title">Help & Support</p><p class="small-copy">Guidance, support, resources</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">AB</div><div><p class="title">About AVRAI</p><p class="small-copy">Principles, links, architecture note</p></div><div class="chevron">›</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">About AVRAI</div>
+              <div class="route-tag">About page</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>about</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">About AVRAI</div>
+                  <div class="icon-dot">i</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <div class="row">
+                      <div class="icon-square">IN</div>
+                      <div>
+                        <p class="title">About AVRAI</p>
+                        <p class="small-copy">A neutral product shell focused on belonging, privacy, and useful discovery.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">What AVRAI is for</p>
+                    <p class="copy">AVRAI helps people find places, experiences, and communities that feel genuinely right for them.</p>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Principles</p>
+                    <p class="small-copy">Belonging comes first. Privacy and control stay with the user. Useful discovery matters more than decorative product theater.</p>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Links</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">WE</div><div><p class="title">Website</p><p class="small-copy">avrai.org</p></div><div class="chevron">›</div></div>
+                      <div class="list-item"><div class="icon-square">PP</div><div><p class="title">Privacy Policy</p><p class="small-copy">How AVRAI protects user data</p></div><div class="chevron">›</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Help & Support</div>
+              <div class="route-tag">Help page</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>support</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Help & Support</div>
+                  <div class="icon-dot">?</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <p class="title">Need something quickly?</p>
+                    <p class="small-copy">Use these sections to get oriented, troubleshoot, or contact the team without leaving the app.</p>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Quick Help</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">GS</div><div><p class="title">Getting Started</p><p class="small-copy">Learn the basics of using AVRAI</p></div><div class="chevron">›</div></div>
+                      <div class="list-item"><div class="icon-square">SP</div><div><p class="title">Creating Spots</p><p class="small-copy">How to add and edit places</p></div><div class="chevron">›</div></div>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Contact Support</p>
+                    <div class="button primary" style="margin-top:12px;">Open support on avrai.org</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Notifications</div>
+              <div class="route-tag">Notifications settings</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>notify</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Notifications</div>
+                  <div class="icon-dot">🔔</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <div class="row">
+                      <div class="icon-square">NT</div>
+                      <div>
+                        <p class="title">Notification controls</p>
+                        <p class="small-copy">You control delivery methods, quiet hours, and how AVRAI uses activity signals for updates.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Notification Types</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">DD</div><div><p class="title">Daily Drop</p><p class="small-copy">Part of the BHAM capped suggestion budget.</p></div><div class="chevron">On</div></div>
+                      <div class="list-item"><div class="icon-square">CN</div><div><p class="title">Context Nudges</p><p class="small-copy">Also part of the BHAM capped suggestion budget.</p></div><div class="chevron">On</div></div>
+                      <div class="list-item"><div class="icon-square">HM</div><div><p class="title">Human Messages</p><p class="small-copy">Uncapped by BHAM suggestion policy.</p></div><div class="chevron">On</div></div>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Quiet Hours</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">QH</div><div><p class="title">Enable Quiet Hours</p><p class="small-copy">Pause notifications during a chosen overnight window.</p></div><div class="chevron">Off</div></div>
+                    </div>
+                  </div>
+                  <div class="button primary">Send Test Notification</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Privacy Settings</div>
+              <div class="route-tag">Privacy settings</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>privacy</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Privacy Settings</div>
+                  <div class="icon-dot">🔒</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <p class="title">Privacy commitment</p>
+                    <p class="small-copy">You own your data, you control your experience, and you decide what AVRAI can share or retain.</p>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Core Privacy Controls</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">PV</div><div><p class="title">Profile Visibility</p><p class="small-copy">Who can see your profile and activity.</p></div><div class="chevron">Friends</div></div>
+                      <div class="list-item"><div class="icon-square">LS</div><div><p class="title">Location Sharing</p><p class="small-copy">How precise location sharing should be.</p></div><div class="chevron">Approx</div></div>
+                      <div class="list-item"><div class="icon-square">SL</div><div><p class="title">Share Location Data</p><p class="small-copy">Allow location-based recommendations.</p></div><div class="chevron">On</div></div>
+                    </div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Learning Controls</p>
+                    <div class="list" style="margin-top:12px;">
+                      <div class="list-item"><div class="icon-square">AI</div><div><p class="title">AI2AI Learning</p><p class="small-copy">Allow anonymized preference signals to improve matching.</p></div><div class="chevron">On</div></div>
+                      <div class="list-item"><div class="icon-square">OD</div><div><p class="title">On-Device Learning</p><p class="small-copy">Let your device adapt recommendations from local behavior.</p></div><div class="chevron">On</div></div>
+                    </div>
+                  </div>
+                  <div class="surface soft">
+                    <p class="title">Your Data Rights</p>
+                    <p class="small-copy">Export data, delete account, or open the privacy policy from an action list below the control groups.</p>
+                  </div>
+                  <div class="button primary">Reset to defaults</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Social Media Connections</div>
+              <div class="route-tag">Social media settings</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>bridges</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Social Media Connections</div>
+                  <div class="icon-dot">⊕</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface soft">
+                    <p class="title">Discovery signals</p>
+                    <p class="small-copy">AVRAI uses selected social signals to improve profile matching without changing your privacy controls.</p>
+                  </div>
+                  <div class="list">
+                    <div class="list-item"><div class="icon-square">SP</div><div><p class="title">Spotify</p><p class="small-copy">Profile enrichment and taste signal</p></div><div class="chevron">Connect</div></div>
+                    <div class="list-item"><div class="icon-square">IG</div><div><p class="title">Instagram</p><p class="small-copy">Public account signal only</p></div><div class="chevron">Connect</div></div>
+                    <div class="list-item"><div class="icon-square">FB</div><div><p class="title">Facebook</p><p class="small-copy">Public account signal only</p></div><div class="chevron">Connect</div></div>
+                    <div class="list-item"><div class="icon-square">AP</div><div><p class="title">Apple</p><p class="small-copy">Identity and enrichment bridge</p></div><div class="chevron">Connected</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane">
+        <div class="lane-header">
+          <div>
+            <h2>Object Surfaces</h2>
+            <p class="section-note">Detail pages lead with a strong header and action rail. Create flows are classic bordered forms with one dominant save path.</p>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Spot Detail</div>
+              <div class="route-tag">/spot/:id</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>spot</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">June Coffee</div>
+                  <div class="row"><div class="icon-dot">ED</div><div class="icon-dot">SH</div></div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface">
+                    <div class="row between">
+                      <div class="pill">Cafe</div>
+                      <div class="row"><span class="small-copy">AI2AI source</span></div>
+                    </div>
+                    <div class="headline" style="font-size:24px;margin-top:14px;">Quiet coffee near your usual morning movement</div>
+                    <p class="copy">Entity detail pages mix description, sharing, validation, and reservation affordances inside a scroll stack.</p>
+                    <div class="meta" style="margin-top:12px;"><span>0.8 miles away</span><span>Reservation available</span></div>
+                  </div>
+                  <div class="surface soft">
+                    <p class="title">Reservation status</p>
+                    <p class="small-copy">Spot details conditionally expose reservation state and a create reservation action.</p>
+                    <div class="button primary" style="margin-top:12px;">Reserve a spot</div>
+                  </div>
+                  <div class="surface">
+                    <p class="title">Community validation</p>
+                    <p class="small-copy">Secondary modules sit below the core entity story, keeping the top of the page identity-first.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">List Detail</div>
+              <div class="route-tag">/list/:id</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>list</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Saturday loop</div>
+                  <div class="icon-dot">⋯</div>
+                </div>
+                <div class="stack-16">
+                  <div class="surface">
+                    <div class="row between"><div class="pill">Neighborhood</div><div class="icon-dot">🌐</div></div>
+                    <p class="copy" style="margin-top:14px;">List detail starts with category, visibility, description, and item count before moving into the member spots.</p>
+                    <div class="meta" style="margin-top:12px;"><span>8 spots</span><span>Public</span></div>
+                  </div>
+                  <div class="list">
+                    <div class="list-item"><div class="icon-square">01</div><div><p class="title">Morning coffee</p><p class="small-copy">First stop in the list</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">02</div><div><p class="title">Park walk</p><p class="small-copy">Second stop in the list</p></div><div class="chevron">›</div></div>
+                    <div class="list-item"><div class="icon-square">03</div><div><p class="title">Late lunch</p><p class="small-copy">Third stop in the list</p></div><div class="chevron">›</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-wrap">
+            <div class="frame-meta">
+              <div class="frame-title">Create Spot</div>
+              <div class="route-tag">/spot/create</div>
+            </div>
+            <div class="phone">
+              <div class="screen">
+                <div class="statusbar"><span>9:41</span><span>create</span></div>
+                <div class="notch"></div>
+                <div class="nav">
+                  <div class="icon-dot">‹</div>
+                  <div class="nav-title">Create Spot</div>
+                  <div class="icon-dot">✓</div>
+                </div>
+                <div class="stack-16">
+                  <div class="field"><span class="field-label">Spot Name</span><span class="field-value">June Coffee</span></div>
+                  <div class="field"><span class="field-label">Category</span><span class="field-value">Cafe</span></div>
+                  <div class="field"><span class="field-label">Description</span><span class="field-value">Quiet, bright, and easy to meet in.</span></div>
+                  <div class="field"><span class="field-label">Address</span><span class="field-value">123 Example St</span></div>
+                  <div class="surface soft">
+                    <p class="title">Location status</p>
+                    <p class="small-copy">Create flows pull in current location and block save if required location data is missing.</p>
+                  </div>
+                  <div class="button primary">Save spot</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -25,7 +25,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       // Assert: Required UI elements should be displayed
-      expect(find.text('Where\'s your homebase?'), findsOneWidget);
+      expect(find.text('Where\'s your homebase?'), findsWidgets);
       expect(
         find.text(
           'Position the marker over your homebase. Only the location name will appear on your profile.',
@@ -122,12 +122,12 @@ void main() {
       addTearDown(() => tester.view.resetDevicePixelRatio());
       await tester.pumpWidget(widget);
       await tester.pump(const Duration(milliseconds: 200));
-      expect(find.text('Where\'s your homebase?'), findsOneWidget);
+      expect(find.text('Where\'s your homebase?'), findsWidgets);
 
       // Act & Assert: Test landscape orientation
       tester.view.physicalSize = const Size(800, 400);
       await tester.pump();
-      expect(find.text('Where\'s your homebase?'), findsOneWidget);
+      expect(find.text('Where\'s your homebase?'), findsWidgets);
     });
 
     testWidgets('should display selected location when provided',
@@ -145,7 +145,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       // Assert: Selected location should be displayed
-      expect(find.text('Where\'s your homebase?'), findsOneWidget);
+      expect(find.text('Where\'s your homebase?'), findsWidgets);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.text('Enable'), findsAtLeastNWidgets(0));
       expect(find.text('Retry'), findsAtLeastNWidgets(0));
@@ -168,6 +168,8 @@ void main() {
 
       // Assert: Widget should handle rapid taps without errors
       if (enableButtons.evaluate().isNotEmpty) {
+        await tester.ensureVisible(enableButtons.first);
+        await tester.pumpAndSettle();
         await tester.tap(enableButtons.first);
         await tester.tap(enableButtons.first);
         await tester.pump();

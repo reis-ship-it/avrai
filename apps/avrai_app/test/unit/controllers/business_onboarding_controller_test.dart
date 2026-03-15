@@ -8,7 +8,13 @@ import 'package:avrai_runtime_os/services/business/business_shared_agent_service
 import 'package:avrai_core/models/business/business_account.dart';
 import 'package:avrai_core/models/business/business_expert_preferences.dart';
 import 'package:avrai_core/models/business/business_patron_preferences.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
 
+import '../../helpers/platform_channel_helper.dart';
 import 'business_onboarding_controller_test.mocks.dart';
 
 @GenerateMocks([
@@ -195,6 +201,117 @@ void main() {
 
         verify(mockSharedAgentService.initializeSharedAgent('business_123'))
             .called(1);
+      });
+
+      test('should attach OS-first artifacts on successful onboarding',
+          () async {
+        final fakeHeadlessHost = _FakeBusinessHeadlessAvraiOsHost();
+        controller = BusinessOnboardingController(
+          businessAccountService: mockBusinessAccountService,
+          sharedAgentService: mockSharedAgentService,
+          headlessOsHost: fakeHeadlessHost,
+        );
+
+        final data = BusinessOnboardingData(
+          setupSharedAgent: true,
+          teamMembers: const <String>['user_1'],
+          preferredCommunities: const <String>['River North'],
+        );
+
+        final updatedAccount = testBusinessAccount.copyWith(
+          updatedAt: now,
+        );
+
+        when(mockBusinessAccountService.getBusinessAccount('business_123'))
+            .thenAnswer((_) async => testBusinessAccount);
+        when(mockBusinessAccountService.updateBusinessAccount(
+          testBusinessAccount,
+          expertPreferences: null,
+          patronPreferences: null,
+          requiredExpertise: null,
+          preferredCommunities: data.preferredCommunities,
+        )).thenAnswer((_) async => updatedAccount);
+        when(mockSharedAgentService.initializeSharedAgent('business_123'))
+            .thenAnswer((_) async => 'agent_456');
+
+        final result = await controller.completeBusinessOnboarding(
+          businessId: 'business_123',
+          data: data,
+        );
+
+        expect(result.success, isTrue);
+        expect(result.realityKernelFusionInput, isNotNull);
+        expect(result.kernelGovernanceReport, isNotNull);
+        expect(
+            result.realityKernelFusionInput!.localityContainedInWhere, isTrue);
+        expect(result.metadata?['modelTruthReady'], isTrue);
+        expect(result.metadata?['localityContainedInWhere'], isTrue);
+        expect(result.metadata?['governanceDomains'], contains('where'));
+        expect(fakeHeadlessHost.startCalls, 1);
+        expect(fakeHeadlessHost.runtimeCalls, 1);
+        expect(fakeHeadlessHost.modelTruthCalls, 1);
+        expect(fakeHeadlessHost.governanceCalls, 1);
+      });
+
+      test('should expose restored headless OS bootstrap state in result',
+          () async {
+        final fakeHeadlessHost = _FakeBusinessHeadlessAvraiOsHost();
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: getTestStorage(
+            boxName: 'business_onboarding_restored_bootstrap',
+          ),
+        );
+        final seedingBootstrap = HeadlessAvraiOsBootstrapService(
+          host: fakeHeadlessHost,
+          prefs: prefs,
+        );
+        await seedingBootstrap.initialize();
+        final restoredBootstrap = HeadlessAvraiOsBootstrapService(
+          host: _FakeBusinessHeadlessAvraiOsHost(),
+          prefs: prefs,
+        );
+        await restoredBootstrap.restorePersistedSnapshot();
+
+        controller = BusinessOnboardingController(
+          businessAccountService: mockBusinessAccountService,
+          sharedAgentService: mockSharedAgentService,
+          headlessOsHost: fakeHeadlessHost,
+          headlessOsBootstrapService: restoredBootstrap,
+        );
+
+        final data = BusinessOnboardingData(
+          setupSharedAgent: false,
+        );
+
+        final updatedAccount = testBusinessAccount.copyWith(updatedAt: now);
+
+        when(mockBusinessAccountService.getBusinessAccount('business_123'))
+            .thenAnswer((_) async => testBusinessAccount);
+        when(mockBusinessAccountService.updateBusinessAccount(
+          testBusinessAccount,
+          expertPreferences: null,
+          patronPreferences: null,
+          requiredExpertise: null,
+          preferredCommunities: null,
+        )).thenAnswer((_) async => updatedAccount);
+
+        final result = await controller.completeBusinessOnboarding(
+          businessId: 'business_123',
+          data: data,
+        );
+
+        expect(result.success, isTrue);
+        expect(result.restoredHeadlessOsBootstrapSnapshot, isNotNull);
+        expect(
+          result.restoredHeadlessOsBootstrapSnapshot!.restoredFromPersistence,
+          isTrue,
+        );
+        expect(
+            result.metadata?['restoredHeadlessOsBootstrapAvailable'], isTrue);
+        expect(
+          result.metadata?['restoredHeadlessOsLocalityContainedInWhere'],
+          isTrue,
+        );
       });
 
       test('should return failure for non-existent business account', () async {
@@ -389,4 +506,138 @@ void main() {
       });
     });
   });
+}
+
+class _FakeBusinessHeadlessAvraiOsHost implements HeadlessAvraiOsHost {
+  int startCalls = 0;
+  int runtimeCalls = 0;
+  int modelTruthCalls = 0;
+  int governanceCalls = 0;
+
+  @override
+  Future<HeadlessAvraiOsHostState> start() async {
+    startCalls += 1;
+    return HeadlessAvraiOsHostState(
+      started: true,
+      startedAtUtc: DateTime.utc(2026, 3, 6),
+      localityContainedInWhere: true,
+      summary: 'business onboarding host',
+    );
+  }
+
+  @override
+  Future<RealityKernelFusionInput> buildModelTruth({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    modelTruthCalls += 1;
+    return RealityKernelFusionInput(
+      envelope: envelope,
+      bundle: _bundle,
+      who: const WhoRealityProjection(summary: 'who', confidence: 0.8),
+      what: const WhatRealityProjection(summary: 'what', confidence: 0.84),
+      when: const WhenRealityProjection(summary: 'when', confidence: 0.86),
+      where: const WhereRealityProjection(
+        summary: 'where',
+        confidence: 0.9,
+        payload: <String, dynamic>{'locality_contained_in_where': true},
+      ),
+      why: const WhyRealityProjection(summary: 'why', confidence: 0.83),
+      how: const HowRealityProjection(summary: 'how', confidence: 0.82),
+      generatedAtUtc: DateTime.utc(2026, 3, 6),
+    );
+  }
+
+  @override
+  Future<List<KernelHealthReport>> healthCheck() async =>
+      const <KernelHealthReport>[];
+
+  @override
+  Future<KernelGovernanceReport> inspectGovernance({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    governanceCalls += 1;
+    return KernelGovernanceReport(
+      envelope: envelope,
+      bundle: _bundle,
+      projections: const <KernelGovernanceProjection>[
+        KernelGovernanceProjection(
+          domain: KernelDomain.where,
+          summary: 'business locality remains inside where',
+          confidence: 0.9,
+        ),
+      ],
+      generatedAtUtc: DateTime.utc(2026, 3, 6),
+    );
+  }
+
+  @override
+  Future<KernelContextBundle> resolveRuntimeExecution({
+    required KernelEventEnvelope envelope,
+  }) async {
+    runtimeCalls += 1;
+    return _bundle;
+  }
+
+  KernelContextBundle get _bundle => KernelContextBundle(
+        who: const WhoKernelSnapshot(
+          primaryActor: 'business_123',
+          affectedActor: 'business_123',
+          companionActors: <String>['agent_456'],
+          actorRoles: <String>['business'],
+          trustScope: 'shared',
+          cohortRefs: <String>[],
+          identityConfidence: 0.9,
+        ),
+        what: const WhatKernelSnapshot(
+          actionType: 'complete_business_onboarding',
+          targetEntityType: 'business_account',
+          targetEntityId: 'business_123',
+          stateTransitionType: 'initialized',
+          outcomeType: 'completed',
+          semanticTags: <String>['business_onboarding'],
+          taxonomyConfidence: 0.88,
+        ),
+        when: WhenKernelSnapshot(
+          observedAt: DateTime.utc(2026, 3, 6),
+          freshness: 1.0,
+          recencyBucket: 'current',
+          timingConflictFlags: const <String>[],
+          temporalConfidence: 0.94,
+        ),
+        where: const WhereKernelSnapshot(
+          localityToken: 'where:locality:business',
+          cityCode: 'chi',
+          localityCode: 'river_north',
+          projection: <String, dynamic>{'locality_contained_in_where': true},
+          boundaryTension: 0.14,
+          spatialConfidence: 0.89,
+          travelFriction: 0.2,
+          placeFitFlags: <String>['locality_contained_in_where'],
+        ),
+        how: const HowKernelSnapshot(
+          executionPath:
+              'business_onboarding_controller.completeBusinessOnboarding',
+          workflowStage: 'business_onboarding',
+          transportMode: 'in_process',
+          plannerMode: 'workflow',
+          modelFamily: 'headless_os',
+          interventionChain: <String>['load', 'update', 'initialize'],
+          failureMechanism: 'none',
+          mechanismConfidence: 0.9,
+        ),
+        why: WhyKernelSnapshot(
+          goal: 'bootstrap_business_runtime',
+          summary: 'business onboarding completed',
+          rootCauseType: WhyRootCauseType.contextDriven,
+          confidence: 0.87,
+          drivers: const <WhySignal>[
+            WhySignal(label: 'business_account_persisted', weight: 0.9),
+          ],
+          inhibitors: const <WhySignal>[],
+          counterfactuals: const <WhyCounterfactual>[],
+          createdAtUtc: DateTime.utc(2026, 3, 6),
+        ),
+      );
 }

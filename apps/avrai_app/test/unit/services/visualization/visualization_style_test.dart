@@ -6,7 +6,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/misc/visualization_style.dart';
-import 'package:avrai/theme/colors.dart';
 
 void main() {
   group('KnotVisualizationStyle', () {
@@ -191,37 +190,29 @@ void main() {
     test('should create knot style from brand colors', () {
       final style = VisualizationStyleFactory.knotFromBrand();
 
-      expect(style.primaryColor,
-          equals((AppColors.electricGreen.toARGB32() & 0xFFFFFF)));
-      expect(style.secondaryColor,
-          equals((AppColors.primaryLight.toARGB32() & 0xFFFFFF)));
+      expect(style.primaryColor, equals(0x00FF66));
+      expect(style.secondaryColor, equals(0x66FF99));
     });
 
     test('should create fabric style from brand colors', () {
       final style = VisualizationStyleFactory.fabricFromBrand();
 
-      expect(style.highlightColor,
-          equals((AppColors.white.toARGB32() & 0xFFFFFF)));
+      expect(style.highlightColor, equals(0xFFFFFF));
     });
 
     test('should create worldsheet style from brand colors', () {
       final style = VisualizationStyleFactory.worldsheetFromBrand();
 
-      expect(style.primaryColor,
-          equals((AppColors.electricGreen.toARGB32() & 0xFFFFFF)));
-      expect(style.secondaryColor,
-          equals((AppColors.primaryLight.toARGB32() & 0xFFFFFF)));
+      expect(style.primaryColor, equals(0x00FF66));
+      expect(style.secondaryColor, equals(0x66FF99));
     });
 
     test('should create network style from brand colors', () {
       final style = VisualizationStyleFactory.networkFromBrand();
 
-      expect(style.nodeColor,
-          equals((AppColors.electricGreen.toARGB32() & 0xFFFFFF)));
-      expect(style.edgeColor,
-          equals((AppColors.electricGreen.toARGB32() & 0xFFFFFF)));
-      expect(
-          style.centerColor, equals((AppColors.white.toARGB32() & 0xFFFFFF)));
+      expect(style.nodeColor, equals(0x00FF66));
+      expect(style.edgeColor, equals(0x00FF66));
+      expect(style.centerColor, equals(0xFFFFFF));
     });
   });
 }

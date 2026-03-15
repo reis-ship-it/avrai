@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:avrai_core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_core/models/interpretation/interpretation_models.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
 import 'package:avrai_core/models/community/collaborative_activity_metrics.dart';
@@ -205,7 +207,7 @@ class AI2AIChatAnalyzer {
         // Look for planning keywords in messages
         bool hasPlanningKeywords = false;
         for (final message in chat.messages) {
-          final content = message.content.toLowerCase();
+          final content = message.learnablePatternText.toLowerCase();
           if (content.contains('list') ||
               content.contains('plan') ||
               content.contains('create') ||
@@ -337,6 +339,11 @@ class AI2AIChatEvent {
 }
 
 class ChatMessage {
+  static const String humanLanguageBoundaryMetadataKey =
+      'human_language_boundary';
+  static const String humanLanguageLearningMetadataKey =
+      'human_language_learning_boundary';
+
   final String senderId;
   final String content;
   final DateTime timestamp;
@@ -348,6 +355,162 @@ class ChatMessage {
     required this.timestamp,
     required this.context,
   });
+
+  Map<String, dynamic>? get humanLanguageLearningMetadata =>
+      _readMetadataMap(humanLanguageLearningMetadataKey);
+
+  Map<String, dynamic>? get humanLanguageBoundaryMetadata {
+    return _readMetadataMap(humanLanguageBoundaryMetadataKey);
+  }
+
+  Map<String, dynamic>? get effectiveHumanLanguageMetadata =>
+      humanLanguageLearningMetadata ?? humanLanguageBoundaryMetadata;
+
+  Map<String, dynamic>? _readMetadataMap(String key) {
+    final raw = context[key];
+    if (raw is Map<String, dynamic>) {
+      return raw;
+    }
+    if (raw is Map) {
+      return Map<String, dynamic>.from(raw);
+    }
+    return null;
+  }
+
+  BoundarySanitizedArtifact? get learnableArtifact {
+    final metadata = effectiveHumanLanguageMetadata;
+    if (metadata == null) {
+      return null;
+    }
+
+    final rawArtifact = metadata['sanitized_artifact'];
+    if (rawArtifact is Map<String, dynamic>) {
+      return BoundarySanitizedArtifact.fromJson(rawArtifact);
+    }
+    if (rawArtifact is Map) {
+      return BoundarySanitizedArtifact.fromJson(
+        Map<String, dynamic>.from(rawArtifact),
+      );
+    }
+
+    final summary = metadata['sanitized_summary']?.toString().trim();
+    if (summary == null || summary.isEmpty) {
+      return null;
+    }
+
+    return BoundarySanitizedArtifact(
+      pseudonymousActorRef:
+          metadata['pseudonymous_actor_ref']?.toString() ?? 'anon_unknown',
+      summary: summary,
+      safeClaims: <String>[summary],
+      safeQuestions: const <String>[],
+      safePreferenceSignals: const <InterpretationPreferenceSignal>[],
+      learningVocabulary: const <String>[],
+      learningPhrases: const <String>[],
+      redactedText: metadata['redacted_text']?.toString() ?? summary,
+    );
+  }
+
+  bool get hasStructuredLearnableArtifact => learnableArtifact != null;
+
+  bool get usesLegacyRawFallback =>
+      !hasStructuredLearnableArtifact && content.trim().isNotEmpty;
+
+  String get learnableArtifactSource {
+    if (!hasStructuredLearnableArtifact) {
+      return 'legacy_raw_fallback';
+    }
+    if (humanLanguageLearningMetadata != null) {
+      return humanLanguageLearningMetadataKey;
+    }
+    return humanLanguageBoundaryMetadataKey;
+  }
+
+  double get learnableReliabilityWeight =>
+      hasStructuredLearnableArtifact ? 1.0 : 0.7;
+
+  String get learnableSummaryText {
+    final artifact = learnableArtifact;
+    if (artifact != null && artifact.summary.trim().isNotEmpty) {
+      return artifact.summary.trim();
+    }
+    return content.trim();
+  }
+
+  String get learnablePatternText {
+    final artifact = learnableArtifact;
+    if (artifact == null) {
+      return content;
+    }
+
+    final segments = <String>[
+      artifact.summary,
+      ...artifact.safeClaims,
+      ...artifact.safeQuestions,
+      ...artifact.safePreferenceSignals.expand(
+        (entry) => <String>[entry.kind, entry.value],
+      ),
+      ...artifact.learningVocabulary,
+      ...artifact.learningPhrases,
+      artifact.redactedText,
+    ];
+
+    return segments
+        .map((entry) => entry.trim())
+        .where((entry) => entry.isNotEmpty)
+        .join(' ');
+  }
+
+  List<String> get learnableTopicTerms {
+    final artifact = learnableArtifact;
+    final topicTerms = <String>{};
+    if (artifact != null) {
+      for (final token in artifact.learningVocabulary) {
+        final normalized = _normalizeTopicToken(token);
+        if (normalized != null) {
+          topicTerms.add(normalized);
+        }
+      }
+      for (final phrase in <String>[
+        artifact.summary,
+        ...artifact.safeClaims,
+        ...artifact.safeQuestions,
+        ...artifact.learningPhrases,
+        artifact.redactedText,
+      ]) {
+        for (final token in phrase.split(RegExp(r'\s+'))) {
+          final normalized = _normalizeTopicToken(token);
+          if (normalized != null) {
+            topicTerms.add(normalized);
+          }
+        }
+      }
+      for (final signal in artifact.safePreferenceSignals) {
+        for (final token in <String>[signal.kind, signal.value]) {
+          final normalized = _normalizeTopicToken(token);
+          if (normalized != null) {
+            topicTerms.add(normalized);
+          }
+        }
+      }
+    } else {
+      for (final token in content.split(RegExp(r'\s+'))) {
+        final normalized = _normalizeTopicToken(token);
+        if (normalized != null) {
+          topicTerms.add(normalized);
+        }
+      }
+    }
+    return topicTerms.toList(growable: false);
+  }
+
+  String? _normalizeTopicToken(String token) {
+    final cleaned = token.toLowerCase().replaceAll(RegExp(r'[^\w]'), '');
+    if (cleaned.length <= 3) {
+      return null;
+    }
+    return cleaned;
+  }
 }
 
 enum ChatMessageType {

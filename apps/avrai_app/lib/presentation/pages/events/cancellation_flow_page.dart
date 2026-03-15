@@ -8,7 +8,7 @@ import 'package:avrai_runtime_os/controllers/event_cancellation_controller.dart'
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Cancellation Flow Page
 ///
@@ -141,7 +141,7 @@ class _CancellationFlowPageState extends State<CancellationFlowPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: widget.isHost ? 'Cancel Event' : 'Cancel Ticket',
       constrainBody: false,
       backgroundColor: AppColors.background,

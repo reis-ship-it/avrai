@@ -1,0 +1,178 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "replayYear": 2023,
+  "status": "accepted_as_monte_carlo_base_year",
+  "exportRoot": "runtime_exports/replay_storage_staging/bham_2023",
+  "projectIsolationMode": "shared_project_isolated_namespace",
+  "replaySchema": "replay_simulation",
+  "entries": [
+    {
+      "artifactRef": "58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json",
+      "bucket": "replay-training-exports",
+      "objectPath": "2023/training/58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json",
+      "byteSize": 4319
+    },
+    {
+      "artifactRef": "36_BHAM_CONSOLIDATED_REPLAY_NORMALIZED_OBSERVATIONS_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/36_BHAM_CONSOLIDATED_REPLAY_NORMALIZED_OBSERVATIONS_2023.json",
+      "bucket": "replay-normalized-observations",
+      "objectPath": "2023/normalized/36_BHAM_CONSOLIDATED_REPLAY_NORMALIZED_OBSERVATIONS_2023.json",
+      "byteSize": 13377268
+    },
+    {
+      "artifactRef": "37_BHAM_REPLAY_EXECUTION_PLAN_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/37_BHAM_REPLAY_EXECUTION_PLAN_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/37_BHAM_REPLAY_EXECUTION_PLAN_2023.json",
+      "byteSize": 1072270
+    },
+    {
+      "artifactRef": "39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json",
+      "byteSize": 44200
+    },
+    {
+      "artifactRef": "40_BHAM_REPLAY_VIRTUAL_WORLD_ENVIRONMENT_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/40_BHAM_REPLAY_VIRTUAL_WORLD_ENVIRONMENT_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/40_BHAM_REPLAY_VIRTUAL_WORLD_ENVIRONMENT_2023.json",
+      "byteSize": 3616017
+    },
+    {
+      "artifactRef": "41_BHAM_REPLAY_HIGHER_AGENT_ROLLUPS_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/41_BHAM_REPLAY_HIGHER_AGENT_ROLLUPS_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/41_BHAM_REPLAY_HIGHER_AGENT_ROLLUPS_2023.json",
+      "byteSize": 560024
+    },
+    {
+      "artifactRef": "44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json",
+      "byteSize": 3224197
+    },
+    {
+      "artifactRef": "45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json",
+      "byteSize": 274619021
+    },
+    {
+      "artifactRef": "50_BHAM_REPLAY_POPULATION_PROFILE_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/50_BHAM_REPLAY_POPULATION_PROFILE_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/50_BHAM_REPLAY_POPULATION_PROFILE_2023.json",
+      "byteSize": 122099360
+    },
+    {
+      "artifactRef": "51_BHAM_REPLAY_PLACE_GRAPH_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/51_BHAM_REPLAY_PLACE_GRAPH_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/51_BHAM_REPLAY_PLACE_GRAPH_2023.json",
+      "byteSize": 7295024
+    },
+    {
+      "artifactRef": "52_BHAM_REPLAY_ISOLATION_REPORT_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/52_BHAM_REPLAY_ISOLATION_REPORT_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/52_BHAM_REPLAY_ISOLATION_REPORT_2023.json",
+      "byteSize": 512
+    },
+    {
+      "artifactRef": "53_BHAM_REPLAY_KERNEL_PARTICIPATION_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/53_BHAM_REPLAY_KERNEL_PARTICIPATION_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/53_BHAM_REPLAY_KERNEL_PARTICIPATION_2023.json",
+      "byteSize": 4000
+    },
+    {
+      "artifactRef": "54_BHAM_REPLAY_REALISM_GATE_REPORT_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/54_BHAM_REPLAY_REALISM_GATE_REPORT_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/54_BHAM_REPLAY_REALISM_GATE_REPORT_2023.json",
+      "byteSize": 4968
+    },
+    {
+      "artifactRef": "56_BHAM_REPLAY_DAILY_BEHAVIOR_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/56_BHAM_REPLAY_DAILY_BEHAVIOR_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/56_BHAM_REPLAY_DAILY_BEHAVIOR_2023.json",
+      "byteSize": 246076749
+    },
+    {
+      "artifactRef": "57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json",
+      "byteSize": 4610
+    },
+    {
+      "artifactRef": "59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json",
+      "byteSize": 128948601
+    },
+    {
+      "artifactRef": "60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json",
+      "byteSize": 86014768
+    },
+    {
+      "artifactRef": "61_BHAM_REPLAY_EXCHANGE_SUMMARY_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/61_BHAM_REPLAY_EXCHANGE_SUMMARY_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/61_BHAM_REPLAY_EXCHANGE_SUMMARY_2023.json",
+      "byteSize": 1152416
+    },
+    {
+      "artifactRef": "62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json",
+      "bucket": "replay-exchange-logs",
+      "objectPath": "2023/exchange/62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json",
+      "byteSize": 36429014
+    },
+    {
+      "artifactRef": "67_BHAM_REPLAY_PHYSICAL_MOVEMENT_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/67_BHAM_REPLAY_PHYSICAL_MOVEMENT_2023.json",
+      "bucket": "replay-world-snapshots",
+      "objectPath": "2023/world/67_BHAM_REPLAY_PHYSICAL_MOVEMENT_2023.json",
+      "byteSize": 238251071
+    },
+    {
+      "artifactRef": "68_BHAM_REPLAY_TRAINING_SIGNALS_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/68_BHAM_REPLAY_TRAINING_SIGNALS_2023.json",
+      "bucket": "replay-training-exports",
+      "objectPath": "2023/training/68_BHAM_REPLAY_TRAINING_SIGNALS_2023.json",
+      "byteSize": 776195421
+    },
+    {
+      "artifactRef": "69_BHAM_REPLAY_HOLDOUT_EVALUATION_2023.json",
+      "sourcePath": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/69_BHAM_REPLAY_HOLDOUT_EVALUATION_2023.json",
+      "bucket": "replay-training-exports",
+      "objectPath": "2023/training/69_BHAM_REPLAY_HOLDOUT_EVALUATION_2023.json",
+      "byteSize": 2827
+    }
+  ],
+  "notes": [
+    "This is a local replay-storage staging export only.",
+    "No live app Supabase buckets or public-schema tables were written."
+  ],
+  "metadata": {
+    "bucketCounts": {
+      "replay-training-exports": 3,
+      "replay-normalized-observations": 1,
+      "replay-world-snapshots": 17,
+      "replay-exchange-logs": 1
+    },
+    "totalBytes": 1938996657,
+    "sourceRoot": "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation"
+  }
+}

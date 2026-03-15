@@ -1,12 +1,10 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:avrai_runtime_os/ai/privacy_protection.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
@@ -17,13 +15,26 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai_knot/services/knot/deterministic_matcher_service.dart';
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:avrai_core/models/personality_knot.dart';
+import 'package:avrai_runtime_os/ai2ai/canonical_peer_resolution_service.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_protocol_codec_adapter.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
 
 /// Supports discovery of nearby AI personalities and prioritization
 class DiscoveryManager {
   final Connectivity connectivity;
   final UserVibeAnalyzer vibeAnalyzer;
+  final CanonicalVibeProjectionService canonicalVibeProjectionService;
+  final CanonicalPeerResolutionService canonicalPeerResolutionService;
 
-  DiscoveryManager({required this.connectivity, required this.vibeAnalyzer});
+  DiscoveryManager({
+    required this.connectivity,
+    required this.vibeAnalyzer,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
+    CanonicalPeerResolutionService? canonicalPeerResolutionService,
+  })  : canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService(),
+        canonicalPeerResolutionService =
+            canonicalPeerResolutionService ?? CanonicalPeerResolutionService();
 
   Future<List<AIPersonalityNode>> discover(
     String userId,
@@ -31,16 +42,22 @@ class DiscoveryManager {
     Future<List<AIPersonalityNode>> Function(AnonymizedVibeData)
         performDiscovery,
   ) async {
+    final canonicalPersonality =
+        await canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: userId,
+      profile: personality,
+    );
     // Offline-first: physical-layer discovery (BLE, etc.) must work without
     // internet connectivity. Cloud/realtime discovery can be layered on top.
     // So we intentionally do NOT short-circuit when offline.
 
-    final userVibe = await vibeAnalyzer.compileUserVibe(userId, personality);
+    final userVibe =
+        await vibeAnalyzer.compileUserVibe(userId, canonicalPersonality);
     final anonymizedVibe = await PrivacyProtection.anonymizeUserVibe(userVibe);
     final nodes = await performDiscovery(anonymizedVibe);
 
     final compatibility = await _analyzeCompatibility(userVibe, nodes,
-        localPersonality: personality);
+        localPersonality: canonicalPersonality);
     final prioritized = _prioritize(nodes, compatibility);
     return prioritized;
   }
@@ -65,6 +82,23 @@ class DiscoveryManager {
     }
 
     for (final node in nodes) {
+      if (localPersonality != null && node.resolvedPeerContext != null) {
+        final localPayload = canonicalPeerResolutionService.buildLocalPayload(
+          localPersonality: localPersonality,
+        );
+        final canonicalCompatibility =
+            canonicalPeerResolutionService.computeCompatibility(
+          localPayload: localPayload,
+          remoteContext: node.resolvedPeerContext!,
+        );
+        result[node.nodeId] =
+            canonicalPeerResolutionService.toLegacyCompatibilityResult(
+          canonicalCompatibility,
+          localPayload: localPayload,
+          remoteContext: node.resolvedPeerContext!,
+        );
+        continue;
+      }
       if (localKnot != null && node.knot != null) {
         final matcher = DeterministicMatcherService();
         final matchScore = matcher.calculateVibeMatch(localKnot, node.knot!);
@@ -116,15 +150,22 @@ class DiscoveryManager {
 /// Philosophy: "Always Learning With You" - AI learns alongside you, online and offline
 class ConnectionManager {
   final UserVibeAnalyzer vibeAnalyzer;
+  final CanonicalVibeProjectionService canonicalVibeProjectionService;
+  final CanonicalPeerResolutionService canonicalPeerResolutionService;
   final PersonalityLearning?
       personalityLearning; // NEW: For offline AI learning
-  final AI2AIProtocol? ai2aiProtocol; // NEW: For offline peer exchange
+  final LegacyProtocolCodecAdapter? protocolCodecAdapter;
 
   ConnectionManager({
     required this.vibeAnalyzer,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
+    CanonicalPeerResolutionService? canonicalPeerResolutionService,
     this.personalityLearning, // Optional for backward compatibility
-    this.ai2aiProtocol, // Optional for backward compatibility
-  });
+    this.protocolCodecAdapter,
+  })  : canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService(),
+        canonicalPeerResolutionService =
+            canonicalPeerResolutionService ?? CanonicalPeerResolutionService();
 
   Future<ConnectionMetrics?> establish(
     String localUserId,
@@ -137,24 +178,68 @@ class ConnectionManager {
       ConnectionMetrics initialMetrics,
     ) performEstablishment,
   ) async {
-    final localVibe =
-        await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-    final compatibility =
-        await vibeAnalyzer.analyzeVibeCompatibility(localVibe, remoteNode.vibe);
+    final canonicalLocalPersonality =
+        await canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: localUserId,
+      profile: localPersonality,
+    );
+    final localVibe = await vibeAnalyzer.compileUserVibe(
+      localUserId,
+      canonicalLocalPersonality,
+    );
+    final localPeerPayload = canonicalPeerResolutionService.buildLocalPayload(
+      localPersonality: canonicalLocalPersonality,
+    );
+    final canonicalCompatibility = remoteNode.resolvedPeerContext == null
+        ? null
+        : canonicalPeerResolutionService.computeCompatibility(
+            localPayload: localPeerPayload,
+            remoteContext: remoteNode.resolvedPeerContext!,
+          );
+    final compatibility = canonicalCompatibility == null
+        ? await vibeAnalyzer.analyzeVibeCompatibility(
+            localVibe, remoteNode.vibe)
+        : canonicalPeerResolutionService.toLegacyCompatibilityResult(
+            canonicalCompatibility,
+            localPayload: localPeerPayload,
+            remoteContext: remoteNode.resolvedPeerContext!,
+          );
 
     if (!_isWorthy(compatibility)) return null;
 
-    final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
-    final anonRemote =
-        await PrivacyProtection.anonymizeUserVibe(remoteNode.vibe);
-
-    final metrics = ConnectionMetrics.initial(
-      localAISignature: anonLocal.vibeSignature,
-      remoteAISignature: anonRemote.vibeSignature,
-      compatibility: compatibility.basicCompatibility,
+    final metrics = _buildInitialMetrics(
+      localPayload: localPeerPayload,
+      remoteContext: remoteNode.resolvedPeerContext,
+      compatibility: compatibility,
+      canonicalCompatibility: canonicalCompatibility,
     );
 
     return performEstablishment(localVibe, remoteNode, compatibility, metrics);
+  }
+
+  Future<ResolvedPeerVibeContext?> resolveRemotePeerContextForDevice({
+    required String localUserId,
+    required PersonalityProfile localPersonality,
+    required String remoteDeviceId,
+  }) async {
+    if (protocolCodecAdapter == null) {
+      return null;
+    }
+
+    final canonicalLocalPersonality =
+        await canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: localUserId,
+      profile: localPersonality,
+    );
+    final localPeerPayload = canonicalPeerResolutionService.buildLocalPayload(
+      localPersonality: canonicalLocalPersonality,
+    );
+    return protocolCodecAdapter!.exchangeResolvedPeerContext(
+      remoteDeviceId: remoteDeviceId,
+      localAgentId: canonicalLocalPersonality.agentId,
+      localPersonality: canonicalLocalPersonality,
+      localPeerPayload: localPeerPayload,
+    );
   }
 
   bool _isWorthy(VibeCompatibilityResult c) {
@@ -176,135 +261,115 @@ class ConnectionManager {
   /// The key should work anywhere, not just when online."
   ///
   /// Flow:
-  /// 1. Exchange personality profiles via Bluetooth/NSD
-  /// 2. Calculate compatibility locally
-  /// 3. Generate learning insights locally
-  /// 4. Update both AIs immediately (on-device)
-  /// 5. Queue connection log for cloud sync (optional, when online)
+  /// 1. Exchange bounded canonical peer payloads via Bluetooth/NSD
+  /// 2. Resolve the inbound payload into governed session-scoped peer context
+  /// 3. Compute compatibility and connection metrics without importing remote truth
   Future<ConnectionMetrics?> establishOfflinePeerConnection(
     String localUserId,
     PersonalityProfile localPersonality,
     String remoteDeviceId,
   ) async {
-    // Verify we have the required dependencies
-    if (personalityLearning == null || ai2aiProtocol == null) {
+    // Verify we have the required dependency
+    if (protocolCodecAdapter == null) {
       throw Exception(
-          'Offline AI2AI requires PersonalityLearning and AI2AIProtocol dependencies');
+        'Offline AI2AI requires LegacyProtocolCodecAdapter dependency',
+      );
     }
 
     try {
-      // Step 1: Exchange personality profiles peer-to-peer
-      final remoteProfile = await ai2aiProtocol!.exchangePersonalityProfile(
-        remoteDeviceId,
-        localPersonality,
+      final canonicalLocalPersonality =
+          await canonicalVibeProjectionService.canonicalizeUserProfile(
+        userId: localUserId,
+        profile: localPersonality,
       );
-
-      if (remoteProfile == null) {
-        // Exchange failed (timeout, connection lost, etc.)
+      final localPeerPayload = canonicalPeerResolutionService.buildLocalPayload(
+        localPersonality: canonicalLocalPersonality,
+      );
+      final remoteContext = await resolveRemotePeerContextForDevice(
+        localUserId: localUserId,
+        localPersonality: canonicalLocalPersonality,
+        remoteDeviceId: remoteDeviceId,
+      );
+      if (remoteContext == null) {
         return null;
       }
 
-      // Step 2: Calculate compatibility locally (no cloud needed)
-      final localVibe =
-          await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-      final remoteVibe = await vibeAnalyzer.compileUserVibe(
-        remoteProfile.agentId,
-        remoteProfile,
+      final canonicalCompatibility =
+          canonicalPeerResolutionService.computeCompatibility(
+        localPayload: localPeerPayload,
+        remoteContext: remoteContext,
       );
       final compatibility =
-          await vibeAnalyzer.analyzeVibeCompatibility(localVibe, remoteVibe);
-
-      // Check if connection is worthy
+          canonicalPeerResolutionService.toLegacyCompatibilityResult(
+        canonicalCompatibility,
+        localPayload: localPeerPayload,
+        remoteContext: remoteContext,
+      );
       if (!_isWorthy(compatibility)) {
         return null;
       }
 
-      // Step 3: Generate learning insights locally
-      final learningInsight = _generateOfflineAI2AILearningInsight(
-        localPersonality,
-        remoteProfile,
-        compatibility,
+      final initialMetrics = _buildInitialMetrics(
+        localPayload: localPeerPayload,
+        remoteContext: remoteContext,
+        compatibility: compatibility,
+        canonicalCompatibility: canonicalCompatibility,
       );
-
-      // Step 4: Apply learning to local AI immediately (offline learning)
-      await personalityLearning!.evolveFromAI2AILearning(
-        localUserId,
-        learningInsight,
+      return initialMetrics.updateDuringInteraction(
+        newCompatibility: compatibility.basicCompatibility,
+        learningEffectiveness: compatibility.connectionStrength,
+        aiPleasureScore: compatibility.aiPleasurePotential,
+        newInteraction: InteractionEvent.success(
+          type: InteractionType.vibeExchange,
+          data: <String, dynamic>{
+            'canonical_peer_payload': true,
+            'local_peer_archetype': localPeerPayload.personalSurface.archetype,
+            'remote_peer_archetype': remoteContext.personalSurface.archetype,
+            'remote_scope': remoteContext.reference.scope,
+            'shared_scoped_context_count':
+                canonicalCompatibility.sharedScopedContextIds.length,
+          },
+        ),
+        additionalOutcomes: <String, dynamic>{
+          'successful_exchanges': 1,
+          'canonical_peer_payload_exchange': 1,
+          'governed_peer_resolution': 1,
+        },
       );
-
-      // Step 5: Create connection metrics
-      final anonLocal = await PrivacyProtection.anonymizeUserVibe(localVibe);
-      final anonRemote = await PrivacyProtection.anonymizeUserVibe(remoteVibe);
-
-      final metrics = ConnectionMetrics.initial(
-        localAISignature: anonLocal.vibeSignature,
-        remoteAISignature: anonRemote.vibeSignature,
-        compatibility: compatibility.basicCompatibility,
-      );
-
-      // TODO: Queue connection log for cloud sync when online
-      // This is optional - the AI has already learned offline
-
-      return metrics;
     } catch (e) {
       // Log error but don't throw - offline connections can fail gracefully
       return null;
     }
   }
 
-  /// Generate learning insights from an offline AI2AI interaction.
-  ///
-  /// This lives in the app layer (not `avra_network`) because it depends on the
-  /// app's learning model types and thresholds.
-  AI2AILearningInsight _generateOfflineAI2AILearningInsight(
-    PersonalityProfile local,
-    PersonalityProfile remote,
-    VibeCompatibilityResult compatibility,
-  ) {
-    final dimensionInsights = <String, double>{};
-
-    // Learning algorithm: compare dimensions and only learn from significant,
-    // high-confidence differences (resists surface drift).
-    for (final dimension in remote.dimensions.keys) {
-      final localValue = local.dimensions[dimension] ?? 0.0;
-      final remoteValue = remote.dimensions[dimension] ?? 0.0;
-      final difference = remoteValue - localValue;
-
-      final remoteConfidence = remote.dimensionConfidence[dimension] ?? 0.0;
-      if (difference.abs() > 0.15 && remoteConfidence > 0.7) {
-        // Gradual learning - 30% influence.
-        dimensionInsights[dimension] = difference * 0.3;
-      }
-    }
-
-    final learningQuality = _calculateOfflineInsightConfidence(
-      dimensionInsights: dimensionInsights,
-      compatibility: compatibility,
-    );
-
-    return AI2AILearningInsight(
-      type: AI2AIInsightType.dimensionDiscovery,
-      dimensionInsights: dimensionInsights,
-      learningQuality: learningQuality,
-      timestamp: DateTime.now(),
-    );
-  }
-
-  double _calculateOfflineInsightConfidence({
-    required Map<String, double> dimensionInsights,
+  ConnectionMetrics _buildInitialMetrics({
+    required Ai2AiCanonicalPeerPayload localPayload,
     required VibeCompatibilityResult compatibility,
+    ResolvedPeerVibeContext? remoteContext,
+    CanonicalPeerCompatibilityResult? canonicalCompatibility,
   }) {
-    if (dimensionInsights.isEmpty) return 0.0;
-
-    // Confidence rises with compatibility and the magnitude of insights,
-    // but is capped to [0, 1].
-    final avgMagnitude = dimensionInsights.values
-            .map((v) => v.abs())
-            .fold<double>(0.0, (a, b) => a + b) /
-        dimensionInsights.length;
-
-    return (compatibility.basicCompatibility * 0.6 + avgMagnitude * 0.4)
-        .clamp(0.0, 1.0);
+    final learningOutcomesSeed = <String, dynamic>{
+      if (remoteContext != null && canonicalCompatibility != null)
+        ...canonicalPeerResolutionService.compatibilityMetadata(
+          canonicalCompatibility,
+          remoteContext: remoteContext,
+        ),
+      if (remoteContext != null && canonicalCompatibility != null)
+        'peer_why_summary': canonicalPeerResolutionService
+            .buildPeerCompatibilityWhySnapshot(
+              localPayload: localPayload,
+              remoteContext: remoteContext,
+              result: canonicalCompatibility,
+            )
+            .summary,
+    };
+    return ConnectionMetrics.initial(
+      localAISignature: localPayload.personalSurface.signatureHash,
+      remoteAISignature:
+          remoteContext?.personalSurface.signatureHash ?? 'remote-unknown',
+      compatibility: compatibility.basicCompatibility,
+      learningOutcomesSeed: learningOutcomesSeed,
+    );
   }
 }
 

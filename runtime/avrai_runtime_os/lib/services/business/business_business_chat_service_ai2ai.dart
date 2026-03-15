@@ -2,16 +2,15 @@ import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:async';
 import 'dart:convert';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart' as ai2ai;
 import 'package:avrai_network/network/message_encryption_service.dart';
 import 'package:avrai_core/models/business/business_business_message.dart';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
 import 'package:avrai_runtime_os/services/business/business_account_service.dart';
+import 'package:avrai_runtime_os/services/chat/conversation_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/services/user/user_anonymization_service.dart';
-import 'package:avrai_runtime_os/services/security/location_obfuscation_service.dart';
-import 'package:avrai_core/services/atomic_clock_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -22,10 +21,12 @@ import 'package:get_storage/get_storage.dart';
 /// All messages stored locally in Sembast for offline access.
 class BusinessBusinessChatServiceAI2AI {
   static const String _logName = 'BusinessBusinessChatServiceAI2AI';
-  final ai2ai.AnonymousCommunicationProtocol _ai2aiProtocol;
+  final ConversationOrchestrationLane _conversationOrchestrationLane;
   final MessageEncryptionService _encryptionService;
   final BusinessAccountService? _businessService;
   final AgentIdService _agentIdService;
+  final HumanLanguageBoundaryReviewLane _humanLanguageBoundaryReviewLane;
+  final Ai2AiChatEventIntakeService? _ai2aiChatEventIntakeService;
   final _uuid = const Uuid();
 
   // Local storage container names
@@ -34,56 +35,29 @@ class BusinessBusinessChatServiceAI2AI {
       'business_business_conversations';
 
   BusinessBusinessChatServiceAI2AI({
-    ai2ai.AnonymousCommunicationProtocol? ai2aiProtocol,
+    ConversationOrchestrationLane? conversationOrchestrationLane,
     MessageEncryptionService? encryptionService,
     BusinessAccountService? businessService,
     AgentIdService? agentIdService,
-  })  : _ai2aiProtocol = ai2aiProtocol ?? _createDefaultProtocol(),
+    HumanLanguageBoundaryReviewLane? humanLanguageBoundaryReviewLane,
+    Ai2AiChatEventIntakeService? ai2aiChatEventIntakeService,
+  })  : _conversationOrchestrationLane = conversationOrchestrationLane ??
+            _resolveConversationOrchestrationLane(),
         _encryptionService = encryptionService ?? AES256GCMEncryptionService(),
         _businessService = businessService,
-        _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>();
+        _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
+        _humanLanguageBoundaryReviewLane = humanLanguageBoundaryReviewLane ??
+            HumanLanguageBoundaryReviewLane(),
+        _ai2aiChatEventIntakeService = ai2aiChatEventIntakeService;
 
-  static ai2ai.AnonymousCommunicationProtocol _createDefaultProtocol() {
-    try {
-      // Try to get from DI first
-      if (GetIt.instance.isRegistered<ai2ai.AnonymousCommunicationProtocol>()) {
-        return GetIt.instance<ai2ai.AnonymousCommunicationProtocol>();
-      }
-    } catch (_) {
-      // Fallback to creating with defaults
+  static ConversationOrchestrationLane _resolveConversationOrchestrationLane() {
+    if (GetIt.instance.isRegistered<ConversationOrchestrationLane>()) {
+      return GetIt.instance<ConversationOrchestrationLane>();
     }
-
-    // Fallback: create with default dependencies
-    try {
-      return ai2ai.AnonymousCommunicationProtocol(
-        encryptionService:
-            GetIt.instance.isRegistered<MessageEncryptionService>()
-                ? GetIt.instance<MessageEncryptionService>()
-                : AES256GCMEncryptionService(),
-        supabase: GetIt.instance.isRegistered<SupabaseClient>()
-            ? GetIt.instance<SupabaseClient>()
-            : Supabase.instance.client,
-        atomicClock: GetIt.instance.isRegistered<AtomicClockService>()
-            ? GetIt.instance<AtomicClockService>()
-            : AtomicClockService(),
-        anonymizationService:
-            GetIt.instance.isRegistered<UserAnonymizationService>()
-                ? GetIt.instance<UserAnonymizationService>()
-                : UserAnonymizationService(
-                    locationObfuscationService: LocationObfuscationService(),
-                  ),
-      );
-    } catch (_) {
-      // Last resort: create with minimal defaults
-      return ai2ai.AnonymousCommunicationProtocol(
-        encryptionService: AES256GCMEncryptionService(),
-        supabase: Supabase.instance.client,
-        atomicClock: AtomicClockService(),
-        anonymizationService: UserAnonymizationService(
-          locationObfuscationService: LocationObfuscationService(),
-        ),
-      );
-    }
+    throw ArgumentError(
+      'ConversationOrchestrationLane must be provided or registered for '
+      'BusinessBusinessChatServiceAI2AI.',
+    );
   }
 
   /// Send a message from one business to another
@@ -117,6 +91,18 @@ class BusinessBusinessChatServiceAI2AI {
         name: _logName,
       );
 
+      final review = await _reviewBusinessDirectMessage(
+        actorAgentId: actualSenderAgentId,
+        localActorId: senderBusinessId,
+        message: content,
+      );
+      if (!review.transcriptStorageAllowed || !review.egressAllowed) {
+        throw HumanLanguageBoundaryViolationException(
+          operation: 'business_business_chat_network_send',
+          decision: review.turn.boundary,
+        );
+      }
+
       // Get or create conversation
       final conversation =
           await _getOrCreateConversation(senderBusinessId, recipientBusinessId);
@@ -125,11 +111,20 @@ class BusinessBusinessChatServiceAI2AI {
       Uint8List? encryptedContent;
       String encryptionType = 'aes256gcm';
       if (encrypt) {
-        final encrypted =
-            await _encryptionService.encrypt(content, actualRecipientAgentId);
+        final encrypted = await _encryptionService.encrypt(
+          review.transportText,
+          actualRecipientAgentId,
+        );
         encryptedContent = encrypted.encryptedContent;
         encryptionType = encrypted.encryptionType.name;
       }
+
+      final metadata = await _buildOutboundBusinessBusinessMessageMetadata(
+        localActorId: senderBusinessId,
+        actorAgentId: actualSenderAgentId,
+        plaintext: review.transcriptText,
+        review: review,
+      );
 
       // Create message with participant identities
       final message = BusinessBusinessMessage(
@@ -137,12 +132,13 @@ class BusinessBusinessChatServiceAI2AI {
         conversationId: conversation['id'] as String,
         senderBusinessId: senderBusinessId,
         recipientBusinessId: recipientBusinessId,
-        content: content,
+        content: review.transcriptText,
         encryptedContent: encryptedContent,
         encryptionType: encryptionType,
         type: messageType,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        metadata: metadata,
       );
 
       // Store message locally in Sembast
@@ -154,8 +150,10 @@ class BusinessBusinessChatServiceAI2AI {
         'message_id': message.id,
         'conversation_id': message.conversationId,
         'sender_business_id': senderBusinessId,
+        'sender_agent_id': actualSenderAgentId,
         'recipient_business_id': recipientBusinessId,
-        'content': content, // Will be encrypted by ai2ai protocol
+        'recipient_agent_id': actualRecipientAgentId,
+        'content': review.transportText, // Will be encrypted by ai2ai protocol
         'encrypted_content':
             encryptedContent != null ? base64Encode(encryptedContent) : null,
         'encryption_type': encryptionType,
@@ -163,18 +161,26 @@ class BusinessBusinessChatServiceAI2AI {
         'created_at': message.createdAt.toIso8601String(),
       };
 
-      // Route through ai2ai network
-      // MessageType.userChat allows routing before decryption (unencrypted header)
       final payloadWithCategory = {
         ...ai2aiPayload,
         'message_category':
             'user_chat', // Optional: post-decryption validation/clarity
       };
-      await _ai2aiProtocol.sendEncryptedMessage(
-        actualRecipientAgentId,
-        ai2ai.MessageType
-            .userChat, // Protocol-level routing via unencrypted header (AnonymousCommunicationProtocol enum)
-        payloadWithCategory,
+      await _conversationOrchestrationLane.sendDirectMessagePayload(
+        recipientAgentId: actualRecipientAgentId,
+        payload: payloadWithCategory,
+      );
+      await _ingestBusinessBusinessMessageForLearning(
+        localActorId: senderBusinessId,
+        localActorAgentId: actualSenderAgentId,
+        senderActorId: senderBusinessId,
+        senderActorAgentId: actualSenderAgentId,
+        counterpartActorId: recipientBusinessId,
+        counterpartActorAgentId: actualRecipientAgentId,
+        messageId: message.id,
+        plaintext: review.transportText,
+        occurredAt: message.createdAt,
+        metadata: message.metadata,
       );
 
       // Update conversation last_message_at
@@ -508,5 +514,102 @@ class BusinessBusinessChatServiceAI2AI {
     // Deterministic ID generation (same conversation always gets same ID)
     final ids = [business1Id, business2Id]..sort();
     return 'conv_bb_${ids.join('_')}';
+  }
+
+  Future<HumanLanguageBoundaryReview> _reviewBusinessDirectMessage({
+    required String actorAgentId,
+    required String localActorId,
+    required String message,
+  }) {
+    return _humanLanguageBoundaryReviewLane.reviewOutboundText(
+      actorAgentId: actorAgentId,
+      rawText: message,
+      egressPurpose: BoundaryEgressPurpose.directMessage,
+      egressRequested: true,
+      userId: localActorId,
+      chatType: 'business_direct',
+      surface: 'business_chat',
+      channel: 'business_business_chat',
+    );
+  }
+
+  Future<Map<String, dynamic>> _buildOutboundBusinessBusinessMessageMetadata({
+    required String localActorId,
+    required String actorAgentId,
+    required String plaintext,
+    required HumanLanguageBoundaryReview review,
+  }) async {
+    return _mergeMetadata(
+      review.toMetadata(),
+      await _buildAi2AiLearningMetadata(
+        localActorId: localActorId,
+        sourceActorId: localActorId,
+        sourceAgentId: actorAgentId,
+        plaintext: plaintext,
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> _buildAi2AiLearningMetadata({
+    required String localActorId,
+    required String sourceActorId,
+    required String sourceAgentId,
+    required String plaintext,
+  }) async {
+    final intake = _ai2aiChatEventIntakeService;
+    if (intake == null) {
+      return const <String, dynamic>{};
+    }
+    return intake.buildLearningMetadata(
+      localUserId: localActorId,
+      sourceUserId: sourceActorId,
+      sourceAgentId: sourceAgentId,
+      rawText: plaintext,
+      chatType: 'business_direct',
+      channel: 'business_business_chat',
+      surface: 'business_chat',
+    );
+  }
+
+  Future<void> _ingestBusinessBusinessMessageForLearning({
+    required String localActorId,
+    required String localActorAgentId,
+    required String senderActorId,
+    required String senderActorAgentId,
+    required String counterpartActorId,
+    required String counterpartActorAgentId,
+    required String messageId,
+    required String plaintext,
+    required DateTime occurredAt,
+    Map<String, dynamic>? metadata,
+  }) async {
+    final intake = _ai2aiChatEventIntakeService;
+    if (intake == null) {
+      return;
+    }
+    await intake.ingestDirectMessage(
+      localUserId: localActorId,
+      localAgentId: localActorAgentId,
+      senderUserId: senderActorId,
+      senderAgentId: senderActorAgentId,
+      counterpartUserId: counterpartActorId,
+      counterpartAgentId: counterpartActorAgentId,
+      messageId: messageId,
+      plaintext: plaintext,
+      occurredAt: occurredAt,
+      direction: Ai2AiChatFlowDirection.outbound,
+      metadata: metadata,
+    );
+  }
+
+  Map<String, dynamic> _mergeMetadata(
+    Map<String, dynamic>? base,
+    Map<String, dynamic>? additions,
+  ) {
+    final merged = Map<String, dynamic>.from(base ?? const <String, dynamic>{});
+    if (additions != null) {
+      merged.addAll(additions);
+    }
+    return merged;
   }
 }

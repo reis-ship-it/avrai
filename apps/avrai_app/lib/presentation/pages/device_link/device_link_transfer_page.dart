@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/device_link/auto_device_link_service.dart';
 import 'package:avrai_runtime_os/services/device_link/history_transfer_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Device Link Transfer Page
 ///
@@ -88,7 +88,7 @@ class _DeviceLinkTransferPageState extends State<DeviceLinkTransferPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Transferring Data',
       automaticallyImplyLeading: !_isComplete && _error == null,
       constrainBody: false,

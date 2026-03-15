@@ -4,9 +4,9 @@ import 'dart:typed_data';
 
 import 'package:avrai_core/models/personality_knot.dart';
 
-/// Service responsible for serializing a [PersonalityKnot] into a highly 
+/// Service responsible for serializing a [PersonalityKnot] into a highly
 /// compressed binary format suitable for 5-second BLE broadcast windows.
-/// 
+///
 /// Part of the v0.1 Reality Check "Math String" payload optimization.
 class DnaEncoderService {
   static const int _version = 1;
@@ -15,7 +15,7 @@ class DnaEncoderService {
   Uint8List encode(PersonalityKnot knot) {
     try {
       final builder = BytesBuilder();
-      
+
       // Version
       builder.addByte(_version);
 
@@ -55,13 +55,18 @@ class DnaEncoderService {
 
       final result = builder.toBytes();
       developer.log(
-        'Encoded knot ${knot.agentId} to ${result.length} bytes', 
-        name: 'DnaEncoderService', 
+        'Encoded knot ${knot.agentId} to ${result.length} bytes',
+        name: 'DnaEncoderService',
       );
-      
+
       return result;
     } catch (e, st) {
-      developer.log('Failed to encode knot', error: e, stackTrace: st, name: 'DnaEncoderService');
+      developer.log(
+        'Failed to encode knot',
+        error: e,
+        stackTrace: st,
+        name: 'DnaEncoderService',
+      );
       throw FormatException('Failed to encode PersonalityKnot: $e');
     }
   }
@@ -77,103 +82,113 @@ class DnaEncoderService {
     try {
       final bd = ByteData.view(bytes.buffer, bytes.offsetInBytes, bytes.length);
       int offset = 0;
-      
+
       final version = bd.getUint8(offset++);
       if (version != _version) {
         throw FormatException('Unsupported format version: $version');
       }
-      
+
       final agentIdLen = bd.getUint8(offset++);
       final agentId = utf8.decode(bytes.sublist(offset, offset + agentIdLen));
       offset += agentIdLen;
-      
-      final createdAtMs = bd.getInt64(offset, Endian.little); 
+
+      final createdAtMs = bd.getInt64(offset, Endian.little);
       offset += 8;
-      
-      final lastUpdatedMs = bd.getInt64(offset, Endian.little); 
+
+      final lastUpdatedMs = bd.getInt64(offset, Endian.little);
       offset += 8;
-      
-      final braidLen = bd.getUint16(offset, Endian.little); 
+
+      final braidLen = bd.getUint16(offset, Endian.little);
       offset += 2;
-      
+
       final braidData = <double>[];
       for (int i = 0; i < braidLen; i++) {
         // Round to 5 decimals to fix float32 reconstruction precision issues
-        braidData.add(_cleanFloat32(bd.getFloat32(offset, Endian.little))); 
+        braidData.add(_cleanFloat32(bd.getFloat32(offset, Endian.little)));
         offset += 4;
       }
-      
+
       final hasPhysics = bd.getUint8(offset++) == 1;
       KnotPhysics? physics;
       if (hasPhysics) {
-        final energy = _cleanFloat32(bd.getFloat32(offset, Endian.little)); 
+        final energy = _cleanFloat32(bd.getFloat32(offset, Endian.little));
         offset += 4;
-        final stability = _cleanFloat32(bd.getFloat32(offset, Endian.little)); 
+        final stability = _cleanFloat32(bd.getFloat32(offset, Endian.little));
         offset += 4;
-        final length = _cleanFloat32(bd.getFloat32(offset, Endian.little)); 
+        final length = _cleanFloat32(bd.getFloat32(offset, Endian.little));
         offset += 4;
-        physics = KnotPhysics(energy: energy, stability: stability, length: length);
+        physics = KnotPhysics(
+          energy: energy,
+          stability: stability,
+          length: length,
+        );
       }
-      
-      final crossingNumber = bd.getInt16(offset, Endian.little); 
+
+      final crossingNumber = bd.getInt16(offset, Endian.little);
       offset += 2;
-      
-      final writhe = bd.getInt16(offset, Endian.little); 
+
+      final writhe = bd.getInt16(offset, Endian.little);
       offset += 2;
-      
-      final signature = bd.getInt16(offset, Endian.little); 
+
+      final signature = bd.getInt16(offset, Endian.little);
       offset += 2;
-      
-      final bridgeNumber = bd.getInt16(offset, Endian.little); 
+
+      final bridgeNumber = bd.getInt16(offset, Endian.little);
       offset += 2;
-      
-      final braidIndex = bd.getInt16(offset, Endian.little); 
+
+      final braidIndex = bd.getInt16(offset, Endian.little);
       offset += 2;
-      
-      final determinant = bd.getInt32(offset, Endian.little); 
+
+      final determinant = bd.getInt32(offset, Endian.little);
       offset += 4;
-      
+
       int? unknottingNumber;
       if (bd.getUint8(offset++) == 1) {
-        unknottingNumber = bd.getInt16(offset, Endian.little); 
+        unknottingNumber = bd.getInt16(offset, Endian.little);
         offset += 2;
       }
-      
+
       int? arfInvariant;
       if (bd.getUint8(offset++) == 1) {
         arfInvariant = bd.getInt8(offset++);
       }
-      
+
       double? hyperbolicVolume;
       if (bd.getUint8(offset++) == 1) {
-        hyperbolicVolume = _cleanFloat32(bd.getFloat32(offset, Endian.little)); 
+        hyperbolicVolume = _cleanFloat32(bd.getFloat32(offset, Endian.little));
         offset += 4;
       }
-      
+
       final jonesLen = bd.getUint8(offset++);
       final jonesPolynomial = <double>[];
       for (int i = 0; i < jonesLen; i++) {
-        jonesPolynomial.add(_cleanFloat32(bd.getFloat32(offset, Endian.little))); 
+        jonesPolynomial.add(
+          _cleanFloat32(bd.getFloat32(offset, Endian.little)),
+        );
         offset += 4;
       }
-      
+
       final alexLen = bd.getUint8(offset++);
       final alexanderPolynomial = <double>[];
       for (int i = 0; i < alexLen; i++) {
-        alexanderPolynomial.add(_cleanFloat32(bd.getFloat32(offset, Endian.little))); 
+        alexanderPolynomial.add(
+          _cleanFloat32(bd.getFloat32(offset, Endian.little)),
+        );
         offset += 4;
       }
-      
+
       List<double>? homflyPolynomial;
       if (bd.getUint8(offset++) == 1) {
         final homflyLen = bd.getUint8(offset++);
         homflyPolynomial = [];
         for (int i = 0; i < homflyLen; i++) {
-          homflyPolynomial.add(_cleanFloat32(bd.getFloat32(offset, Endian.little))); 
+          homflyPolynomial.add(
+            _cleanFloat32(bd.getFloat32(offset, Endian.little)),
+          );
           offset += 4;
         }
       }
-      
+
       final invariants = KnotInvariants(
         crossingNumber: crossingNumber,
         writhe: writhe,
@@ -188,12 +203,12 @@ class DnaEncoderService {
         alexanderPolynomial: alexanderPolynomial,
         homflyPolynomial: homflyPolynomial,
       );
-      
+
       developer.log(
-        'Decoded knot $agentId from ${bytes.length} bytes', 
-        name: 'DnaEncoderService', 
+        'Decoded knot $agentId from ${bytes.length} bytes',
+        name: 'DnaEncoderService',
       );
-      
+
       return PersonalityKnot(
         agentId: agentId,
         invariants: invariants,
@@ -202,9 +217,13 @@ class DnaEncoderService {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtMs),
         lastUpdated: DateTime.fromMillisecondsSinceEpoch(lastUpdatedMs),
       );
-      
     } catch (e, st) {
-      developer.log('Failed to decode knot bytes', error: e, stackTrace: st, name: 'DnaEncoderService');
+      developer.log(
+        'Failed to decode knot bytes',
+        error: e,
+        stackTrace: st,
+        name: 'DnaEncoderService',
+      );
       throw FormatException('Failed to decode PersonalityKnot: $e');
     }
   }
@@ -214,13 +233,13 @@ class DnaEncoderService {
     if (hex.length % 2 != 0) {
       throw const FormatException('Invalid hex string: length must be even');
     }
-    
+
     final bytes = Uint8List(hex.length ~/ 2);
     for (int i = 0; i < bytes.length; i++) {
       final byteHex = hex.substring(i * 2, i * 2 + 2);
       bytes[i] = int.parse(byteHex, radix: 16);
     }
-    
+
     return decode(bytes);
   }
 
@@ -233,19 +252,19 @@ class DnaEncoderService {
     _addInt16(builder, inv.signature);
     _addInt16(builder, inv.bridgeNumber);
     _addInt16(builder, inv.braidIndex);
-    
+
     // determinant: Int32
     _addInt32(builder, inv.determinant);
-    
+
     // Optional ints/doubles
     _addOptionalInt16(builder, inv.unknottingNumber);
     _addOptionalInt8(builder, inv.arfInvariant);
     _addOptionalFloat32(builder, inv.hyperbolicVolume);
-    
+
     // Lists
     _addDoubleList(builder, inv.jonesPolynomial);
     _addDoubleList(builder, inv.alexanderPolynomial);
-    
+
     if (inv.homflyPolynomial != null) {
       builder.addByte(1);
       _addDoubleList(builder, inv.homflyPolynomial!);
@@ -277,7 +296,7 @@ class DnaEncoderService {
     bd.setInt32(0, value, Endian.little);
     builder.add(bd.buffer.asUint8List());
   }
-  
+
   void _addInt64(BytesBuilder builder, int value) {
     final bd = ByteData(8);
     bd.setInt64(0, value, Endian.little);
@@ -328,7 +347,7 @@ class DnaEncoderService {
   }
 
   /// Cleans float32 noise when converting back to double.
-  /// 
+  ///
   /// Since float32 is lower precision, 1.2 might become 1.2000000476837158.
   /// This rounds it to 5 decimal places for clean equality checks.
   double _cleanFloat32(double value) {

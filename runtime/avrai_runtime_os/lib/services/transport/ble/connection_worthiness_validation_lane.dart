@@ -1,6 +1,7 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_runtime_os/ai2ai/canonical_peer_resolution_service.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -25,18 +26,34 @@ class ConnectionWorthinessValidationLane {
   }) async {
     try {
       VibeCompatibilityResult compatibility;
-      
+
       // Phase 0.1 Pivot: Try fast deterministic math first
-      if (remoteNode.knot != null) {
+      if (remoteNode.resolvedPeerContext != null) {
+        final canonicalPeerResolutionService = CanonicalPeerResolutionService();
+        final localPayload = canonicalPeerResolutionService.buildLocalPayload(
+          localPersonality: localPersonality,
+        );
+        compatibility =
+            canonicalPeerResolutionService.toLegacyCompatibilityResult(
+          canonicalPeerResolutionService.computeCompatibility(
+            localPayload: localPayload,
+            remoteContext: remoteNode.resolvedPeerContext!,
+          ),
+          localPayload: localPayload,
+          remoteContext: remoteNode.resolvedPeerContext!,
+        );
+      } else if (remoteNode.knot != null) {
         try {
-          final knotService = GetIt.instance.isRegistered<PersonalityKnotService>()
-              ? GetIt.instance<PersonalityKnotService>()
-              : PersonalityKnotService();
+          final knotService =
+              GetIt.instance.isRegistered<PersonalityKnotService>()
+                  ? GetIt.instance<PersonalityKnotService>()
+                  : PersonalityKnotService();
           final localKnot = await knotService.generateKnot(localPersonality);
-          
+
           final matcher = DeterministicMatcherService();
-          final matchScore = matcher.calculateVibeMatch(localKnot, remoteNode.knot!);
-          
+          final matchScore =
+              matcher.calculateVibeMatch(localKnot, remoteNode.knot!);
+
           compatibility = VibeCompatibilityResult(
             basicCompatibility: matchScore,
             aiPleasurePotential: matchScore,
@@ -45,22 +62,25 @@ class ConnectionWorthinessValidationLane {
             interactionStyle: AI2AIInteractionStyle.focusedExchange,
             trustBuildingPotential: matchScore,
             recommendedConnectionDuration: const Duration(seconds: 300),
-            connectionPriority: matchScore >= VibeConstants.minimumCompatibilityThreshold 
-                ? ConnectionPriority.high 
-                : ConnectionPriority.low,
+            connectionPriority:
+                matchScore >= VibeConstants.minimumCompatibilityThreshold
+                    ? ConnectionPriority.high
+                    : ConnectionPriority.low,
           );
         } catch (e) {
-          logger.warn('Failed to calculate knot match: $e, falling back to legacy vibe match', tag: logName);
+          logger.warn(
+              'Failed to calculate knot match: $e, falling back to legacy vibe match',
+              tag: logName);
           final UserVibe localVibe =
               await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-          compatibility = await vibeAnalyzer
-              .analyzeVibeCompatibility(localVibe, remoteNode.vibe);
+          compatibility = await vibeAnalyzer.analyzeVibeCompatibility(
+              localVibe, remoteNode.vibe);
         }
       } else {
         final UserVibe localVibe =
             await vibeAnalyzer.compileUserVibe(localUserId, localPersonality);
-        compatibility = await vibeAnalyzer
-            .analyzeVibeCompatibility(localVibe, remoteNode.vibe);
+        compatibility = await vibeAnalyzer.analyzeVibeCompatibility(
+            localVibe, remoteNode.vibe);
       }
 
       if (!isConnectionWorthy(compatibility)) {

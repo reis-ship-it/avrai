@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:avrai_core/contracts/air_gap_contract.dart';
 import 'package:avrai_core/schemas/semantic_tuple.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
+import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:reality_engine/memory/air_gap/tuple_extraction_engine.dart';
 import 'package:reality_engine/memory/semantic_knowledge_store.dart';
 
@@ -37,12 +39,18 @@ class SpotifyAirgapIntegrationService {
 
   final TupleExtractionEngine _airGapEngine;
   final SemanticKnowledgeStore _knowledgeStore;
+  final WhatRuntimeIngestionService? _whatIngestion;
+  final AgentIdService? _agentIdService;
 
   SpotifyAirgapIntegrationService({
     required TupleExtractionEngine airGapEngine,
     required SemanticKnowledgeStore knowledgeStore,
+    WhatRuntimeIngestionService? whatIngestion,
+    AgentIdService? agentIdService,
   })  : _airGapEngine = airGapEngine,
-        _knowledgeStore = knowledgeStore;
+        _knowledgeStore = knowledgeStore,
+        _whatIngestion = whatIngestion,
+        _agentIdService = agentIdService;
 
   /// Triggered by the user connecting their Spotify account or via a background job.
   Future<void> syncRecentListeningHistory(String userId) async {
@@ -70,6 +78,35 @@ class SpotifyAirgapIntegrationService {
           'Extraction complete. Saving ${semanticTuples.length} semantic tuples.',
           name: _logName);
       await _knowledgeStore.saveTuples(semanticTuples);
+      if (_whatIngestion != null && _agentIdService != null) {
+        final agentId = await _agentIdService.getUserAgentId(userId);
+        final entityRef = _spotifyEntityRef(rawData);
+        await _whatIngestion.ingestSemanticTuples(
+          source: 'spotify_airgap_integration',
+          entityRef: entityRef,
+          tuples: semanticTuples,
+          agentId: agentId,
+          lineageRef:
+              'spotify:$userId:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+        await _whatIngestion.ingestPluginSemanticObservation(
+          source: 'spotify_airgap_integration',
+          entityRef: entityRef,
+          observedAtUtc: payload.capturedAt,
+          agentId: agentId,
+          semanticTuples: semanticTuples,
+          activityContext: 'exploration',
+          structuredSignals: <String, dynamic>{
+            'provider': 'spotify',
+            'recentTrackCount':
+                (rawData['recently_played'] as List<dynamic>? ?? const [])
+                    .length,
+          },
+          confidence: 0.61,
+          lineageRef:
+              'spotify:$userId:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+      }
 
       developer.log('Spotify sync and Air Gap digestion successful.',
           name: _logName);
@@ -119,5 +156,19 @@ class SpotifyAirgapIntegrationService {
         }
       ]
     };
+  }
+
+  String _spotifyEntityRef(Map<String, dynamic> spotifyData) {
+    final recent = spotifyData['recently_played'] as List<dynamic>? ?? const [];
+    final firstTrack = recent.isEmpty
+        ? null
+        : Map<String, dynamic>.from(recent.first as Map<dynamic, dynamic>);
+    return DefaultWhatRuntimeIngestionService.deterministicEntityRef(
+      'spotify',
+      <String, Object?>{
+        'artist': firstTrack?['artist']?.toString() ?? 'unknown_artist',
+        'track': firstTrack?['track']?.toString() ?? 'unknown_track',
+      },
+    );
   }
 }

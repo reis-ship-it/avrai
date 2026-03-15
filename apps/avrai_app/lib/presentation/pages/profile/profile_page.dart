@@ -22,19 +22,29 @@ import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/profile/partnership_display_widget.dart';
 import 'package:avrai_core/models/user/user_partnership.dart';
 // Admin: God Mode Access
-import 'package:avrai/apps/admin_app/ui/pages/god_mode_login_page.dart';
+import 'package:avrai/presentation/pages/admin/admin_desktop_handoff_page.dart';
 import 'package:avrai/presentation/pages/profile/edit_profile_page.dart';
 import 'package:avrai_core/models/user/user.dart' show UserRole;
 // Phase 4: Dynamic Knots
 import 'package:get_it/get_it.dart';
+import 'package:get_storage/get_storage.dart';
 import 'dart:developer' as developer;
+import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
+import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/community/club_service.dart';
 import 'package:avrai_runtime_os/services/device/wearable_data_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
+    show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/recommendations/recommendation_feedback_service.dart';
+import 'package:avrai_runtime_os/services/recommendations/saved_discovery_service.dart';
+import 'package:avrai_core/models/discovery/discovery_models.dart';
 import 'package:avrai/presentation/widgets/knot/dynamic_knot_widget.dart';
 import 'package:avrai/presentation/pages/knot/knot_meditation_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -53,12 +63,38 @@ class _ProfilePageState extends State<ProfilePage> {
 
   DynamicKnot? _dynamicKnot;
   bool _isLoadingKnot = false;
+  SharedPreferencesCompat? _prefs;
+  final SavedDiscoveryService _savedDiscoveryService = SavedDiscoveryService();
+  final RecommendationFeedbackService _feedbackService =
+      RecommendationFeedbackService();
+  final CommunityService _communityService = CommunityService();
+  final ClubService _clubService = ClubService();
+  PersonalityLearning? _personalityLearning;
+  final Map<String, bool> _betaControls = <String, bool>{
+    'ai2ai_participation': true,
+    'ble_discovery': true,
+    'background_sensing': true,
+    'health_bridge': false,
+    'calendar_bridge': false,
+    'social_bridge': false,
+    'notification_categories': true,
+    'direct_user_matching': true,
+    'prefer_offline_ai': true,
+    'strong_air_gap': true,
+  };
+  int _savedItemsCount = 0;
+  int _positiveSignalCount = 0;
+  int _negativeSignalCount = 0;
+  int _ai2aiDailySuccessCount = 0;
 
   @override
   void initState() {
     super.initState();
     _tryResolveKnotServices();
     _loadDynamicKnot();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWave4ProfileSurface();
+    });
   }
 
   void _tryResolveKnotServices() {
@@ -102,7 +138,69 @@ class _ProfilePageState extends State<ProfilePage> {
         stackTrace: st,
       );
     }
+    try {
+      _prefs = GetIt.instance<SharedPreferencesCompat>();
+    } catch (_) {
+      _prefs = null;
+    }
+    try {
+      _personalityLearning = GetIt.instance<PersonalityLearning>();
+    } catch (_) {
+      _personalityLearning = null;
+    }
   }
+
+  Future<void> _loadWave4ProfileSurface() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      return;
+    }
+
+    final userId = authState.user.id;
+    final savedItems = await _savedDiscoveryService.listAll(userId);
+    final feedbackEvents = await _feedbackService.listEvents(userId);
+    for (final key in _betaControls.keys.toList()) {
+      _betaControls[key] =
+          _prefs?.getBool(_controlKey(key)) ?? _betaControls[key]!;
+    }
+    final today = DateTime.now();
+    final ai2aiDailySuccessCount = feedbackEvents.where((event) {
+      final sameDay = event.occurredAtUtc.year == today.year &&
+          event.occurredAtUtc.month == today.month &&
+          event.occurredAtUtc.day == today.day;
+      return sameDay &&
+          (event.action == RecommendationFeedbackAction.meaningful ||
+              event.action == RecommendationFeedbackAction.fun);
+    }).length;
+
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _savedItemsCount = savedItems.length;
+      _positiveSignalCount = feedbackEvents
+          .where((event) => event.action == RecommendationFeedbackAction.save)
+          .length;
+      _negativeSignalCount = feedbackEvents
+          .where((event) =>
+              event.action == RecommendationFeedbackAction.dismiss ||
+              event.action == RecommendationFeedbackAction.lessLikeThis)
+          .length;
+      _ai2aiDailySuccessCount = ai2aiDailySuccessCount;
+    });
+  }
+
+  Future<void> _setControlFlag(String key, bool value) async {
+    await _prefs?.setBool(_controlKey(key), value);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _betaControls[key] = value;
+    });
+  }
+
+  String _controlKey(String key) => 'bham:profile_controls:v1:$key';
 
   Future<void> _loadDynamicKnot() async {
     final authState = context.read<AuthBloc>().state;
@@ -168,11 +266,357 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _resetRecommendations(String userId) async {
+    await _feedbackService.clearAll(userId);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Recommendation feedback reset.')),
+      );
+    }
+    await _loadWave4ProfileSurface();
+  }
+
+  Future<void> _resetAgentFromLocalityBaseline(String userId) async {
+    await _personalityLearning?.resetPersonality(userId);
+    final agentId = _agentIdService != null
+        ? await _agentIdService!.getUserAgentId(userId)
+        : null;
+    if (agentId != null && _knotStorageService != null) {
+      await _knotStorageService!.deleteKnot(agentId);
+    }
+    await _loadDynamicKnot();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Agent reset to locality baseline.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _disconnectBridges() async {
+    await _setControlFlag('health_bridge', false);
+    await _setControlFlag('calendar_bridge', false);
+    await _setControlFlag('social_bridge', false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('External bridges disconnected.')),
+      );
+    }
+  }
+
+  Future<void> _clearChatHistory() async {
+    await GetStorage('friend_chat_messages').erase();
+    await GetStorage('friend_chat_outbox').erase();
+    await GetStorage('community_chat_messages').erase();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Local chat history cleared.')),
+      );
+    }
+  }
+
+  Future<void> _leaveGroups(String userId) async {
+    final communities = await _communityService.getAllCommunities();
+    for (final community in communities) {
+      if (community.isMember(userId) && !community.isFounder(userId)) {
+        await _communityService.removeMember(community, userId);
+      }
+    }
+
+    final clubs = await _clubService.getAllClubs();
+    for (final club in clubs) {
+      await _clubService.leaveClub(clubId: club.id, userId: userId);
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Left eligible clubs and communities.')),
+      );
+    }
+  }
+
+  Future<void> _clearSavedItems(String userId) async {
+    await _savedDiscoveryService.clearAll(userId);
+    await _loadWave4ProfileSurface();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Saved items cleared.')),
+      );
+    }
+  }
+
+  Widget _buildBhamSummarySection(BuildContext context, String displayName) {
+    final summaryText =
+        '$displayName is currently operating on the Birmingham beta loop with $_savedItemsCount saved objects and $_ai2aiDailySuccessCount positive AI2AI outcomes today.';
+    final timeline = <String>[
+      'Saved discovery objects: $_savedItemsCount',
+      'Positive recommendation signals: $_positiveSignalCount',
+      'Negative recommendation signals: $_negativeSignalCount',
+    ];
+
+    return AppSurface(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'BHAM Beta Summary',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            summaryText,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _summaryPill('AI2AI daily success $_ai2aiDailySuccessCount'),
+              _summaryPill(
+                  'Pheromone +$_positiveSignalCount / -$_negativeSignalCount'),
+              _summaryPill('Saved $_savedItemsCount'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Behavior Timeline',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...timeline.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.timeline,
+                    color: AppColors.textSecondary,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      entry,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBhamControlSurface() {
+    return AppSurface(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'BHAM Controls',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ..._betaControls.entries.map(
+            (entry) => SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: entry.value,
+              onChanged: (value) => _setControlFlag(entry.key, value),
+              title: Text(_controlLabel(entry.key)),
+              subtitle: Text(_controlDescription(entry.key)),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.notifications_active_outlined),
+            title: const Text('Notification categories'),
+            subtitle: const Text('Open the detailed settings surfaces.'),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsSettingsPage(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: const Text('Privacy and delete-account flow'),
+            subtitle:
+                const Text('Detailed privacy controls and account deletion.'),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacySettingsPage(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.bluetooth_searching_outlined),
+            title: const Text('Discovery and AI settings'),
+            subtitle: const Text(
+                'BLE discovery, federated learning, and on-device AI.'),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () => context.go('/discovery-settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDestructiveActions(String userId) {
+    return AppSurface(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Reset And Cleanup',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => _resetRecommendations(userId),
+                child: const Text('Reset recommendations'),
+              ),
+              OutlinedButton(
+                onPressed: () => _resetAgentFromLocalityBaseline(userId),
+                child: const Text('Reset agent'),
+              ),
+              OutlinedButton(
+                onPressed: _disconnectBridges,
+                child: const Text('Disconnect bridges'),
+              ),
+              OutlinedButton(
+                onPressed: _clearChatHistory,
+                child: const Text('Clear chat history'),
+              ),
+              OutlinedButton(
+                onPressed: () => _leaveGroups(userId),
+                child: const Text('Leave groups'),
+              ),
+              OutlinedButton(
+                onPressed: () => _clearSavedItems(userId),
+                child: const Text('Clear saved items'),
+              ),
+              FilledButton.tonal(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacySettingsPage(),
+                    ),
+                  );
+                },
+                child: const Text('Delete account'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryPill(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  String _controlLabel(String key) {
+    return switch (key) {
+      'ai2ai_participation' => 'AI2AI participation',
+      'ble_discovery' => 'BLE discovery',
+      'background_sensing' => 'Background sensing',
+      'health_bridge' => 'Health bridge',
+      'calendar_bridge' => 'Calendar bridge',
+      'social_bridge' => 'Social bridge',
+      'notification_categories' => 'Notification categories',
+      'direct_user_matching' => 'Direct user matching',
+      'prefer_offline_ai' => 'Prefer offline AI',
+      'strong_air_gap' => 'Strong air-gap model',
+      _ => key,
+    };
+  }
+
+  String _controlDescription(String key) {
+    return switch (key) {
+      'ai2ai_participation' =>
+        'Allow the beta to participate in AI-to-AI recommendation and relay flows.',
+      'ble_discovery' => 'Allow nearby discovery for local device encounters.',
+      'background_sensing' =>
+        'Permit passive context collection needed for the BHAM loop.',
+      'health_bridge' => 'Allow health data bridge inputs when enabled.',
+      'calendar_bridge' => 'Allow calendar bridge inputs when enabled.',
+      'social_bridge' => 'Allow social bridge inputs when enabled.',
+      'notification_categories' =>
+        'Control whether recommendation nudges stay active.',
+      'direct_user_matching' =>
+        'Allow explicit direct-match style introductions.',
+      'prefer_offline_ai' => 'Prefer on-device and offline AI behavior first.',
+      'strong_air_gap' => 'Use stronger privacy boundaries for shared outputs.',
+      _ => '',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final spacing = context.spacing;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Profile',
       scrollable: true,
       body: BlocBuilder<AuthBloc, AuthState>(
@@ -376,10 +820,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 SizedBox(height: spacing.lg),
 
-                // Partnerships Section (Phase 4.5)
-                _buildPartnershipsSection(context, state.user.id),
-
+                if (BhamBetaDefaults.enablePartnershipSurfaces) ...[
+                  SizedBox(height: spacing.lg),
+                  _buildPartnershipsSection(context, state.user.id),
+                ],
                 SizedBox(height: spacing.lg),
+
+                _buildBhamSummarySection(
+                  context,
+                  state.user.displayName ?? 'User',
+                ),
+                _buildBhamControlSurface(),
+                _buildDestructiveActions(state.user.id),
 
                 // Beta Feedback (Prominent)
                 AppSurface(
@@ -513,7 +965,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   icon: Icons.smart_toy_outlined,
                   title: 'On-Device AI',
-                  subtitle: 'Offline LLM + scheduled learning (device-gated)',
+                  subtitle:
+                      'On-device language + scheduled learning (device-gated)',
                   onTap: () {
                     context.go('/on-device-ai');
                   },
@@ -689,7 +1142,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const GodModeLoginPage(),
+                          builder: (context) => const AdminDesktopHandoffPage(
+                            requestedSurfaceTitle: 'God Mode Admin',
+                            requestedPath: '/admin/command-center',
+                          ),
                         ),
                       );
                     },
@@ -703,7 +1159,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const GodModeLoginPage(),
+                          builder: (context) => const AdminDesktopHandoffPage(
+                            requestedSurfaceTitle: 'URK Kernel Console',
+                            requestedPath: '/admin/urk-kernels',
+                          ),
                         ),
                       );
                     },

@@ -5,21 +5,15 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/ai/personality_learning.dart';
-import 'package:avrai_runtime_os/ai/privacy_protection.dart'
-    show AnonymizedVibeData, AnonymizedVibeMetrics;
-import 'package:avrai_core/constants/vibe_constants.dart';
+import 'package:avrai/services/debug/proof_run_automation_service.dart';
 import 'package:avrai_runtime_os/services/ledgers/proof_run_service_v0.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
-import 'package:avrai_network/network/device_discovery.dart'
-    show DiscoveredDevice, DeviceType;
+import 'package:avrai/presentation/widgets/debug/event_planning_telemetry_debug_card.dart';
 
 class ProofRunPage extends StatefulWidget {
   const ProofRunPage({super.key});
@@ -32,9 +26,8 @@ class _ProofRunPageState extends State<ProofRunPage> {
   static const String _logName = 'ProofRunPage';
 
   late final ProofRunServiceV0 _proof;
+  late final ProofRunAutomationService _automationService;
   late final LocalLlmProvisioningStateService _provisioning;
-  late final PersonalityLearning _personalityLearning;
-  late final VibeConnectionOrchestrator _orchestrator;
 
   String? _activeRunId;
   int _activeStartedAtMs = 0;
@@ -50,7 +43,14 @@ class _ProofRunPageState extends State<ProofRunPage> {
   String? _lastChatResponse;
 
   bool _isSimulatingAi2Ai = false;
+  bool _isRunningSimulatedSmoke = false;
   List<String> _simulatedNodeIds = const [];
+  String? _lastSimulatedSmokeSummary;
+  bool _isStartingEventPlanningSmoke = false;
+  bool _isFinishingEventPlanningSmoke = false;
+  final Set<EventPlanningBetaSmokeMilestone>
+      _completedEventPlanningMilestones =
+      <EventPlanningBetaSmokeMilestone>{};
 
   @override
   void initState() {
@@ -64,9 +64,8 @@ class _ProofRunPageState extends State<ProofRunPage> {
 
     final sl = GetIt.instance;
     _proof = sl<ProofRunServiceV0>();
+    _automationService = sl<ProofRunAutomationService>();
     _provisioning = LocalLlmProvisioningStateService();
-    _personalityLearning = sl<PersonalityLearning>();
-    _orchestrator = sl<VibeConnectionOrchestrator>();
 
     _refreshActiveRun();
     _startProvisioningPoller();
@@ -242,12 +241,6 @@ class _ProofRunPageState extends State<ProofRunPage> {
       return;
     }
 
-    final userId = _currentUserIdOrNull();
-    if (userId == null || userId.isEmpty) {
-      setState(() => _error = 'Not authenticated; AI2AI requires auth.');
-      return;
-    }
-
     setState(() {
       _error = null;
       _isSimulatingAi2Ai = true;
@@ -255,79 +248,17 @@ class _ProofRunPageState extends State<ProofRunPage> {
     });
 
     try {
-      // Ensure the discovery switch is ON (debugSimulateWalkByHotPath gates on it).
-      await StorageService.instance.setBool('discovery_enabled', true);
-
-      final profile =
-          await _personalityLearning.getCurrentPersonality(userId) ??
-              await _personalityLearning.initializePersonality(userId);
-
-      final now = DateTime.now().toUtc();
-      final dims = <String, double>{
-        for (final d in VibeConstants.coreDimensions) d: 0.62,
-      };
-      // Make the simulated peer slightly “different” to trigger learning deltas.
-      dims['community_orientation'] = 0.9;
-      dims['exploration_eagerness'] = 0.85;
-
-      final peerVibe = AnonymizedVibeData(
-        noisyDimensions: dims,
-        anonymizedMetrics: AnonymizedVibeMetrics(
-          energy: 0.8,
-          social: 0.85,
-          exploration: 0.9,
-        ),
-        temporalContextHash: 'proof_run',
-        vibeSignature: 'simulated_peer_sig',
-        privacyLevel: 'debug',
-        anonymizationQuality: 0.95,
-        salt: 'proof_run',
-        createdAt: now,
-        expiresAt: now.add(const Duration(hours: 24)),
+      final ids = await _automationService.simulateAi2AiEncounter(
+        runId: runId,
+        userId: _currentUserIdOrNull(),
+        scenarioName: 'proof_run_manual_encounter',
       );
-
-      final devices = <DiscoveredDevice>[
-        DiscoveredDevice(
-          deviceId: 'sim_peer_1',
-          deviceName: 'SimulatedPeer1',
-          type: DeviceType.bluetooth,
-          isSpotsEnabled: true,
-          personalityData: peerVibe,
-          signalStrength: -55,
-          discoveredAt: now,
-          metadata: const <String, dynamic>{
-            'proof_run': true,
-            'simulated': true,
-          },
-        ),
-      ];
-
-      // ignore: invalid_use_of_visible_for_testing_member
-      await _orchestrator.debugSimulateWalkByHotPath(
-        userId: userId,
-        personality: profile,
-        devices: devices,
-      );
-
-      // ignore: invalid_use_of_visible_for_testing_member
-      final nodes = _orchestrator.debugDiscoveredNodesSnapshot();
-      final ids = nodes.map((n) => n.nodeId).toList(growable: false);
 
       if (!mounted) return;
       setState(() {
         _isSimulatingAi2Ai = false;
         _simulatedNodeIds = ids;
       });
-
-      await _markMilestone(
-        'proof_ai2ai_encounter_simulated',
-        payload: <String, Object?>{
-          'simulated': true,
-          'transport': 'none_ios_simulator',
-          'node_ids': ids,
-          'node_count': ids.length,
-        },
-      );
     } catch (e, st) {
       developer.log('AI2AI simulation failed',
           name: _logName, error: e, stackTrace: st);
@@ -339,10 +270,160 @@ class _ProofRunPageState extends State<ProofRunPage> {
     }
   }
 
+  Future<void> _runSimulatedSmoke() async {
+    setState(() {
+      _error = null;
+      _exportDir = null;
+      _isRunningSimulatedSmoke = true;
+      _lastSimulatedSmokeSummary = null;
+    });
+
+    try {
+      final result = await _automationService.runSimulatedHeadlessSmoke(
+        SimulatedHeadlessSmokeRequest(
+          platformMode: 'debug_ui',
+          userId: _currentUserIdOrNull(),
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _isRunningSimulatedSmoke = false;
+        _exportDir = result.exportDirectoryPath.isEmpty
+            ? null
+            : result.exportDirectoryPath;
+        _simulatedNodeIds = result.simulatedNodeIds;
+        _lastSimulatedSmokeSummary = [
+          'run_id=${result.runId}',
+          'wake_runs=${result.backgroundWakeRunCount}',
+          'proofs=${result.fieldValidationProofCount}',
+          'ambient_candidate=${result.ambientCandidateCount}',
+          'ambient_confirmed=${result.ambientConfirmedCount}',
+        ].join(' | ');
+      });
+      _refreshActiveRun();
+      if (!result.success && result.failureSummary != null) {
+        setState(() => _error = result.failureSummary);
+      }
+    } catch (e, st) {
+      developer.log('Simulated smoke failed',
+          name: _logName, error: e, stackTrace: st);
+      if (!mounted) return;
+      setState(() {
+        _isRunningSimulatedSmoke = false;
+        _error = e.toString();
+      });
+    }
+  }
+
+  Future<void> _startEventPlanningSmoke() async {
+    setState(() {
+      _error = null;
+      _exportDir = null;
+      _isStartingEventPlanningSmoke = true;
+      _completedEventPlanningMilestones.clear();
+    });
+
+    try {
+      final String runId = await _automationService.startEventPlanningBetaSmoke(
+        platformMode: 'ios',
+        userId: _currentUserIdOrNull(),
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _activeRunId = runId;
+        _activeStartedAtMs = _proof.getActiveRunStartedAtMs();
+        _isStartingEventPlanningSmoke = false;
+      });
+    } catch (e, st) {
+      developer.log('Event planning smoke start failed',
+          name: _logName, error: e, stackTrace: st);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _isStartingEventPlanningSmoke = false;
+        _error = e.toString();
+      });
+    }
+  }
+
+  Future<void> _recordEventPlanningSmokeMilestone(
+    EventPlanningBetaSmokeMilestone milestone,
+  ) async {
+    final String? runId = _activeRunId;
+    if (runId == null || runId.isEmpty) {
+      setState(() => _error = 'Start an event-planning smoke run first.');
+      return;
+    }
+
+    setState(() => _error = null);
+    try {
+      await _automationService.recordEventPlanningBetaSmokeMilestone(
+        runId: runId,
+        milestone: milestone,
+        platformMode: 'ios',
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _completedEventPlanningMilestones.add(milestone);
+      });
+    } catch (e, st) {
+      developer.log('Event planning smoke milestone failed',
+          name: _logName, error: e, stackTrace: st);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _finishEventPlanningSmoke() async {
+    final String? runId = _activeRunId;
+    if (runId == null || runId.isEmpty) {
+      setState(() => _error = 'Start an event-planning smoke run first.');
+      return;
+    }
+
+    setState(() {
+      _error = null;
+      _isFinishingEventPlanningSmoke = true;
+    });
+
+    try {
+      final String exportDir =
+          await _automationService.finishAndExportEventPlanningBetaSmoke(
+        runId: runId,
+        platformMode: 'ios',
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _exportDir = exportDir;
+        _isFinishingEventPlanningSmoke = false;
+      });
+      _refreshActiveRun();
+    } catch (e, st) {
+      developer.log('Event planning smoke finish failed',
+          name: _logName, error: e, stackTrace: st);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _isFinishingEventPlanningSmoke = false;
+        _error = e.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!kDebugMode) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Proof Run (debug)',
         showNavigationBar: false,
         constrainBody: false,
@@ -356,7 +437,7 @@ class _ProofRunPageState extends State<ProofRunPage> {
         : null;
     final prov = _provState;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Proof Run (debug)',
       appBarBackgroundColor: AppColors.surface,
       constrainBody: false,
@@ -383,6 +464,13 @@ class _ProofRunPageState extends State<ProofRunPage> {
                   onPressed: _startRun,
                   child: const Text('Start run'),
                 ),
+                ElevatedButton(
+                  onPressed:
+                      _isRunningSimulatedSmoke ? null : _runSimulatedSmoke,
+                  child: Text(_isRunningSimulatedSmoke
+                      ? 'Running smoke…'
+                      : 'Run simulated smoke'),
+                ),
                 OutlinedButton(
                   onPressed: (runId != null) ? _finishRun : null,
                   child: const Text('Finish'),
@@ -395,6 +483,10 @@ class _ProofRunPageState extends State<ProofRunPage> {
               padding: const EdgeInsets.only(top: 12),
               child: _buildBanner(_error!),
             ),
+          const SizedBox(height: 12),
+          _buildEventPlanningSmokeCard(),
+          const SizedBox(height: 12),
+          const EventPlanningTelemetryDebugCard(),
           const SizedBox(height: 12),
           _buildCard(
             title: 'Milestones (manual)',
@@ -475,6 +567,9 @@ class _ProofRunPageState extends State<ProofRunPage> {
             body: [
               'iOS simulator cannot do real BLE scanning.',
               'This button simulates the AI2AI “walk-by” hot path using the real orchestrator logic, and records a receipt that explicitly says simulated.',
+              if (_lastSimulatedSmokeSummary != null) '',
+              if (_lastSimulatedSmokeSummary != null)
+                'Latest smoke: $_lastSimulatedSmokeSummary',
               if (_simulatedNodeIds.isNotEmpty) '',
               if (_simulatedNodeIds.isNotEmpty)
                 'Simulated nodes: ${_simulatedNodeIds.join(', ')}',
@@ -520,6 +615,88 @@ class _ProofRunPageState extends State<ProofRunPage> {
       if (pct != null) 'progress=$pct%',
       if (s.lastError != null) 'last_error=${s.lastError}',
     ].join('\n');
+  }
+
+  Widget _buildEventPlanningSmokeCard() {
+    final String? runId = _activeRunId;
+    final bool hasRun = runId != null && runId.isNotEmpty;
+    final bool allMilestonesCompleted =
+        _completedEventPlanningMilestones.length ==
+            EventPlanningBetaSmokeMilestone.values.length;
+
+    return _buildCard(
+      title: 'Event Planning Smoke (iOS manual)',
+      body: [
+        'Scenario: ${ProofRunAutomationService.eventPlanningBetaSmokeScenarioName}',
+        'This is the human-run closeout flow for chat handoff -> event truth -> air gap -> publish -> safety -> debrief.',
+        if (_completedEventPlanningMilestones.isNotEmpty) '',
+        if (_completedEventPlanningMilestones.isNotEmpty)
+          'Completed: ${_completedEventPlanningMilestones.map((EventPlanningBetaSmokeMilestone milestone) => milestone.name).join(', ')}',
+        if (allMilestonesCompleted)
+          'All required milestones recorded. Finish and export the receipt bundle for signoff.',
+      ].join('\n'),
+      trailing: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed:
+                    _isStartingEventPlanningSmoke ? null : _startEventPlanningSmoke,
+                child: Text(
+                  _isStartingEventPlanningSmoke
+                      ? 'Starting…'
+                      : 'Start iOS smoke',
+                ),
+              ),
+              OutlinedButton(
+                onPressed: hasRun && !_isFinishingEventPlanningSmoke
+                    ? _finishEventPlanningSmoke
+                    : null,
+                child: Text(
+                  _isFinishingEventPlanningSmoke
+                      ? 'Finishing…'
+                      : 'Finish & export',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: EventPlanningBetaSmokeMilestone.values
+                .map(
+                  (EventPlanningBetaSmokeMilestone milestone) =>
+                      FilterChip(
+                    label: Text(_labelForEventPlanningMilestone(milestone)),
+                    selected:
+                        _completedEventPlanningMilestones.contains(milestone),
+                    onSelected: hasRun
+                        ? (_) => _recordEventPlanningSmokeMilestone(milestone)
+                        : null,
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _labelForEventPlanningMilestone(
+    EventPlanningBetaSmokeMilestone milestone,
+  ) {
+    return switch (milestone) {
+      EventPlanningBetaSmokeMilestone.eventTruthEntered => 'Event truth',
+      EventPlanningBetaSmokeMilestone.airGapCrossed => 'Air gap',
+      EventPlanningBetaSmokeMilestone.suggestionShown => 'Suggestion',
+      EventPlanningBetaSmokeMilestone.publishCompleted => 'Publish',
+      EventPlanningBetaSmokeMilestone.safetyChecklistOpened => 'Safety',
+      EventPlanningBetaSmokeMilestone.debriefCompleted => 'Debrief',
+    };
   }
 
   Widget _buildBanner(String message) {

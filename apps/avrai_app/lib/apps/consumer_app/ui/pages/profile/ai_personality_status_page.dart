@@ -14,7 +14,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai/theme/tokens/theme_tokens.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:developer' as developer;
 
@@ -90,7 +90,7 @@ class _AIPersonalityStatusPageState extends State<AIPersonalityStatusPage> {
   Widget build(BuildContext context) {
     final spacing = context.spacing;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'AI Personality Status',
       backgroundColor: AppTheme.primaryColor,
       actions: [

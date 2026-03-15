@@ -24,7 +24,7 @@ class PassivePing {
 }
 
 /// Represents a clustered dwell event, heavily compressing raw pings.
-/// 
+///
 /// Instead of sending 40 location pings from a coffee shop to the LLM
 /// during the nightly batch, we send one DwellEvent representing 2 hours.
 class DwellEvent {
@@ -32,7 +32,7 @@ class DwellEvent {
   DateTime endTime;
   final double latitude;
   final double longitude;
-  
+
   /// The math-based "DNA" strings encountered while dwelling here
   final List<String> encounteredAgentIds;
 
@@ -50,28 +50,30 @@ class DwellEvent {
   }) : encounteredAgentIds = encounteredAgentIds ?? [];
 }
 
-/// Service that passively listens to the physical world, capturing location 
+/// Service that passively listens to the physical world, capturing location
 /// and BLE serendipity without running heavy LLM inference.
-/// 
+///
 /// Employs smart clustering to reduce the token load on the nightly batch process.
 class SmartPassiveCollectionService {
   static const String _logName = 'SmartPassiveCollection';
-  
+
   final DeviceMotionService _motionService;
   final DeviceDiscoveryService? _deviceDiscoveryService;
-  
+
   StreamSubscription<MotionData>? _motionSub;
   StreamSubscription<Position>? _locationSub;
   bool _isActive = false;
+  bool _discoveryCallbackRegistered = false;
 
   // Activity tracking state
   int _highMotionTicks = 0;
   int _lowMotionTicks = 0;
-  bool _isCurrentlyActive = false; // true = high motion (walking/driving), false = low motion (dwelling)
+  bool _isCurrentlyActive =
+      false; // true = high motion (walking/driving), false = low motion (dwelling)
 
   // The in-memory buffer before flushing to SQLite/Drift
   final List<PassivePing> _rawPingBuffer = [];
-  
+
   // The compressed clusters ready for the LLM
   final List<DwellEvent> _dwellClusters = [];
 
@@ -82,19 +84,24 @@ class SmartPassiveCollectionService {
   SmartPassiveCollectionService({
     required DeviceMotionService motionService,
     DeviceDiscoveryService? deviceDiscoveryService,
-  }) : _motionService = motionService,
-       _deviceDiscoveryService = deviceDiscoveryService;
+  })  : _motionService = motionService,
+        _deviceDiscoveryService = deviceDiscoveryService;
 
   void start() {
     if (_isActive) return;
     _isActive = true;
-    
+
     // We listen to motion to adjust BLE polling frequency based on activity.
     _motionSub = _motionService.motionStream.listen(_handleMotionData);
-    
+
+    if (_deviceDiscoveryService != null && !_discoveryCallbackRegistered) {
+      _deviceDiscoveryService.onDevicesDiscovered(_handleDiscoveredDevices);
+      _discoveryCallbackRegistered = true;
+    }
+
     // Hook up physical location stream
     _startLocationStream();
-    
+
     developer.log('Smart Passive Collection started', name: _logName);
   }
 
@@ -123,9 +130,10 @@ class SmartPassiveCollectionService {
           return;
         }
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
-        developer.log('Location permissions are permanently denied', name: _logName);
+        developer.log('Location permissions are permanently denied',
+            name: _logName);
         return;
       }
 
@@ -134,15 +142,18 @@ class SmartPassiveCollectionService {
         distanceFilter: 20, // Send an update only if moved 20 meters
       );
 
-      _locationSub = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position position) {
+      _locationSub =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position position) {
         recordPing(PassivePing(
           timestamp: position.timestamp,
           latitude: position.latitude,
           longitude: position.longitude,
         ));
       });
-      
-      developer.log('Started physical location stream for passive collection', name: _logName);
+
+      developer.log('Started physical location stream for passive collection',
+          name: _logName);
     } catch (e) {
       developer.log('Error starting location stream: $e', name: _logName);
     }
@@ -150,16 +161,39 @@ class SmartPassiveCollectionService {
 
   void recordPing(PassivePing ping) {
     if (!_isActive) return;
-    
+
     _rawPingBuffer.add(ping);
     _clusterPings();
   }
 
+  void recordEncounterFromDiscovery(DiscoveredDevice device) {
+    if (!_isActive) return;
+    final anchor = _resolveEncounterAnchor();
+    if (anchor == null) {
+      developer.log(
+        'Skipping passive encounter capture because no location anchor is available yet',
+        name: _logName,
+      );
+      return;
+    }
+    recordPing(
+      PassivePing(
+        timestamp: DateTime.now().toUtc(),
+        latitude: anchor.lat,
+        longitude: anchor.lon,
+        encounterAgentId: _encounterIdentifier(device),
+        encounterConfidence: device.proximityScore,
+      ),
+    );
+  }
+
   void _handleMotionData(MotionData motion) {
     if (!_isActive || _deviceDiscoveryService == null) return;
-    
+
     // Evaluate motion "energy" using rotation
-    final motionEnergy = motion.rotation.alpha.abs() + motion.rotation.beta.abs() + motion.rotation.gamma.abs();
+    final motionEnergy = motion.rotation.alpha.abs() +
+        motion.rotation.beta.abs() +
+        motion.rotation.gamma.abs();
 
     if (motion.shake || motionEnergy > 1.5) {
       _highMotionTicks++;
@@ -172,8 +206,10 @@ class SmartPassiveCollectionService {
     // Motion data runs at ~60fps, so 180 ticks is roughly 3 seconds
     if (_highMotionTicks > 180 && !_isCurrentlyActive) {
       _isCurrentlyActive = true;
-      developer.log('High activity detected (moving). Reducing BLE scan frequency to save battery.', name: _logName);
-      
+      developer.log(
+          'High activity detected (moving). Reducing BLE scan frequency to save battery.',
+          name: _logName);
+
       // Moving fast -> lower chance of serendipitous dwell encounter -> scan less
       _deviceDiscoveryService.updateScanConfig(
         scanInterval: const Duration(seconds: 30),
@@ -182,13 +218,24 @@ class SmartPassiveCollectionService {
     } else if (_lowMotionTicks > 300 && _isCurrentlyActive) {
       // 300 ticks = ~5 seconds of stillness
       _isCurrentlyActive = false;
-      developer.log('Low activity detected (dwelling). Increasing BLE scan frequency to catch walk-bys.', name: _logName);
-      
+      developer.log(
+          'Low activity detected (dwelling). Increasing BLE scan frequency to catch walk-bys.',
+          name: _logName);
+
       // Sitting still -> high chance of serendipity -> scan more frequently
       _deviceDiscoveryService.updateScanConfig(
         scanInterval: const Duration(seconds: 5),
         scanWindow: const Duration(seconds: 4),
       );
+    }
+  }
+
+  void _handleDiscoveredDevices(List<DiscoveredDevice> devices) {
+    if (!_isActive || devices.isEmpty) {
+      return;
+    }
+    for (final device in devices) {
+      recordEncounterFromDiscovery(device);
     }
   }
 
@@ -205,26 +252,24 @@ class SmartPassiveCollectionService {
     // 2. Are we currently in an active dwell?
     if (_dwellClusters.isNotEmpty) {
       final currentDwell = _dwellClusters.last;
-      
-      final distance = _calculateDistanceMeters(
-        currentDwell.latitude, 
-        currentDwell.longitude, 
-        latestPing.latitude, 
-        latestPing.longitude
-      );
+
+      final distance = _calculateDistanceMeters(currentDwell.latitude,
+          currentDwell.longitude, latestPing.latitude, latestPing.longitude);
 
       if (distance <= _dwellRadiusMeters) {
         // Still dwelling! Extend the time.
         currentDwell.endTime = latestPing.timestamp;
-        
+
         // Add any serendipitous encounters that happened while sitting here
         if (latestPing.encounterAgentId != null) {
-          if (!currentDwell.encounteredAgentIds.contains(latestPing.encounterAgentId)) {
+          if (!currentDwell.encounteredAgentIds
+              .contains(latestPing.encounterAgentId)) {
             currentDwell.encounteredAgentIds.add(latestPing.encounterAgentId!);
-            developer.log('Added serendipitous encounter to current dwell', name: _logName);
+            developer.log('Added serendipitous encounter to current dwell',
+                name: _logName);
           }
         }
-        
+
         // Discard the raw ping, it's safely compressed
         _rawPingBuffer.removeLast();
         return;
@@ -236,43 +281,53 @@ class SmartPassiveCollectionService {
     if (_rawPingBuffer.length >= 2) {
       final oldest = _rawPingBuffer.first;
       final newest = _rawPingBuffer.last;
-      
+
       final duration = newest.timestamp.difference(oldest.timestamp);
-      
+
       if (duration >= _minDwellDuration) {
         // We've been hovering around here long enough to call it a dwell.
         final newDwell = DwellEvent(
           startTime: oldest.timestamp,
           endTime: newest.timestamp,
           // Average the coordinates roughly
-          latitude: _rawPingBuffer.map((p) => p.latitude).reduce((a, b) => a + b) / _rawPingBuffer.length,
-          longitude: _rawPingBuffer.map((p) => p.longitude).reduce((a, b) => a + b) / _rawPingBuffer.length,
+          latitude:
+              _rawPingBuffer.map((p) => p.latitude).reduce((a, b) => a + b) /
+                  _rawPingBuffer.length,
+          longitude:
+              _rawPingBuffer.map((p) => p.longitude).reduce((a, b) => a + b) /
+                  _rawPingBuffer.length,
         );
-        
+
         // Gather any encounters that happened during this new dwell
         for (final p in _rawPingBuffer) {
-          if (p.encounterAgentId != null && !newDwell.encounteredAgentIds.contains(p.encounterAgentId)) {
+          if (p.encounterAgentId != null &&
+              !newDwell.encounteredAgentIds.contains(p.encounterAgentId)) {
             newDwell.encounteredAgentIds.add(p.encounterAgentId!);
           }
         }
-        
+
         _dwellClusters.add(newDwell);
         _rawPingBuffer.clear();
-        developer.log('Formed new DwellEvent lasting ${duration.inMinutes} mins', name: _logName);
+        developer.log(
+            'Formed new DwellEvent lasting ${duration.inMinutes} mins',
+            name: _logName);
       }
     }
   }
 
   /// Haversine formula to calculate rough distance between two coordinates
-  double _calculateDistanceMeters(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistanceMeters(
+      double lat1, double lon1, double lat2, double lon2) {
     const double earthRadius = 6371000; // Meters
     final double dLat = _degreesToRadians(lat2 - lat1);
     final double dLon = _degreesToRadians(lon2 - lon1);
-    
+
     final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-                     math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) * 
-                     math.sin(dLon / 2) * math.sin(dLon / 2);
-    
+        math.cos(_degreesToRadians(lat1)) *
+            math.cos(_degreesToRadians(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
+
     final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return earthRadius * c;
   }
@@ -281,13 +336,33 @@ class SmartPassiveCollectionService {
     return degrees * math.pi / 180;
   }
 
+  ({double lat, double lon})? _resolveEncounterAnchor() {
+    if (_rawPingBuffer.isNotEmpty) {
+      final latest = _rawPingBuffer.last;
+      return (lat: latest.latitude, lon: latest.longitude);
+    }
+    if (_dwellClusters.isNotEmpty) {
+      final latest = _dwellClusters.last;
+      return (lat: latest.latitude, lon: latest.longitude);
+    }
+    return null;
+  }
+
+  String _encounterIdentifier(DiscoveredDevice device) {
+    final vibeSignature = device.personalityData?.vibeSignature.trim();
+    if (vibeSignature != null && vibeSignature.isNotEmpty) {
+      return vibeSignature;
+    }
+    return device.deviceId;
+  }
+
   /// Called by the Nightly Batch Process to consume and clear the queue.
   List<DwellEvent> flushForBatchProcessing() {
     final copy = List<DwellEvent>.from(_dwellClusters);
     _dwellClusters.clear();
     return copy;
   }
-  
+
   // Expose state for testing
   int get rawBufferSize => _rawPingBuffer.length;
   int get dwellClusterCount => _dwellClusters.length;

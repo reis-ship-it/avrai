@@ -51,17 +51,18 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        expect(find.text('AI Learning Sources'), findsOneWidget);
+        expect(find.text('AI Learning Sources'), findsAtLeastNWidgets(1));
       });
 
       testWidgets('should display header explanation', (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        expect(find.text('Cross-App Learning'), findsOneWidget);
+        expect(find.text('Control learning sources'), findsOneWidget);
         expect(
           find.textContaining(
-              'improve suggestions while keeping processing local'),
+            'local learning and recommendations',
+          ),
           findsOneWidget,
         );
       });
@@ -81,14 +82,7 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        await tester.scrollUntilVisible(
-          find.text('Local processing'),
-          300,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.pumpAndSettle();
-
-        expect(find.text('Local processing'), findsOneWidget);
+        expect(find.text('Local processing'), findsAtLeastNWidgets(1));
         expect(
           find.textContaining('Connected app signals stay on this device'),
           findsOneWidget,
@@ -140,25 +134,11 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        await tester.scrollUntilVisible(
-          find.text('Enable All'),
-          400,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.pumpAndSettle();
-
         expect(find.text('Enable All'), findsOneWidget);
       });
 
       testWidgets('Disable All button should be present', (tester) async {
         await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
-
-        await tester.scrollUntilVisible(
-          find.text('Disable All'),
-          400,
-          scrollable: find.byType(Scrollable).first,
-        );
         await tester.pumpAndSettle();
 
         expect(find.text('Disable All'), findsOneWidget);
@@ -173,12 +153,7 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Scroll to make Enable All visible
-        await tester.scrollUntilVisible(
-          find.text('Enable All'),
-          500.0,
-          scrollable: find.byType(Scrollable).first,
-        );
+        await tester.ensureVisible(find.text('Enable All'));
         await tester.pumpAndSettle();
 
         // Tap Enable All
@@ -195,12 +170,7 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // Scroll to make Disable All visible
-        await tester.scrollUntilVisible(
-          find.text('Disable All'),
-          500.0,
-          scrollable: find.byType(Scrollable).first,
-        );
+        await tester.ensureVisible(find.text('Disable All'));
         await tester.pumpAndSettle();
 
         // Tap Disable All

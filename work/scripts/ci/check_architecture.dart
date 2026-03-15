@@ -11,6 +11,11 @@ import 'dart:io';
 Future<void> main() async {
   bool hasViolations = false;
   final rootDir = Directory.current;
+  const flutterSdkEngineAllowlist = <String>{
+    // BHAM beta transitional exception: avrai_knot remains the native math /
+    // FRB-backed knot substrate until post-beta package reclassification.
+    'avrai_knot',
+  };
 
   // Map of directory prefix to allowed dependency prefixes
   final rules = {
@@ -27,14 +32,15 @@ Future<void> main() async {
     if (entity is File && entity.path.endsWith('pubspec.yaml')) {
       final relPath = entity.parent.path
           .replaceFirst(rootDir.path + Platform.pathSeparator, '');
-      if (relPath.contains('ios/.symlinks') || relPath.contains('.dart_tool'))
+      if (relPath.contains('ios/.symlinks') || relPath.contains('.dart_tool')) {
         continue;
+      }
 
       final content = await entity.readAsString();
       final nameMatch = RegExp(r'^name:\s*([a-zA-Z0-9_]+)', multiLine: true)
           .firstMatch(content);
       if (nameMatch != null) {
-        packageDirs[nameMatch.group(1)!] = relPath + '/';
+        packageDirs[nameMatch.group(1)!] = '$relPath/';
       }
     }
   }
@@ -59,21 +65,25 @@ Future<void> main() async {
         .toList();
 
     // Check pubspec for flutter dependency if in engine/ or shared/
-    final pubspecFile = File(pkgPath + 'pubspec.yaml');
+    final pubspecFile = File('${pkgPath}pubspec.yaml');
     if (pubspecFile.existsSync()) {
       final content = await pubspecFile.readAsString();
       if ((currentLayer == 'engine/' || currentLayer == 'shared/')) {
         if (content.contains('sdk: flutter') || content.contains('flutter:')) {
-          stderr.writeln(
-              'ERROR: $pkgName ($pkgPath) is in $currentLayer but depends on the Flutter SDK.');
-          hasViolations = true;
+          final flutterAllowed = currentLayer == 'engine/' &&
+              flutterSdkEngineAllowlist.contains(pkgName);
+          if (!flutterAllowed) {
+            stderr.writeln(
+                'ERROR: $pkgName ($pkgPath) is in $currentLayer but depends on the Flutter SDK.');
+            hasViolations = true;
+          }
         }
       }
 
       // Check pubspec dependencies against disallowed layers
       for (final targetPkg in packageDirs.entries) {
         if (targetPkg.key == pkgName) continue;
-        final targetLayer = targetPkg.value.split('/').first + '/';
+        final targetLayer = '${targetPkg.value.split('/').first}/';
 
         if (disallowedLayers.contains(targetLayer)) {
           final depRegex = RegExp('^\\s+${targetPkg.key}:', multiLine: true);
@@ -87,7 +97,7 @@ Future<void> main() async {
     }
 
     // Check Dart file imports
-    final libDir = Directory(pkgPath + 'lib');
+    final libDir = Directory('${pkgPath}lib');
     if (libDir.existsSync()) {
       await for (final entity in libDir.list(recursive: true)) {
         if (entity is File && entity.path.endsWith('.dart')) {
@@ -106,7 +116,7 @@ Future<void> main() async {
 
               for (final targetPkg in packageDirs.entries) {
                 if (targetPkg.key == pkgName) continue;
-                final targetLayer = targetPkg.value.split('/').first + '/';
+                final targetLayer = '${targetPkg.value.split('/').first}/';
 
                 if (disallowedLayers.contains(targetLayer)) {
                   if (line.contains("'package:${targetPkg.key}/") ||

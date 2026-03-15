@@ -146,5 +146,73 @@ void main() {
 
       expect(updated.records.length, 2);
     });
+
+    test('builds feedback trend rows by entity type and recency window',
+        () async {
+      final remoteService = MockRemoteSourceHealthService();
+      when(() => remoteService.fetchRows()).thenAnswer(
+        (_) async => <SignatureHealthRecord>[
+          SignatureHealthRecord(
+            sourceId: 'feedback-soft',
+            provider: 'user_feedback',
+            entityType: 'suggested_list',
+            categoryLabel: 'soft_ignore',
+            sourceLabel: 'List soft ignore',
+            confidence: 0.68,
+            freshness: 0.9,
+            fallbackRate: 0.0,
+            reviewNeeded: false,
+            updatedAt: DateTime(2026, 3, 6),
+            syncState: 'active',
+            healthCategory: SignatureHealthCategory.strong,
+            summary: 'Soft ignore feedback.',
+          ),
+          SignatureHealthRecord(
+            sourceId: 'feedback-hard',
+            provider: 'user_feedback',
+            entityType: 'spot',
+            categoryLabel: 'hard_not_interested',
+            sourceLabel: 'Spot hard reject',
+            confidence: 0.72,
+            freshness: 0.91,
+            fallbackRate: 0.0,
+            reviewNeeded: false,
+            updatedAt: DateTime(2026, 3, 2),
+            syncState: 'active',
+            healthCategory: SignatureHealthCategory.strong,
+            summary: 'Hard reject feedback.',
+          ),
+        ],
+      );
+      when(() => remoteService.watchRows()).thenAnswer(
+        (_) => const Stream<List<SignatureHealthRecord>>.empty(),
+      );
+
+      final service = SignatureHealthAdminService(
+        intakeRepository: repository,
+        remoteSourceHealthService: remoteService,
+      );
+
+      final snapshot = await service.getSnapshot();
+      final trendRows = snapshot.buildFeedbackTrendRows(
+        now: DateTime(2026, 3, 6, 12),
+      );
+
+      expect(trendRows.length, 2);
+      expect(
+        trendRows
+            .firstWhere((row) => row.entityType == 'suggested_list')
+            .countsByWindow['24h']!
+            .softIgnoreCount,
+        1,
+      );
+      expect(
+        trendRows
+            .firstWhere((row) => row.entityType == 'spot')
+            .countsByWindow['7d']!
+            .hardNotInterestedCount,
+        1,
+      );
+    });
   });
 }

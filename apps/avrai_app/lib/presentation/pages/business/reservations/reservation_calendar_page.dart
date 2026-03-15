@@ -14,7 +14,7 @@ import 'package:avrai/presentation/widgets/business/reservations/reservation_cal
 import 'package:avrai/presentation/widgets/reservations/reservation_card_widget.dart';
 import 'package:avrai/presentation/pages/reservations/reservation_detail_page.dart';
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Reservation Calendar Page
 ///
@@ -107,7 +107,7 @@ class _ReservationCalendarPageState extends State<ReservationCalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Reservation Calendar',
       body: _error != null
           ? Center(

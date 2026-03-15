@@ -3,7 +3,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:avrai_runtime_os/controllers/profile_update_controller.dart';
 import 'package:avrai_core/models/user/user.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:get_it/get_it.dart';
 
@@ -106,7 +106,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final spacing = context.spacing;
     final radius = context.radius;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Edit Profile',
       scrollable: true,
       body: Form(

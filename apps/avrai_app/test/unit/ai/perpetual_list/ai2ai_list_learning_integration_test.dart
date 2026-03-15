@@ -343,6 +343,40 @@ void main() {
 
         expect(age.inHours, greaterThanOrEqualTo(4));
       });
+
+      test('should expose soft ignore metadata and lower learning weight', () {
+        final interaction = ListInteraction(
+          listId: 'test-list',
+          type: ListInteractionType.dismissed,
+          timestamp: DateTime.now(),
+          metadata: const <String, dynamic>{
+            ListInteraction.negativePreferenceIntentMetadataKey:
+                ListInteraction.softIgnoreIntentValue,
+          },
+        );
+
+        expect(interaction.isSoftIgnore, isTrue);
+        expect(interaction.isHardNotInterested, isFalse);
+        expect(interaction.learningWeight, 0.5);
+      });
+
+      test(
+          'should expose hard not interested metadata and stronger learning weight',
+          () {
+        final interaction = ListInteraction(
+          listId: 'test-list',
+          type: ListInteractionType.dismissed,
+          timestamp: DateTime.now(),
+          metadata: const <String, dynamic>{
+            ListInteraction.negativePreferenceIntentMetadataKey:
+                ListInteraction.hardNotInterestedIntentValue,
+          },
+        );
+
+        expect(interaction.isSoftIgnore, isFalse);
+        expect(interaction.isHardNotInterested, isTrue);
+        expect(interaction.learningWeight, 1.2);
+      });
     });
   });
 }

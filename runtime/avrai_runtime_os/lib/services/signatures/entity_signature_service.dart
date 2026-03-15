@@ -10,6 +10,7 @@ import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -23,6 +24,8 @@ import 'package:avrai_runtime_os/services/signatures/bundles/community_event_bun
 import 'package:avrai_runtime_os/services/signatures/bundles/performer_venue_event_bundle_builder.dart';
 import 'package:avrai_runtime_os/services/signatures/signature_match_service.dart';
 import 'package:avrai_runtime_os/services/signatures/signature_repository.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_runtime_policy.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 enum NegativePreferenceIntent {
   softIgnore,
@@ -50,6 +53,10 @@ class EntitySignatureService {
   final UserVibeAnalyzer _userVibeAnalyzer;
   final PersonalityLearning _personalityLearning;
   final RemoteSourceHealthService? _remoteSourceHealthService;
+  final VibeKernel _vibeKernel;
+
+  bool get _isCanonicalAuthorityActive =>
+      CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive;
 
   EntitySignatureService({
     required SignatureRepository repository,
@@ -64,6 +71,7 @@ class EntitySignatureService {
     required UserVibeAnalyzer userVibeAnalyzer,
     required PersonalityLearning personalityLearning,
     RemoteSourceHealthService? remoteSourceHealthService,
+    VibeKernel? vibeKernel,
   })  : _repository = repository,
         _storageService = storageService,
         _matchService = matchService,
@@ -75,7 +83,8 @@ class EntitySignatureService {
         _communityEventBundleBuilder = communityEventBundleBuilder,
         _userVibeAnalyzer = userVibeAnalyzer,
         _personalityLearning = personalityLearning,
-        _remoteSourceHealthService = remoteSourceHealthService;
+        _remoteSourceHealthService = remoteSourceHealthService,
+        _vibeKernel = vibeKernel ?? VibeKernel();
 
   Future<EntitySignature> buildUserSignature({
     required UnifiedUser user,
@@ -91,6 +100,12 @@ class EntitySignatureService {
       personality: resolvedPersonality,
       userVibe: resolvedUserVibe,
     );
+    if (_isCanonicalAuthorityActive) {
+      return _canonicalizeSignature(
+        fallback: freshlyBuiltSignature,
+        personalAgentId: resolvedPersonality.agentId,
+      );
+    }
     final behaviorState = _loadBehaviorLearningState(user.id);
     final learnedSignature = behaviorState == null
         ? freshlyBuiltSignature
@@ -109,7 +124,10 @@ class EntitySignatureService {
             latest: learnedSignature,
           );
     await _repository.save(signature);
-    return signature;
+    return _canonicalizeSignature(
+      fallback: signature,
+      personalAgentId: resolvedPersonality.agentId,
+    );
   }
 
   Future<EntitySignature> initializeUserSignatureFromOnboarding({
@@ -153,24 +171,31 @@ class EntitySignatureService {
         ],
       ),
     );
-    await _repository.save(enrichedSignature);
-    return enrichedSignature;
+    if (!_isCanonicalAuthorityActive) {
+      await _repository.save(enrichedSignature);
+    }
+    return _canonicalizeSignature(
+      fallback: enrichedSignature,
+      personalAgentId: personality.agentId,
+    );
   }
 
   Future<EntitySignature> buildSpotSignature({
     required Spot spot,
   }) async {
     final signature = _spotSignatureBuilder.build(spot: spot);
-    await _repository.save(signature);
-    return signature;
+    await _persistSignatureCompatibilityIfAllowed(signature);
+    _syncSignatureToVibeKernel(signature);
+    return _canonicalizeSignature(fallback: signature);
   }
 
   Future<EntitySignature> buildCommunitySignature({
     required Community community,
   }) async {
     final signature = _communitySignatureBuilder.build(community: community);
-    await _repository.save(signature);
-    return signature;
+    await _persistSignatureCompatibilityIfAllowed(signature);
+    _syncSignatureToVibeKernel(signature);
+    return _canonicalizeSignature(fallback: signature);
   }
 
   Future<EntitySignature> buildEventSignature({
@@ -207,15 +232,102 @@ class EntitySignatureService {
     }
 
     if (bundleSignature != null) {
-      await _repository.save(bundleSignature);
+      await _persistSignatureCompatibilityIfAllowed(bundleSignature);
+      _syncSignatureToVibeKernel(bundleSignature);
+      bundleSignature = _canonicalizeSignature(fallback: bundleSignature);
     }
 
     final signature = _eventSignatureBuilder.build(
       event: event,
       bundleSignature: bundleSignature,
     );
+    await _persistSignatureCompatibilityIfAllowed(signature);
+    _syncSignatureToVibeKernel(signature);
+    return _canonicalizeSignature(fallback: signature);
+  }
+
+  Future<void> _persistSignatureCompatibilityIfAllowed(
+    EntitySignature signature,
+  ) async {
+    if (_isCanonicalAuthorityActive) {
+      return;
+    }
     await _repository.save(signature);
-    return signature;
+  }
+
+  void _syncSignatureToVibeKernel(EntitySignature signature) {
+    try {
+      _vibeKernel.ingestEntityObservation(
+        entityId: signature.entityId,
+        entityType: signature.entityKind.name,
+        dimensions: signature.dna,
+        provenanceTags: const <String>['entity_signature_sync'],
+      );
+    } catch (error, stackTrace) {
+      developer.log(
+        'Failed to sync entity signature to VibeKernel: $error',
+        name: _logName,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  EntitySignature _canonicalizeSignature({
+    required EntitySignature fallback,
+    String? personalAgentId,
+  }) {
+    try {
+      if (fallback.entityKind == SignatureEntityKind.user &&
+          personalAgentId != null) {
+        final snapshot = _vibeKernel.getUserSnapshot(personalAgentId);
+        return _signatureFromCanonicalSnapshot(
+          snapshot: snapshot,
+          entityId: fallback.entityId,
+          entityKind: fallback.entityKind,
+          fallback: fallback,
+        );
+      }
+      final entitySnapshot = _vibeKernel.getEntitySnapshot(
+        entityId: fallback.entityId,
+        entityType: fallback.entityKind.name,
+      );
+      return _signatureFromCanonicalSnapshot(
+        snapshot: entitySnapshot.vibe,
+        entityId: fallback.entityId,
+        entityKind: fallback.entityKind,
+        fallback: fallback,
+      );
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  EntitySignature _signatureFromCanonicalSnapshot({
+    required VibeStateSnapshot snapshot,
+    required String entityId,
+    required SignatureEntityKind entityKind,
+    required EntitySignature fallback,
+  }) {
+    return fallback.copyWith(
+      signatureId: 'canonical:${entityKind.name}:$entityId',
+      dna: snapshot.coreDna.dimensions,
+      pheromones: snapshot.pheromones.vectors,
+      confidence: snapshot.confidence,
+      freshness: (1.0 - (snapshot.freshnessHours / 168.0)).clamp(0.0, 1.0),
+      updatedAt: snapshot.updatedAtUtc,
+      summary: 'Canonical ${entityKind.name} vibe projection from VibeKernel.',
+      sourceTrace: _mergeSourceTrace(
+        fallback.sourceTrace,
+        const <SignatureSourceTrace>[
+          SignatureSourceTrace(
+            kind: SignatureSourceKind.derived,
+            label: 'canonical_vibe_kernel',
+            weight: 1.0,
+          ),
+        ],
+      ),
+    );
   }
 
   EntitySignature? getStoredSignature({
@@ -788,6 +900,21 @@ class EntitySignatureService {
     PersonalityProfile? personality,
     bool isPositiveSignal = true,
   }) async {
+    if (_isCanonicalAuthorityActive) {
+      _recordBehaviorSignalInVibeKernel(
+        userId: user.id,
+        personalAgentId: personality?.agentId,
+        targetSignature: targetSignature,
+        signalType: signalType,
+        dnaInfluence: dnaInfluence,
+        pheromoneInfluence: pheromoneInfluence,
+        isPositiveSignal: isPositiveSignal,
+      );
+      return buildUserSignature(
+        user: user,
+        personality: personality,
+      );
+    }
     final behaviorState = _updateBehaviorLearningState(
       existing: _loadBehaviorLearningState(user.id),
       targetSignature: targetSignature,
@@ -801,6 +928,65 @@ class EntitySignatureService {
       user: user,
       personality: personality,
     );
+  }
+
+  void _recordBehaviorSignalInVibeKernel({
+    required String userId,
+    required String? personalAgentId,
+    required EntitySignature targetSignature,
+    required String signalType,
+    required double dnaInfluence,
+    required double pheromoneInfluence,
+    required bool isPositiveSignal,
+  }) {
+    final subjectId = personalAgentId ?? targetSignature.entityId;
+    final signals = <String, double>{
+      ..._salientBehaviorSignals(
+        prefix: '$signalType:dna',
+        dimensions: targetSignature.dna,
+        influence: dnaInfluence,
+        isPositiveSignal: isPositiveSignal,
+      ),
+      ..._salientBehaviorSignals(
+        prefix: '$signalType:pheromone',
+        dimensions: targetSignature.pheromones,
+        influence: pheromoneInfluence,
+        isPositiveSignal: isPositiveSignal,
+      ),
+      '$signalType:polarity': isPositiveSignal ? 1.0 : 0.0,
+    };
+
+    _vibeKernel.ingestBehaviorObservation(
+      subjectId: subjectId,
+      behaviorSignals: signals,
+      provenanceTags: <String>[
+        'entity_signature_behavior',
+        'user:$userId',
+        'signal:$signalType',
+        if (!isPositiveSignal) 'negative',
+      ],
+    );
+  }
+
+  Map<String, double> _salientBehaviorSignals({
+    required String prefix,
+    required Map<String, double> dimensions,
+    required double influence,
+    required bool isPositiveSignal,
+  }) {
+    final entries = dimensions.entries.toList(growable: false)
+      ..sort(
+        (left, right) =>
+            (right.value - 0.5).abs().compareTo((left.value - 0.5).abs()),
+      );
+    final normalizedInfluence = influence.clamp(0.0, 1.0);
+    final selected = entries.take(6);
+    return <String, double>{
+      for (final entry in selected)
+        '$prefix:${entry.key}': ((isPositiveSignal ? entry.value : 1.0 - entry.value) *
+                normalizedInfluence)
+            .clamp(0.0, 1.0),
+    };
   }
 
   EntitySignature _applyBehaviorLearning({
@@ -956,6 +1142,9 @@ class EntitySignatureService {
   }
 
   _UserSignatureBehaviorState? _loadBehaviorLearningState(String userId) {
+    if (_isCanonicalAuthorityActive) {
+      return null;
+    }
     final raw = _storageService.getObject<Map<dynamic, dynamic>>(
       '$_behaviorLearningStoragePrefix$userId',
     );
@@ -972,6 +1161,9 @@ class EntitySignatureService {
     String userId,
     _UserSignatureBehaviorState state,
   ) async {
+    if (_isCanonicalAuthorityActive) {
+      return;
+    }
     await _storageService.setObject(
       '$_behaviorLearningStoragePrefix$userId',
       state.toJson(),

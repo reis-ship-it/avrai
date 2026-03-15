@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_error_state.dart';
 import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
 import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_section.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/ai2ai_learning_methods_page_schema.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_effectiveness_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_insights_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
@@ -61,92 +60,106 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'AI2AI Learning Methods',
-      constrainBody: false,
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, authState) {
-          if (authState is! Authenticated) {
-            return const AppLoadingState(label: 'Loading AI2AI learning');
-          }
-
-          final userId = authState.user.id;
-
-          if (_isInitializing) {
-            return const AppLoadingState(label: 'Loading AI2AI learning');
-          }
-
-          if (_errorMessage != null) {
-            return AppErrorState(
-              title: 'Unable to load AI2AI learning',
-              body: _errorMessage!,
-              onRetry: _initializeService,
-            );
-          }
-
-          if (_learningService == null) {
-            return const AppLoadingState(label: 'Loading AI2AI learning');
-          }
-
-          return ListView(
-            key: const Key('ai2ai_learning_methods_page_list'),
-            padding: const EdgeInsets.all(16),
-            children: [
-              AppSurface(
-                child: const AppPageHeader(
-                  title: 'AI2AI Learning Methods',
-                  subtitle:
-                      'Review how your AI learns from anonymized exchange patterns and related recommendations.',
-                  leadingIcon: Icons.psychology_outlined,
-                  showDivider: false,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Methods Overview',
-                subtitle: 'See how your AI learns from other AIs.',
-                child: AI2AILearningMethodsWidget(
-                  userId: userId,
-                  learningService: _learningService!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Effectiveness Metrics',
-                subtitle: 'Track how effectively your AI is learning.',
-                child: AI2AILearningEffectivenessWidget(
-                  userId: userId,
-                  learningService: _learningService!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Active Learning Insights',
-                subtitle: 'Recent insights from AI2AI interactions.',
-                child: AI2AILearningInsightsWidget(
-                  userId: userId,
-                  learningService: _learningService!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _DashboardSection(
-                title: 'Learning Recommendations',
-                subtitle: 'Suggested partners and development areas.',
-                child: AI2AILearningRecommendationsWidget(
-                  userId: userId,
-                  learningService: _learningService!,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const AppInfoBanner(
-                title: 'Learn more',
-                body:
-                    'AI2AI learning uses secure, anonymized exchanges to strengthen recommendations without sharing raw personal content.',
-                icon: Icons.info_outline,
-              ),
-            ],
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        if (authState is! Authenticated) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const Center(child: CircularProgressIndicator()),
+            ),
           );
-        },
+        }
+
+        final userId = authState.user.id;
+
+        if (_isInitializing) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const AppLoadingState(label: 'Loading AI2AI learning'),
+            ),
+          );
+        }
+
+        if (_errorMessage != null) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: AppErrorState(
+                title: 'Unable to load AI2AI learning',
+                body: _errorMessage!,
+                onRetry: _initializeService,
+              ),
+            ),
+          );
+        }
+
+        if (_learningService == null) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const AppLoadingState(label: 'Loading AI2AI learning'),
+            ),
+          );
+        }
+
+        return AppSchemaPage(
+          schema: buildAI2AILearningMethodsPageSchema(
+            content: _buildContent(userId),
+          ),
+          bodyScrollKey: const Key('ai2ai_learning_methods_page_scroll'),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(String userId) {
+    return Padding(
+      key: const Key('ai2ai_learning_methods_page_content'),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _DashboardSection(
+          title: 'Learning Methods Overview',
+          subtitle: 'See how your AI learns from other AIs.',
+          child: AI2AILearningMethodsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Effectiveness Metrics',
+          subtitle: 'Track how effectively your AI is learning.',
+          child: AI2AILearningEffectivenessWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Active Learning Insights',
+          subtitle: 'Recent insights from AI2AI interactions.',
+          child: AI2AILearningInsightsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Recommendations',
+          subtitle: 'Suggested partners and development areas.',
+          child: AI2AILearningRecommendationsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        const AppInfoBanner(
+          title: 'Learn more',
+          body:
+              'AI2AI learning uses secure, anonymized exchanges to strengthen recommendations without sharing raw personal content.',
+          icon: Icons.info_outline,
+        ),
+      ],
       ),
     );
   }

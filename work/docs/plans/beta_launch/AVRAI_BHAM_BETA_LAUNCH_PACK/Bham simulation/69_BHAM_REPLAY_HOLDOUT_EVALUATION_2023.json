@@ -1,0 +1,111 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "replayYear": 2023,
+  "trainingMonths": [
+    "2023-01",
+    "2023-02",
+    "2023-04",
+    "2023-05",
+    "2023-07",
+    "2023-08",
+    "2023-10",
+    "2023-11"
+  ],
+  "validationMonths": [
+    "2023-03",
+    "2023-09"
+  ],
+  "holdoutMonths": [
+    "2023-06",
+    "2023-12"
+  ],
+  "passed": true,
+  "metrics": [
+    {
+      "metricId": "holdout:event_density",
+      "metricName": "event_density",
+      "trainingValue": 738.5,
+      "validationValue": 963.0,
+      "holdoutValue": 658.5,
+      "threshold": 0.35,
+      "passed": true,
+      "metadata": {
+        "validationDeltaPct": 0.3039945836154367,
+        "holdoutDeltaPct": 0.1083276912660799
+      }
+    },
+    {
+      "metricId": "holdout:attendance_plausibility",
+      "metricName": "attendance_plausibility",
+      "trainingValue": 1.0,
+      "validationValue": 1.0,
+      "holdoutValue": 1.0,
+      "threshold": 0.2,
+      "passed": true,
+      "metadata": {
+        "validationDeltaPct": 0.0,
+        "holdoutDeltaPct": 0.0
+      }
+    },
+    {
+      "metricId": "holdout:locality_pressure",
+      "metricName": "locality_pressure",
+      "trainingValue": 50.85052910052911,
+      "validationValue": 54.785714285714285,
+      "holdoutValue": 50.478835978835974,
+      "threshold": 0.25,
+      "passed": true,
+      "metadata": {
+        "validationDeltaPct": 0.07738730067892706,
+        "holdoutDeltaPct": 0.0073095231901779125
+      }
+    },
+    {
+      "metricId": "holdout:venue_community_participation",
+      "metricName": "venue_community_participation",
+      "trainingValue": 0.09278,
+      "validationValue": 0.11214,
+      "holdoutValue": 0.08352,
+      "threshold": 0.03,
+      "passed": true,
+      "metadata": {
+        "validationDeltaAbs": 0.019360000000000002,
+        "holdoutDeltaAbs": 0.009260000000000004,
+        "comparisonMode": "absolute_participation_band"
+      }
+    },
+    {
+      "metricId": "holdout:exchange_participation",
+      "metricName": "exchange_participation",
+      "trainingValue": 0.5122,
+      "validationValue": 0.5122,
+      "holdoutValue": 0.5122,
+      "threshold": 0.0,
+      "passed": true,
+      "metadata": {
+        "actorsWithAnyExchange": 12805.0
+      }
+    },
+    {
+      "metricId": "holdout:offline_queue_behavior",
+      "metricName": "offline_queue_behavior",
+      "trainingValue": 0.16029424343512103,
+      "validationValue": 0.16029424343512103,
+      "holdoutValue": 0.16029424343512103,
+      "threshold": 0.0,
+      "passed": true,
+      "metadata": {
+        "offlineQueuedCount": 1874,
+        "exchangeEventCount": 11691
+      }
+    }
+  ],
+  "notes": [
+    "Held-out 2023 windows stay within replay variation thresholds."
+  ],
+  "metadata": {
+    "placeNodeCount": 2615,
+    "movementCount": 117840,
+    "untrackedWindowCount": 75000
+  }
+}

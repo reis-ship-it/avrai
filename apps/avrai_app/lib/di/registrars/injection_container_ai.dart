@@ -1,11 +1,35 @@
 // TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
 // ignore_for_file: deprecated_member_use
 
+import 'dart:io' show Platform;
 import 'package:avrai_runtime_os/services/integrations/spotify_airgap_service.dart';
+import 'package:avrai_runtime_os/kernel/what/what_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
+import 'package:avrai_runtime_os/kernel/mesh/dart_mesh_runtime_kernel.dart';
+import 'package:avrai_runtime_os/kernel/mesh/mesh_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/mesh/mesh_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/mesh/mesh_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/mesh/native_backed_mesh_kernel.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/ai2ai_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/ai2ai_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/ai2ai_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/dart_ai2ai_runtime_kernel.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/native_backed_ai2ai_kernel.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
+import 'package:avrai_runtime_os/kernel/os/domain_execution_conformance_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/kernel/temporal/temporal_kernel.dart';
+import 'package:avrai_runtime_os/kernel/temporal/temporal_kernel_lineage_sink.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show StorageService, SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
+import 'package:avrai_runtime_os/services/vibe/vibe_kernel_persistence_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_migration_service.dart';
+import 'package:avrai_runtime_os/services/vibe/hierarchical_locality_vibe_projector.dart';
+import 'package:avrai_runtime_os/services/vibe/scoped_context_vibe_projector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
@@ -13,8 +37,32 @@ import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dart';
+import 'package:avrai_runtime_os/services/events/event_success_analysis_service.dart';
+import 'package:avrai_runtime_os/services/events/event_host_debrief_service.dart';
+import 'package:avrai_runtime_os/services/events/event_learning_signal_service.dart';
+import 'package:avrai_runtime_os/services/events/event_planning_telemetry_service.dart';
+import 'package:avrai_runtime_os/services/events/event_planning_intake_adapter.dart';
+import 'package:avrai_runtime_os/services/events/beta_event_planning_suggestion_service.dart';
+import 'package:avrai_runtime_os/ai/ai2ai_learning.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_learning_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_exchange_submission_lane.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_rendezvous_release_policy.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_rendezvous_runtime_signal_lane.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_rendezvous_scheduler.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_rendezvous_store.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_runtime_state_frame_service.dart';
+import 'package:avrai_runtime_os/services/background/ai2ai_background_execution_lane.dart';
+import 'package:avrai_runtime_os/services/background/background_platform_wake_bridge.dart';
+import 'package:avrai_runtime_os/services/background/background_wake_execution_run_record_store.dart';
+import 'package:avrai_runtime_os/services/background/headless_background_runtime_coordinator.dart';
+import 'package:avrai_runtime_os/services/background/mesh_background_execution_lane.dart';
+import 'package:avrai_runtime_os/services/background/passive_kernel_signal_intake_lane.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_ai2ai_exchange_transport_adapter.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_conversation_transport_adapter.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_protocol_codec_adapter.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_satisfaction_enhancer.dart';
 import 'package:avrai_runtime_os/ai/feedback_learning.dart'
@@ -25,8 +73,10 @@ import 'package:avrai_runtime_os/services/analytics/usage_pattern_tracker.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_log_queue.dart';
 import 'package:avrai_runtime_os/ai2ai/cloud_intelligence_sync.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
+import 'package:avrai_runtime_os/ai2ai/peer_interaction_outcome_learning_service.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_key_manager.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_inbound_decode_lane.dart';
 import 'dart:developer' as developer;
 import 'package:avrai_runtime_os/services/network/enhanced_connectivity_service.dart';
 import 'package:avrai_runtime_os/p2p/federated_learning.dart';
@@ -48,8 +98,26 @@ import 'package:avrai_runtime_os/ai2ai/embedding_delta_collector.dart';
 import 'package:avrai_runtime_os/ai2ai/federated_learning_hooks.dart';
 import 'package:avrai_runtime_os/services/user/user_name_resolution_service.dart';
 import 'package:avrai_runtime_os/services/user/personality_agent_chat_service.dart';
+import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
+import 'package:avrai_runtime_os/services/chat/conversation_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/chat/friend_chat_service.dart';
 import 'package:avrai_runtime_os/services/community/community_chat_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_announce_ledger.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_announce_validator.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_custody_outbox.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_interface_registry.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_route_ledger.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_runtime_state_frame_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_profile_resolver.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_credential_factory.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_announce_attestation_factory.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_credential_refresh_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_lifecycle_runtime_lane.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_revocation_policy.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_segment_revocation_store.dart';
+import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_proof_store.dart';
+import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_runner.dart';
 import 'package:avrai_runtime_os/services/chat/dm_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_message_store.dart';
 import 'package:avrai_runtime_os/services/community/community_sender_key_service.dart';
@@ -73,6 +141,8 @@ import 'package:avrai_runtime_os/services/business/business_business_outreach_se
 import 'package:avrai_runtime_os/services/business/business_member_service.dart';
 import 'package:avrai_runtime_os/services/business/business_shared_agent_service.dart';
 import 'package:avrai_runtime_os/services/business/business_account_service.dart';
+import 'package:avrai_runtime_os/monitoring/network_activity_monitor.dart';
+import 'package:avrai_runtime_os/services/community/club_service.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_expansion_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.dart';
@@ -111,7 +181,9 @@ import 'package:avrai_runtime_os/services/onboarding/onboarding_place_list_gener
 import 'package:avrai_runtime_os/services/onboarding/onboarding_recommendation_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:avrai_runtime_os/data/datasources/remote/google_places_datasource.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_learning_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
+import 'package:avrai_runtime_os/services/language/language_profile_diagnostics_service.dart';
 import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_receipts_service_v0.dart';
@@ -133,20 +205,34 @@ import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.
 import 'package:avrai_runtime_os/services/prediction/markov_engagement_predictor.dart';
 import 'package:avrai_runtime_os/services/prediction/markov_transition_store.dart';
 import 'package:avrai_runtime_os/services/prediction/swarm_prior_loader.dart';
+import 'package:avrai_runtime_os/services/prediction/replay_year_completeness_service.dart';
+import 'package:avrai_runtime_os/services/prediction/authoritative_replay_year_selection_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_calibration_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_ensemble_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_governance_projection_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_regime_shift_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_resolution_service.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_skill_ledger.dart';
+import 'package:avrai_runtime_os/services/prediction/forecast_strength_service.dart';
+import 'package:avrai_runtime_os/services/prediction/governed_forecast_runtime_service.dart';
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 
 import 'package:avrai_runtime_os/services/passive_collection/smart_passive_collection_service.dart';
 import 'package:avrai_runtime_os/services/passive_collection/dwell_event_intake_adapter.dart';
+import 'package:avrai_runtime_os/services/passive_collection/passive_dwell_reality_learning_service.dart';
 import 'package:avrai_runtime_os/services/passive_collection/battery_adaptive_batch_scheduler.dart';
-import 'package:avrai_runtime_os/services/passive_collection/nightly_digestion_job.dart';
+import 'package:avrai_runtime_os/services/passive_collection/adaptive_digestion_job.dart';
+import 'package:avrai_runtime_os/services/passive_collection/archetype_learning_runtime.dart';
 import 'package:avrai_runtime_os/services/predictive_outreach/locality_federated_exchange_service.dart';
 import 'package:avrai_runtime_os/services/predictive_outreach/locality_federated_exchange_job.dart';
 import 'package:avrai_runtime_os/data/database/app_database.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/pheromone_mesh_routing_service.dart';
 import 'package:avrai_runtime_os/services/security/governance_kernel_service.dart';
-import 'package:avrai_knot/services/knot/archetype_pattern_learner.dart';
 import 'package:avrai_core/contracts/air_gap_contract.dart';
 import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
+
+final bool _shouldAutoScheduleAdaptiveDigestion =
+    !Platform.environment.containsKey('FLUTTER_TEST');
 
 /// AI/Network Services Registration Module
 ///
@@ -201,16 +287,319 @@ Future<void> registerAIServices(GetIt sl) async {
     return PersonalityLearning.withPrefs(prefs);
   });
 
-  // AI2AI Learning Service (Phase 7, Week 38)
-  // Wrapper service for AI2AI learning methods UI
-  sl.registerLazySingleton(() {
+  sl.registerLazySingleton<AI2AIChatAnalyzer>(() {
     final prefs = sl<SharedPreferencesCompat>();
-    final personalityLearning = sl<PersonalityLearning>();
-    return AI2AILearning.create(
+    return AI2AIChatAnalyzer(
       prefs: prefs,
-      personalityLearning: personalityLearning,
+      personalityLearning: sl<PersonalityLearning>(),
     );
   });
+
+  sl.registerLazySingleton(
+    () => HumanLanguageBoundaryReviewLane(
+      prefs: sl<SharedPreferencesCompat>(),
+    ),
+  );
+  sl.registerLazySingleton<NetworkActivityMonitor>(
+    () => NetworkActivityMonitor(),
+  );
+  sl.registerLazySingleton(
+    () => const Ai2AiRuntimeStateFrameService(),
+  );
+  sl.registerLazySingleton(
+    () => const MeshRuntimeStateFrameService(),
+  );
+  sl.registerLazySingleton(
+    () => MeshSegmentRevocationStore(
+      storageService: sl<StorageService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshSegmentRevocationPolicy(
+      revocationStore: sl<MeshSegmentRevocationStore>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshSegmentCredentialRefreshService(
+      storageService: sl<StorageService>(),
+      revocationPolicy: sl<MeshSegmentRevocationPolicy>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshSegmentLifecycleRuntimeLane(
+      refreshService: sl<MeshSegmentCredentialRefreshService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => DomainExecutionFieldScenarioProofStore(
+      storageService: sl<StorageService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => BackgroundWakeExecutionRunRecordStore(
+      storageService: sl<StorageService>(),
+    ),
+  );
+  sl.registerLazySingleton<MeshRouteLedger>(
+    () => MeshRouteLedger(),
+  );
+  sl.registerLazySingleton<MeshCustodyOutbox>(
+    () => MeshCustodyOutbox(),
+  );
+  sl.registerLazySingleton<MeshInterfaceRegistry>(
+    () => MeshInterfaceRegistry(cloudInterfaceAvailable: true),
+  );
+  sl.registerLazySingleton<MeshAnnounceLedger>(
+    () => MeshAnnounceLedger(
+      announceValidator: MeshAnnounceValidator(
+        revocationPolicy: sl<MeshSegmentRevocationPolicy>(),
+      ),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GovernedMeshPacketCodec(
+      encryptionService: sl<MessageEncryptionService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshInboundDecodeLane(
+      encryptionService: sl<MessageEncryptionService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshNativeFallbackAudit(),
+  );
+  sl.registerLazySingleton<MeshNativeInvocationBridge>(
+    () => MeshNativeBridgeBindings(),
+  );
+  sl.registerLazySingleton<DartMeshRuntimeKernel>(
+    () => DartMeshRuntimeKernel(
+      routeLedger: sl<MeshRouteLedger>(),
+      custodyOutbox: sl<MeshCustodyOutbox>(),
+      announceLedger: sl<MeshAnnounceLedger>(),
+      interfaceRegistry: sl<MeshInterfaceRegistry>(),
+      stateFrameService: sl<MeshRuntimeStateFrameService>(),
+    ),
+  );
+  sl.registerLazySingleton<MeshKernelFallbackSurface>(
+    () => sl<DartMeshRuntimeKernel>(),
+  );
+  sl.registerLazySingleton<MeshKernelContract>(
+    () => NativeBackedMeshKernel(
+      nativeBridge: sl<MeshNativeInvocationBridge>(),
+      fallback: sl<MeshKernelFallbackSurface>(),
+      audit: sl<MeshNativeFallbackAudit>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => Ai2AiNativeFallbackAudit(),
+  );
+  sl.registerLazySingleton<Ai2AiNativeInvocationBridge>(
+    () => Ai2AiNativeBridgeBindings(),
+  );
+  sl.registerLazySingleton<DartAi2AiRuntimeKernel>(
+    () => DartAi2AiRuntimeKernel(
+      networkActivityMonitor: sl<NetworkActivityMonitor>(),
+      stateFrameService: sl<Ai2AiRuntimeStateFrameService>(),
+      rendezvousStore: sl<Ai2AiRendezvousStore>(),
+    ),
+  );
+  sl.registerLazySingleton<Ai2AiKernelFallbackSurface>(
+    () => sl<DartAi2AiRuntimeKernel>(),
+  );
+  sl.registerLazySingleton<Ai2AiKernelContract>(
+    () => NativeBackedAi2AiKernel(
+      nativeBridge: sl<Ai2AiNativeInvocationBridge>(),
+      fallback: sl<Ai2AiKernelFallbackSurface>(),
+      audit: sl<Ai2AiNativeFallbackAudit>(),
+    ),
+  );
+  sl.registerLazySingleton<DomainExecutionConformanceService>(
+    () => DefaultDomainExecutionConformanceService(
+      meshKernel: sl<MeshKernelContract>(),
+      ai2aiKernel: sl<Ai2AiKernelContract>(),
+      encryptionService: sl<MessageEncryptionService>(),
+      featureFlagService: sl.isRegistered<FeatureFlagService>()
+          ? sl<FeatureFlagService>()
+          : null,
+    ),
+  );
+  sl.registerLazySingleton<LanguagePatternLearningService>(
+    () => LanguagePatternLearningService(
+      agentIdService: sl<AgentIdService>(),
+    ),
+  );
+  sl.registerLazySingleton<LanguageProfileDiagnosticsService>(
+    () => LanguageProfileDiagnosticsService(
+      languageLearningService: sl<LanguagePatternLearningService>(),
+      agentIdService: sl<AgentIdService>(),
+    ),
+  );
+
+  // AI2AI Learning Service (Phase 7, Week 38)
+  // Wrapper service for AI2AI learning methods UI
+  sl.registerLazySingleton(
+    () => AI2AILearning(
+      chatAnalyzer: sl<AI2AIChatAnalyzer>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => Ai2AiRendezvousStore(
+      storageService: sl<StorageService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => const MeshSegmentProfileResolver(),
+  );
+  sl.registerLazySingleton(
+    () => MeshSegmentCredentialFactory(
+      signatureRepository: sl.isRegistered<SignatureRepository>()
+          ? sl<SignatureRepository>()
+          : null,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MeshAnnounceAttestationFactory(
+      signatureRepository: sl.isRegistered<SignatureRepository>()
+          ? sl<SignatureRepository>()
+          : null,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => const Ai2AiRendezvousReleasePolicy(),
+  );
+  sl.registerLazySingleton(
+    () => Ai2AiExchangeSubmissionLane(
+      ai2aiKernel: sl<Ai2AiKernelContract>(),
+      transportAdapter: sl.isRegistered<LegacyAi2AiExchangeTransportAdapter>()
+          ? sl<LegacyAi2AiExchangeTransportAdapter>()
+          : null,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => Ai2AiRendezvousScheduler(
+      store: sl<Ai2AiRendezvousStore>(),
+      submissionLane: sl<Ai2AiExchangeSubmissionLane>(),
+      releasePolicy: sl<Ai2AiRendezvousReleasePolicy>(),
+      connectivity: sl<Connectivity>(),
+      hasTrustedRoute: (peerId) async {
+        final featureFlagService = sl.isRegistered<FeatureFlagService>()
+            ? sl<FeatureFlagService>()
+            : null;
+        if (featureFlagService == null) {
+          return true;
+        }
+        final reticulumEnabled = await featureFlagService.isEnabled(
+          GovernanceFeatureFlags.reticulumMeshTransportControlPlaneV1,
+          defaultValue: false,
+        );
+        final trustedEnforcementEnabled = reticulumEnabled &&
+            await featureFlagService.isEnabled(
+              GovernanceFeatureFlags.trustedMeshAnnounceEnforcementV1,
+              defaultValue: false,
+            );
+        if (!trustedEnforcementEnabled ||
+            !sl.isRegistered<MeshAnnounceLedger>()) {
+          return true;
+        }
+        final activeAnnounces =
+            sl<MeshAnnounceLedger>().activeRecords(destinationId: peerId);
+        return activeAnnounces.any((record) => record.attestationId != null);
+      },
+    ),
+  );
+  sl.registerLazySingleton(
+    () => Ai2AiRendezvousRuntimeSignalLane(
+      scheduler: sl<Ai2AiRendezvousScheduler>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => Ai2AiBackgroundExecutionLane(
+      scheduler: sl<Ai2AiRendezvousScheduler>(),
+    ),
+  );
+  sl.registerLazySingleton<BackgroundPlatformWakePort>(
+    () => MethodChannelBackgroundPlatformWakeBridge(),
+  );
+  sl.registerLazySingleton(
+    () => MeshBackgroundExecutionLane(
+      discovery: sl<DeviceDiscoveryService>(),
+      packetCodec: sl<GovernedMeshPacketCodec>(),
+      routeLedger: sl<MeshRouteLedger>(),
+      custodyOutbox: sl<MeshCustodyOutbox>(),
+      interfaceRegistry: sl<MeshInterfaceRegistry>(),
+      announceLedger: sl<MeshAnnounceLedger>(),
+      localUserId: sl.isRegistered<AppAuthService>()
+          ? sl<AppAuthService>().currentUserId
+          : null,
+      governanceBindingService:
+          sl.isRegistered<Ai2AiMeshGovernanceBindingService>()
+              ? sl<Ai2AiMeshGovernanceBindingService>()
+              : null,
+      segmentProfileResolver: sl.isRegistered<MeshSegmentProfileResolver>()
+          ? sl<MeshSegmentProfileResolver>()
+          : null,
+      segmentCredentialFactory: sl.isRegistered<MeshSegmentCredentialFactory>()
+          ? sl<MeshSegmentCredentialFactory>()
+          : null,
+      segmentCredentialRefreshService:
+          sl.isRegistered<MeshSegmentCredentialRefreshService>()
+              ? sl<MeshSegmentCredentialRefreshService>()
+              : null,
+      segmentRevocationStore: sl.isRegistered<MeshSegmentRevocationStore>()
+          ? sl<MeshSegmentRevocationStore>()
+          : null,
+      announceAttestationFactory:
+          sl.isRegistered<MeshAnnounceAttestationFactory>()
+              ? sl<MeshAnnounceAttestationFactory>()
+              : null,
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => Ai2AiChatEventIntakeService(
+      chatAnalyzer: sl<AI2AIChatAnalyzer>(),
+      humanLanguageBoundaryReviewLane: sl<HumanLanguageBoundaryReviewLane>(),
+      agentIdService: sl<AgentIdService>(),
+      governanceBindingService:
+          sl.isRegistered<Ai2AiMeshGovernanceBindingService>()
+              ? sl<Ai2AiMeshGovernanceBindingService>()
+              : null,
+      ai2aiKernel: sl.isRegistered<Ai2AiKernelContract>()
+          ? sl<Ai2AiKernelContract>()
+          : null,
+      exchangeSubmissionLane: sl.isRegistered<Ai2AiExchangeSubmissionLane>()
+          ? sl<Ai2AiExchangeSubmissionLane>()
+          : null,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => DomainExecutionFieldScenarioRunner(
+      meshKernel: sl<MeshKernelContract>(),
+      ai2aiKernel: sl<Ai2AiKernelContract>(),
+      conformanceService: sl<DomainExecutionConformanceService>(),
+      routeLedger: sl<MeshRouteLedger>(),
+      custodyOutbox: sl<MeshCustodyOutbox>(),
+      announceLedger: sl<MeshAnnounceLedger>(),
+      interfaceRegistry: sl<MeshInterfaceRegistry>(),
+      meshRuntimeStateFrameService: sl<MeshRuntimeStateFrameService>(),
+      ai2aiRuntimeStateFrameService: sl<Ai2AiRuntimeStateFrameService>(),
+      networkActivityMonitor: sl<NetworkActivityMonitor>(),
+      discovery: sl<DeviceDiscoveryService>(),
+      segmentProfileResolver: sl<MeshSegmentProfileResolver>(),
+      segmentCredentialFactory: sl<MeshSegmentCredentialFactory>(),
+      announceAttestationFactory: sl<MeshAnnounceAttestationFactory>(),
+      meshCredentialRefreshService: sl<MeshSegmentCredentialRefreshService>(),
+      meshRevocationStore: sl<MeshSegmentRevocationStore>(),
+      ambientSocialRealityLearningService:
+          sl<AmbientSocialRealityLearningService>(),
+      ai2aiExchangeSubmissionLane: sl<Ai2AiExchangeSubmissionLane>(),
+      ai2aiRendezvousScheduler: sl<Ai2AiRendezvousScheduler>(),
+      proofStore: sl<DomainExecutionFieldScenarioProofStore>(),
+      trustedAnnounceEnforcementEnabled: true,
+    ),
+  );
 
   // UserFeedbackAnalyzer (Philosophy: "Dynamic dimension discovery through user feedback analysis")
   // Advanced feedback learning system that extracts implicit personality dimensions
@@ -246,6 +635,78 @@ Future<void> registerAIServices(GetIt sl) async {
     final prefs = sl<SharedPreferencesCompat>();
     return UsagePatternTracker(prefs);
   });
+
+  sl.registerLazySingleton<ForecastKernel>(() => buildNativeForecastKernel());
+  logger.debug('✅ [DI-AI] ForecastKernel registered (native-first)');
+
+  sl.registerLazySingleton(() => const ReplayYearCompletenessService());
+  logger.debug('✅ [DI-AI] ReplayYearCompletenessService registered');
+
+  sl.registerLazySingleton(
+    () => AuthoritativeReplayYearSelectionService(
+      completenessService: sl<ReplayYearCompletenessService>(),
+    ),
+  );
+  logger.debug('✅ [DI-AI] AuthoritativeReplayYearSelectionService registered');
+
+  sl.registerLazySingleton(
+    () => ForecastSkillLedger(
+      prefs: sl<SharedPreferencesCompat>(),
+    ),
+  );
+  logger.debug('✅ [DI-AI] ForecastSkillLedger registered');
+
+  sl.registerLazySingleton(
+    () => ForecastEnsembleService(
+      skillLedger: sl<ForecastSkillLedger>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ForecastCalibrationService(
+      skillLedger: sl<ForecastSkillLedger>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ForecastRegimeShiftService(
+      skillLedger: sl<ForecastSkillLedger>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ForecastStrengthService(
+      ensembleService: sl<ForecastEnsembleService>(),
+      calibrationService: sl<ForecastCalibrationService>(),
+      regimeShiftService: sl<ForecastRegimeShiftService>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ForecastResolutionService(
+      skillLedger: sl<ForecastSkillLedger>(),
+    ),
+  );
+  logger.debug('✅ [DI-AI] Forecast strength services registered');
+
+  sl.registerLazySingleton(
+    () => ForecastGovernanceProjectionService(
+      forecastKernel: sl<ForecastKernel>(),
+      temporalKernel: sl<TemporalKernel>(),
+      skillLedger: sl<ForecastSkillLedger>(),
+      ensembleService: sl<ForecastEnsembleService>(),
+      calibrationService: sl<ForecastCalibrationService>(),
+      regimeShiftService: sl<ForecastRegimeShiftService>(),
+      forecastStrengthService: sl<ForecastStrengthService>(),
+      forecastResolutionService: sl<ForecastResolutionService>(),
+    ),
+  );
+  logger.debug('✅ [DI-AI] ForecastGovernanceProjectionService registered');
+
+  sl.registerLazySingleton(
+    () => GovernedForecastRuntimeService(
+      forecastGovernanceProjectionService:
+          sl<ForecastGovernanceProjectionService>(),
+      replayYearSelectionService: sl<AuthoritativeReplayYearSelectionService>(),
+    ),
+  );
+  logger.debug('✅ [DI-AI] GovernedForecastRuntimeService registered');
 
   // AI2AI Protocol (Philosophy: "The Key Works Everywhere")
   // Phase 14: Updated to use MessageEncryptionService (Signal Protocol ready)
@@ -293,6 +754,9 @@ Future<void> registerAIServices(GetIt sl) async {
     return AI2AIProtocol(
       encryptionService: sl<MessageEncryptionService>(),
       rateLimiter: rateLimiter,
+      temporalLineageSink: sl.isRegistered<TemporalKernel>()
+          ? TemporalKernelLineageSink(temporalKernel: sl<TemporalKernel>())
+          : null,
     );
   });
 
@@ -306,6 +770,28 @@ Future<void> registerAIServices(GetIt sl) async {
         connectivity: sl<Connectivity>(),
       ));
 
+  if (!sl.isRegistered<AmbientSocialRealityLearningService>()) {
+    sl.registerLazySingleton<AmbientSocialRealityLearningService>(
+      () => AmbientSocialRealityLearningService(
+        whatIngestion: sl.isRegistered<WhatRuntimeIngestionService>()
+            ? sl<WhatRuntimeIngestionService>()
+            : null,
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<PeerInteractionOutcomeLearningService>()) {
+    sl.registerLazySingleton<PeerInteractionOutcomeLearningService>(
+      () => PeerInteractionOutcomeLearningService(
+        governanceKernelService: sl.isRegistered<GovernanceKernelService>()
+            ? sl<GovernanceKernelService>()
+            : null,
+        ambientSocialRealityLearningService:
+            sl<AmbientSocialRealityLearningService>(),
+      ),
+    );
+  }
+
   // VibeConnectionOrchestrator + AI2AIRealtimeService wiring
   // Philosophy: "The Key Works Everywhere" - offline AI2AI via PersonalityLearning
   sl.registerLazySingleton<VibeConnectionOrchestrator>(() {
@@ -314,9 +800,19 @@ Future<void> registerAIServices(GetIt sl) async {
     final deviceDiscovery = sl<DeviceDiscoveryService>();
     final advertisingService = sl<PersonalityAdvertisingService>();
     final personalityLearning = sl<PersonalityLearning>();
-    final ai2aiProtocol = sl<AI2AIProtocol>();
+    final legacyProtocolCodecAdapter = sl<LegacyProtocolCodecAdapter>();
     final signalKeyManager =
         sl.isRegistered<SignalKeyManager>() ? sl<SignalKeyManager>() : null;
+    final ai2aiMeshGovernanceBindingService =
+        sl.isRegistered<Ai2AiMeshGovernanceBindingService>()
+            ? sl<Ai2AiMeshGovernanceBindingService>()
+            : null;
+    final meshPacketCodec = sl.isRegistered<GovernedMeshPacketCodec>()
+        ? sl<GovernedMeshPacketCodec>()
+        : null;
+    final meshInboundDecodeLane = sl.isRegistered<MeshInboundDecodeLane>()
+        ? sl<MeshInboundDecodeLane>()
+        : null;
     final prefs = sl<SharedPreferencesCompat>();
 
     final orchestrator = VibeConnectionOrchestrator(
@@ -325,8 +821,17 @@ Future<void> registerAIServices(GetIt sl) async {
       deviceDiscovery: deviceDiscovery,
       advertisingService: advertisingService,
       personalityLearning: personalityLearning,
-      protocol: ai2aiProtocol,
+      peerInteractionOutcomeLearningService:
+          sl<PeerInteractionOutcomeLearningService>(),
+      legacyProtocolCodecAdapter: legacyProtocolCodecAdapter,
+      meshPacketCodec: meshPacketCodec,
+      meshInboundDecodeLane: meshInboundDecodeLane,
       signalKeyManager: signalKeyManager,
+      ai2aiMeshGovernanceBindingService: ai2aiMeshGovernanceBindingService,
+      ai2aiChatEventIntakeService: sl<Ai2AiChatEventIntakeService>(),
+      featureFlagService: sl.isRegistered<FeatureFlagService>()
+          ? sl<FeatureFlagService>()
+          : null,
       prefs: prefs,
     );
 
@@ -472,11 +977,9 @@ Future<void> registerAIServices(GetIt sl) async {
   // Inference Orchestrator
   sl.registerLazySingleton(() {
     final config = sl<ConfigService>();
-    final llmService = sl<LLMService>();
     final onnxScorer = sl<OnnxDimensionScorer>();
     return InferenceOrchestrator(
       onnxScorer: onnxScorer,
-      llmService: llmService,
       config: config,
     );
   });
@@ -628,6 +1131,12 @@ Future<void> registerAIServices(GetIt sl) async {
       knotFabricService: sl<KnotFabricService>(),
       knotStorageService: sl<KnotStorageService>(),
       entitySignatureService: sl<EntitySignatureService>(),
+      whatKernel: sl.isRegistered<WhatKernelContract>()
+          ? sl<WhatKernelContract>()
+          : null,
+      headlessOsHost: sl.isRegistered<HeadlessAvraiOsHost>()
+          ? sl<HeadlessAvraiOsHost>()
+          : null,
       quantumMatchingController: sl.isRegistered<QuantumMatchingController>()
           ? sl<QuantumMatchingController>()
           : null,
@@ -771,12 +1280,32 @@ Future<void> registerAIServices(GetIt sl) async {
 
   // Phase 3: Unified Chat Services
   sl.registerLazySingleton(() => UserNameResolutionService());
+  sl.registerLazySingleton(() => BhamRouteLearningService());
+  sl.registerLazySingleton(() =>
+      BhamRoutePlanner(routeLearningService: sl<BhamRouteLearningService>()));
+  sl.registerLazySingleton(() => const BhamTransportPolicy());
+  sl.registerLazySingleton(() => BhamMessagingRetentionService());
+  sl.registerLazySingleton(() => BhamNotificationPolicyService());
+  sl.registerLazySingleton(() => DirectMatchService());
+  sl.registerLazySingleton(() => AdminSupportChatService(
+        routePlanner: sl<BhamRoutePlanner>(),
+        routeLearningService: sl<BhamRouteLearningService>(),
+        transportPolicy: sl<BhamTransportPolicy>(),
+      ));
+  sl.registerLazySingleton(() => EventChatService(
+        routePlanner: sl<BhamRoutePlanner>(),
+        routeLearningService: sl<BhamRouteLearningService>(),
+        transportPolicy: sl<BhamTransportPolicy>(),
+      ));
   sl.registerLazySingleton(() => PersonalityAgentChatService(
-        llmService: sl<LLMService>(),
+        languageRuntimeService: sl<LanguageRuntimeService>(),
         encryptionService: sl<MessageEncryptionService>(),
         agentIdService: sl<AgentIdService>(),
         personalityLearning: sl<PersonalityLearning>(),
         searchRepository: sl<HybridSearchRepository>(),
+        headlessOsHost: sl.isRegistered<HeadlessAvraiOsHost>()
+            ? sl<HeadlessAvraiOsHost>()
+            : null,
       ));
   // DM blob store (payloadless realtime)
   if (!sl.isRegistered<DmMessageStore>()) {
@@ -801,6 +1330,14 @@ Future<void> registerAIServices(GetIt sl) async {
             sl.isRegistered<RealtimeBackend>() ? sl<RealtimeBackend>() : null,
         atomicClock: sl<AtomicClockService>(),
         dmStore: sl<DmMessageStore>(),
+        routePlanner: sl<BhamRoutePlanner>(),
+        routeLearningService: sl<BhamRouteLearningService>(),
+        transportPolicy: sl<BhamTransportPolicy>(),
+        humanLanguageBoundaryReviewLane: sl<HumanLanguageBoundaryReviewLane>(),
+        ai2aiChatEventIntakeService: sl<Ai2AiChatEventIntakeService>(),
+        headlessOsHost: sl.isRegistered<HeadlessAvraiOsHost>()
+            ? sl<HeadlessAvraiOsHost>()
+            : null,
       ));
   sl.registerLazySingleton(() => CommunityChatService(
         encryptionService: sl<MessageEncryptionService>(),
@@ -811,6 +1348,14 @@ Future<void> registerAIServices(GetIt sl) async {
         dmStore: sl<DmMessageStore>(),
         senderKeyService: sl<CommunitySenderKeyService>(),
         communityMessageStore: sl<CommunityMessageStore>(),
+        routePlanner: sl<BhamRoutePlanner>(),
+        routeLearningService: sl<BhamRouteLearningService>(),
+        transportPolicy: sl<BhamTransportPolicy>(),
+        humanLanguageBoundaryReviewLane: sl<HumanLanguageBoundaryReviewLane>(),
+        ai2aiChatEventIntakeService: sl<Ai2AiChatEventIntakeService>(),
+        headlessOsHost: sl.isRegistered<HeadlessAvraiOsHost>()
+            ? sl<HeadlessAvraiOsHost>()
+            : null,
       ));
 
   // Community Service (for community chat member lists)
@@ -848,6 +1393,24 @@ Future<void> registerAIServices(GetIt sl) async {
               : null,
         ));
   }
+  if (!sl.isRegistered<ClubService>()) {
+    sl.registerLazySingleton<ClubService>(() => ClubService(
+          communityService: sl<CommunityService>(),
+          storageService:
+              sl.isRegistered<StorageService>() ? sl<StorageService>() : null,
+        ));
+  }
+  sl.registerLazySingleton(() => MessagingRuntimeService(
+        personalityAgentChatService: sl<PersonalityAgentChatService>(),
+        friendChatService: sl<FriendChatService>(),
+        communityChatService: sl<CommunityChatService>(),
+        communityService: sl<CommunityService>(),
+        clubService: sl<ClubService>(),
+        adminSupportChatService: sl<AdminSupportChatService>(),
+        eventChatService: sl<EventChatService>(),
+        directMatchService: sl<DirectMatchService>(),
+        retentionService: sl<BhamMessagingRetentionService>(),
+      ));
 
   // Anonymous Communication Protocol (Phase 14: Signal Protocol ready)
   sl.registerLazySingleton(() => ai2ai.AnonymousCommunicationProtocol(
@@ -861,21 +1424,43 @@ Future<void> registerAIServices(GetIt sl) async {
         supabaseService:
             sl.isRegistered<SupabaseService>() ? sl<SupabaseService>() : null,
       ));
+  sl.registerLazySingleton<LegacyAi2AiExchangeTransportAdapter>(
+    () => AnonymousAi2AiExchangeTransportAdapter(
+      protocol: sl<ai2ai.AnonymousCommunicationProtocol>(),
+    ),
+  );
+  sl.registerLazySingleton<LegacyConversationTransportAdapter>(
+    () => AnonymousConversationTransportAdapter(
+      protocol: sl<ai2ai.AnonymousCommunicationProtocol>(),
+    ),
+  );
+  sl.registerLazySingleton<LegacyProtocolCodecAdapter>(
+    () => Ai2AiProtocolCodecAdapter(
+      protocol: sl<AI2AIProtocol>(),
+    ),
+  );
+  sl.registerLazySingleton(() => ConversationOrchestrationLane(
+        transportAdapter: sl<LegacyConversationTransportAdapter>(),
+      ));
 
   // Business-Expert Chat Service (AI2AI routing)
   sl.registerLazySingleton(() => BusinessExpertChatServiceAI2AI(
-        ai2aiProtocol: sl<ai2ai.AnonymousCommunicationProtocol>(),
+        conversationOrchestrationLane: sl<ConversationOrchestrationLane>(),
         encryptionService: sl<MessageEncryptionService>(),
         businessService: sl<BusinessAccountService>(),
         agentIdService: sl<AgentIdService>(),
+        humanLanguageBoundaryReviewLane: sl<HumanLanguageBoundaryReviewLane>(),
+        ai2aiChatEventIntakeService: sl<Ai2AiChatEventIntakeService>(),
       ));
 
   // Business-Business Chat Service (AI2AI routing)
   sl.registerLazySingleton(() => BusinessBusinessChatServiceAI2AI(
-        ai2aiProtocol: sl<ai2ai.AnonymousCommunicationProtocol>(),
+        conversationOrchestrationLane: sl<ConversationOrchestrationLane>(),
         encryptionService: sl<MessageEncryptionService>(),
         businessService: sl<BusinessAccountService>(),
         agentIdService: sl<AgentIdService>(),
+        humanLanguageBoundaryReviewLane: sl<HumanLanguageBoundaryReviewLane>(),
+        ai2aiChatEventIntakeService: sl<Ai2AiChatEventIntakeService>(),
       ));
 
   // Business-Expert Outreach Service (vibe-based matching)
@@ -1011,6 +1596,42 @@ Future<void> registerAIServices(GetIt sl) async {
   // v0.2 Physical Connection Sprint Services
   // ============================================================
 
+  if (!sl.isRegistered<VibeKernelPersistenceService>()) {
+    final persistenceService = VibeKernelPersistenceService(
+      storage: sl<StorageService>(),
+    );
+    await persistenceService.restore();
+    sl.registerSingleton<VibeKernelPersistenceService>(persistenceService);
+    if (!sl.isRegistered<CanonicalVibeMigrationService>()) {
+      final migrationService = CanonicalVibeMigrationService(
+        storage: sl<StorageService>(),
+        persistenceService: persistenceService,
+      );
+      await migrationService.runIfNeeded();
+      sl.registerSingleton<CanonicalVibeMigrationService>(migrationService);
+    }
+  }
+
+  if (!sl.isRegistered<CanonicalVibeProjectionService>()) {
+    sl.registerLazySingleton<CanonicalVibeProjectionService>(
+      () => CanonicalVibeProjectionService(
+        agentIdService: sl<AgentIdService>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<HierarchicalLocalityVibeProjector>()) {
+    sl.registerLazySingleton<HierarchicalLocalityVibeProjector>(
+      () => HierarchicalLocalityVibeProjector(),
+    );
+  }
+
+  if (!sl.isRegistered<ScopedContextVibeProjector>()) {
+    sl.registerLazySingleton<ScopedContextVibeProjector>(
+      () => ScopedContextVibeProjector(),
+    );
+  }
+
   if (!sl.isRegistered<SemanticKnowledgeStore>()) {
     sl.registerLazySingleton<SemanticKnowledgeStore>(
         () => InMemorySemanticStore());
@@ -1019,6 +1640,64 @@ Future<void> registerAIServices(GetIt sl) async {
   if (!sl.isRegistered<AirGapContract>()) {
     sl.registerLazySingleton<AirGapContract>(
         () => TupleExtractionEngine(sl<SemanticKnowledgeStore>()));
+  }
+
+  if (!sl.isRegistered<EventPlanningTelemetryService>()) {
+    sl.registerLazySingleton<EventPlanningTelemetryService>(
+      () => EventPlanningTelemetryService(
+        prefs: sl<SharedPreferencesCompat>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<EventPlanningIntakeAdapter>()) {
+    sl.registerLazySingleton<EventPlanningIntakeAdapter>(
+      () => EventPlanningIntakeAdapter(
+        sl<AirGapContract>(),
+        whatIngestion: sl.isRegistered<WhatRuntimeIngestionService>()
+            ? sl<WhatRuntimeIngestionService>()
+            : null,
+        geoHierarchyService: sl.isRegistered<GeoHierarchyService>()
+            ? sl<GeoHierarchyService>()
+            : null,
+        telemetryService: sl.isRegistered<EventPlanningTelemetryService>()
+            ? sl<EventPlanningTelemetryService>()
+            : null,
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<BetaEventPlanningSuggestionService>()) {
+    sl.registerLazySingleton<BetaEventPlanningSuggestionService>(
+      () => const BetaEventPlanningSuggestionService(),
+    );
+  }
+
+  if (!sl.isRegistered<EventLearningSignalService>()) {
+    sl.registerLazySingleton<EventLearningSignalService>(
+      () => EventLearningSignalService(
+        continuousLearningSystem: sl.isRegistered<ContinuousLearningSystem>()
+            ? sl<ContinuousLearningSystem>()
+            : null,
+        whatIngestion: sl.isRegistered<WhatRuntimeIngestionService>()
+            ? sl<WhatRuntimeIngestionService>()
+            : null,
+        airGap: sl<AirGapContract>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<EventHostDebriefService>()) {
+    sl.registerLazySingleton<EventHostDebriefService>(
+      () => EventHostDebriefService(
+        eventService: sl<ExpertiseEventService>(),
+        successAnalysisService: sl<EventSuccessAnalysisService>(),
+        learningSignalService: sl<EventLearningSignalService>(),
+        telemetryService: sl.isRegistered<EventPlanningTelemetryService>()
+            ? sl<EventPlanningTelemetryService>()
+            : null,
+      ),
+    );
   }
 
   if (!sl.isRegistered<GovernanceKernelService>()) {
@@ -1037,19 +1716,71 @@ Future<void> registerAIServices(GetIt sl) async {
     sl.registerLazySingleton<SmartPassiveCollectionService>(
       () => SmartPassiveCollectionService(
         motionService: sl<DeviceMotionService>(),
+        deviceDiscoveryService: sl<DeviceDiscoveryService>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<PassiveDwellRealityLearningService>()) {
+    sl.registerLazySingleton<PassiveDwellRealityLearningService>(
+      () => PassiveDwellRealityLearningService(
+        ambientSocialLearningService: sl<AmbientSocialRealityLearningService>(),
       ),
     );
   }
 
   if (!sl.isRegistered<DwellEventIntakeAdapter>()) {
     sl.registerLazySingleton<DwellEventIntakeAdapter>(
-      () => DwellEventIntakeAdapter(sl<AirGapContract>()),
+      () => DwellEventIntakeAdapter(
+        sl<AirGapContract>(),
+        whatIngestion: sl.isRegistered<WhatRuntimeIngestionService>()
+            ? sl<WhatRuntimeIngestionService>()
+            : null,
+        realityLearningService: sl<PassiveDwellRealityLearningService>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<PassiveKernelSignalIntakeLane>()) {
+    sl.registerLazySingleton<PassiveKernelSignalIntakeLane>(
+      () => PassiveKernelSignalIntakeLane(
+        passiveCollectionService: sl<SmartPassiveCollectionService>(),
+        dwellEventIntakeAdapter: sl<DwellEventIntakeAdapter>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<HeadlessBackgroundRuntimeCoordinator>()) {
+    sl.registerLazySingleton<HeadlessBackgroundRuntimeCoordinator>(
+      () => HeadlessBackgroundRuntimeCoordinator(
+        bootstrapService: sl<HeadlessAvraiOsBootstrapService>(),
+        meshLane: sl<MeshBackgroundExecutionLane>(),
+        ai2aiLane: sl<Ai2AiBackgroundExecutionLane>(),
+        passiveLane: sl<PassiveKernelSignalIntakeLane>(),
+        segmentLifecycleLane: sl<MeshSegmentLifecycleRuntimeLane>(),
+        featureFlagService: sl.isRegistered<FeatureFlagService>()
+            ? sl<FeatureFlagService>()
+            : null,
+        platformWakePort: sl.isRegistered<BackgroundPlatformWakePort>()
+            ? sl<BackgroundPlatformWakePort>()
+            : null,
+        runRecordStore: sl.isRegistered<BackgroundWakeExecutionRunRecordStore>()
+            ? sl<BackgroundWakeExecutionRunRecordStore>()
+            : null,
+        ambientSocialLearningService:
+            sl.isRegistered<AmbientSocialRealityLearningService>()
+                ? sl<AmbientSocialRealityLearningService>()
+                : null,
+        connectivity: sl<Connectivity>(),
+        foregroundRuntimeSignalLane:
+            sl.isRegistered<Ai2AiRendezvousRuntimeSignalLane>()
+                ? sl<Ai2AiRendezvousRuntimeSignalLane>()
+                : null,
+      ),
     );
   }
 
-  if (!sl.isRegistered<ArchetypePatternLearner>()) {
-    sl.registerLazySingleton<ArchetypePatternLearner>(
-      () => ArchetypePatternLearner(),
+  if (!sl.isRegistered<ArchetypeLearningRuntime>()) {
+    sl.registerLazySingleton<ArchetypeLearningRuntime>(
+      () => KnotBackedArchetypeLearningRuntime(),
     );
   }
 
@@ -1059,24 +1790,26 @@ Future<void> registerAIServices(GetIt sl) async {
     );
   }
 
-  if (!sl.isRegistered<NightlyDigestionJob>()) {
-    sl.registerLazySingleton<NightlyDigestionJob>(
-      () => NightlyDigestionJob(
+  if (!sl.isRegistered<AdaptiveDigestionJob>()) {
+    sl.registerLazySingleton<AdaptiveDigestionJob>(
+      () => AdaptiveDigestionJob(
         sl<SmartPassiveCollectionService>(),
         sl<DwellEventIntakeAdapter>(),
         sl<AppDatabase>(),
         sl<PheromoneMeshRoutingService>(),
-        sl<ArchetypePatternLearner>(),
-        sl<LLMService>(),
+        sl<ArchetypeLearningRuntime>(),
+        sl<LanguageRuntimeService>(),
         sl<SharedPreferences>(),
       ),
     );
 
-    // Register the job with the scheduler
-    Future.microtask(() {
-      sl<BatteryAdaptiveBatchScheduler>()
-          .scheduleJob(sl<NightlyDigestionJob>());
-    });
+    // Avoid test-time side effects when DI is being bootstrapped for integration suites.
+    if (_shouldAutoScheduleAdaptiveDigestion) {
+      Future.microtask(() {
+        sl<BatteryAdaptiveBatchScheduler>()
+            .scheduleJob(sl<AdaptiveDigestionJob>());
+      });
+    }
   }
 
   if (!sl.isRegistered<LocalityFederatedExchangeService>()) {
@@ -1093,11 +1826,13 @@ Future<void> registerAIServices(GetIt sl) async {
       ),
     );
 
-    // Register the job with the scheduler
-    Future.microtask(() {
-      sl<BatteryAdaptiveBatchScheduler>()
-          .scheduleJob(sl<LocalityFederatedExchangeJob>());
-    });
+    // Avoid test-time side effects when DI is being bootstrapped for integration suites.
+    if (_shouldAutoScheduleAdaptiveDigestion) {
+      Future.microtask(() {
+        sl<BatteryAdaptiveBatchScheduler>()
+            .scheduleJob(sl<LocalityFederatedExchangeJob>());
+      });
+    }
   }
 
   // Integrations
@@ -1106,6 +1841,11 @@ Future<void> registerAIServices(GetIt sl) async {
       () => SpotifyAirgapIntegrationService(
         airGapEngine: sl<AirGapContract>() as TupleExtractionEngine,
         knowledgeStore: sl<SemanticKnowledgeStore>(),
+        whatIngestion: sl.isRegistered<WhatRuntimeIngestionService>()
+            ? sl<WhatRuntimeIngestionService>()
+            : null,
+        agentIdService:
+            sl.isRegistered<AgentIdService>() ? sl<AgentIdService>() : null,
       ),
     );
   }

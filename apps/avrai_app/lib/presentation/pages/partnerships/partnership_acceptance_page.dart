@@ -11,7 +11,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/widgets/partnerships/revenue_split_display.dart';
 import 'package:avrai/presentation/widgets/partnerships/compatibility_badge.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Partnership Acceptance Page
@@ -164,7 +164,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading || _event == null) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Partnership Proposal',
         appBarBackgroundColor: AppTheme.primaryColor,
         appBarForegroundColor: AppColors.white,
@@ -177,7 +177,7 @@ class _PartnershipAcceptancePageState extends State<PartnershipAcceptancePage> {
     final agreement = widget.partnership.agreement;
     final revenueSplit = widget.partnership.revenueSplit;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Partnership Proposal',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

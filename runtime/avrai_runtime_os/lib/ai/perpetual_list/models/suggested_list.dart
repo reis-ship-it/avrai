@@ -227,6 +227,11 @@ enum ListInteractionType {
 
 /// Record of user interaction with a suggested list
 class ListInteraction {
+  static const String negativePreferenceIntentMetadataKey =
+      'negativePreferenceIntent';
+  static const String softIgnoreIntentValue = 'soft_ignore';
+  static const String hardNotInterestedIntentValue = 'hard_not_interested';
+
   /// Type of interaction
   final ListInteractionType type;
 
@@ -266,6 +271,27 @@ class ListInteraction {
 
   /// Check if this was a neutral interaction
   bool get isNeutral => type == ListInteractionType.viewed;
+
+  String? get negativePreferenceIntent =>
+      metadata[negativePreferenceIntentMetadataKey] as String?;
+
+  bool get isSoftIgnore => negativePreferenceIntent == softIgnoreIntentValue;
+
+  bool get isHardNotInterested =>
+      negativePreferenceIntent == hardNotInterestedIntentValue;
+
+  double get learningWeight {
+    if (!isNegative) {
+      return 1.0;
+    }
+    if (isSoftIgnore) {
+      return 0.5;
+    }
+    if (isHardNotInterested) {
+      return 1.2;
+    }
+    return 1.0;
+  }
 
   /// Convert to JSON
   Map<String, dynamic> toJson() {

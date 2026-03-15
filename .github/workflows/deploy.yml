@@ -10,10 +10,51 @@ permissions:
   id-token: write
 
 jobs:
+  security-kernel-readiness:
+    name: Security Kernel Readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.6'
+        channel: 'stable'
+        cache: true
+
+    - name: Bootstrap app CI environment
+      run: bash scripts/ci/bootstrap_avrai_app_ci_env.sh
+
+    - name: Queue security code-change triggers from git diff
+      env:
+        SECURITY_TRIGGER_ACTOR_ALIAS: github_actions_deploy
+        SECURITY_TRIGGER_COMMIT_REF: ${{ github.sha }}
+      run: bash work/scripts/ci/queue_security_code_change_from_git.sh
+
+    - name: Run security kernel activation readiness suite
+      run: bash work/scripts/run_security_kernel_activation_suite.sh
+
+    - name: Publish security readiness summary
+      if: always()
+      run: |
+        {
+          echo "## Security Kernel Readiness"
+          echo "- Code-change trigger ingress queued from git diff for \`${GITHUB_SHA}\`."
+          echo "- Focused security activation suite completed successfully."
+          echo "- All deploy/build jobs are blocked on this readiness job."
+        } >> "$GITHUB_STEP_SUMMARY"
+
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: [security-kernel-readiness]
     
     steps:
     - name: Checkout code
@@ -140,6 +181,7 @@ jobs:
     name: Build iOS
     runs-on: macos-latest
     timeout-minutes: 30
+    needs: [security-kernel-readiness]
     
     steps:
     - name: Checkout code
@@ -170,6 +212,7 @@ jobs:
     name: Build Web
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: [security-kernel-readiness]
     
     steps:
     - name: Checkout code

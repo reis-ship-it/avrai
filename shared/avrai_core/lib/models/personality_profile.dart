@@ -614,7 +614,7 @@ class PersonalityProfile {
   String toString() {
     final agentIdPreview =
         agentId.length <= 10 ? agentId : agentId.substring(0, 10);
-    return 'PersonalityProfile(agentId: ${agentIdPreview}..., archetype: $archetype, '
+    return 'PersonalityProfile(agentId: $agentIdPreview..., archetype: $archetype, '
         'generation: $evolutionGeneration, authenticity: ${authenticity.toStringAsFixed(2)})';
   }
 }

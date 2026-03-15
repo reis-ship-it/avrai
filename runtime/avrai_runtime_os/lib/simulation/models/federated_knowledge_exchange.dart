@@ -13,11 +13,12 @@ class FederatedKnowledgeExchange {
   final Map<String, _GlobalGapKnowledge> _globalKnowledgeBase = {};
 
   /// Records a successful "Routine Enhancement" discovery.
-  void recordSuccess(SimulatedHuman human, PointOfInterest poi, double successScore) {
+  void recordSuccess(
+      SimulatedHuman human, PointOfInterest poi, double successScore) {
     if (!_globalKnowledgeBase.containsKey(poi.id)) {
       _globalKnowledgeBase[poi.id] = _GlobalGapKnowledge(poi: poi);
     }
-    
+
     final knowledge = _globalKnowledgeBase[poi.id]!;
     knowledge.addSuccess(successScore);
 

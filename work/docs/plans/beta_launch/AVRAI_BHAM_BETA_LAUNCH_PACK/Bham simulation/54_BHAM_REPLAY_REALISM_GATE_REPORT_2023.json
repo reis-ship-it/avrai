@@ -1,0 +1,167 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "replayYear": 2023,
+  "readyForMonteCarloBaseYear": true,
+  "records": [
+    {
+      "gateId": "isolation",
+      "status": "passed",
+      "rationale": "Replay world is isolated from live runtime and app mutation.",
+      "metrics": {
+        "violationCount": 0
+      }
+    },
+    {
+      "gateId": "population_realism",
+      "status": "passed",
+      "rationale": "Dense Birmingham population, locality coverage, and AVRAI-agent split are present.",
+      "metrics": {
+        "totalPopulation": 669744,
+        "modeledActorCount": 25000,
+        "eligiblePopulation": 562585,
+        "dependentMobilityPopulation": 107159,
+        "localityCoveragePct": 1.0,
+        "under13AgentViolationCount": 0
+      }
+    },
+    {
+      "gateId": "place_venue_graph",
+      "status": "passed",
+      "rationale": "Canonical Birmingham place graph is dense enough for city movement.",
+      "metrics": {
+        "nodeCount": 2615,
+        "venueProfiles": 825,
+        "localityCount": 215
+      }
+    },
+    {
+      "gateId": "event_community_club",
+      "status": "passed",
+      "rationale": "Meaningful citywide 2023 activity coverage is present.",
+      "metrics": {
+        "eventProfiles": 1774,
+        "communityProfiles": 827,
+        "clubCount": 564,
+        "organizationProfiles": 415
+      }
+    },
+    {
+      "gateId": "kernel_participation",
+      "status": "passed",
+      "rationale": "All replay-participating kernels are materially active.",
+      "metrics": {
+        "activeKernelCount": 9,
+        "requiredKernelCount": 9
+      }
+    },
+    {
+      "gateId": "higher_agent_behavior",
+      "status": "passed",
+      "rationale": "Personal, locality, city, and top-level agents all act in the replay year.",
+      "metrics": {
+        "rollupCountsByLevel": {
+          "personal": 64,
+          "locality": 215,
+          "city": 1,
+          "topLevelReality": 1
+        },
+        "behaviorActionCount": 606,
+        "dailyActorActionCount": 116676
+      }
+    },
+    {
+      "gateId": "explainability",
+      "status": "passed",
+      "rationale": "Replay outputs include explicit action explanations and evidence.",
+      "metrics": {
+        "actionExplanationCount": 1206
+      }
+    },
+    {
+      "gateId": "calibration",
+      "status": "passed",
+      "rationale": "Replay metrics are calibrated against Birmingham truth-year targets.",
+      "metrics": {
+        "recordCount": 12,
+        "unresolvedMetricCount": 0
+      }
+    },
+    {
+      "gateId": "actor_kernel_bundle",
+      "status": "passed",
+      "rationale": "All modeled actors carry the full replay kernel bundle.",
+      "metrics": {
+        "actorCount": 25000,
+        "actorsWithFullBundle": 25000
+      }
+    },
+    {
+      "gateId": "connectivity",
+      "status": "passed",
+      "rationale": "All modeled actors have replay-only device and connectivity timelines.",
+      "metrics": {
+        "profileCount": 25000,
+        "transitionCount": 100000
+      }
+    },
+    {
+      "gateId": "exchange_sparsity",
+      "status": "passed",
+      "rationale": "Messaging and group participation are selective rather than universal.",
+      "metrics": {
+        "actorsWithAnyExchange": 12805,
+        "maxThreadParticipationPerActor": 3,
+        "actorCount": 25000
+      }
+    },
+    {
+      "gateId": "ai2ai_simulation",
+      "status": "passed",
+      "rationale": "Replay AI2AI and transport records are simulated inside the isolated replay world.",
+      "metrics": {
+        "ai2aiRecordCount": 11691,
+        "offlineQueuedExchangeCount": 1874
+      }
+    },
+    {
+      "gateId": "routine_realism",
+      "status": "passed",
+      "rationale": "Exchange and attendance behavior remains bounded by actor routine and life-stage.",
+      "metrics": {
+        "dailyActorActionCount": 116676,
+        "actorsWithAnyExchange": 12805,
+        "untrackedWindowCount": 75000
+      }
+    },
+    {
+      "gateId": "training_readiness",
+      "status": "passed",
+      "rationale": "Replay outputs are complete enough to export for storage and Monte Carlo preparation.",
+      "metrics": {
+        "traceCount": 128418,
+        "exchangeEventCount": 11691,
+        "actionTrainingRecordCount": 257898,
+        "counterfactualChoiceCount": 423666,
+        "outcomeLabelCount": 257898,
+        "truthDecisionRecordCount": 389,
+        "higherAgentInterventionTraceCount": 128367,
+        "holdoutEvaluationPassed": true
+      }
+    }
+  ],
+  "unresolvedGaps": [],
+  "metadata": {
+    "virtualNodeCount": 1180,
+    "actionCount": 606,
+    "dailyActorActionCount": 116676,
+    "exchangeEventCount": 11691,
+    "actorsWithConnectivityProfiles": 25000,
+    "untrackedWindowCount": 75000,
+    "actionTrainingRecordCount": 257898,
+    "counterfactualChoiceCount": 423666,
+    "outcomeLabelCount": 257898,
+    "truthDecisionRecordCount": 389,
+    "higherAgentInterventionTraceCount": 128367,
+    "holdoutEvaluationPassed": true
+  }
+}

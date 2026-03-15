@@ -4,7 +4,6 @@ import 'package:avrai/theme/colors.dart';
 
 /// Expertise Pin Widget
 /// Displays a visual pin representing user expertise
-/// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
 class ExpertisePinWidget extends StatelessWidget {
   final ExpertisePin pin;
   final bool showDetails;

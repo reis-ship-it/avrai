@@ -43,10 +43,13 @@ class TupleExtractionEngine implements AirGapContract {
           const Duration(milliseconds: 800)); // Simulate inference time
 
       final String mockExtractedCategory =
-          payload.sourceId.contains('locality_historical_ingestion') 
+          payload.sourceId.contains('locality_historical_ingestion')
               ? 'locality_event'
-              : payload.sourceId.contains('social_media') ? 'preference' : 'routine';
-      final String mockPredicate = payload.sourceId.contains('locality_historical_ingestion')
+              : payload.sourceId.contains('social_media')
+                  ? 'preference'
+                  : 'routine';
+      final String mockPredicate =
+          payload.sourceId.contains('locality_historical_ingestion')
               ? 'hosts_activity'
               : payload.sourceId.contains('social_media')
                   ? 'follows_trend'
@@ -55,8 +58,8 @@ class TupleExtractionEngine implements AirGapContract {
       final tuple = SemanticTuple(
         id: 'mock-uuid-123',
         category: mockExtractedCategory,
-        subject: payload.sourceId.contains('locality_historical_ingestion') 
-            ? 'locality_agent' 
+        subject: payload.sourceId.contains('locality_historical_ingestion')
+            ? 'locality_agent'
             : 'user_self',
         predicate: mockPredicate,
         object: 'abstracted_target_${payload.hashCode}',

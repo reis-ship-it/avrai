@@ -93,7 +93,7 @@ class IncomingLearningInsightProcessingLane {
         timestamp: now,
       );
 
-      await applyInsightForPeer(
+      final applied = await applyInsightForPeer(
         userId: currentUserId,
         personalityLearning: personalityLearning,
         peerId: sender,
@@ -110,6 +110,7 @@ class IncomingLearningInsightProcessingLane {
         sender: sender,
         originId: originId,
         hop: hop,
+        applied: applied,
         learningQuality: learningQuality,
         deltaDimensionsCount: deltas.length,
         forwardGossip: () {

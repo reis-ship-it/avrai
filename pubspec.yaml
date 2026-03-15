@@ -22,6 +22,23 @@ workspace:
 dev_dependencies:
   melos: ^7.3.0
 
-scripts:
-  # Dummy script to make melos happy if needed locally
-  dummy: echo "OK"
+melos:
+  scripts:
+    dummy:
+      run: echo "OK"
+      description: Workspace smoke check.
+    test:
+      run: melos exec --dir-exists=test -c 4 -- flutter test --concurrency=1
+      description: Run all package test suites with stable concurrency.
+    analyze:
+      run: melos exec -c 6 -- flutter analyze
+      description: Run workspace analysis across all packages.
+    check:architecture:
+      run: dart run work/scripts/ci/check_architecture.dart
+      description: Validate package dependency boundaries.
+    check:repo_hygiene:
+      run: dart run work/scripts/ci/check_repo_hygiene.dart
+      description: Fail on tracked generated artifacts.
+    gate:repo_green:
+      run: bash work/scripts/ci/run_repo_green_gate.sh
+      description: Run the validated app-package, iOS, analyze, architecture, and hygiene gates.

@@ -1,11 +1,23 @@
 // Platform-specific integration test for iOS
 // Tests Rust FFI integration on iOS platform
 
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 
 void main() {
+  final runNativeKnotPlatformTests =
+      Platform.environment['RUN_KNOT_PLATFORM_TESTS'] == 'true';
+  if (!runNativeKnotPlatformTests || !Platform.isIOS) {
+    test(
+      'Knot Math iOS integration tests are skipped by default',
+      () {},
+    );
+    return;
+  }
+
   group('Knot Math iOS Integration', () {
     late PersonalityKnotService service;
 

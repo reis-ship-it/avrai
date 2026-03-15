@@ -1,0 +1,124 @@
+{
+  "replayYear": 2023,
+  "candidateCount": 3,
+  "generatedAtUtc": "2026-03-12T06:39:02.159940Z",
+  "candidates": [
+    {
+      "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+      "coverageStatus": "current_spatial_catalog",
+      "recordCount": 29,
+      "sourceUri": "https://www.rpcgb.org/data-and-maps-downloads",
+      "historicalizationTarget": "replace current catalog rows with archived 2023 rows or governed year-valid snapshots",
+      "sampleRecords": [
+        {
+          "recordId": "rpcgb-1",
+          "name": "Regional Transportation Plan",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region"
+        },
+        {
+          "recordId": "rpcgb-2",
+          "name": "Building Communities Program",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region"
+        },
+        {
+          "recordId": "rpcgb-4",
+          "name": "Employment",
+          "entityType": "economic_signal",
+          "locality": "greater_birmingham_region"
+        },
+        {
+          "recordId": "rpcgb-5",
+          "name": "RPCGB Open Data Portal",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region"
+        },
+        {
+          "recordId": "rpcgb-6",
+          "name": "Regional Trends, 2023 (2025)",
+          "entityType": "locality",
+          "locality": "greater_birmingham_region"
+        }
+      ]
+    },
+    {
+      "sourceName": "Eventbrite / Meetup",
+      "coverageStatus": "current_community_event_catalog",
+      "recordCount": 89,
+      "sourceUri": "https://www.eventbrite.com/d/al--birmingham/events/",
+      "historicalizationTarget": "replace current catalog rows with archived 2023 rows or governed year-valid snapshots",
+      "sampleRecords": [
+        {
+          "recordId": "evt-1",
+          "name": "Find Events",
+          "entityType": "event",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "evt-2",
+          "name": "Get Started",
+          "entityType": "event",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "evt-3",
+          "name": "Birmingham Speed Dating for Singles Age 23-39 ♥ Alabama at Denim On 7th",
+          "entityType": "event",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "evt-4",
+          "name": "Stand on Business Steppas Ball",
+          "entityType": "event",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "evt-5",
+          "name": "R&B & SOUTHERN SOUL MONTHLY PARTY SERIES: MIKE CLARK JR. PERFORMING LIVE!!",
+          "entityType": "event",
+          "locality": "bham_metro_regional"
+        }
+      ]
+    },
+    {
+      "sourceName": "IN Birmingham (CVB Calendar)",
+      "coverageStatus": "current_tourism_catalog",
+      "recordCount": 28,
+      "sourceUri": "https://inbirmingham.com/festivals-and-events/",
+      "historicalizationTarget": "replace current catalog rows with archived 2023 rows or governed year-valid snapshots",
+      "sampleRecords": [
+        {
+          "recordId": "inbham-1",
+          "name": "Birmingham Guides",
+          "entityType": "locality",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "inbham-2",
+          "name": "Avondale / Crestwood Visit Avondale / Crestwood",
+          "entityType": "community",
+          "locality": "bham_avondale"
+        },
+        {
+          "recordId": "inbham-3",
+          "name": "Bessemer Visit Bessemer",
+          "entityType": "community",
+          "locality": "bham_metro_regional"
+        },
+        {
+          "recordId": "inbham-4",
+          "name": "Downtown Visit Downtown",
+          "entityType": "community",
+          "locality": "bham_downtown"
+        },
+        {
+          "recordId": "inbham-5",
+          "name": "Fultondale Visit Fultondale",
+          "entityType": "community",
+          "locality": "bham_metro_regional"
+        }
+      ]
+    }
+  ]
+}

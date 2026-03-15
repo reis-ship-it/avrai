@@ -17,9 +17,14 @@ void main() {
         child: const AboutPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('About avrai'), findsOneWidget);
-      expect(find.text('avrai'), findsOneWidget);
-      expect(find.text('know you belong.'), findsOneWidget);
+      expect(find.text('About AVRAI'), findsWidgets);
+      expect(
+        find.textContaining(
+          'A neutral product shell focused on belonging, privacy, and useful discovery.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('What AVRAI is for'), findsOneWidget);
       expect(find.byType(AboutPage), findsOneWidget);
     });
   });

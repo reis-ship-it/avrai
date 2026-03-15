@@ -103,7 +103,10 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert - Page should be scrollable to accommodate widgets
-        expect(find.byType(ListView), findsOneWidget);
+        expect(
+          find.byKey(const Key('continuous_learning_page_scroll')),
+          findsOneWidget,
+        );
         expect(find.byType(Scrollable), findsWidgets);
       });
 
@@ -120,7 +123,10 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert - All widgets should be in a scrollable list
-        expect(find.byType(ListView), findsOneWidget);
+        expect(
+          find.byKey(const Key('continuous_learning_page_scroll')),
+          findsOneWidget,
+        );
       });
     });
 
@@ -262,7 +268,10 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert
-        expect(find.byType(ListView), findsOneWidget);
+        expect(
+          find.byKey(const Key('continuous_learning_page_scroll')),
+          findsOneWidget,
+        );
         expect(find.byType(Scrollable), findsWidgets);
       });
 
@@ -279,7 +288,7 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Scroll to footer
-        final list = find.byType(ListView);
+        final list = find.byKey(const Key('continuous_learning_page_scroll'));
         final target = find.text('Learn more');
         for (var i = 0; i < 20 && target.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));

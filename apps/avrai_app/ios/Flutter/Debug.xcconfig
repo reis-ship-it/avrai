@@ -12,10 +12,8 @@ IPHONEOS_DEPLOYMENT_TARGET = 17.0
 // Provide a real value via untracked `ios/Flutter/Secrets.xcconfig` or CI secrets.
 GOOGLE_MAPS_IOS_API_KEY=
 
-// Note: MLC native libraries are optional for transport-only smoke matrices.
-// Keep these flags out of transport verification builds to avoid duplicate-symbol
-// collisions with knot_math dependencies.
-// Keep tokenizers/sentencepiece libraries out of transport-only smoke builds to avoid
-// duplicate-symbol collisions with knot_math.
-OTHER_LDFLAGS = $(inherited) -Wl,-all_load -lmodel_iphone -ltvm_runtime -ltvm_ffi_static
-LIBRARY_SEARCH_PATHS = $(inherited) "$(SRCROOT)/dist/lib"
+// The beta build ships without the iOS local-LLM runtime bundle.
+// Keep debug/device builds aligned with release so linker settings do not pull
+// simulator-only TVM artifacts into iOS builds.
+OTHER_LDFLAGS = $(inherited)
+LIBRARY_SEARCH_PATHS = $(inherited)

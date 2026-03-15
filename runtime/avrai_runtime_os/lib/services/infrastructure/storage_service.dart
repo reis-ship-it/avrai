@@ -241,7 +241,10 @@ class StorageService implements IStorageService, SpotsKeyValueStore {
   @override
   List<String> getKeys({String box = _defaultBox}) {
     final storage = _getStorageForBox(box);
-    return storage.getKeys().cast<String>();
+    return storage
+        .getKeys()
+        .map<String>((key) => key.toString())
+        .toList(growable: false);
   }
 
   GetStorage _getStorageForBox(String box) {

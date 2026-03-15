@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_core/models/interpretation/interpretation_models.dart';
 import 'package:avrai_runtime_os/ai/ai2ai_learning.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart'
@@ -110,6 +112,68 @@ void main() {
 
           expect(result.chatEvent.messageType, equals(messageType));
         }
+      });
+
+      test('should prefer sanitized boundary artifact over raw chat content',
+          () async {
+        const localUserId = 'test-user-123';
+        final chatEvent = AI2AIChatEvent(
+          eventId: 'chat-artifact-1',
+          messageType: ChatMessageType.personalitySharing,
+          participants: ['user1', 'user2'],
+          messages: [
+            ChatMessage(
+              senderId: 'user1',
+              content: 'zzz',
+              timestamp: DateTime.now(),
+              context: <String, dynamic>{
+                ChatMessage.humanLanguageBoundaryMetadataKey: <String, dynamic>{
+                  'sanitized_artifact': const BoundarySanitizedArtifact(
+                    pseudonymousActorRef: 'anon_u1',
+                    summary:
+                        'Loves to explore and discover new local spots together with friends',
+                    safeClaims: <String>[
+                      'Loves to explore and discover new local spots together with friends',
+                    ],
+                    safeQuestions: <String>[],
+                    safePreferenceSignals: <InterpretationPreferenceSignal>[],
+                    learningVocabulary: <String>[
+                      'explore',
+                      'discover',
+                      'together',
+                      'authentic',
+                      'friends',
+                    ],
+                    learningPhrases: <String>[
+                      'new local spots',
+                    ],
+                    redactedText:
+                        'loves to explore and discover new local spots together with friends',
+                  ).toJson(),
+                },
+              },
+            ),
+          ],
+          timestamp: DateTime.now(),
+          duration: const Duration(minutes: 5),
+          metadata: {},
+        );
+        final connectionContext = ConnectionMetrics.initial(
+          localAISignature: 'ai1',
+          remoteAISignature: 'ai2',
+          compatibility: 0.8,
+        );
+
+        final result = await analyzer.analyzeChatConversation(
+          localUserId,
+          chatEvent,
+          connectionContext,
+        );
+
+        final dimensions =
+            result.sharedInsights.map((entry) => entry.dimension);
+        expect(dimensions, contains('exploration_eagerness'));
+        expect(dimensions, contains('community_orientation'));
       });
     });
 

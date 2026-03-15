@@ -90,6 +90,19 @@ class CityProfile {
         ),
       );
 
+  /// Birmingham: Medium density, neighborhood-centered, moderate paced.
+  static CityProfile birmingham() => const CityProfile(
+        id: 'birmingham_sim_01',
+        name: 'Birmingham',
+        transportType: TransportationDominance.carCentric,
+        populationDensity: 0.35,
+        lifestylePacing: 0.58,
+        bounds: CityBounds(
+          northWest: GeoCoordinate(33.67, -86.95),
+          southEast: GeoCoordinate(33.40, -86.66),
+        ),
+      );
+
   /// Generates a year-long (360 days) seasonal weather progression for the city.
   /// Each season is exactly 90 days.
   List<WeatherState> generateAnnualWeather() {
@@ -121,6 +134,7 @@ class CityProfile {
       // Add slight variance per city
       if (name == 'Denver') baseTemp -= 10.0; // Colder
       if (name == 'Atlanta') baseTemp += 10.0; // Warmer
+      if (name == 'Birmingham') baseTemp += 6.0; // Warm, humid shoulder seasons
 
       days.add(WeatherState(
         season: currentSeason,

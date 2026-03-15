@@ -17,22 +17,29 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/community/community_chat_service.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/headless_avrai_os_availability_service.dart';
 import 'package:avrai_runtime_os/services/user/user_name_resolution_service.dart';
 import 'package:avrai_core/models/community/community.dart';
 import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
 import 'package:avrai/presentation/widgets/chat/message_search_bar.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/headless_os_status_banner.dart';
 
 class CommunityChatView extends StatefulWidget {
   final String communityId;
   final Community? community;
+  final CommunityChatService? communityChatService;
+  final HeadlessAvraiOsAvailabilityService? headlessOsAvailabilityService;
 
   const CommunityChatView({
     super.key,
     required this.communityId,
     this.community,
+    this.communityChatService,
+    this.headlessOsAvailabilityService,
   });
 
   @override
@@ -42,9 +49,9 @@ class CommunityChatView extends StatefulWidget {
 class _CommunityChatViewState extends State<CommunityChatView> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  final _chatService = GetIt.instance<CommunityChatService>();
-  final _communityService = GetIt.instance<CommunityService>();
-  final _nameResolver = GetIt.instance<UserNameResolutionService>();
+  late final CommunityChatService _chatService;
+  late final CommunityService _communityService;
+  late final UserNameResolutionService _nameResolver;
   StreamSubscription? _incomingSubscription;
 
   List<Map<String, dynamic>> _messages = [];
@@ -56,10 +63,15 @@ class _CommunityChatViewState extends State<CommunityChatView> {
   final Map<String, String> _senderNames = {}; // Cache sender names
   final Map<String, String?> _senderPhotoUrls = {}; // Cache sender photo URLs
   String _searchQuery = '';
+  CommunityChatSendResult? _lastSendResult;
 
   @override
   void initState() {
     super.initState();
+    _chatService =
+        widget.communityChatService ?? GetIt.instance<CommunityChatService>();
+    _communityService = GetIt.instance<CommunityService>();
+    _nameResolver = GetIt.instance<UserNameResolutionService>();
     _loadUser();
     _loadCommunity();
   }
@@ -222,7 +234,8 @@ class _CommunityChatViewState extends State<CommunityChatView> {
 
     try {
       // Store locally + send over realtime (Signal Protocol transport, fanout).
-      await _chatService.sendGroupMessageOverNetwork(
+      final result =
+          await _chatService.sendGroupMessageOverNetworkWithKernelContext(
         userId: _userId!,
         communityId: widget.communityId,
         message: messageText,
@@ -232,6 +245,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
       if (mounted) {
         setState(() {
           _isSending = false;
+          _lastSendResult = result;
         });
         _scrollToBottom();
       }
@@ -344,7 +358,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
   @override
   Widget build(BuildContext context) {
     if (_userId == null) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'Community Chat',
         showNavigationBar: false,
         constrainBody: false,
@@ -356,7 +370,7 @@ class _CommunityChatViewState extends State<CommunityChatView> {
 
     final communityName = _community?.name ?? widget.communityId;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: communityName,
       constrainBody: false,
       titleWidget: Row(
@@ -399,6 +413,56 @@ class _CommunityChatViewState extends State<CommunityChatView> {
       ),
       body: Column(
         children: [
+          HeadlessOsStatusBanner(service: widget.headlessOsAvailabilityService),
+          if (_lastSendResult != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: AppSurface(
+                key: const Key('community_chat_os_result_card'),
+                color: AppColors.grey100,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.hub,
+                        color: AppTheme.primaryColor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _lastSendResult!.modelTruthReady
+                                  ? 'AVRAI OS observed this community message'
+                                  : 'Community message sent without model truth',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _lastSendResult!.governanceSummary ??
+                                  (_lastSendResult!.localityContainedInWhere
+                                      ? 'locality remains inside where'
+                                      : 'governance summary pending'),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           // Search bar
           MessageSearchBar(
             onSearch: _handleSearch,

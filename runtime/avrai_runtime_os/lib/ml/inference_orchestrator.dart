@@ -1,49 +1,53 @@
-// Inference Orchestrator for Phase 11: User-AI Interaction Update
-// Layered inference path: ONNX for dimension scoring, Gemini for complex reasoning
-
 import 'dart:developer' as developer;
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/config_service.dart';
 import 'package:avrai_runtime_os/ml/onnx_dimension_scorer.dart';
+import 'package:avrai_core/models/expression/expression_models.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
+import 'package:reality_engine/reality_engine.dart';
 
-/// Orchestrates inference based on strategy
-/// Device-first: ONNX for dimension math, Gemini for reasoning
-/// Edge-prefetch: Edge cache + device
-/// Cloud-only: Pure cloud (fallback)
+/// Orchestrates inference based on strategy.
+///
+/// Device-first uses local scoring for structured signals and the expression
+/// kernel for the final reasoning layer. The mouth expresses only what the
+/// orchestrator has already grounded.
 class InferenceOrchestrator {
   static const String _logName = 'InferenceOrchestrator';
 
   final OnnxDimensionScorer? onnxScorer;
-  final LLMService llmService;
   final ConfigService config;
+  final LanguageKernelOrchestratorService _languageKernelOrchestrator;
+  final VibeKernel _vibeKernel;
 
   InferenceOrchestrator({
     this.onnxScorer,
-    required this.llmService,
     required this.config,
-  });
+    LanguageKernelOrchestratorService? languageKernelOrchestrator,
+    VibeKernel? vibeKernel,
+  }) : _languageKernelOrchestrator =
+            languageKernelOrchestrator ?? LanguageKernelOrchestratorService(),
+        _vibeKernel = vibeKernel ?? VibeKernel();
 
-  /// Orchestrates inference based on strategy
   Future<InferenceResult> infer({
     required Map<String, dynamic> input,
     required InferenceStrategy strategy,
   }) async {
     switch (strategy) {
       case InferenceStrategy.deviceFirst:
-        return await _deviceFirstInference(input);
+        return _deviceFirstInference(input);
       case InferenceStrategy.edgePrefetch:
-        return await _edgePrefetchInference(input);
+        return _edgePrefetchInference(input);
       case InferenceStrategy.cloudOnly:
-        return await _cloudOnlyInference(input);
+        return _cloudOnlyInference(input);
     }
   }
 
-  /// Device-first: ONNX for dimension scoring, Gemini for reasoning
   Future<InferenceResult> _deviceFirstInference(
-      Map<String, dynamic> input) async {
+    Map<String, dynamic> input,
+  ) async {
     try {
-      // Step 1: ONNX dimension scoring (privacy-sensitive, fast)
-      Map<String, double> dimensionScores = {};
+      Map<String, double> dimensionScores = <String, double>{};
       if (onnxScorer != null) {
         try {
           dimensionScores = await onnxScorer!.scoreDimensions(input);
@@ -55,103 +59,60 @@ class InferenceOrchestrator {
           dimensionScores = _ruleBasedDimensionScoring(input);
         }
       } else {
-        // Fallback to rule-based scoring
         dimensionScores = _ruleBasedDimensionScoring(input);
       }
 
-      // Step 2: Check if Gemini expansion needed
-      final needsExpansion = _needsGeminiExpansion(input, dimensionScores);
+      final needsReasoningExpansion =
+          _needsReasoningExpansion(input, dimensionScores);
+      final reasoning = needsReasoningExpansion
+          ? _renderGroundedReasoning(
+              input: input,
+              dimensionScores: dimensionScores,
+              source: InferenceSource.hybrid,
+            )
+          : null;
 
-      if (needsExpansion) {
-        // Step 3: Prepare structured context for Gemini
-        final structuredContext =
-            _prepareStructuredContext(input, dimensionScores);
-
-        // Step 4: Call Gemini with distilled context
-        try {
-          final geminiResponse = await llmService.chat(
-            messages: [
-              ChatMessage(
-                role: ChatRole.system,
-                content:
-                    'You are a helpful assistant for SPOTS. Use the provided dimension scores and context to provide recommendations.',
-              ),
-              ChatMessage(
-                role: ChatRole.user,
-                content: _buildPrompt(input, structuredContext),
-              ),
-            ],
-            context: _buildLLMContext(structuredContext),
-          );
-
-          return InferenceResult(
-            dimensionScores: dimensionScores,
-            reasoning: geminiResponse,
-            source: InferenceSource.hybrid, // ONNX + Gemini
-          );
-        } catch (e) {
-          developer.log(
-            'Gemini expansion failed, returning ONNX-only result: $e',
-            name: _logName,
-          );
-          // Fallback to ONNX-only result if Gemini fails
-          return InferenceResult(
-            dimensionScores: dimensionScores,
-            reasoning: null,
-            source: InferenceSource.device, // ONNX only
-          );
-        }
-      } else {
-        // ONNX-only result
-        return InferenceResult(
-          dimensionScores: dimensionScores,
-          reasoning: null,
-          source: InferenceSource.device, // ONNX only
-        );
-      }
+      return InferenceResult(
+        dimensionScores: dimensionScores,
+        reasoning: reasoning,
+        source:
+            reasoning == null ? InferenceSource.device : InferenceSource.hybrid,
+      );
     } catch (e) {
       developer.log(
-        'Device-first inference failed, falling back to cloud: $e',
+        'Device-first inference failed, falling back to grounded cloud mode: '
+        '$e',
         name: _logName,
       );
-      // Fallback to cloud-only
-      return await _cloudOnlyInference(input);
+      return _cloudOnlyInference(input);
     }
   }
 
-  /// Check if Gemini expansion is needed
-  bool _needsGeminiExpansion(
-      Map<String, dynamic> input, Map<String, double> scores) {
-    // Heuristics for when to use Gemini:
-    // 1. Complex query (natural language, multiple intents)
-    // 2. Low confidence scores (need reasoning)
-    // 3. User explicitly requests narrative/explanation
-    // 4. Context requires social/community insights
-
+  bool _needsReasoningExpansion(
+    Map<String, dynamic> input,
+    Map<String, double> scores,
+  ) {
     final query = input['query'] as String? ?? '';
     final hasComplexQuery = query.length > 50 || query.contains('?');
-    final hasLowConfidence = scores.values.any((s) => s < 0.3);
+    final hasLowConfidence = scores.values.any((score) => score < 0.3);
     final needsNarrative = input['needs_narrative'] as bool? ?? false;
 
     return hasComplexQuery || hasLowConfidence || needsNarrative;
   }
 
-  /// Prepare structured context for Gemini
   Map<String, dynamic> _prepareStructuredContext(
     Map<String, dynamic> input,
     Map<String, double> scores,
   ) {
-    // Convert to structured facts for Gemini
-    return {
+    return <String, dynamic>{
       'dimension_scores': scores,
       'traits': _scoresToTraits(scores),
-      'places': input['places'] ?? [],
-      'social_graph': input['social_graph'] ?? [],
-      'onboarding_data': input['onboarding_data'] ?? {},
+      'places': input['places'] ?? const <dynamic>[],
+      'social_graph': input['social_graph'] ?? const <dynamic>[],
+      'onboarding_data': input['onboarding_data'] ?? const <String, dynamic>{},
     };
   }
 
-  /// Convert dimension scores to human-readable traits
   List<String> _scoresToTraits(Map<String, double> scores) {
     final traits = <String>[];
     if ((scores['exploration_eagerness'] ?? 0.0) > 0.7) {
@@ -172,44 +133,79 @@ class InferenceOrchestrator {
     return traits;
   }
 
-  /// Build prompt for Gemini
-  String _buildPrompt(
-      Map<String, dynamic> input, Map<String, dynamic> context) {
-    final query = input['query'] as String? ?? '';
-    final traits = (context['traits'] as List?)?.join(', ') ?? '';
+  String _renderGroundedReasoning({
+    required Map<String, dynamic> input,
+    required Map<String, double> dimensionScores,
+    required InferenceSource source,
+  }) {
+    final structuredContext = _prepareStructuredContext(input, dimensionScores);
+    final query = (input['query'] as String? ?? '').trim();
+    final traits = ((structuredContext['traits'] as List?) ?? const <dynamic>[])
+        .whereType<String>();
+    final topDimensions = _topDimensions(dimensionScores);
 
-    return '''
-User query: $query
-User traits: $traits
-Dimension scores: ${context['dimension_scores']}
+    final claims = <String>[
+      if (query.isNotEmpty)
+        'AVRAI grounded this reasoning in the current query and runtime context.',
+      if (topDimensions.isNotEmpty)
+        'Strongest local signals: '
+            '${topDimensions.map(_formatDimensionSignal).join(', ')}.',
+      if (traits.isNotEmpty)
+        'Current local scoring points toward ${traits.take(3).join(', ')}.',
+      if (source == InferenceSource.hybrid)
+        'This pass combines local scoring with a governed expression layer.',
+      if (query.isEmpty && topDimensions.isEmpty)
+        'AVRAI is using only the currently available runtime context.',
+    ];
 
-Provide a helpful recommendation based on this context.
-''';
-  }
-
-  /// Build LLMContext for LLMService
-  LLMContext _buildLLMContext(Map<String, dynamic> structuredContext) {
-    // Extract preferences from onboarding data
-    final preferences = (structuredContext['onboarding_data']
-        as Map<String, dynamic>?)?['preferences'] as Map<String, dynamic>?;
-
-    return LLMContext(
-      location: null, // Can be added from input if available
-      preferences: preferences,
+    final rendered = _languageKernelOrchestrator.renderGroundedOutput(
+      speechAct: ExpressionSpeechAct.explain,
+      audience: ExpressionAudience.userSafe,
+      surfaceShape: ExpressionSurfaceShape.card,
+      subjectLabel: 'Inference reasoning',
+      allowedClaims: claims,
+      confidenceBand: topDimensions.isEmpty ? 'low' : 'medium',
+      vibeContext: _safeExpressionContext(input),
+      uncertaintyNotice: topDimensions.isEmpty
+          ? 'No strong local dimension signal was available for this pass.'
+          : null,
+      toneProfile: 'clear_direct',
     );
+    return rendered.text;
   }
 
-  /// Rule-based dimension scoring (fallback when ONNX unavailable)
+  VibeExpressionContext? _safeExpressionContext(Map<String, dynamic> input) {
+    final subjectId =
+        input['agentId'] as String? ?? input['userId'] as String? ?? input['subjectId'] as String?;
+    if (subjectId == null || subjectId.trim().isEmpty) {
+      return null;
+    }
+    try {
+      return _vibeKernel.getExpressionContext(subjectId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<MapEntry<String, double>> _topDimensions(Map<String, double> scores) {
+    final ranked = scores.entries
+        .where((entry) => (entry.value - 0.5).abs() >= 0.05)
+        .toList()
+      ..sort((left, right) =>
+          (right.value - 0.5).abs().compareTo((left.value - 0.5).abs()));
+    return ranked.take(3).toList(growable: false);
+  }
+
+  String _formatDimensionSignal(MapEntry<String, double> entry) {
+    final label = entry.key.replaceAll('_', ' ');
+    return '$label ${entry.value.toStringAsFixed(2)}';
+  }
+
   Map<String, double> _ruleBasedDimensionScoring(Map<String, dynamic> input) {
-    // Fallback rule-based scoring when ONNX unavailable
-    // This provides basic dimension scores based on input data
     final scores = <String, double>{};
+    final places = input['places'] as List? ?? const <dynamic>[];
+    final socialGraph = input['social_graph'] as List? ?? const <dynamic>[];
 
-    // Extract basic signals from input
-    final places = input['places'] as List? ?? [];
-    final socialGraph = input['social_graph'] as List? ?? [];
-
-    // Basic heuristics for dimension scoring
     if (places.isNotEmpty) {
       scores['location_adventurousness'] = 0.6;
       scores['exploration_eagerness'] = 0.7;
@@ -220,7 +216,6 @@ Provide a helpful recommendation based on this context.
       scores['trust_network_reliance'] = 0.6;
     }
 
-    // Default values for missing dimensions
     scores['exploration_eagerness'] ??= 0.5;
     scores['community_orientation'] ??= 0.5;
     scores['location_adventurousness'] ??= 0.5;
@@ -231,38 +226,30 @@ Provide a helpful recommendation based on this context.
     return scores;
   }
 
-  /// Edge-prefetch inference (similar to device-first but prefetches from edge)
   Future<InferenceResult> _edgePrefetchInference(
-      Map<String, dynamic> input) async {
-    // For now, similar to device-first
-    // TODO: Add edge cache prefetching
-    return await _deviceFirstInference(input);
+    Map<String, dynamic> input,
+  ) async {
+    return _deviceFirstInference(input);
   }
 
-  /// Pure cloud inference (current implementation)
   Future<InferenceResult> _cloudOnlyInference(
-      Map<String, dynamic> input) async {
+    Map<String, dynamic> input,
+  ) async {
     try {
-      final query = input['query'] as String? ?? '';
-      final response = await llmService.chat(
-        messages: [
-          ChatMessage(
-            role: ChatRole.user,
-            content: query.isNotEmpty ? query : 'Provide recommendations',
-          ),
-        ],
+      final reasoning = _renderGroundedReasoning(
+        input: input,
+        dimensionScores: const <String, double>{},
+        source: InferenceSource.cloud,
       );
-
       return InferenceResult(
-        dimensionScores: {},
-        reasoning: response,
+        dimensionScores: const <String, double>{},
+        reasoning: reasoning,
         source: InferenceSource.cloud,
       );
     } catch (e) {
       developer.log('Cloud-only inference failed: $e', name: _logName);
-      // Return empty result if cloud fails
       return InferenceResult(
-        dimensionScores: {},
+        dimensionScores: const <String, double>{},
         reasoning: null,
         source: InferenceSource.cloud,
       );
@@ -270,21 +257,18 @@ Provide a helpful recommendation based on this context.
   }
 }
 
-/// Inference strategy
 enum InferenceStrategy {
-  deviceFirst, // ONNX for math, Gemini for reasoning
-  edgePrefetch, // Edge cache + device
-  cloudOnly, // Pure cloud (fallback)
+  deviceFirst,
+  edgePrefetch,
+  cloudOnly,
 }
 
-/// Inference source
 enum InferenceSource {
-  device, // ONNX only
-  hybrid, // ONNX + Gemini
-  cloud, // Cloud only
+  device,
+  hybrid,
+  cloud,
 }
 
-/// Inference result
 class InferenceResult {
   final Map<String, double> dimensionScores;
   final String? reasoning;

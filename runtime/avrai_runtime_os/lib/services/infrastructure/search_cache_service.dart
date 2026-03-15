@@ -21,7 +21,7 @@ class SearchCacheService {
       Duration(days: 7); // For offline access
 
   // Cache storage
-  final GetStorage _box = GetStorage('search_cache');
+  final GetStorage _box;
 
   // In-memory cache for ultra-fast access
   final Map<String, _CacheEntry> _memoryCache = {};
@@ -32,6 +32,8 @@ class SearchCacheService {
   int _cacheHits = 0;
   int _cacheMisses = 0;
   int _offlineHits = 0;
+
+  SearchCacheService({GetStorage? box}) : _box = box ?? GetStorage('search_cache');
 
   /// Search with intelligent caching
   /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable" - Local caching preserves privacy

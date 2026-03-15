@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_runtime_os/services/device/wearable_data_service.dart';
 import 'package:avrai/presentation/widgets/knot/breathing_knot_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Page for knot meditation feature
 /// Phase 4: Dynamic Knots (Mood/Energy)
@@ -134,7 +134,7 @@ class _KnotMeditationPageState extends State<KnotMeditationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Knot Meditation',
       constrainBody: false,
       actions: [

@@ -36,17 +36,14 @@ class HelpSupportPage extends StatelessWidget {
           'AI2AI Learning',
           'AI2AI learning exchanges anonymized signals, not raw private content.',
         ),
-        sendFeedback: () =>
-            _launchEmail('feedback@avrai.app', subject: 'AVRAI Feedback'),
-        reportBug: () =>
-            _launchEmail('bugs@avrai.app', subject: 'AVRAI Bug Report'),
-        emailSupport: () =>
-            _launchEmail('support@avrai.app', subject: 'AVRAI Support'),
-        openCommunityForum: () => _launchUrl('https://avrai.app/community'),
-        openVideoTutorials: () => _launchUrl('https://avrai.app/tutorials'),
-        openUserGuide: () => _launchUrl('https://avrai.app/guide'),
-        showWhatsNew: () => _launchUrl('https://avrai.app/updates'),
-        showPrinciples: () => _launchUrl('https://avrai.app/principles'),
+        sendFeedback: () => _launchUrl('https://avrai.org/support'),
+        reportBug: () => _launchUrl('https://avrai.org/support'),
+        emailSupport: () => _launchUrl('https://avrai.org/support'),
+        openCommunityForum: () => _launchUrl('https://avrai.org/support'),
+        openVideoTutorials: () => _launchUrl('https://avrai.org/support'),
+        openUserGuide: () => _launchUrl('https://avrai.org/support'),
+        showWhatsNew: () => _launchUrl('https://avrai.org/support'),
+        showPrinciples: () => _launchUrl('https://avrai.org/principles'),
         platformName: Theme.of(context).platform.name,
         supportId:
             'USR-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
@@ -78,17 +75,6 @@ class HelpSupportPage extends StatelessWidget {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _launchEmail(String email, {String? subject}) async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: email,
-      queryParameters: subject == null ? null : {'subject': subject},
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
     }
   }
 }

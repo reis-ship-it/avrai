@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:get_it/get_it.dart';
 import 'package:avrai_core/constants/vibe_constants.dart';
 import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_core/models/expertise/multi_path_expertise.dart';
 import 'package:avrai_core/models/quantum/outcome_result.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -13,10 +14,14 @@ import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart
 import 'package:avrai_runtime_os/services/prediction/engagement_phase_classifier.dart';
 import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_signal.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_runtime_policy.dart';
 import 'package:avrai_runtime_os/services/social_media/social_media_vibe_analyzer.dart';
 import 'package:avrai_runtime_os/ai/quantum/quantum_vibe_engine.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 part 'personality_learning_preferences.dart';
 
@@ -110,6 +115,106 @@ class PersonalityLearning {
     return QuantumVibeEngine();
   }
 
+  VibeKernel _resolveVibeKernel() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<VibeKernel>()) {
+        return sl<VibeKernel>();
+      }
+    } catch (_) {}
+    return VibeKernel();
+  }
+
+  TrajectoryKernel _resolveTrajectoryKernel() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<TrajectoryKernel>()) {
+        return sl<TrajectoryKernel>();
+      }
+    } catch (_) {}
+    return TrajectoryKernel();
+  }
+
+  CanonicalVibeProjectionService _resolveCanonicalProjectionService() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<CanonicalVibeProjectionService>()) {
+        return sl<CanonicalVibeProjectionService>();
+      }
+    } catch (_) {}
+    return CanonicalVibeProjectionService(
+      vibeKernel: _resolveVibeKernel(),
+      agentIdService: _resolveAgentIdService(),
+    );
+  }
+
+  bool _hasCanonicalMutationHistory(String agentId) {
+    if (!CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return false;
+    }
+    try {
+      return _resolveTrajectoryKernel()
+          .replaySubject(
+            subjectRef: VibeSubjectRef.personal(agentId),
+            limit: 1,
+          )
+          .isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  PersonalityProfile? _projectCanonicalProfileIfAvailable(
+    String agentId, {
+    String? userId,
+  }) {
+    if (!_hasCanonicalMutationHistory(agentId)) {
+      return null;
+    }
+    return _resolveCanonicalProjectionService().projectProfileForAgent(
+      agentId,
+      userId: userId,
+    );
+  }
+
+  void _syncProfileToVibeKernel(PersonalityProfile profile) {
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      developer.log(
+        'Skipping legacy profile back-sync for ${profile.agentId}; canonical VibeKernel is authoritative',
+        name: _logName,
+      );
+      return;
+    }
+    if (_hasCanonicalMutationHistory(profile.agentId)) {
+      return;
+    }
+    try {
+      _resolveVibeKernel().seedUserStateFromOnboarding(
+        subjectId: profile.agentId,
+        dimensions: profile.dimensions,
+        dimensionConfidence: profile.dimensionConfidence,
+        provenanceTags: const <String>['personality_profile_sync'],
+      );
+    } catch (error, stackTrace) {
+      developer.log(
+        'Failed to sync personality profile into VibeKernel: $error',
+        name: _logName,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  void _recordBehaviorInVibeKernel(String agentId, String actionKey) {
+    try {
+      _resolveVibeKernel().ingestBehaviorObservation(
+        subjectId: agentId,
+        behaviorSignals: <String, double>{actionKey: 0.72},
+        provenanceTags: const <String>['personality_learning_action'],
+      );
+    } catch (_) {}
+  }
+
   /// Set callback for personality evolution events
   void setEvolutionCallback(
       Function(String userId, PersonalityProfile evolvedProfile) callback) {
@@ -130,11 +235,25 @@ class PersonalityLearning {
       // Phase 8.3: Get agentId for privacy protection
       final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
+      final canonicalProjection = _projectCanonicalProfileIfAvailable(
+        agentId,
+        userId: userId,
+      );
+
+      if (canonicalProjection != null) {
+        _currentProfile = canonicalProjection;
+        developer.log(
+          'Loaded canonical personality projection',
+          name: _logName,
+        );
+        return canonicalProjection;
+      }
 
       // Try to load existing personality profile from local storage (by agentId)
       final existingProfile = await _loadPersonalityProfile(agentId);
       if (existingProfile != null) {
         _currentProfile = existingProfile;
+        _syncProfileToVibeKernel(existingProfile);
         developer.log(
             'Loaded existing personality profile (generation ${existingProfile.evolutionGeneration})',
             name: _logName);
@@ -187,6 +306,7 @@ class PersonalityLearning {
                 // Save cloud profile locally
                 await _savePersonalityProfile(migratedProfile);
                 _currentProfile = migratedProfile;
+                _syncProfileToVibeKernel(migratedProfile);
                 developer.log(
                     'Loaded personality profile from cloud (generation ${migratedProfile.evolutionGeneration})',
                     name: _logName);
@@ -207,6 +327,7 @@ class PersonalityLearning {
       final newProfile = PersonalityProfile.initial(agentId, userId: userId);
       await _savePersonalityProfile(newProfile);
       _currentProfile = newProfile;
+      _syncProfileToVibeKernel(newProfile);
 
       developer.log('Created new personality profile for user', name: _logName);
       return newProfile;
@@ -219,6 +340,7 @@ class PersonalityLearning {
       final fallbackProfile =
           PersonalityProfile.initial(agentId, userId: userId);
       _currentProfile = fallbackProfile;
+      _syncProfileToVibeKernel(fallbackProfile);
       return fallbackProfile;
     }
   }
@@ -234,6 +356,11 @@ class PersonalityLearning {
     // Convert userId → agentId for privacy protection
     final agentIdService = _resolveAgentIdService();
     final agentId = await agentIdService.getUserAgentId(userId);
+    final canonicalProjection = _projectCanonicalProfileIfAvailable(
+      agentId,
+      userId: userId,
+    );
+    final hasCanonicalOnboardingSeed = canonicalProjection != null;
 
     developer.log(
       'Initializing personality from onboarding for user: $userId (agentId: ${agentId.substring(0, 10)}...)',
@@ -245,22 +372,29 @@ class PersonalityLearning {
       final existingProfile = await _loadPersonalityProfile(agentId);
       if (existingProfile != null && existingProfile.evolutionGeneration > 1) {
         // Profile already evolved, don't overwrite
+        final projectedExisting = _projectCanonicalProfileIfAvailable(
+          agentId,
+          userId: userId,
+        );
         developer.log(
           'Profile already evolved (generation ${existingProfile.evolutionGeneration}), skipping initialization',
           name: _logName,
         );
-        return existingProfile;
+        return projectedExisting ?? existingProfile;
       }
 
       // Start with default initial profile using agentId
-      final baseProfile = PersonalityProfile.initial(agentId, userId: userId);
+      final baseProfile = canonicalProjection ??
+          PersonalityProfile.initial(agentId, userId: userId);
       final initialDimensions =
           Map<String, double>.from(baseProfile.dimensions);
       final initialConfidence =
           Map<String, double>.from(baseProfile.dimensionConfidence);
 
       // 1. Apply onboarding data (if provided)
-      if (slmDimensions != null && slmDimensions.isNotEmpty) {
+      if (!hasCanonicalOnboardingSeed &&
+          slmDimensions != null &&
+          slmDimensions.isNotEmpty) {
         // Use the dimensions synthesized by the SLM from open responses
         slmDimensions.forEach((dimension, value) {
           final currentValue = initialDimensions[dimension] ?? 0.5;
@@ -428,6 +562,7 @@ class PersonalityLearning {
           // Phase 8.3: Record agentId for debugging/telemetry (privacy-safe).
           'agent_id': agentId,
           'learning_sources': [
+            if (hasCanonicalOnboardingSeed) 'canonical_onboarding_vibe',
             if (onboardingData != null) 'onboarding',
             if (socialMediaData != null) 'social_media',
           ],
@@ -438,12 +573,17 @@ class PersonalityLearning {
       );
 
       await _savePersonalityProfile(newProfile);
-      _currentProfile = newProfile;
+      _currentProfile = _projectCanonicalProfileIfAvailable(
+            agentId,
+            userId: userId,
+          ) ??
+          newProfile;
+      _syncProfileToVibeKernel(newProfile);
 
       developer.log(
           '✅ Personality initialized with agentId: ${agentId.substring(0, 10)}...',
           name: _logName);
-      return newProfile;
+      return _currentProfile!;
     } catch (e, stackTrace) {
       developer.log('Error initializing from onboarding: $e',
           name: _logName, error: e, stackTrace: stackTrace);
@@ -662,10 +802,12 @@ class PersonalityLearning {
 
       // Save updated profile locally
       await _savePersonalityProfile(evolvedProfile);
+      _syncProfileToVibeKernel(evolvedProfile);
       // Update cache only if it matches the userId we just evolved
       // Phase 8.3: Check by agentId
       final agentIdService = _resolveAgentIdService();
       final agentId = await agentIdService.getUserAgentId(userId);
+      _recordBehaviorInVibeKernel(agentId, 'action:${action.type.name}');
       if (_currentProfile == null || _currentProfile!.agentId == agentId) {
         _currentProfile = evolvedProfile;
       }
@@ -851,6 +993,7 @@ class PersonalityLearning {
 
       // Save updated profile locally
       await _savePersonalityProfile(evolvedProfile);
+      _syncProfileToVibeKernel(evolvedProfile);
       _currentProfile = evolvedProfile;
 
       developer.log(
@@ -1012,6 +1155,12 @@ class PersonalityLearning {
   /// Load personality profile by agentId (primary) or userId (fallback for migration)
   Future<PersonalityProfile?> _loadPersonalityProfile(String identifier) async {
     try {
+      final canonicalProfile =
+          await _loadCanonicalPersonalityProfile(identifier);
+      if (canonicalProfile != null) {
+        return canonicalProfile;
+      }
+
       // Try agentId first (new format)
       var profileJson =
           _prefs.getString('${_personalityProfileKey}_$identifier');
@@ -1086,6 +1235,14 @@ class PersonalityLearning {
 
   Future<void> _savePersonalityProfile(PersonalityProfile profile) async {
     try {
+      if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+        developer.log(
+          'Skipping legacy personality persistence for ${profile.agentId}; canonical VibeKernel is authoritative',
+          name: _logName,
+        );
+        return;
+      }
+
       // Serialize profile to JSON
       final profileJson = jsonEncode(profile.toJson());
 
@@ -1109,6 +1266,65 @@ class PersonalityLearning {
     } catch (e) {
       developer.log('Error saving personality profile: $e', name: _logName);
     }
+  }
+
+  Future<PersonalityProfile?> _loadCanonicalPersonalityProfile(
+    String identifier,
+  ) async {
+    if (!CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return null;
+    }
+
+    try {
+      final agentId = identifier.startsWith('agent_')
+          ? identifier
+          : await _resolveAgentIdService().getUserAgentId(identifier);
+      final snapshot = _resolveVibeKernel().getUserSnapshot(agentId);
+      if (!hasCanonicalVibeSignal(snapshot)) {
+        return null;
+      }
+      return PersonalityProfile(
+        agentId: agentId,
+        userId: identifier.startsWith('agent_') ? null : identifier,
+        dimensions: _canonicalDimensions(snapshot),
+        dimensionConfidence: _canonicalConfidence(snapshot),
+        archetype: _determineArchetypeFromDimensions(
+          _canonicalDimensions(snapshot),
+        ),
+        authenticity: snapshot.affectiveState.valence.clamp(0.0, 1.0),
+        createdAt: snapshot.updatedAtUtc,
+        lastUpdated: snapshot.updatedAtUtc,
+        evolutionGeneration: snapshot.behaviorPatterns.observationCount + 1,
+        learningHistory: <String, dynamic>{
+          'canonical_vibe_subject_id': snapshot.subjectId,
+          'canonical_subject_kind': snapshot.subjectKind,
+          'canonical_provenance_tags': snapshot.provenanceTags,
+        },
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Map<String, double> _canonicalDimensions(VibeStateSnapshot snapshot) {
+    final dimensions = Map<String, double>.from(snapshot.coreDna.dimensions);
+    for (final dimension in VibeConstants.coreDimensions) {
+      dimensions.putIfAbsent(
+        dimension,
+        () => snapshot.pheromones.vectors[dimension] ?? 0.5,
+      );
+    }
+    return dimensions;
+  }
+
+  Map<String, double> _canonicalConfidence(VibeStateSnapshot snapshot) {
+    if (snapshot.coreDna.dimensionConfidence.isNotEmpty) {
+      return Map<String, double>.from(snapshot.coreDna.dimensionConfidence);
+    }
+    return <String, double>{
+      for (final dimension in VibeConstants.coreDimensions)
+        dimension: snapshot.confidence.clamp(0.0, 1.0),
+    };
   }
 
   /// Sync profile to cloud if enabled (non-blocking, fire-and-forget)
@@ -1415,6 +1631,7 @@ class PersonalityLearning {
 
       // Save updated profile locally
       await _savePersonalityProfile(finalProfile);
+      _syncProfileToVibeKernel(finalProfile);
 
       if (_currentProfile == null || _currentProfile!.agentId == agentId) {
         _currentProfile = finalProfile;

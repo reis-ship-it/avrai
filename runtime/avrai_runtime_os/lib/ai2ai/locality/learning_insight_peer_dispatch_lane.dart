@@ -7,6 +7,7 @@ import 'package:avrai_runtime_os/services/transport/mesh/learning_insight_peer_s
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,7 +17,7 @@ class LearningInsightPeerDispatchLane {
   static Future<void> send({
     required bool allowBleSideEffects,
     required bool eventModeEnabled,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? deviceDiscovery,
     required String peerId,
     required SharedPreferencesCompat prefs,
@@ -32,7 +33,7 @@ class LearningInsightPeerDispatchLane {
   }) async {
     if (!allowBleSideEffects) return;
     if (eventModeEnabled) return;
-    if (protocol == null) return;
+    if (packetCodec == null) return;
 
     final DiscoveredDevice? device = deviceDiscovery?.getDevice(peerId);
     if (device == null) return;
@@ -46,7 +47,7 @@ class LearningInsightPeerDispatchLane {
         peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
     final String insightId = const Uuid().v4();
     await LearningInsightPeerSendLane.send(
-      protocol: protocol,
+      packetCodec: packetCodec,
       device: device,
       peerId: peerId,
       localBleNodeId: localBleNodeId,

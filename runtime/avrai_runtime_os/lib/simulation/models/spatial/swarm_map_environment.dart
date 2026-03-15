@@ -56,24 +56,23 @@ class SwarmMapEnvironment {
 
   /// Finds POIs that lie along a path between Point A and Point B.
   /// This is critical for the "Routine Enhancement" logic (finding interstitial gaps).
-  List<PointOfInterest> findPOIsAlongRoute(
-      List<GeoCoordinate> routePoints,
+  List<PointOfInterest> findPOIsAlongRoute(List<GeoCoordinate> routePoints,
       {double maxDistanceKm = 1.0}) {
     // Optimization: create a bounding box of the route to pre-filter
     if (routePoints.isEmpty) return [];
-    
+
     double minLat = double.maxFinite;
     double maxLat = -double.maxFinite;
     double minLng = double.maxFinite;
     double maxLng = -double.maxFinite;
-    
+
     for (final p in routePoints) {
       if (p.latitude < minLat) minLat = p.latitude;
       if (p.latitude > maxLat) maxLat = p.latitude;
       if (p.longitude < minLng) minLng = p.longitude;
       if (p.longitude > maxLng) maxLng = p.longitude;
     }
-    
+
     // Add padding to bounding box
     final latPadding = maxDistanceKm / 111.0;
     final lngPadding = maxDistanceKm / 85.0;
@@ -83,13 +82,14 @@ class SwarmMapEnvironment {
     maxLng += lngPadding;
 
     // Filter first by bounding box, then by strict distance
-    final threshold = maxDistanceKm * maxDistanceKm; // Using squared distance from GeoCoordinate
+    final threshold = maxDistanceKm *
+        maxDistanceKm; // Using squared distance from GeoCoordinate
 
     return allPOIs.where((poi) {
       // 1. Fast bounding box check
-      if (poi.location.latitude < minLat || 
+      if (poi.location.latitude < minLat ||
           poi.location.latitude > maxLat ||
-          poi.location.longitude < minLng || 
+          poi.location.longitude < minLng ||
           poi.location.longitude > maxLng) {
         return false;
       }

@@ -1,4 +1,6 @@
 import 'dart:developer' as developer;
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_core/models/user/language_profile_diagnostics.dart';
 import 'package:avrai_core/models/user/language_profile.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
@@ -19,6 +21,8 @@ import 'dart:math' as math;
 class LanguagePatternLearningService {
   static const String _logName = 'LanguagePatternLearningService';
   static const String _dataKeyPrefix = 'language_profile_';
+  static const String _eventKeyPrefix = 'language_profile_events_';
+  static const int _maxStoredEventsPerProfile = 24;
   final GetStorage _box = GetStorage('language_patterns');
 
   final AgentIdService _agentIdService;
@@ -70,6 +74,22 @@ class LanguagePatternLearningService {
 
       // Save updated profile
       await _saveLanguageProfile(agentId, updatedProfile);
+      await _appendLearningEvent(
+        LanguageLearningEvent(
+          profileRef: agentId,
+          displayRef: userId,
+          learningScope: 'user_runtime_learning',
+          surface: 'agent_chat',
+          source: 'agent_message',
+          summary: 'Learned from a direct agent-chat message.',
+          vocabularySample: _topScoredKeys(analysis.vocabulary, limit: 4),
+          phraseSample: _topScoredKeys(analysis.phrases, limit: 3),
+          toneSnapshot: Map<String, double>.from(analysis.tone),
+          messageCountAfter: updatedProfile.messageCount,
+          confidenceAfter: updatedProfile.learningConfidence,
+          timestamp: updatedProfile.lastUpdated,
+        ),
+      );
 
       developer.log(
         '✅ Language profile updated: messages=${updatedProfile.messageCount}, confidence=${updatedProfile.learningConfidence.toStringAsFixed(2)}',
@@ -80,6 +100,94 @@ class LanguagePatternLearningService {
     } catch (e, stackTrace) {
       developer.log(
         'Error analyzing message: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return false;
+    }
+  }
+
+  /// Analyze a sanitized boundary artifact and update a governance/operator
+  /// language profile without storing raw text.
+  Future<bool> analyzeSanitizedArtifact({
+    required String profileRef,
+    required BoundarySanitizedArtifact artifact,
+    String? displayRef,
+    String learningScope = 'governance',
+    String surface = 'admin',
+  }) async {
+    try {
+      final effectiveProfileRef = profileRef.trim();
+      if (effectiveProfileRef.isEmpty) {
+        return false;
+      }
+
+      final hasLearningMaterial = artifact.redactedText.trim().isNotEmpty ||
+          artifact.learningVocabulary.isNotEmpty ||
+          artifact.learningPhrases.isNotEmpty ||
+          artifact.safeQuestions.isNotEmpty ||
+          artifact.safePreferenceSignals.isNotEmpty;
+      if (!hasLearningMaterial) {
+        developer.log(
+          'Skipping sanitized analysis: no learning material for $effectiveProfileRef',
+          name: _logName,
+        );
+        return false;
+      }
+
+      developer.log(
+        'Analyzing sanitized language artifact: profileRef=$effectiveProfileRef, surface=$surface, scope=$learningScope',
+        name: _logName,
+      );
+
+      final profile = await getLanguageProfileByRef(effectiveProfileRef) ??
+          LanguageProfile.initial(
+            effectiveProfileRef,
+            displayRef ?? effectiveProfileRef,
+          );
+
+      final analysis = _analyzeSanitizedArtifact(artifact);
+      final updatedProfile = _updateProfileWithAnalysis(
+        profile,
+        analysis,
+        metadata: <String, dynamic>{
+          'learningScope': learningScope,
+          'lastSurface': surface,
+          'profileRef': effectiveProfileRef,
+        },
+      );
+
+      await _saveLanguageProfile(effectiveProfileRef, updatedProfile);
+      await _appendLearningEvent(
+        LanguageLearningEvent(
+          profileRef: effectiveProfileRef,
+          displayRef: profile.userId,
+          learningScope: learningScope,
+          surface: surface,
+          source: 'sanitized_artifact',
+          summary: _buildSanitizedLearningSummary(
+            learningScope: learningScope,
+            surface: surface,
+          ),
+          vocabularySample: _topScoredKeys(analysis.vocabulary, limit: 4),
+          phraseSample: _topScoredKeys(analysis.phrases, limit: 3),
+          toneSnapshot: Map<String, double>.from(analysis.tone),
+          messageCountAfter: updatedProfile.messageCount,
+          confidenceAfter: updatedProfile.learningConfidence,
+          timestamp: updatedProfile.lastUpdated,
+        ),
+      );
+
+      developer.log(
+        '✅ Sanitized language profile updated: profileRef=$effectiveProfileRef, messages=${updatedProfile.messageCount}, confidence=${updatedProfile.learningConfidence.toStringAsFixed(2)}',
+        name: _logName,
+      );
+
+      return true;
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error analyzing sanitized language artifact: $e',
         name: _logName,
         error: e,
         stackTrace: stackTrace,
@@ -108,6 +216,88 @@ class LanguagePatternLearningService {
     } catch (e, stackTrace) {
       developer.log(
         'Error getting language profile: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  Future<List<LanguageLearningEvent>> getRecentLearningEventsByUser(
+    String userId, {
+    int limit = 8,
+  }) async {
+    try {
+      final agentId = await _agentIdService.getUserAgentId(userId);
+      return getRecentLearningEventsByRef(agentId, limit: limit);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error getting learning events for user: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return const <LanguageLearningEvent>[];
+    }
+  }
+
+  Future<List<LanguageLearningEvent>> getRecentLearningEventsByRef(
+    String profileRef, {
+    int limit = 8,
+  }) async {
+    try {
+      final normalizedRef = profileRef.trim();
+      if (normalizedRef.isEmpty) {
+        return const <LanguageLearningEvent>[];
+      }
+
+      final stored =
+          _box.read<List<dynamic>>('$_eventKeyPrefix$normalizedRef') ??
+              const <dynamic>[];
+      final events = stored
+          .map((entry) => LanguageLearningEvent.fromJson(
+                Map<String, dynamic>.from(entry as Map),
+              ))
+          .toList(growable: false)
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+      if (events.length <= limit) {
+        return events;
+      }
+      return events.take(limit).toList(growable: false);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error getting learning events by ref: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return const <LanguageLearningEvent>[];
+    }
+  }
+
+  /// Get a language profile directly by profile ref.
+  ///
+  /// Used for governance/operator profiles that should not derive from a
+  /// user-facing identifier.
+  Future<LanguageProfile?> getLanguageProfileByRef(String profileRef) async {
+    try {
+      final normalizedRef = profileRef.trim();
+      if (normalizedRef.isEmpty) {
+        return null;
+      }
+
+      final data =
+          _box.read<Map<String, dynamic>>('$_dataKeyPrefix$normalizedRef');
+      if (data == null) {
+        return null;
+      }
+
+      return LanguageProfile.fromJson(data);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error getting language profile by ref: $e',
         name: _logName,
         error: e,
         stackTrace: stackTrace,
@@ -254,6 +444,55 @@ class LanguagePatternLearningService {
       phrases: phrases,
       sentenceStructure: sentenceStructure,
       tone: tone,
+    );
+  }
+
+  MessageAnalysis _analyzeSanitizedArtifact(
+    BoundarySanitizedArtifact artifact,
+  ) {
+    final synthesizedMessageParts = <String>[
+      artifact.redactedText,
+      artifact.summary,
+      ...artifact.safeQuestions,
+      ...artifact.safePreferenceSignals.map((entry) => entry.value),
+      ...artifact.learningPhrases,
+    ].where((entry) => entry.trim().isNotEmpty).toList(growable: false);
+
+    final baseAnalysis = _analyzeMessageContent(
+      synthesizedMessageParts.join('. '),
+    );
+
+    final mergedVocabulary = Map<String, double>.from(baseAnalysis.vocabulary);
+    for (final token in artifact.learningVocabulary) {
+      final normalized = token.trim().toLowerCase();
+      if (normalized.isEmpty) continue;
+      final existing = mergedVocabulary[normalized] ?? 0.0;
+      mergedVocabulary[normalized] = math.max(existing, 1.0);
+    }
+
+    final mergedPhrases = Map<String, double>.from(baseAnalysis.phrases);
+    for (final phrase in artifact.learningPhrases) {
+      final normalized = phrase.trim().toLowerCase();
+      if (normalized.isEmpty) continue;
+      final existing = mergedPhrases[normalized] ?? 0.0;
+      mergedPhrases[normalized] = math.max(existing, 1.0);
+    }
+
+    final mergedTone = Map<String, double>.from(baseAnalysis.tone);
+    if (artifact.safeQuestions.isNotEmpty) {
+      mergedTone['directness'] =
+          math.max(mergedTone['directness'] ?? 0.5, 0.62);
+    }
+    if (artifact.safePreferenceSignals.isNotEmpty) {
+      mergedTone['enthusiasm'] =
+          math.max(mergedTone['enthusiasm'] ?? 0.5, 0.55);
+    }
+
+    return MessageAnalysis(
+      vocabulary: mergedVocabulary,
+      phrases: mergedPhrases,
+      sentenceStructure: baseAnalysis.sentenceStructure,
+      tone: mergedTone,
     );
   }
 
@@ -538,31 +777,33 @@ class LanguagePatternLearningService {
 
   /// Update profile with new analysis
   LanguageProfile _updateProfileWithAnalysis(
-    LanguageProfile profile,
-    MessageAnalysis analysis,
-  ) {
+      LanguageProfile profile, MessageAnalysis analysis,
+      {Map<String, dynamic>? metadata}) {
     // Calculate confidence based on message count
     final newMessageCount = profile.messageCount + 1;
     final confidence = math.min(
         1.0, newMessageCount / 100.0); // Max confidence at 100 messages
+
+    final mergedMetadata = <String, dynamic>{
+      'messageCount': 1,
+      'learningConfidence': confidence,
+      ...?metadata,
+    };
 
     return profile.copyWith(
       vocabulary: analysis.vocabulary,
       phrases: analysis.phrases,
       sentenceStructure: analysis.sentenceStructure,
       tone: analysis.tone,
-      metadata: {
-        'messageCount': 1, // Increment by 1
-        'learningConfidence': confidence,
-      },
+      metadata: mergedMetadata,
     );
   }
 
   /// Save language profile to storage
   Future<void> _saveLanguageProfile(
-      String agentId, LanguageProfile profile) async {
+      String profileRef, LanguageProfile profile) async {
     try {
-      await _box.write('$_dataKeyPrefix$agentId', profile.toJson());
+      await _box.write('$_dataKeyPrefix$profileRef', profile.toJson());
     } catch (e, stackTrace) {
       developer.log(
         'Error saving language profile: $e',
@@ -572,6 +813,61 @@ class LanguagePatternLearningService {
       );
       rethrow;
     }
+  }
+
+  Future<void> _appendLearningEvent(LanguageLearningEvent event) async {
+    try {
+      final key = '$_eventKeyPrefix${event.profileRef}';
+      final stored = _box.read<List<dynamic>>(key) ?? const <dynamic>[];
+      final events = stored
+          .map((entry) => LanguageLearningEvent.fromJson(
+                Map<String, dynamic>.from(entry as Map),
+              ))
+          .toList();
+      events.add(event);
+      events.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      final bounded = events
+          .take(_maxStoredEventsPerProfile)
+          .map((entry) => entry.toJson())
+          .toList(growable: false);
+      await _box.write(key, bounded);
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error appending learning event: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  List<String> _topScoredKeys(
+    Map<String, double> scoredEntries, {
+    int limit = 4,
+  }) {
+    final entries = scoredEntries.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries
+        .take(limit)
+        .map((entry) => entry.key)
+        .where((entry) => entry.trim().isNotEmpty)
+        .toList(growable: false);
+  }
+
+  String _buildSanitizedLearningSummary({
+    required String learningScope,
+    required String surface,
+  }) {
+    if (learningScope == 'governance_feedback_rewrite') {
+      return 'Learned from an approved admin rewrite.';
+    }
+    if (learningScope == 'governance_feedback_acceptance') {
+      return 'Learned from an approved admin response.';
+    }
+    if (surface.contains('check_in')) {
+      return 'Learned from a governance check-in prompt.';
+    }
+    return 'Learned from a sanitized ${surface.replaceAll('_', ' ')} interaction.';
   }
 
   /// Format tone value for display

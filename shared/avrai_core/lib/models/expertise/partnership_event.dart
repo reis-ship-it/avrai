@@ -1,5 +1,7 @@
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/events/event_partnership.dart';
+import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/payment/revenue_split.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
@@ -56,6 +58,8 @@ class PartnershipEvent extends ExpertiseEvent {
     required super.createdAt,
     required super.updatedAt,
     super.status,
+    super.externalSyncMetadata,
+    super.planningSnapshot,
     this.partnershipId,
     this.partnership,
     this.revenueSplitId,
@@ -99,6 +103,8 @@ class PartnershipEvent extends ExpertiseEvent {
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
       status: event.status,
+      externalSyncMetadata: event.externalSyncMetadata,
+      planningSnapshot: event.planningSnapshot,
       partnershipId: partnershipId,
       partnership: partnership,
       revenueSplitId: revenueSplitId,
@@ -173,6 +179,8 @@ class PartnershipEvent extends ExpertiseEvent {
     DateTime? createdAt,
     DateTime? updatedAt,
     EventStatus? status,
+    Object? externalSyncMetadata = _partnershipEventSentinel,
+    Object? planningSnapshot = _partnershipEventSentinel,
     String? partnershipId,
     EventPartnership? partnership,
     String? revenueSplitId,
@@ -205,6 +213,12 @@ class PartnershipEvent extends ExpertiseEvent {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
+      externalSyncMetadata: externalSyncMetadata == _partnershipEventSentinel
+          ? this.externalSyncMetadata
+          : externalSyncMetadata as ExternalSyncMetadata?,
+      planningSnapshot: planningSnapshot == _partnershipEventSentinel
+          ? this.planningSnapshot
+          : planningSnapshot as EventPlanningSnapshot?,
       partnershipId: partnershipId ?? this.partnershipId,
       partnership: partnership ?? this.partnership,
       revenueSplitId: revenueSplitId ?? this.revenueSplitId,
@@ -227,3 +241,5 @@ class PartnershipEvent extends ExpertiseEvent {
         partnerCount,
       ];
 }
+
+const Object _partnershipEventSentinel = Object();

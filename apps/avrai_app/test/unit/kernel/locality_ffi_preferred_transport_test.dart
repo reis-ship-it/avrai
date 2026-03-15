@@ -1,5 +1,6 @@
 import 'package:avrai_runtime_os/kernel/locality/locality_native_bridge_bindings.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_native_kernel_stub.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_priority.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -16,9 +17,11 @@ void main() {
       final fallback = _FakeTransport(
         response: <String, dynamic>{'path': 'fallback'},
       );
+      final audit = LocalityNativeFallbackAudit();
       final transport = FfiPreferredLocalitySyscallTransport(
         nativeBridge: bridge,
         fallbackTransport: fallback,
+        audit: audit,
       );
 
       final result = await transport.invokeAsync(
@@ -29,6 +32,8 @@ void main() {
       expect(result['path'], 'native');
       expect(bridge.invocations, 1);
       expect(fallback.invocations, 0);
+      expect(audit.nativeHandledCount, 1);
+      expect(audit.fallbackUnavailableCount, 0);
     });
 
     test('falls back when native bridge is unavailable', () async {
@@ -43,9 +48,11 @@ void main() {
       final fallback = _FakeTransport(
         response: <String, dynamic>{'path': 'fallback'},
       );
+      final audit = LocalityNativeFallbackAudit();
       final transport = FfiPreferredLocalitySyscallTransport(
         nativeBridge: bridge,
         fallbackTransport: fallback,
+        audit: audit,
       );
 
       final result = transport.invokeSync(
@@ -56,6 +63,35 @@ void main() {
       expect(result['path'], 'fallback');
       expect(bridge.initialized, isTrue);
       expect(fallback.invocations, 1);
+      expect(audit.fallbackUnavailableCount, 1);
+    });
+
+    test('throws when native is required and unavailable', () {
+      final bridge = _FakeNativeBridge(
+        available: false,
+        response: <String, dynamic>{
+          'ok': true,
+          'handled': true,
+          'payload': <String, dynamic>{'path': 'native'},
+        },
+      );
+      final fallback = _FakeTransport(
+        response: <String, dynamic>{'path': 'fallback'},
+      );
+      final transport = FfiPreferredLocalitySyscallTransport(
+        nativeBridge: bridge,
+        fallbackTransport: fallback,
+        policy: const LocalityNativeExecutionPolicy(requireNative: true),
+      );
+
+      expect(
+        () => transport.invokeSync(
+          syscall: 'snapshot_locality',
+          payload: const <String, dynamic>{'agentId': 'agent-1'},
+        ),
+        throwsStateError,
+      );
+      expect(fallback.invocations, 0);
     });
   });
 }

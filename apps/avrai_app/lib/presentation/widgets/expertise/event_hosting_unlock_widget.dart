@@ -10,8 +10,6 @@ import 'package:avrai/theme/app_theme.dart';
 
 /// Event Hosting Unlock Widget
 /// Shows when user unlocks event hosting (Local level+ required)
-/// OUR_GUTS.md: "The key opens doors to events"
-///
 /// **Usage Example:**
 /// ```dart
 /// EventHostingUnlockWidget(

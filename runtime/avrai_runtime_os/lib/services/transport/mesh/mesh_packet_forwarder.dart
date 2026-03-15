@@ -3,9 +3,11 @@
 
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_bearer_adapter.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_transport_execution_lane.dart';
 
 class MeshPacketForwarder {
   const MeshPacketForwarder._();
@@ -13,10 +15,10 @@ class MeshPacketForwarder {
   static Future<void> forwardToCandidates({
     required List<String> candidatePeerIds,
     required DeviceDiscoveryService discovery,
-    required AI2AIProtocol protocol,
+    required GovernedMeshPacketCodec packetCodec,
     required String senderNodeId,
     required Map<String, String> peerNodeIdByDeviceId,
-    required MessageType messageType,
+    required MeshPacketType messageType,
     required Map<String, dynamic> payload,
     String? geographicScope,
     bool fireAndForgetSend = false,
@@ -24,39 +26,34 @@ class MeshPacketForwarder {
     void Function(String peerId, String recipientId, Object error)?
         onForwardFailed,
   }) async {
-    for (final peerId in candidatePeerIds) {
-      final device = discovery.getDevice(peerId);
-      if (device == null || device.type != DeviceType.bluetooth) continue;
-
-      final recipientId =
-          peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
-
-      try {
-        final packetBytes = await protocol.encodePacketBytes(
-          type: messageType,
-          payload: payload,
-          senderNodeId: senderNodeId,
-          recipientNodeId: recipientId,
-          geographicScope: geographicScope,
-        );
-
-        if (fireAndForgetSend) {
-          unawaited(sendBlePacketsBatch(
-            device: device,
-            senderId: senderNodeId,
-            packetBytesList: <Uint8List>[packetBytes],
-          ));
-        } else {
-          await sendBlePacketsBatch(
-            device: device,
-            senderId: senderNodeId,
-            packetBytesList: <Uint8List>[packetBytes],
-          );
-        }
-        onForwarded?.call(peerId, recipientId);
-      } catch (e) {
-        onForwardFailed?.call(peerId, recipientId, e);
-      }
+    final executionLane = MeshTransportExecutionLane(
+      adapters: <MeshBearerAdapter>[
+        BleMeshBearerAdapter(
+          discovery: discovery,
+          packetCodec: packetCodec,
+        ),
+      ],
+    );
+    final result = await executionLane.dispatch(
+      MeshBearerDispatchRequest(
+        candidatePeerIds: candidatePeerIds,
+        senderNodeId: senderNodeId,
+        peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+        messageType: messageType,
+        payload: payload,
+        geographicScope: geographicScope,
+        fireAndForgetSend: fireAndForgetSend,
+      ),
+    );
+    for (final forwarded in result.forwardedRecipients.entries) {
+      onForwarded?.call(forwarded.key, forwarded.value);
+    }
+    for (final failure in result.failedPeers.entries) {
+      final device = discovery.getDevice(failure.key);
+      final recipientId = device == null
+          ? failure.key
+          : peerNodeIdByDeviceId[device.deviceId] ?? device.deviceId;
+      onForwardFailed?.call(failure.key, recipientId, failure.value);
     }
   }
 }

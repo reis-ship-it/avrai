@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_core/avra_core.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Test page to verify Supabase integration
 class SupabaseTestPage extends StatefulWidget {
@@ -442,7 +442,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Supabase Test (Realtime + DB)',
       constrainBody: false,
       body: SingleChildScrollView(

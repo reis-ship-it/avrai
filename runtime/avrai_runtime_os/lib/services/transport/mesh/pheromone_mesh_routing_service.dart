@@ -25,9 +25,13 @@ class PheromoneMeshRoutingService {
     final clearance = _governanceKernel.interceptOutgoing(vector);
     if (clearance.isApproved && clearance.sanitizedVector != null) {
       _outbox.add(clearance.sanitizedVector!);
-      developer.log('Vector enqueued for broadcast (Outbox size: ${_outbox.length})', name: _logName);
+      developer.log(
+          'Vector enqueued for broadcast (Outbox size: ${_outbox.length})',
+          name: _logName);
     } else {
-      developer.log('Vector rejected for broadcast: ${clearance.rejectionReason}', name: _logName);
+      developer.log(
+          'Vector rejected for broadcast: ${clearance.rejectionReason}',
+          name: _logName);
     }
   }
 
@@ -37,15 +41,18 @@ class PheromoneMeshRoutingService {
     final clearance = _governanceKernel.interceptIncoming(vector);
     if (clearance.isApproved) {
       _inbox.add(vector);
-      developer.log('Vector received and stored in inbox (Inbox size: ${_inbox.length})', name: _logName);
+      developer.log(
+          'Vector received and stored in inbox (Inbox size: ${_inbox.length})',
+          name: _logName);
     } else {
-      developer.log('Incoming vector rejected: ${clearance.rejectionReason}', name: _logName);
+      developer.log('Incoming vector rejected: ${clearance.rejectionReason}',
+          name: _logName);
     }
   }
 
   /// Attempt to securely swap pending outbox vectors with a newly matched device.
   /// For this spike, we simulate the swap by returning the outbox vectors that
-  /// are ready to be sent to the remote device, and providing a callback to 
+  /// are ready to be sent to the remote device, and providing a callback to
   /// ingest the vectors sent by the remote device.
   List<KnowledgeVector> getVectorsForSwapping() {
     if (_outbox.isEmpty) return [];
@@ -54,8 +61,9 @@ class PheromoneMeshRoutingService {
     // to send based on what the other node already has. For now, we send all
     // pending outbox vectors, up to a limit.
     final vectorsToSend = _outbox.take(10).toList();
-    
-    developer.log('Prepared ${vectorsToSend.length} vectors for mesh swapping', name: _logName);
+
+    developer.log('Prepared ${vectorsToSend.length} vectors for mesh swapping',
+        name: _logName);
     return vectorsToSend;
   }
 

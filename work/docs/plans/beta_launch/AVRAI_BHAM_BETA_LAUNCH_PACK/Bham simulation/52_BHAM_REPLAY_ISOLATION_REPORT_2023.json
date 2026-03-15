@@ -1,0 +1,18 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "passed": true,
+  "violations": [],
+  "policySnapshot": {
+    "runtimeMutationPolicy": "blocked",
+    "liveDataIngressPolicy": "blocked",
+    "appSurfacePolicy": "blocked",
+    "adminInspectionPolicy": "adminOnly",
+    "higherAgentPolicy": "replayOnlyInternal"
+  },
+  "notes": [
+    "Replay must remain isolated from live runtime mutation and transport state."
+  ],
+  "metadata": {
+    "environmentNamespace": "replay-world/bham/2023/wave8_bham_truth_year"
+  }
+}

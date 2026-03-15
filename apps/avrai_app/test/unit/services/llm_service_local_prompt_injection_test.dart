@@ -4,39 +4,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../helpers/test_storage_helper.dart';
 
-final class _RecordingBackend implements LlmBackend {
-  List<ChatMessage> lastMessages = const [];
+final class _RecordingBackend implements LanguageBackend {
+  List<LanguageTurnMessage> lastMessages = const [];
 
   @override
   Future<String> chat({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required Duration timeout,
     String? responseFormat,
   }) async {
-    lastMessages = List<ChatMessage>.from(messages);
+    lastMessages = List<LanguageTurnMessage>.from(messages);
     return 'ok';
   }
 
   @override
   Stream<String> chatStream({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required bool useRealSse,
     required bool autoFallback,
   }) {
-    lastMessages = List<ChatMessage>.from(messages);
+    lastMessages = List<LanguageTurnMessage>.from(messages);
     return const Stream<String>.empty();
   }
 }
@@ -53,7 +54,7 @@ final class _FakeBootstrap extends LocalLlmPostInstallBootstrapService {
 }
 
 void main() {
-  group('LLMService local system prompt injection', () {
+  group('LanguageRuntimeService local system prompt injection', () {
     setUpAll(() async {
       await TestStorageHelper.initTestStorage();
       await GetStorage.init('local_llm_bootstrap');
@@ -91,7 +92,7 @@ void main() {
       final local = _RecordingBackend();
 
       final client = SupabaseClient('http://localhost', 'anon');
-      final service = LLMService(
+      final service = LanguageRuntimeService(
         client,
         cloudBackend: cloud,
         localBackend: local,
@@ -101,15 +102,18 @@ void main() {
 
       await service.chat(
         messages: [
-          ChatMessage(role: ChatRole.user, content: 'hello'),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.user,
+            content: 'hello',
+          ),
         ],
-        context: LLMContext(userId: 'user_1'),
+        context: LanguageRuntimeContext(userId: 'user_1'),
       );
 
       expect(local.lastMessages, isNotEmpty);
-      expect(local.lastMessages.first.role, equals(ChatRole.system));
+      expect(local.lastMessages.first.role, equals(LanguageTurnRole.system));
       expect(local.lastMessages.first.content, equals('SYSTEM_PROMPT'));
-      expect(local.lastMessages[1].role, equals(ChatRole.user));
+      expect(local.lastMessages[1].role, equals(LanguageTurnRole.user));
     });
 
     test('does not inject system prompt for cloud backend', () async {
@@ -122,7 +126,7 @@ void main() {
       final local = _RecordingBackend();
 
       final client = SupabaseClient('http://localhost', 'anon');
-      final service = LLMService(
+      final service = LanguageRuntimeService(
         client,
         cloudBackend: cloud,
         localBackend: local,
@@ -132,13 +136,16 @@ void main() {
 
       await service.chat(
         messages: [
-          ChatMessage(role: ChatRole.user, content: 'hello'),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.user,
+            content: 'hello',
+          ),
         ],
-        context: LLMContext(userId: 'user_1'),
+        context: LanguageRuntimeContext(userId: 'user_1'),
       );
 
       expect(cloud.lastMessages, isNotEmpty);
-      expect(cloud.lastMessages.first.role, equals(ChatRole.user));
+      expect(cloud.lastMessages.first.role, equals(LanguageTurnRole.user));
     });
   });
 }

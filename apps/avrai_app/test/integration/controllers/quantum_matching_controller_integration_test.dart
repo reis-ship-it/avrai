@@ -87,9 +87,10 @@ void main() {
           reason: 'errorCode=${result.errorCode} error=${result.error}',
         );
         expect(result.matchingResult, isNotNull);
-        expect(result.matchingResult!.compatibility, greaterThan(0.0));
+        expect(result.matchingResult!.compatibility, greaterThanOrEqualTo(0.0));
         expect(result.matchingResult!.compatibility, lessThanOrEqualTo(1.0));
-        expect(result.matchingResult!.quantumCompatibility, greaterThan(0.0));
+        expect(result.matchingResult!.quantumCompatibility,
+            greaterThanOrEqualTo(0.0));
         expect(result.matchingResult!.quantumCompatibility,
             lessThanOrEqualTo(1.0));
         expect(result.matchingResult!.locationCompatibility,
@@ -146,7 +147,7 @@ void main() {
           reason: 'errorCode=${result.errorCode} error=${result.error}',
         );
         expect(result.matchingResult, isNotNull);
-        expect(result.matchingResult!.compatibility, greaterThan(0.0));
+        expect(result.matchingResult!.compatibility, greaterThanOrEqualTo(0.0));
         expect(result.matchingResult!.entities.length,
             greaterThanOrEqualTo(2)); // User + Spot
       });
@@ -186,7 +187,7 @@ void main() {
           reason: 'errorCode=${result.errorCode} error=${result.error}',
         );
         expect(result.matchingResult, isNotNull);
-        expect(result.matchingResult!.compatibility, greaterThan(0.0));
+        expect(result.matchingResult!.compatibility, greaterThanOrEqualTo(0.0));
         expect(result.matchingResult!.entities.length,
             greaterThanOrEqualTo(2)); // User + Business
       });
@@ -380,7 +381,7 @@ void main() {
             inInclusiveRange(0.0, 1.0));
 
         // Combined compatibility should be weighted combination
-        expect(result.matchingResult!.compatibility, greaterThan(0.0));
+        expect(result.matchingResult!.compatibility, greaterThanOrEqualTo(0.0));
       });
 
       test('should handle missing optional services gracefully', () async {

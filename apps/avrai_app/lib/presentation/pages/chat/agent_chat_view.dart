@@ -7,20 +7,28 @@ import 'dart:async';
 
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/controllers/human_chat_controller.dart';
+import 'package:avrai/presentation/pages/events/quick_event_builder_page.dart';
 import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
+import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
+import 'package:avrai_runtime_os/services/infrastructure/headless_avrai_os_availability_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class AgentChatView extends StatefulWidget {
   final String? draftMessage;
   final VoidCallback? onDraftConsumed;
+  final HumanChatController? controller;
+  final HeadlessAvraiOsAvailabilityService? headlessOsAvailabilityService;
 
   const AgentChatView({
     super.key,
     this.draftMessage,
     this.onDraftConsumed,
+    this.controller,
+    this.headlessOsAvailabilityService,
   });
 
   @override
@@ -32,12 +40,18 @@ class _AgentChatViewState extends State<AgentChatView> {
   final _scrollController = ScrollController();
   final _inputFocusNode = FocusNode();
   late final HumanChatController _controller;
+  late final bool _ownsController;
   int _lastMessageCount = 0;
+  HeadlessAvraiOsAvailabilitySnapshot? _osAvailability;
+  StreamSubscription<HeadlessAvraiOsAvailabilitySnapshot>? _osSubscription;
 
   @override
   void initState() {
     super.initState();
-    _controller = HumanChatController()..addListener(_handleControllerUpdate);
+    _controller = widget.controller ?? HumanChatController();
+    _ownsController = widget.controller == null;
+    _controller.addListener(_handleControllerUpdate);
+    unawaited(_loadOsAvailability());
   }
 
   @override
@@ -140,6 +154,40 @@ class _AgentChatViewState extends State<AgentChatView> {
     );
   }
 
+  UnifiedUser? _currentUnifiedUser(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      return null;
+    }
+    final user = authState.user;
+    return UnifiedUser(
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName ?? user.name,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isOnline: user.isOnline ?? false,
+    );
+  }
+
+  void _openEventDraftBuilder(BuildContext context) {
+    final UnifiedUser? user = _currentUnifiedUser(context);
+    final AgentEventPlanningDraft? draft = _controller.lastEventPlanningDraft;
+    if (user == null || draft == null) {
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => QuickEventBuilderPage(
+          currentUser: user,
+          preselectedTemplate: draft.suggestedTemplate,
+          initialPlanningInput: draft.planningInput,
+        ),
+      ),
+    );
+  }
+
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -154,13 +202,49 @@ class _AgentChatViewState extends State<AgentChatView> {
 
   @override
   void dispose() {
-    _controller
-      ..removeListener(_handleControllerUpdate)
-      ..dispose();
+    _osSubscription?.cancel();
+    _controller.removeListener(_handleControllerUpdate);
+    if (_ownsController) {
+      _controller.dispose();
+    }
     _messageController.dispose();
     _scrollController.dispose();
     _inputFocusNode.dispose();
     super.dispose();
+  }
+
+  HeadlessAvraiOsAvailabilityService? _resolveAvailabilityService() {
+    final provided = widget.headlessOsAvailabilityService;
+    if (provided != null) {
+      return provided;
+    }
+    final getIt = GetIt.instance;
+    if (!getIt.isRegistered<HeadlessAvraiOsAvailabilityService>()) {
+      return null;
+    }
+    return getIt<HeadlessAvraiOsAvailabilityService>();
+  }
+
+  Future<void> _loadOsAvailability() async {
+    final service = _resolveAvailabilityService();
+    if (service == null) {
+      return;
+    }
+    final availability = await service.currentAvailability();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _osAvailability = availability;
+    });
+    _osSubscription = service.watchAvailability().listen((next) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _osAvailability = next;
+      });
+    });
   }
 
   @override
@@ -173,6 +257,11 @@ class _AgentChatViewState extends State<AgentChatView> {
 
     return Column(
       children: [
+        if (_osAvailability != null || _controller.lastChatKernelResult != null)
+          _AgentChatOsStatusCard(
+            availability: _osAvailability,
+            controller: _controller,
+          ),
         Expanded(
           child: Stack(
             children: [
@@ -531,6 +620,66 @@ class _AgentChatViewState extends State<AgentChatView> {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  if (_controller.lastEventPlanningDraft != null) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.event_note_outlined,
+                                size: 16,
+                                color: AppTheme.primaryColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Draft Event In Builder',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _controller.lastEventPlanningDraft!.summary,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: OutlinedButton.icon(
+                              onPressed: () => _openEventDraftBuilder(context),
+                              icon: const Icon(Icons.arrow_forward),
+                              label: const Text('Open Event Draft'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                   if (_controller.signaturePrompts.isNotEmpty) ...[
                     Align(
                       alignment: Alignment.centerLeft,
@@ -603,6 +752,92 @@ class _AgentChatViewState extends State<AgentChatView> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AgentChatOsStatusCard extends StatelessWidget {
+  const _AgentChatOsStatusCard({
+    required this.availability,
+    required this.controller,
+  });
+
+  final HeadlessAvraiOsAvailabilitySnapshot? availability;
+  final HumanChatController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final liveReady = availability?.liveReady ?? false;
+    final restoredReady = availability?.restoredReady ?? false;
+    final color = controller.modelTruthReady
+        ? AppColors.success
+        : liveReady
+            ? AppColors.success
+            : restoredReady
+                ? AppTheme.primaryColor
+                : AppColors.warning;
+    final title = controller.modelTruthReady
+        ? 'Chat is updating your local AVRAI OS'
+        : liveReady
+            ? 'AVRAI OS is live for this chat'
+            : restoredReady
+                ? 'AVRAI OS resumed for this chat'
+                : 'AVRAI OS is still starting for chat';
+    final summary = controller.governanceSummary ??
+        (controller.modelTruthReady
+            ? 'The last chat turn flowed through model truth and governance.'
+            : liveReady
+                ? 'This chat is attached to live local OS context.'
+                : restoredReady
+                    ? 'Restored local OS context is available while live kernels finish starting.'
+                    : 'Chat is available, but deeper OS context has not finished starting yet.');
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: color.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.memory, size: 16, color: color),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            summary,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${availability?.kernelCount ?? 0} kernels • '
+            '${(controller.localityContainedInWhere || (availability?.localityContainedInWhere ?? false)) ? 'locality in where' : 'spatial kernel pending'}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

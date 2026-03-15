@@ -14,7 +14,7 @@ import 'package:avrai/presentation/widgets/events/locality_selection_widget.dart
 import 'package:avrai/presentation/widgets/events/geographic_scope_indicator_widget.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_scope_service.dart';
 import 'package:avrai_runtime_os/services/intake/organizer_sync_connection_advisor.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Event Creation Form Page
 /// Agent 2: Event Discovery & Hosting UI (Week 3, Task 2.8)
@@ -474,7 +474,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   @override
   Widget build(BuildContext context) {
     if (_expertiseError != null) {
-      return AdaptivePlatformPageScaffold(
+      return AppFlowScaffold(
         title: 'Create Event',
         constrainBody: false,
         backgroundColor: AppColors.background,
@@ -514,7 +514,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create Event',
       constrainBody: false,
       backgroundColor: AppColors.background,

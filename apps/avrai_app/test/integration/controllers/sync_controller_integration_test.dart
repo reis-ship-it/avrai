@@ -191,7 +191,6 @@ void main() {
           knotFabricService: null,
           knotWorldsheetService: null,
           quantumEntanglementService: null,
-          ai2aiProtocol: null,
         );
 
         final userId =

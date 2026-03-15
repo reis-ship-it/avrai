@@ -6,10 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   audioplayers_windows
   battery_plus
-  cloud_firestore
   connectivity_plus
-  file_selector_windows
-  firebase_auth
   firebase_core
   firebase_storage
   flutter_blue_plus_winrt
@@ -17,11 +14,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_nsd
   flutter_secure_storage_x_windows
   geolocator_windows
-  objectbox_flutter_libs
   permission_handler_windows
-  printing
-  share_plus
-  sqlite3_flutter_libs
   url_launcher_windows
 )
 

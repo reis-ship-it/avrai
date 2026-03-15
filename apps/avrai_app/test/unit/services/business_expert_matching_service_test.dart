@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:avrai_runtime_os/services/business/business_expert_matching_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_matching_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_community_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/services/partnerships/partnership_service.dart';
 import 'package:avrai_core/models/business/business_account.dart';
 import 'package:avrai_core/models/business/business_expert_preferences.dart';
@@ -14,31 +14,45 @@ import '../../helpers/integration_test_helpers.dart';
 import 'business_expert_matching_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
 
-@GenerateMocks([
-  ExpertiseMatchingService,
-  ExpertiseCommunityService,
-  LLMService,
-  PartnershipService
-])
+@GenerateMocks(
+    [ExpertiseMatchingService, ExpertiseCommunityService, PartnershipService])
+class StubLanguageRuntimeService extends Fake
+    implements LanguageRuntimeService {
+  StubLanguageRuntimeService({
+    this.recommendationResponse = 'AI suggestion response',
+  });
+
+  String recommendationResponse;
+
+  @override
+  Future<String> generateRecommendation({
+    required String userQuery,
+    LanguageRuntimeContext? userContext,
+    LanguageRoutingPolicy dispatchPolicy =
+        const LanguageRoutingPolicy.standard(),
+  }) async =>
+      recommendationResponse;
+}
+
 void main() {
   group('BusinessExpertMatchingService Tests', () {
     late BusinessExpertMatchingService service;
     late MockExpertiseMatchingService mockExpertiseMatchingService;
     late MockExpertiseCommunityService mockCommunityService;
-    late MockLLMService mockLLMService;
+    late StubLanguageRuntimeService stubLanguageRuntimeService;
     late MockPartnershipService mockPartnershipService;
     late BusinessAccount business;
 
     setUp(() {
       mockExpertiseMatchingService = MockExpertiseMatchingService();
       mockCommunityService = MockExpertiseCommunityService();
-      mockLLMService = MockLLMService();
+      stubLanguageRuntimeService = StubLanguageRuntimeService();
       mockPartnershipService = MockPartnershipService();
 
       service = BusinessExpertMatchingService(
         expertiseMatchingService: mockExpertiseMatchingService,
         communityService: mockCommunityService,
-        llmService: mockLLMService,
+        languageRuntimeService: stubLanguageRuntimeService,
         partnershipService: mockPartnershipService,
       );
 
@@ -59,7 +73,7 @@ void main() {
 
     group('findExpertsForBusiness', () {
       test(
-          'should return empty list when no experts match, respect maxResults parameter, use expert preferences when available, apply minimum match score threshold from preferences, find experts from preferred communities, use AI suggestions when LLM service available, or work without LLM service',
+          'should return empty list when no experts match, respect maxResults parameter, use expert preferences when available, apply minimum match score threshold from preferences, find experts from preferred communities, use language runtime suggestions when available, or work without the language runtime',
           () async {
         // Test business logic: expert finding with various configurations
         when(mockExpertiseMatchingService.findSimilarExperts(
@@ -117,19 +131,18 @@ void main() {
         );
         expect(matches5, isA<List<BusinessExpertMatch>>());
 
-        when(mockLLMService.generateRecommendation(
-          userQuery: anyNamed('userQuery'),
-        )).thenAnswer((_) async => 'AI suggestion response');
+        stubLanguageRuntimeService.recommendationResponse =
+            'AI suggestion response';
         final matches6 = await service.findExpertsForBusiness(business);
         expect(matches6, isA<List<BusinessExpertMatch>>());
 
-        final serviceWithoutLLM = BusinessExpertMatchingService(
+        final serviceWithoutLanguageRuntime = BusinessExpertMatchingService(
           expertiseMatchingService: mockExpertiseMatchingService,
           communityService: mockCommunityService,
-          llmService: null,
+          languageRuntimeService: null,
         );
-        final matches7 =
-            await serviceWithoutLLM.findExpertsForBusiness(business);
+        final matches7 = await serviceWithoutLanguageRuntime
+            .findExpertsForBusiness(business);
         expect(matches7, isA<List<BusinessExpertMatch>>());
       });
     });

@@ -956,7 +956,7 @@ class HybridSearchRepository {
         ? '${filters.categories?.join(',')}_${filters.minRating}_${filters.maxDistance}_${filters.communityOnly}_${filters.reservationAvailable}'
         : 'none';
     final personalizationKey = userId == null ? 'anon' : 'user_$userId';
-    return '${query}_${lat}_${lon}_${maxResults}_${includeExternal}'
+    return '${query}_${lat}_${lon}_${maxResults}_$includeExternal'
         '_${filterKey}_${sortOption.name}_$personalizationKey';
   }
 

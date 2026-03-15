@@ -3,7 +3,7 @@ import 'package:avrai_runtime_os/services/device/device_capabilities.dart';
 enum OfflineLlmTier {
   none,
   qwen3b, // Mobile standard
-  phi4,   // Desktop / high-end tablet standard
+  phi4, // Desktop / high-end tablet standard
 }
 
 class OnDeviceAiGateResult {
@@ -25,8 +25,10 @@ class OnDeviceAiGateResult {
 /// **Mid-to-high only strategy:** we intentionally set a higher bar.
 class OnDeviceAiCapabilityGate {
   // Baseline thresholds (mid/high range target).
-  static const int _minRamMbFor3b = 4 * 1024; // 4GB for Qwen 2.5 3B (takes ~2.2GB)
-  static const int _minRamMbFor4b = 6 * 1024; // 6GB for Phi-4 Mini (takes ~2.8GB)
+  static const int _minRamMbFor3b =
+      4 * 1024; // 4GB for Qwen 2.5 3B (takes ~2.2GB)
+  static const int _minRamMbFor4b =
+      6 * 1024; // 6GB for Phi-4 Mini (takes ~2.8GB)
 
   static const int _minFreeDiskMbFor3b = 4 * 1024;
   static const int _minFreeDiskMbFor4b = 6 * 1024;

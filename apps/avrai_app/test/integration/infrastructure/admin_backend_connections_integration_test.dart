@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart' as real_prefs;
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';

@@ -20,8 +20,12 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('What do you love?'), findsOneWidget);
+      expect(find.text('What do you love?'), findsWidgets);
       expect(find.textContaining('Select your preferences'), findsOneWidget);
+      expect(find.text('Preference survey'), findsOneWidget);
+      expect(find.text('Selection target'), findsOneWidget);
+      expect(find.text('Search'), findsOneWidget);
+      expect(find.text('Categories'), findsOneWidget);
       expect(find.text('Food & Drink'), findsOneWidget);
       expect(find.text('Activities'), findsOneWidget);
       expect(find.byType(PreferenceSurveyPage), findsOneWidget);

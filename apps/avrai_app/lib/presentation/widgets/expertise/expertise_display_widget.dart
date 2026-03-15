@@ -7,12 +7,11 @@ import 'package:avrai_runtime_os/services/expertise/expertise_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/expertise/locality_threshold_widget.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 import 'package:go_router/go_router.dart';
 
 /// Expertise Display Widget
 /// Displays user's expertise levels and category expertise
-/// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
-///
 /// **Usage Example:**
 /// ```dart
 /// ExpertiseDisplayWidget(
@@ -208,8 +207,8 @@ class _ExpertiseDisplayWidgetState extends State<ExpertiseDisplayWidget> {
         // Locality Threshold Indicators (Week 25)
         _buildLocalityThresholdIndicators(),
 
-        // Partnership Boost Indicator (Phase 4.5)
-        _buildPartnershipBoostIndicator(),
+        if (BhamBetaDefaults.enablePartnershipSurfaces)
+          _buildPartnershipBoostIndicator(),
 
         // Progress Indicators (if enabled)
         if (widget.showProgress) ...[
