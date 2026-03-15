@@ -49,13 +49,13 @@ class _CodeChangeTriggerArgs {
 
   String get usage => '''
 Usage:
-  dart run tool/queue_security_code_change_trigger.dart \\
+  flutter pub run tool/queue_security_code_change_trigger.dart \\
     --commit-ref <sha-or-label> \\
     [--actor <alias>] \\
     --changed-path <path> [--changed-path <path> ...]
 
 Example:
-  dart run tool/queue_security_code_change_trigger.dart \\
+  flutter pub run tool/queue_security_code_change_trigger.dart \\
     --commit-ref abc123 \\
     --actor ci_release \\
     --changed-path runtime/avrai_runtime_os/services/security/security_trigger_ingress_service.dart

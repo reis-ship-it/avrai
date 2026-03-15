@@ -36,7 +36,7 @@ main() {
   echo "Queueing security code-change triggers for ${#changed_paths[@]} changed path(s) at ${COMMIT_REF}."
 
   local -a cmd=(
-    dart run tool/queue_security_code_change_trigger.dart
+    flutter pub run avrai_runtime_os:tool/queue_security_code_change_trigger.dart
     --commit-ref "$COMMIT_REF"
     --actor "$ACTOR_ALIAS"
   )
